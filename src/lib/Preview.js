@@ -29,7 +29,8 @@ import {
     checkFileValid,
     cacheFile,
     uncacheFile,
-    isWatermarked
+    isWatermarked,
+    canDownloadWatermarkedRep
 } from './file';
 import {
     API_HOST,
@@ -450,7 +451,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
+        // If we can download the watermarked rep, then we should be able to print it.
+        if (
+            (checkPermission(this.file, PERMISSION_DOWNLOAD) || canDownloadWatermarkedRep(this.file)) &&
+            checkFeature(this.viewer, 'print')
+        ) {
             this.viewer.print();
         }
     }
@@ -463,13 +468,25 @@ class Preview extends EventEmitter {
      */
     download() {
         const { apiHost, queryParams } = this.options;
+        let downloadUrl;
 
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
             // Append optional query params
-            const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+            downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
             get(downloadUrl, this.getRequestHeaders()).then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
+        } else if (canDownloadWatermarkedRep(this.file)) {
+            // If we can download the watermarked rep but not the original, we assume that the viewer is using the
+            // watermarked rep for preview, so we will download it.
+            // This allows the content URL to be downloaded by the browser
+            const downloadQueryParams = { response_content_disposition_type: 'attachment' };
+            const template = this.viewer.options.representation.content.url_template;
+            downloadUrl = appendQueryParams(
+                this.viewer.createContentUrlWithAuthParams(template, this.viewer.options.viewer.ASSET),
+                downloadQueryParams
+            );
+            openUrlInsideIframe(downloadUrl);
         }
     }
 
@@ -891,7 +908,11 @@ class Preview extends EventEmitter {
         }
 
         // Show download button if download permissions exist, options allow, and browser has ability
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if (
+            (checkPermission(this.file, PERMISSION_DOWNLOAD) || canDownloadWatermarkedRep(this.file)) &&
+            this.options.showDownload &&
+            Browser.canDownload()
+        ) {
             this.ui.showLoadingDownloadButton(this.download);
         }
 
@@ -1026,9 +1047,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     finishLoading(data = {}) {
+        const canDownload = checkPermission(this.file, PERMISSION_DOWNLOAD);
+        const canDownloadWatermarked = canDownloadWatermarkedRep(this.file);
         // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if ((canDownload || canDownloadWatermarked) && this.options.showDownload && Browser.canDownload()) {
             this.ui.showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
