@@ -1,3 +1,16 @@
+<a name="1.28.0"></a>
+# 1.28.0 (2018-01-31)
+
+* Update: box-annotations to v0.11.0 (#612) ([cb281a6](https://github.com/box/box-content-preview/commit/cb281a6))
+* Chore: Add safety check in util.replaceHeader() (#610) ([3a47c2e](https://github.com/box/box-content-preview/commit/3a47c2e))
+* Chore: Allow notifications to persist (#605) ([e8992c7](https://github.com/box/box-content-preview/commit/e8992c7))
+* Chore: remove useless event unbinding (#604) ([618f106](https://github.com/box/box-content-preview/commit/618f106))
+* Fix: Image viewer flickering in IE11 during reset zoom (#594) ([d43094f](https://github.com/box/box-content-preview/commit/d43094f))
+* Fix: Prevent navigation on empty collections (#607) ([217fbce](https://github.com/box/box-content-preview/commit/217fbce))
+* Mojito: Update translations (#602) ([fd711bb](https://github.com/box/box-content-preview/commit/fd711bb))
+
+
+
 <a name="1.27.0"></a>
 # 1.27.0 (2018-01-24)
 
