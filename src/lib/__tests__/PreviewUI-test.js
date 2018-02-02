@@ -267,19 +267,29 @@ describe('lib/PreviewUI', () => {
 
 
     describe('replaceHeader()', () => {
-        it('should hide all headers and then show the specified header', () => {
+        const newHeader = document.createElement('div');
+
+        beforeEach(() => {
             containerEl = ui.setup(options);
-            const newHeader = document.createElement('div');
             newHeader.className = 'bp-header bp-draw-header bp-is-hidden';
-
             containerEl.appendChild(newHeader);
+        });
 
-            ui.replaceHeader('.bp-draw-header');
-
-            expect(newHeader.classList.contains('bp-is-hidden')).to.be.false;
+        it('should do nothing if no valid header is specified', () => {
+            ui.replaceHeader('.bp-invalid-header');
 
             const baseHeader = containerEl.querySelector('.bp-base-header');
-            expect(baseHeader.classList.contains('bp-is-hidden')).to.be.true;
+            expect(newHeader).to.have.class('bp-is-hidden');
+            expect(baseHeader).to.not.have.class('bp-is-hidden');
+
+        });
+
+        it('should hide all headers and then show the specified header', () => {
+            ui.replaceHeader('.bp-draw-header');
+
+            const baseHeader = containerEl.querySelector('.bp-base-header');
+            expect(newHeader).to.not.have.class('bp-is-hidden');
+            expect(baseHeader).to.have.class('bp-is-hidden');
 
         });
     });
