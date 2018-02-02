@@ -57,7 +57,7 @@ reset_to_master() {
     # The master branch should not have any commits
     if [[ $(git log --oneline ...github-upstream/master) != "" ]] ; then
         echo "----------------------------------------------------"
-        echo "Error in resetting to master!"
+        echo "Your branch has unmerged commits!"
         echo "----------------------------------------------------"
         exit 1
     fi
