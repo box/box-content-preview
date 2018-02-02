@@ -894,6 +894,8 @@ class BaseViewer extends EventEmitter {
             createError: __('annotations_create_error'),
             deleteError: __('annotations_delete_error'),
             authError: __('annotations_authorization_error'),
+            doneButton: __('annotation_done'),
+            closeButton: __('annotation_close'),
             cancelButton: __('annotation_cancel'),
             saveButton: __('annotation_save'),
             postButton: __('annotation_post'),
