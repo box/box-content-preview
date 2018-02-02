@@ -29,6 +29,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE } from '../events';
+import { createPreviewError } from '../logUtils';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -716,7 +717,8 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            this.triggerError(ERROR_CODE.annotationsLoadFail);
+            const error = createPreviewError(ERROR_CODE.annotationsLoadFail);
+            this.triggerError(error);
             return;
         }
 

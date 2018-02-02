@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
+import { createPreviewError } from './logUtils';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
@@ -127,9 +128,7 @@ class RepStatus extends EventEmitter {
                         break;
                 }
 
-                error = new Error(errCode);
-                error.displayMessage = errorMessage;
-
+                error = createPreviewError(errCode, errorMessage, this.representation);
                 this.reject(error);
                 break;
 

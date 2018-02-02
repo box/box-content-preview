@@ -7,7 +7,7 @@ const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
-const CLIENT_VERSION = __VERSION__;
+export const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
 /**

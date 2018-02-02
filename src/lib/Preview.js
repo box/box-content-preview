@@ -47,6 +47,7 @@ import {
 } from './constants';
 import { VIEWER_EVENT, ERROR_CODE } from './events';
 import './Preview.scss';
+import getClientLogDetails, { createPreviewError, getISOTime } from './logUtils';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
@@ -331,8 +332,7 @@ class Preview extends EventEmitter {
                 console.error('[Preview SDK] Tried to cache invalid file: ', file);
                 /* eslint-enable no-console */
 
-                const err = new Error(ERROR_CODE.invalidCacheAttempt);
-                err.data = file;
+                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, null, file);
                 this.logPreviewError(err);
             }
         });
@@ -537,8 +537,7 @@ class Preview extends EventEmitter {
             console.error(`Error prefetching file ID ${fileId} - ${err}`);
             /* eslint-enable no-console */
 
-            const error = new Error(ERROR_CODE.prefetchFileId);
-            error.data = fileId;
+            const error = createPreviewError(ERROR_CODE.prefetchFile, null, err);
             this.logPreviewError(error);
 
             return;
@@ -1172,8 +1171,7 @@ class Preview extends EventEmitter {
                 errorMessage = __('error_rate_limit');
             }
 
-            const error = new Error(errorCode);
-            error.displayMessage = errorMessage;
+            const error = createPreviewError(errorCode, errorMessage, this.file.id);
             this.triggerError(error);
             return;
         }
@@ -1247,6 +1245,26 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Create a generic log Object.
+     *
+     * @private
+     * @return {Object} Log details for viewer session and current file.
+     */
+    createLog() {
+        const log = {
+            timestamp: getISOTime(),
+            file_id: this.file ? this.file.id : '',
+            file_version_id: this.file ? this.file.file_version.id : '',
+            content_type: '',
+            extension: '', // determined outside
+            locale: this.location.locale || '',
+            ...getClientLogDetails()
+        };
+
+        return log;
+    }
+
+    /**
      * Message, to any listeners of Preview, that an error has occurred.
      *
      * @private
@@ -1255,13 +1273,15 @@ class Preview extends EventEmitter {
      */
     logPreviewError(error) {
         const err = error;
-        // Make sure to strip auth
-        err.message = stripAuthFromString(error.message || '');
-        err.displayMessage = stripAuthFromString(error.displayMessage || '');
+        // If we haven't supplied a code, then it was thrown by the browser
+        err.code = err.code || ERROR_CODE.browserError;
+        // Make sure to strip auth, if it's a string.
+        err.message = typeof error.message === 'string' ? stripAuthFromString(error.message) : error.message;
+        err.displayMessage = typeof error.displayMessage === 'string' ? stripAuthFromString(error.displayMessage) : '';
 
         const errorLog = {
             error: err,
-            data: error.data || ''
+            ...this.createLog()
         };
 
         this.emit('preview_error', errorLog);
@@ -1341,21 +1361,26 @@ class Preview extends EventEmitter {
                             });
                         })
                         .catch((err) => {
+                            const message = `Error prefetching file ID ${id} - ${err}`;
                             /* eslint-disable no-console */
-                            console.error(`Error prefetching file ID ${id} - ${err}`);
+                            console.error(message);
                             /* eslint-enable no-console */
-                            const error = new Error(ERROR_CODE.prefetchFileId);
-                            error.data = id;
+
+                            const error = createPreviewError(ERROR_CODE.prefetchFile, message, {
+                                fileId: id,
+                                error: err
+                            });
                             this.logPreviewError(error);
                         });
                 });
             })
             .catch(() => {
+                const message = 'Error prefetching files';
                 /* eslint-disable no-console */
-                console.error('Error prefetching files');
+                console.error(message);
                 /* eslint-enable no-console */
-                const error = new Error(ERROR_CODE.prefetchFileId);
-                error.data = filesToPrefetch;
+
+                const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
                 this.logPreviewError(error);
             });
     }

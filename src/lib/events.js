@@ -16,7 +16,7 @@ export const VIEWER_EVENT = {
 export const ERROR_CODE = {
     annotationsLoadFail: 'error_annotations_load',
     invalidCacheAttempt: 'error_invalid_file_for_cache',
-    prefetchFileId: 'error_prefetch_file_id',
+    prefetchFile: 'error_prefetch_file',
     rateLimit: 'error_rate_limit',
     retriesExceeded: 'error_retries_exceeded'
 };
