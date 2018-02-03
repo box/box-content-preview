@@ -686,6 +686,10 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.getViewerOption('fooBar')).to.equal(baz);
         });
+
+        it('should return undefined if no matching user-defined viewer option is found', () => {
+            expect(base.getViewerOption('fooBar')).to.equal(undefined);
+        });
     });
 
     describe('loadAssets()', () => {

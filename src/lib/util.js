@@ -837,3 +837,28 @@ export function getClosestPageToPinch(x, y, visiblePages) {
 
     return closestPage;
 }
+
+/**
+ * Simplified lodash.get, this returns the value of a nested property with string path `propPath`. If that property
+ * does not exist on the object, then return `defaultValue`.
+ *
+ * @param {Object} object - Object to fetch property from
+ * @param {string} propPath - String path to property, e.g. 'b.c' if you are trying to fetch a.b.c
+ * @param {*} defaultValue - Default value if property is undefined
+ * @return {*} Value of prop if defined, defaultValue otherwise
+ */
+export function getProp(object, propPath, defaultValue) {
+    let value = object;
+    const path = propPath.split('.');
+
+    for (let i = 0; i < path.length; i++) {
+        if (value == null) {
+            // Checks against null or undefined
+            return defaultValue;
+        }
+
+        value = value[path[i]];
+    }
+
+    return value !== undefined ? value : defaultValue;
+}

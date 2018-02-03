@@ -748,4 +748,35 @@ describe('lib/util', () => {
             expect(result).to.equal(null);
         });
     });
+
+    describe('getProp()', () => {
+        it('should return prop value as specified by path', () => {
+            const someProp = 'some-prop';
+            let a = {
+                b: {
+                    c: 'value',
+                    b: ''
+                },
+                [someProp]: {
+                    value: 'test'
+                }
+            };
+
+            expect(util.getProp(a, 'b.c')).to.equal('value');
+            expect(util.getProp(a, 'b.b')).to.equal('');
+            expect(util.getProp(a, `${someProp}.value`)).to.equal('test');
+        });
+
+        it('should return default value if prop does not exist or value is undefined', () => {
+            let a = {
+                b: {},
+                test: undefined,
+                foo: null
+            };
+
+            expect(util.getProp(a, 'b.c', 'default')).to.equal('default');
+            expect(util.getProp(a, 'test', 'default')).to.equal('default');
+            expect(util.getProp(a, 'foo.bar', 'default')).to.equal('default');
+        });
+    });
 });

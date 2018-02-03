@@ -1,9 +1,8 @@
 /* eslint-disable import/first */
 import './polyfill';
 import EventEmitter from 'events';
-import cloneDeep from 'lodash.clonedeep';
-import getProp from 'lodash.get';
-import throttle from 'lodash.throttle';
+import cloneDeep from 'lodash/cloneDeep';
+import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Browser from './Browser';
 import Logger from './Logger';
@@ -14,6 +13,7 @@ import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import {
     get,
+    getProp,
     post,
     decodeKeydown,
     openUrlInsideIframe,
