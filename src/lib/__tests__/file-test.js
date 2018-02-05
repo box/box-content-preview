@@ -9,7 +9,9 @@ import {
     checkFileValid,
     cacheFile,
     uncacheFile,
-    getRepresentation
+    getRepresentation,
+    normalizeFileVersion,
+    getCachedFile
 } from '../file';
 
 const sandbox = sinon.sandbox.create();
@@ -22,8 +24,15 @@ describe('lib/file', () => {
     describe('getURL()', () => {
         it('should return the correct api url', () => {
             assert.equal(
-                getURL('id', 'api'),
+                getURL('id', '', 'api'),
                 'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
+            );
+        });
+
+        it('should return the correct API url for file version', () => {
+            assert.equal(
+                getURL('id', 'versionId', 'api'),
+                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
             );
         });
     });
@@ -118,11 +127,39 @@ describe('lib/file', () => {
         });
     });
 
+    describe('normalizeFileVersion', () => {
+        it('should return a well-formed file object', () => {
+            const fileId = '123';
+            const fileVersion = {
+                id: 'file_version_123',
+                permissions: {},
+                sha1: 'blah',
+                name: 'harhar',
+                size: 123,
+                extension: 'exe',
+                representations: {},
+                watermark_info: {},
+                authenticated_download_url: 'blah?version=file_version_123'
+            };
+
+            const file = normalizeFileVersion(fileVersion, fileId);
+            assert.ok(checkFileValid(file));
+
+            expect(file.id).to.equal(fileId);
+            expect(file.file_version.id).to.equal(fileVersion.id);
+        });
+    });
+
     describe('cacheFile', () => {
-        it('should not cache file if it is watermarked', () => {
-            const cache = {
+        let cache;
+
+        beforeEach(() => {
+            cache = {
                 set: sandbox.stub()
             };
+        });
+
+        it('should not cache file if it is watermarked', () => {
             const file = {
                 watermark_info: {
                     is_watermarked: true
@@ -135,9 +172,6 @@ describe('lib/file', () => {
         });
 
         it('should not add original representation if file object doesnt have any to start with', () => {
-            const cache = {
-                set: sandbox.stub()
-            };
             const file = {
                 id: '0'
             };
@@ -148,9 +182,6 @@ describe('lib/file', () => {
         });
 
         it('should add an original rep and cache the file', () => {
-            const cache = {
-                set: sandbox.stub()
-            };
             const file = {
                 id: '0',
                 representations: {
@@ -161,13 +192,10 @@ describe('lib/file', () => {
             cacheFile(cache, file);
 
             expect(file.representations.entries[0].representation).to.equal('ORIGINAL');
-            expect(cache.set).to.be.calledWith(file.id, file);
+            expect(cache.set).to.be.calledWith(`file_${file.id}`, file);
         });
 
         it('should not add an original rep if original rep already exists', () => {
-            const cache = {
-                set: sandbox.stub()
-            };
             const file = {
                 id: '0',
                 representations: {
@@ -201,19 +229,36 @@ describe('lib/file', () => {
             cacheFile(cache, file);
             expect(file.representations.entries[0].content.url_template).to.have.string('version=123');
         });
+
+        it('should additionally cache file by file version ID if file version exists on file', () => {
+            const file = {
+                id: '123',
+                file_version: {
+                    id: '1234'
+                }
+            }
+
+            cacheFile(cache, file);
+            expect(cache.set).to.be.calledWith(`file_${file.id}`, file);
+            expect(cache.set).to.be.calledWith(`file_version_${file.file_version.id}`, file);
+        });
     });
 
     describe('uncacheFile', () => {
         it('should uncache a file', () => {
             const cache = new Cache();
             const file = {
-                id: '0'
+                id: '0',
+                file_version: {
+                    id: '123'
+                }
             };
             cache.set(file.id, file);
 
             uncacheFile(cache, file);
 
-            expect(cache.get(file.id)).to.be.undefined;
+            expect(cache.get(`file_${file.id}`)).to.be.undefined;
+            expect(cache.get(`file_version_${file.file_version.id}`)).to.be.undefined;
         });
     });
 
@@ -241,6 +286,40 @@ describe('lib/file', () => {
             };
 
             expect(getRepresentation(file, 'ORIGINAL')).to.be.equal(originalRep);
+        });
+    });
+
+    describe('getCachedFile', () => {
+        let cache;
+
+        beforeEach(() => {
+            cache = {
+                get: sandbox.stub()
+            };
+        });
+
+        it('should return cached file using file ID as the key if file ID is provided', () => {
+            const fileId = '123';
+            getCachedFile(cache, { fileId });
+            expect(cache.get).to.be.calledWith(`file_${fileId}`);
+        });
+
+        it('should return cached file using file version ID as the key if both file ID and file version ID are provided', () => {
+            const fileId = '123';
+            const fileVersionId = '1234';
+            getCachedFile(cache, { fileId, fileVersionId });
+            expect(cache.get).to.be.calledWith(`file_version_${fileVersionId}`);
+        });
+
+        it('should return cached file using file version ID as the key if file version ID is provided', () => {
+            const fileVersionId = '1234';
+            getCachedFile(cache, { fileVersionId });
+            expect(cache.get).to.be.calledWith(`file_version_${fileVersionId}`);
+        });
+
+        it('should null if neither file ID nor file version ID is provided', () => {
+            getCachedFile(cache, {});
+            expect(cache.get).to.not.be.called;
         });
     });
 });
