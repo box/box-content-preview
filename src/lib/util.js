@@ -852,8 +852,8 @@ export function getProp(object, propPath, defaultValue) {
     const path = propPath.split('.');
 
     for (let i = 0; i < path.length; i++) {
+        // Checks against null or undefined
         if (value == null) {
-            // Checks against null or undefined
             return defaultValue;
         }
 
