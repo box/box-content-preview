@@ -1,7 +1,13 @@
 const DEFAULT_WAIT_TIME = 10000; // 10 seconds
-const { SAUCE_USERNAME, SAUCE_ACCESS_KEY, TRAVIS_JOB_NUMBER, CI, BROWSER_NAME } = process.env;
-
-const browserName = BROWSER_NAME || 'chrome';
+const {
+    SAUCE_USERNAME,
+    SAUCE_ACCESS_KEY,
+    TRAVIS_JOB_NUMBER,
+    CI,
+    BROWSER_NAME = 'chrome',
+    BROWSER_VERSION = 'latest',
+    BROWSER_PLATFORM
+} = process.env;
 
 // Local selenium config
 const webDriverIOlocal = {
@@ -23,7 +29,9 @@ const WebDriverIO =
             key: SAUCE_ACCESS_KEY,
             desiredCapabilities: {
                 'tunnel-identifier': TRAVIS_JOB_NUMBER,
-                browserName,
+                browserName: BROWSER_NAME,
+                version: BROWSER_VERSION,
+                platform: BROWSER_PLATFORM,
                 chromeOptions: {
                     args: ['--disable-web-security']
                 }
