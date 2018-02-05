@@ -1,4 +1,4 @@
-import { appendQueryParams } from './util';
+import { getProp, appendQueryParams } from './util';
 import { ORIGINAL_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
@@ -64,7 +64,7 @@ export function getRepresentation(file, repName) {
  * @return {boolean} Whether or not file is watermarked
  */
 export function isWatermarked(file) {
-    return !!file && !!file.watermark_info && file.watermark_info.is_watermarked;
+    return getProp(file, 'watermark_info.is_watermarked', false);
 }
 
 /**
@@ -76,7 +76,7 @@ export function isWatermarked(file) {
  * @return {boolean} Whether or not action is permitted
  */
 export function checkPermission(file, operation) {
-    return !!file && !!file.permissions && !!file.permissions[operation];
+    return getProp(file, `permissions.${operation}`, false);
 }
 
 /**
