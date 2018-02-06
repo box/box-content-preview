@@ -970,7 +970,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
-                pauseRequireJS: true,
+                fixDependencies: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1056,9 +1056,9 @@ describe('lib/Preview', () => {
             expect(preview.options.skipServerUpdate).to.be.true;
         });
 
-        it('should set whether to pause requireJS when loading dependencies', () => {
+        it('should set whether to fix dependencies', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.pauseRequireJS).to.be.true;
+            expect(preview.options.fixDependencies).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -2125,7 +2125,7 @@ describe('lib/Preview', () => {
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.not.be.called;
         });
-        
+
         it('should reset the timer and escape early if the first load milestone is not hit', () => {
             Timer.reset();// Clear out all entries in the Timer
             sandbox.stub(Timer, 'reset');
@@ -2134,14 +2134,14 @@ describe('lib/Preview', () => {
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.not.be.called;
         });
-        
+
         it('should emit a preview_metric event', (done) => {
             preview.on(PREVIEW_METRIC, () => {
                 done();
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should emit a preview_metric event with event_name "preview_load"', () => {
             const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
             Timer.start(tag);
@@ -2164,7 +2164,7 @@ describe('lib/Preview', () => {
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
             preview.on(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
@@ -2174,7 +2174,7 @@ describe('lib/Preview', () => {
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should reset the Timer', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
@@ -2183,7 +2183,7 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.called;
 
         });
-        
+
         it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
             Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
             preview.on(PREVIEW_METRIC, (metric) => {
