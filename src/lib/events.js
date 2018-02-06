@@ -18,5 +18,6 @@ export const ERROR_CODE = {
     invalidCacheAttempt: 'error_invalid_file_for_cache',
     prefetchFile: 'error_prefetch_file',
     rateLimit: 'error_rate_limit',
-    retriesExceeded: 'error_retries_exceeded'
+    retriesExceeded: 'error_retries_exceeded',
+    browserError: 'error_browser_thrown'
 };

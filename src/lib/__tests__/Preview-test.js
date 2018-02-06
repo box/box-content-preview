@@ -8,7 +8,8 @@ import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import { VIEWER_EVENT } from '../events';
+import { VIEWER_EVENT, ERROR_CODE } from '../events';
+import { createPreviewError } from '../logUtils';
 
 const tokens = require('../tokens');
 
@@ -337,6 +338,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.error = sandbox.stub(console, 'error');
+            stubs.logPreviewError = sandbox.stub(preview, 'logPreviewError');
         });
 
         it('should format the metadata into an array', () => {
@@ -374,6 +376,7 @@ describe('lib/Preview', () => {
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
+            expect(stubs.logPreviewError).calledOnce;
         });
 
         it('should not cache a file if it is watermarked', () => {
@@ -1913,17 +1916,19 @@ describe('lib/Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.emit = sandbox.stub(preview, 'emit');
+            stubs.logPreviewError = sandbox.stub(preview, 'logPreviewError');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
 
             preview.open = true;
         });
 
-        it('should do nothing if the preview is closed', () => {
+        it('should only log an error if the preview is closed', () => {
             preview.open = false;
 
-            preview.triggerError();
+            preview.triggerError(new Error('fail'));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
+            expect(stubs.logPreviewError).to.be.called;
         });
 
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
@@ -1940,6 +1945,108 @@ describe('lib/Preview', () => {
             expect(stubs.getErrorViewer).to.be.called;
             expect(stubs.attachViewerListeners).to.be.called;
             expect(ErrorViewer.load).to.be.calledWith(err);
+        });
+    });
+
+    describe('createLog()', () => {
+        it('should create a log object containing correct file info properties', () => {
+            const id = '12345';
+            preview.file = {
+                id
+            };
+
+            const log = preview.createLog();
+            expect(log.timestamp).to.exist;
+            expect(log.file_id).to.equal(id);
+            expect(log.file_version_id).to.exist;
+            expect(log.content_type).to.exsit;
+            expect(log.extension).to.exist;
+            expect(log.locale).to.exist;
+        });
+
+        it('should use empty string for file_id, if no file', () => {
+            preview.file = undefined;
+            const log = preview.createLog();
+
+            expect(log.file_id).to.equal('');
+        });
+
+        it('should use empty string for file_version_id, if no file version', () => {
+            preview.file = {
+                id: '12345',
+                file_version: undefined
+            };
+            const log = preview.createLog();
+
+            expect(log.file_version_id).to.equal('');
+        });
+    });
+
+    describe.only('logPreviewError', () => {
+        it('should emit a "preview_error" message', (done) => {
+            preview.on('preview_error', () => {
+                done();
+            });
+
+            preview.logPreviewError({});
+        });
+
+        it('should emit a "preview_error" message with an object describing the error', (done) => {
+            const code = 'an_error';
+            const displayMessage = 'Oh no!';
+            const message = { fileId: '12345' };
+            const error = createPreviewError(code, displayMessage, message);
+
+            preview.on('preview_error', (details) => {
+                expect(details.error).to.deep.equal(error);
+                done();
+            });
+
+            preview.logPreviewError(error);
+        });
+
+        it('should emit a "preview_error" message with info about the preview session', (done) => {
+            const fileId = '1234';
+            const fileVersionId = '999';
+
+            preview.file = {
+                id: fileId,
+                file_version: {
+                    id: fileVersionId
+                }
+            };
+
+            preview.on('preview_error', (details) => {
+                expect(details.file_id).to.equal(fileId);
+                expect(details.file_version_id).to.equal(fileVersionId);
+                done();
+            });
+
+            preview.logPreviewError({});
+        });
+
+        it('should use a default browser error code if none is present', (done) => {
+            preview.on('preview_error', (details) => {
+                expect(details.error.code).to.equal(ERROR_CODE.browserError);
+                done();
+            });
+
+            preview.logPreviewError({});
+        });
+
+        it('should strip any auth from the message and displayMessage if it is present', (done) => {
+            const message = 'A message';
+            const displayMessage = 'A display message';
+            const auth = 'access_token="1234abcd"';
+            const filtered = 'access_token=[FILTERED]';
+            preview.on('preview_error', (details) => {
+                expect(details.error.message).to.equal(`${message}?${filtered}`)
+                expect(details.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
+                done();
+            });
+
+            const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
+            preview.logPreviewError(error);
         });
     });
 

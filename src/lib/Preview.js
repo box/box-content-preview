@@ -51,7 +51,7 @@ import {
 } from './constants';
 import { VIEWER_EVENT, ERROR_CODE } from './events';
 import './Preview.scss';
-import getClientLogDetails, { createPreviewError, getISOTime } from './logUtils';
+import { getClientLogDetails, createPreviewError, getISOTime } from './logUtils';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
@@ -332,11 +332,12 @@ class Preview extends EventEmitter {
             if (checkFileValid(file)) {
                 cacheFile(this.cache, file);
             } else {
+                const message = '[Preview SDK] Tried to cache invalid file';
                 /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                console.error(`${message}: `, file);
                 /* eslint-enable no-console */
 
-                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, null, file);
+                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, message, file);
                 this.logPreviewError(err);
             }
         });
@@ -1294,13 +1295,14 @@ class Preview extends EventEmitter {
      * @return {Object} Log details for viewer session and current file.
      */
     createLog() {
+        const file = this.file || {};
         const log = {
             timestamp: getISOTime(),
-            file_id: this.file ? this.file.id : '',
-            file_version_id: this.file ? this.file.file_version.id : '',
-            content_type: '',
-            extension: '', // determined outside
-            locale: this.location.locale || '',
+            file_id: getProp(file, 'id', ''),
+            file_version_id: getProp(file, 'file_version.id', ''),
+            content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
+            extension: file.extension || '',
+            locale: getProp(this.location, 'locale', ''),
             ...getClientLogDetails()
         };
 
@@ -1317,7 +1319,7 @@ class Preview extends EventEmitter {
     logPreviewError(error) {
         const err = error;
         // If we haven't supplied a code, then it was thrown by the browser
-        err.code = err.code || ERROR_CODE.browserError;
+        err.code = error.code || ERROR_CODE.browserError;
         // Make sure to strip auth, if it's a string.
         err.message = typeof error.message === 'string' ? stripAuthFromString(error.message) : error.message;
         err.displayMessage = typeof error.displayMessage === 'string' ? stripAuthFromString(error.displayMessage) : '';

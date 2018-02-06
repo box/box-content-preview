@@ -1,6 +1,5 @@
-import { CLIENT_VERSION } from './util';
-
 import Browser from './Browser';
+import { CLIENT_VERSION } from './util';
 
 /**
  * Get current time in ISO format.
@@ -59,5 +58,5 @@ export function createPreviewError(code, displayMessage = __('error_refresh'), d
     error.message = details || displayMessage;
     error.displayMessage = displayMessage;
 
-    this.logPreviewError(error);
+    return error;
 }
