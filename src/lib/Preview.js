@@ -1059,24 +1059,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Wrapper around emit to prevent errors from affecting the client.
-     *
-     * @private
-     * @param {string} eventName - event name to emit
-     * @param {Object} [data] - event name to emit
-     * @return {void}
-     */
-    emit(eventName, data) {
-        try {
-            super.emit(eventName, data);
-        } catch (e) {
-            /* eslint-disable no-console */
-            console.error(e);
-            /* eslint-enable no-console */
-        }
-    }
-
-    /**
      * Finish loading a viewer - display the appropriate control buttons, re-emit the 'load' event, log
      * the preview, and prefetch the next few files.
      *
