@@ -19,31 +19,33 @@ const webDriverIOlocal = {
 };
 
 // CI saucelabs config
-const WebDriverIO =
-    typeof SAUCE_USERNAME === 'undefined'
-        ? webDriverIOlocal
-        : Object.assign({}, webDriverIOlocal, {
-            host: 'ondemand.saucelabs.com',
-            port: 80,
-            user: SAUCE_USERNAME,
-            key: SAUCE_ACCESS_KEY,
-            desiredCapabilities: {
-                'tunnel-identifier': TRAVIS_JOB_NUMBER,
-                browserName: BROWSER_NAME,
-                version: BROWSER_VERSION,
-                platform: BROWSER_PLATFORM,
-                chromeOptions: {
-                    args: ['--disable-web-security']
-                }
+let WebDriverIO;
+if (typeof SAUCE_USERNAME === 'undefined') {
+    WebDriverIO = webDriverIOlocal;
+} else {
+    WebDriverIO = Object.assign({}, webDriverIOlocal, {
+        host: 'ondemand.saucelabs.com',
+        port: 80,
+        user: SAUCE_USERNAME,
+        key: SAUCE_ACCESS_KEY,
+        desiredCapabilities: {
+            'tunnel-identifier': TRAVIS_JOB_NUMBER,
+            browserName: BROWSER_NAME,
+            version: BROWSER_VERSION,
+            platform: BROWSER_PLATFORM,
+            chromeOptions: {
+                args: ['--disable-web-security']
             }
-        });
-
-// Local saucelabs config
-if (!CI) {
-    Object.assign(WebDriverIO, {
-        host: 'localhost',
-        port: 4445
+        }
     });
+
+    if (!CI) {
+        // Local saucelabs config
+        Object.assign(WebDriverIO, {
+            host: 'localhost',
+            port: 4445
+        });
+    }
 }
 
 exports.config = {
@@ -51,7 +53,8 @@ exports.config = {
     timeout: DEFAULT_WAIT_TIME,
     output: './functional-tests/output',
     helpers: {
-        WebDriverIO
+        WebDriverIO,
+        Filesystem: {}
     },
     include: {},
     bootstrap: false,
