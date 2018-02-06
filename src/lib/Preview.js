@@ -804,6 +804,11 @@ class Preview extends EventEmitter {
         // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
         this.options.pauseRequireJS = !!options.pauseRequireJS;
 
+        // Option to disable 'preview' event log. Use this if you are using Preview in a way that does not constitute
+        // a full preview, e.g. a content feed. Enabling this option skips the client-side log to the Events API
+        // (access stats will not be incremented), but content access is still logged server-side for audit purposes
+        this.options.disableEventLog = !!options.disableEventLog;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -1117,8 +1122,10 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
-            // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
+            // If there wasn't an error and event logging is not disabled, use Events API to log a preview
+            if (!this.options.disableEventLog) {
+                this.logPreviewEvent(this.file.id, this.options);
+            }
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
