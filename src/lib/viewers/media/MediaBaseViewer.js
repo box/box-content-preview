@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
