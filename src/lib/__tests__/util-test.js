@@ -204,6 +204,16 @@ describe('lib/util', () => {
             expect(linkEl.rel).to.equal('prefetch');
             expect(linkEl.href.indexOf(url) !== -1).to.be.true;
         });
+
+        it('should return a preload link element when a url is provided and preload is true', () => {
+            const url = 'foo.js';
+            const linkEl = util.createPrefetch(url, true);
+            expect(linkEl instanceof HTMLElement).to.be.true;
+            expect(linkEl.tagName).to.equal('LINK');
+            expect(linkEl.rel).to.equal('preload');
+            expect(linkEl.as).to.equal('script');
+            expect(linkEl.href.indexOf(url) !== -1).to.be.true;
+        });
     });
 
     describe('createStylesheet()', () => {
@@ -362,6 +372,12 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('link[rel="prefetch"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="prefetch"][href="bar"]') instanceof HTMLLinkElement);
             });
+
+            it('should insert links with preload if specified', () => {
+                util.prefetchAssets(['foo'], true);
+                const head = document.head;
+                assert.ok(head.querySelector('link[rel="preload"][href="foo"]') instanceof HTMLLinkElement);
+            })
         });
 
         describe('loadStylesheets()', () => {
