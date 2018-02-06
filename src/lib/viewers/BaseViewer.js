@@ -1,9 +1,10 @@
 import EventEmitter from 'events';
-import debounce from 'lodash.debounce';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import {
+    getProp,
     appendQueryParams,
     appendAuthParams,
     getHeaders,
@@ -577,14 +578,12 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @param {string} option - to get
-     * @return {Object} Value of a viewer option
+     * @return {Object|undefined} Value of a viewer option
      */
     getViewerOption(option) {
         const { viewers, viewer } = this.options;
-        if (viewers && viewers[viewer.NAME]) {
-            return viewers[viewer.NAME][option];
-        }
-        return null;
+        const viewerName = getProp(viewer, 'NAME');
+        return getProp(viewers, `${viewerName}.${option}`);
     }
 
     /**
