@@ -618,18 +618,19 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
+     * @param {boolean} preload - Use preload instead of prefetch, default false
      * @return {void}
      */
-    prefetchAssets(js, css) {
+    prefetchAssets(js, css, preload = false) {
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // Prefetch the stylesheets needed for this preview
-        prefetchAssets((css || []).map(assetUrlCreator));
+        prefetchAssets((css || []).map(assetUrlCreator), preload);
 
         // Prefetch the scripts needed for this preview
-        prefetchAssets((js || []).map(assetUrlCreator));
+        prefetchAssets((js || []).map(assetUrlCreator), preload);
     }
 
     /**
