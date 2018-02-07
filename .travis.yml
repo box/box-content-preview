@@ -12,10 +12,7 @@ jobs:
     cache: yarn
   - stage: sauce-labs
     addons:
-      sauce_connect:
-        username: box-content-preview
-      jwt:
-        secure: EPjmiionirVVkbFbp9r4DjMLMcfmdj9Sq8UiMcIGGf5gQk0cV5sgJpDHUDlKhFL3na8FkYf27qadaaJHG9Lr7o1V6IN1tsLamD9kdQjeG1pUSZbyMoMbja9i8CY0/MnQPaPL8UBXbcPrJoBwPNp6PphZ1PtBW68oXale3Xdfd7JMyTtm8f6G40pxpDl50dKI2VZHKKrfWakFkK2DMM73vJScxCrlyJEDc+wSJi2Mr/lrZc/QYy3ug3BGq1S6vV6wsOCk/4Jx+W1hvqK0QBgIytv1XzypqDFJ0OiTiOccsbwvEUHOepQl0EQxBZtM9PO//SBMFc2TqAhldta37JFrEcOEtqrsHwqVELzRMJm9lDSSD+TSj/tri6Kevy311gboZsJh2T3Znkq2h5Zpx8ImbgZCKvQyn8bTSp9MOkb9bGt1tUkZ1LEk3Pj0PUEjFZMnAsT/fLg2EGdXRQWb1W/ZyknoNPfvsU5Po8obQ/AOlKMqaMM7YiGQWruL7Esml0XaiL9H1TSUwmtyAnAU+Q1eYv7II7SnQmVxcgILX7D7nAO82/jP2f12fszEOlgivLr0AS9iAMLcNsrTfSO2p60MESmc/2ZVGjIagNEaGohfb9AI5d0tezU6+GWijuRijVqn1x2rLbSXOV7c3G9yrJpGTru9WD3n/ekgVvg/0nanBpU=
+      sauce_connect: true
     before_script:
     - python -m SimpleHTTPServer &
     - sleep 5
