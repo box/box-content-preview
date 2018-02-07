@@ -53,8 +53,7 @@ exports.config = {
     timeout: DEFAULT_WAIT_TIME,
     output: './functional-tests/output',
     helpers: {
-        WebDriverIO,
-        Filesystem: {}
+        WebDriverIO
     },
     include: {},
     bootstrap: false,
