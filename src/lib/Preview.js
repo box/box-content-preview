@@ -165,6 +165,10 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
+
+        this.on('preview_error', (err) => {
+            console.log(err.error.stack);
+        });
     }
 
     /**
@@ -1062,7 +1066,8 @@ class Preview extends EventEmitter {
                 this.navigateRight();
                 break;
             case VIEWER_EVENT.error:
-                this.logPreviewError(data.data);
+                // Do nothing since 'error' event was already caught, and will be emitted
+                // as a 'preview_error' event
                 break;
             default:
                 // This includes 'notification', 'preload' and others
