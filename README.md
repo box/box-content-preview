@@ -1,7 +1,7 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v1.28.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v1.29.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -19,11 +19,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v1.28.0
+* Version: v1.29.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/1.28.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/1.28.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/1.29.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/1.29.0/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -51,8 +51,8 @@ You can self-host the Box Content Preview library or reference the versions avai
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/1.28.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.28.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/1.29.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.29.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -69,7 +69,7 @@ You can self-host the Box Content Preview library or reference the versions avai
 ### Self-hosting
 To self-host the Box Content Preview library, follow these steps:
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
-  * Check out a specific version with `git checkout v1.28.0`
+  * Check out a specific version with `git checkout v1.29.0`
   * Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 2. Install dependencies and build the library with `yarn install && yarn run prod`
 3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `1.26.0`. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
@@ -125,13 +125,14 @@ preview.show(fileId, accessToken, {
 | sharedLink |  | Shared link URL |
 | sharedLinkPassword |  | Shared link password |
 | collection |  | List of file IDs to iterate over for previewing |
-| header | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
+| header | 'light' | String value of `none` or `dark` or `light` that controls header visibility and theme |
 | logoUrl |  | URL of logo to show in header |
 | showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
-| pauseRequireJS | false | Temporarily disables requireJS to allow Preview's third party dependencies to load |
-| fileOptions | {} | Mapping of file ID to file-level option. See below for details |
+| pauseRequireJS | false | Temporarily disables AMD module loaders (e.g. RequireJS) to allow Preview's third party dependencies to load |
+| disableEventLog | false | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side) |
+| fileOptions | {} | Mapping of file ID to file-level options. See the file option table below for details |
 
 | File Option | Description |
 | --- | --- |

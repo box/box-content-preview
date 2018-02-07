@@ -1,9 +1,8 @@
 /* eslint-disable import/first */
 import './polyfill';
 import EventEmitter from 'events';
-import cloneDeep from 'lodash.clonedeep';
-import getProp from 'lodash.get';
-import throttle from 'lodash.throttle';
+import cloneDeep from 'lodash/cloneDeep';
+import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Browser from './Browser';
 import Logger from './Logger';
@@ -14,6 +13,7 @@ import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import {
     get,
+    getProp,
     post,
     decodeKeydown,
     openUrlInsideIframe,
@@ -804,6 +804,11 @@ class Preview extends EventEmitter {
         // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
         this.options.pauseRequireJS = !!options.pauseRequireJS;
 
+        // Option to disable 'preview' event log. Use this if you are using Preview in a way that does not constitute
+        // a full preview, e.g. a content feed. Enabling this option skips the client-side log to the Events API
+        // (access stats will not be incremented), but content access is still logged server-side for audit purposes
+        this.options.disableEventLog = !!options.disableEventLog;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -1054,24 +1059,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Wrapper around emit to prevent errors from affecting the client.
-     *
-     * @private
-     * @param {string} eventName - event name to emit
-     * @param {Object} [data] - event name to emit
-     * @return {void}
-     */
-    emit(eventName, data) {
-        try {
-            super.emit(eventName, data);
-        } catch (e) {
-            /* eslint-disable no-console */
-            console.error(e);
-            /* eslint-enable no-console */
-        }
-    }
-
-    /**
      * Finish loading a viewer - display the appropriate control buttons, re-emit the 'load' event, log
      * the preview, and prefetch the next few files.
      *
@@ -1117,8 +1104,10 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
-            // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
+            // If there wasn't an error and event logging is not disabled, use Events API to log a preview
+            if (!this.options.disableEventLog) {
+                this.logPreviewEvent(this.file.id, this.options);
+            }
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
