@@ -165,10 +165,6 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
-
-        this.on('preview_error', (err) => {
-            console.log(err.error.stack);
-        });
     }
 
     /**
