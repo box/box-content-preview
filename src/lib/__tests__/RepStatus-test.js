@@ -143,31 +143,43 @@ describe('lib/RepStatus', () => {
             repStatus.updateStatus = () => {};
         });
 
-        it('should reject with the refresh message if the rep status is error', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_refresh'));
+        it('should reject with the refresh message if the rep status is error', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_refresh'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the protected message if the rep status is error due to a password protected PDF', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_password_protected'));
+        it('should reject with the protected message if the rep status is error due to a password protected PDF', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_password_protected'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_password_protected';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the try again message if the rep status is error due to unavailability', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_try_again_later'));
+        it('should reject with the try again message if the rep status is error due to unavailability', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_try_again_later'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_try_again_later';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the unsupported format message if the rep status is error due a bad file', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_bad_file'));
+        it('should reject with the unsupported format message if the rep status is error due a bad file', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_bad_file'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_unsupported_format';
 

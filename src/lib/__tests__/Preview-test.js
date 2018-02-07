@@ -1982,7 +1982,7 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe.only('logPreviewError', () => {
+    describe('logPreviewError', () => {
         it('should emit a "preview_error" message', (done) => {
             preview.on('preview_error', () => {
                 done();
