@@ -1,7 +1,7 @@
 const { SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD, SELECTOR_DOWNLOAD_IFRAME } = require('./constants');
 const { expect } = require('chai');
 
-Feature('Header');
+Feature('Header', { retries: 3 });
 
 Before((I) => {
     I.amOnPage('/functional-tests/index.html');

@@ -1,4 +1,4 @@
-Feature('Sanity');
+Feature('Sanity', { retries: 3 });
 const bpLoaded = '.bp-loaded';
 
 Before((I) => {

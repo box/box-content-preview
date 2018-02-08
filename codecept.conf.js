@@ -17,8 +17,7 @@ const commonConfigObj = {
     browser: BROWSER_NAME,
     url: 'http://localhost:8000',
     smartWait: DEFAULT_WAIT_TIME,
-    restart: false,
-    keepBrowserState: true,
+    restart: true,
     waitForTimeout: DEFAULT_WAIT_TIME
 };
 
