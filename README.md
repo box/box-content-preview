@@ -301,7 +301,7 @@ preview.addListener('rotate', (data) => {
 
 Development Setup
 -----------------
-1. Install Node v6.10.0 or higher.
+1. Install Node v8.9.4 or higher.
 2. Install yarn package manager `https://yarnpkg.com/en/docs/install`. Alternatively, you can replace any `yarn` command with `npm`.
 2. Fork the upstream repo `https://github.com/box/box-content-preview`.
 3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-content-preview.git`.
