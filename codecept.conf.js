@@ -18,6 +18,7 @@ const webDriverIOlocal = {
     browser: 'chrome',
     smartWait: DEFAULT_WAIT_TIME,
     restart: false,
+    keepBrowserState: true,
     waitForTimeout: DEFAULT_WAIT_TIME
 };
 
