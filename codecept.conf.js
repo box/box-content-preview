@@ -1,4 +1,4 @@
-const DEFAULT_WAIT_TIME = 15000; // 15 seconds
+const DEFAULT_WAIT_TIME = 90000; // 90 seconds
 const {
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
@@ -13,9 +13,9 @@ const {
 const MOBILE_PLATFORMS = ['iOS', 'Android'];
 
 // Local selenium config
-const webDriverIOlocal = {
+const commonConfigObj = {
+    browser: BROWSER_NAME,
     url: 'http://localhost:8000',
-    browser: 'chrome',
     smartWait: DEFAULT_WAIT_TIME,
     restart: false,
     keepBrowserState: true,
@@ -24,7 +24,7 @@ const webDriverIOlocal = {
 
 const helperObj = {};
 if (typeof SAUCE_USERNAME === 'undefined') {
-    helperObj.WebDriverIO = webDriverIOlocal;
+    helperObj.WebDriverIO = commonConfigObj;
 } else {
     // Common saucelab config
     const sauceObj = {
@@ -41,7 +41,7 @@ if (typeof SAUCE_USERNAME === 'undefined') {
         }
     };
 
-    const mixedInSauceObj = Object.assign({}, webDriverIOlocal, sauceObj);
+    const mixedInSauceObj = Object.assign({}, commonConfigObj, sauceObj);
     if (MOBILE_PLATFORMS.indexOf(BROWSER_PLATFORM) === -1) {
         // webdriver (desktop)
         Object.assign(sauceObj.desiredCapabilities, {
@@ -53,7 +53,8 @@ if (typeof SAUCE_USERNAME === 'undefined') {
         Object.assign(sauceObj.desiredCapabilities, {
             platformVersion: PLATFORM_VERSION,
             deviceName: DEVICE_NAME,
-            deviceOrientation: 'portrait'
+            deviceOrientation: 'portrait',
+            appiumVersion: '1.7.2'
         });
         helperObj.Appium = mixedInSauceObj;
     }
