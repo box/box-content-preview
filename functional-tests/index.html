@@ -1,27 +1,31 @@
-<head>
-    <style>
-    .preview-container {
-      border: 1px solid #eee;
-      height: 490px;
-      width: 100%;
-    }
-    </style>
-    <link rel="stylesheet" type="text/css" href="../dist/dev/en-US/preview.css">
-    <script src="../dist/dev/en-US/preview.js"></script>
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .preview-container {
+                border: 1px solid #eee;
+                height: 490px;
+                width: 100%;
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="../dist/dev/en-US/preview.css">
+        <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
+        <script src="../dist/dev/en-US/preview.js"></script>
 
-</head>
+    </head>
 
-<body>
-  <div class="preview-container"></div>
-  <script>
-      var ACCESS_TOKEN = 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP';
+    <body>
+        <div class="preview-container"></div>
+        <script>
+            var ACCESS_TOKEN = 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP';
 
-      var FILE_ID_DOC = '93392244621';
+            var FILE_ID_DOC = '93392244621';
 
-      var preview = new Box.Preview();
-      preview.show(FILE_ID_DOC, ACCESS_TOKEN, {
-        container: '.preview-container',
-        showDownload: true,
-      });
-  </script>
-</body>
+            var preview = new Box.Preview();
+            preview.show(FILE_ID_DOC, ACCESS_TOKEN, {
+                container: '.preview-container',
+                showDownload: true,
+            });
+        </script>
+    </body>
+</html>
