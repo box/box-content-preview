@@ -166,10 +166,6 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
-
-        this.on(PREVIEW_METRIC, (msg) => {
-            console.log(msg);
-        });
     }
 
     /**
@@ -1132,7 +1128,6 @@ class Preview extends EventEmitter {
         } else {
             // Bump up preview count
             this.count.success += 1;
-            console.log(this.logger.done(this.count));
             // Finally emit the viewer instance back with a load event
             this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,
@@ -1391,7 +1386,7 @@ class Preview extends EventEmitter {
         const total = times.reduce((acc, current) => acc + current);
 
         const event = {
-            event_name: 'preview_load',
+            event_name: LOAD_METRIC.previewLoadEvent,
             value: total, // Sum of all available load times.
             [LOAD_METRIC.fileInfoTime]: times[0],
             [LOAD_METRIC.convertTime]: times[1],

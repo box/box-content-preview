@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import RepStatus from '../RepStatus';
 import * as util from '../util';
+import { LOAD_METRIC } from '../events';
+import Timer from '../Timer';
+import { STATUS_SUCCESS } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let repStatus;
@@ -33,6 +36,8 @@ describe('lib/RepStatus', () => {
         }
 
         repStatus = null;
+
+        Timer.reset();
     });
 
     describe('getStatus()', () => {
@@ -134,6 +139,17 @@ describe('lib/RepStatus', () => {
             repStatus.infoUrl = '';
             expect(repStatus.updateStatus()).to.be.instanceof(Promise);
         });
+
+        it('should start a convert time Timer if a content url_template exists', () => {
+            const fileId = 123456;
+            rep.content = {
+                url_template: `https://box.com/files/internal_files/${fileId}/versions`
+            };
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            repStatus.updateStatus();
+
+            expect(Timer.get(tag)).to.exist;
+        });
     });
 
     describe('handleResponse()', () => {
@@ -222,6 +238,20 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
             clock.tick(STATUS_UPDATE_INTERVAL_MS + 1);
             clock.restore();
+        });
+
+        it('should stop a convert time Timer if a content url_template exists, and success converting', () => {
+            const fileId = 123456;
+            rep.content = {
+                url_template: `https://box.com/files/internal_files/${fileId}/versions`
+            };
+            repStatus.representation.status.state = STATUS_SUCCESS;
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            Timer.start(tag);
+            repStatus.handleResponse();
+
+            // Elapsed will not exist if stop isn't called
+            expect(Timer.get(tag).elapsed).to.exist;
         });
     });
 

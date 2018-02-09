@@ -8,7 +8,7 @@ import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import { createPreviewError } from '../logUtils';
 import Timer from '../Timer';
 
@@ -2098,8 +2098,101 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('emitLoadMetrics()', () => {
+    describe.only('emitLoadMetrics()', () => {
+        const fileId = 123456;
+        const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
+
+        beforeEach(() => {
+            preview.file = {
+                id: fileId
+            };
+
+            // Make sure the first milestone (fileInfoTime) has been met
+            Timer.start(fileInfoTag);
+            Timer.stop(fileInfoTag);
+        });
+
+        afterEach(() => {
+            Timer.reset();
+        });
+
+        it('should reset the Timer and escape early if no file or file id', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.file = undefined;
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
         
+        it('should reset the timer and escape early if the first load milestone is not hit', () => {
+            Timer.reset();// Clear out all entries in the Timer
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
+        
+        it('should emit a preview_metric event', (done) => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should emit a preview_metric event with event_name "preview_load"', () => {
+            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.start(tag);
+            Timer.stop(tag);
+
+            Timer.get(tag).elapsed = 10;
+            Timer.get(fileInfoTag).elapsed = 20;
+
+            const expectedTime = 30; // 10ms + 20ms
+
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.value).to.equal(expectedTime);
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event where the value property equals the sum of all load events', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
+                expect(metric[LOAD_METRIC.convertTime]).to.exist;
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should reset the Timer', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.be.called;
+
+        });
+        
+        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
+            Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
+                expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
+            });
+            preview.emitLoadMetrics();
+        });
     });
 
     describe('getRequestHeaders()', () => {
