@@ -413,17 +413,18 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     viewerLoadHandler(event) {
-        const contentTemplate = document.createElement('a');
-        contentTemplate.href = this.options.representation.content.url_template;
-        const contentHost = contentTemplate.hostname;
-        if (shouldShowDegradedDownloadNotification(contentHost)) {
+        const contentHost = document.createElement('a');
+        const contentTemplate = getProp(this.options, 'representation.content.url_template', null);
+        contentHost.href = contentTemplate;
+        const contentHostname = contentHost.hostname;
+        if (contentTemplate && shouldShowDegradedDownloadNotification(contentHostname)) {
             this.previewUI.notification.show(
-                replacePlaceholders(__('notification_degraded_preview'), [contentHost]),
+                replacePlaceholders(__('notification_degraded_preview'), [contentHostname]),
                 __('notification_button_default_text'),
                 true
             );
 
-            setDownloadHostNotificationShown(contentHost);
+            setDownloadHostNotificationShown(contentHostname);
         }
 
         if (event && event.scale) {
