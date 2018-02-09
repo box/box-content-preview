@@ -203,6 +203,7 @@ class Box3DViewer extends BaseViewer {
         });
         this.createSubModules();
         this.attachEventHandlers();
+        this.startLoadTimer();
         this.renderer.load(this.createContentUrl(template, 'entities.json'), this.options).catch(this.handleError);
     }
 

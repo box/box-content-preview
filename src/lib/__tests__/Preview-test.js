@@ -338,7 +338,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.error = sandbox.stub(console, 'error');
-            stubs.logPreviewError = sandbox.stub(preview, 'logPreviewError');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
         });
 
         it('should format the metadata into an array', () => {
@@ -376,7 +376,7 @@ describe('lib/Preview', () => {
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
-            expect(stubs.logPreviewError).calledOnce;
+            expect(stubs.emitPreviewError).calledOnce;
         });
 
         it('should not cache a file if it is watermarked', () => {
@@ -1916,7 +1916,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.emit = sandbox.stub(preview, 'emit');
-            stubs.logPreviewError = sandbox.stub(preview, 'logPreviewError');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
 
             preview.open = true;
@@ -1928,7 +1928,7 @@ describe('lib/Preview', () => {
             preview.triggerError(new Error('fail'));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
-            expect(stubs.logPreviewError).to.be.called;
+            expect(stubs.emitPreviewError).to.be.called;
         });
 
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
@@ -1948,25 +1948,25 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('createLog()', () => {
+    describe('createLogEvent()', () => {
         it('should create a log object containing correct file info properties', () => {
             const id = '12345';
             preview.file = {
                 id
             };
 
-            const log = preview.createLog();
+            const log = preview.createLogEvent();
             expect(log.timestamp).to.exist;
             expect(log.file_id).to.equal(id);
             expect(log.file_version_id).to.exist;
-            expect(log.content_type).to.exsit;
+            expect(log.content_type).to.exist;
             expect(log.extension).to.exist;
             expect(log.locale).to.exist;
         });
 
         it('should use empty string for file_id, if no file', () => {
             preview.file = undefined;
-            const log = preview.createLog();
+            const log = preview.createLogEvent();
 
             expect(log.file_id).to.equal('');
         });
@@ -1976,19 +1976,19 @@ describe('lib/Preview', () => {
                 id: '12345',
                 file_version: undefined
             };
-            const log = preview.createLog();
+            const log = preview.createLogEvent();
 
             expect(log.file_version_id).to.equal('');
         });
     });
 
-    describe('logPreviewError', () => {
+    describe('emitPreviewError()', () => {
         it('should emit a "preview_error" message', (done) => {
             preview.on('preview_error', () => {
                 done();
             });
 
-            preview.logPreviewError({});
+            preview.emitPreviewError({});
         });
 
         it('should emit a "preview_error" message with an object describing the error', (done) => {
@@ -2002,7 +2002,7 @@ describe('lib/Preview', () => {
                 done();
             });
 
-            preview.logPreviewError(error);
+            preview.emitPreviewError(error);
         });
 
         it('should emit a "preview_error" message with info about the preview session', (done) => {
@@ -2022,7 +2022,7 @@ describe('lib/Preview', () => {
                 done();
             });
 
-            preview.logPreviewError({});
+            preview.emitPreviewError({});
         });
 
         it('should use a default browser error code if none is present', (done) => {
@@ -2031,7 +2031,7 @@ describe('lib/Preview', () => {
                 done();
             });
 
-            preview.logPreviewError({});
+            preview.emitPreviewError({});
         });
 
         it('should strip any auth from the message and displayMessage if it is present', (done) => {
@@ -2046,7 +2046,7 @@ describe('lib/Preview', () => {
             });
 
             const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
-            preview.logPreviewError(error);
+            preview.emitPreviewError(error);
         });
     });
 

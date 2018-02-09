@@ -192,6 +192,7 @@ class PlainTextViewer extends TextBaseViewer {
         this.truncated = size > SIZE_LIMIT_BYTES;
         const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
+        this.startLoadTimer();
         get(this.createContentUrlWithAuthParams(template), headers, 'text')
             .then((text) => {
                 if (this.isDestroyed()) {

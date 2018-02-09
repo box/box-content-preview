@@ -182,7 +182,7 @@ class Preview extends EventEmitter {
      */
     destroy() {
         // Log all load metrics
-        this.logLoadMetrics();
+        this.emitLoadMetrics();
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
@@ -349,7 +349,7 @@ class Preview extends EventEmitter {
                 /* eslint-enable no-console */
 
                 const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, message, file);
-                this.logPreviewError(err);
+                this.emitPreviewError(err);
             }
         });
     }
@@ -555,7 +555,7 @@ class Preview extends EventEmitter {
             /* eslint-enable no-console */
 
             const error = createPreviewError(ERROR_CODE.prefetchFile, null, err);
-            this.logPreviewError(error);
+            this.emitPreviewError(error);
 
             return;
         }
@@ -1104,7 +1104,7 @@ class Preview extends EventEmitter {
         }
 
         // Log now that loading is finished
-        this.logLoadMetrics();
+        this.emitLoadMetrics();
 
         // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
@@ -1288,7 +1288,7 @@ class Preview extends EventEmitter {
      */
     triggerError(err) {
         // Always log preview errors
-        this.logPreviewError(err);
+        this.emitPreviewError(err);
 
         // If preview is closed don't do anything
         if (!this.open) {
@@ -1320,7 +1320,7 @@ class Preview extends EventEmitter {
      * @private
      * @return {Object} Log details for viewer session and current file.
      */
-    createLog() {
+    createLogEvent() {
         const file = this.file || {};
         const log = {
             timestamp: getISOTime(),
@@ -1342,7 +1342,7 @@ class Preview extends EventEmitter {
      * @param {Error} error - The error that occurred.
      * @return {void}
      */
-    logPreviewError(error) {
+    emitPreviewError(error) {
         const err = error;
         // If we haven't supplied a code, then it was thrown by the browser
         err.code = error.code || ERROR_CODE.browserError;
@@ -1352,7 +1352,7 @@ class Preview extends EventEmitter {
 
         const errorLog = {
             error: err,
-            ...this.createLog()
+            ...this.createLogEvent()
         };
 
         this.emit(PREVIEW_ERROR, errorLog);
@@ -1366,7 +1366,7 @@ class Preview extends EventEmitter {
      * @private
      * @return {void}
      */
-    logLoadMetrics() {
+    emitLoadMetrics() {
         if (!this.file || !this.file.id) {
             Timer.reset();
             return;
@@ -1400,7 +1400,7 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: times[1],
             [LOAD_METRIC.downloadResponseTime]: times[2],
             [LOAD_METRIC.fullDocumentLoadTime]: times[3],
-            ...this.createLog()
+            ...this.createLogEvent()
         };
 
         this.emit(PREVIEW_METRIC, event);
@@ -1492,7 +1492,7 @@ class Preview extends EventEmitter {
                                 fileId,
                                 error: err
                             });
-                            this.logPreviewError(error);
+                            this.emitPreviewError(error);
                         });
                 });
             })
@@ -1503,7 +1503,7 @@ class Preview extends EventEmitter {
                 /* eslint-enable no-console */
 
                 const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
-                this.logPreviewError(error);
+                this.emitPreviewError(error);
             });
     }
 
