@@ -6,25 +6,9 @@ class Timer {
     times = {};
 
     /**
-     * Create a new time structure at a given key (tag) in the 'times' object.
-     *
-     * @param {string} tag - The tag for the new time structure.
-     * @return {Object} The newly created structure, inserted into the 'times' object, as key: tag
-     */
-    create(tag) {
-        const time = {
-            start: undefined,
-            end: undefined,
-            elapsed: undefined
-        };
-
-        this.times[tag] = time;
-        return time;
-    }
-
-    /**
      * Start running a timer, for a tag. If a tag has already been started, then this does nothing.
      *
+     * @public
      * @param {string} tag - Time structure to look up, at this string. Creates a new one if none exists.
      * @return {void}
      */
@@ -48,6 +32,7 @@ class Timer {
      * Stop the timer from running, for a tag, and calculate elapsed time. If a tag has never been started, or has already
      * been stopped, this does nothing.
      *
+     * @public
      * @param {string} tag - Time structure to look up, at this string.
      * @return {void}
      */
@@ -65,6 +50,7 @@ class Timer {
     /**
      * Get the time object at a given tag.
      *
+     * @public
      * @param {string} tag - The tag to get the time structure for.
      * @return {Object} The time structure, or undefined if none with that tag.
      */
@@ -75,6 +61,7 @@ class Timer {
     /**
      * Resets the values in a certain time structure, if it exists.
      *
+     * @public
      * @param {string} [tag] - If provided, will reset a specific time structure associated with the tag.
      *                         If empty, resets everything.
      * @return {void}
@@ -100,12 +87,31 @@ class Timer {
     /**
      * Creates a tag string given a file id and event name.
      *
+     * @public
      * @param {string} fileId - A file id for the file.
      * @param {string} name - A name for the tag.
      * @return {string} A string in the correct tagging format.
      */
     createTag(fileId, name) {
         return `file_${fileId}_${name}`;
+    }
+
+    /**
+     * Create a new time structure at a given key (tag) in the 'times' object.
+     *
+     * @private
+     * @param {string} tag - The tag for the new time structure.
+     * @return {Object} The newly created structure, inserted into the 'times' object, as key: tag
+     */
+    create(tag) {
+        const time = {
+            start: undefined,
+            end: undefined,
+            elapsed: undefined
+        };
+
+        this.times[tag] = time;
+        return time;
     }
 }
 
