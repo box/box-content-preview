@@ -18,7 +18,9 @@ jobs:
     - sleep 5
     script: yarn run functional-tests-ci
     notifications:
-      slack:
-        secure: WdQMB2bWBYgAwTN8h8PqKrEaeigsqbH18Mk9kn/hMeUq33tZeqg6cvZ9UymY2rvGCn8X+/HQW3PFQuXURvMWmyU9deDadrGabjmDzwQ5pfOID4ALtUu0HuN+7jzSLw6cbYTfSJV+E95+VtHxe3qjikqfS9ntKjkIZMl6fiZGL7Uiio7W1Qy28GJK3dFN7U9U2aSc4ttc6skl3a0/OjSPCj3KMTrbQEY/RhRXYEzgeDH2vNcGv9boZbjYreHB2aSD3VrSrSgMWpNLqBm0lVsksYicp6M4++EBLC8NLvldQ13gzSq8MIcdoZTcpycNqXKBfa73sQkdYvCKJubTEZ7BhkeW2hlfWKQbm93G00GqlQ8FgdjTERoyKWNmA/K4j+8LjvfxW0B2jh6m8PDNkw0cf1uHQFy3LhU6JFZm4bQHTGzaDe7eWLgiHq7J54x3+6sNjS2seJNivf2/clpdETKRBy5PljUDdEwJ1xT96N5J9MB8dwhdIqWXKvbjqlRzSFN9Stq3qCGebMopPUOf0HrcvmQqb73LQX6xMWc03HXoJVwAF7FvQSo0JI8rU7O2tegXIj7TyGTi/JrtXREL0U+i1bpXimsF2juidA8Ck01iu+HmnXACDXd03xZrPVTYywYeH1JRsMiUNauLj1ANNk3jS4cEIwJJONuhT+2ZhU4qB/8=
+      email:
+        recipients:
+          - preview-alerts@box.com
+        on_success: never 
         on_failure: always
     cache: yarn
