@@ -21,3 +21,15 @@ export const ERROR_CODE = {
     retriesExceeded: 'error_retries_exceeded',
     browserError: 'error_browser_thrown'
 };
+
+// Event fired from Preview with error details
+export const PREVIEW_ERROR = 'preview_error';
+// Event fired from Preview with performance metrics
+export const PREVIEW_METRIC = 'preview_metric';
+// Milestone events for loading performance
+export const LOAD_METRIC = {
+    fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
+    convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
+    downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
+    fullDocumentLoadTime: 'full_document_load_time' // How long it took to load the whole document.
+};

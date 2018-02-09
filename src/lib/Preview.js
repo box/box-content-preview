@@ -11,6 +11,7 @@ import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
+import Timer from './Timer';
 import {
     get,
     getProp,
@@ -49,7 +50,7 @@ import {
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID
 } from './constants';
-import { VIEWER_EVENT, ERROR_CODE } from './events';
+import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
 import './Preview.scss';
 import { getClientLogDetails, createPreviewError, getISOTime } from './logUtils';
 
@@ -165,6 +166,13 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
+
+        this.on(PREVIEW_ERROR, (msg) => {
+            console.error(msg);
+        });
+        this.on(PREVIEW_METRIC, (msg) => {
+            console.log(msg);
+        });
     }
 
     /**
@@ -173,6 +181,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        // Log all load metrics
+        this.logLoadMetrics();
+
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
@@ -877,6 +888,8 @@ class Preview extends EventEmitter {
         const { apiHost, queryParams } = this.options;
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
+        Timer.start(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`);
+
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
         get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleFileInfoResponse)
@@ -892,6 +905,7 @@ class Preview extends EventEmitter {
      */
     handleFileInfoResponse(response) {
         let file = response;
+        Timer.stop(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`);
 
         // If we are previewing a file version, normalize response to a well-formed file object
         if (this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID)) {
@@ -1081,6 +1095,13 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     finishLoading(data = {}) {
+        if (this.file && this.file.id) {
+            Timer.stop(`${LOAD_METRIC.fullDocumentLoadTime}_${this.file.id}`);
+        }
+
+        // Log now that loading is finished
+        this.logLoadMetrics();
+
         // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
@@ -1330,7 +1351,52 @@ class Preview extends EventEmitter {
             ...this.createLog()
         };
 
-        this.emit('preview_error', errorLog);
+        this.emit(PREVIEW_ERROR, errorLog);
+    }
+
+    /**
+     * Load metrics behave slightly different than other metrics, in that they have
+     * higher level properties that do not fit into the general purpose "value" and "event_name".
+     * A value of 0 means that the load milestone was never reached.
+     *
+     * @private
+     * @return {void}
+     */
+    logLoadMetrics() {
+        if (!this.file || !this.file.id) {
+            Timer.reset();
+            return;
+        }
+
+        // Do nothing if there is nothing worth logging.
+        const infoTime = Timer.get(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`) || {};
+        if (!infoTime.elapsed) {
+            Timer.reset();
+            return;
+        }
+
+        const timerList = [
+            infoTime,
+            Timer.get(`${LOAD_METRIC.convertTime}_${this.file.id}`) || {},
+            Timer.get(`${LOAD_METRIC.downloadResponseTime}_${this.file.id}`) || {},
+            Timer.get(`${LOAD_METRIC.fullDocumentLoadTime}_${this.file.id}`) || {}
+        ];
+        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
+        const total = times.reduce((acc, current) => acc + current);
+
+        const event = {
+            event_name: 'preview_load',
+            value: total, // Sum of all available load times.
+            [LOAD_METRIC.fileInfoTime]: times[0],
+            [LOAD_METRIC.convertTime]: times[1],
+            [LOAD_METRIC.downloadResponseTime]: times[2],
+            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            ...this.createLog()
+        };
+
+        this.emit(PREVIEW_METRIC, event);
+
+        Timer.reset();
     }
 
     /**

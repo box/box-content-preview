@@ -29,8 +29,9 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT, ERROR_CODE } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
 import { createPreviewError } from '../logUtils';
+import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -259,6 +260,16 @@ class BaseViewer extends EventEmitter {
                 this.triggerError();
             }
         }, this.loadTimeout);
+    }
+
+    /**
+     * Start the laod timer for fullDocumentLoad event.
+     *
+     * @protected
+     * @return {void}
+     */
+    startLoadTimer() {
+        Timer.start(`${LOAD_METRIC.fullDocumentLoadTime}_${this.options.file.id}`);
     }
 
     /**

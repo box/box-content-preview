@@ -525,6 +525,9 @@ class DocBaseViewer extends BaseViewer {
             };
         }
 
+        // Start timing document load
+        this.startLoadTimer();
+
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);

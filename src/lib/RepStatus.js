@@ -2,6 +2,8 @@ import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
 import { createPreviewError } from './logUtils';
+import Timer from './Timer';
+import { LOAD_METRIC } from './events';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
@@ -81,6 +83,8 @@ class RepStatus extends EventEmitter {
             return Promise.resolve();
         }
 
+        // Using content.url_template to guarantee uniqueness
+        Timer.start(`${LOAD_METRIC.convertTime}_${this.representation.content.url_template}`);
         return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
@@ -134,6 +138,7 @@ class RepStatus extends EventEmitter {
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
+                Timer.stop(`${LOAD_METRIC.convertTime}_${this.representation.content.url_template}`);
                 this.resolve();
                 break;
 
