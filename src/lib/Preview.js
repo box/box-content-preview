@@ -1131,7 +1131,7 @@ class Preview extends EventEmitter {
         } else {
             // Bump up preview count
             this.count.success += 1;
-
+            console.log(this.logger.done(this.count));
             // Finally emit the viewer instance back with a load event
             this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,

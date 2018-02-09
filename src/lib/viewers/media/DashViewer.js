@@ -166,6 +166,8 @@ class DashViewer extends VideoBaseViewer {
             }
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
+
+        this.startLoadTimer();
         this.player.load(this.mediaUrl);
     }
 

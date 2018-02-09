@@ -22,13 +22,17 @@ class Timer {
             time = this.create(key);
         }
 
+        // Can't start a timer that's already started
+        if (time.start) {
+            return;
+        }
+
         time.start = global.performance.now();
         time.end = undefined;
         time.elapsed = undefined;
     }
 
     stop(key) {
-        console.log('STOP:', key);
         const time = this.get(key);
         // The timer has already been stopped. or hasn't started, don't stop it again.
         if (!time || time.start === undefined || time.end !== undefined) {
@@ -37,6 +41,7 @@ class Timer {
 
         time.end = global.performance.now();
         time.elapsed = time.end - time.start;
+        console.log('STOP:', key, time.elapsed);
     }
 
     get(key) {
