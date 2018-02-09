@@ -263,7 +263,7 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Start the laod timer for fullDocumentLoad event.
+     * Start the load timer for fullDocumentLoad event.
      *
      * @protected
      * @return {void}

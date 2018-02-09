@@ -2,24 +2,36 @@
  * General purpose time recording tool
  */
 class Timer {
+    /** @property {Object} - Dictionary of time objects. Used to track times. tag: { start, end, elapsed } */
     times = {};
 
-    create(key) {
+    /**
+     * Create a new time structure at a given key (tag) in the 'times' object.
+     *
+     * @param {string} tag - The tag for the new time structure.
+     * @return {Object} The newly created structure, inserted into the 'times' object, as key: tag
+     */
+    create(tag) {
         const time = {
             start: undefined,
             end: undefined,
             elapsed: undefined
         };
 
-        this.times[key] = time;
+        this.times[tag] = time;
         return time;
     }
 
-    start(key) {
-        console.log('START: ', key);
-        let time = this.get(key);
+    /**
+     * Start running a timer, for a tag. If a tag has already been started, then this does nothing.
+     *
+     * @param {string} tag - Time structure to look up, at this string. Creates a new one if none exists.
+     * @return {void}
+     */
+    start(tag) {
+        let time = this.get(tag);
         if (!time) {
-            time = this.create(key);
+            time = this.create(tag);
         }
 
         // Can't start a timer that's already started
@@ -32,30 +44,57 @@ class Timer {
         time.elapsed = undefined;
     }
 
-    stop(key) {
-        const time = this.get(key);
-        // The timer has already been stopped. or hasn't started, don't stop it again.
+    /**
+     * Stop the timer from running, for a tag, and calculate elapsed time. If a tag has never been started, or has already
+     * been stopped, this does nothing.
+     *
+     * @param {string} tag - Time structure to look up, at this string.
+     * @return {void}
+     */
+    stop(tag) {
+        const time = this.get(tag);
+        // The timer has already been stopped, or hasn't started. Don't stop it again.
         if (!time || time.start === undefined || time.end !== undefined) {
             return;
         }
 
         time.end = global.performance.now();
         time.elapsed = time.end - time.start;
-        console.log('STOP:', key, time.elapsed);
     }
 
-    get(key) {
-        return this.times[key];
+    /**
+     * Get the time object at a given tag.
+     *
+     * @param {string} tag - The tag to get the time structure for.
+     * @return {Object} The time structure, or undefined if none with that tag.
+     */
+    get(tag) {
+        return this.times[tag];
     }
 
-    getAll() {
-        return this.times;
-    }
+    /**
+     * Resets the values in a certain time structure, if it exists.
+     *
+     * @param {string} [tag] - If provided, will reset a specific time structure associated with the tag.
+     *                         If empty, resets everything.
+     * @return {void}
+     */
+    reset(tag) {
+        if (tag) {
+            const time = this.get(tag);
+            // We don't need to clean up nothin'
+            if (!time) {
+                return;
+            }
 
-    reset() {
-        Object.keys(this.times).forEach((key) => {
-            delete this.times[key];
-        });
+            time.start = undefined;
+            time.end = undefined;
+            time.elapsed = undefined;
+        } else {
+            Object.keys(this.times).forEach((timeTag) => {
+                this.reset(timeTag);
+            });
+        }
     }
 }
 
