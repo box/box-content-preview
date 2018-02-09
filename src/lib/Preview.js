@@ -888,7 +888,8 @@ class Preview extends EventEmitter {
         const { apiHost, queryParams } = this.options;
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
-        Timer.start(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`);
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.start(tag);
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
         get(fileInfoUrl, this.getRequestHeaders())
@@ -905,7 +906,9 @@ class Preview extends EventEmitter {
      */
     handleFileInfoResponse(response) {
         let file = response;
-        Timer.stop(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`);
+        // Stop timer for file info time event.
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.stop(tag);
 
         // If we are previewing a file version, normalize response to a well-formed file object
         if (this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID)) {
@@ -1096,7 +1099,8 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         if (this.file && this.file.id) {
-            Timer.stop(`${LOAD_METRIC.fullDocumentLoadTime}_${this.file.id}`);
+            const tag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.stop(tag);
         }
 
         // Log now that loading is finished
@@ -1369,17 +1373,22 @@ class Preview extends EventEmitter {
         }
 
         // Do nothing if there is nothing worth logging.
-        const infoTime = Timer.get(`${LOAD_METRIC.fileInfoTime}_${this.file.id}`) || {};
+        const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        const infoTime = Timer.get(infoTag) || {};
         if (!infoTime.elapsed) {
             Timer.reset();
             return;
         }
 
+        const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
+        const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
+        const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+
         const timerList = [
             infoTime,
-            Timer.get(`${LOAD_METRIC.convertTime}_${this.file.id}`) || {},
-            Timer.get(`${LOAD_METRIC.downloadResponseTime}_${this.file.id}`) || {},
-            Timer.get(`${LOAD_METRIC.fullDocumentLoadTime}_${this.file.id}`) || {}
+            Timer.get(convertTag) || {},
+            Timer.get(downloadTag) || {},
+            Timer.get(fullLoadTag) || {}
         ];
         const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
         const total = times.reduce((acc, current) => acc + current);

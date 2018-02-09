@@ -85,7 +85,8 @@ class RepStatus extends EventEmitter {
 
         // Using content.url_template to guarantee uniqueness
         const fileId = this.representation.content.url_template.match(/(?:internal_files\/)(.+)(?:\/versions)/)[1];
-        Timer.start(`${LOAD_METRIC.convertTime}_${fileId}`);
+        const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+        Timer.start(tag);
         return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
@@ -116,6 +117,7 @@ class RepStatus extends EventEmitter {
         let errorMessage;
         let error;
         const fileId = this.representation.content.url_template.match(/(?:internal_files\/)(.+)(?:\/versions)/)[1];
+        const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
 
         switch (status) {
             case 'error':
@@ -140,7 +142,7 @@ class RepStatus extends EventEmitter {
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
-                Timer.stop(`${LOAD_METRIC.convertTime}_${fileId}`);
+                Timer.stop(tag);
                 this.resolve();
                 break;
 

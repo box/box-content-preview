@@ -96,6 +96,17 @@ class Timer {
             });
         }
     }
+
+    /**
+     * Creates a tag string given a file id and event name.
+     *
+     * @param {string} fileId - A file id for the file.
+     * @param {string} name - A name for the tag.
+     * @return {string} A string in the correct tagging format.
+     */
+    createTag(fileId, name) {
+        return `file_${fileId}_${name}`;
+    }
 }
 
 export default new Timer();
