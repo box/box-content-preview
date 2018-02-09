@@ -8,8 +8,9 @@ import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import { VIEWER_EVENT, ERROR_CODE } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
 import { createPreviewError } from '../logUtils';
+import Timer from '../Timer';
 
 const tokens = require('../tokens');
 
@@ -95,6 +96,12 @@ describe('lib/Preview', () => {
         it('should clear the viewer', () => {
             preview.destroy();
             expect(preview.viewer).to.equal(undefined);
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.destroy();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -1143,6 +1150,13 @@ describe('lib/Preview', () => {
                 expect(stubs.handleFetchError).to.not.be.called;
             });
         });
+
+        it('should start a Timer for file info timing', () => {
+            const startStub = sandbox.stub(Timer, 'start');
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.loadFromServer();
+            expect(startStub).to.calledWith(expectedTag);
+        });
     });
 
     describe('handleFileInfoResponse()', () => {
@@ -1338,6 +1352,16 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.triggerError).to.be.called;
+        });
+
+        it('should stop the Timer for file info time', () => {
+            const stopStub = sandbox.stub(Timer, 'stop');
+            preview.file = {
+                id: 12345
+            };
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.handleFileInfoResponse(stubs.file);
+            expect(stopStub).to.be.calledWith();
         });
     });
 
@@ -1574,6 +1598,16 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.calledWith(data.event, data.data);
             expect(preview.emit).to.be.calledWith(VIEWER_EVENT.default, data);
         });
+
+        it('should not emit any messages error events', () => {
+            sandbox.stub(preview, 'emit');
+            const data = {
+                event: 'error',
+                data: ':('
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.emit).to.not.be.called;
+        });
     });
 
     describe('finishLoading()', () => {
@@ -1733,6 +1767,20 @@ describe('lib/Preview', () => {
         it('should prefetch next files', () => {
             preview.finishLoading();
             expect(stubs.prefetchNextFiles).to.be.called;
+        });
+
+        it('should stop the timer for full document load if a file exists', () => {
+            preview.file.id = 1234;
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            sandbox.stub(Timer, 'stop');
+            preview.finishLoading();
+            expect(Timer.stop).to.be.calledWith(expectedTag);
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.finishLoading();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -2048,6 +2096,10 @@ describe('lib/Preview', () => {
             const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
             preview.emitPreviewError(error);
         });
+    });
+
+    describe('emitLoadMetrics()', () => {
+        
     });
 
     describe('getRequestHeaders()', () => {
