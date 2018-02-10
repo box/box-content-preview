@@ -2098,7 +2098,7 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe.only('emitLoadMetrics()', () => {
+    describe('emitLoadMetrics()', () => {
         const fileId = 123456;
         const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
 
@@ -2110,6 +2110,7 @@ describe('lib/Preview', () => {
             // Make sure the first milestone (fileInfoTime) has been met
             Timer.start(fileInfoTag);
             Timer.stop(fileInfoTag);
+            Timer.get(fileInfoTag).elapsed = 20;
         });
 
         afterEach(() => {
@@ -2135,7 +2136,7 @@ describe('lib/Preview', () => {
         });
         
         it('should emit a preview_metric event', (done) => {
-            preview.on(PREVIEW_METRIC, (metric) => {
+            preview.on(PREVIEW_METRIC, () => {
                 done();
             });
             preview.emitLoadMetrics();
