@@ -148,6 +148,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 expect(media.autoplay).to.be.called;
             })
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(media, 'startLoadTimer');
+            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+
+            return media.load().then(() => {
+                expect(media.startLoadTimer).to.be.called;
+            });
+        });
     });
 
     describe('loadeddataHandler()', () => {

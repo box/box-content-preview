@@ -855,6 +855,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
         });
+
+        it('should invoke startLoadTimer()', () => {
+            const doc = {
+                url: 'url'
+            };
+            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            sandbox.stub(docBase, 'getViewerOption').returns(100);
+            sandbox.stub(docBase, 'startLoadTimer');
+            docBase.initViewer('url');
+
+            expect(docBase.startLoadTimer).to.be.called;
+        });
     });
 
     describe('resize()', () => {

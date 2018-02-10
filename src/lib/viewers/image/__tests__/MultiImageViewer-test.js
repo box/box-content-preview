@@ -155,6 +155,16 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 })
                 .catch(() => {});
         });
+
+        it('should make the images invisible', () => {
+            sandbox.stub(multiImage, 'startLoadTimer');
+            return multiImage
+                .load('file/100/content/{page}.png')
+                .then(() => {
+                    expect(multiImage.startLoadTimer).to.be.called;
+                })
+                .catch(() => {});
+        });
     });
 
     describe('constructImageUrls()', () => {

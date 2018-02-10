@@ -8,7 +8,8 @@ import * as util from '../../util';
 import * as file from '../../file';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
-import { VIEWER_EVENT } from '../../events';
+import { VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import Timer from '../../Timer';
 
 let base;
 let containerEl;
@@ -165,6 +166,16 @@ describe('lib/viewers/BaseViewer', () => {
 
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
+        });
+    });
+
+    describe('startLoadTimer()', () => {
+        it('should start a timer for the fullDocumentLoadTime metric', () => {
+            base.options.file.id = '1234';
+            base.startLoadTimer();
+            
+            const tag = Timer.createTag(base.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            expect(Timer.get(tag)).to.exist;
         });
     });
 
