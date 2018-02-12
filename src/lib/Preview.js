@@ -26,6 +26,12 @@ import {
     stripAuthFromString
 } from './util';
 import {
+    isDownloadHostBlocked,
+    setDownloadReachability,
+    isCustomDownloadHost,
+    replaceDownloadHostWithDefault
+} from './downloadReachability';
+import {
     getURL,
     getDownloadURL,
     checkPermission,
@@ -478,13 +484,29 @@ class Preview extends EventEmitter {
     download() {
         const { apiHost, queryParams } = this.options;
 
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            // Append optional query params
-            const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            get(downloadUrl, this.getRequestHeaders()).then((data) => {
-                openUrlInsideIframe(data.download_url);
-            });
+        if (!checkPermission(this.file, PERMISSION_DOWNLOAD)) {
+            return;
         }
+
+        // Append optional query params
+        const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+        get(downloadUrl, this.getRequestHeaders()).then((data) => {
+            const defaultDownloadUrl = replaceDownloadHostWithDefault(data.download_url);
+            if (isDownloadHostBlocked() || !isCustomDownloadHost(data.download_url)) {
+                // If we know the host is blocked, or we are already using the default,
+                // use the default.
+                openUrlInsideIframe(defaultDownloadUrl);
+            } else {
+                // Try the custom host, then check reachability
+                openUrlInsideIframe(data.download_url);
+                setDownloadReachability(data.download_url).then(() => {
+                    if (isDownloadHostBlocked()) {
+                        // If download is unreachable, try again with default
+                        openUrlInsideIframe(defaultDownloadUrl);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -746,6 +768,9 @@ class Preview extends EventEmitter {
             this.navigateRight,
             this.throttledMousemoveHandler
         );
+
+        // Set up the notification
+        this.ui.setupNotification();
 
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
@@ -1199,9 +1224,6 @@ class Preview extends EventEmitter {
 
         // Hide the loading indicator
         this.ui.hideLoadingIndicator();
-
-        // Set up the notification
-        this.ui.setupNotification();
 
         // Prefetch next few files
         this.prefetchNextFiles();

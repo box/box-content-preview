@@ -582,7 +582,11 @@ class DocBaseViewer extends BaseViewer {
 
                 // Display a generic error message but log the real one
                 const error = new PreviewError(ERROR_CODE.LOAD_DOCUMENT, __('error_document'), {}, err.message);
-                this.triggerError(error);
+                if (err instanceof Error) {
+                    error.displayMessage = __('error_document');
+                }
+
+                this.handleDownloadError(err, pdfUrl);
             });
     }
 

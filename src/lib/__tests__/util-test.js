@@ -10,9 +10,12 @@ describe('lib/util', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
-
+    
     describe('get()', () => {
-        const url = 'foo?bar=bum';
+        let url;
+        beforeEach(() => {
+            url = 'foo?bar=bum';
+        });
 
         afterEach(() => {
             fetchMock.restore();
@@ -95,6 +98,23 @@ describe('lib/util', () => {
                 expect(fetchMock.called(url)).to.be.true;
                 expect(typeof response === 'object').to.be.true;
             });
+        });
+
+        it('set the download host fallback and try again if we\'re fetching from a non default host', () => {
+            url = 'dl7.boxcloud.com'
+            fetchMock.get(url, {
+                status: 500
+            });
+
+            return util.get(url, 'any')
+            .then(() => {
+                expect(response.status).to.equal(200);
+            })
+            .catch(() => {
+                fetchMock.get(url, {
+                    status: 200
+                });
+            })
         });
     });
 
@@ -326,6 +346,11 @@ describe('lib/util', () => {
 
         it('should return correct content url when no asset_path', () => {
             expect(util.createContentUrl('foo', 'bar')).to.equal('foo');
+        });
+
+        it('should replace the download host with the default if we are falling back', () => {
+            sessionStorage.setItem('download_host_fallback', 'true');
+            expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).to.equal('https://dl.boxcloud.com');
         });
     });
 

@@ -1,10 +1,13 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
 
+import { isDownloadHostBlocked, replaceDownloadHostWithDefault } from './downloadReachability';
+
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
+
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 export const CLIENT_VERSION = __VERSION__;
@@ -403,6 +406,11 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
+    if (isDownloadHostBlocked()) {
+        /* eslint-disable no-param-reassign */
+        template = replaceDownloadHostWithDefault(template);
+        /* eslint-enable no-param-reassign */
+    }
     return template.replace('{+asset_path}', asset || '');
 }
 

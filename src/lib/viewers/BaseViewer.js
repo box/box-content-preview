@@ -7,13 +7,23 @@ import {
     getProp,
     appendQueryParams,
     appendAuthParams,
-    getHeaders,
     createContentUrl,
+    getHeaders,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
-    createAssetUrlCreator
+    createAssetUrlCreator,
+    replacePlaceholders
 } from '../util';
+
+import {
+    setDownloadReachability,
+    isCustomDownloadHost,
+    replaceDownloadHostWithDefault,
+    setDownloadHostNotificationShown,
+    downloadNotificationToShow
+} from '../downloadReachability';
+
 import Browser from '../Browser';
 import {
     CLASS_FULLSCREEN,
@@ -100,6 +110,9 @@ class BaseViewer extends EventEmitter {
 
     /** @property {Object} - Viewer startAt options */
     startAt;
+    
+    /** @property {boolean} - Has the viewer retried downloading the content */
+    haveRetriedContentDownload = false;
 
     /**
      * [constructor]
@@ -292,6 +305,31 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Handles a download error when using a non default host.
+     *
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.haveRetriedContentDownload) {
+            /* eslint-disable no-console */
+            console.error(err);
+            /* eslint-enable no-console */
+
+            this.triggerError(err);
+            return;
+        }
+
+        this.haveRetriedContentDownload = true;
+        this.load();
+
+        if (isCustomDownloadHost(downloadURL)) {
+            setDownloadReachability(downloadURL);
+        }
+    }
+
+    /**
      * Emits error event with refresh message.
      *
      * @protected
@@ -350,6 +388,12 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
+        if (this.haveRetriedContentDownload) {
+            /* eslint-disable no-param-reassign */
+            template = replaceDownloadHostWithDefault(template);
+            /* eslint-enable no-param-reassign */
+        }
+
         // Append optional query params
         const { queryParams } = this.options;
         return appendQueryParams(createContentUrl(template, asset), queryParams);
@@ -366,7 +410,7 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        const urlWithAuthParams = this.appendAuthParams(createContentUrl(template, asset));
+        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
 
         // Append optional query params
         const { queryParams } = this.options;
@@ -408,13 +452,25 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles the viewer load to potentially set up Box Annotations.
+     * Handles the viewer load to finish viewer setup after loading.
      *
      * @private
      * @param {Object} event - load event data
      * @return {void}
      */
     viewerLoadHandler(event) {
+        const contentTemplate = getProp(this.options, 'representation.content.url_template', null);
+        const downloadHostToNotify = downloadNotificationToShow(contentTemplate);
+        if (downloadHostToNotify) {
+            this.previewUI.notification.show(
+                replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
+                __('notification_button_default_text'),
+                true
+            );
+
+            setDownloadHostNotificationShown(downloadHostToNotify);
+        }
+
         if (event && event.scale) {
             this.scale = event.scale;
         }
