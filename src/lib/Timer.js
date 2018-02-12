@@ -38,6 +38,7 @@ class Timer {
      */
     stop(tag) {
         const time = this.get(tag);
+
         // The timer has already been stopped, or hasn't started. Don't stop it again.
         if (!time || time.start === undefined || time.end !== undefined) {
             return;
