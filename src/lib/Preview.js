@@ -899,6 +899,7 @@ class Preview extends EventEmitter {
      */
     handleFileInfoResponse(response) {
         let file = response;
+
         // Stop timer for file info time event.
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         Timer.stop(tag);
@@ -1128,6 +1129,7 @@ class Preview extends EventEmitter {
         } else {
             // Bump up preview count
             this.count.success += 1;
+
             // Finally emit the viewer instance back with a load event
             this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,
@@ -1336,6 +1338,7 @@ class Preview extends EventEmitter {
      */
     emitPreviewError(error) {
         const err = error;
+
         // If we haven't supplied a code, then it was thrown by the browser
         err.code = error.code || ERROR_CODE.browserError;
         // Make sure to strip auth, if it's a string.

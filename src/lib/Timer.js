@@ -69,7 +69,8 @@ class Timer {
     reset(tag) {
         if (tag) {
             const time = this.get(tag);
-            // We don't need to clean up nothin'
+
+            // If nothing exists, there's no reason to reset it
             if (!time) {
                 return;
             }
@@ -78,9 +79,7 @@ class Timer {
             time.end = undefined;
             time.elapsed = undefined;
         } else {
-            Object.keys(this.times).forEach((timeTag) => {
-                this.reset(timeTag);
-            });
+            Object.keys(this.times).forEach(this.reset.bind(this));
         }
     }
 
