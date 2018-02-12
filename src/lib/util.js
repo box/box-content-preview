@@ -5,6 +5,11 @@ const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
+
+const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
+const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
+const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
+
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
@@ -112,6 +117,63 @@ function createDownloadIframe() {
 }
 
 /**
+ * Checks if the url is a download host, but not the default download host.
+ *
+ * @public
+ * @param {string} url - The URL to check
+ * @return {boolean} - HTTP response
+ */
+export function isCustomDownloadHost(url) {
+    return !url.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && !!url.match(/^https:\/\/dl\d+\./);
+}
+
+/**
+ * Replaces the hostname of a download URL with the default hostname, https://dl.
+ *
+ * @private
+ * @param {string} url - The URL to modify
+ * @return {string} - The updated download URL
+ */
+export function replaceDownloadHostWithDefault(url) {
+    return url.replace(/^https:\/\/dl\d+\./, DEFAULT_DOWNLOAD_HOST_PREFIX);
+}
+
+/**
+ * Sets session storage to use the default download host
+ *
+ * @public
+ * @return {void}
+ */
+export function setDownloadHostFallback() {
+    sessionStorage.setItem(DOWNLOAD_HOST_FALLBACK_KEY, 'true');
+}
+
+/**
+ * Stores the host in an array via localstorage so that we don't show a notification for it again
+ *
+ * @public
+ * @param {string} downloadHost - Download URL host
+ * @return {void}
+ */
+export function setDownloadHostNotificationShown(downloadHost) {
+    const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+    shownHostsArr.push(downloadHost);
+    localStorage.setItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY, JSON.stringify(shownHostsArr));
+}
+
+/**
+ * Determines if the degraded download notification should be shown.
+ *
+ * @public
+ * @param {string} downloadHost - Download URL host
+ * @return {boolean} Should the notification be shown
+ */
+export function shouldShowDegradedDownloadNotification(downloadHost) {
+    const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+    return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true' && !shownHostsArr.includes(downloadHost);
+}
+
+/**
  * HTTP GETs a URL
  * Usage:
  *     get(url, headers, type)
@@ -158,7 +220,20 @@ export function get(url, ...rest) {
 
     return fetch(url, { headers })
         .then(checkStatus)
-        .then(parser);
+        .then(parser)
+        .catch((e) => {
+            // Make sure we are making a dl call
+            if (isCustomDownloadHost(url)) {
+                // Retry download with default host.
+                setDownloadHostFallback();
+                return get(url, ...rest);
+            }
+
+            /* eslint-disable no-console */
+            console.error(e);
+            /* eslint-enable no-console */
+            return Promise.reject(e);
+        });
 }
 
 /**
@@ -397,6 +472,12 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
+    if (sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true') {
+        /* eslint-disable no-param-reassign */
+        template = replaceDownloadHostWithDefault(template);
+        /* eslint-enable no-param-reassign */
+    }
+
     return template.replace('{+asset_path}', asset || '');
 }
 

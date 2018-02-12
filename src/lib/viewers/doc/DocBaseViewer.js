@@ -539,17 +539,13 @@ class DocBaseViewer extends BaseViewer {
                 }
             })
             .catch((err) => {
-                /* eslint-disable no-console */
-                console.error(err);
-                /* eslint-enable no-console */
-
                 // Display a generic error message but log the real one
                 const error = err;
-                if (error instanceof Error) {
+                if (err instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
 
-                this.triggerError(error);
+                this.handleDownloadError(err, pdfUrl);
             });
     }
 

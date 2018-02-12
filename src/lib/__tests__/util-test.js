@@ -10,8 +10,64 @@ describe('lib/util', () => {
         sandbox.verifyAndRestore();
     });
 
+    describe('isCustomDownloadHost()', () => {
+        it('should be true if the url does not start with the default host prefix and is a dl host', () => {
+            let url = 'https://dl3.boxcloud.com/foo';
+            let result = util.isCustomDownloadHost(url)
+            expect(result).to.be.true;
+
+            url = 'https://dl.boxcloud.com/foo';
+            expect(util.isCustomDownloadHost(url)).to.be.false;
+
+            url = 'https://www.google.com';
+            expect(util.isCustomDownloadHost(url)).to.be.false;
+        });
+    });
+
+    describe('replaceDownloadHostWithDefault()', () => {
+        it('should return a download URL with the default host', () => {
+            let url = 'https://dl3.boxcloud.com/foo';
+            const result = util.replaceDownloadHostWithDefault(url);
+
+            expect(result).to.equal('https://dl.boxcloud.com/foo');
+        });
+    });
+
+    describe('setDownloadHostFallback()', () => {
+        it('should set the value in sessionStorage', () => {
+            util.setDownloadHostFallback();
+
+            expect(sessionStorage.getItem('download_host_fallback')).to.equal('true');
+        });
+    });
+
+    describe('shouldShowDegradedDownloadNotification()', () => {
+        beforeEach(() => {
+            sessionStorage.setItem('download_host_fallback', 'false');
+        });
+
+        it('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
+            let result = util.shouldShowDegradedDownloadNotification();
+            expect(result).to.be.false;
+
+            sessionStorage.setItem('download_host_fallback', 'true');
+            result = util.shouldShowDegradedDownloadNotification();
+            expect(result).to.be.true;
+        
+            const shownHostsArr = ['dl5.boxcloud.com'];
+            localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
+            result = util.shouldShowDegradedDownloadNotification(shownHostsArr[0]);
+            expect(result).to.be.false;
+
+        });
+    });
+
+
     describe('get()', () => {
-        const url = 'foo?bar=bum';
+        let url;
+        beforeEach(() => {
+            url = 'foo?bar=bum';
+        });
 
         afterEach(() => {
             fetchMock.restore();
@@ -94,6 +150,23 @@ describe('lib/util', () => {
                 expect(fetchMock.called(url)).to.be.true;
                 expect(response).to.be.an.object;
             });
+        });
+
+        it('set the download host fallback and try again if we\'re fetching from a non default host', () => {
+            url = 'dl7.boxcloud.com'
+            fetchMock.get(url, {
+                status: 500
+            });
+
+            return util.get(url, 'any')
+            .then(() => {
+                expect(response.status).to.equal(200);
+            })
+            .catch(() => {
+                fetchMock.get(url, {
+                    status: 200
+                });
+            })
         });
     });
 
@@ -315,6 +388,11 @@ describe('lib/util', () => {
 
         it('should return correct content url when no asset_path', () => {
             expect(util.createContentUrl('foo', 'bar')).to.equal('foo');
+        });
+
+        it('should replace the download host with the default if we are falling back', () => {
+            sessionStorage.setItem('download_host_fallback', 'true');
+            expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).to.equal('https://dl.boxcloud.com');
         });
     });
 
