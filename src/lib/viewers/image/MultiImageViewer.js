@@ -250,8 +250,16 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     handleMultiImageDownloadError(err) {
+        this.singleImageEls.forEach((el, index) => {
+            this.unbindImageListeners(index);
+        });
+
         // Since we're using the src to get the hostname, we can always use the src of the first page
-        this.handleMultiImageDownloadError(err, this.singleImageEls[0]);
+        const { src } = this.singleImageEls[0];
+        // Clear any images we may have started to load.
+        this.singleImageEls = [];
+
+        this.handleDownloadError(err, src);
     }
 
     /**

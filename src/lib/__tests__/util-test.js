@@ -10,17 +10,17 @@ describe('lib/util', () => {
         sandbox.verifyAndRestore();
     });
 
-    describe('isNonDefaultDownloadHost()', () => {
+    describe('isCustomDownloadHost()', () => {
         it('should be true if the url does not start with the default host prefix and is a dl host', () => {
             let url = 'https://dl3.boxcloud.com/foo';
-            let result = util.isNonDefaultDownloadHost(url)
+            let result = util.isCustomDownloadHost(url)
             expect(result).to.be.true;
 
             url = 'https://dl.boxcloud.com/foo';
-            expect(util.isNonDefaultDownloadHost(url)).to.be.false;
+            expect(util.isCustomDownloadHost(url)).to.be.false;
 
             url = 'https://www.google.com';
-            expect(util.isNonDefaultDownloadHost(url)).to.be.false;
+            expect(util.isCustomDownloadHost(url)).to.be.false;
         });
     });
 

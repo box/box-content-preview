@@ -9,7 +9,7 @@ import {
     appendAuthParams,
     createContentUrl,
     getHeaders,
-    isNonDefaultDownloadHost,
+    isCustomDownloadHost,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
@@ -281,16 +281,20 @@ class BaseViewer extends EventEmitter {
      *
      * @param {Error} err - Load error
      * @param {string} downloadURL - download URL
-     * @return {boolean} If the error was handled
+     * @return {void}
      */
     handleDownloadError(err, downloadURL) {
-        if (isNonDefaultDownloadHost(downloadURL)) {
+        if (isCustomDownloadHost(downloadURL)) {
             setDownloadHostFallback();
             this.load();
-            return true;
+            return;
         }
 
-        return false;
+        /* eslint-disable no-console */
+        console.error(err);
+        /* eslint-enable no-console */
+
+        this.triggerError(err);
     }
 
     /**

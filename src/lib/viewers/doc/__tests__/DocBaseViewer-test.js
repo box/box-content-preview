@@ -874,32 +874,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('handleDownloadError()', () => {
-        beforeEach(() => {
-            sandbox.stub(docBase, 'triggerError');
-        });
-
-        it('should do nothing if the error is handled', () => {
-            Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub().returns(true)
-            });
-
-            docBase.handleDownloadError('error', 'url');
-
-            expect(docBase.triggerError).to.not.be.called;
-        });
-
-        it('should trigger an error if the error is not handled', () => {
-            Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub().returns(false)
-            });
-
-            docBase.handleDownloadError('error', 'url');
-
-            expect(docBase.triggerError).to.be.called;
-        });
-    });
-
     describe('resize()', () => {
         const resizeFunc = BaseViewer.prototype.resize;
 

@@ -531,28 +531,30 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('handleDownloadError()', () => {
+        const handleDownloadErrorFunc = BaseViewer.prototype.handleDownloadError;
+
         beforeEach(() => {
-            sandbox.stub(imageBase, 'triggerError');
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub()
+            });        
         });
 
-        it('should do nothing if the error is handled', () => {
+        afterEach(() => {
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub().returns(true)
+                value: handleDownloadErrorFunc
             });
-
-            imageBase.handleDownloadError('error', 'url');
-
-            expect(imageBase.triggerError).to.not.be.called;
         });
 
-        it('should trigger an error if the error is not handled', () => {
-            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub().returns(false)
-            });
+        it('should call the parent method with an error display message and the image URL', () => {
+            const err = new Error('downloadError')
 
-            imageBase.handleDownloadError('error', 'url');
+            try {
+                imageBase.handleDownloadError(err, 'foo');
+            } catch (e) {
+                // no-op
+            }
 
-            expect(imageBase.triggerError).to.be.called;
+            expect(BaseViewer.prototype.handleDownloadError).to.be.calledWith(err, 'foo')
         });
     });
 
@@ -562,6 +564,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
             stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
+            imageBase.options = {
+                file: {
+                    id: 1
+                },
+                viewer: {
+                    viewerName: "Image"
+                }
+            }
         });
 
         it('should do nothing if already destroyed', () => {

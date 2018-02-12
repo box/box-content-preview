@@ -123,14 +123,14 @@ function createDownloadIframe() {
  * @param {string} url - The URL to check
  * @return {boolean} - HTTP response
  */
-export function isNonDefaultDownloadHost(url) {
+export function isCustomDownloadHost(url) {
     return !url.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && !!url.match(/^https:\/\/dl\d+\./);
 }
 
 /**
  * Replaces the hostname of a download URL with the default hostname, https://dl.
  *
- * @public
+ * @private
  * @param {string} url - The URL to modify
  * @return {string} - The updated download URL
  */
@@ -223,7 +223,7 @@ export function get(url, ...rest) {
         .then(parser)
         .catch((e) => {
             // Make sure we are making a dl call
-            if (isNonDefaultDownloadHost(url)) {
+            if (isCustomDownloadHost(url)) {
                 // Retry download with default host.
                 setDownloadHostFallback();
                 return get(url, ...rest);

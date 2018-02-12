@@ -184,21 +184,24 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleDownloadError()', () => {
+        beforeEach(() => {
+            sandbox.stub(base, 'triggerError');
+        });
+
         it('should return false if using the default download host', () => {
-            sandbox.stub(util, 'isNonDefaultDownloadHost').returns(false);
-            const result = base.handleDownloadError('error', 'https://dl.boxcloud.com');
-            expect(result).to.be.false;
+            sandbox.stub(util, 'isCustomDownloadHost').returns(false);
+            base.handleDownloadError('error', 'https://dl.boxcloud.com');
+            expect(base.triggerError).to.be.called;
         });
 
         it('should set the download host fallback, rereload, and return true if we are using a non default host', () => {
-            sandbox.stub(util, 'isNonDefaultDownloadHost').returns(true);
+            sandbox.stub(util, 'isCustomDownloadHost').returns(true);
             sandbox.stub(util, 'setDownloadHostFallback')
             sandbox.stub(base, 'load');
 
             const result = base.handleDownloadError('error', 'https://dl7.boxcloud.com');
             expect(base.load).to.be.called;
             expect(util.setDownloadHostFallback).to.be.called;
-            expect(result).to.be.true;
         });
     });
 
