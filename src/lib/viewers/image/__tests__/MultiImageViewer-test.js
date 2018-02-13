@@ -18,6 +18,7 @@ let clock;
 let containerEl;
 
 describe('lib/viewers/image/MultiImageViewer', () => {
+    stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
     const setupFunc = BaseViewer.prototype.setup;
     const sizeFunc = ImageBaseViewer.prototype.setOriginalImageSize;
 
@@ -343,7 +344,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('bindPageControlListeners()', () => {
+    describe('bindPageControlListeners', () => {
         beforeEach(() => {
             multiImage.currentPageNumber = 1;
             multiImage.pagesCount = 10;
@@ -373,34 +374,8 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     });
 
-    describe('handleMultiImageDownloadError()', () => {
-        beforeEach(() => {
-            multiImage.singleImageEls = [
-                {
-                    src: 'foo'
-                },
-                {
-                    src: 'baz'
-                }
-            ];
 
-            sandbox.stub(multiImage, 'handleDownloadError');
-            sandbox.stub(multiImage, 'unbindImageListeners')
-        });
-
-        it('unbind the image listeners, clear the image Els array, and handle the download error', () => {
-            const src = multiImage.singleImageEls[0].src;
-            
-            multiImage.handleMultiImageDownloadError('err');
-            
-            expect(multiImage.singleImageEls).to.deep.equal([]);
-            expect(multiImage.handleDownloadError).to.be.calledWith('err', src);
-            expect(multiImage.unbindImageListeners).to.be.calledTwice;
-
-        });
-    });
-
-    describe('bindImageListeners()', () => {
+    describe('bindImageListeners', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {
@@ -423,7 +398,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('unbindImageListeners()', () => {
+    describe('unbindImageListeners', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {

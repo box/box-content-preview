@@ -7,17 +7,12 @@ import {
     getProp,
     appendQueryParams,
     appendAuthParams,
-    createContentUrl,
     getHeaders,
-    isCustomDownloadHost,
+    createContentUrl,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
-    setDownloadHostFallback,
-    setDownloadHostNotificationShown,
-    shouldShowDegradedDownloadNotification,
-    createAssetUrlCreator,
-    replacePlaceholders
+    createAssetUrlCreator
 } from '../util';
 import Browser from '../Browser';
 import {
@@ -277,27 +272,6 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles a download error when using a non default host.
-     *
-     * @param {Error} err - Load error
-     * @param {string} downloadURL - download URL
-     * @return {void}
-     */
-    handleDownloadError(err, downloadURL) {
-        if (isCustomDownloadHost(downloadURL)) {
-            setDownloadHostFallback();
-            this.load();
-            return;
-        }
-
-        /* eslint-disable no-console */
-        console.error(err);
-        /* eslint-enable no-console */
-
-        this.triggerError(err);
-    }
-
-    /**
      * Emits error event with refresh message.
      *
      * @protected
@@ -410,27 +384,13 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles the viewer load to finish viewer setup after loading.
+     * Handles the viewer load to potentially set up Box Annotations.
      *
      * @private
      * @param {Object} event - load event data
      * @return {void}
      */
     viewerLoadHandler(event) {
-        const contentHost = document.createElement('a');
-        const contentTemplate = getProp(this.options, 'representation.content.url_template', null);
-        contentHost.href = contentTemplate;
-        const contentHostname = contentHost.hostname;
-        if (contentTemplate && shouldShowDegradedDownloadNotification(contentHostname)) {
-            this.previewUI.notification.show(
-                replacePlaceholders(__('notification_degraded_preview'), [contentHostname]),
-                __('notification_button_default_text'),
-                true
-            );
-
-            setDownloadHostNotificationShown(contentHostname);
-        }
-
         if (event && event.scale) {
             this.scale = event.scale;
         }

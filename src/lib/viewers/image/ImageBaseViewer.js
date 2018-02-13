@@ -26,6 +26,7 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.errorHandler = this.errorHandler.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -310,20 +311,23 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles a content download error
+     * Handles image element loading errors.
      *
-     * @param {Error} err - Load error
-     * @param {string} imgUrl - URL we are using as the image src
+     * @private
+     * @param {Error} err - Error to handle
      * @return {void}
      */
-    handleDownloadError(err, imgUrl) {
+    errorHandler(err) {
+        /* eslint-disable no-console */
+        console.error(err);
+        /* eslint-enable no-console */
+
         // Display a generic error message but log the real one
         const error = err;
         if (err instanceof Error) {
             error.displayMessage = __('error_refresh');
         }
-
-        super.handleDownloadError(err, imgUrl);
+        this.emit('error', error);
     }
 
     /**

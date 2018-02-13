@@ -530,31 +530,19 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
-    describe('handleDownloadError()', () => {
-        const handleDownloadErrorFunc = BaseViewer.prototype.handleDownloadError;
-
+    describe('errorHandler()', () => {
         beforeEach(() => {
-            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub()
-            });        
+            stubs.emit = sandbox.stub(imageBase, 'emit');
         });
 
-        afterEach(() => {
-            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: handleDownloadErrorFunc
-            });
-        });
+        it('should console log error and emit with generic display error message', () => {
+            const err = new Error('blah');
+            sandbox.mock(window.console).expects('error').withArgs(err);
 
-        it('should call the parent method with an error display message and the image URL', () => {
-            const err = new Error('downloadError')
+            imageBase.errorHandler(err);
 
-            try {
-                imageBase.handleDownloadError(err, 'foo');
-            } catch (e) {
-                // no-op
-            }
-
-            expect(BaseViewer.prototype.handleDownloadError).to.be.calledWith(err, 'foo')
+            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
+            expect(stubs.emit).to.have.been.calledWith('error', err);
         });
     });
 
@@ -564,14 +552,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
             stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
-            imageBase.options = {
-                file: {
-                    id: 1
-                },
-                viewer: {
-                    viewerName: "Image"
-                }
-            }
+            stubs.errorHandler = sandbox.stub(imageBase, 'errorHandler');
         });
 
         it('should do nothing if already destroyed', () => {
@@ -584,10 +565,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.zoom).to.not.have.been.called;
             expect(stubs.setOriginalImageSize).to.not.have.been.called;
             expect(stubs.loadUI).to.not.have.been.called;
+            expect(stubs.errorHandler).to.not.have.been.called;
         });
 
         it('should load UI if not destroyed', (done) => {
             imageBase.on(VIEWER_EVENT.load, () => {
+                expect(stubs.errorHandler).to.not.have.been.called;
                 expect(imageBase.loaded).to.be.true;
                 expect(stubs.zoom).to.have.been.called;
                 expect(stubs.loadUI).to.have.been.called;
