@@ -48,6 +48,9 @@ class SWFViewer extends BaseViewer {
     postLoad = () => {
         /* global swfobject */
         const template = this.options.representation.content.url_template;
+
+        this.startLoadTimer();
+
         /* istanbul ignore next */
         swfobject.embedSWF(
             this.createContentUrlWithAuthParams(template),

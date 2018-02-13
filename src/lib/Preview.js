@@ -11,6 +11,7 @@ import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
+import Timer from './Timer';
 import {
     get,
     getProp,
@@ -20,7 +21,8 @@ import {
     getHeaders,
     findScriptLocation,
     appendQueryParams,
-    replacePlaceholders
+    replacePlaceholders,
+    stripAuthFromString
 } from './util';
 import {
     getURL,
@@ -48,8 +50,9 @@ import {
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID
 } from './constants';
-import { VIEWER_EVENT } from './events';
+import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
 import './Preview.scss';
+import { getClientLogDetails, createPreviewError, getISOTime } from './logUtils';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
@@ -171,6 +174,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        // Log all load metrics
+        this.emitLoadMetrics();
+
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
@@ -330,9 +336,13 @@ class Preview extends EventEmitter {
             if (checkFileValid(file)) {
                 cacheFile(this.cache, file);
             } else {
+                const message = '[Preview SDK] Tried to cache invalid file';
                 /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                console.error(`${message}: `, file);
                 /* eslint-enable no-console */
+
+                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, message, file);
+                this.emitPreviewError(err);
             }
         });
     }
@@ -536,6 +546,10 @@ class Preview extends EventEmitter {
             /* eslint-disable no-console */
             console.error(`Error prefetching file ID ${fileId} - ${err}`);
             /* eslint-enable no-console */
+
+            const error = createPreviewError(ERROR_CODE.prefetchFile, null, err);
+            this.emitPreviewError(error);
+
             return;
         }
 
@@ -867,6 +881,9 @@ class Preview extends EventEmitter {
         const { apiHost, queryParams } = this.options;
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.start(tag);
+
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
         get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleFileInfoResponse)
@@ -882,6 +899,10 @@ class Preview extends EventEmitter {
      */
     handleFileInfoResponse(response) {
         let file = response;
+
+        // Stop timer for file info time event.
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.stop(tag);
 
         // If we are previewing a file version, normalize response to a well-formed file object
         if (this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID)) {
@@ -1051,6 +1072,10 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.mediaEndAutoplay:
                 this.navigateRight();
                 break;
+            case VIEWER_EVENT.error:
+                // Do nothing since 'error' event was already caught, and will be emitted
+                // as a 'preview_error' event
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
@@ -1067,6 +1092,14 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     finishLoading(data = {}) {
+        if (this.file && this.file.id) {
+            const tag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.stop(tag);
+        }
+
+        // Log now that loading is finished
+        this.emitLoadMetrics();
+
         // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
@@ -1195,12 +1228,15 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
+            let errorCode = ERROR_CODE.retriesExceeded;
             let errorMessage = __('error_refresh');
             if (err.response && err.response.status === 429) {
+                errorCode = ERROR_CODE.rateLimit;
                 errorMessage = __('error_rate_limit');
             }
 
-            this.triggerError(new Error(errorMessage));
+            const error = createPreviewError(errorCode, errorMessage, this.file.id);
+            this.triggerError(error);
             return;
         }
 
@@ -1245,6 +1281,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
+        // Always log preview errors
+        this.emitPreviewError(err);
+
         // If preview is closed don't do anything
         if (!this.open) {
             return;
@@ -1267,6 +1306,101 @@ class Preview extends EventEmitter {
 
         // Load the error viewer
         this.viewer.load(err);
+    }
+
+    /**
+     * Create a generic log Object.
+     *
+     * @private
+     * @return {Object} Log details for viewer session and current file.
+     */
+    createLogEvent() {
+        const file = this.file || {};
+        const log = {
+            timestamp: getISOTime(),
+            file_id: getProp(file, 'id', ''),
+            file_version_id: getProp(file, 'file_version.id', ''),
+            content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
+            extension: file.extension || '',
+            locale: getProp(this.location, 'locale', ''),
+            ...getClientLogDetails()
+        };
+
+        return log;
+    }
+
+    /**
+     * Message, to any listeners of Preview, that an error has occurred.
+     *
+     * @private
+     * @param {Error} error - The error that occurred.
+     * @return {void}
+     */
+    emitPreviewError(error) {
+        const err = error;
+
+        // If we haven't supplied a code, then it was thrown by the browser
+        err.code = error.code || ERROR_CODE.browserError;
+        // Make sure to strip auth, if it's a string.
+        err.message = typeof error.message === 'string' ? stripAuthFromString(error.message) : error.message;
+        err.displayMessage = typeof error.displayMessage === 'string' ? stripAuthFromString(error.displayMessage) : '';
+
+        const errorLog = {
+            error: err,
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_ERROR, errorLog);
+    }
+
+    /**
+     * Load metrics behave slightly different than other metrics, in that they have
+     * higher level properties that do not fit into the general purpose "value" and "event_name".
+     * A value of 0 means that the load milestone was never reached.
+     *
+     * @private
+     * @return {void}
+     */
+    emitLoadMetrics() {
+        if (!this.file || !this.file.id) {
+            Timer.reset();
+            return;
+        }
+
+        // Do nothing if there is nothing worth logging.
+        const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        const infoTime = Timer.get(infoTag) || {};
+        if (!infoTime.elapsed) {
+            Timer.reset();
+            return;
+        }
+
+        const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
+        const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
+        const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+
+        const timerList = [
+            infoTime,
+            Timer.get(convertTag) || {},
+            Timer.get(downloadTag) || {},
+            Timer.get(fullLoadTag) || {}
+        ];
+        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
+        const total = times.reduce((acc, current) => acc + current);
+
+        const event = {
+            event_name: LOAD_METRIC.previewLoadEvent,
+            value: total, // Sum of all available load times.
+            [LOAD_METRIC.fileInfoTime]: times[0],
+            [LOAD_METRIC.convertTime]: times[1],
+            [LOAD_METRIC.downloadResponseTime]: times[2],
+            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, event);
+
+        Timer.reset();
     }
 
     /**
@@ -1344,16 +1478,27 @@ class Preview extends EventEmitter {
                             });
                         })
                         .catch((err) => {
+                            const message = `Error prefetching file ID ${fileId} - ${err}`;
                             /* eslint-disable no-console */
-                            console.error(`Error prefetching file ID ${fileId} - ${err}`);
+                            console.error(message);
                             /* eslint-enable no-console */
+
+                            const error = createPreviewError(ERROR_CODE.prefetchFile, message, {
+                                fileId,
+                                error: err
+                            });
+                            this.emitPreviewError(error);
                         });
                 });
             })
             .catch(() => {
+                const message = 'Error prefetching files';
                 /* eslint-disable no-console */
-                console.error('Error prefetching files');
+                console.error(message);
                 /* eslint-enable no-console */
+
+                const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
+                this.emitPreviewError(error);
             });
     }
 

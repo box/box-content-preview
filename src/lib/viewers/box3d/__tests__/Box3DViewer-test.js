@@ -387,6 +387,13 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             box3d.postLoad();
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(box3d, 'startLoadTimer');
+            box3d.postLoad();
+
+            expect(box3d.startLoadTimer).to.be.called;
+        });
     });
 
     describe('prefetch()', () => {

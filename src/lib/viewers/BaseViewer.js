@@ -29,7 +29,9 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
+import { createPreviewError } from '../logUtils';
+import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -261,6 +263,17 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Start the load timer for fullDocumentLoad event.
+     *
+     * @protected
+     * @return {void}
+     */
+    startLoadTimer() {
+        const tag = Timer.createTag(this.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        Timer.start(tag);
+    }
+
+    /**
      * Triggers an error when an asset (static or representation) fails to load.
      *
      * @param {string} [err] - Optional error message
@@ -396,11 +409,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch((err) => {
-                /* eslint-disable no-console */
-                console.error('Annotation assets failed to load', err);
-                /* eslint-enable no-console */
-            });
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler);
         }
     }
 
@@ -718,8 +727,13 @@ class BaseViewer extends EventEmitter {
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
-        /* global BoxAnnotations */
-        const boxAnnotations = this.options.boxAnnotations || new BoxAnnotations(viewerOptions);
+        if (!global.BoxAnnotations) {
+            const error = createPreviewError(ERROR_CODE.annotationsLoadFail);
+            this.triggerError(error);
+            return;
+        }
+
+        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (this.annotatorConf) {

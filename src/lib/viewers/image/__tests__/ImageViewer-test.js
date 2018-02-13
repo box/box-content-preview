@@ -89,6 +89,20 @@ describe('lib/viewers/image/ImageViewer', () => {
                 })
                 .catch(() => {});
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(image, 'startLoadTimer');
+            sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);
+            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+
+            // load the image
+            return image
+                .load(imageUrl)
+                .then(() => {
+                    expect(image.startLoadTimer).to.be.called;
+                })
+                .catch(() => {});
+        });
     });
 
     describe('prefetch()', () => {
