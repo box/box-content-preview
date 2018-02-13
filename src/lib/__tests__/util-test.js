@@ -47,17 +47,26 @@ describe('lib/util', () => {
         });
 
         it('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
-            let result = util.shouldShowDegradedDownloadNotification();
+            const shownHostsArr = ['https://dl5.boxcloud.com'];
+
+            let result = util.shouldShowDegradedDownloadNotification(shownHostsArr[0]);
             expect(result).to.be.false;
 
             sessionStorage.setItem('download_host_fallback', 'true');
-            result = util.shouldShowDegradedDownloadNotification();
+            result = util.shouldShowDegradedDownloadNotification(shownHostsArr[0]);
             expect(result).to.be.true;
         
-            const shownHostsArr = ['dl5.boxcloud.com'];
-            localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
-            result = util.shouldShowDegradedDownloadNotification(shownHostsArr[0]);
+            // localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
+            // result = util.shouldShowDegradedDownloadNotification(shownHostsArr[0]);
+            // expect(result).to.be.false;
+
+        });
+
+        it('should return false if the host is the default (not a custom) host', () => {
+            sessionStorage.setItem('download_host_fallback', 'true');
+            const result = util.shouldShowDegradedDownloadNotification('https://dl.boxcloud.com');
             expect(result).to.be.false;
+
 
         });
     });
