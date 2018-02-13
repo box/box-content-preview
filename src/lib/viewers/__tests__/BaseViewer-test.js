@@ -183,28 +183,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleDownloadError()', () => {
-        beforeEach(() => {
-            sandbox.stub(base, 'triggerError');
-        });
-
-        it('should return false if using the default download host', () => {
-            sandbox.stub(util, 'isCustomDownloadHost').returns(false);
-            base.handleDownloadError('error', 'https://dl.boxcloud.com');
-            expect(base.triggerError).to.be.called;
-        });
-
-        it('should set the download host fallback, rereload, and return true if we are using a non default host', () => {
-            sandbox.stub(util, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(util, 'setDownloadHostFallback')
-            sandbox.stub(base, 'load');
-
-            const result = base.handleDownloadError('error', 'https://dl7.boxcloud.com');
-            expect(base.load).to.be.called;
-            expect(util.setDownloadHostFallback).to.be.called;
-        });
-    });
-
     describe('triggerError()', () => {
         it('should emit error event', () => {
             sandbox.stub(base, 'emit');
@@ -357,13 +335,6 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.annotationsLoadPromise = Promise.resolve();
             stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
-            base.options.representation = {
-                content: {
-                    url_template: 'dl.boxcloud.com'
-                }
-            };
-            stubs.shouldShowDegradedDownloadNotification = sandbox.stub(util, 'shouldShowDegradedDownloadNotification').returns(false);
-
         });
 
         it('should set the scale if it exists', () => {
@@ -392,23 +363,6 @@ describe('lib/viewers/BaseViewer', () => {
                     expect(error).equals(sinon.match.error);
                     expect(error.message).equals('message');
                 });
-        });
-
-        it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
-            stubs.shouldShowDegradedDownloadNotification.returns(true);
-            base.previewUI =
-            {
-                notification: {
-                    show: sandbox.stub()
-
-                }
-            }
-
-            sandbox.stub(util, 'setDownloadHostNotificationShown');
-            
-            base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.previewUI.notification.show).to.be.called;
-            expect(util.setDownloadHostNotificationShown).to.be.called;
         });
     });
 

@@ -730,9 +730,6 @@ class Preview extends EventEmitter {
             this.throttledMousemoveHandler
         );
 
-        // Set up the notification
-        this.ui.setupNotification();
-
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
 
@@ -1130,6 +1127,9 @@ class Preview extends EventEmitter {
 
         // Hide the loading indicator
         this.ui.hideLoadingIndicator();
+
+        // Set up the notification
+        this.ui.setupNotification();
 
         // Prefetch next few files
         this.prefetchNextFiles();
