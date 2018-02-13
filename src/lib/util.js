@@ -170,7 +170,15 @@ export function setDownloadHostNotificationShown(downloadHost) {
  */
 export function shouldShowDegradedDownloadNotification(downloadHost) {
     const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
-    return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true' && !shownHostsArr.includes(downloadHost);
+    // We only want to show the notification if
+    // 1. We have switched to the fallback DL host
+    // 2. We haven't shown a notification for this host before
+    // 3. We aren't currently using the default download host to preview
+    return (
+        sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true' &&
+        !shownHostsArr.includes(downloadHost) &&
+        isCustomDownloadHost(downloadHost)
+    );
 }
 
 /**
