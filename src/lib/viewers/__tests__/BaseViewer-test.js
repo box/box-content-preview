@@ -782,6 +782,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
             expect(util.prefetchAssets).to.be.calledTwice;
         });
+
+        it('should create an asset URL and preload the relevant stylesheets and scripts if preload is true', () => {
+            base.options.location = {};
+
+            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
+            sandbox.stub(util, 'prefetchAssets');
+
+            base.prefetchAssets([], [], true);
+            expect(util.prefetchAssets).to.be.calledWith(sinon.match.any, true);
+        });
     });
 
     describe('getRepStatus()', () => {
