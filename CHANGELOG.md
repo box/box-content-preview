@@ -1,3 +1,10 @@
+<a name="1.30.1"></a>
+## 1.30.1 (2018-02-14)
+
+* Chore: pass file id to RepStatus for easier timers (#660) ([89a9c45](https://github.com/box/box-content-preview/commit/89a9c45))
+
+
+
 <a name="1.30.0"></a>
 # 1.30.0 (2018-02-13)
 
