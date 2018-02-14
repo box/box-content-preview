@@ -648,12 +648,13 @@ class BaseViewer extends EventEmitter {
      * @return {RepStatus} Instance of RepStatus
      */
     getRepStatus(representation) {
-        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const { token, sharedLink, sharedLinkPassword, logger, file } = this.options;
         const repStatus = new RepStatus({
             representation: representation || this.options.representation,
             token,
             sharedLink,
             sharedLinkPassword,
+            fileId: file.id,
             logger: representation ? null : logger // Do not log to main preview status if rep is passed in
         });
 
