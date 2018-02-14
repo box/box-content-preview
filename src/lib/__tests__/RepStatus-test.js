@@ -12,6 +12,7 @@ const STATUS_UPDATE_INTERVAL_MS = 2000;
 
 describe('lib/RepStatus', () => {
     let rep;
+    const fileId = '12345';
 
     beforeEach(() => {
         rep = {
@@ -24,7 +25,8 @@ describe('lib/RepStatus', () => {
         const logger = () => {};
         repStatus = new RepStatus({
             representation: rep,
-            logger
+            logger,
+            fileId
         });
     });
 
@@ -140,11 +142,7 @@ describe('lib/RepStatus', () => {
             expect(repStatus.updateStatus()).to.be.instanceof(Promise);
         });
 
-        it('should start a convert time Timer if a content url_template exists', () => {
-            const fileId = 123456;
-            rep.content = {
-                url_template: `https://box.com/files/internal_files/${fileId}/versions`
-            };
+        it('should start a convert time Timer', () => {
             const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
             repStatus.updateStatus();
 
@@ -240,11 +238,7 @@ describe('lib/RepStatus', () => {
             clock.restore();
         });
 
-        it('should stop a convert time Timer if a content url_template exists, and success converting', () => {
-            const fileId = 123456;
-            rep.content = {
-                url_template: `https://box.com/files/internal_files/${fileId}/versions`
-            };
+        it('should stop a convert time Timer on success converting', () => {
             repStatus.representation.status.state = STATUS_SUCCESS;
             const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
             Timer.start(tag);
