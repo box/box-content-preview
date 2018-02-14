@@ -129,6 +129,7 @@ class MediaBaseViewer extends BaseViewer {
         return this.getRepStatus()
             .getPromise()
             .then(() => {
+                this.startLoadTimer();
                 this.mediaEl.src = this.mediaUrl;
                 if (this.isAutoplayEnabled()) {
                     this.autoplay();

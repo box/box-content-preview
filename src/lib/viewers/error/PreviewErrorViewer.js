@@ -5,6 +5,7 @@ import { PERMISSION_DOWNLOAD } from '../../constants';
 import { getIconFromExtension, getIconFromName } from '../../icons/icons';
 import './PreviewError.scss';
 import { VIEWER_EVENT } from '../../events';
+import { stripAuthFromString } from '../../util';
 
 class PreviewErrorViewer extends BaseViewer {
     /**
@@ -99,10 +100,10 @@ class PreviewErrorViewer extends BaseViewer {
 
         // The error will either be the message from the original error, the displayMessage from the orignal error,
         // or the default message from the locally created error
-        const errorMsg = err.message || displayMessage;
+        const errorMsg = typeof err.message === 'string' ? err.message : displayMessage;
 
         // Filter out any access tokens
-        const filteredMsg = errorMsg.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
+        const filteredMsg = stripAuthFromString(errorMsg);
 
         this.emit(VIEWER_EVENT.load, {
             error: filteredMsg

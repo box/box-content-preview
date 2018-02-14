@@ -84,6 +84,9 @@ class MultiImageViewer extends ImageBaseViewer {
                 const template = this.options.representation.content.url_template;
                 this.imageUrls = this.constructImageUrls(template);
 
+                // Start load timer
+                this.startLoadTimer();
+
                 this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
 
                 this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);

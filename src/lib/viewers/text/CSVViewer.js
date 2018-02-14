@@ -51,6 +51,7 @@ class CSVViewer extends TextBaseViewer {
                     const workerSrc = URL.createObjectURL(papaWorkerBlob);
                     Papa.SCRIPT_PATH = workerSrc;
 
+                    this.startLoadTimer();
                     const urlWithAuth = this.createContentUrlWithAuthParams(template);
                     Papa.parse(urlWithAuth, {
                         download: true,

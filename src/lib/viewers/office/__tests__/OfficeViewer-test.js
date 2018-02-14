@@ -117,6 +117,13 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(setupStub).to.be.called;
             expect(BaseViewer.prototype.load).to.be.called;
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(office, 'startLoadTimer');
+
+            office.load();
+            expect(office.startLoadTimer).to.be.called;
+        });
     });
 
     describe('setupIframe()', () => {

@@ -8,7 +8,9 @@ import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import { VIEWER_EVENT } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
+import { createPreviewError } from '../logUtils';
+import Timer from '../Timer';
 
 const tokens = require('../tokens');
 
@@ -94,6 +96,12 @@ describe('lib/Preview', () => {
         it('should clear the viewer', () => {
             preview.destroy();
             expect(preview.viewer).to.equal(undefined);
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.destroy();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -337,6 +345,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.error = sandbox.stub(console, 'error');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
         });
 
         it('should format the metadata into an array', () => {
@@ -374,6 +383,7 @@ describe('lib/Preview', () => {
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
+            expect(stubs.emitPreviewError).calledOnce;
         });
 
         it('should not cache a file if it is watermarked', () => {
@@ -1140,6 +1150,13 @@ describe('lib/Preview', () => {
                 expect(stubs.handleFetchError).to.not.be.called;
             });
         });
+
+        it('should start a Timer for file info timing', () => {
+            const startStub = sandbox.stub(Timer, 'start');
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.loadFromServer();
+            expect(startStub).to.calledWith(expectedTag);
+        });
     });
 
     describe('handleFileInfoResponse()', () => {
@@ -1335,6 +1352,16 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.triggerError).to.be.called;
+        });
+
+        it('should stop the Timer for file info time', () => {
+            const stopStub = sandbox.stub(Timer, 'stop');
+            preview.file = {
+                id: 12345
+            };
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.handleFileInfoResponse(stubs.file);
+            expect(stopStub).to.be.calledWith();
         });
     });
 
@@ -1571,6 +1598,16 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.calledWith(data.event, data.data);
             expect(preview.emit).to.be.calledWith(VIEWER_EVENT.default, data);
         });
+
+        it('should not emit any messages error events', () => {
+            sandbox.stub(preview, 'emit');
+            const data = {
+                event: 'error',
+                data: ':('
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.emit).to.not.be.called;
+        });
     });
 
     describe('finishLoading()', () => {
@@ -1730,6 +1767,20 @@ describe('lib/Preview', () => {
         it('should prefetch next files', () => {
             preview.finishLoading();
             expect(stubs.prefetchNextFiles).to.be.called;
+        });
+
+        it('should stop the timer for full document load if a file exists', () => {
+            preview.file.id = 1234;
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            sandbox.stub(Timer, 'stop');
+            preview.finishLoading();
+            expect(Timer.stop).to.be.calledWith(expectedTag);
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.finishLoading();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -1913,17 +1964,19 @@ describe('lib/Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.emit = sandbox.stub(preview, 'emit');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
 
             preview.open = true;
         });
 
-        it('should do nothing if the preview is closed', () => {
+        it('should only log an error if the preview is closed', () => {
             preview.open = false;
 
-            preview.triggerError();
+            preview.triggerError(new Error('fail'));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
+            expect(stubs.emitPreviewError).to.be.called;
         });
 
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
@@ -1940,6 +1993,206 @@ describe('lib/Preview', () => {
             expect(stubs.getErrorViewer).to.be.called;
             expect(stubs.attachViewerListeners).to.be.called;
             expect(ErrorViewer.load).to.be.calledWith(err);
+        });
+    });
+
+    describe('createLogEvent()', () => {
+        it('should create a log object containing correct file info properties', () => {
+            const id = '12345';
+            preview.file = {
+                id
+            };
+
+            const log = preview.createLogEvent();
+            expect(log.timestamp).to.exist;
+            expect(log.file_id).to.equal(id);
+            expect(log.file_version_id).to.exist;
+            expect(log.content_type).to.exist;
+            expect(log.extension).to.exist;
+            expect(log.locale).to.exist;
+        });
+
+        it('should use empty string for file_id, if no file', () => {
+            preview.file = undefined;
+            const log = preview.createLogEvent();
+
+            expect(log.file_id).to.equal('');
+        });
+
+        it('should use empty string for file_version_id, if no file version', () => {
+            preview.file = {
+                id: '12345',
+                file_version: undefined
+            };
+            const log = preview.createLogEvent();
+
+            expect(log.file_version_id).to.equal('');
+        });
+    });
+
+    describe('emitPreviewError()', () => {
+        it('should emit a "preview_error" message', (done) => {
+            preview.on('preview_error', () => {
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        it('should emit a "preview_error" message with an object describing the error', (done) => {
+            const code = 'an_error';
+            const displayMessage = 'Oh no!';
+            const message = { fileId: '12345' };
+            const error = createPreviewError(code, displayMessage, message);
+
+            preview.on('preview_error', (details) => {
+                expect(details.error).to.deep.equal(error);
+                done();
+            });
+
+            preview.emitPreviewError(error);
+        });
+
+        it('should emit a "preview_error" message with info about the preview session', (done) => {
+            const fileId = '1234';
+            const fileVersionId = '999';
+
+            preview.file = {
+                id: fileId,
+                file_version: {
+                    id: fileVersionId
+                }
+            };
+
+            preview.on('preview_error', (details) => {
+                expect(details.file_id).to.equal(fileId);
+                expect(details.file_version_id).to.equal(fileVersionId);
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        it('should use a default browser error code if none is present', (done) => {
+            preview.on('preview_error', (details) => {
+                expect(details.error.code).to.equal(ERROR_CODE.browserError);
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        it('should strip any auth from the message and displayMessage if it is present', (done) => {
+            const message = 'A message';
+            const displayMessage = 'A display message';
+            const auth = 'access_token="1234abcd"';
+            const filtered = 'access_token=[FILTERED]';
+            preview.on('preview_error', (details) => {
+                expect(details.error.message).to.equal(`${message}?${filtered}`)
+                expect(details.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
+                done();
+            });
+
+            const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
+            preview.emitPreviewError(error);
+        });
+    });
+
+    describe('emitLoadMetrics()', () => {
+        const fileId = 123456;
+        const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
+
+        beforeEach(() => {
+            preview.file = {
+                id: fileId
+            };
+
+            // Make sure the first milestone (fileInfoTime) has been met
+            Timer.start(fileInfoTag);
+            Timer.stop(fileInfoTag);
+            Timer.get(fileInfoTag).elapsed = 20;
+        });
+
+        afterEach(() => {
+            Timer.reset();
+        });
+
+        it('should reset the Timer and escape early if no file or file id', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.file = undefined;
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
+        
+        it('should reset the timer and escape early if the first load milestone is not hit', () => {
+            Timer.reset();// Clear out all entries in the Timer
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
+        
+        it('should emit a preview_metric event', (done) => {
+            preview.on(PREVIEW_METRIC, () => {
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should emit a preview_metric event with event_name "preview_load"', () => {
+            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.start(tag);
+            Timer.stop(tag);
+
+            Timer.get(tag).elapsed = 10;
+            Timer.get(fileInfoTag).elapsed = 20;
+
+            const expectedTime = 30; // 10ms + 20ms
+
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.value).to.equal(expectedTime);
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event where the value property equals the sum of all load events', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
+                expect(metric[LOAD_METRIC.convertTime]).to.exist;
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+            });
+            preview.emitLoadMetrics();
+        });
+        
+        it('should reset the Timer', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.be.called;
+
+        });
+        
+        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
+            Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
+                expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
+            });
+            preview.emitLoadMetrics();
         });
     });
 
