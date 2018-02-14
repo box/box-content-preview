@@ -1,3 +1,14 @@
+<a name="1.31.0"></a>
+# 1.31.0 (2018-02-14)
+
+* Chore: change travis notifications (#661) ([efe8b04](https://github.com/box/box-content-preview/commit/efe8b04))
+* Chore: pass file id to RepStatus for easier timers (#660) ([6bfb193](https://github.com/box/box-content-preview/commit/6bfb193))
+* Fix: markdown ul and ol css overrides (#651) ([822a98c](https://github.com/box/box-content-preview/commit/822a98c))
+* Mojito: Update translations (#656) ([8f823e0](https://github.com/box/box-content-preview/commit/8f823e0))
+* Upgrade: Shaka Player 2.3.2 (#657) ([58f15cf](https://github.com/box/box-content-preview/commit/58f15cf))
+
+
+
 <a name="1.30.0"></a>
 # 1.30.0 (2018-02-13)
 
