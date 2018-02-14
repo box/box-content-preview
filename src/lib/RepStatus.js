@@ -10,7 +10,6 @@ const STATUS_UPDATE_INTERVAL_MS = 2000;
 const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
 const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
 const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
-const FILE_ID_CAPTURE = /(?:internal_files\/)(.+)(?:\/versions)/;
 
 class RepStatus extends EventEmitter {
     /**
@@ -49,10 +48,11 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
+    constructor({ representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
         super();
         this.representation = representation;
         this.logger = logger;
+        this.fileId = fileId;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -84,12 +84,8 @@ class RepStatus extends EventEmitter {
             return Promise.resolve();
         }
 
-        // Getting file id to track conversion time, if there's a url tempate
-        if (this.representation.content && this.representation.content.url_template) {
-            const fileId = this.representation.content.url_template.match(FILE_ID_CAPTURE)[1];
-            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
-            Timer.start(tag);
-        }
+        const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
+        Timer.start(tag);
 
         return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
@@ -120,12 +116,7 @@ class RepStatus extends EventEmitter {
         const errCode = RepStatus.getErrorCode(this.representation);
         let errorMessage;
         let error;
-        let convertTag;
-
-        if (this.representation.content && this.representation.content.url_template) {
-            const fileId = this.representation.content.url_template.match(FILE_ID_CAPTURE)[1];
-            convertTag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
-        }
+        const convertTag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
 
         switch (status) {
             case 'error':
@@ -150,9 +141,7 @@ class RepStatus extends EventEmitter {
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
-                if (convertTag) {
-                    Timer.stop(convertTag);
-                }
+                Timer.stop(convertTag);
                 this.resolve();
                 break;
 
