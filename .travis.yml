@@ -1,6 +1,10 @@
 language: node_js
 node_js:
 - '8'
+notifications:
+    email:
+        recipients:
+            - boxpreviewalerts@gmail.com
 aliases:
     - &sauce-labs
         before_script:
@@ -9,12 +13,6 @@ aliases:
         addons:
           sauce_connect: true
         script: yarn run functional-tests-ci
-        notifications:
-          email:
-            recipients:
-              - preview-alerts@box.com
-            on_success: always
-            on_failure: always
         cache: yarn
     - &sauce-labs-mobile
       <<: *sauce-labs
