@@ -232,6 +232,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
             });
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(text, 'startLoadTimer');
+
+            text.postLoad();
+
+            expect(text.startLoadTimer).to.be.called;
+        });
     });
 
     describe('initHighlightJs()', () => {

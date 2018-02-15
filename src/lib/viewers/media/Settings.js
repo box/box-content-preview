@@ -295,13 +295,17 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     setMenuContainerDimensions(menu) {
-        const paddedHeight = menu.offsetHeight + SETTINGS_MENU_PADDING;
+        // Use getBoundingClientRect because when browsers are zoomed, the height/width
+        // Can be a fractional value, which gets stripped off with offsetHeight/offsetWidth
+        const { width, height } = menu.getBoundingClientRect();
+
+        const paddedHeight = height + SETTINGS_MENU_PADDING;
         this.settingsEl.style.height = `${paddedHeight}px`;
 
         // If the menu grows tall enough to require scrolling, take into account scroll bar width.
         const scrollPadding =
             paddedHeight >= SETTINGS_MENU_MAX_HEIGHT ? SETTINGS_MENU_PADDING_SCROLL : SETTINGS_MENU_PADDING;
-        this.settingsEl.style.width = `${menu.offsetWidth + scrollPadding}px`;
+        this.settingsEl.style.width = `${width + scrollPadding}px`;
     }
 
     /**

@@ -165,10 +165,6 @@ $header-height: 48px;
     position: absolute; // Override _boxui.scss because Preview cannot assume taking up the full viewport
 }
 
-.bp-has-header .bp-notifications-wrapper {
-    top: 48px;
-}
-
 .bp-toggle-overlay {
     > button {
         margin-bottom: 0;

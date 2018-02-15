@@ -1,8 +1,8 @@
 /* eslint-disable import/first */
 import './polyfill';
 import EventEmitter from 'events';
-import throttle from 'lodash.throttle';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash/cloneDeep';
+import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Browser from './Browser';
 import Logger from './Logger';
@@ -11,15 +11,18 @@ import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
+import Timer from './Timer';
 import {
     get,
+    getProp,
     post,
     decodeKeydown,
     openUrlInsideIframe,
     getHeaders,
     findScriptLocation,
     appendQueryParams,
-    replacePlaceholders
+    replacePlaceholders,
+    stripAuthFromString
 } from './util';
 import {
     getURL,
@@ -29,7 +32,9 @@ import {
     checkFileValid,
     cacheFile,
     uncacheFile,
-    isWatermarked
+    isWatermarked,
+    getCachedFile,
+    normalizeFileVersion
 } from './file';
 import {
     API_HOST,
@@ -42,10 +47,12 @@ import {
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
     X_REP_HINT_VIDEO_DASH,
-    X_REP_HINT_VIDEO_MP4
+    X_REP_HINT_VIDEO_MP4,
+    FILE_OPTION_FILE_VERSION_ID
 } from './constants';
-import { VIEWER_EVENT } from './events';
+import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
 import './Preview.scss';
+import { getClientLogDetails, createPreviewError, getISOTime } from './logUtils';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
@@ -167,6 +174,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        // Log all load metrics
+        this.emitLoadMetrics();
+
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
@@ -326,9 +336,13 @@ class Preview extends EventEmitter {
             if (checkFileValid(file)) {
                 cacheFile(this.cache, file);
             } else {
+                const message = '[Preview SDK] Tried to cache invalid file';
                 /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                console.error(`${message}: `, file);
                 /* eslint-enable no-console */
+
+                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, message, file);
+                this.emitPreviewError(err);
             }
         });
     }
@@ -506,7 +520,8 @@ class Preview extends EventEmitter {
      *
      * @public
      * @param {Object} options - Prefetch options
-     * @param {string} options.fileId - Box File ID
+     * @param {string} options.fileId - Box file ID (do not also pass a file version ID)
+     * @param {string} options.fileVersionId - Box file version ID (do not also pass a file ID)
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
@@ -514,14 +529,14 @@ class Preview extends EventEmitter {
      * @param {string} token - Access token
      * @return {void}
      */
-    prefetch({ fileId, token, sharedLink = '', sharedLinkPassword = '', preload = false }) {
+    prefetch({ fileId, fileVersionId, token, sharedLink = '', sharedLinkPassword = '', preload = false }) {
         let file;
         let loader;
         let viewer;
 
         // Determining the viewer could throw an error
         try {
-            file = this.cache.get(fileId);
+            file = getCachedFile(this.cache, { fileId, fileVersionId });
             loader = file ? this.getLoader(file) : null;
             viewer = loader ? loader.determineViewer(file) : null;
             if (!viewer) {
@@ -531,6 +546,10 @@ class Preview extends EventEmitter {
             /* eslint-disable no-console */
             console.error(`Error prefetching file ID ${fileId} - ${err}`);
             /* eslint-enable no-console */
+
+            const error = createPreviewError(ERROR_CODE.prefetchFile, null, err);
+            this.emitPreviewError(error);
+
             return;
         }
 
@@ -555,7 +574,7 @@ class Preview extends EventEmitter {
             viewerInstance.prefetch({
                 assets: true,
                 // Prefetch preload if explicitly requested or if viewer has 'preload' option set
-                preload: preload || viewerInstance.getViewerOption('preload'),
+                preload: preload || !!viewerInstance.getViewerOption('preload'),
                 // Don't prefetch file's representation content if this is for preload
                 content: !preload
             });
@@ -613,27 +632,64 @@ class Preview extends EventEmitter {
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
 
-        // Save reference to the currently shown file, if any
+        // Save reference to the currently shown file ID and file version ID, if any
         const currentFileId = this.file ? this.file.id : undefined;
+        const currentFileVersionId = this.file && this.file.file_version ? this.file.file_version.id : undefined;
 
-        // Check if file ID or well-formed file object was passed in
+        // Save reference to file version we want to load, if any
+        const fileVersionId = this.getFileOption(fileIdOrFile, FILE_OPTION_FILE_VERSION_ID) || '';
+
+        // Check what was passed to preview.show()—string file ID or some file object
         if (typeof fileIdOrFile === 'string') {
-            // Use cached file data if available, otherwise create empty file object
-            this.file = this.cache.get(fileIdOrFile) || { id: fileIdOrFile };
-        } else if (checkFileValid(fileIdOrFile)) {
+            const fileId = fileIdOrFile;
+
+            // If we want to load by file version ID, use that as key for cache
+            const cacheKey = fileVersionId ? { fileVersionId } : { fileId };
+
+            // If file info is not cached, create a 'bare' file object that we populate with data from the server later
+            const bareFile = { id: fileId };
+            if (fileVersionId) {
+                bareFile.file_version = {
+                    id: fileVersionId
+                };
+            }
+
+            this.file = getCachedFile(this.cache, cacheKey) || bareFile;
+
             // Use well-formed file object if available
+        } else if (checkFileValid(fileIdOrFile)) {
             this.file = fileIdOrFile;
-        } else if (!!fileIdOrFile && typeof fileIdOrFile.id === 'string') {
-            // File is not a well-formed file object but has an id
-            this.file = { id: fileIdOrFile.id };
+
+            // File is not a well-formed file object but has a file ID and/or file version ID (e.g. Content Explorer)
+        } else if (fileIdOrFile && typeof fileIdOrFile.id === 'string') {
+            /* eslint-disable camelcase */
+            const { id, file_version } = fileIdOrFile;
+
+            this.file = { id };
+            if (file_version) {
+                this.file.file_version = {
+                    id: file_version.id
+                };
+            }
+            /* eslint-enable camelcase */
         } else {
             throw new Error(
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
             );
         }
 
-        // Retry up to RETRY_COUNT if we are reloading same file
-        if (this.file.id === currentFileId) {
+        // Retry up to RETRY_COUNT if we are reloading same file. If load is called during a preview when file version
+        // ID has been specified, count as a retry only if the current file verison ID matches that specified file
+        // version ID
+        if (fileVersionId) {
+            if (fileVersionId === currentFileVersionId) {
+                this.retryCount += 1;
+            } else {
+                this.retryCount = 0;
+            }
+
+            // Otherwise, count this as a retry if the file ID we are trying to load matches the current file ID
+        } else if (this.file.id === currentFileId) {
             this.retryCount += 1;
         } else {
             this.retryCount = 0;
@@ -762,6 +818,11 @@ class Preview extends EventEmitter {
         // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
         this.options.pauseRequireJS = !!options.pauseRequireJS;
 
+        // Option to disable 'preview' event log. Use this if you are using Preview in a way that does not constitute
+        // a full preview, e.g. a content feed. Enabling this option skips the client-side log to the Events API
+        // (access stats will not be incremented), but content access is still logged server-side for audit purposes
+        this.options.disableEventLog = !!options.disableEventLog;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -818,8 +879,12 @@ class Preview extends EventEmitter {
      */
     loadFromServer() {
         const { apiHost, queryParams } = this.options;
+        const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
-        const fileInfoUrl = appendQueryParams(getURL(this.file.id, apiHost), queryParams);
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.start(tag);
+
+        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
         get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
@@ -829,12 +894,27 @@ class Preview extends EventEmitter {
      * Loads the preview from server response.
      *
      * @private
-     * @param {Object} file - File object
+     * @param {Object} response - File object response from API
      * @return {void}
      */
-    handleFileInfoResponse(file) {
+    handleFileInfoResponse(response) {
+        let file = response;
+
+        // Stop timer for file info time event.
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.stop(tag);
+
+        // If we are previewing a file version, normalize response to a well-formed file object
+        if (this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID)) {
+            file = normalizeFileVersion(response, this.file.id);
+        }
+
         // If preview is closed or response comes back for an incorrect file, don't do anything
-        if (!this.open || (this.file && this.file.id !== file.id)) {
+        const responseFileVersionId = file.file_version.id;
+        if (
+            !this.open ||
+            (this.file && this.file.file_version && this.file.file_version.id !== responseFileVersionId)
+        ) {
             return;
         }
 
@@ -844,7 +924,7 @@ class Preview extends EventEmitter {
             this.logger.setFile(file);
 
             // Keep reference to previously cached file version
-            const cachedFile = this.cache.get(file.id);
+            const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
 
             // Explicitly uncache watermarked files, otherwise update cache
             const isFileWatermarked = isWatermarked(file);
@@ -992,28 +1072,14 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.mediaEndAutoplay:
                 this.navigateRight();
                 break;
+            case VIEWER_EVENT.error:
+                // Do nothing since 'error' event was already caught, and will be emitted
+                // as a 'preview_error' event
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
-        }
-    }
-
-    /**
-     * Wrapper around emit to prevent errors from affecting the client.
-     *
-     * @private
-     * @param {string} eventName - event name to emit
-     * @param {Object} [data] - event name to emit
-     * @return {void}
-     */
-    emit(eventName, data) {
-        try {
-            super.emit(eventName, data);
-        } catch (e) {
-            /* eslint-disable no-console */
-            console.error(e);
-            /* eslint-enable no-console */
         }
     }
 
@@ -1026,6 +1092,14 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     finishLoading(data = {}) {
+        if (this.file && this.file.id) {
+            const tag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.stop(tag);
+        }
+
+        // Log now that loading is finished
+        this.emitLoadMetrics();
+
         // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
@@ -1063,8 +1137,10 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
-            // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
+            // If there wasn't an error and event logging is not disabled, use Events API to log a preview
+            if (!this.options.disableEventLog) {
+                this.logPreviewEvent(this.file.id, this.options);
+            }
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
@@ -1148,16 +1224,19 @@ class Preview extends EventEmitter {
         }
 
         // Nuke the cache
-        this.cache.unset(this.file.id);
+        uncacheFile(this.cache, this.file);
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
+            let errorCode = ERROR_CODE.retriesExceeded;
             let errorMessage = __('error_refresh');
             if (err.response && err.response.status === 429) {
+                errorCode = ERROR_CODE.rateLimit;
                 errorMessage = __('error_rate_limit');
             }
 
-            this.triggerError(new Error(errorMessage));
+            const error = createPreviewError(errorCode, errorMessage, this.file.id);
+            this.triggerError(error);
             return;
         }
 
@@ -1202,6 +1281,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
+        // Always log preview errors
+        this.emitPreviewError(err);
+
         // If preview is closed don't do anything
         if (!this.open) {
             return;
@@ -1211,7 +1293,7 @@ class Preview extends EventEmitter {
         this.open = false;
 
         // Nuke the cache
-        this.cache.unset(this.file.id);
+        uncacheFile(this.cache, this.file);
 
         // Destroy anything still showing
         this.destroy();
@@ -1224,6 +1306,101 @@ class Preview extends EventEmitter {
 
         // Load the error viewer
         this.viewer.load(err);
+    }
+
+    /**
+     * Create a generic log Object.
+     *
+     * @private
+     * @return {Object} Log details for viewer session and current file.
+     */
+    createLogEvent() {
+        const file = this.file || {};
+        const log = {
+            timestamp: getISOTime(),
+            file_id: getProp(file, 'id', ''),
+            file_version_id: getProp(file, 'file_version.id', ''),
+            content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
+            extension: file.extension || '',
+            locale: getProp(this.location, 'locale', ''),
+            ...getClientLogDetails()
+        };
+
+        return log;
+    }
+
+    /**
+     * Message, to any listeners of Preview, that an error has occurred.
+     *
+     * @private
+     * @param {Error} error - The error that occurred.
+     * @return {void}
+     */
+    emitPreviewError(error) {
+        const err = error;
+
+        // If we haven't supplied a code, then it was thrown by the browser
+        err.code = error.code || ERROR_CODE.browserError;
+        // Make sure to strip auth, if it's a string.
+        err.message = typeof error.message === 'string' ? stripAuthFromString(error.message) : error.message;
+        err.displayMessage = typeof error.displayMessage === 'string' ? stripAuthFromString(error.displayMessage) : '';
+
+        const errorLog = {
+            error: err,
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_ERROR, errorLog);
+    }
+
+    /**
+     * Load metrics behave slightly different than other metrics, in that they have
+     * higher level properties that do not fit into the general purpose "value" and "event_name".
+     * A value of 0 means that the load milestone was never reached.
+     *
+     * @private
+     * @return {void}
+     */
+    emitLoadMetrics() {
+        if (!this.file || !this.file.id) {
+            Timer.reset();
+            return;
+        }
+
+        // Do nothing if there is nothing worth logging.
+        const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        const infoTime = Timer.get(infoTag) || {};
+        if (!infoTime.elapsed) {
+            Timer.reset();
+            return;
+        }
+
+        const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
+        const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
+        const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+
+        const timerList = [
+            infoTime,
+            Timer.get(convertTag) || {},
+            Timer.get(downloadTag) || {},
+            Timer.get(fullLoadTag) || {}
+        ];
+        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
+        const total = times.reduce((acc, current) => acc + current);
+
+        const event = {
+            event_name: LOAD_METRIC.previewLoadEvent,
+            value: total, // Sum of all available load times.
+            [LOAD_METRIC.fileInfoTime]: times[0],
+            [LOAD_METRIC.convertTime]: times[1],
+            [LOAD_METRIC.downloadResponseTime]: times[2],
+            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, event);
+
+        Timer.reset();
     }
 
     /**
@@ -1280,11 +1457,12 @@ class Preview extends EventEmitter {
         // Get access tokens for all files we should be prefetching
         getTokens(filesToPrefetch, this.previewOptions.token)
             .then((tokenMap) => {
-                filesToPrefetch.forEach((id) => {
-                    const token = tokenMap[id];
+                filesToPrefetch.forEach((fileId) => {
+                    const token = tokenMap[fileId];
 
                     // Append optional query params
-                    const fileInfoUrl = appendQueryParams(getURL(id, apiHost), queryParams);
+                    const fileVersionId = this.getFileOption(fileId, FILE_OPTION_FILE_VERSION_ID) || '';
+                    const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), queryParams);
 
                     // Prefetch and cache file information and content
                     get(fileInfoUrl, this.getRequestHeaders(token))
@@ -1300,16 +1478,27 @@ class Preview extends EventEmitter {
                             });
                         })
                         .catch((err) => {
+                            const message = `Error prefetching file ID ${fileId} - ${err}`;
                             /* eslint-disable no-console */
-                            console.error(`Error prefetching file ID ${id} - ${err}`);
+                            console.error(message);
                             /* eslint-enable no-console */
+
+                            const error = createPreviewError(ERROR_CODE.prefetchFile, message, {
+                                fileId,
+                                error: err
+                            });
+                            this.emitPreviewError(error);
                         });
                 });
             })
             .catch(() => {
+                const message = 'Error prefetching files';
                 /* eslint-disable no-console */
-                console.error('Error prefetching files');
+                console.error(message);
                 /* eslint-enable no-console */
+
+                const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
+                this.emitPreviewError(error);
             });
     }
 
@@ -1413,7 +1602,6 @@ class Preview extends EventEmitter {
     /**
      * Global keydown handler for preview.
      *
-     *
      * @private
      * @param {Event} event - keydown event
      * @return {void}
@@ -1465,6 +1653,18 @@ class Preview extends EventEmitter {
             event.preventDefault();
             event.stopPropagation();
         }
+    }
+
+    /**
+     * Helper to get specific file option for a file.
+     *
+     * @param {string|Object} fileIdOrFile - File ID or file object to get file version ID for
+     * @param {string} optionName - Name of option, e.g. fileVersionId
+     * @return {Object|undefined} Specific file option
+     */
+    getFileOption(fileIdOrFile, optionName) {
+        const fileId = typeof fileIdOrFile === 'string' ? fileIdOrFile : fileIdOrFile.id;
+        return getProp(this.previewOptions, `fileOptions.${fileId}.${optionName}`);
     }
 }
 

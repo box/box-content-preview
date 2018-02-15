@@ -1,6 +1,9 @@
 import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
+import { createPreviewError } from './logUtils';
+import Timer from './Timer';
+import { LOAD_METRIC } from './events';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
@@ -45,10 +48,11 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
+    constructor({ representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
         super();
         this.representation = representation;
         this.logger = logger;
+        this.fileId = fileId;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -80,6 +84,9 @@ class RepStatus extends EventEmitter {
             return Promise.resolve();
         }
 
+        const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
+        Timer.start(tag);
+
         return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
@@ -106,30 +113,35 @@ class RepStatus extends EventEmitter {
      */
     handleResponse() {
         const status = RepStatus.getStatus(this.representation);
-        let errorCode;
+        const errCode = RepStatus.getErrorCode(this.representation);
+        let errorMessage;
+        let error;
+        const convertTag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
 
         switch (status) {
             case 'error':
-                switch (RepStatus.getErrorCode(this.representation)) {
+                switch (errCode) {
                     case ERROR_PASSWORD_PROTECTED:
-                        errorCode = __('error_password_protected');
+                        errorMessage = __('error_password_protected');
                         break;
                     case ERROR_TRY_AGAIN_LATER:
-                        errorCode = __('error_try_again_later');
+                        errorMessage = __('error_try_again_later');
                         break;
                     case ERROR_UNSUPPORTED_FORMAT:
-                        errorCode = __('error_bad_file');
+                        errorMessage = __('error_bad_file');
                         break;
                     default:
-                        errorCode = __('error_refresh');
+                        errorMessage = __('error_refresh');
                         break;
                 }
 
-                this.reject(errorCode);
+                error = createPreviewError(errCode, errorMessage, this.representation);
+                this.reject(error);
                 break;
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
+                Timer.stop(convertTag);
                 this.resolve();
                 break;
 

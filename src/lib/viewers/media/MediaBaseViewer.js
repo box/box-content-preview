@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
@@ -129,6 +129,7 @@ class MediaBaseViewer extends BaseViewer {
         return this.getRepStatus()
             .getPromise()
             .then(() => {
+                this.startLoadTimer();
                 this.mediaEl.src = this.mediaUrl;
                 if (this.isAutoplayEnabled()) {
                     this.autoplay();

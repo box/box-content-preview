@@ -85,5 +85,12 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
             iframe.load();
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(iframe, 'startLoadTimer');
+            iframe.load();
+
+            expect(iframe.startLoadTimer).to.be.called;
+        });
     });
 });

@@ -166,7 +166,8 @@ class DashViewer extends VideoBaseViewer {
             }
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
-        return this.player.load(this.mediaUrl).catch((error) => {
+        this.startLoadTimer();
+        return this.player.load(`${this.mediaUrl  }fds`).catch((error) => {
             // The error is of a different format than the shakaErrorHandler expects
             this.shakaErrorHandler({
                 detail: error

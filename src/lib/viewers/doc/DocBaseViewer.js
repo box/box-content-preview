@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -497,12 +497,7 @@ class DocBaseViewer extends BaseViewer {
         this.bindDOMListeners();
 
         // Initialize pdf.js in container
-        this.pdfViewer = new PDFJS.PDFViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
-        });
+        this.pdfViewer = this.initPdfViewer();
 
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
@@ -530,6 +525,9 @@ class DocBaseViewer extends BaseViewer {
             };
         }
 
+        // Start timing document load
+        this.startLoadTimer();
+
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
@@ -556,6 +554,22 @@ class DocBaseViewer extends BaseViewer {
 
                 this.triggerError(error);
             });
+    }
+
+    /**
+     * Initialize pdf.js viewer.
+     *
+     * @protected
+     * @override
+     * @return {PDFJS.PDFViewer} PDF viewer type
+     */
+    initPdfViewer() {
+        return new PDFJS.PDFViewer({
+            container: this.docEl,
+            linkService: new PDFJS.PDFLinkService(),
+            // Enhanced text selection uses more memory, so disable on mobile
+            enhanceTextSelection: !this.isMobile
+        });
     }
 
     /**

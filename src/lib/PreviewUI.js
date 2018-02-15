@@ -341,6 +341,11 @@ class PreviewUI {
      * @return {void}
      */
     replaceHeader(replacementHeader) {
+        const headerToShow = this.container.querySelector(replacementHeader);
+        if (!headerToShow) {
+            return;
+        }
+
         // First hide all possible headers
         const headers = this.container.querySelectorAll(`.${CLASS_BOX_PREVIEW_HEADER}`);
         [].forEach.call(headers, (header) => {
@@ -348,7 +353,6 @@ class PreviewUI {
         });
 
         // Show the specified header
-        const headerToShow = this.container.querySelector(replacementHeader);
         headerToShow.classList.remove(CLASS_HIDDEN);
     }
 

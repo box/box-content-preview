@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 import MediaBaseViewer from './MediaBaseViewer';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons/icons';

@@ -250,6 +250,14 @@ describe('lib/viewers/media/DashViewer', () => {
                 expect(spy).to.be.calledOnce;
             });
         });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(dash, 'startLoadTimer');
+            sandbox.stub(shaka, 'Player').returns(dash.player);
+            dash.loadDashPlayer();
+
+            expect(dash.startLoadTimer).to.be.called;
+        });
     });
 
     describe('requestFilter()', () => {

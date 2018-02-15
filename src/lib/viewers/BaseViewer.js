@@ -1,9 +1,10 @@
 import EventEmitter from 'events';
-import debounce from 'lodash.debounce';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import {
+    getProp,
     appendQueryParams,
     appendAuthParams,
     getHeaders,
@@ -28,7 +29,9 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
+import { createPreviewError } from '../logUtils';
+import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -260,6 +263,17 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Start the load timer for fullDocumentLoad event.
+     *
+     * @protected
+     * @return {void}
+     */
+    startLoadTimer() {
+        const tag = Timer.createTag(this.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        Timer.start(tag);
+    }
+
+    /**
      * Triggers an error when an asset (static or representation) fails to load.
      *
      * @param {string} [err] - Optional error message
@@ -395,11 +409,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch((err) => {
-                /* eslint-disable no-console */
-                console.error('Annotation assets failed to load', err);
-                /* eslint-enable no-console */
-            });
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler);
         }
     }
 
@@ -577,14 +587,12 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @param {string} option - to get
-     * @return {Object} Value of a viewer option
+     * @return {Object|undefined} Value of a viewer option
      */
     getViewerOption(option) {
         const { viewers, viewer } = this.options;
-        if (viewers && viewers[viewer.NAME]) {
-            return viewers[viewer.NAME][option];
-        }
-        return null;
+        const viewerName = getProp(viewer, 'NAME');
+        return getProp(viewers, `${viewerName}.${option}`);
     }
 
     /**
@@ -640,12 +648,13 @@ class BaseViewer extends EventEmitter {
      * @return {RepStatus} Instance of RepStatus
      */
     getRepStatus(representation) {
-        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const { token, sharedLink, sharedLinkPassword, logger, file } = this.options;
         const repStatus = new RepStatus({
             representation: representation || this.options.representation,
             token,
             sharedLink,
             sharedLinkPassword,
+            fileId: file.id,
             logger: representation ? null : logger // Do not log to main preview status if rep is passed in
         });
 
@@ -719,8 +728,13 @@ class BaseViewer extends EventEmitter {
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
-        /* global BoxAnnotations */
-        const boxAnnotations = this.options.boxAnnotations || new BoxAnnotations(viewerOptions);
+        if (!global.BoxAnnotations) {
+            const error = createPreviewError(ERROR_CODE.annotationsLoadFail);
+            this.triggerError(error);
+            return;
+        }
+
+        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (this.annotatorConf) {
@@ -894,6 +908,8 @@ class BaseViewer extends EventEmitter {
             createError: __('annotations_create_error'),
             deleteError: __('annotations_delete_error'),
             authError: __('annotations_authorization_error'),
+            doneButton: __('annotation_done'),
+            closeButton: __('annotation_close'),
             cancelButton: __('annotation_cancel'),
             saveButton: __('annotation_save'),
             postButton: __('annotation_post'),

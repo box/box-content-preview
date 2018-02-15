@@ -61,7 +61,10 @@ describe('lib/viewers/media/Settings', () => {
     describe('increaseSpeed()', () => {
         it('should increase speed one step', () => {
             sandbox.stub(settings, 'chooseOption');
-            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.25');
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-speed')
+                .returns('1.25');
 
             settings.increaseSpeed();
 
@@ -70,7 +73,10 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should not increase speed after max', () => {
             sandbox.stub(settings, 'chooseOption');
-            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('2.0');
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-speed')
+                .returns('2.0');
 
             settings.increaseSpeed();
 
@@ -81,7 +87,10 @@ describe('lib/viewers/media/Settings', () => {
     describe('decreaseSpeed()', () => {
         it('should decrease speed one step', () => {
             sandbox.stub(settings, 'chooseOption');
-            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.5');
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-speed')
+                .returns('1.5');
 
             settings.decreaseSpeed();
 
@@ -93,7 +102,10 @@ describe('lib/viewers/media/Settings', () => {
             expect(speedOptions.length).to.be.above(0);
 
             sandbox.stub(settings, 'chooseOption');
-            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns(speedOptions[0]);
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-speed')
+                .returns(speedOptions[0]);
 
             settings.decreaseSpeed();
 
@@ -112,8 +124,10 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should add extra padding to settingsEl based on menu contents that require scroll bar', () => {
             const menuEl = {
-                offsetWidth: 0,
-                offsetHeight: 500 // 210 is max height of settings menu
+                getBoundingClientRect: () => ({
+                    width: 0,
+                    height: 500 // 210 is max height of settings menu
+                })
             };
             settings.setMenuContainerDimensions(menuEl);
 
@@ -121,14 +135,18 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should grow the height of the settingsEl to that of the sub-menu, with padding', () => {
+            const MENU_PADDING = 18;
+            const MENU_HEIGHT = 20;
             const menuEl = {
-                offsetWidth: 0,
-                offsetHeight: 18
+                getBoundingClientRect: () => ({
+                    width: 0,
+                    height: MENU_HEIGHT
+                })
             };
             settings.setMenuContainerDimensions(menuEl);
 
-            // Adds 18px to the offsetHeight of sum of child element's heights
-            expect(settings.settingsEl.style.height).to.equal('36px');
+            // Adds 18px (padding) to the offsetHeight of sum of child element's heights
+            expect(settings.settingsEl.style.height).to.equal(`${MENU_HEIGHT + MENU_PADDING}px`);
         });
     });
 
@@ -150,20 +168,18 @@ describe('lib/viewers/media/Settings', () => {
             sandbox.stub(settings, 'chooseOption');
             const quality = 'sd';
             const speed = '2.0';
-            const autoplay = 'Enabled'
+            const autoplay = 'Enabled';
 
             const getStub = sandbox.stub(settings.cache, 'get');
             getStub.withArgs('media-quality').returns(quality);
             getStub.withArgs('media-speed').returns(speed);
             getStub.withArgs('media-autoplay').returns(autoplay);
 
-
             settings.init();
 
             expect(settings.chooseOption).to.be.calledWith('quality', quality);
             expect(settings.chooseOption).to.be.calledWith('speed', speed);
             expect(settings.chooseOption).to.be.calledWith('autoplay', autoplay);
-
         });
     });
 
@@ -736,7 +752,6 @@ describe('lib/viewers/media/Settings', () => {
             sandbox.stub(settings, 'handleSubtitleSelection');
             sandbox.stub(settings.cache, 'set');
 
-
             settings.chooseOption('speed', 0.5, false);
 
             expect(settings.cache.set).to.not.be.called;
@@ -853,7 +868,10 @@ describe('lib/viewers/media/Settings', () => {
         it('Should toggle on subtitles if they were on in the most recently viewed subtitled video', () => {
             sandbox.stub(settings, 'chooseOption');
             sandbox.stub(settings, 'areSubtitlesOn').returns(false);
-            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('2');
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-subtitles')
+                .returns('2');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 
@@ -863,7 +881,10 @@ describe('lib/viewers/media/Settings', () => {
         it('Should not toggle on subtitles if they were off in the most recently viewed subtitled video', () => {
             sandbox.stub(settings, 'chooseOption');
             sandbox.stub(settings, 'areSubtitlesOn').returns(false);
-            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('-1');
+            sandbox
+                .stub(settings.cache, 'get')
+                .withArgs('media-subtitles')
+                .returns('-1');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 
@@ -1107,7 +1128,7 @@ describe('lib/viewers/media/Settings', () => {
             sandbox.stub(settings.cache, 'get').returns('hd');
             sandbox.stub(settings, 'chooseOption');
             const CLASS_SETTINGS_QUALITY_MENU = 'bp-media-settings-menu-quality';
-            const qualitySubMenu = settings.containerEl.querySelector(`.${CLASS_SETTINGS_QUALITY_MENU}`)
+            const qualitySubMenu = settings.containerEl.querySelector(`.${CLASS_SETTINGS_QUALITY_MENU}`);
 
             settings.enableHD();
 

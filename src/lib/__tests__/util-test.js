@@ -2,6 +2,7 @@
 import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
+import { stripAuthFromString } from '../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -746,6 +747,51 @@ describe('lib/util', () => {
             });
 
             expect(result).to.equal(null);
+        });
+    });
+
+    describe('stripAuthFromString()', () => {
+        it('should filter the access_token property from any string', () => {
+            const accessToken = 'access_token=09876512371234897012348970';
+            const accessFiltered = 'access_token=[FILTERED]';
+            const query = `http://www.foo.com?test=1234&${accessToken}&bar=ooo`;
+            const queryFiltered = `http://www.foo.com?test=1234&${accessFiltered}&bar=ooo`;
+            const random = `here's my string ${accessToken} khjfsadlkjfsad`;
+            const randomFiltered = `here's my string ${accessFiltered}`; // It strips everything starting at 'access_token='
+
+            expect(stripAuthFromString(query)).to.equal(queryFiltered);
+            expect(stripAuthFromString(random)).to.equal(randomFiltered);
+        });
+    });
+
+    describe('getProp()', () => {
+        it('should return prop value as specified by path', () => {
+            const someProp = 'some-prop';
+            let a = {
+                b: {
+                    c: 'value',
+                    b: ''
+                },
+                [someProp]: {
+                    value: 'test'
+                }
+            };
+
+            expect(util.getProp(a, 'b.c')).to.equal('value');
+            expect(util.getProp(a, 'b.b')).to.equal('');
+            expect(util.getProp(a, `${someProp}.value`)).to.equal('test');
+        });
+
+        it('should return default value if prop does not exist or value is undefined', () => {
+            let a = {
+                b: {},
+                test: undefined,
+                foo: null
+            };
+
+            expect(util.getProp(a, 'b.c', 'default')).to.equal('default');
+            expect(util.getProp(a, 'test', 'default')).to.equal('default');
+            expect(util.getProp(a, 'foo.bar', 'default')).to.equal('default');
         });
     });
 });

@@ -73,6 +73,8 @@ class OfficeViewer extends BaseViewer {
     load() {
         this.setup();
         super.load();
+        // Negligible load timer
+        this.startLoadTimer();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
     }

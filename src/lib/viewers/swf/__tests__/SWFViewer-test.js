@@ -67,6 +67,19 @@ describe('lib/viewers/SWFViewer', () => {
                 expect(swf.postLoad).to.be.called;
             });
         });
+
+        it('should invoke startLoadTimer()', () => {
+            Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
+
+            sandbox.stub(swf, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(swf, 'setup');
+
+            sandbox.stub(swf, 'startLoadTimer');
+
+            return swf.load().then(() => {
+                expect(swf.startLoadTimer).to.be.called;
+            });
+        });
     });
 
     describe('postLoad()', () => {

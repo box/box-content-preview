@@ -57,6 +57,7 @@ class ImageViewer extends ImageBaseViewer {
         return this.getRepStatus()
             .getPromise()
             .then(() => {
+                this.startLoadTimer();
                 this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
             })
             .catch(this.handleAssetError);

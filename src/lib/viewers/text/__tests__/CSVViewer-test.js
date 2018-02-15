@@ -110,6 +110,21 @@ describe('lib/viewers/text/CSVViewer', () => {
             });
         });
         /* eslint-enable no-undef */
+
+
+        it('should invoke startLoadTimer()', () => {            
+            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.stub() });
+            csv.options.token = 'token';
+            csv.options.sharedLink = 'sharedLink';
+            csv.options.sharedLinkPassword = 'sharedLinkPassword';
+            sandbox.stub(util, 'get').returns(Promise.resolve());
+            sandbox.stub(csv, 'startLoadTimer');
+
+            return csv.load().then(() => {
+                expect(csv.startLoadTimer).to.be.called;
+            });
+        });
     });
 
     describe('prefetch()', () => {
