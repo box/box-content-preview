@@ -62,6 +62,7 @@ const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown ev
 const LOG_RETRY_TIMEOUT_MS = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
+const SUPPORT_URL = 'https://support.box.com';
 
 // All preview assets are relative to preview.js. Here we create a location
 // object that mimics the window location object and points to where
@@ -923,6 +924,16 @@ class Preview extends EventEmitter {
             this.file = file;
             this.logger.setFile(file);
 
+            // If file is not downloadable, trigger an error
+            if (file.is_download_available === false) {
+                const error = createPreviewError(ERROR_CODE.notDownloadable, __('error_not_downloadable'), null, {
+                    linkText: __('link_contact_us'),
+                    linkUrl: SUPPORT_URL
+                });
+                this.triggerError(error);
+                return;
+            }
+
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
 
@@ -1497,7 +1508,7 @@ class Preview extends EventEmitter {
                 console.error(message);
                 /* eslint-enable no-console */
 
-                const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
+                const error = createPreviewError(ERROR_CODE.prefetchFile, message, filesToPrefetch);
                 this.emitPreviewError(error);
             });
     }

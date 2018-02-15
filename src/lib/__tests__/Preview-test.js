@@ -170,7 +170,8 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             }
 
             preview.show(file, 'foken');
@@ -238,7 +239,8 @@ describe('lib/Preview', () => {
                 extension: 'docx',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
         });
 
@@ -772,7 +774,8 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
 
             stubs.promise = Promise.resolve({
@@ -1165,6 +1168,10 @@ describe('lib/Preview', () => {
                 setFile: sandbox.stub(),
                 setCacheStale: sandbox.stub()
             };
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
 
             stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
             stubs.set = sandbox.stub(preview.cache, 'set');
@@ -1216,7 +1223,6 @@ describe('lib/Preview', () => {
         });
 
         it('should do nothing if response comes back for an incorrect file', () => {
-            preview.open = true;
             preview.file = {
                 id: '123',
                 file_version: {
@@ -1230,22 +1236,19 @@ describe('lib/Preview', () => {
         });
 
         it('should save a reference to the file and update the logger', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
             expect(preview.logger.setFile).to.be.called;
         });
 
-        it('should get the latest cache, then update it with the new file', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
+        it('should trigger an error if file is not downloadable', () => {
+            stubs.file.is_download_available = false;
+            preview.handleFileInfoResponse(stubs.file);
+            expect(stubs.triggerError).to.be.called;
+            expect(stubs.loadViewer).to.not.be.called;
+        });
 
+        it('should get the latest cache, then update it with the new file', () => {
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1262,11 +1265,6 @@ describe('lib/Preview', () => {
 
         it('should uncache the file if the file is watermarked', () => {
             stubs.isWatermarked.returns(true);
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1280,11 +1278,6 @@ describe('lib/Preview', () => {
         });
 
         it('should load the viewer if the file is not in the cache', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns(null);
 
             preview.handleFileInfoResponse(stubs.file);
@@ -1292,11 +1285,6 @@ describe('lib/Preview', () => {
         });
 
         it('should load the viewer if the cached file is not valid', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.checkFileValid.returns(false);
 
             preview.handleFileInfoResponse(stubs.file);
@@ -1304,11 +1292,6 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1323,11 +1306,6 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.isWatermarked.returns(true);
             stubs.getCachedFile.returns({
                 file_version: {
@@ -1343,11 +1321,6 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.throws(new Error());
 
             preview.handleFileInfoResponse(stubs.file);
