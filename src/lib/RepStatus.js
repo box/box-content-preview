@@ -7,6 +7,7 @@ import { LOAD_METRIC } from './events';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
+const ERROR_FILE_BAD_STATE = '1337';
 const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
 const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
 const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
@@ -129,6 +130,9 @@ class RepStatus extends EventEmitter {
                         break;
                     case ERROR_UNSUPPORTED_FORMAT:
                         errorMessage = __('error_bad_file');
+                        break;
+                    case ERROR_FILE_BAD_STATE:
+                        errorCode = __('error_file_bad_state');
                         break;
                     default:
                         errorMessage = __('error_refresh');
