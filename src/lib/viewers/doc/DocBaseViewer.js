@@ -21,7 +21,7 @@ import {
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { JS, CSS } from './docAssets';
+import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -167,6 +167,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (assets) {
             this.prefetchAssets(JS, CSS);
+            this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
         if (preload && !isWatermarked) {
@@ -610,6 +611,8 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Set pdf.js worker, image, and character map locations
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;

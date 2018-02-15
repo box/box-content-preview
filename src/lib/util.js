@@ -277,12 +277,18 @@ export function createScript(url) {
  *
  * @public
  * @param {string} url - Asset urls
+ * @param {boolean} preload - Whether or not to use preload, default false
  * @return {HTMLElement} Prefetch link element
  */
-export function createPrefetch(url) {
+export function createPrefetch(url, preload = false) {
     const link = document.createElement('link');
-    link.rel = 'prefetch';
+    link.rel = preload ? 'preload' : 'prefetch';
     link.href = url;
+
+    if (preload) {
+        link.as = url.indexOf('.js') !== -1 ? 'script' : 'style';
+    }
+
     return link;
 }
 
@@ -433,14 +439,16 @@ export function createAssetUrlCreator(location) {
  *
  * @public
  * @param {Array} urls - Asset urls
+ * @param {boolean} preload - Use preload instead of prefetch, default false
  * @return {void}
  */
-export function prefetchAssets(urls) {
+export function prefetchAssets(urls, preload = false) {
     const { head } = document;
+    const rel = preload ? 'preload' : 'prefetch';
 
     urls.forEach((url) => {
-        if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
-            head.appendChild(createPrefetch(url));
+        if (!head.querySelector(`link[rel="${rel}"][href="${url}"]`)) {
+            head.appendChild(createPrefetch(url, preload));
         }
     });
 }

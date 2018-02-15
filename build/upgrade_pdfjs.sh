@@ -2,7 +2,7 @@ DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 DOC_STATIC_ASSETS_PATH="src/third-party/doc/$DOC_STATIC_ASSETS_VERSION"
 
 if [ ! -d $DOC_STATIC_ASSETS_PATH ]; then
-    DOC_LATEST_STATIC_ASSETS=`ls src/third-party/doc | sort -nr | head -1`
+    DOC_LATEST_STATIC_ASSETS=`ls src/third-party/doc | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
     echo "Latest version is $DOC_LATEST_STATIC_ASSETS"
     `cp -R src/third-party/doc/$DOC_LATEST_STATIC_ASSETS $DOC_STATIC_ASSETS_PATH`
     echo "Created build directory for $DOC_STATIC_ASSETS_PATH"
