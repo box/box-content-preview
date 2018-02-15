@@ -167,7 +167,7 @@ class DashViewer extends VideoBaseViewer {
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
         this.startLoadTimer();
-        return this.player.load(`${this.mediaUrl  }fds`).catch((error) => {
+        return this.player.load(this.mediaUrl).catch((error) => {
             // The error is of a different format than the shakaErrorHandler expects
             this.shakaErrorHandler({
                 detail: error
@@ -359,7 +359,7 @@ class DashViewer extends VideoBaseViewer {
 
         if (shakaError.detail.severity > 1) {
             // critical error
-            this.emit('error', error);
+            this.triggerError(error);
         }
     }
 
