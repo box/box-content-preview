@@ -93,7 +93,7 @@ describe('lib/util', () => {
 
             return util.get(url, 'any').then((response) => {
                 expect(fetchMock.called(url)).to.be.true;
-                expect(response).to.be.an.object;
+                expect(typeof response === 'object').to.be.true;
             });
         });
     });
@@ -398,15 +398,15 @@ describe('lib/util', () => {
             });
 
             it('should disable AMD until scripts are loaded or fail to load', () => {
-                const func = () => {};
-                func.amd = ['jquery'];
-                window.define = func;
+                const defineFunc = () => {};
+                defineFunc.amd = { jquery: '' };
+                window.define = defineFunc;
 
                 const promise = util.loadScripts(['foo', 'bar'], true);
                 expect(define).to.equal(undefined);
 
                 return promise.then(() => {
-                    expect(define).to.equal(func);
+                    expect(define).to.equal(defineFunc);
                 });
             });
         });
