@@ -489,8 +489,10 @@ export function loadScripts(urls, disableAMD = false) {
     // scripts are loaded.
 
     /* eslint-disable no-undef */
-    const defineRef = typeof define === 'function' ? define : undefined;
-    if (disableAMD && typeof define === 'function' && define.amd) {
+    const amdPresent = !!window.define && typeof define === 'function' && !!define.amd;
+    const defineRef = amdPresent ? define : undefined;
+
+    if (disableAMD && amdPresent) {
         define = undefined;
     }
 
@@ -509,10 +511,14 @@ export function loadScripts(urls, disableAMD = false) {
 
     return Promise.all(promises)
         .then(() => {
-            define = defineRef || define;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
+            }
         })
         .catch(() => {
-            define = defineRef || define;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
+            }
         });
 }
 
