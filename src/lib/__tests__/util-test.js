@@ -397,20 +397,17 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
 
-            it('should clear requireJS until scripts are loaded or fail to load', () => {
-                window.define = true;
-                window.require = true;
-                window.requrejs = true;
+            it('should disable AMD until scripts are loaded or fail to load', () => {
+                const func = () => {};
+                func.amd = ['jquery'];
+                window.define = func;
 
-                return util.loadScripts(['foo', 'bar'], true).catch(() => {
-                    expect(window.define).to.equal(true);
-                    expect(window.require).to.equal(true);
-                    expect(window.requirejs).to.equal(true);
+                const promise = util.loadScripts(['foo', 'bar'], true);
+                expect(define).to.equal(undefined);
+
+                return promise.then(() => {
+                    expect(define).to.equal(func);
                 });
-
-                expect(window.define).to.equal(undefined);
-                expect(window.require).to.equal(undefined);
-                expect(window.requirejs).to.equal(undefined);
             });
         });
 

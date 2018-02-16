@@ -475,18 +475,23 @@ export function loadStylesheets(urls) {
  *
  * @public
  * @param {Array} urls - Asset urls
- * @param {string} [disableRequireJS] - Should requireJS be temporarily disabled
+ * @param {string} [disableAMD] - Temporarily disable AMD definitions while external scripts are loading
  * @return {Promise} Promise to load scripts
  */
-export function loadScripts(urls, disableRequireJS = false) {
+export function loadScripts(urls, disableAMD = false) {
     const { head } = document;
     const promises = [];
-    const { define, require, requirejs } = window;
 
-    if (disableRequireJS) {
-        window.define = undefined;
-        window.require = undefined;
-        window.requirejs = undefined;
+    // Preview expects third party assets to be loaded into the global scope. However, many of our third party
+    // assets include a UMD module definition, and a parent application using RequireJS or a similar AMD module loader
+    // will trigger the AMD check in these UMD definitions and prevent the necessary assets from being loaded in the
+    // global scope. If `disableAMD` is passed, we get around this by temporarily disabling `define()` until Preview's
+    // scripts are loaded.
+
+    /* eslint-disable no-undef */
+    const defineRef = typeof define === 'function' ? define : undefined;
+    if (disableAMD && typeof define === 'function' && define.amd) {
+        define = undefined;
     }
 
     urls.forEach((url) => {
@@ -504,18 +509,10 @@ export function loadScripts(urls, disableRequireJS = false) {
 
     return Promise.all(promises)
         .then(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
-            }
+            define = defineRef || define;
         })
         .catch(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
-            }
+            define = defineRef || define;
         });
 }
 
