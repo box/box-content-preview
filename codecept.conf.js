@@ -53,8 +53,11 @@ if (typeof SAUCE_USERNAME === 'undefined') {
             platformVersion: PLATFORM_VERSION,
             deviceName: DEVICE_NAME,
             deviceOrientation: 'portrait',
-            appiumVersion: '1.7.2'
+            appiumVersion: '1.7.2',
+            platformName: BROWSER_PLATFORM
+
         });
+        console.log(sauceObj.desiredCapabilities)
         helperObj.Appium = mixedInSauceObj;
     }
 }
