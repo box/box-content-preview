@@ -261,7 +261,7 @@ class MediaControls extends EventEmitter {
             0,
             1
         );
-        this.setTimeCode(0); // This also sets the aria values
+        this.setTimeCode(this.mediaEl.currentTime || 0); // This also sets the aria values
         this.timeScrubber.on('valuechange', () => {
             this.emit('timeupdate', this.getTimeFromScrubber());
         });

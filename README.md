@@ -137,7 +137,7 @@ preview.show(fileId, accessToken, {
 | File Option | Description |
 | --- | --- |
 | fileVersionId | File version ID to preview. This must be a valid non-current file version ID. Use [Get Versions](https://developer.box.com/reference#view-versions-of-a-file) to fetch a list of file versions |
-| start | The unit and value of where to start the preview at. Current supported units are 'seconds' for media and 'pages' for documents. |
+| startAt | The unit and value of where to start the preview at. Current supported units are 'seconds' for media and 'pages' for documents. |
 
 Access Token
 ------------

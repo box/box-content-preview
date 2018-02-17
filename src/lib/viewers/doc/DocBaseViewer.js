@@ -56,6 +56,8 @@ class DocBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
 
+        this.startPageNum = this.getStartPage();
+
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.print = this.print.bind(this);
@@ -71,7 +73,6 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
-        this.startPageNum = this.getStartPage();
     }
 
     /**
@@ -165,18 +166,18 @@ class DocBaseViewer extends BaseViewer {
 
         const { unit, value } = this.fileStartObj || {};
 
-        if (value && unit) {
-            switch (unit) {
-                case PAGES_UNIT_NAME:
-                    convertedValue = parseInt(value, 10);
-                    if (Number.isNaN(convertedValue) || convertedValue < 1) {
-                        // Negative values aren't allowed, fall back to default behavior
-                        convertedValue = undefined;
-                    }
-                    break;
-                default:
-                    console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+        if (!value || !unit) {
+            return convertedValue;
+        }
+
+        if (unit === PAGES_UNIT_NAME) {
+            convertedValue = parseInt(value, 10);
+            if (!convertedValue || convertedValue < 1) {
+                // Negative values aren't allowed, fall back to default behavior
+                return undefined;
             }
+        } else {
+            console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
         }
 
         return convertedValue;
@@ -515,12 +516,13 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Sets the start page the preview should start at
      *
-     * @param {Object} doc - the PDFjs document
+     * @param {number} startPageNum - the start page number to start the preview at
+     * @param {number} pagesCount - the number of pages in the document
      * @return {void}
      */
-    setStartPage(doc) {
-        if (doc && this.startPageNum && this.startPageNum > 0 && this.startPageNum <= doc.numPages) {
-            this.cachePage(this.startPageNum);
+    setStartPage(startPageNum, pagesCount) {
+        if (startPageNum && startPageNum > 0 && startPageNum <= pagesCount) {
+            this.cachePage(startPageNum);
         }
     }
 
@@ -575,7 +577,6 @@ class DocBaseViewer extends BaseViewer {
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
         return this.pdfLoadingTask
             .then((doc) => {
-                this.setStartPage(doc);
                 this.pdfViewer.setDocument(doc);
 
                 const { linkService } = this.pdfViewer;
@@ -906,6 +907,13 @@ class DocBaseViewer extends BaseViewer {
 
         this.loadUI();
 
+        const { pagesCount, currentScale } = this.pdfViewer;
+
+        // Set current page to the value passed for startAt
+        if (this.startPageNum) {
+            this.setStartPage(this.startPageNum, pagesCount);
+        }
+
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
 
@@ -916,9 +924,9 @@ class DocBaseViewer extends BaseViewer {
         if (!this.loaded) {
             this.loaded = true;
             this.emit(VIEWER_EVENT.load, {
-                numPages: this.pdfViewer.pagesCount,
+                numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
-                scale: this.pdfViewer.currentScale
+                scale: currentScale
             });
 
             // Add page IDs to each page after page structure is available

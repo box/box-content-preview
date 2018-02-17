@@ -14,6 +14,7 @@ const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 const SECONDS_UNIT_NAME = 'seconds';
+const INITIAL_TIME_IN_SECONDS = 0;
 
 class MediaBaseViewer extends BaseViewer {
     /**
@@ -41,7 +42,6 @@ class MediaBaseViewer extends BaseViewer {
         this.handleRate = this.handleRate.bind(this);
         this.handleAutoplay = this.handleAutoplay.bind(this);
         this.mediaendHandler = this.mediaendHandler.bind(this);
-        this.loadedMetadataHandler = this.loadedMetadataHandler.bind(this);
     }
     /**
      * @inheritdoc
@@ -68,15 +68,6 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Sets the start time for a media element
-     *
-     * @return {void}
-     */
-    loadedMetadataHandler() {
-        this.setStartTime();
-    }
-
-    /**
      * Converts a value and unit to seconds
      *
      * @param {string|number} value - the value e.g. 1
@@ -84,23 +75,23 @@ class MediaBaseViewer extends BaseViewer {
      * @return {number} a time in seconds
      */
     getStartTimeInSeconds() {
-        let convertedValue = 0;
+        let convertedValue = INITIAL_TIME_IN_SECONDS;
 
         const value = getProp(this.fileStartObj, 'value');
         const unit = getProp(this.fileStartObj, 'unit');
 
-        if (value && unit) {
-            switch (unit) {
-                case SECONDS_UNIT_NAME:
-                    convertedValue = parseInt(value, 10);
-                    if (convertedValue < 0) {
-                        // Negative values aren't allowed, start from 0
-                        convertedValue = 0;
-                    }
-                    break;
-                default:
-                    console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+        if (!value || !unit) {
+            return INITIAL_TIME_IN_SECONDS;
+        }
+
+        if (unit === SECONDS_UNIT_NAME) {
+            convertedValue = parseInt(value, 10);
+            if (convertedValue < 0) {
+                // Negative values aren't allowed, start from beginning
+                return INITIAL_TIME_IN_SECONDS;
             }
+        } else {
+            console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
         }
 
         return convertedValue;
@@ -141,7 +132,6 @@ class MediaBaseViewer extends BaseViewer {
                 this.mediaEl.removeEventListener('seeked', this.seekHandler);
                 this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
                 this.mediaEl.removeEventListener('error', this.errorHandler);
-                this.mediaEl.removeEventListener('loadedmetadata', this.loadedMetadataHandler);
 
                 this.removePauseEventListener();
                 this.mediaEl.removeAttribute('src');
@@ -173,7 +163,6 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
-        this.mediaEl.addEventListener('loadedmetadata', this.loadedMetadataHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
         if (Browser.isIOS()) {
@@ -216,6 +205,7 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
+        this.setStartTime();
         this.handleVolume();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);

@@ -845,7 +845,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
-            const spy = sandbox.spy(docBase, 'setStartPage');
             const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
 
@@ -855,7 +854,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.bindDOMListeners).to.be.called;
                 expect(stubs.pdfViewer.setDocument).to.be.called;
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
-                expect(spy).to.have.been.calledOnce;
             });
         });
 
@@ -1287,6 +1285,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
             expect(docBase.loaded).to.be.truthy;
         });
+
+        it('should set the start page as the cached page', () => {
+            const START_PAGE_NUM = 2;
+            const PAGES_COUNT = 3;
+            docBase.startPageNum = 2;
+            docBase.pdfViewer = {
+                pagesCount: 3
+            };
+            const setStartPageSpy = sandbox.spy(docBase, 'setStartPage');
+            const cacheSpy = sandbox.spy(docBase, 'cachePage');
+            docBase.pagesinitHandler();
+
+            expect(setStartPageSpy).to.have.been.calledWith(START_PAGE_NUM, PAGES_COUNT);
+            expect(cacheSpy).to.have.been.calledWith(START_PAGE_NUM);
+
+        });
     });
 
     describe('pagerenderedHandler()', () => {
@@ -1709,38 +1723,31 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('setStartPage()', () => {
-        let doc;
         let spy;
+        const START_PAGE_NUM = 2;
+        const NUM_PAGES = 3;
         beforeEach(()=>{
-            doc = {
-                numPages : 3
-            };
             spy = sandbox.spy(docBase, 'cachePage');
         });
 
         it('should set the cached page', () => {
-            const PAGE_NUM = 2;
-            docBase.startPageNum = PAGE_NUM;
-            docBase.setStartPage(doc);
-            expect(spy).to.have.been.calledWith(PAGE_NUM);
+            docBase.setStartPage(START_PAGE_NUM, NUM_PAGES);
+            expect(spy).to.have.been.calledWith(START_PAGE_NUM);
         });
 
         it('should not set the start page if called with out of bounds page number', () => {
-            docBase.startPageNum = 5;
-            docBase.setStartPage(doc);
+            docBase.setStartPage(5, NUM_PAGES);
             expect(spy).to.have.not.been.called;
 
-            docBase.startPageNum = 0;
-            docBase.setStartPage(doc);
+            docBase.setStartPage(0, NUM_PAGES);
             expect(spy).to.have.not.been.called;
 
-            docBase.startPageNum = -1;
-            docBase.setStartPage(doc);
+            docBase.setStartPage(-1, NUM_PAGES);
             expect(spy).to.have.not.been.called;
         });
 
         it('should not set the start page if no page number set', () => {
-            docBase.setStartPage(doc);
+            docBase.setStartPage(START_PAGE_NUM);
             expect(spy).to.have.not.been.called;
         });
     });
