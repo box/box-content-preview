@@ -25,14 +25,14 @@ describe('lib/file', () => {
         it('should return the correct api url', () => {
             assert.equal(
                 getURL('id', '', 'api'),
-                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
+                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available'
             );
         });
 
         it('should return the correct API url for file version', () => {
             assert.equal(
                 getURL('id', 'versionId', 'api'),
-                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
+                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available'
             );
         });
     });
@@ -121,7 +121,8 @@ describe('lib/file', () => {
                 extension: 'blah',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'blah'
+                authenticated_download_url: 'blah',
+                is_download_available: true
             };
             assert.ok(checkFileValid(file));
         });
@@ -139,7 +140,8 @@ describe('lib/file', () => {
                 extension: 'exe',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'blah?version=file_version_123'
+                authenticated_download_url: 'blah?version=file_version_123',
+                is_download_available: true
             };
 
             const file = normalizeFileVersion(fileVersion, fileId);
