@@ -1,6 +1,8 @@
 import Base360Loader from '../Base360Loader';
 import Browser from '../../../Browser';
+import PreviewError from '../../../PreviewError';
 import { replacePlaceholders } from '../../../util';
+import { ERROR_CODE } from '../../../events';
 import Video360Viewer from './Video360Viewer';
 
 const VIDEO_FORMATS = [
@@ -57,7 +59,7 @@ class Video360Loader extends Base360Loader {
             // If browser doesn't support WebGL
             if (!isSupportedBrowser || isIOS || !Browser.hasWebGL()) {
                 const message = replacePlaceholders(__('error_browser_unsupported'), [__('360_videos')]);
-                throw new Error(message);
+                throw new PreviewError(ERROR_CODE.BROWSER_UNSUPPORTED, message, { file });
             }
         }
 

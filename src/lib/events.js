@@ -14,13 +14,29 @@ export const VIEWER_EVENT = {
 
 // Error codes logged by preview with "preview_error" events
 export const ERROR_CODE = {
-    annotationsLoadFail: 'error_annotations_load',
-    invalidCacheAttempt: 'error_invalid_file_for_cache',
-    prefetchFile: 'error_prefetch_file',
-    rateLimit: 'error_rate_limit',
-    retriesExceeded: 'error_retries_exceeded',
-    browserError: 'error_browser_thrown',
-    notDownloadable: 'error_file_not_downloadable'
+    ACCOUNT: 'error_account',
+    UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
+    PERMISSIONS_PREVIEW: 'error_permissions_preview',
+    BAD_INPUT: 'error_bad_input',
+    LOAD_ANNOTATIONS: 'error_load_annotations',
+    LOAD_ASSET: 'error_load_asset',
+    LOAD_DOCUMENT: 'error_load_document',
+    LOAD_MEDIA: 'error_load_media',
+    LOAD_VIEWER: 'error_load_viewer',
+    IMAGE_SIZING: 'error_image_sizing',
+    SHAKA: 'error_shaka',
+    INVALID_CACHE_ATTEMPT: 'error_invalid_file_for_cache',
+    PREFETCH_FILE: 'error_prefetch_file',
+    RATE_LIMIT: 'error_rate_limit',
+    EXCEEDED_RETRY_LIMIT: 'error_exceeded_retry_limit',
+    BROWSER_GENERIC: 'error_browser_generic',
+    BROWSER_UNSUPPORTED: 'error_browser_unsupported',
+    NOT_DOWNLOADABLE: 'error_file_not_downloadable',
+    GENERIC: 'error_generic',
+    CONVERSION_GENERIC: 'error_conversion_generic',
+    CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
+    CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
+    CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format'
 };
 
 export const PREVIEW_LOAD_EVENT = '';

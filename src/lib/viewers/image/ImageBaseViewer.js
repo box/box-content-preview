@@ -1,11 +1,12 @@
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
+import PreviewError from '../../PreviewError';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -318,15 +319,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     errorHandler(err) {
-        /* eslint-disable no-console */
+        // eslint-disable-next-line
         console.error(err);
-        /* eslint-enable no-console */
 
         // Display a generic error message but log the real one
-        const error = err;
-        if (err instanceof Error) {
-            error.displayMessage = __('error_refresh');
-        }
+        const error = new PreviewError(ERROR_CODE.IMAGE_SIZING, __('error_refresh'), {}, err.message);
         this.emit('error', error);
     }
 

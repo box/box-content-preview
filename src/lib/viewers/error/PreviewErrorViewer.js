@@ -1,11 +1,12 @@
 import BaseViewer from '../BaseViewer';
-import { checkPermission } from '../../file';
 import Browser from '../../Browser';
+import PreviewError from '../../PreviewError';
+import { checkPermission } from '../../file';
 import { PERMISSION_DOWNLOAD } from '../../constants';
 import { getIconFromExtension, getIconFromName } from '../../icons/icons';
-import './PreviewError.scss';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { stripAuthFromString } from '../../util';
+import './PreviewError.scss';
 
 class PreviewErrorViewer extends BaseViewer {
     /**
@@ -61,13 +62,21 @@ class PreviewErrorViewer extends BaseViewer {
     /**
      * Shows an error message to the user.
      *
-     * @param {Error} err - Error
+     * @param {Error} err - Error that caused Preview to fail, can be a native Error object or a Preview-defined
+     * PreviewError object
      * @return {void}
      */
     load(err) {
         this.setup();
 
+        const error =
+            err instanceof PreviewError
+                ? err
+                : new PreviewError(ERROR_CODE.GENERIC, __('error_generic'), {}, err.message);
+
+        const { displayMessage, details, message } = error;
         const { file, showDownload } = this.options;
+
         this.icon = getIconFromName('FILE_DEFAULT');
 
         // Generic errors will not have the file object
@@ -83,36 +92,23 @@ class PreviewErrorViewer extends BaseViewer {
             }
         }
 
-        /* eslint-disable no-param-reassign */
-        err = err instanceof Error ? err : new Error(__('error_generic'));
-        /* eslint-enable no-param-reassign */
-
-        // If there is no display message fallback to the message from above
-        let displayMessage = err.displayMessage || err.message;
-        displayMessage = typeof displayMessage === 'string' ? displayMessage : __('error_generic');
-
         this.iconEl.innerHTML = this.icon;
+
+        // Display user-friendly error message
         this.messageEl.textContent = displayMessage;
 
         // Add optional link or download button
-        const { linkText, linkUrl } = err;
-        if (linkText && linkUrl) {
-            this.addLinkButton(linkText, linkUrl);
+        if (details && details.linkText && details.linkUrl) {
+            this.addLinkButton(details.linkText, details.linkUrl);
         } else if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
             this.addDownloadButton();
         }
 
         this.loaded = true;
 
-        // The error will either be the message from the original error, the displayMessage from the orignal error,
-        // or the default message from the locally created error
-        const errorMsg = typeof err.message === 'string' ? err.message : displayMessage;
-
-        // Filter out any access tokens
-        const filteredMsg = stripAuthFromString(errorMsg);
-
+        // Log error message - this will be the original error message if available, display message if not
         this.emit(VIEWER_EVENT.load, {
-            error: filteredMsg
+            error: stripAuthFromString(message)
         });
     }
 
