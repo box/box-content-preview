@@ -19,11 +19,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v1.31.0
+* Version: v1.30.1
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/1.31.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/1.31.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/1.30.1/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/1.30.1/en-US/preview.css
 
 Supported Locales
 -----------------
