@@ -19,7 +19,8 @@ export const ERROR_CODE = {
     prefetchFile: 'error_prefetch_file',
     rateLimit: 'error_rate_limit',
     retriesExceeded: 'error_retries_exceeded',
-    browserError: 'error_browser_thrown'
+    browserError: 'error_browser_thrown',
+    notDownloadable: 'error_file_not_downloadable'
 };
 
 export const PREVIEW_LOAD_EVENT = '';

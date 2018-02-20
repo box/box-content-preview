@@ -80,5 +80,15 @@ describe('lib/logUtils', () => {
 
             expect(err.displayMessage).to.equal(errRefresh);
         });
+
+        it('should append optional properties to error if provided', () => {
+            const err = createPreviewError('', '', null, {
+                foo: 'bar',
+                some: 'value'
+            });
+
+            expect(err.foo).to.equal('bar');
+            expect(err.some).to.equal('value');
+        });
     });
 });

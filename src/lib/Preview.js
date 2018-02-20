@@ -62,6 +62,7 @@ const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown ev
 const LOG_RETRY_TIMEOUT_MS = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
+const SUPPORT_URL = 'https://support.box.com';
 
 // All preview assets are relative to preview.js. Here we create a location
 // object that mimics the window location object and points to where
@@ -814,9 +815,9 @@ class Preview extends EventEmitter {
         // Optional additional query params to append to requests
         this.options.queryParams = options.queryParams || {};
 
-        // Option to pause requireJS while Preview loads third party dependencies
-        // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
-        this.options.pauseRequireJS = !!options.pauseRequireJS;
+        // Option to patch AMD module definitions while Preview loads the third party dependencies it expects in the
+        // browser global scope. Definitions will be re-enabled on the 'assetsloaded' event
+        this.options.fixDependencies = !!options.fixDependencies || !!options.pauseRequireJS;
 
         // Option to disable 'preview' event log. Use this if you are using Preview in a way that does not constitute
         // a full preview, e.g. a content feed. Enabling this option skips the client-side log to the Events API
@@ -925,6 +926,16 @@ class Preview extends EventEmitter {
             // Set current file to file data from server and update file in logger
             this.file = file;
             this.logger.setFile(file);
+
+            // If file is not downloadable, trigger an error
+            if (file.is_download_available === false) {
+                const error = createPreviewError(ERROR_CODE.notDownloadable, __('error_not_downloadable'), null, {
+                    linkText: __('link_contact_us'),
+                    linkUrl: SUPPORT_URL
+                });
+                this.triggerError(error);
+                return;
+            }
 
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
@@ -1500,7 +1511,7 @@ class Preview extends EventEmitter {
                 console.error(message);
                 /* eslint-enable no-console */
 
-                const error = createPreviewError(ERROR_CODE, message, filesToPrefetch);
+                const error = createPreviewError(ERROR_CODE.prefetchFile, message, filesToPrefetch);
                 this.emitPreviewError(error);
             });
     }
