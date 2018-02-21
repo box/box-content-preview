@@ -1,4 +1,3 @@
-const DEFAULT_WAIT_TIME = 90000; // 90 seconds
 const {
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
@@ -8,7 +7,8 @@ const {
     BROWSER_VERSION = 'latest',
     BROWSER_PLATFORM,
     PLATFORM_VERSION,
-    DEVICE_NAME
+    DEVICE_NAME,
+    DEFAULT_WAIT_TIME = 90000
 } = process.env;
 const MOBILE_PLATFORMS = ['iOS', 'Android'];
 
