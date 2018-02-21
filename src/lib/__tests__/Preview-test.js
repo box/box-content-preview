@@ -1883,7 +1883,7 @@ describe('lib/Preview', () => {
             expect(stubs.load).to.be.calledWith(1);
         });
 
-        it('should retry using exponential backoff', () => {
+        it('should retry using full jitter', () => {
             preview.file = {
                 id: '0'
             };
@@ -1892,9 +1892,6 @@ describe('lib/Preview', () => {
             preview.retryCount = 3;
 
             preview.handleFetchError(stubs.error);
-
-            clock.tick(7000);
-            expect(stubs.load).to.not.be.called;
 
             clock.tick(8001);
             expect(stubs.load).to.be.called;
