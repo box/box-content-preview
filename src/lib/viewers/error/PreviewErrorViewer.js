@@ -26,10 +26,13 @@ class PreviewErrorViewer extends BaseViewer {
         super.setup();
 
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
+        this.infoEl.className = 'bp-error';
+
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.iconEl.className = 'bp-icon bp-icon-file';
+
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
-        this.infoEl.className = 'bp-error';
+        this.messageEl.className = 'bp-error-text';
     }
 
     /**
@@ -91,8 +94,11 @@ class PreviewErrorViewer extends BaseViewer {
         this.iconEl.innerHTML = this.icon;
         this.messageEl.textContent = displayMessage;
 
-        // Add optional download button
-        if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
+        // Add optional link or download button
+        const { linkText, linkUrl } = err;
+        if (linkText && linkUrl) {
+            this.addLinkButton(linkText, linkUrl);
+        } else if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
             this.addDownloadButton();
         }
 
@@ -111,17 +117,29 @@ class PreviewErrorViewer extends BaseViewer {
     }
 
     /**
-     * Adds optional download button
+     * Adds a link button underneath error message.
+     *
+     * @param {string} linkText - Translated button message
+     * @param {string} linkUrl - URL for link
+     * @return {void}
+     */
+    addLinkButton(linkText, linkUrl) {
+        const linkBtnEl = this.infoEl.appendChild(document.createElement('a'));
+        linkBtnEl.className = 'bp-btn bp-btn-primary';
+        linkBtnEl.target = '_blank';
+        linkBtnEl.textContent = linkText;
+        linkBtnEl.href = linkUrl;
+    }
+
+    /**
+     * Adds a download file button underneath error message.
      *
      * @private
      * @return {void}
      */
     addDownloadButton() {
-        this.downloadEl = this.infoEl.appendChild(document.createElement('div'));
-        this.downloadEl.classList.add('bp-error-download');
-        this.downloadBtnEl = this.downloadEl.appendChild(document.createElement('button'));
-        this.downloadBtnEl.classList.add('bp-btn');
-        this.downloadBtnEl.classList.add('bp-btn-primary');
+        this.downloadBtnEl = this.infoEl.appendChild(document.createElement('button'));
+        this.downloadBtnEl.className = 'bp-btn bp-btn-primary';
         this.downloadBtnEl.textContent = __('download');
         this.downloadBtnEl.addEventListener('click', this.download);
     }

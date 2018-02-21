@@ -80,6 +80,20 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             });
         });
 
+        it('should add link button if error has linkText and linkUrl defined', () => {
+            sandbox.stub(error, 'addLinkButton');
+            sandbox.stub(error, 'addDownloadButton');
+
+            const err = new Error('reason');
+            err.linkText = 'test';
+            err.linkUrl = 'someUrl';
+
+            error.load(err);
+
+            expect(error.addLinkButton).to.be.calledWith('test', 'someUrl');
+            expect(error.addDownloadButton).to.not.be.called;
+        });
+
         it('should add download button if file has permissions and showDownload option is set', () => {
             sandbox.stub(error, 'addDownloadButton');
             sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
@@ -179,6 +193,19 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         });
     });
 
+    describe('addLinkButton()', () => {
+        it('should add a link button with the appropriate message and URL', () => {
+            error.setup();
+            error.addLinkButton('test', 'someUrl');
+            const linkBtnEl = error.infoEl.querySelector('a');
+
+            expect(linkBtnEl instanceof HTMLElement).to.be.true;
+            expect(linkBtnEl.target).to.equal('_blank');
+            expect(linkBtnEl.textContent).to.equal('test');
+            expect(linkBtnEl.href).to.have.string('someUrl');
+        });
+    });
+
     describe('addDownloadButton()', () => {
         it('should add a download button and attach a download click handler', () => {
             error.setup();
@@ -186,9 +213,8 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             error.addDownloadButton();
 
-            expect(error.downloadEl instanceof HTMLElement).to.be.true;
-            expect(error.downloadEl.parentNode).to.equal(error.infoEl);
             expect(error.downloadBtnEl instanceof HTMLElement).to.be.true;
+            expect(error.downloadBtnEl.parentNode).to.equal(error.infoEl);
             expect(error.downloadBtnEl.classList.contains('bp-btn')).to.be.true;
             expect(error.downloadBtnEl.classList.contains('bp-btn-primary')).to.be.true;
             expect(error.downloadBtnEl.textContent).to.equal('Download');

@@ -277,12 +277,18 @@ export function createScript(url) {
  *
  * @public
  * @param {string} url - Asset urls
+ * @param {boolean} preload - Whether or not to use preload, default false
  * @return {HTMLElement} Prefetch link element
  */
-export function createPrefetch(url) {
+export function createPrefetch(url, preload = false) {
     const link = document.createElement('link');
-    link.rel = 'prefetch';
+    link.rel = preload ? 'preload' : 'prefetch';
     link.href = url;
+
+    if (preload) {
+        link.as = url.indexOf('.js') !== -1 ? 'script' : 'style';
+    }
+
     return link;
 }
 
@@ -433,14 +439,16 @@ export function createAssetUrlCreator(location) {
  *
  * @public
  * @param {Array} urls - Asset urls
+ * @param {boolean} preload - Use preload instead of prefetch, default false
  * @return {void}
  */
-export function prefetchAssets(urls) {
+export function prefetchAssets(urls, preload = false) {
     const { head } = document;
+    const rel = preload ? 'preload' : 'prefetch';
 
     urls.forEach((url) => {
-        if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
-            head.appendChild(createPrefetch(url));
+        if (!head.querySelector(`link[rel="${rel}"][href="${url}"]`)) {
+            head.appendChild(createPrefetch(url, preload));
         }
     });
 }
@@ -467,18 +475,25 @@ export function loadStylesheets(urls) {
  *
  * @public
  * @param {Array} urls - Asset urls
- * @param {string} [disableRequireJS] - Should requireJS be temporarily disabled
+ * @param {string} [disableAMD] - Temporarily disable AMD definitions while external scripts are loading
  * @return {Promise} Promise to load scripts
  */
-export function loadScripts(urls, disableRequireJS = false) {
+export function loadScripts(urls, disableAMD = false) {
     const { head } = document;
     const promises = [];
-    const { define, require, requirejs } = window;
 
-    if (disableRequireJS) {
-        window.define = undefined;
-        window.require = undefined;
-        window.requirejs = undefined;
+    // Preview expects third party assets to be loaded into the global scope. However, many of our third party
+    // assets include a UMD module definition, and a parent application using RequireJS or a similar AMD module loader
+    // will trigger the AMD check in these UMD definitions and prevent the necessary assets from being loaded in the
+    // global scope. If `disableAMD` is passed, we get around this by temporarily disabling `define()` until Preview's
+    // scripts are loaded.
+
+    /* eslint-disable no-undef */
+    const amdPresent = !!window.define && typeof define === 'function' && !!define.amd;
+    const defineRef = amdPresent ? define : undefined;
+
+    if (disableAMD && amdPresent) {
+        define = undefined;
     }
 
     urls.forEach((url) => {
@@ -496,17 +511,13 @@ export function loadScripts(urls, disableRequireJS = false) {
 
     return Promise.all(promises)
         .then(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
             }
         })
         .catch(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
             }
         });
 }
