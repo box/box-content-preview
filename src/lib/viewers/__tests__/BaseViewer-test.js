@@ -211,21 +211,21 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should trigger an error  if we have already retried', () => {
-            base.haveRetriedContentDownload = true;
+            base.hasRetriedContentDownload = true;
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
             expect(base.triggerError).to.be.called;
             expect(base.load).to.not.be.called;
         });
 
         it('should retry load, and check download reachability if we are on a custom host', () => {
-            base.haveRetriedContentDownload = false;
+            base.hasRetriedContentDownload = false;
             dr.isCustomDownloadHost.returns(false);
 
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
             expect(base.load).to.be.called;
             expect(dr.setDownloadReachability).to.be.not.called;
 
-            base.haveRetriedContentDownload = false;
+            base.hasRetriedContentDownload = false;
             // Now try on a custom host
             dr.isCustomDownloadHost.returns(true);
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
@@ -314,7 +314,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should fallback to the default host if we have retried', () => {
-            base.haveRetriedContentDownload = true;
+            base.hasRetriedContentDownload = true;
             sandbox.stub(dr, 'replaceDownloadHostWithDefault');
             sandbox.stub(util, 'createContentUrl');
 

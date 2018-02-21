@@ -1,7 +1,9 @@
 const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
+const PROD_CUSTOM_HOST_SUFFIX = 'boxcloud.com';
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
-const DEFAULT_HOST_REGEX = /^https:\/\/dl\d+\./;
+const NUMBERED_HOST_PREFIX_REGEX = /^https:\/\/dl\d+\./;
+const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/[A-Za-z0-9]+./;
 
 /**
  * Checks if the url is a download host, but not the default download host.
@@ -11,20 +13,30 @@ const DEFAULT_HOST_REGEX = /^https:\/\/dl\d+\./;
  * @return {boolean} - HTTP response
  */
 export function isCustomDownloadHost(downloadUrl) {
+    // A custom download host either
+    // 1. begins with a numbered dl hostname
+    // 2. or starts with a custom prefix and ends with boxcloud.com
     return (
-        downloadUrl && !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && !!downloadUrl.match(DEFAULT_HOST_REGEX)
+        !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) &&
+        (!!downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX) || downloadUrl.includes(PROD_CUSTOM_HOST_SUFFIX))
     );
 }
 
 /**
  * Replaces the hostname of a download URL with the default hostname, https://dl.
  *
- * @private
+ * @public
  * @param {string} downloadUrl - Content download URL, may either be a template or an actual URL
  * @return {string} - The updated download URL
  */
 export function replaceDownloadHostWithDefault(downloadUrl) {
-    return downloadUrl.replace(DEFAULT_HOST_REGEX, DEFAULT_DOWNLOAD_HOST_PREFIX);
+    if (downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX)) {
+        // First check to see if we can swap a numbered dl prefix for the default
+        return downloadUrl.replace(NUMBERED_HOST_PREFIX_REGEX, DEFAULT_DOWNLOAD_HOST_PREFIX);
+    }
+
+    // Otherwise replace the custom prefix with the default
+    return downloadUrl.replace(CUSTOM_HOST_PREFIX_REGEX, DEFAULT_DOWNLOAD_HOST_PREFIX);
 }
 
 /**
@@ -65,7 +77,7 @@ export function setDownloadHostNotificationShown(downloadHost) {
  *
  * @public
  * @param {string} contentTemplate - Content download URL template
- * @return {string|undefined} Should the notification be shown
+ * @return {string|undefined} Which host should we show a notification for, if any
  */
 export function downloadNotificationToShow(contentTemplate) {
     const contentHost = document.createElement('a');

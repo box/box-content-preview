@@ -34,17 +34,28 @@ describe('lib/downloadReachability', () => {
 
             url = 'https://www.google.com';
             expect(dr.isCustomDownloadHost(url)).to.be.false;
+
+
+            url = 'https://kld3lk.boxcloud.com';
+            expect(dr.isCustomDownloadHost(url)).to.be.true;
+
+            url = 'https://dl3.user.inside-box.net';
+            expect(dr.isCustomDownloadHost(url)).to.be.true;
+
+
+            url = 'https://dl.user.inside-box.net';
+            expect(dr.isCustomDownloadHost(url)).to.be.false;
         });
     });
 
     describe('replaceDownloadHostWithDefault()', () => {
         it('should add the given host to the array of shown hosts', () => {
-            const blockedHost = 'https://dl3.boxcloud.com';
+            // const blockedHost = 'https://dl3.boxcloud.com';
 
-            const result = dr.setDownloadHostNotificationShown(blockedHost);
+            // const result = dr.setDownloadHostNotificationShown(blockedHost);
 
-            const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
-            expect(shownHostsArr).to.contain('https://dl3.boxcloud.com');
+            // const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+            // expect(shownHostsArr).to.contain('https://dl3.boxcloud.com');
         });
     });
         
@@ -85,7 +96,7 @@ describe('lib/downloadReachability', () => {
         });
 
         it('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
-            let result = dr.downloadNotificationToShow();
+            let result = dr.downloadNotificationToShow('https://foo.com');
             expect(result).to.be.undefined;;
 
             sessionStorage.setItem('download_host_fallback', 'true');
@@ -94,12 +105,11 @@ describe('lib/downloadReachability', () => {
         
             const shownHostsArr = ['dl5.boxcloud.com'];
             localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
-            result = dr.downloadNotificationToShow(shownHostsArr[0]);
+            result = dr.downloadNotificationToShow('https://dl5.boxcloud.com');
             expect(result).to.be.undefined;
 
         });
     });
-
 
     describe('setDownloadReachability()', () => {
         afterEach(() => {
@@ -107,7 +117,7 @@ describe('lib/downloadReachability', () => {
         })
         it('should catch an errored response', () => {
             const setDownloadHostFallbackStub = sandbox.stub(dr, 'setDownloadHostFallback');
-            fetchMock.head('https://dl3.boxcloud.com', {throws: new Error('woohoo')})
+            fetchMock.head('https://dl3.boxcloud.com', {throws: new Error()})
 
             return dr.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
                 expect(setDownloadHostFallbackStub).to.be.called;

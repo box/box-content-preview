@@ -1,6 +1,7 @@
 // Events emitted by Viewers
 export const VIEWER_EVENT = {
     download: 'download', // Begin downloading the file.
+    unreachableDownloadNotification: 'unreachabledownloadnotification', // Notification that download host is not reachable is displayed to the user.
     reload: 'reload', // Reload preview.
     load: 'load', // Preview is finished loading.
     progressStart: 'progressstart', // Begin using loading indicator.
@@ -37,7 +38,8 @@ export const ERROR_CODE = {
     CONVERSION_GENERIC: 'error_conversion_generic',
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
-    CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format'
+    CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
+    CONTENT_DOWNLOAD: 'error_content_download'
 };
 
 export const PREVIEW_LOAD_EVENT = '';

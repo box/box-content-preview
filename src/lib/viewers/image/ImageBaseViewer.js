@@ -81,7 +81,9 @@ class ImageBaseViewer extends BaseViewer {
                 this.loaded = true;
                 this.emit(VIEWER_EVENT.load);
             })
-            .catch(this.errorHandler);
+            .catch(() => {
+                // No-op, this prmise should always resolve
+            });
     }
 
     /**
@@ -314,17 +316,20 @@ class ImageBaseViewer extends BaseViewer {
      * Handles a content download error
      *
      * @param {Error} err - Load error
-     * @param {string} imgUrl - URL we are using as the image src
+     * @param {string} imgUrl - Image src URL
      * @return {void}
      */
     handleDownloadError(err, imgUrl) {
+        // eslint-disable-next-line
+        console.error(err);
+
         // Display a generic error message but log the real one
-        const error = new PreviewError(ERROR_CODE.IMAGE_SIZING, __('error_refresh'), {}, err.message);
+        const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), {}, err.message);
         if (err instanceof Error) {
             error.displayMessage = __('error_refresh');
         }
 
-        super.handleDownloadError(err, imgUrl);
+        super.handleDownloadError(error, imgUrl);
     }
 
     /**

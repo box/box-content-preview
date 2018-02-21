@@ -53,14 +53,14 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
-        const downloadURL = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
             .then(() => {
                 this.startLoadTimer();
-                this.imageEl.src = downloadURL;
+                this.imageEl.src = downloadUrl;
             })
             .catch(this.handleAssetError);
     }

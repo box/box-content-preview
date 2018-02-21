@@ -562,17 +562,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         it('should call the parent method with an error display message and the image URL', () => {
             const err = new Error('downloadError')
 
-            try {
-                imageBase.handleDownloadError(err, 'foo');
-            } catch (e) {
-                // no-op
-            }
+            imageBase.handleDownloadError(err, 'foo');
 
-            const [ event, error ] = stubs.emit.getCall(0).args;
-            expect(event).to.equal('error');
+            const [ error, URL ] = BaseViewer.prototype.handleDownloadError.getCall(0).args;
+            expect(URL).to.equal('foo');
             expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_image_sizing');
-            expect(BaseViewer.prototype.handleDownloadError).to.be.calledWith(err, 'foo')
+            expect(error.code).to.equal('error_content_download');
         });
     });
 

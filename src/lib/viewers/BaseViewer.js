@@ -112,7 +112,7 @@ class BaseViewer extends EventEmitter {
     startAt;
     
     /** @property {boolean} - Has the viewer retried downloading the content */
-    haveRetriedContentDownload = false;
+    hasRetriedContentDownload = false;
 
     /**
      * [constructor]
@@ -312,7 +312,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleDownloadError(err, downloadURL) {
-        if (this.haveRetriedContentDownload) {
+        if (this.hasRetriedContentDownload) {
             /* eslint-disable no-console */
             console.error(err);
             /* eslint-enable no-console */
@@ -321,7 +321,7 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        this.haveRetriedContentDownload = true;
+        this.hasRetriedContentDownload = true;
         this.load();
 
         if (isCustomDownloadHost(downloadURL)) {
@@ -388,7 +388,7 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
-        if (this.haveRetriedContentDownload) {
+        if (this.hasRetriedContentDownload) {
             /* eslint-disable no-param-reassign */
             template = replaceDownloadHostWithDefault(template);
             /* eslint-enable no-param-reassign */
