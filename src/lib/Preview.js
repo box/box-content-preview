@@ -1105,7 +1105,7 @@ class Preview extends EventEmitter {
     handleViewerMetrics(data) {
         const formattedEvent = {
             event_name: data.event,
-            ...data.data,
+            value: data.data,
             ...this.createLogEvent()
         };
 

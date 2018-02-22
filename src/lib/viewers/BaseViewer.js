@@ -505,7 +505,7 @@ class BaseViewer extends EventEmitter {
     emitMetric(event, data) {
         super.emit(VIEWER_EVENT.metric, {
             event,
-            ...data
+            data
         });
     }
 
