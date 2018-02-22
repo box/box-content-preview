@@ -42,28 +42,3 @@ export function getClientLogDetails() {
         logger_session_id: PREVIEW_SESSION_ID
     };
 }
-
-/**
- * Creates an error compliant with "preview_error" messages.
- *
- * @private
- * @param {string} code - Code associated with the error that occurred.
- * @param {string} [displayMessage] - Optional string to display, if applicable.
- * @param {*} [details] - Additional details about the error. IE) File id, reason, etc.
- * @param {*} [properties] - Additional optional properties on the error
- * @return {Error} An error object with an associated error code.
- */
-export function createPreviewError(code, displayMessage = __('error_refresh'), details = null, properties) {
-    const error = new Error(code);
-    error.code = code;
-    error.message = details || displayMessage;
-    error.displayMessage = displayMessage;
-
-    if (properties) {
-        Object.keys(properties).forEach((key) => {
-            error[key] = properties[key];
-        });
-    }
-
-    return error;
-}

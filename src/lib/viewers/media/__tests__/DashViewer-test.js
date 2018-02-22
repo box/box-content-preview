@@ -3,6 +3,7 @@ import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import fullscreen from '../../../Fullscreen';
+import PreviewError from '../../../PreviewError';
 import * as util from '../../../util';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
@@ -469,7 +470,10 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.shakaErrorHandler(shakaError);
 
-            expect(dash.emit).to.be.calledWith('error');
+            const [ event, error ] = dash.emit.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_shaka');
         });
 
         it('should not emit error on recoverable shaka errors', () => {

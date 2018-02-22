@@ -5,11 +5,11 @@ import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
+import PreviewError from '../PreviewError';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
-import { createPreviewError } from '../logUtils';
 import Timer from '../Timer';
 
 const tokens = require('../tokens');
@@ -869,7 +869,7 @@ describe('lib/Preview', () => {
                 right: 'fields'
             }
 
-            expect(preview.load.bind(preview, file)).to.throw(Error, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
+            expect(preview.load.bind(preview, file)).to.throw(PreviewError, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
         });
 
         it('should get the tokens when file id is available', () => {
@@ -1241,11 +1241,13 @@ describe('lib/Preview', () => {
             expect(preview.logger.setFile).to.be.called;
         });
 
-        it('should trigger an error if file is not downloadable', () => {
+        it('should trigger error if file is not downloadable', () => {
             stubs.file.is_download_available = false;
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.triggerError).to.be.called;
-            expect(stubs.loadViewer).to.not.be.called;
+
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_file_not_downloadable');
         });
 
         it('should get the latest cache, then update it with the new file', () => {
@@ -1321,10 +1323,19 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
-            stubs.getCachedFile.throws(new Error());
-
+            const error = new PreviewError('some_code');
+            stubs.getCachedFile.throws(error);
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.triggerError).to.be.called;
+            expect(stubs.triggerError).to.be.calledWith(error);
+        });
+
+        it('should trigger a viewer load error if a non-PreviewError is thrown', () => {
+            stubs.getCachedFile.throws(new Error('random'));
+            preview.handleFileInfoResponse(stubs.file);
+
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
         });
 
         it('should stop the Timer for file info time', () => {
@@ -1388,13 +1399,10 @@ describe('lib/Preview', () => {
 
         it('should throw an error if there is no preview permission', () => {
             stubs.checkPermission.returns(false);
-            const spy = sandbox.spy(preview, 'loadViewer');
-
-            try {
-                preview.loadViewer();
-            } catch (e) {
-                expect(e.message).to.equal(__('error_permissions'));
-            }
+            expect(() => preview.loadViewer()).to.throw(
+                PreviewError,
+                /We're sorry, you don't have permission to preview this file./
+            );
         });
 
         it('should show the loading download button if there are sufficient permissions and support', () => {
@@ -2020,22 +2028,14 @@ describe('lib/Preview', () => {
     });
 
     describe('emitPreviewError()', () => {
-        it('should emit a "preview_error" message', (done) => {
-            preview.on('preview_error', () => {
-                done();
-            });
-
-            preview.emitPreviewError({});
-        });
-
         it('should emit a "preview_error" message with an object describing the error', (done) => {
             const code = 'an_error';
             const displayMessage = 'Oh no!';
-            const message = { fileId: '12345' };
-            const error = createPreviewError(code, displayMessage, message);
+            const error = new PreviewError(code, displayMessage);
 
-            preview.on('preview_error', (details) => {
-                expect(details.error).to.deep.equal(error);
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal('an_error');
+                expect(data.error.displayMessage).to.equal('Oh no!');
                 done();
             });
 
@@ -2053,9 +2053,9 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.on('preview_error', (details) => {
-                expect(details.file_id).to.equal(fileId);
-                expect(details.file_version_id).to.equal(fileVersionId);
+            preview.on('preview_error', (data) => {
+                expect(data.file_id).to.equal(fileId);
+                expect(data.file_version_id).to.equal(fileVersionId);
                 done();
             });
 
@@ -2063,8 +2063,8 @@ describe('lib/Preview', () => {
         });
 
         it('should use a default browser error code if none is present', (done) => {
-            preview.on('preview_error', (details) => {
-                expect(details.error.code).to.equal(ERROR_CODE.browserError);
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal(ERROR_CODE.BROWSER_GENERIC);
                 done();
             });
 
@@ -2076,13 +2076,13 @@ describe('lib/Preview', () => {
             const displayMessage = 'A display message';
             const auth = 'access_token="1234abcd"';
             const filtered = 'access_token=[FILTERED]';
-            preview.on('preview_error', (details) => {
-                expect(details.error.message).to.equal(`${message}?${filtered}`)
-                expect(details.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
+            preview.on('preview_error', (data) => {
+                expect(data.error.message).to.equal(`${message}?${filtered}`)
+                expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
                 done();
             });
 
-            const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
+            const error = new PreviewError('bad_thing', `${displayMessage}?${auth}`, {}, `${message}?${auth}`);
             preview.emitPreviewError(error);
         });
     });
