@@ -98,6 +98,9 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Whether viewer is being used on a touch device */
     hasTouch;
 
+    /** @property {Object} - Viewer startAt options */
+    startAt;
+
     /**
      * [constructor]
      *
@@ -110,10 +113,7 @@ class BaseViewer extends EventEmitter {
         this.cache = options.cache;
         this.previewUI = options.ui;
 
-        const fileOptions = options.fileOptions || {};
-        const fileId = getProp(options, 'file.id');
-        const optionsForFileId = fileOptions[fileId] || {};
-        this.fileStartObj = optionsForFileId[FILE_OPTION_START];
+        this.startAt = getProp(options, `fileOptions.${options.file.id}.${FILE_OPTION_START}`, {});
 
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();

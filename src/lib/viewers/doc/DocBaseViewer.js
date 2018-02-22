@@ -164,7 +164,7 @@ class DocBaseViewer extends BaseViewer {
     getStartPage() {
         let convertedValue;
 
-        const { unit, value } = this.fileStartObj || {};
+        const { unit, value } = this.startAt;
 
         if (!value || !unit) {
             return convertedValue;
@@ -396,11 +396,12 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNumber) {
-        if (!pageNumber || pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
+        const parsedPageNumber = parseInt(pageNumber, 10);
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
-        this.pdfViewer.currentPageNumber = pageNumber;
+        this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
@@ -512,19 +513,6 @@ class DocBaseViewer extends BaseViewer {
         }
 
         return true;
-    }
-
-    /**
-     * Sets the start page the preview should start at
-     *
-     * @param {number} startPageNum - the start page number to start the preview at
-     * @param {number} pagesCount - the number of pages in the document
-     * @return {void}
-     */
-    setStartPage(startPageNum, pagesCount) {
-        if (startPageNum && startPageNum > 0 && startPageNum <= pagesCount) {
-            this.cachePage(startPageNum);
-        }
     }
 
     //--------------------------------------------------------------------------
@@ -912,13 +900,9 @@ class DocBaseViewer extends BaseViewer {
 
         const { pagesCount, currentScale } = this.pdfViewer;
 
-        // Set current page to the value passed for startAt
-        if (this.startPageNum) {
-            this.setStartPage(this.startPageNum, pagesCount);
-        }
-
-        // Set current page to previously opened page or first page
-        this.setPage(this.getCachedPage());
+        // Set page to the user-defined page, previously opened page, or first page
+        const startPage = this.startPageNum || this.getCachedPage();
+        this.setPage(startPage);
 
         // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
         this.docEl.classList.add(CLASS_IS_SCROLLABLE);

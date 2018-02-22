@@ -329,6 +329,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('setMediaTime()', () => {
         it('should set the time on the media element', () => {
             media.mediaEl = document.createElement('video');
+            media.mediaEl.duration = 4;
             const newTime = 3.14;
 
             media.setMediaTime(newTime);

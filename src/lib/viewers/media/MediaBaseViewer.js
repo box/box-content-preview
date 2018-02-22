@@ -77,15 +77,15 @@ class MediaBaseViewer extends BaseViewer {
     getStartTimeInSeconds() {
         let convertedValue = INITIAL_TIME_IN_SECONDS;
 
-        const value = getProp(this.fileStartObj, 'value');
-        const unit = getProp(this.fileStartObj, 'unit');
+        const value = getProp(this.startAt, 'value');
+        const unit = getProp(this.startAt, 'unit');
 
         if (!value || !unit) {
             return INITIAL_TIME_IN_SECONDS;
         }
 
         if (unit === SECONDS_UNIT_NAME) {
-            convertedValue = parseInt(value, 10);
+            convertedValue = parseFloat(value, 10);
             if (convertedValue < 0) {
                 // Negative values aren't allowed, start from beginning
                 return INITIAL_TIME_IN_SECONDS;
@@ -95,17 +95,6 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         return convertedValue;
-    }
-
-    /**
-     * Takes the start parameter, validates, converts, and applies to the media element
-     *
-     * @return {void}
-     */
-    setStartTime() {
-        if (this.mediaEl && this.startTimeInSeconds > 0 && this.startTimeInSeconds < this.mediaEl.duration) {
-            this.setMediaTime(this.startTimeInSeconds);
-        }
     }
 
     /**
@@ -205,7 +194,7 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
-        this.setStartTime();
+        this.setMediaTime(this.startTimeInSeconds);
         this.handleVolume();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
@@ -406,7 +395,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setMediaTime(time) {
-        this.mediaEl.currentTime = time;
+        if (this.mediaEl && time >= 0 && time <= this.mediaEl.duration) {
+            this.mediaEl.currentTime = time;
+        }
     }
 
     /**
