@@ -772,8 +772,8 @@ class MediaControls extends EventEmitter {
     /**
      * Called when user moves mouse over the scrubber
      *
-     * @param {functon} cb the callback function to be executed
-     * @return {Function} the handler function
+     * @param {Function} cb - the callback function to be executed
+     * @return {Function} - the handler function
      */
     timeScrubberHandler(cb) {
         return (event) => {
