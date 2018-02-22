@@ -1,6 +1,8 @@
 import AssetLoader from '../../AssetLoader';
 import Browser from '../../../Browser';
+import PreviewError from '../../../PreviewError';
 import { replacePlaceholders } from '../../../util';
+import { ERROR_CODE } from '../../../events';
 import Model3DViewer from './Model3DViewer';
 
 const VIEWERS = [
@@ -31,7 +33,7 @@ class Model3DLoader extends AssetLoader {
 
         if (viewer && !Browser.supportsModel3D()) {
             const message = replacePlaceholders(__('error_browser_unsupported'), [__('3d_models')]);
-            throw new Error(message);
+            throw new PreviewError(ERROR_CODE.BROWSER_UNSUPPORTED, message, { file });
         }
 
         return viewer;

@@ -66,7 +66,7 @@ function checkStatus(response) {
     }
 
     const error = new Error(response.statusText);
-    error.response = response;
+    error.response = response; // Need to pass response through so we can see what kind of HTTP error this was
     throw error;
 }
 
@@ -658,9 +658,8 @@ export function replacePlaceholders(string, placeholderValues) {
         // extracting the index that is supposed to replace the matched placeholder
         const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
 
-        /* eslint-disable no-plusplus */
+        // eslint-disable-next-line
         return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
-        /* eslint-enable no-plusplus */
     });
 }
 
@@ -852,12 +851,16 @@ export function getClosestPageToPinch(x, y, visiblePages) {
 /**
  * Strip out auth related fields from a string.
  *
- * @param {string} string - A string containing any auth related fields.
+ * @param {string} str - A string containing any auth related fields.
  * @return {string} A string with [FILTERED] replacing any auth related fields.
  */
-export function stripAuthFromString(string) {
+export function stripAuthFromString(str) {
+    if (typeof str !== 'string') {
+        return str;
+    }
+
     // Strip out "access_token"
-    return string.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
+    return str.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
 }
 
 /**
