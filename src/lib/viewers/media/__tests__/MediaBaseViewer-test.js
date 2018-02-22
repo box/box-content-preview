@@ -3,6 +3,7 @@ import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Cache from '../../../Cache';
+import PreviewError from '../../../PreviewError';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -186,7 +187,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('errorHandler', () => {
+    describe('errorHandler()', () => {
         it('should emit the error and set a display message', () => {
             sandbox.stub(media, 'emit');
             const err = new Error('blah');
@@ -194,8 +195,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.errorHandler(err);
 
-            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(media.emit).to.be.calledWith('error', err);
+            const [ event, error ] = media.emit.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_media');
         });
     });
 

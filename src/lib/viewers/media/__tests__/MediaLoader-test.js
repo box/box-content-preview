@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import MediaLoader from '../MediaLoader';
+import PreviewError from '../../../PreviewError';
 import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
@@ -25,7 +26,7 @@ describe('lib/viewers/media/MediaLoader', () => {
 
             sandbox.stub(util, 'requires360Viewer').returns(true);
             expect(() => MediaLoader.determineViewer(file)).to.throw(
-                Error,
+                PreviewError,
                 /browser doesn't support preview for 360-degree videos/
             );
         });

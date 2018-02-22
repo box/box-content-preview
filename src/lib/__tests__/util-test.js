@@ -775,6 +775,11 @@ describe('lib/util', () => {
             expect(stripAuthFromString(query)).to.equal(queryFiltered);
             expect(stripAuthFromString(random)).to.equal(randomFiltered);
         });
+
+        it('should return passed in param if not string', () => {
+            const obj = { foo: 'bar' };
+            expect(stripAuthFromString(obj)).to.equal(obj);
+        });
     });
 
     describe('getProp()', () => {

@@ -86,10 +86,10 @@ module.exports = (config) => config.set({
 
     frameworks: [
         'mocha',
-        'chai-sinon',
         'chai-dom',
         'chai',
         'sinon',
+        'sinon-chai',
         'fixture'
     ],
 

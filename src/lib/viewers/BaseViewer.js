@@ -30,7 +30,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
-import { createPreviewError } from '../logUtils';
+import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
@@ -280,7 +280,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAssetError(err) {
-        this.triggerError(err);
+        const originalMessage = err ? err.message : '';
+        const error = new PreviewError(ERROR_CODE.LOAD_ASSET, '', {}, originalMessage);
+        this.triggerError(error);
         this.destroyed = true;
     }
 
@@ -293,7 +295,11 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', err instanceof Error ? err : new Error(err || __('error_refresh')));
+        const error =
+            err instanceof PreviewError
+                ? err
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+        this.emit('error', error);
     }
 
     /**
@@ -409,7 +415,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler);
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {});
         }
     }
 
@@ -490,6 +496,22 @@ class BaseViewer extends EventEmitter {
             data,
             viewerName: viewer ? viewer.NAME : '',
             fileId: file.id
+        });
+    }
+
+    /**
+     * Emits a viewer metric
+     *
+     * @protected
+     * @emits metric
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emitMetric(event, data) {
+        super.emit(VIEWER_EVENT.metric, {
+            event,
+            data
         });
     }
 
@@ -730,7 +752,7 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            const error = createPreviewError(ERROR_CODE.annotationsLoadFail);
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
             this.triggerError(error);
             return;
         }

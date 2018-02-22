@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
+import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as file from '../../file';
@@ -77,7 +78,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl).to.have.class('bp');
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
-            expect(base.loadTimeout).to.be.a.number;
+            expect(base.loadTimeout).to.be.a('number');
             expect(base.loadAnnotator).to.be.called;
         });
 
@@ -139,7 +140,7 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('getResizeHandler()', () => {
         it('should return a resize handler', () => {
-            expect(base.getResizeHandler()).to.be.a.function;
+            expect(base.getResizeHandler()).to.be.a('function');
         });
     });
 
@@ -162,7 +163,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(window.clearTimeout).to.be.called;
             expect(window.setTimeout).to.be.called;
-            expect(base.loadTimeoutId).to.be.a.number;
+            expect(base.loadTimeoutId).to.be.a('number');
 
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
@@ -173,7 +174,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should start a timer for the fullDocumentLoadTime metric', () => {
             base.options.file.id = '1234';
             base.startLoadTimer();
-            
+
             const tag = Timer.createTag(base.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
             expect(Timer.get(tag)).to.exist;
         });
@@ -182,26 +183,36 @@ describe('lib/viewers/BaseViewer', () => {
     describe('handleAssetError()', () => {
         it('should trigger error and set destroyed to true', () => {
             sandbox.stub(base, 'triggerError');
-            base.handleAssetError();
+            base.handleAssetError(new Error('test'));
             expect(base.triggerError).to.be.called;
             expect(base.destroyed).to.be.true;
         });
 
         it('should pass along the error if provided', () => {
-            sandbox.stub(base, 'triggerError');
-            base.handleAssetError('error');
-            expect(base.triggerError).to.be.calledWith('error');
+            const stub = sandbox.stub(base, 'triggerError');
+
+            base.handleAssetError(new Error('test'));
+
+            const error = stub.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_asset');
+            expect(error.message).to.equal('test');
         });
     });
 
     describe('triggerError()', () => {
-        it('should emit error event', () => {
-            sandbox.stub(base, 'emit');
+        it('should emit PreviewError event', () => {
+            const stub = sandbox.stub(base, 'emit');
 
             const err = new Error('blah');
             base.triggerError(err);
 
-            expect(base.emit).to.be.calledWith('error', err);
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+            expect(error.message).to.equal('blah');
         });
     });
 

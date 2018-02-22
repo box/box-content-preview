@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Image360Loader from '../Image360Loader';
 import Browser from '../../../../Browser';
+import PreviewError from '../../../../PreviewError';
 
 const sandbox = sinon.sandbox.create();
 
@@ -24,7 +25,7 @@ describe('lib/viewers/box3d/image360/Image360Loader', () => {
 
         it('should throw an error if browser does not support WebGL', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(false);
-            expect(() => Image360Loader.determineViewer(file)).to.throw(Error, /support preview for 360-degree images/);
+            expect(() => Image360Loader.determineViewer(file)).to.throw(PreviewError, /support preview for 360-degree images/);
         });
 
         it('should return viewer if 360 is properly supported', () => {
