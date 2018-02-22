@@ -8,8 +8,9 @@ export const VIEWER_EVENT = {
     notificationShow: 'notificationshow', // Show notification modal.
     notificationHide: 'notificationhide', // Hide notification modal.
     mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
-    error: 'error', // When an error occurs
-    default: 'viewerevent' // The default viewer event
+    error: 'error', // When an error occurs.
+    default: 'viewerevent', // The default viewer event.
+    metric: 'viewermetric' // A viewer metric.
 };
 
 // Error codes logged by preview with "preview_error" events

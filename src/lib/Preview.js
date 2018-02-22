@@ -1054,6 +1054,7 @@ class Preview extends EventEmitter {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener(VIEWER_EVENT.default, this.handleViewerEvents);
+        this.viewer.addListener(VIEWER_EVENT.metric, this.handleViewerMetrics);
     }
 
     /**
@@ -1099,6 +1100,23 @@ class Preview extends EventEmitter {
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
         }
+    }
+
+    /**
+     * Handle metrics emitted by the viewer
+     *
+     * @private
+     * @param {Object} [data] - Viewer metric data
+     * @return {void}
+     */
+    handleViewerMetrics(data) {
+        const formattedEvent = {
+            event_name: data.event,
+            value: data.data,
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, formattedEvent);
     }
 
     /**
