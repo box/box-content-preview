@@ -84,6 +84,7 @@ class MediaControls extends EventEmitter {
         this.handleAutoplay = this.handleAutoplay.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
+        this.timeScrubberHandler = this.timeScrubberHandler.bind(this);
 
         this.setDuration(this.mediaEl.duration);
         this.setupSettings();
@@ -106,10 +107,13 @@ class MediaControls extends EventEmitter {
             this.removeVolumeScrubberWrapperExpansionHandlers();
         }
 
+        if (this.timeScrubberEl) {
+            this.timeScrubberEl.removeEventListener('mousemove', this.timeScrubberElShowHandler);
+            this.timeScrubberEl.removeEventListener('mouseleave', this.filmstripHideHandler);
+        }
+
         if (this.timeScrubber) {
             this.timeScrubber.getHandleEl().removeEventListener('mousedown', this.timeScrubbingStartHandler);
-            this.timeScrubber.getConvertedEl().removeEventListener('mousemove', this.filmstripShowHandler);
-            this.timeScrubber.getConvertedEl().removeEventListener('mouseleave', this.filmstripHideHandler);
             this.timeScrubber.destroy();
             this.timeScrubber = undefined;
         }
@@ -170,6 +174,7 @@ class MediaControls extends EventEmitter {
         this.filmstripContainerEl = undefined;
         this.filmstripEl = undefined;
         this.filmstripTimeEl = undefined;
+        this.timeScrubberElShowHandler = undefined;
     }
 
     /**
@@ -723,6 +728,8 @@ class MediaControls extends EventEmitter {
     initFilmstrip(url, status, aspect, interval) {
         this.filmstripUrl = url;
         this.filmstripInterval = interval;
+        // event delegation for playerEl & convertedEl
+        this.timeScrubberElShowHandler = this.timeScrubberHandler(this.filmstripShowHandler);
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
         this.filmstripContainerEl.className = 'bp-media-filmstrip-container';
@@ -748,8 +755,8 @@ class MediaControls extends EventEmitter {
             this.timeScrubberEl.addEventListener('touchstart', this.timeScrubbingStartHandler);
         }
 
-        this.timeScrubber.getConvertedEl().addEventListener('mousemove', this.filmstripShowHandler);
-        this.timeScrubber.getConvertedEl().addEventListener('mouseleave', this.filmstripHideHandler);
+        this.timeScrubberEl.addEventListener('mousemove', this.timeScrubberElShowHandler);
+        this.timeScrubberEl.addEventListener('mouseleave', this.filmstripHideHandler);
 
         this.filmstripEl.onload = () => {
             if (this.filmstripContainerEl) {
@@ -760,6 +767,22 @@ class MediaControls extends EventEmitter {
 
         // Once the filmstrip status is success, load it
         status.getPromise().then(this.setFilmstrip);
+    }
+
+    /**
+     * Called when user moves mouse over the scrubber
+     *
+     * @param {functon} cb the callback function to be executed
+     * @return {Function} the handler function
+     */
+    timeScrubberHandler(cb) {
+        return (event) => {
+            const { target } = event;
+            const { playedEl, convertedEl } = this.timeScrubber;
+            if (target === convertedEl || target === playedEl) {
+                cb(event);
+            }
+        };
     }
 
     /**
