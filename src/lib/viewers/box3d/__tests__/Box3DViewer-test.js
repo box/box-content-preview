@@ -377,7 +377,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             expect(box3d.createSubModules).to.be.called;
             expect(box3d.attachEventHandlers).to.be.called;
-            expect(box3d.boxSdk).to.be.an.object;
+            expect(box3d.boxSdk).to.be.a('object');
         });
 
         it('should call renderer.load() with the entities.json file and options', () => {

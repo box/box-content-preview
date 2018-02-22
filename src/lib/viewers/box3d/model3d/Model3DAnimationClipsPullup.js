@@ -91,7 +91,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Get the number of clips in this pullup.
-     * 
+     *
      * @public
      * @return {number} The number of clips in this pullup.
      */
@@ -101,7 +101,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Get the clip ID for the clip at the specified index.
-     * 
+     *
      * @public
      * @param {number} index - The clip index.
      * @return {string} The clip ID.
@@ -112,7 +112,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Handle clicks on clips.
-     * 
+     *
      * @private
      * @param {Event} event - The click event.
      * @return {void}
@@ -126,7 +126,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Hide this pullup.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -136,7 +136,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Left-pad the specified integer with zeroes.
-     * 
+     *
      * @private
      * @param {number} x - The integer to pad with zeroes.
      * @param {number} width - The total number of characters in the padded string.
@@ -148,7 +148,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Reset this pullup to its default state.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -160,7 +160,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Select the specified clip, firing EVENT_SELECT_ANIMATION_CLIP.
-     * 
+     *
      * @public
      * @param {string} selectedClipId - The ID of the clip to select.
      * @return {void}
@@ -177,7 +177,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Show this pullup.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -187,7 +187,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Toggle the visibility of this pullup.
-     * 
+     *
      * @public
      * @return {void}
      */

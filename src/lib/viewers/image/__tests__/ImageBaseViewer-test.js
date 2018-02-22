@@ -3,6 +3,7 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
+import PreviewError from '../../../PreviewError';
 import * as util from '../../../util';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
@@ -535,14 +536,16 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.emit = sandbox.stub(imageBase, 'emit');
         });
 
-        it('should console log error and emit with generic display error message', () => {
+        it('should console log error and emit preview error', () => {
             const err = new Error('blah');
             sandbox.mock(window.console).expects('error').withArgs(err);
 
             imageBase.errorHandler(err);
 
-            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(stubs.emit).to.have.been.calledWith('error', err);
+            const [ event, error ] = stubs.emit.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_image_sizing');
         });
     });
 

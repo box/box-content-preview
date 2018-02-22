@@ -1,11 +1,12 @@
 import VideoBaseViewer from './VideoBaseViewer';
+import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
 import { appendQueryParams, get } from '../../util';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
-import './Dash.scss';
 import getLanguageName from '../../lang';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -346,12 +347,14 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     shakaErrorHandler(shakaError) {
-        const error = new Error(
+        const error = new PreviewError(
+            ERROR_CODE.SHAKA,
+            __('error_refresh'),
+            {},
             `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${
                 shakaError.detail.severity
             }, Data = ${shakaError.detail.data.toString()}`
         );
-        error.displayMessage = __('error_refresh');
 
         if (shakaError.detail.severity > 1) {
             // critical error

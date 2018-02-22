@@ -1,15 +1,11 @@
 import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
-import { createPreviewError } from './logUtils';
+import PreviewError from './PreviewError';
 import Timer from './Timer';
-import { LOAD_METRIC } from './events';
+import { ERROR_CODE, LOAD_METRIC } from './events';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
-
-const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
-const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
-const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
 
 class RepStatus extends EventEmitter {
     /**
@@ -113,21 +109,21 @@ class RepStatus extends EventEmitter {
      */
     handleResponse() {
         const status = RepStatus.getStatus(this.representation);
-        const errCode = RepStatus.getErrorCode(this.representation);
+        const convertTag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
+        const code = RepStatus.getErrorCode(this.representation);
         let errorMessage;
         let error;
-        const convertTag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
 
         switch (status) {
             case 'error':
-                switch (errCode) {
-                    case ERROR_PASSWORD_PROTECTED:
+                switch (code) {
+                    case ERROR_CODE.CONVERSION_PASSWORD_PROTECTED:
                         errorMessage = __('error_password_protected');
                         break;
-                    case ERROR_TRY_AGAIN_LATER:
+                    case ERROR_CODE.CONVERSION_TRY_AGAIN_LATER:
                         errorMessage = __('error_try_again_later');
                         break;
-                    case ERROR_UNSUPPORTED_FORMAT:
+                    case ERROR_CODE.CONVERSION_UNSUPPORTED_FORMAT:
                         errorMessage = __('error_bad_file');
                         break;
                     default:
@@ -135,7 +131,7 @@ class RepStatus extends EventEmitter {
                         break;
                 }
 
-                error = createPreviewError(errCode, errorMessage, this.representation);
+                error = new PreviewError(code, errorMessage, { representation: this.representation });
                 this.reject(error);
                 break;
 
