@@ -325,10 +325,6 @@ class ImageBaseViewer extends BaseViewer {
 
         // Display a generic error message but log the real one
         const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), {}, err.message);
-        if (err instanceof Error) {
-            error.displayMessage = __('error_refresh');
-        }
-
         super.handleDownloadError(error, imgUrl);
     }
 

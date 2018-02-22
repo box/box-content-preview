@@ -1,7 +1,6 @@
 // Events emitted by Viewers
 export const VIEWER_EVENT = {
     download: 'download', // Begin downloading the file.
-    unreachableDownloadNotification: 'unreachabledownloadnotification', // Notification that download host is not reachable is displayed to the user.
     reload: 'reload', // Reload preview.
     load: 'load', // Preview is finished loading.
     progressStart: 'progressstart', // Begin using loading indicator.
@@ -54,4 +53,10 @@ export const LOAD_METRIC = {
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
     fullDocumentLoadTime: 'full_document_load_time' // How long it took to load the document so it could be previewed.
+};
+
+// Events around download reachability
+export const DOWNLOAD_REACHABILITY_METRICS = {
+    NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
+    DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked'
 };

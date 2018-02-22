@@ -10,7 +10,7 @@ describe('lib/util', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
-    
+
     describe('get()', () => {
         let url;
         beforeEach(() => {

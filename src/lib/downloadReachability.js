@@ -6,6 +6,18 @@ const NUMBERED_HOST_PREFIX_REGEX = /^https:\/\/dl\d+\./;
 const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/[A-Za-z0-9]+./;
 
 /**
+ * Extracts the hostname from a URL
+ *
+ * @param {string} downloadUrl - Content download URL, may either be a template or an actual URL
+ * @return {string} The hoostname of the given URL
+ */
+export function getHostnameFromUrl(downloadUrl) {
+    const contentHost = document.createElement('a');
+    contentHost.href = downloadUrl;
+    return contentHost.hostname;
+}
+
+/**
  * Checks if the url is a download host, but not the default download host.
  *
  * @public
@@ -76,18 +88,16 @@ export function setDownloadHostNotificationShown(downloadHost) {
  * Determines what notification should be shown if needed.
  *
  * @public
- * @param {string} contentTemplate - Content download URL template
+ * @param {string} downloadUrl - Content download URL
  * @return {string|undefined} Which host should we show a notification for, if any
  */
-export function downloadNotificationToShow(contentTemplate) {
-    const contentHost = document.createElement('a');
-    contentHost.href = contentTemplate;
-    const contentHostname = contentHost.hostname;
+export function downloadNotificationToShow(downloadUrl) {
+    const contentHostname = getHostnameFromUrl(downloadUrl);
     const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
 
     return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true' &&
         !shownHostsArr.includes(contentHostname) &&
-        isCustomDownloadHost(contentTemplate)
+        isCustomDownloadHost(downloadUrl)
         ? contentHostname
         : undefined;
 }
@@ -99,7 +109,12 @@ export function downloadNotificationToShow(contentTemplate) {
  * @return {void}
  */
 export function setDownloadReachability(downloadUrl) {
-    return fetch(downloadUrl, { method: 'HEAD' }).catch(() => {
-        setDownloadHostFallback();
-    });
+    return fetch(downloadUrl, { method: 'HEAD' })
+        .then(() => {
+            return Promise.resolve(false);
+        })
+        .catch(() => {
+            setDownloadHostFallback();
+            return Promise.resolve(true);
+        });
 }

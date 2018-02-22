@@ -21,7 +21,8 @@ import {
     isCustomDownloadHost,
     replaceDownloadHostWithDefault,
     setDownloadHostNotificationShown,
-    downloadNotificationToShow
+    downloadNotificationToShow,
+    getHostnameFromUrl
 } from '../downloadReachability';
 
 import Browser from '../Browser';
@@ -40,7 +41,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -313,10 +314,6 @@ class BaseViewer extends EventEmitter {
      */
     handleDownloadError(err, downloadURL) {
         if (this.hasRetriedContentDownload) {
-            /* eslint-disable no-console */
-            console.error(err);
-            /* eslint-enable no-console */
-
             this.triggerError(err);
             return;
         }
@@ -325,7 +322,11 @@ class BaseViewer extends EventEmitter {
         this.load();
 
         if (isCustomDownloadHost(downloadURL)) {
-            setDownloadReachability(downloadURL);
+            setDownloadReachability(downloadURL).then((isBlocked) => {
+                if (isBlocked) {
+                    this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED, getHostnameFromUrl(downloadURL));
+                }
+            });
         }
     }
 
@@ -389,9 +390,8 @@ class BaseViewer extends EventEmitter {
      */
     createContentUrl(template, asset) {
         if (this.hasRetriedContentDownload) {
-            /* eslint-disable no-param-reassign */
+            // eslint-disable-next-line
             template = replaceDownloadHostWithDefault(template);
-            /* eslint-enable no-param-reassign */
         }
 
         // Append optional query params
@@ -469,6 +469,9 @@ class BaseViewer extends EventEmitter {
             );
 
             setDownloadHostNotificationShown(downloadHostToNotify);
+            this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.NOTIFICATION_SHOWN, {
+                host: downloadHostToNotify
+            });
         }
 
         if (event && event.scale) {

@@ -208,6 +208,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(dr, 'isCustomDownloadHost');
             sandbox.stub(dr, 'setDownloadReachability');
             sandbox.stub(base, 'load');
+            sandbox.stub(base, 'emitMetric');
         });
 
         it('should trigger an error  if we have already retried', () => {
@@ -228,6 +229,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.hasRetriedContentDownload = false;
             // Now try on a custom host
             dr.isCustomDownloadHost.returns(true);
+            dr.setDownloadReachability.returns(Promise.resolve(true))
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
             expect(dr.setDownloadReachability).to.be.called;
 

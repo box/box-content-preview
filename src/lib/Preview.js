@@ -169,6 +169,7 @@ class Preview extends EventEmitter {
         this.handleFileInfoResponse = this.handleFileInfoResponse.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
         this.handleViewerEvents = this.handleViewerEvents.bind(this);
+        this.handleViewerMetrics = this.handleViewerMetrics.bind(this);
         this.triggerError = this.triggerError.bind(this);
         this.throttledMousemoveHandler = this.getGlobalMousemoveHandler().bind(this);
         this.navigateLeft = this.navigateLeft.bind(this);
@@ -499,8 +500,8 @@ class Preview extends EventEmitter {
             } else {
                 // Try the custom host, then check reachability
                 openUrlInsideIframe(data.download_url);
-                setDownloadReachability(data.download_url).then(() => {
-                    if (isDownloadHostBlocked()) {
+                setDownloadReachability(data.download_url).then((isBlocked) => {
+                    if (isBlocked) {
                         // If download is unreachable, try again with default
                         openUrlInsideIframe(defaultDownloadUrl);
                     }

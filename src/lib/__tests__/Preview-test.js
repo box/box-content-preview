@@ -746,7 +746,7 @@ describe('lib/Preview', () => {
                 }
             });
 
-            stubs.reachabilityPromise = Promise.resolve({});
+            stubs.reachabilityPromise = Promise.resolve(true);
 
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
@@ -788,13 +788,11 @@ describe('lib/Preview', () => {
 
         it('should check download reachability and fallback if we do not know the status of our custom host', () => {
             stubs.checkPermission.returns(true);
-            stubs.isDownloadHostBlocked.returns(false);
             stubs.isCustomDownloadHost.returns(true);
 
             preview.download();
             return stubs.promise.then((data) => {
                 expect(stubs.openUrlInsideIframe).to.be.calledWith(data.download_url);
-                stubs.isDownloadHostBlocked.returns(true);
                 return stubs.reachabilityPromise.then(() => {
                     expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
                 });

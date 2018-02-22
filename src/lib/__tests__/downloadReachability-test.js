@@ -50,12 +50,12 @@ describe('lib/downloadReachability', () => {
 
     describe('replaceDownloadHostWithDefault()', () => {
         it('should add the given host to the array of shown hosts', () => {
-            // const blockedHost = 'https://dl3.boxcloud.com';
+            const blockedHost = 'https://dl3.boxcloud.com';
 
-            // const result = dr.setDownloadHostNotificationShown(blockedHost);
+            const result = dr.setDownloadHostNotificationShown(blockedHost);
 
-            // const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
-            // expect(shownHostsArr).to.contain('https://dl3.boxcloud.com');
+            const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+            expect(shownHostsArr).to.contain('https://dl3.boxcloud.com');
         });
     });
         
@@ -127,8 +127,4 @@ describe('lib/downloadReachability', () => {
 
         });
     });
-
-
-
-
 });
