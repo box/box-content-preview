@@ -8,6 +8,7 @@ import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
+import PreviewError from './PreviewError';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
@@ -51,13 +52,13 @@ import {
     FILE_OPTION_FILE_VERSION_ID
 } from './constants';
 import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
+import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
-import { getClientLogDetails, createPreviewError, getISOTime } from './logUtils';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE_MS = 1500; // for showing or hiding the navigation icons
-const RETRY_COUNT = 5; // number of times to retry network request for a file
+const RETRY_COUNT = 3; // number of times to retry network request for a file
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
 const LOG_RETRY_TIMEOUT_MS = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
@@ -247,9 +248,8 @@ class Preview extends EventEmitter {
     reload(skipServerUpdate) {
         // If not passed in, default to Preview option for skipping server update
         if (typeof skipServerUpdate === 'undefined') {
-            /* eslint-disable prefer-destructuring, no-param-reassign */
+            // eslint-disable-next-line
             skipServerUpdate = this.options.skipServerUpdate;
-            /* eslint-enable prefer-destructuring, no-param-reassign */
         }
 
         // Reload preview without fetching updated file info from server
@@ -338,11 +338,10 @@ class Preview extends EventEmitter {
                 cacheFile(this.cache, file);
             } else {
                 const message = '[Preview SDK] Tried to cache invalid file';
-                /* eslint-disable no-console */
+                // eslint-disable-next-line
                 console.error(`${message}: `, file);
-                /* eslint-enable no-console */
 
-                const err = createPreviewError(ERROR_CODE.invalidCacheAttempt, message, file);
+                const err = new PreviewError(ERROR_CODE.INVALID_CACHE_ATTEMPT, message, { file });
                 this.emitPreviewError(err);
             }
         });
@@ -544,11 +543,11 @@ class Preview extends EventEmitter {
                 return;
             }
         } catch (err) {
-            /* eslint-disable no-console */
-            console.error(`Error prefetching file ID ${fileId} - ${err}`);
-            /* eslint-enable no-console */
+            const message = `Error prefetching file ID ${fileId} - ${err}`;
+            // eslint-disable-next-line
+            console.error(message);
 
-            const error = createPreviewError(ERROR_CODE.prefetchFile, null, err);
+            const error = new PreviewError(ERROR_CODE.PREFETCH_FILE, message, {}, err.message);
             this.emitPreviewError(error);
 
             return;
@@ -674,7 +673,10 @@ class Preview extends EventEmitter {
             }
             /* eslint-enable camelcase */
         } else {
-            throw new Error(
+            throw new PreviewError(
+                ERROR_CODE.BAD_INPUT,
+                __('error_generic'),
+                {},
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
             );
         }
@@ -929,12 +931,11 @@ class Preview extends EventEmitter {
 
             // If file is not downloadable, trigger an error
             if (file.is_download_available === false) {
-                const error = createPreviewError(ERROR_CODE.notDownloadable, __('error_not_downloadable'), null, {
+                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), {
                     linkText: __('link_contact_us'),
                     linkUrl: SUPPORT_URL
                 });
-                this.triggerError(error);
-                return;
+                throw error;
             }
 
             // Keep reference to previously cached file version
@@ -962,7 +963,12 @@ class Preview extends EventEmitter {
                 this.reload(true); // Reload viewer without fetching updated file info from server
             }
         } catch (err) {
-            this.triggerError(err instanceof Error ? err : new Error(__('error_refresh')));
+            const error =
+                err instanceof PreviewError
+                    ? err
+                    : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+
+            this.triggerError(error);
         }
     }
 
@@ -981,7 +987,7 @@ class Preview extends EventEmitter {
 
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
-            throw new Error(__('error_permissions'));
+            throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
         }
 
         // Show download button if download permissions exist, options allow, and browser has ability
@@ -999,11 +1005,12 @@ class Preview extends EventEmitter {
                 return viewer.EXT.indexOf(this.file.extension) > -1;
             });
 
-            throw new Error(
-                isFileTypeSupported
-                    ? __('error_account')
-                    : replacePlaceholders(__('error_unsupported'), [`.${this.file.extension}`])
-            );
+            const code = isFileTypeSupported ? ERROR_CODE.ACCOUNT : ERROR_CODE.UNSUPPORTED_FILE_TYPE;
+            const message = isFileTypeSupported
+                ? __('error_account')
+                : replacePlaceholders(__('error_unsupported'), [`.${this.file.extension}`]);
+
+            throw new PreviewError(code, message);
         }
 
         // Determine the viewer to use
@@ -1050,6 +1057,7 @@ class Preview extends EventEmitter {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener(VIEWER_EVENT.default, this.handleViewerEvents);
+        this.viewer.addListener(VIEWER_EVENT.metric, this.handleViewerMetrics);
     }
 
     /**
@@ -1095,6 +1103,23 @@ class Preview extends EventEmitter {
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
         }
+    }
+
+    /**
+     * Handle metrics emitted by the viewer
+     *
+     * @private
+     * @param {Object} [data] - Viewer metric data
+     * @return {void}
+     */
+    handleViewerMetrics(data) {
+        const formattedEvent = {
+            event_name: data.event,
+            value: data.data,
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, formattedEvent);
     }
 
     /**
@@ -1242,22 +1267,23 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
-            let errorCode = ERROR_CODE.retriesExceeded;
+            let errorCode = ERROR_CODE.EXCEEDED_RETRY_LIMIT;
             let errorMessage = __('error_refresh');
+
             if (err.response && err.response.status === 429) {
-                errorCode = ERROR_CODE.rateLimit;
+                errorCode = ERROR_CODE.RATE_LIMIT;
                 errorMessage = __('error_rate_limit');
             }
 
-            const error = createPreviewError(errorCode, errorMessage, this.file.id);
+            const error = new PreviewError(errorCode, errorMessage, { fileId: this.file.id });
             this.triggerError(error);
             return;
         }
 
         clearTimeout(this.retryTimeout);
 
-        // Respect 'Retry-After' header if present, otherwise retry using exponential backoff
-        let timeoutMs = 2 ** this.retryCount * MS_IN_S;
+        // Respect 'Retry-After' header if present, otherwise retry full jitter
+        let timeoutMs = Math.random() * (2 ** this.retryCount * MS_IN_S);
         if (err.headers) {
             const retryAfterS = parseInt(err.headers.get('Retry-After'), 10);
             if (!Number.isNaN(retryAfterS)) {
@@ -1274,7 +1300,7 @@ class Preview extends EventEmitter {
      * Instantiate the error viewer
      *
      * @private
-     * @return {PreviewError} PreviewError instance
+     * @return {PreviewErrorViewer} PreviewErrorViewer instance
      */
     getErrorViewer() {
         return new PreviewErrorViewer(
@@ -1347,20 +1373,22 @@ class Preview extends EventEmitter {
      * Message, to any listeners of Preview, that an error has occurred.
      *
      * @private
-     * @param {Error} error - The error that occurred.
+     * @param {PreviewError} error - The error that occurred.
      * @return {void}
      */
     emitPreviewError(error) {
-        const err = error;
+        const sanitizedError = error;
 
         // If we haven't supplied a code, then it was thrown by the browser
-        err.code = error.code || ERROR_CODE.browserError;
-        // Make sure to strip auth, if it's a string.
-        err.message = typeof error.message === 'string' ? stripAuthFromString(error.message) : error.message;
-        err.displayMessage = typeof error.displayMessage === 'string' ? stripAuthFromString(error.displayMessage) : '';
+        sanitizedError.code = error.code || ERROR_CODE.BROWSER_GENERIC;
+
+        // Strip auth from messages
+        const { displayMessage, message } = sanitizedError;
+        sanitizedError.displayMessage = stripAuthFromString(displayMessage);
+        sanitizedError.message = stripAuthFromString(message);
 
         const errorLog = {
-            error: err,
+            error: sanitizedError,
             ...this.createLogEvent()
         };
 
@@ -1493,25 +1521,27 @@ class Preview extends EventEmitter {
                         })
                         .catch((err) => {
                             const message = `Error prefetching file ID ${fileId} - ${err}`;
-                            /* eslint-disable no-console */
+                            // eslint-disable-next-line
                             console.error(message);
-                            /* eslint-enable no-console */
 
-                            const error = createPreviewError(ERROR_CODE.prefetchFile, message, {
-                                fileId,
-                                error: err
-                            });
+                            const error = new PreviewError(ERROR_CODE.PREFETCH_FILE, message, { fileId }, err.message);
                             this.emitPreviewError(error);
                         });
                 });
             })
-            .catch(() => {
-                const message = 'Error prefetching files';
-                /* eslint-disable no-console */
+            .catch((err) => {
+                const message = `Error prefetching files - ${err}`;
+                // eslint-disable-next-line
                 console.error(message);
-                /* eslint-enable no-console */
 
-                const error = createPreviewError(ERROR_CODE.prefetchFile, message, filesToPrefetch);
+                const error = new PreviewError(
+                    ERROR_CODE.PREFETCH_FILE,
+                    message,
+                    {
+                        fileIds: filesToPrefetch
+                    },
+                    err.message
+                );
                 this.emitPreviewError(error);
             });
     }

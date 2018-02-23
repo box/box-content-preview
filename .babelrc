@@ -1,4 +1,3 @@
-// Configuration for Babel transpilation
 {
     "presets": [
         ["es2015", { "modules": false }],
@@ -7,7 +6,8 @@
     ],
     "plugins": [
         "transform-class-properties",
-        "transform-object-rest-spread"
+        "transform-object-rest-spread",
+        ["babel-plugin-transform-builtin-extend", { "globals": ["Error"] }]
     ],
     "env": {
         "test": {
@@ -22,8 +22,7 @@
                         "src/lib/viewers/box3d/model3d/model3DSettingsPullup.js",
                         "src/lib/viewers/box3d/model3d/Model3DVrControls.js",
                         "src/lib/viewers/box3d/**/SceneEntities.js",
-                        "src/lib/viewers/box3d/**Constants.js",
-                        "src/lib/viewers/doc/doc-preloader.js"
+                        "src/lib/viewers/box3d/**Constants.js"
                     ]
                 }],
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]

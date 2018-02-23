@@ -2,8 +2,9 @@ import debounce from 'lodash/debounce';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
+import PreviewError from '../../PreviewError';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
 
 const CSS_CLASS_MEDIA = 'bp-media';
@@ -33,7 +34,6 @@ class MediaBaseViewer extends BaseViewer {
         this.resetPlayIcon = this.resetPlayIcon.bind(this);
         this.seekHandler = this.seekHandler.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
-        this.errorHandler = this.errorHandler.bind(this);
         this.containerClickHandler = this.containerClickHandler.bind(this);
         this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
         this.setVolume = this.setVolume.bind(this);
@@ -226,16 +226,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     errorHandler(err) {
-        /* eslint-disable no-console */
+        // eslint-disable-next-line
         console.error(err);
-        /* eslint-enable no-console */
 
         // Display a generic error message but log the real one
-        const error = err;
-        if (err instanceof Error) {
-            error.displayMessage = __('error_refresh');
-        }
-
+        const error = new PreviewError(ERROR_CODE.LOAD_MEDIA, __('error_refresh'), {}, err.message);
         this.emit('error', error);
     }
 

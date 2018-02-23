@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import DocBaseViewer from '../DocBaseViewer';
+import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
@@ -406,7 +407,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set findBar to a function if viewer option disableFindBar is not set', () => {
             docBase.initFind();
-            expect(docBase.findBar).to.be.a.function;
+            expect(docBase.findBar).to.be.instanceof(DocFindBar);
         });
     });
 
@@ -1283,7 +1284,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 numPages: 5,
                 scale: sinon.match.any
             });
-            expect(docBase.loaded).to.be.truthy;
+            expect(docBase.loaded).to.be.true;
         });
 
         it('should set the start page based', () => {
