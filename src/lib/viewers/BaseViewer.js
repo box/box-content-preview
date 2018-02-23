@@ -500,6 +500,22 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Emits a viewer metric
+     *
+     * @protected
+     * @emits metric
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emitMetric(event, data) {
+        super.emit(VIEWER_EVENT.metric, {
+            event,
+            data
+        });
+    }
+
+    /**
      * Handles the beginning of a pinch to zoom event on mobile.
      * Although W3 strongly discourages the prevention of pinch to zoom,
      * we still meet the WCAG's requirement of a 200% zoom on text.

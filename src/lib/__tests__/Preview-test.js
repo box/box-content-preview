@@ -1511,6 +1511,7 @@ describe('lib/Preview', () => {
             preview.attachViewerListeners();
             expect(preview.viewer.addListener).to.be.calledWith('error', sinon.match.func);
             expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.default, sinon.match.func);
+            expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.metric, sinon.match.func);
         });
     });
 
@@ -1588,6 +1589,24 @@ describe('lib/Preview', () => {
             };
             preview.handleViewerEvents(data);
             expect(preview.emit).to.not.be.called;
+        });
+    });
+
+    describe('handleViewerMetrics()', () => {
+        it('should create a formatted event and emit a preview_metric', () => {
+            sandbox.stub(preview, 'createLogEvent');
+            sandbox.stub(preview, 'emit');
+            const fakeEvent = {
+                event: 'test',
+                data: 7
+            }
+
+            const fakeLog = {
+                event_name: fakeEvent.event,
+                value: fakeEvent.data
+            }
+            preview.handleViewerMetrics(fakeEvent);
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
         });
     });
 
