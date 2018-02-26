@@ -811,8 +811,10 @@ class BaseViewer extends EventEmitter {
             return false;
         }
 
-        const canViewAnnotations = !!(permissions.can_view_annotations_all || permissions.can_view_annotations_self);
-        return !permissions.can_annotate && !canViewAnnotations;
+        const { can_annotate, can_view_annotations_all, can_view_annotations_self } = permissions;
+
+        // eslint-disable-next-line
+        return can_annotate || can_view_annotations_all || can_view_annotations_self;
     }
 
     /**
