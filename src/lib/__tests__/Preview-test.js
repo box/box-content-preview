@@ -298,7 +298,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            let files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
+            let files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -809,6 +809,12 @@ describe('lib/Preview', () => {
             const fileId = '123';
             preview.load(fileId);
             expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId });
+        });
+
+        it('should fetch file from cache and convert file id to string when file id passed as a number', () => {
+            const fileId = 123;
+            preview.load(fileId);
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId : fileId.toString() });
         });
 
         it('should fetch file from cache using file version ID as key if file version ID is in options', () => {

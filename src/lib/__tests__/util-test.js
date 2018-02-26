@@ -812,4 +812,26 @@ describe('lib/util', () => {
             expect(util.getProp(a, 'foo.bar', 'default')).to.equal('default');
         });
     });
+
+    describe('isValidFileId()', () => {
+        it('should be valid if fileId is a numeric string', () => {
+            expect(util.isValidFileId('1')).to.be.true;
+        });
+
+        it('should be valid if fileId is a number', () => {
+            expect(util.isValidFileId(1)).to.be.true;
+        });
+
+        it('should be invalid if fileId is undefined', () => {
+            expect(util.isValidFileId()).to.be.false;
+        });
+
+        it('should be invalid if fileId is NaN', () => {
+            expect(util.isValidFileId(NaN)).to.be.false;
+        });
+
+        it('should be invalid if fileId is a mixed string', () => {
+            expect(util.isValidFileId('1234foo')).to.be.false;
+        });
+    });
 });
