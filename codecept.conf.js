@@ -57,7 +57,6 @@ if (typeof SAUCE_USERNAME === 'undefined') {
             platformName: BROWSER_PLATFORM
 
         });
-        console.log(sauceObj.desiredCapabilities)
         helperObj.Appium = mixedInSauceObj;
     }
 }
