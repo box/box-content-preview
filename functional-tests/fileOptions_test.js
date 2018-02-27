@@ -2,7 +2,7 @@ const {
     SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_MEDIA_TIMESTAMP,
     SELECTOR_DOC_CURRENT_PAGE,
-    SELECTOR_BOX_PREIVIEW_LOGO,
+    SELECTOR_BOX_PREVIEW_LOGO,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_DOC,
     SELECTOR_BOX_PREVIEW_MP3,
@@ -24,7 +24,7 @@ Feature('File Options', { retries: CI ? 3 : 0 });
 Before((I) => {
     I.amOnPage('/functional-tests/file-options.html');
     I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
-    I.waitForElement(SELECTOR_BOX_PREIVIEW_LOGO);
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOGO);
     I.waitForElement(SELECTOR_BOX_PREVIEW_DOC);
 });
 
