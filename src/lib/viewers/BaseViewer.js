@@ -814,7 +814,7 @@ class BaseViewer extends EventEmitter {
         const { can_annotate, can_view_annotations_all, can_view_annotations_self } = permissions;
 
         // eslint-disable-next-line
-        return can_annotate || can_view_annotations_all || can_view_annotations_self;
+        return !!(can_annotate || can_view_annotations_all || can_view_annotations_self);
     }
 
     /**
