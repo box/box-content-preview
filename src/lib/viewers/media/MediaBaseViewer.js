@@ -86,6 +86,7 @@ class MediaBaseViewer extends BaseViewer {
 
         if (unit === SECONDS_UNIT_NAME) {
             convertedValue = parseFloat(value, 10);
+
             if (convertedValue < 0) {
                 // Negative values aren't allowed, start from beginning
                 return INITIAL_TIME_IN_SECONDS;

@@ -150,7 +150,6 @@ class DashViewer extends VideoBaseViewer {
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
-
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {

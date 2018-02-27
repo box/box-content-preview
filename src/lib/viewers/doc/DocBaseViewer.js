@@ -173,6 +173,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (unit === PAGES_UNIT_NAME) {
             convertedValue = parseInt(value, 10);
+
             if (!convertedValue || convertedValue < 1) {
                 // Negative values aren't allowed, fall back to default behavior
                 return undefined;
@@ -264,7 +265,6 @@ class DocBaseViewer extends BaseViewer {
     load() {
         this.setup();
         super.load();
-
         this.showPreload();
 
         const template = this.options.representation.content.url_template;
