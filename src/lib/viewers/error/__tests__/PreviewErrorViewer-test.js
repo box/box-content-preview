@@ -2,6 +2,7 @@
 import PreviewErrorViewer from '../PreviewErrorViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
+import PreviewError from '../../../PreviewError';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 import * as icons from '../../../icons/icons';
@@ -67,8 +68,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 const extension = testCase[0];
                 const hasCustomIcon = testCase[1];
 
-                const err = new Error();
-                err.displayMessage = 'reason';
+                const err = new PreviewError('some_code');
                 error.options.file.extension = extension;
                 error.load(err);
 
@@ -76,8 +76,22 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 if (hasCustomIcon) {
                     expect(getIconFromExtensionStub).to.be.calledWith(extension);
                 }
-                expect(error.messageEl.textContent).to.equal(err.displayMessage);
             });
+        });
+
+        it('should add link button if error has linkText and linkUrl defined', () => {
+            sandbox.stub(error, 'addLinkButton');
+            sandbox.stub(error, 'addDownloadButton');
+
+            const err = new PreviewError('some_error_code', '', {
+                linkText: 'test',
+                linkUrl: 'someUrl'
+            });
+
+            error.load(err);
+
+            expect(error.addLinkButton).to.be.calledWith('test', 'someUrl');
+            expect(error.addDownloadButton).to.not.be.called;
         });
 
         it('should add download button if file has permissions and showDownload option is set', () => {
@@ -110,15 +124,10 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             expect(error.addDownloadButton).to.not.be.called;
         });
 
-        it('set the display message to the fallback error if the original display message is not a string', () => {
-            const err = new Error();
-            err.displayMessage = {
-                error: 'error!'
-            };
-
+        it('should set the display message', () => {
+            const err = new PreviewError('some_error_code', 'error!');
             error.load(err);
-
-            expect(error.messageEl.textContent).to.equal(__('error_generic'));
+            expect(error.messageEl.textContent).to.equal('error!');
         });
 
         it('should not add download button if the browser cannot download', () => {
@@ -132,10 +141,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
         it('should broadcast the log message', () => {
             sandbox.stub(error, 'emit');
-
-            const err = new Error();
-            err.displayMessage = 'reason';
-            err.message = 'this is bad';
+            const err = new PreviewError('some_code', 'reason', {}, 'this is bad');
 
             error.load(err);
 
@@ -146,28 +152,24 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             );
         });
 
-        it('should broadcast the display message if there is no log message', () => {
+        it('should broadcast the display message if there is no error message', () => {
             sandbox.stub(error, 'emit');
-
-            const err = new Error();
-            err.displayMessage = 'reason';
-            err.message = undefined;
+            const err = new PreviewError('some_code', 'display message!');
 
             error.load(err);
 
-
             expect(error.emit).to.be.calledWith(
                 VIEWER_EVENT.load, {
-                    error: 'reason'
+                    error: 'display message!'
                 }
             );
         });
 
         it('should filter out access tokens before broadcasting', () => {
             sandbox.stub(error, 'emit');
-
-            const err = new Error();
-            err.message = 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"';
+            const err = new PreviewError('some_code', 'display', {},
+                'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"'
+            );
 
             error.load(err);
 
@@ -179,6 +181,19 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         });
     });
 
+    describe('addLinkButton()', () => {
+        it('should add a link button with the appropriate message and URL', () => {
+            error.setup();
+            error.addLinkButton('test', 'someUrl');
+            const linkBtnEl = error.infoEl.querySelector('a');
+
+            expect(linkBtnEl instanceof HTMLElement).to.be.true;
+            expect(linkBtnEl.target).to.equal('_blank');
+            expect(linkBtnEl.textContent).to.equal('test');
+            expect(linkBtnEl.href).to.have.string('someUrl');
+        });
+    });
+
     describe('addDownloadButton()', () => {
         it('should add a download button and attach a download click handler', () => {
             error.setup();
@@ -186,9 +201,8 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             error.addDownloadButton();
 
-            expect(error.downloadEl instanceof HTMLElement).to.be.true;
-            expect(error.downloadEl.parentNode).to.equal(error.infoEl);
             expect(error.downloadBtnEl instanceof HTMLElement).to.be.true;
+            expect(error.downloadBtnEl.parentNode).to.equal(error.infoEl);
             expect(error.downloadBtnEl.classList.contains('bp-btn')).to.be.true;
             expect(error.downloadBtnEl.classList.contains('bp-btn-primary')).to.be.true;
             expect(error.downloadBtnEl.textContent).to.equal('Download');

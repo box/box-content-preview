@@ -81,7 +81,7 @@ describe('lib/RepStatus', () => {
             });
 
             expect(repStatus.representation).to.deep.equal(rep);
-            expect(repStatus.logger).to.be.an.object;
+            expect(repStatus.logger).to.be.a('object');
             expect(repStatus.infoUrl).to.equal(infoUrl);
             expect(repStatus.promise).to.be.a.promise;
         });

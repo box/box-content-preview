@@ -7,6 +7,7 @@ import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
+import PreviewError from '../../PreviewError';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
@@ -21,8 +22,8 @@ import {
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { JS, CSS } from './docAssets';
-import { VIEWER_EVENT } from '../../events';
+import { JS, PRELOAD_JS, CSS } from './docAssets';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -167,6 +168,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (assets) {
             this.prefetchAssets(JS, CSS);
+            this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
         if (preload && !isWatermarked) {
@@ -542,16 +544,11 @@ class DocBaseViewer extends BaseViewer {
                 }
             })
             .catch((err) => {
-                /* eslint-disable no-console */
+                // eslint-disable-next-line
                 console.error(err);
-                /* eslint-enable no-console */
 
                 // Display a generic error message but log the real one
-                const error = err;
-                if (error instanceof Error) {
-                    error.displayMessage = __('error_document');
-                }
-
+                const error = new PreviewError(ERROR_CODE.LOAD_DOCUMENT, __('error_document'), {}, err.message);
                 this.triggerError(error);
             });
     }
@@ -610,6 +607,8 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Set pdf.js worker, image, and character map locations
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;

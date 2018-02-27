@@ -5,11 +5,11 @@ import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
+import PreviewError from '../PreviewError';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
-import { createPreviewError } from '../logUtils';
 import Timer from '../Timer';
 
 const tokens = require('../tokens');
@@ -170,7 +170,8 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             }
 
             preview.show(file, 'foken');
@@ -238,7 +239,8 @@ describe('lib/Preview', () => {
                 extension: 'docx',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
         });
 
@@ -772,7 +774,8 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
 
             stubs.promise = Promise.resolve({
@@ -866,7 +869,7 @@ describe('lib/Preview', () => {
                 right: 'fields'
             }
 
-            expect(preview.load.bind(preview, file)).to.throw(Error, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
+            expect(preview.load.bind(preview, file)).to.throw(PreviewError, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
         });
 
         it('should get the tokens when file id is available', () => {
@@ -970,7 +973,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
-                pauseRequireJS: true,
+                fixDependencies: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1056,9 +1059,9 @@ describe('lib/Preview', () => {
             expect(preview.options.skipServerUpdate).to.be.true;
         });
 
-        it('should set whether to pause requireJS when loading dependencies', () => {
+        it('should set whether to fix dependencies', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.pauseRequireJS).to.be.true;
+            expect(preview.options.fixDependencies).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -1165,6 +1168,10 @@ describe('lib/Preview', () => {
                 setFile: sandbox.stub(),
                 setCacheStale: sandbox.stub()
             };
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
 
             stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
             stubs.set = sandbox.stub(preview.cache, 'set');
@@ -1216,7 +1223,6 @@ describe('lib/Preview', () => {
         });
 
         it('should do nothing if response comes back for an incorrect file', () => {
-            preview.open = true;
             preview.file = {
                 id: '123',
                 file_version: {
@@ -1230,22 +1236,21 @@ describe('lib/Preview', () => {
         });
 
         it('should save a reference to the file and update the logger', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
             expect(preview.logger.setFile).to.be.called;
         });
 
-        it('should get the latest cache, then update it with the new file', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
+        it('should trigger error if file is not downloadable', () => {
+            stubs.file.is_download_available = false;
+            preview.handleFileInfoResponse(stubs.file);
 
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_file_not_downloadable');
+        });
+
+        it('should get the latest cache, then update it with the new file', () => {
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1262,11 +1267,6 @@ describe('lib/Preview', () => {
 
         it('should uncache the file if the file is watermarked', () => {
             stubs.isWatermarked.returns(true);
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1280,11 +1280,6 @@ describe('lib/Preview', () => {
         });
 
         it('should load the viewer if the file is not in the cache', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns(null);
 
             preview.handleFileInfoResponse(stubs.file);
@@ -1292,11 +1287,6 @@ describe('lib/Preview', () => {
         });
 
         it('should load the viewer if the cached file is not valid', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.checkFileValid.returns(false);
 
             preview.handleFileInfoResponse(stubs.file);
@@ -1304,11 +1294,6 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1323,11 +1308,6 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.isWatermarked.returns(true);
             stubs.getCachedFile.returns({
                 file_version: {
@@ -1343,15 +1323,19 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
-            stubs.getCachedFile.throws(new Error());
-
+            const error = new PreviewError('some_code');
+            stubs.getCachedFile.throws(error);
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.triggerError).to.be.called;
+            expect(stubs.triggerError).to.be.calledWith(error);
+        });
+
+        it('should trigger a viewer load error if a non-PreviewError is thrown', () => {
+            stubs.getCachedFile.throws(new Error('random'));
+            preview.handleFileInfoResponse(stubs.file);
+
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
         });
 
         it('should stop the Timer for file info time', () => {
@@ -1415,13 +1399,10 @@ describe('lib/Preview', () => {
 
         it('should throw an error if there is no preview permission', () => {
             stubs.checkPermission.returns(false);
-            const spy = sandbox.spy(preview, 'loadViewer');
-
-            try {
-                preview.loadViewer();
-            } catch (e) {
-                expect(e.message).to.equal(__('error_permissions'));
-            }
+            expect(() => preview.loadViewer()).to.throw(
+                PreviewError,
+                /We're sorry, you don't have permission to preview this file./
+            );
         });
 
         it('should show the loading download button if there are sufficient permissions and support', () => {
@@ -1530,6 +1511,7 @@ describe('lib/Preview', () => {
             preview.attachViewerListeners();
             expect(preview.viewer.addListener).to.be.calledWith('error', sinon.match.func);
             expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.default, sinon.match.func);
+            expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.metric, sinon.match.func);
         });
     });
 
@@ -1607,6 +1589,24 @@ describe('lib/Preview', () => {
             };
             preview.handleViewerEvents(data);
             expect(preview.emit).to.not.be.called;
+        });
+    });
+
+    describe('handleViewerMetrics()', () => {
+        it('should create a formatted event and emit a preview_metric', () => {
+            sandbox.stub(preview, 'createLogEvent');
+            sandbox.stub(preview, 'emit');
+            const fakeEvent = {
+                event: 'test',
+                data: 7
+            }
+
+            const fakeLog = {
+                event_name: fakeEvent.event,
+                value: fakeEvent.data
+            }
+            preview.handleViewerMetrics(fakeEvent);
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
         });
     });
 
@@ -1910,7 +1910,7 @@ describe('lib/Preview', () => {
             expect(stubs.load).to.be.calledWith(1);
         });
 
-        it('should retry using exponential backoff', () => {
+        it('should retry using full jitter', () => {
             preview.file = {
                 id: '0'
             };
@@ -1919,9 +1919,6 @@ describe('lib/Preview', () => {
             preview.retryCount = 3;
 
             preview.handleFetchError(stubs.error);
-
-            clock.tick(7000);
-            expect(stubs.load).to.not.be.called;
 
             clock.tick(8001);
             expect(stubs.load).to.be.called;
@@ -2031,22 +2028,14 @@ describe('lib/Preview', () => {
     });
 
     describe('emitPreviewError()', () => {
-        it('should emit a "preview_error" message', (done) => {
-            preview.on('preview_error', () => {
-                done();
-            });
-
-            preview.emitPreviewError({});
-        });
-
         it('should emit a "preview_error" message with an object describing the error', (done) => {
             const code = 'an_error';
             const displayMessage = 'Oh no!';
-            const message = { fileId: '12345' };
-            const error = createPreviewError(code, displayMessage, message);
+            const error = new PreviewError(code, displayMessage);
 
-            preview.on('preview_error', (details) => {
-                expect(details.error).to.deep.equal(error);
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal('an_error');
+                expect(data.error.displayMessage).to.equal('Oh no!');
                 done();
             });
 
@@ -2064,9 +2053,9 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.on('preview_error', (details) => {
-                expect(details.file_id).to.equal(fileId);
-                expect(details.file_version_id).to.equal(fileVersionId);
+            preview.on('preview_error', (data) => {
+                expect(data.file_id).to.equal(fileId);
+                expect(data.file_version_id).to.equal(fileVersionId);
                 done();
             });
 
@@ -2074,8 +2063,8 @@ describe('lib/Preview', () => {
         });
 
         it('should use a default browser error code if none is present', (done) => {
-            preview.on('preview_error', (details) => {
-                expect(details.error.code).to.equal(ERROR_CODE.browserError);
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal(ERROR_CODE.BROWSER_GENERIC);
                 done();
             });
 
@@ -2087,13 +2076,13 @@ describe('lib/Preview', () => {
             const displayMessage = 'A display message';
             const auth = 'access_token="1234abcd"';
             const filtered = 'access_token=[FILTERED]';
-            preview.on('preview_error', (details) => {
-                expect(details.error.message).to.equal(`${message}?${filtered}`)
-                expect(details.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
+            preview.on('preview_error', (data) => {
+                expect(data.error.message).to.equal(`${message}?${filtered}`)
+                expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
                 done();
             });
 
-            const error = createPreviewError('bad_thing', `${displayMessage}?${auth}`, `${message}?${auth}`);
+            const error = new PreviewError('bad_thing', `${displayMessage}?${auth}`, {}, `${message}?${auth}`);
             preview.emitPreviewError(error);
         });
     });
@@ -2125,7 +2114,7 @@ describe('lib/Preview', () => {
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.not.be.called;
         });
-        
+
         it('should reset the timer and escape early if the first load milestone is not hit', () => {
             Timer.reset();// Clear out all entries in the Timer
             sandbox.stub(Timer, 'reset');
@@ -2134,14 +2123,14 @@ describe('lib/Preview', () => {
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.not.be.called;
         });
-        
+
         it('should emit a preview_metric event', (done) => {
             preview.on(PREVIEW_METRIC, () => {
                 done();
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should emit a preview_metric event with event_name "preview_load"', () => {
             const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
             Timer.start(tag);
@@ -2164,7 +2153,7 @@ describe('lib/Preview', () => {
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
             preview.on(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
@@ -2174,7 +2163,7 @@ describe('lib/Preview', () => {
             });
             preview.emitLoadMetrics();
         });
-        
+
         it('should reset the Timer', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
@@ -2183,7 +2172,7 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.called;
 
         });
-        
+
         it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
             Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
             preview.on(PREVIEW_METRIC, (metric) => {

@@ -235,6 +235,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         it('should invoke startLoadTimer()', () => {
             sandbox.stub(text, 'startLoadTimer');
+            sandbox.stub(util, 'get').returns(Promise.resolve(''));
 
             text.postLoad();
 
@@ -308,21 +309,24 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         });
 
         it('should setup the print iframe', () => {
+            const appendStub = sandbox.stub();
+
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub());
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: sandbox.stub()
+                        appendChild: appendStub
                     }
                 }
             });
             text.options.location = 'en-US';
+            sandbox.stub(window, 'setTimeout');
 
             text.preparePrint(['blah']);
 
             expect(util.createAssetUrlCreator).to.be.calledWith(text.options.location);
             expect(util.openContentInsideIframe).to.be.calledWith(text.textEl.outerHTML);
-            expect(text.printframe.contentDocument.head.appendChild).to.be.called.once;
+            expect(appendStub).to.be.called;
         });
 
         it('should enable printing via print popup after a delay', () => {

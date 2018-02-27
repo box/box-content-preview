@@ -319,9 +319,8 @@ class Settings extends EventEmitter {
         while (currentNode && currentNode !== this.settingsEl) {
             if (typeof currentNode.getAttribute('data-type') === 'string') {
                 return currentNode;
-                /* eslint-disable no-else-return */
+                // eslint-disable-next-line
             } else {
-                /* eslint-enable no-else-return */
                 currentNode = currentNode.parentNode;
             }
         }

@@ -30,7 +30,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
-import { createPreviewError } from '../logUtils';
+import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
@@ -280,7 +280,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAssetError(err) {
-        this.triggerError(err);
+        const originalMessage = err ? err.message : '';
+        const error = new PreviewError(ERROR_CODE.LOAD_ASSET, '', {}, originalMessage);
+        this.triggerError(error);
         this.destroyed = true;
     }
 
@@ -293,7 +295,11 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', err instanceof Error ? err : new Error(err || __('error_refresh')));
+        const error =
+            err instanceof PreviewError
+                ? err
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+        this.emit('error', error);
     }
 
     /**
@@ -409,7 +415,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler);
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {});
         }
     }
 
@@ -490,6 +496,22 @@ class BaseViewer extends EventEmitter {
             data,
             viewerName: viewer ? viewer.NAME : '',
             fileId: file.id
+        });
+    }
+
+    /**
+     * Emits a viewer metric
+     *
+     * @protected
+     * @emits metric
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emitMetric(event, data) {
+        super.emit(VIEWER_EVENT.metric, {
+            event,
+            data
         });
     }
 
@@ -599,13 +621,12 @@ class BaseViewer extends EventEmitter {
      * Loads assets needed for a viewer
      *
      * @protected
-     * @param {Array} [js] - js assets
-     * @param {Array} [css] - css assets
-     * @param {boolean} [isViewerAsset] is the asset to load third party
+     * @param {Array} [js] - JS assets
+     * @param {Array} [css] - CSS assets
+     * @param {boolean} [isViewerAsset] - Whether we are loading a third party viewer asset
      * @return {Promise} Promise to load scripts
      */
     loadAssets(js, css, isViewerAsset = true) {
-        const disableRequireJS = isViewerAsset && !!this.options.pauseRequireJS;
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
@@ -614,7 +635,8 @@ class BaseViewer extends EventEmitter {
         loadStylesheets((css || []).map(assetUrlCreator));
 
         // Then load the scripts needed for this preview
-        return loadScripts((js || []).map(assetUrlCreator), disableRequireJS).then(() => {
+        const disableAMD = isViewerAsset && this.options.fixDependencies;
+        return loadScripts((js || []).map(assetUrlCreator), disableAMD).then(() => {
             if (isViewerAsset) {
                 this.emit('assetsloaded');
             }
@@ -627,18 +649,19 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
+     * @param {boolean} preload - Use preload instead of prefetch, default false
      * @return {void}
      */
-    prefetchAssets(js, css) {
+    prefetchAssets(js, css, preload = false) {
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // Prefetch the stylesheets needed for this preview
-        prefetchAssets((css || []).map(assetUrlCreator));
+        prefetchAssets((css || []).map(assetUrlCreator), preload);
 
         // Prefetch the scripts needed for this preview
-        prefetchAssets((js || []).map(assetUrlCreator));
+        prefetchAssets((js || []).map(assetUrlCreator), preload);
     }
 
     /**
@@ -729,7 +752,7 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            const error = createPreviewError(ERROR_CODE.annotationsLoadFail);
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
             this.triggerError(error);
             return;
         }

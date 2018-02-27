@@ -264,3 +264,7 @@ $header-height: 48px;
     // z-index as the base modal
     z-index: 160; // follows bp-modal from boxui
 }
+
+.bp-container .bp-btn-primary {
+    color: #fff;
+}

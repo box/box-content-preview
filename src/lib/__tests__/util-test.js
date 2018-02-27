@@ -93,7 +93,7 @@ describe('lib/util', () => {
 
             return util.get(url, 'any').then((response) => {
                 expect(fetchMock.called(url)).to.be.true;
-                expect(response).to.be.an.object;
+                expect(typeof response === 'object').to.be.true;
             });
         });
     });
@@ -202,6 +202,16 @@ describe('lib/util', () => {
             expect(linkEl instanceof HTMLElement).to.be.true;
             expect(linkEl.tagName).to.equal('LINK');
             expect(linkEl.rel).to.equal('prefetch');
+            expect(linkEl.href.indexOf(url) !== -1).to.be.true;
+        });
+
+        it('should return a preload link element when a url is provided and preload is true', () => {
+            const url = 'foo.js';
+            const linkEl = util.createPrefetch(url, true);
+            expect(linkEl instanceof HTMLElement).to.be.true;
+            expect(linkEl.tagName).to.equal('LINK');
+            expect(linkEl.rel).to.equal('preload');
+            expect(linkEl.as).to.equal('script');
             expect(linkEl.href.indexOf(url) !== -1).to.be.true;
         });
     });
@@ -362,6 +372,12 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('link[rel="prefetch"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="prefetch"][href="bar"]') instanceof HTMLLinkElement);
             });
+
+            it('should insert links with preload if specified', () => {
+                util.prefetchAssets(['foo'], true);
+                const head = document.head;
+                assert.ok(head.querySelector('link[rel="preload"][href="foo"]') instanceof HTMLLinkElement);
+            })
         });
 
         describe('loadStylesheets()', () => {
@@ -381,20 +397,17 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
 
-            it('should clear requireJS until scripts are loaded or fail to load', () => {
-                window.define = true;
-                window.require = true;
-                window.requrejs = true;
+            it('should disable AMD until scripts are loaded or fail to load', () => {
+                const defineFunc = () => {};
+                defineFunc.amd = { jquery: '' };
+                window.define = defineFunc;
 
-                return util.loadScripts(['foo', 'bar'], true).catch(() => {
-                    expect(window.define).to.equal(true);
-                    expect(window.require).to.equal(true);
-                    expect(window.requirejs).to.equal(true);
+                const promise = util.loadScripts(['foo', 'bar'], true);
+                expect(define).to.equal(undefined);
+
+                return promise.then(() => {
+                    expect(define).to.equal(defineFunc);
                 });
-
-                expect(window.define).to.equal(undefined);
-                expect(window.require).to.equal(undefined);
-                expect(window.requirejs).to.equal(undefined);
             });
         });
 
@@ -761,6 +774,11 @@ describe('lib/util', () => {
 
             expect(stripAuthFromString(query)).to.equal(queryFiltered);
             expect(stripAuthFromString(random)).to.equal(randomFiltered);
+        });
+
+        it('should return passed in param if not string', () => {
+            const obj = { foo: 'bar' };
+            expect(stripAuthFromString(obj)).to.equal(obj);
         });
     });
 

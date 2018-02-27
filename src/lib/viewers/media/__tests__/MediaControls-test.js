@@ -105,6 +105,8 @@ describe('lib/viewers/media/MediaControls', () => {
             );
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             stubs.removeActivationListener = sandbox.stub(util, 'removeActivationListener');
+            stubs.timeScrubberElShowHandler = sandbox.stub();
+
             stubs.genericEl = {
                 getHandleEl: sandbox.stub().returns({
                     removeEventListener: sandbox.stub()
@@ -114,6 +116,10 @@ describe('lib/viewers/media/MediaControls', () => {
                 }),
                 destroy: sandbox.stub(),
                 removeListener: sandbox.stub(),
+                removeEventListener: sandbox.stub()
+            };
+
+            stubs.timeScrubberEl = {
                 removeEventListener: sandbox.stub()
             };
         });
@@ -129,11 +135,14 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should remove time scrubber event listeners if it exists', () => {
             mediaControls.timeScrubber = false;
-
+            mediaControls.timeScrubberEl = null;
             mediaControls.destroy();
             expect(mediaControls.timeScrubber).to.be.false;
 
             mediaControls.timeScrubber = stubs.genericEl;
+
+            mediaControls.timeScrubberEl = stubs.timeScrubberEl;
+            mediaControls.timeScrubberElShowHandler = stubs.timeScrubberElShowHandler;
 
             mediaControls.destroy();
 
@@ -141,11 +150,11 @@ describe('lib/viewers/media/MediaControls', () => {
                 'mousedown',
                 mediaControls.timeScrubbingStartHandler
             );
-            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
                 'mousemove',
-                mediaControls.filmstripShowHandler
+                stubs.timeScrubberElShowHandler
             );
-            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
                 'mouseleave',
                 mediaControls.filmstripHideHandler
             );
@@ -245,7 +254,6 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(settingsStub).to.be.calledWith('quality', mediaControls.handleQuality);
             expect(settingsStub).to.be.calledWith('speed', mediaControls.handleRate);
             expect(settingsStub).to.be.calledWith('autoplay', mediaControls.handleAutoplay);
-
         });
     });
 
@@ -697,7 +705,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
     describe('isVisible()', () => {
         beforeEach(() => {
-            stubs.wrapperParent = document.createElement('div')
+            stubs.wrapperParent = document.createElement('div');
             mediaControls.wrapperEl = stubs.wrapperParent.appendChild(document.createElement('div'));
         });
 
@@ -743,14 +751,11 @@ describe('lib/viewers/media/MediaControls', () => {
             };
             mediaControls.setupScrubbers();
             stubs.handleElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
-            stubs.getConvertedElAddEventListener = sandbox.stub(
-                mediaControls.timeScrubber.getConvertedEl(),
-                'addEventListener'
-            );
-
-            mediaControls.timeScrubberEl = {
-                addEventListener: sandbox.stub()
-            }
+            stubs.timeScrubberEl = {
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub()
+            };
+            mediaControls.timeScrubberEl = stubs.timeScrubberEl;
             stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
         });
 
@@ -771,25 +776,30 @@ describe('lib/viewers/media/MediaControls', () => {
         });
 
         it('should add the correct eventListeners to the handle and converted time scrubber elements', () => {
+            const spy = sandbox.spy(mediaControls, 'timeScrubberHandler');
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(stubs.handleElAddEventListener).to.be.calledWith(
                 'mousedown',
                 mediaControls.timeScrubbingStartHandler
             );
-            expect(stubs.getConvertedElAddEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
                 'mousemove',
-                mediaControls.filmstripShowHandler
+                mediaControls.timeScrubberElShowHandler
             );
-            expect(stubs.getConvertedElAddEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
                 'mouseleave',
                 mediaControls.filmstripHideHandler
             );
+            expect(spy).to.have.been.called.twice;
         });
 
         it('should add the touchstart eventListener if touch is detected', () => {
             mediaControls.hasTouch = true;
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(mediaControls.timeScrubberEl.addEventListener).to.be.calledWith('touchstart', mediaControls.timeScrubbingStartHandler)
+            expect(mediaControls.timeScrubberEl.addEventListener).to.be.calledWith(
+                'touchstart',
+                mediaControls.timeScrubbingStartHandler
+            );
         });
 
         it('should add the onload function to the filmstrip', () => {
@@ -1034,12 +1044,9 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('initAlternateAudio()', () => {
         it('should load alternate audio', () => {
             sandbox.stub(mediaControls.settings, 'loadAlternateAudio');
-            const audios = [
-                { language: 'eng', role: 'audio0' },
-                { language: 'rus', role: 'audio1' }
-            ];
+            const audios = [{ language: 'eng', role: 'audio0' }, { language: 'rus', role: 'audio1' }];
             mediaControls.initAlternateAudio(audios);
-        expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
+            expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
         });
     });
 
@@ -1049,6 +1056,48 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.enableHDSettings();
 
             expect(mediaControls.settings.enableHD).to.be.called;
+        });
+    });
+
+    describe('timeScrubberHandler()', () => {
+        let handler;
+        beforeEach(() => {
+            stubs.timeScrubberCallbackSpy = sandbox.spy();
+            handler = mediaControls.timeScrubberHandler(stubs.timeScrubberCallbackSpy);
+
+            stubs.playedEl = {
+                removeEventListener: sandbox.stub()
+            };
+            stubs.convertedEl = {
+                removeEventListener: sandbox.stub()
+            };
+
+            mediaControls.timeScrubber.playedEl = stubs.playedEl;
+            mediaControls.timeScrubber.convertedEl = stubs.convertedEl;
+        });
+
+        it('should execute the callback when target is playedEl', () => {
+            const eventStub = {
+                target: stubs.playedEl
+            };
+            handler(eventStub);
+            expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
+        });
+
+        it('should execute the callback when target is convertedEl', () => {
+            const eventStub = {
+                target: stubs.convertedEl
+            };
+            handler(eventStub);
+            expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
+        });
+
+        it('should not execute the callback when target is not playedEl or convertedEl', () => {
+            const eventStub = {
+                target: sandbox.stub()
+            };
+            handler(eventStub);
+            expect(stubs.timeScrubberCallbackSpy).to.have.not.been.called;
         });
     });
 });

@@ -130,7 +130,7 @@ preview.show(fileId, accessToken, {
 | showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
-| pauseRequireJS | false | Temporarily disables AMD module loaders (e.g. RequireJS) to allow Preview's third party dependencies to load |
+| fixDependencies | false | Temporarily patches AMD to properly load Preview's dependencies. You may need to enable this if your project uses RequireJS |
 | disableEventLog | false | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side) |
 | fileOptions | {} | Mapping of file ID to file-level options. See the file option table below for details |
 

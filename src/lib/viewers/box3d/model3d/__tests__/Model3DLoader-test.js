@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Model3DLoader from '../Model3DLoader';
 import Browser from '../../../../Browser';
+import PreviewError from '../../../../PreviewError';
 
 const sandbox = sinon.sandbox.create();
 let file;
@@ -28,7 +29,7 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
         it('should throw an error if browser doesn\'t support 3D and it is a 3d file', () => {
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
             expect(() => Model3DLoader.determineViewer(file)).to.throw(
-                Error,
+                PreviewError,
                 /browser doesn't support preview for 3D models/
             );
         });
@@ -48,7 +49,7 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
 
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
             expect(() => Model3DLoader.determineViewer(file)).to.not.throw(
-                Error,
+                PreviewError,
                 /browser doesn't support preview for 3D models/
             );
         });

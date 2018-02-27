@@ -3,7 +3,9 @@ import { requires360Viewer, replacePlaceholders } from '../../util';
 import MP3Viewer from './MP3Viewer';
 import MP4Viewer from './MP4Viewer';
 import DashViewer from './DashViewer';
+import PreviewError from '../../PreviewError';
 import { ORIGINAL_REP_NAME } from '../../constants';
+import { ERROR_CODE } from '../../events';
 
 const VIDEO_FORMATS = [
     '3g2',
@@ -72,7 +74,7 @@ class MediaLoader extends AssetLoader {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && requires360Viewer(file)) {
             const message = replacePlaceholders(__('error_browser_unsupported'), [__('360_videos')]);
-            throw new Error(message);
+            throw new PreviewError(ERROR_CODE.BROWSER_UNSUPPORTED, message, { file });
         }
 
         return viewer;
