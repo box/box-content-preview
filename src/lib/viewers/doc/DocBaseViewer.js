@@ -44,6 +44,7 @@ const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const PAGES_UNIT_NAME = 'pages';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -55,6 +56,8 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
+
+        this.startPageNum = this.getStartPage();
 
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
@@ -152,6 +155,34 @@ class DocBaseViewer extends BaseViewer {
         }
 
         super.destroy();
+    }
+
+    /**
+     * Converts a value and unit to page number
+     *
+     * @return {number|undefined} a page number > 0
+     */
+    getStartPage() {
+        let convertedValue;
+
+        const { unit, value } = this.startAt;
+
+        if (!value || !unit) {
+            return convertedValue;
+        }
+
+        if (unit === PAGES_UNIT_NAME) {
+            convertedValue = parseInt(value, 10);
+
+            if (!convertedValue || convertedValue < 1) {
+                // Negative values aren't allowed, fall back to default behavior
+                return undefined;
+            }
+        } else {
+            console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+        }
+
+        return convertedValue;
     }
 
     /**
@@ -366,11 +397,12 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNumber) {
-        if (!pageNumber || pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
+        const parsedPageNumber = parseInt(pageNumber, 10);
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
-        this.pdfViewer.currentPageNumber = pageNumber;
+        this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
@@ -862,8 +894,11 @@ class DocBaseViewer extends BaseViewer {
 
         this.loadUI();
 
-        // Set current page to previously opened page or first page
-        this.setPage(this.getCachedPage());
+        const { pagesCount, currentScale } = this.pdfViewer;
+
+        // Set page to the user-defined page, previously opened page, or first page
+        const startPage = this.startPageNum || this.getCachedPage();
+        this.setPage(startPage);
 
         // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
         this.docEl.classList.add(CLASS_IS_SCROLLABLE);
@@ -872,9 +907,9 @@ class DocBaseViewer extends BaseViewer {
         if (!this.loaded) {
             this.loaded = true;
             this.emit(VIEWER_EVENT.load, {
-                numPages: this.pdfViewer.pagesCount,
+                numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
-                scale: this.pdfViewer.currentScale
+                scale: currentScale
             });
 
             // Add page IDs to each page after page structure is available

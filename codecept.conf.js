@@ -1,4 +1,3 @@
-const DEFAULT_WAIT_TIME = 90000; // 90 seconds
 const {
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
@@ -8,7 +7,8 @@ const {
     BROWSER_VERSION = 'latest',
     BROWSER_PLATFORM,
     PLATFORM_VERSION,
-    DEVICE_NAME
+    DEVICE_NAME,
+    DEFAULT_WAIT_TIME = 90000
 } = process.env;
 const MOBILE_PLATFORMS = ['iOS', 'Android'];
 
@@ -53,7 +53,9 @@ if (typeof SAUCE_USERNAME === 'undefined') {
             platformVersion: PLATFORM_VERSION,
             deviceName: DEVICE_NAME,
             deviceOrientation: 'portrait',
-            appiumVersion: '1.7.2'
+            appiumVersion: '1.7.2',
+            platformName: BROWSER_PLATFORM
+
         });
         helperObj.Appium = mixedInSauceObj;
     }

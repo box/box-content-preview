@@ -27,7 +27,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         containerEl = document.querySelector('.container');
-        imageBase = new ImageBaseViewer(containerEl);
+        imageBase = new ImageBaseViewer({
+            file: {
+                id: '1234'
+            }
+        });
         imageBase.containerEl = containerEl;
         imageBase.imageEl = document.createElement('div');
 
@@ -233,13 +237,15 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             };
 
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
+            promise
+                .then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
+                    done();
+                })
+                .catch(() => {
+                    Assert.fail();
+                });
         });
 
         it('should default to 300x150 when naturalHeight and naturalWidth are 0x0', (done) => {
@@ -254,13 +260,15 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(300);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(150);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
+            promise
+                .then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(300);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(150);
+                    done();
+                })
+                .catch(() => {
+                    Assert.fail();
+                });
         });
 
         it('should resolve when the get call fails', (done) => {
@@ -284,7 +292,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 'bp-image-zoom-out-icon',
                 ICON_ZOOM_OUT
             );
-            expect(imageBase.controls.add).to.be.calledWith(__('zoom_in'), imageBase.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
+            expect(imageBase.controls.add).to.be.calledWith(
+                __('zoom_in'),
+                imageBase.zoomIn,
+                'bp-image-zoom-in-icon',
+                ICON_ZOOM_IN
+            );
         });
     });
 
@@ -538,7 +551,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         it('should console log error and emit preview error', () => {
             const err = new Error('blah');
-            sandbox.mock(window.console).expects('error').withArgs(err);
+            sandbox
+                .mock(window.console)
+                .expects('error')
+                .withArgs(err);
 
             imageBase.errorHandler(err);
 

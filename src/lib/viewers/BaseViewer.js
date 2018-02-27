@@ -20,6 +20,7 @@ import {
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -97,6 +98,9 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Whether viewer is being used on a touch device */
     hasTouch;
 
+    /** @property {Object} - Viewer startAt options */
+    startAt;
+
     /**
      * [constructor]
      *
@@ -108,6 +112,9 @@ class BaseViewer extends EventEmitter {
         this.options = options;
         this.cache = options.cache;
         this.previewUI = options.ui;
+
+        this.startAt = getProp(options, `fileOptions.${options.file.id}.${FILE_OPTION_START}`, {});
+
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();

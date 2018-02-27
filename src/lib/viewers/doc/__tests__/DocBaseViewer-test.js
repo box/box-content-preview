@@ -30,6 +30,7 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PAGES_UNIT_NAME = 'pages';
 
 const sandbox = sinon.sandbox.create();
 let docBase;
@@ -1285,6 +1286,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
             expect(docBase.loaded).to.be.true;
         });
+
+        it('should set the start page based', () => {
+            const START_PAGE_NUM = 2;
+            const PAGES_COUNT = 3;
+            docBase.startPageNum = START_PAGE_NUM;
+            docBase.pdfViewer = {
+                pagesCount: PAGES_COUNT
+            };
+            docBase.pagesinitHandler();
+
+            expect(stubs.setPage).to.have.been.calledWith(START_PAGE_NUM);
+        });
     });
 
     describe('pagerenderedHandler()', () => {
@@ -1645,6 +1658,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pinchScale).to.equal(1);
             expect(docBase.pinchPage).to.equal(null);
         });
+    });
 
+    describe('getStartPage()', () => {
+        it('should return the start page as a number', () => {
+            docBase.startAt = {
+                value : 3,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.equal(3);
+        });
+
+        it('should return the floored number if a floating point number is passed', () => {
+            docBase.startAt = {
+                value : 4.1,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.equal(4);
+        });
+
+        it('should return undefined if a value < 1 is passed', () => {
+            docBase.startAt = {
+                value : 0,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+
+            docBase.startAt = {
+                value : -100,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid unit is passed', () => {
+            docBase.startAt = {
+                value : 3,
+                unit : 'foo'
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid value is passed', () => {
+            docBase.startAt = {
+                value : 'foo',
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if no unit and value is passed', () => {
+            docBase.startAt = {};
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
     });
 });

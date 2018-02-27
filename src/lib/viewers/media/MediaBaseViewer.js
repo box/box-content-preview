@@ -5,6 +5,7 @@ import MediaControls from './MediaControls';
 import PreviewError from '../../PreviewError';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { getProp } from '../../util';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -13,6 +14,8 @@ const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
+const SECONDS_UNIT_NAME = 'seconds';
+const INITIAL_TIME_IN_SECONDS = 0;
 
 class MediaBaseViewer extends BaseViewer {
     /**
@@ -60,6 +63,39 @@ class MediaBaseViewer extends BaseViewer {
         this.loadTimeout = 100000;
         this.oldVolume = DEFAULT_VOLUME;
         this.pauseListener = null;
+
+        this.startTimeInSeconds = this.getStartTimeInSeconds();
+    }
+
+    /**
+     * Converts a value and unit to seconds
+     *
+     * @param {string|number} value - the value e.g. 1
+     * @param {string} unit - the unit e.g. seconds
+     * @return {number} a time in seconds
+     */
+    getStartTimeInSeconds() {
+        let convertedValue = INITIAL_TIME_IN_SECONDS;
+
+        const value = getProp(this.startAt, 'value');
+        const unit = getProp(this.startAt, 'unit');
+
+        if (!value || !unit) {
+            return INITIAL_TIME_IN_SECONDS;
+        }
+
+        if (unit === SECONDS_UNIT_NAME) {
+            convertedValue = parseFloat(value, 10);
+
+            if (convertedValue < 0) {
+                // Negative values aren't allowed, start from beginning
+                return INITIAL_TIME_IN_SECONDS;
+            }
+        } else {
+            console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+        }
+
+        return convertedValue;
     }
 
     /**
@@ -159,6 +195,7 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
+        this.setMediaTime(this.startTimeInSeconds);
         this.handleVolume();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
@@ -354,7 +391,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setMediaTime(time) {
-        this.mediaEl.currentTime = time;
+        if (this.mediaEl && time >= 0 && time <= this.mediaEl.duration) {
+            this.mediaEl.currentTime = time;
+        }
     }
 
     /**

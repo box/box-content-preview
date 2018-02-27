@@ -826,6 +826,9 @@ class Preview extends EventEmitter {
         // (access stats will not be incremented), but content access is still logged server-side for audit purposes
         this.options.disableEventLog = !!options.disableEventLog;
 
+        // Options that are applicable to certain file ids
+        this.options.fileOptions = options.fileOptions || {};
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
