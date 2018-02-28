@@ -1,3 +1,10 @@
+<a name="1.32.1"></a>
+## 1.32.1 (2018-02-28)
+
+* Fix: move startAt from constructor to setup (#690) ([164e036](https://github.com/box/box-content-preview/commit/164e036))
+
+
+
 <a name="1.32.0"></a>
 # 1.32.0 (2018-02-28)
 
