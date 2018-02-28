@@ -112,9 +112,6 @@ class BaseViewer extends EventEmitter {
         this.options = options;
         this.cache = options.cache;
         this.previewUI = options.ui;
-
-        this.startAt = getProp(options, `fileOptions.${options.file.id}.${FILE_OPTION_START}`, {});
-
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
@@ -143,6 +140,7 @@ class BaseViewer extends EventEmitter {
         if (this.options.file) {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
+            this.startAt = getProp(this.options, `fileOptions.${this.options.file.id}.${FILE_OPTION_START}`, {});
         }
 
         this.finishLoadingSetup();

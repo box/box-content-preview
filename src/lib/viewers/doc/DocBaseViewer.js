@@ -57,8 +57,6 @@ class DocBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
 
-        this.startPageNum = this.getStartPage();
-
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.print = this.print.bind(this);
@@ -102,6 +100,8 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = LOAD_TIMEOUT_MS;
+
+        this.startPageNum = this.getStartPage(this.startAt);
     }
 
     /**
@@ -160,12 +160,13 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Converts a value and unit to page number
      *
+     * @param {Object} startAt - the unit and value that describes where to start the preview
      * @return {number|undefined} a page number > 0
      */
-    getStartPage() {
+    getStartPage(startAt = {}) {
         let convertedValue;
 
-        const { unit, value } = this.startAt;
+        const { unit, value } = startAt;
 
         if (!value || !unit) {
             return convertedValue;
