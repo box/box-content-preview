@@ -87,7 +87,7 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         if (unit === SECONDS_UNIT_NAME) {
-            convertedValue = parseInt(value, 10);
+            convertedValue = parseFloat(value, 10);
 
             if (Number.isNaN(convertedValue) || convertedValue < 0) {
                 // Negative values aren't allowed, start from beginning
