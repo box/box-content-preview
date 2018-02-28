@@ -1662,60 +1662,60 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('getStartPage()', () => {
         it('should return the start page as a number', () => {
-            docBase.startAt = {
+            const startAt = {
                 value : 3,
                 unit : PAGES_UNIT_NAME
             };
 
-            expect(docBase.getStartPage()).to.equal(3);
+            expect(docBase.getStartPage(startAt)).to.equal(3);
         });
 
         it('should return the floored number if a floating point number is passed', () => {
-            docBase.startAt = {
+            const startAt = {
                 value : 4.1,
                 unit : PAGES_UNIT_NAME
             };
 
-            expect(docBase.getStartPage()).to.equal(4);
+            expect(docBase.getStartPage(startAt)).to.equal(4);
         });
 
         it('should return undefined if a value < 1 is passed', () => {
-            docBase.startAt = {
+            let startAt = {
                 value : 0,
                 unit : PAGES_UNIT_NAME
             };
 
-            expect(docBase.getStartPage()).to.be.undefined;
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
 
-            docBase.startAt = {
+            startAt = {
                 value : -100,
                 unit : PAGES_UNIT_NAME
             };
 
-            expect(docBase.getStartPage()).to.be.undefined;
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
         });
 
         it('should return undefined if an invalid unit is passed', () => {
-            docBase.startAt = {
+            const startAt = {
                 value : 3,
                 unit : 'foo'
             };
 
-            expect(docBase.getStartPage()).to.be.undefined;
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
         });
 
         it('should return undefined if an invalid value is passed', () => {
-            docBase.startAt = {
+            const startAt = {
                 value : 'foo',
                 unit : PAGES_UNIT_NAME
             };
 
-            expect(docBase.getStartPage()).to.be.undefined;
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
         });
 
         it('should return undefined if no unit and value is passed', () => {
-            docBase.startAt = {};
-            expect(docBase.getStartPage()).to.be.undefined;
+            const startAt = {};
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
         });
     });
 });

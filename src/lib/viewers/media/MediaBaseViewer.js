@@ -64,21 +64,20 @@ class MediaBaseViewer extends BaseViewer {
         this.oldVolume = DEFAULT_VOLUME;
         this.pauseListener = null;
 
-        this.startTimeInSeconds = this.getStartTimeInSeconds();
+        this.startTimeInSeconds = this.getStartTimeInSeconds(this.startAt);
     }
 
     /**
      * Converts a value and unit to seconds
      *
-     * @param {string|number} value - the value e.g. 1
-     * @param {string} unit - the unit e.g. seconds
+     * @param {Object} startAt - the unit and value that describes where to start the preview
      * @return {number} a time in seconds
      */
-    getStartTimeInSeconds() {
+    getStartTimeInSeconds(startAt = {}) {
         let convertedValue = INITIAL_TIME_IN_SECONDS;
 
-        const value = getProp(this.startAt, 'value');
-        const unit = getProp(this.startAt, 'unit');
+        const value = getProp(startAt, 'value');
+        const unit = getProp(startAt, 'unit');
 
         if (!value || !unit) {
             return INITIAL_TIME_IN_SECONDS;
