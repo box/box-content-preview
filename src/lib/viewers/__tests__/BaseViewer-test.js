@@ -575,7 +575,7 @@ describe('lib/viewers/BaseViewer', () => {
                 stubs.isIOS.returns(true);
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.equal(true);
+                expect(base._scaling).to.be.true;
                 expect(event.stopPropagation).to.be.called;
                 expect(event.preventDefault).to.be.called;
             });
@@ -584,7 +584,7 @@ describe('lib/viewers/BaseViewer', () => {
                 stubs.isIOS.returns(false);
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.equal(true);
+                expect(base._scaling).to.be.true;
                 expect(base._pinchScale).to.not.equal(undefined);
                 expect(event.stopPropagation).to.be.called;
                 expect(event.preventDefault).to.be.called;
@@ -595,7 +595,7 @@ describe('lib/viewers/BaseViewer', () => {
                 event.touches = [0];
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.equal(false);
+                expect(base._scaling).to.be.false;
                 expect(base._pinchScale).to.equal(undefined);
                 expect(event.stopPropagation).to.not.be.called;
                 expect(event.preventDefault).to.not.be.called;
@@ -667,7 +667,7 @@ describe('lib/viewers/BaseViewer', () => {
 
                 base.mobileZoomEndHandler(event);
                 expect(base.zoomIn).to.be.called;
-                expect(base._scaling).to.equal(false);
+                expect(base._scaling).to.be.false;
                 expect(base._pincScale).to.equal(undefined);
             });
 
@@ -691,7 +691,7 @@ describe('lib/viewers/BaseViewer', () => {
                 base.mobileZoomEndHandler(event);
                 expect(base.zoomOut).to.be.called;
                 expect(base.zoomIn).to.not.be.called;
-                expect(base._scaling).to.equal(false);
+                expect(base._scaling).to.be.false;
                 expect(base._pincScale).to.equal(undefined);
             });
         });
@@ -955,22 +955,22 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         it('does nothing if file permissions are undefined', () => {
-            expect(base.hasAnnotationPermissions()).to.equal(false);
+            expect(base.hasAnnotationPermissions()).to.be.false;
         });
 
         it('should return false if the user can neither annotate nor view all or their own annotations', () => {
-            expect(base.hasAnnotationPermissions(permissions)).to.equal(false);
+            expect(base.hasAnnotationPermissions(permissions)).to.be.false;
         });
 
         it('should return true if the user can at least view all annotations', () => {
             permissions.can_view_annotations_all = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.equal(true);
+            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
         });
 
         it('should return true if the user can at least view their own annotations', () => {
             permissions.can_view_annotations_all = false;
             permissions.can_view_annotations_self = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.equal(true);
+            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
         });
     });
 
@@ -987,30 +987,30 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should return false if the user cannot create/view annotations', () => {
             stubs.hasPermissions.returns(false);
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
         });
 
         it('should return true if viewer option is set to true', () => {
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
 
             stubs.getViewerOption.returns(true);
-            expect(base.areAnnotationsEnabled()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.be.true;
         });
 
         it('should use the global showAnnotations boolean if the viewer param is not specified', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = true;
-            expect(base.areAnnotationsEnabled()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.be.true;
 
             base.options.showAnnotations = false;
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
         });
 
         it('should use BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = false;
             base.options.boxAnnotations = undefined;
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
 
             base.options.viewer = { NAME: 'viewerName' };
             base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
@@ -1019,29 +1019,29 @@ describe('lib/viewers/BaseViewer', () => {
             // No enabled annotators in options
             boxAnnotations.options = { 'nope': 'wrong options type' };
             boxAnnotations.viewerOptions = undefined;
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
 
             // All default types enabled
             boxAnnotations.viewerOptions = {
                 'viewerName': { enabled: true }
             };
-            expect(base.areAnnotationsEnabled()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.be.true;
 
             // No specified enabled types
             boxAnnotations.viewerOptions = {
                 'viewerName': { enabledTypes: [] }
             };
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
 
             // Specified types enabled
             boxAnnotations.viewerOptions = {
                 'viewerName': { enabledTypes: [ 'point' ] }
             };
-            expect(base.areAnnotationsEnabled()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.be.true;
 
             // No passed in version of BoxAnnotations
             window.BoxAnnotations = undefined;
-            expect(base.areAnnotationsEnabled()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.be.false;
         });
     });
 
