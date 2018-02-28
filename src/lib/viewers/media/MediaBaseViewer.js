@@ -15,7 +15,10 @@ const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 const SECONDS_UNIT_NAME = 'seconds';
+const TIMESTAMP_UNIT_NAME = 'timestamp';
 const INITIAL_TIME_IN_SECONDS = 0;
+const ONE_MINUTE_IN_SECONDS = 60;
+const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 
 class MediaBaseViewer extends BaseViewer {
     /**
@@ -64,33 +67,34 @@ class MediaBaseViewer extends BaseViewer {
         this.oldVolume = DEFAULT_VOLUME;
         this.pauseListener = null;
 
-        this.startTimeInSeconds = this.getStartTimeInSeconds();
+        this.startTimeInSeconds = this.getStartTimeInSeconds(this.startAt);
     }
 
     /**
      * Converts a value and unit to seconds
      *
-     * @param {string|number} value - the value e.g. 1
-     * @param {string} unit - the unit e.g. seconds
+     * @param {Object} startAt - the startAt object containing unit and value
      * @return {number} a time in seconds
      */
-    getStartTimeInSeconds() {
+    getStartTimeInSeconds(startAt) {
         let convertedValue = INITIAL_TIME_IN_SECONDS;
 
-        const value = getProp(this.startAt, 'value');
-        const unit = getProp(this.startAt, 'unit');
+        const value = getProp(startAt, 'value');
+        const unit = getProp(startAt, 'unit');
 
         if (!value || !unit) {
             return INITIAL_TIME_IN_SECONDS;
         }
 
         if (unit === SECONDS_UNIT_NAME) {
-            convertedValue = parseFloat(value, 10);
+            convertedValue = parseInt(value, 10);
 
-            if (convertedValue < 0) {
+            if (Number.isNaN(convertedValue) || convertedValue < 0) {
                 // Negative values aren't allowed, start from beginning
                 return INITIAL_TIME_IN_SECONDS;
             }
+        } else if (unit === TIMESTAMP_UNIT_NAME) {
+            convertedValue = this.convertTimestampToSeconds(value);
         } else {
             console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
         }
@@ -786,6 +790,56 @@ class MediaBaseViewer extends BaseViewer {
         }
         this.mediaControls.show();
         return true;
+    }
+
+    /**
+     * Converts from a youtube style timestamp to seconds
+     *
+     * @param {string} timestamp - the youtube style timestamp eg. "1h2m3s"
+     * @return {number} - the time in seconds
+     */
+    convertTimestampToSeconds(timestamp) {
+        let timeInSeconds = 0;
+        // Supports optional decimal points
+        const TIMESTAMP_REGEX = /^([0-9]+(\.[0-9]*)?[smh]?){1,3}$/;
+        const HOUR_REGEX = /[0-9]+(\.[0-9]*)?h/;
+        const MINUTE_REGEX = /[0-9]+(\.[0-9]*)?m/;
+        const SECOND_REGEX = /[0-9]+(\.[0-9]*)?s/;
+
+        if (!timestamp || !TIMESTAMP_REGEX.test(timestamp)) {
+            return timeInSeconds;
+        }
+
+        // Gets the first match for all the units
+        const hours = HOUR_REGEX.exec(timestamp);
+        const minutes = MINUTE_REGEX.exec(timestamp);
+        const seconds = SECOND_REGEX.exec(timestamp);
+
+        /**
+         * Validates a substring match and converts to float
+         *
+         * @param {string} match - the timestamp substring e.g. 1h, 2m, or 3s
+         * @return {number} - the number for the given unit
+         */
+        const getValueOfMatch = (match) => {
+            // Strip off unit (h, m, s) and convert to float
+            const parsedMatch = parseFloat(match[0].slice(0, -1), 10);
+            return Number.isNaN(parsedMatch) ? 0 : parsedMatch;
+        };
+
+        if (hours) {
+            timeInSeconds += ONE_HOUR_IN_SECONDS * getValueOfMatch(hours);
+        }
+
+        if (minutes) {
+            timeInSeconds += ONE_MINUTE_IN_SECONDS * getValueOfMatch(minutes);
+        }
+
+        if (seconds) {
+            timeInSeconds += getValueOfMatch(seconds);
+        }
+
+        return timeInSeconds;
     }
 }
 
