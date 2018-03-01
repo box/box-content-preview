@@ -9,7 +9,7 @@ import * as util from '../../util';
 import * as file from '../../file';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
-import { VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
 let base;
@@ -164,6 +164,22 @@ describe('lib/viewers/BaseViewer', () => {
             expect(window.clearTimeout).to.be.called;
             expect(window.setTimeout).to.be.called;
             expect(base.loadTimeoutId).to.be.a('number');
+
+            // Test cleanup
+            clearTimeout(base.loadTimeoutId);
+        });
+
+        it('should trigger an error if it takes too long to load', () => {
+            const triggerStub = sandbox.stub(base, 'triggerError');
+            sandbox.stub(window, 'setTimeout').callsFake((func) => func());
+
+            base.loaded = false;
+            base.destroyed = false;
+
+            base.resetLoadTimeout();
+            const [ error ] = triggerStub.getCall(0).args;
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
 
             // Test cleanup
             clearTimeout(base.loadTimeoutId);

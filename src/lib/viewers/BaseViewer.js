@@ -261,6 +261,7 @@ class BaseViewer extends EventEmitter {
                 this.resetLoadTimeout();
                 return;
             }
+
             if (!this.isLoaded() && !this.isDestroyed()) {
                 const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
                 this.triggerError(error);
