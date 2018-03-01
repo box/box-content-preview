@@ -262,7 +262,8 @@ class BaseViewer extends EventEmitter {
                 return;
             }
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.triggerError();
+                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
+                this.triggerError(error);
             }
         }, this.loadTimeout);
     }
@@ -300,10 +301,17 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
-        const error =
-            err instanceof PreviewError
-                ? err
-                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+        let error;
+
+        if (err instanceof PreviewError) {
+            error = err;
+        } else {
+            let message = err || '';
+            message = typeof message === 'string' ? message : err.message;
+
+            error = new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
+        }
+
         this.emit('error', error);
     }
 

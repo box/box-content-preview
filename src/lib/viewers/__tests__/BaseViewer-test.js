@@ -214,6 +214,53 @@ describe('lib/viewers/BaseViewer', () => {
             expect(error.code).to.equal('error_load_viewer');
             expect(error.message).to.equal('blah');
         });
+
+        it('should emit a load viewer error if no error provided', () => {
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError();
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+
+        });
+
+        it('should handle a string being provided as the error', () => {
+            const message = 'This is an error';
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError(message);
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+            expect(error.message).to.equal(message);
+
+        });
+
+        it('should pass through the error if it is a PreviewError', () => {
+            const code = 'my_special_error';
+            const displayMessage = 'Such a special error!';
+            const message = 'Bad things have happened';
+            const details = {
+                what: 'what?!'
+            };
+            const err = new PreviewError(code, displayMessage, details, message);
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError(err);
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(code);
+            expect(error.displayMessage).to.equal(displayMessage);
+            expect(error.details).to.equal(details);
+            expect(error.message).to.equal(message);
+        });
     });
 
     describe('isLoaded()', () => {
