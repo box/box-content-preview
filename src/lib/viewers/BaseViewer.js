@@ -263,7 +263,7 @@ class BaseViewer extends EventEmitter {
             }
 
             if (!this.isLoaded() && !this.isDestroyed()) {
-                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
+                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT, __('error_refresh'));
                 this.triggerError(error);
             }
         }, this.loadTimeout);
