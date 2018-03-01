@@ -799,7 +799,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {number} - the time in seconds
      */
     convertTimestampToSeconds(timestamp) {
-        let timeInSeconds = 0;
+        let timeInSeconds = INITIAL_TIME_IN_SECONDS;
         // Supports optional decimal points
         const TIMESTAMP_REGEX = /^([0-9]+(\.[0-9]*)?[smh]?){1,3}$/;
         const HOUR_REGEX = /[0-9]+(\.[0-9]*)?h/;
