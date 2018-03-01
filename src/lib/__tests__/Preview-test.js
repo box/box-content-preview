@@ -119,7 +119,6 @@ describe('lib/Preview', () => {
             });
         });
 
-
         it('should set the preview options with function token', () => {
             const foo = () => {};
             preview.show('123', foo, { viewer: 'viewer' });
@@ -172,7 +171,7 @@ describe('lib/Preview', () => {
                 watermark_info: {},
                 authenticated_download_url: 'url',
                 is_download_available: true
-            }
+            };
 
             preview.show(file, 'foken');
             expect(stubs.load).to.be.calledWith(file);
@@ -290,7 +289,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids', () => {
-            let array = ['1', '2', '3', '4'];
+            const array = ['1', '2', '3', '4'];
 
             preview.updateCollection(array);
             expect(stubs.updateFileCache).to.be.calledWith([]);
@@ -298,7 +297,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            let files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
+            const files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -306,21 +305,21 @@ describe('lib/Preview', () => {
         });
 
         it('should throw when bad array of files passed in', () => {
-            let files = ['1', { }, '3'];
+            const files = ['1', {}, '3'];
 
             expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
             expect(stubs.updateFileCache).to.not.be.called;
         });
 
         it('should throw when bad array of file ids passed in', () => {
-            let files = ['', '3'];
+            const files = ['', '3'];
 
             expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
             expect(stubs.updateFileCache).to.not.be.called;
         });
 
         it('should reset the preview collection to an empty array', () => {
-            let array = '1,2,3,4';
+            const array = '1,2,3,4';
 
             preview.updateCollection(array);
             expect(stubs.updateFileCache).to.be.calledWith([]);
@@ -380,7 +379,11 @@ describe('lib/Preview', () => {
                 }
             ];
 
-            stubs.checkFileValid.onCall(0).returns(true).onCall(1).returns(false);
+            stubs.checkFileValid
+                .onCall(0)
+                .returns(true)
+                .onCall(1)
+                .returns(false);
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
@@ -459,25 +462,44 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: () => {}
             };
 
-            sandbox.stub(file, 'getCachedFile').withArgs(preview.cache, sinon.match.any).returns(someFile);
-            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
+            sandbox
+                .stub(file, 'getCachedFile')
+                .withArgs(preview.cache, sinon.match.any)
+                .returns(someFile);
+            sandbox
+                .stub(preview, 'getLoader')
+                .withArgs(someFile)
+                .returns(loader);
         });
 
         it('should short circuit if no appropriate viewer is found', () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
-            sandbox.mock(loader).expects('determineRepresentation').never();
-            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .never();
+            sandbox
+                .mock(viewer)
+                .expects('CONSTRUCTOR')
+                .never();
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should get the appropriate viewer', () => {
-            sandbox.mock(loader).expects('determineViewer').withArgs(someFile).returns(viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineViewer')
+                .withArgs(someFile)
+                .returns(viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should determine representation', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
-            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -506,7 +528,10 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(true)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(true)
                     };
                 }
             };
@@ -524,7 +549,10 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(false)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(false)
                     };
                 }
             };
@@ -552,48 +580,57 @@ describe('lib/Preview', () => {
     });
 
     describe('prefetchViewers()', () => {
-        let prefetchStub;
+        describe('prefetch stubbed', () => {
+            let prefetchStub;
 
-        beforeEach(() => {
-            prefetchStub = sandbox.stub();
-            const stubViewer = () => {
-                return { prefetch: prefetchStub };
-            };
+            beforeEach(() => {
+                prefetchStub = sandbox.stub();
+                const stubViewer = () => {
+                    return { prefetch: prefetchStub };
+                };
 
-            const mockViewers = [
-                {
-                    NAME: 'viewer1',
-                    CONSTRUCTOR: stubViewer
-                },
-                {
-                    NAME: 'viewer2',
-                    CONSTRUCTOR: stubViewer
-                },
-                {
-                    NAME: 'viewer3',
-                    CONSTRUCTOR: stubViewer
-                }
-            ];
+                const mockViewers = [
+                    {
+                        NAME: 'viewer1',
+                        CONSTRUCTOR: stubViewer
+                    },
+                    {
+                        NAME: 'viewer2',
+                        CONSTRUCTOR: stubViewer
+                    },
+                    {
+                        NAME: 'viewer3',
+                        CONSTRUCTOR: stubViewer
+                    }
+                ];
 
-            stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
-        });
-
-        it('should prefetch no viewers if no viewer names are specified', () => {
-            preview.prefetchViewers();
-            expect(prefetchStub).to.not.be.called;
-        });
-
-        it('should prefetch only passed in viewers', () => {
-            const viewerToPrefetch = preview.getViewers()[0];
-            const viewerName = viewerToPrefetch.NAME;
-
-            preview.prefetchViewers([viewerName]);
-            expect(prefetchStub).to.be.calledOnce;
-            expect(prefetchStub).to.be.calledWith({
-                assets: true,
-                preload: false,
-                content: false
+                stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
             });
+
+            it('should prefetch no viewers if no viewer names are specified', () => {
+                preview.prefetchViewers();
+                expect(prefetchStub).to.not.be.called;
+            });
+
+            it('should prefetch only passed in viewers', () => {
+                const viewerToPrefetch = preview.getViewers()[0];
+                const viewerName = viewerToPrefetch.NAME;
+
+                preview.prefetchViewers([viewerName]);
+                expect(prefetchStub).to.be.calledOnce;
+                expect(prefetchStub).to.be.calledWith({
+                    assets: true,
+                    preload: false,
+                    content: false
+                });
+            });
+        });
+
+        it('should not throw when prefetching the viewers', () => {
+            // Get the list of all possible viewers and extract the names
+            const PREVIEW_SDK_VIEWERS_TO_PREFETCH = preview.getViewers().map((viewer) => viewer.NAME);
+
+            expect(() => preview.prefetchViewers(PREVIEW_SDK_VIEWERS_TO_PREFETCH)).to.not.throw();
         });
     });
 
@@ -815,7 +852,10 @@ describe('lib/Preview', () => {
             const fileId = '123';
             const fileVersionId = '1234';
 
-            sandbox.stub(preview, 'getFileOption').withArgs(fileId, 'fileVersionId').returns(fileVersionId);
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs(fileId, 'fileVersionId')
+                .returns(fileVersionId);
             preview.load(fileId);
 
             expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileVersionId });
@@ -848,7 +888,10 @@ describe('lib/Preview', () => {
             };
 
             // Calling load() with file version ID '1234'
-            stubs.getFileVersionId = sandbox.stub(preview, 'getFileOption').withArgs(sinon.match.any, 'fileVersionId').returns('1234');
+            stubs.getFileVersionId = sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs(sinon.match.any, 'fileVersionId')
+                .returns('1234');
             preview.load('0');
 
             // Expect retry count to go up by 1
@@ -867,9 +910,12 @@ describe('lib/Preview', () => {
             const file = {
                 not: 'the',
                 right: 'fields'
-            }
+            };
 
-            expect(preview.load.bind(preview, file)).to.throw(PreviewError, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
+            expect(preview.load.bind(preview, file)).to.throw(
+                PreviewError,
+                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
+            );
         });
 
         it('should get the tokens when file id is available', () => {
@@ -950,7 +996,7 @@ describe('lib/Preview', () => {
             previewUIMock.expects('showNavigation');
 
             preview.setupUI();
-        })
+        });
     });
 
     describe('parseOptions()', () => {
@@ -1208,7 +1254,10 @@ describe('lib/Preview', () => {
             const fileVersion = {
                 id: '1234'
             };
-            sandbox.stub(preview, 'getFileOption').withArgs('123', 'fileVersionId').returns(fileVersion.id);
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs('123', 'fileVersionId')
+                .returns(fileVersion.id);
 
             preview.handleFileInfoResponse(fileVersion);
 
@@ -1449,7 +1498,9 @@ describe('lib/Preview', () => {
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), [`.${preview.file.extension}`]));
+                expect(e.message).to.equal(
+                    util.replacePlaceholders(__('error_unsupported'), [`.${preview.file.extension}`])
+                );
             }
         });
 
@@ -1599,12 +1650,12 @@ describe('lib/Preview', () => {
             const fakeEvent = {
                 event: 'test',
                 data: 7
-            }
+            };
 
             const fakeLog = {
                 event_name: fakeEvent.event,
                 value: fakeEvent.data
-            }
+            };
             preview.handleViewerMetrics(fakeEvent);
             expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
         });
@@ -1823,7 +1874,10 @@ describe('lib/Preview', () => {
 
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
             const promiseReject = Promise.reject({});
-            sandbox.stub(util, 'post').onCall(0).returns(promiseReject);
+            sandbox
+                .stub(util, 'post')
+                .onCall(0)
+                .returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = undefined;
 
@@ -1929,8 +1983,11 @@ describe('lib/Preview', () => {
                 id: '0'
             };
             stubs.error.headers = {
-                get: sandbox.stub().withArgs('Retry-After').returns(5)
-            }
+                get: sandbox
+                    .stub()
+                    .withArgs('Retry-After')
+                    .returns(5)
+            };
             const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 1;
@@ -2077,8 +2134,8 @@ describe('lib/Preview', () => {
             const auth = 'access_token="1234abcd"';
             const filtered = 'access_token=[FILTERED]';
             preview.on('preview_error', (data) => {
-                expect(data.error.message).to.equal(`${message}?${filtered}`)
-                expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`)
+                expect(data.error.message).to.equal(`${message}?${filtered}`);
+                expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`);
                 done();
             });
 
@@ -2116,7 +2173,7 @@ describe('lib/Preview', () => {
         });
 
         it('should reset the timer and escape early if the first load milestone is not hit', () => {
-            Timer.reset();// Clear out all entries in the Timer
+            Timer.reset(); // Clear out all entries in the Timer
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
             preview.emitLoadMetrics();
@@ -2170,7 +2227,6 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.be.called;
-
         });
 
         it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
@@ -2190,7 +2246,8 @@ describe('lib/Preview', () => {
             stubs.canPlayDash = sandbox.stub(Browser, 'canPlayDash').returns(false);
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
-                'X-Rep-Hints': '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
+                'X-Rep-Hints':
+                    '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
             };
 
             preview.options.sharedLink = 'link';
@@ -2386,17 +2443,15 @@ describe('lib/Preview', () => {
                 navigation: 0
             };
 
-            preview.collection = [
-                'file', 'file2', 'file3'
-            ]
+            preview.collection = ['file', 'file2', 'file3'];
         });
 
         it('should do nothing if the collection is invalid', () => {
-            preview.collection = 'foo'
+            preview.collection = 'foo';
             preview.navigateToIndex(1);
             expect(stubs.emit).to.not.be.called;
 
-            preview.collection = []
+            preview.collection = [];
             preview.navigateToIndex(1);
             expect(stubs.emit).to.not.be.called;
         });
@@ -2570,7 +2625,7 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        'fileVersionId': '1234'
+                        fileVersionId: '1234'
                     }
                 }
             };
@@ -2582,7 +2637,7 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        'fileVersionId': '1234'
+                        fileVersionId: '1234'
                     }
                 }
             };
@@ -2594,7 +2649,7 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        'fileVersionId': '1234'
+                        fileVersionId: '1234'
                     }
                 }
             };
