@@ -61,11 +61,11 @@ describe('lib/downloadReachability', () => {
         
     describe('setDownloadHostFallback()', () => {
         it('should set the download host fallback key to be true', () => {
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true').to.be.false;
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.not.equal('true')
 
             dr.setDownloadHostFallback();
 
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true').to.be.true;
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.equal('true')
 
         });
     });

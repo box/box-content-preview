@@ -72,18 +72,14 @@ class ImageBaseViewer extends BaseViewer {
         }
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
-        loadOriginalDimensions
-            .then(() => {
-                this.loadUI();
-                this.zoom();
+        loadOriginalDimensions.then(() => {
+            this.loadUI();
+            this.zoom();
 
-                this.imageEl.classList.remove(CLASS_INVISIBLE);
-                this.loaded = true;
-                this.emit(VIEWER_EVENT.load);
-            })
-            .catch(() => {
-                // No-op, this prmise should always resolve
-            });
+            this.imageEl.classList.remove(CLASS_INVISIBLE);
+            this.loaded = true;
+            this.emit(VIEWER_EVENT.load);
+        });
     }
 
     /**
