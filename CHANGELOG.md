@@ -1,3 +1,10 @@
+<a name="1.32.2"></a>
+## 1.32.2 (2018-03-02)
+
+* Fix: Polyfill Reflect.construct and Array.from for IE11 (#694) ([975b8b3](https://github.com/box/box-content-preview/commit/975b8b3))
+
+
+
 <a name="1.32.1"></a>
 ## 1.32.1 (2018-02-28)
 
