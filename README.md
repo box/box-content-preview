@@ -96,7 +96,7 @@ Initialization
 var preview = new Box.Preview();
 preview.show(fileId, accessToken, { options });
 ```
-Where `fileId` is a string or number `Box_File` id and `accessToken` is a Box API access token.
+Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token.
 
 
 Parameters & Options
