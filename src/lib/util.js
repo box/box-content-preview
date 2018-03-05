@@ -893,3 +893,15 @@ export function getProp(object, propPath, defaultValue) {
 
     return value !== undefined ? value : defaultValue;
 }
+
+/**
+ * Checks that a fileId is of the expected type.
+ * A fileId can be a number, or a string represenation of a number
+ *
+ * @param {number} fileId - The file id
+ * @return {boolean} True if it is valid
+ */
+export function isValidFileId(fileId) {
+    // Tests that the string or number contains all numbers
+    return /^\d+$/.test(fileId);
+}
