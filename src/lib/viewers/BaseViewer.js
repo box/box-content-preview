@@ -298,20 +298,15 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error|string} [err] - Optional error or string with message
+     * @param {Error|PreviewError} [err] - Error object related to the error that happened.
      * @return {void}
      */
     triggerError(err) {
-        let error;
-
-        if (err instanceof PreviewError) {
-            error = err;
-        } else {
-            let message = err || '';
-            message = typeof message === 'string' ? message : err.message;
-
-            error = new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
-        }
+        const message = err ? err.message : '';
+        const error =
+            err instanceof PreviewError
+                ? err
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
 
         this.emit('error', error);
     }
