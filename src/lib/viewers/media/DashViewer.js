@@ -16,6 +16,9 @@ const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
+const SHAKA_CODE_UNEXPECTED_NETWORK_FAILURE = 1002;
+const SHAKA_CODE_SEVERE_ERROR = 1;
+
 class DashViewer extends VideoBaseViewer {
     /**
      * @inheritdoc
@@ -169,7 +172,7 @@ class DashViewer extends VideoBaseViewer {
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
 
         this.startLoadTimer();
-        this.player.load(this.mediaUrl, this.startTimeInSeconds);
+        this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
     }
 
     /**
@@ -372,9 +375,14 @@ class DashViewer extends VideoBaseViewer {
             }, Data = ${shakaError.detail.data.toString()}`
         );
 
-        if (shakaError.detail.severity > 1) {
+        if (shakaError.detail.severity > SHAKA_CODE_SEVERE_ERROR) {
+            if (shakaError.detail.code === SHAKA_CODE_UNEXPECTED_NETWORK_FAILURE) {
+                const downloadURL = shakaError.detail.data[0];
+                this.handleDownloadError(error, downloadURL);
+                return;
+            }
             // critical error
-            this.emit('error', error);
+            this.triggerError(error);
         }
     }
 
