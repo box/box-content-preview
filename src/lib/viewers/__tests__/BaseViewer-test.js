@@ -171,7 +171,7 @@ describe('lib/viewers/BaseViewer', () => {
             clearTimeout(base.loadTimeoutId);
         });
 
-        it('should trigger an error if it takes too long to load', () => {
+        it('should trigger an error if the viewer times out', () => {
             const triggerStub = sandbox.stub(base, 'triggerError');
             sandbox.stub(window, 'setTimeout').callsFake((func) => func());
 
