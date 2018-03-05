@@ -16,6 +16,7 @@ class ImageViewer extends ImageBaseViewer {
 
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
+        this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
@@ -52,13 +53,14 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
+        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
             .then(() => {
                 this.startLoadTimer();
-                this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+                this.imageEl.src = downloadUrl;
             })
             .catch(this.handleAssetError);
     }
@@ -352,6 +354,16 @@ class ImageViewer extends ImageBaseViewer {
     //--------------------------------------------------------------------------
 
     /**
+     * Passes the error and download URL to the download error handler.
+     *
+     * @param {Error} err - Download error
+     * @return {void}
+     */
+    handleImageDownloadError(err) {
+        this.handleDownloadError(err, this.imageEl.src);
+    }
+
+    /**
      * Binds DOM listeners for image viewer.
      *
      * @protected
@@ -361,7 +373,7 @@ class ImageViewer extends ImageBaseViewer {
         super.bindDOMListeners();
 
         this.imageEl.addEventListener('load', this.finishLoading);
-        this.imageEl.addEventListener('error', this.errorHandler);
+        this.imageEl.addEventListener('error', this.handleImageDownloadError);
 
         if (this.isMobile) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
@@ -379,7 +391,7 @@ class ImageViewer extends ImageBaseViewer {
 
         if (this.imageEl) {
             this.imageEl.removeEventListener('load', this.finishLoading);
-            this.imageEl.removeEventListener('error', this.errorHandler);
+            this.imageEl.removeEventListener('error', this.handleImageDownloadError);
         }
 
         if (this.isMobile) {
