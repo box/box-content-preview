@@ -868,6 +868,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.initViewer('url');
 
             expect(docBase.startLoadTimer).to.be.called;
+
+        });
+        
+        it('should handle any download error', () => {
+            stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
+            const doc = {
+                url: 'url'
+            };
+    
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+    
+            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
+
+            return docBase.initViewer('url').catch(() => {
+                expect(stubs.handleDownloadError).to.be.called;
+            });
         });
     });
 

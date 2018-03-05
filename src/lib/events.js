@@ -38,7 +38,8 @@ export const ERROR_CODE = {
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
     CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
-    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout'
+    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
+    CONTENT_DOWNLOAD: 'error_content_download'
 };
 
 export const PREVIEW_LOAD_EVENT = '';
@@ -53,4 +54,10 @@ export const LOAD_METRIC = {
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
     fullDocumentLoadTime: 'full_document_load_time' // How long it took to load the document so it could be previewed.
+};
+
+// Events around download reachability
+export const DOWNLOAD_REACHABILITY_METRICS = {
+    NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
+    DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked'
 };
