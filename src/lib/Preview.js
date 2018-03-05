@@ -1187,6 +1187,12 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
+            // Explicit preview failure
+            this.handleViewerMetrics({
+                event_name: 'success',
+                value: false
+            });
+
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
                 window.callPhantom(0);
@@ -1200,6 +1206,12 @@ class Preview extends EventEmitter {
                 viewer: this.viewer,
                 metrics: this.logger.done(this.count),
                 file: this.file
+            });
+
+            // Explicit preview success
+            this.handleViewerMetrics({
+                event_name: 'success',
+                value: true
             });
 
             // If there wasn't an error and event logging is not disabled, use Events API to log a preview

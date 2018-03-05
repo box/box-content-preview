@@ -1788,6 +1788,28 @@ describe('lib/Preview', () => {
             expect(preview.count.success).to.equal(1);
         });
 
+        it('should emit a metrics message for successful preview', () => {
+            const event_name = 'success';
+            const value = true;
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading();
+
+            expect(handleViewerMetrics).to.be.calledWith({ event_name, value });
+        });
+
+        it('should emit a metrics message for failed preview', () => {
+            const event_name = 'success';
+            const value = false;
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading({ error: {} });
+
+            expect(handleViewerMetrics).to.be.calledWith({ event_name, value });
+        });
+
         it('should emit the load event', () => {
             preview.finishLoading();
             expect(stubs.emit).to.be.called;
