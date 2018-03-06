@@ -376,7 +376,7 @@ describe('lib/file', () => {
             [false, true, false, false, false],
             [true, false, false, false, false],
             [true, true, true, true, true],
-        ].forEach((isDownloadable, isDownloadEnabled, havePermission, isBrowserSupported, expectedResult) => {
+        ].forEach(([isDownloadable, isDownloadEnabled, havePermission, isBrowserSupported, expectedResult]) => {
             it('should only return true if all of: file is downloadable, download is enabled, user has permissions, and browser can download is true', () => {
                 file.permissions.can_download = havePermission;
                 file.is_download_available = isDownloadable

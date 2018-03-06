@@ -895,11 +895,21 @@ export function isValidFileId(fileId) {
 }
 
 /**
+ * Returns window hostname
+ *
+ * @return {string} Window hostname
+ */
+export function getHostname() {
+    return window.location.hostname || '';
+}
+
+/**
  * Returns whether Preview is running inside the Box web application. This should be used sparingly since Preview
  * should function based only on the provided options and not change functionality depending on environment.
  *
  * @return {boolean} Is Preview running in the Box WebApp
  */
 export function isBoxWebApp() {
-    return (window.location.hostname || '').indexOf('app.box.com') !== -1;
+    const boxHostnameRegex = /(app|ent)\.(box\.com|boxcn\.net|boxenterprise\.net)/;
+    return !!getHostname().match(boxHostnameRegex);
 }

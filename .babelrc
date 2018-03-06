@@ -25,6 +25,7 @@
                         "src/lib/viewers/box3d/**Constants.js"
                     ]
                 }],
+                "rewire",
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]
             ]
         }

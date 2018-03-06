@@ -2,6 +2,7 @@
 import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
+import { isBoxWebApp, __RewireAPI__ as UtilAPI } from '../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -835,8 +836,22 @@ describe('lib/util', () => {
     });
 
     describe('isBoxWebApp()', () => {
-        it('should return false when window location is not a Box domain', () => {
-            expect(util.isBoxWebApp()).to.be.false;
-        });
+        [
+            ['https://test.app.box.com', true],
+            ['https://foo.ent.box.com', true],
+            ['https://bar.app.boxcn.net', true],
+            ['https://baz.ent.boxenterprise.net', true],
+            ['https://haha.box.net', false],
+            ['https://some.other.domain', false]
+        ]
+        .forEach(([hostname, expectedResult]) => {
+            it('should return true when window location is a Box domain', () => {
+                UtilAPI.__Rewire__('getHostname', () => {
+                    return hostname;
+                });
+                expect(isBoxWebApp()).to.equal(expectedResult);
+                UtilAPI.__ResetDependency__('getHostname');
+            });
+        })
     });
 });
