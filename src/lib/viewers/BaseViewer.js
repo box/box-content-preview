@@ -111,7 +111,7 @@ class BaseViewer extends EventEmitter {
 
     /** @property {Object} - Viewer startAt options */
     startAt;
-    
+
     /** @property {boolean} - Has the viewer retried downloading the content */
     hasRetriedContentDownload = false;
 
