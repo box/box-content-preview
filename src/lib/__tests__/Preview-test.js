@@ -8,6 +8,7 @@ import Browser from '../Browser';
 import PreviewError from '../PreviewError';
 import * as file from '../file';
 import * as util from '../util';
+import * as dr from '../downloadReachability';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
@@ -297,7 +298,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            const files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
+            let files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -741,15 +742,21 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve({
                 data: {
-                    download_url: 'dl.box'
+                    download_url: 'dl.boxcloud.com'
                 }
             });
 
+            stubs.reachabilityPromise = Promise.resolve(true);
+
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.get = sandbox.stub(dr, 'setDownloadReachability').returns(stubs.reachabilityPromise);
             stubs.openUrlInsideIframe = sandbox.stub(util, 'openUrlInsideIframe');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
             stubs.getDownloadURL = sandbox.stub(file, 'getDownloadURL');
+            stubs.isDownloadHostBlocked = sandbox.stub(dr, 'isDownloadHostBlocked');
+            stubs.isCustomDownloadHost = sandbox.stub(dr, 'isCustomDownloadHost');
+            stubs.replaceDownloadHostWithDefault = sandbox.stub(dr, 'replaceDownloadHostWithDefault').returns('default');
         });
 
         it('should not do anything if there is no download permission', () => {
@@ -759,12 +766,36 @@ describe('lib/Preview', () => {
             expect(stubs.openUrlInsideIframe).to.not.be.called;
         });
 
-        it('get the file and then open in an iframe', () => {
+        it('open the default download URL in an iframe if the custom host is blocked or if we were given the default', () => {
             stubs.checkPermission.returns(true);
+            stubs.isDownloadHostBlocked.returns(true);
+            stubs.isCustomDownloadHost.returns(true);
+
+            preview.download();
+            return stubs.promise.then((data) => {
+                expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
+            });
+
+            stubs.isDownloadHostBlocked.returns(false);
+            stubs.isCustomDownloadHost.returns(false);
+
+            preview.download();
+            return stubs.promise.then((data) => {
+                expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
+            });
+        });
+
+
+        it('should check download reachability and fallback if we do not know the status of our custom host', () => {
+            stubs.checkPermission.returns(true);
+            stubs.isCustomDownloadHost.returns(true);
 
             preview.download();
             return stubs.promise.then((data) => {
                 expect(stubs.openUrlInsideIframe).to.be.calledWith(data.download_url);
+                return stubs.reachabilityPromise.then(() => {
+                    expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
+                });
             });
         });
     });
@@ -846,6 +877,12 @@ describe('lib/Preview', () => {
             const fileId = '123';
             preview.load(fileId);
             expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId });
+        });
+
+        it('should fetch file from cache and convert file id to string when file id passed as a number', () => {
+            const fileId = 123;
+            preview.load(fileId);
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId : fileId.toString() });
         });
 
         it('should fetch file from cache using file version ID as key if file version ID is in options', () => {
@@ -994,6 +1031,7 @@ describe('lib/Preview', () => {
             previewUIMock.expects('showLoadingIndicator');
             previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
 
             preview.setupUI();
         });
@@ -1808,11 +1846,6 @@ describe('lib/Preview', () => {
         it('should hide the loading indicator', () => {
             preview.finishLoading();
             expect(stubs.hideLoadingIndicator).to.be.called;
-        });
-
-        it('should set up the notification', () => {
-            preview.finishLoading();
-            expect(stubs.setupNotification).to.be.called;
         });
 
         it('should prefetch next files', () => {

@@ -237,9 +237,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(text, 'startLoadTimer');
             sandbox.stub(util, 'get').returns(Promise.resolve(''));
 
+            const someText = 'blah';
+            const getPromise = Promise.resolve(someText);
+
             text.postLoad();
 
-            expect(text.startLoadTimer).to.be.called;
+            return getPromise.then(() => {
+                expect(text.startLoadTimer).to.be.called;
+            });
         });
     });
 

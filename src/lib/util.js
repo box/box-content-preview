@@ -1,6 +1,8 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
 
+import { isDownloadHostBlocked, replaceDownloadHostWithDefault } from './downloadReachability';
+
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const CLIENT_NAME_KEY = 'box_client_name';
@@ -403,6 +405,10 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
+    if (isDownloadHostBlocked()) {
+        // eslint-disable-next-line
+        template = replaceDownloadHostWithDefault(template);
+    }
     return template.replace('{+asset_path}', asset || '');
 }
 
@@ -886,4 +892,16 @@ export function getProp(object, propPath, defaultValue) {
     }
 
     return value !== undefined ? value : defaultValue;
+}
+
+/**
+ * Checks that a fileId is of the expected type.
+ * A fileId can be a number, or a string represenation of a number
+ *
+ * @param {number} fileId - The file id
+ * @return {boolean} True if it is valid
+ */
+export function isValidFileId(fileId) {
+    // Tests that the string or number contains all numbers
+    return /^\d+$/.test(fileId);
 }

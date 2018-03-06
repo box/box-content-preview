@@ -23,8 +23,15 @@ import {
     findScriptLocation,
     appendQueryParams,
     replacePlaceholders,
-    stripAuthFromString
+    stripAuthFromString,
+    isValidFileId
 } from './util';
+import {
+    isDownloadHostBlocked,
+    setDownloadReachability,
+    isCustomDownloadHost,
+    replaceDownloadHostWithDefault
+} from './downloadReachability';
 import {
     getURL,
     getDownloadURL,
@@ -163,6 +170,7 @@ class Preview extends EventEmitter {
         this.handleFileInfoResponse = this.handleFileInfoResponse.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
         this.handleViewerEvents = this.handleViewerEvents.bind(this);
+        this.handleViewerMetrics = this.handleViewerMetrics.bind(this);
         this.triggerError = this.triggerError.bind(this);
         this.throttledMousemoveHandler = this.getGlobalMousemoveHandler().bind(this);
         this.navigateLeft = this.navigateLeft.bind(this);
@@ -287,13 +295,16 @@ class Preview extends EventEmitter {
         const fileIds = [];
 
         fileOrIds.forEach((fileOrId) => {
-            if (fileOrId && typeof fileOrId === 'string') {
+            if (fileOrId && isValidFileId(fileOrId)) {
                 // String id found in the collection
-                fileIds.push(fileOrId);
-            } else if (fileOrId && typeof fileOrId === 'object' && typeof fileOrId.id === 'string') {
+                fileIds.push(fileOrId.toString());
+            } else if (fileOrId && typeof fileOrId === 'object' && isValidFileId(fileOrId.id)) {
                 // Possible well-formed file object found in the collection
-                fileIds.push(fileOrId.id);
-                files.push(fileOrId);
+                const wellFormedFileObj = Object.assign({}, fileOrId, {
+                    id: fileOrId.id.toString()
+                });
+                fileIds.push(wellFormedFileObj.id);
+                files.push(wellFormedFileObj);
             } else {
                 throw new Error('Bad collection provided!');
             }
@@ -478,13 +489,29 @@ class Preview extends EventEmitter {
     download() {
         const { apiHost, queryParams } = this.options;
 
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            // Append optional query params
-            const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            get(downloadUrl, this.getRequestHeaders()).then((data) => {
-                openUrlInsideIframe(data.download_url);
-            });
+        if (!checkPermission(this.file, PERMISSION_DOWNLOAD)) {
+            return;
         }
+
+        // Append optional query params
+        const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+        get(downloadUrl, this.getRequestHeaders()).then((data) => {
+            const defaultDownloadUrl = replaceDownloadHostWithDefault(data.download_url);
+            if (isDownloadHostBlocked() || !isCustomDownloadHost(data.download_url)) {
+                // If we know the host is blocked, or we are already using the default,
+                // use the default.
+                openUrlInsideIframe(defaultDownloadUrl);
+            } else {
+                // Try the custom host, then check reachability
+                openUrlInsideIframe(data.download_url);
+                setDownloadReachability(data.download_url).then((isBlocked) => {
+                    if (isBlocked) {
+                        // If download is unreachable, try again with default
+                        openUrlInsideIframe(defaultDownloadUrl);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -640,8 +667,8 @@ class Preview extends EventEmitter {
         const fileVersionId = this.getFileOption(fileIdOrFile, FILE_OPTION_FILE_VERSION_ID) || '';
 
         // Check what was passed to preview.show()—string file ID or some file object
-        if (typeof fileIdOrFile === 'string') {
-            const fileId = fileIdOrFile;
+        if (typeof fileIdOrFile === 'string' || typeof fileIdOrFile === 'number') {
+            const fileId = fileIdOrFile.toString();
 
             // If we want to load by file version ID, use that as key for cache
             const cacheKey = fileVersionId ? { fileVersionId } : { fileId };
@@ -746,6 +773,9 @@ class Preview extends EventEmitter {
             this.navigateRight,
             this.throttledMousemoveHandler
         );
+
+        // Set up the notification
+        this.ui.setupNotification();
 
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
@@ -1199,9 +1229,6 @@ class Preview extends EventEmitter {
 
         // Hide the loading indicator
         this.ui.hideLoadingIndicator();
-
-        // Set up the notification
-        this.ui.setupNotification();
 
         // Prefetch next few files
         this.prefetchNextFiles();
