@@ -275,8 +275,10 @@ class BaseViewer extends EventEmitter {
                 this.resetLoadTimeout();
                 return;
             }
+
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.triggerError();
+                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT, __('error_refresh'));
+                this.triggerError(error);
             }
         }, this.loadTimeout);
     }
@@ -335,14 +337,16 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error|string} [err] - Optional error or string with message
+     * @param {Error|PreviewError} [err] - Error object related to the error that happened.
      * @return {void}
      */
     triggerError(err) {
+        const message = err ? err.message : '';
         const error =
             err instanceof PreviewError
                 ? err
-                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
+
         this.emit('error', error);
     }
 

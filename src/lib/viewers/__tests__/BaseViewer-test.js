@@ -11,7 +11,7 @@ import * as dr from '../../downloadReachability';
 import * as file from '../../file';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
-import { VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
 let base;
@@ -170,6 +170,22 @@ describe('lib/viewers/BaseViewer', () => {
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
         });
+
+        it('should trigger an error if the viewer times out', () => {
+            const triggerStub = sandbox.stub(base, 'triggerError');
+            sandbox.stub(window, 'setTimeout').callsFake((func) => func());
+
+            base.loaded = false;
+            base.destroyed = false;
+
+            base.resetLoadTimeout();
+            const [ error ] = triggerStub.getCall(0).args;
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
+
+            // Test cleanup
+            clearTimeout(base.loadTimeoutId);
+        });
     });
 
     describe('startLoadTimer()', () => {
@@ -249,6 +265,39 @@ describe('lib/viewers/BaseViewer', () => {
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_load_viewer');
             expect(error.message).to.equal('blah');
+        });
+
+        it('should emit a load viewer error if no error provided', () => {
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError();
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+
+        });
+
+        it('should pass through the error if it is a PreviewError', () => {
+            const code = 'my_special_error';
+            const displayMessage = 'Such a special error!';
+            const message = 'Bad things have happened';
+            const details = {
+                what: 'what?!'
+            };
+            const err = new PreviewError(code, displayMessage, details, message);
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError(err);
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(code);
+            expect(error.displayMessage).to.equal(displayMessage);
+            expect(error.details).to.equal(details);
+            expect(error.message).to.equal(message);
         });
     });
 
