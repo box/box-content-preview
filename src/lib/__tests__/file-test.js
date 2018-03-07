@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Cache from '../Cache';
+import Browser from '../Browser';
 import {
     getURL,
     getDownloadURL,
@@ -11,7 +12,9 @@ import {
     uncacheFile,
     getRepresentation,
     normalizeFileVersion,
-    getCachedFile
+    getCachedFile,
+    isVeraProtectedFile,
+    canDownload
 } from '../file';
 
 const sandbox = sinon.sandbox.create();
@@ -322,6 +325,66 @@ describe('lib/file', () => {
         it('should null if neither file ID nor file version ID is provided', () => {
             getCachedFile(cache, {});
             expect(cache.get).to.not.be.called;
+        });
+    });
+
+    describe('isVeraProtectedFile()', () => {
+        [
+            'some.vera.pdf.html',
+            '.vera.test.html',
+            'blah.vera..html',
+            'another.vera.3.html',
+            'test.vera.html'
+        ].forEach((fileName) => {
+            it('should return true if file is named like a Vera-protected file', () => {
+                expect(isVeraProtectedFile({ name: fileName })).to.be.true;
+            });
+        });
+
+        [
+            'vera.pdf.html',
+            'test.vera1.pdf.html',
+            'blah.vera..htm',
+            'another.verahtml',
+        ].forEach((fileName) => {
+            it('should return false if file is not named like a Vera-protected file', () => {
+                expect(isVeraProtectedFile({ name: fileName })).to.be.false;
+            });
+        });
+    });
+
+    describe('canDownload()', () => {
+        let file;
+        let options;
+
+        beforeEach(() => {
+            file = {
+                is_download_available: false,
+                permissions: {
+                    can_download: false
+                }
+            };
+            options = {
+                showDownload: false
+            };
+        });
+
+        [
+            [false, false, false, false, false],
+            [false, false, false, true, false],
+            [false, false, true, false, false],
+            [false, true, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, true],
+        ].forEach(([isDownloadable, isDownloadEnabled, havePermission, isBrowserSupported, expectedResult]) => {
+            it('should only return true if all of: file is downloadable, download is enabled, user has permissions, and browser can download is true', () => {
+                file.permissions.can_download = havePermission;
+                file.is_download_available = isDownloadable
+                options.showDownload = isDownloadable;
+                sandbox.stub(Browser, 'canDownload').returns(isBrowserSupported);
+
+                expect(canDownload(file, options)).to.equal(expectedResult);
+            });
         });
     });
 });

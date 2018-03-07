@@ -2,7 +2,7 @@
 import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
-import { stripAuthFromString } from '../util';
+import { isBoxWebApp, __RewireAPI__ as UtilAPI } from '../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -621,31 +621,6 @@ describe('lib/util', () => {
         });
     });
 
-    describe('isVeraProtectedFile()', () => {
-        [
-            'some.vera.pdf.html',
-            '.vera.test.html',
-            'blah.vera..html',
-            'another.vera.3.html',
-            'test.vera.html'
-        ].forEach((fileName) => {
-            it('should return true if file is named like a Vera-protected file', () => {
-                expect(util.isVeraProtectedFile({ name: fileName })).to.be.true;
-            });
-        });
-
-        [
-            'vera.pdf.html',
-            'test.vera1.pdf.html',
-            'blah.vera..htm',
-            'another.verahtml',
-        ].forEach((fileName) => {
-            it('should return false if file is not named like a Vera-protected file', () => {
-                expect(util.isVeraProtectedFile({ name: fileName })).to.be.false;
-            });
-        });
-    });
-
     describe('setDimensions()', () => {
         it('should set dimensions for the specified element', () => {
             const element = document.createElement('div');
@@ -797,13 +772,13 @@ describe('lib/util', () => {
             const random = `here's my string ${accessToken} khjfsadlkjfsad`;
             const randomFiltered = `here's my string ${accessFiltered}`; // It strips everything starting at 'access_token='
 
-            expect(stripAuthFromString(query)).to.equal(queryFiltered);
-            expect(stripAuthFromString(random)).to.equal(randomFiltered);
+            expect(util.stripAuthFromString(query)).to.equal(queryFiltered);
+            expect(util.stripAuthFromString(random)).to.equal(randomFiltered);
         });
 
         it('should return passed in param if not string', () => {
             const obj = { foo: 'bar' };
-            expect(stripAuthFromString(obj)).to.equal(obj);
+            expect(util.stripAuthFromString(obj)).to.equal(obj);
         });
     });
 
@@ -858,5 +833,25 @@ describe('lib/util', () => {
         it('should be invalid if fileId is a mixed string', () => {
             expect(util.isValidFileId('1234foo')).to.be.false;
         });
+    });
+
+    describe('isBoxWebApp()', () => {
+        [
+            ['https://test.app.box.com', true],
+            ['https://foo.ent.box.com', true],
+            ['https://bar.app.boxcn.net', true],
+            ['https://baz.ent.boxenterprise.net', true],
+            ['https://haha.box.net', false],
+            ['https://some.other.domain', false]
+        ]
+        .forEach(([hostname, expectedResult]) => {
+            it('should return true when window location is a Box domain', () => {
+                UtilAPI.__Rewire__('getHostname', () => {
+                    return hostname;
+                });
+                expect(isBoxWebApp()).to.equal(expectedResult);
+                UtilAPI.__ResetDependency__('getHostname');
+            });
+        })
     });
 });
