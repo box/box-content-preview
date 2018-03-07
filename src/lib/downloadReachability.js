@@ -30,7 +30,7 @@ export function isCustomDownloadHost(downloadUrl) {
     // 2. or starts with a custom prefix and ends with boxcloud.com
     return (
         !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) &&
-        (!!downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX) || downloadUrl.includes(PROD_CUSTOM_HOST_SUFFIX))
+        (!!downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX) || downloadUrl.indexOf(PROD_CUSTOM_HOST_SUFFIX) !== -1)
     );
 }
 
