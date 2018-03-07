@@ -24,7 +24,8 @@ import {
     appendQueryParams,
     replacePlaceholders,
     stripAuthFromString,
-    isValidFileId
+    isValidFileId,
+    isBoxWebApp
 } from './util';
 import {
     isDownloadHostBlocked,
@@ -42,13 +43,13 @@ import {
     uncacheFile,
     isWatermarked,
     getCachedFile,
-    normalizeFileVersion
+    normalizeFileVersion,
+    canDownload
 } from './file';
 import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
-    PERMISSION_DOWNLOAD,
     PERMISSION_PREVIEW,
     PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
@@ -475,7 +476,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
+        if (canDownload(this.file, this.options) && checkFeature(this.viewer, 'print')) {
             this.viewer.print();
         }
     }
@@ -489,7 +490,7 @@ class Preview extends EventEmitter {
     download() {
         const { apiHost, queryParams } = this.options;
 
-        if (!checkPermission(this.file, PERMISSION_DOWNLOAD)) {
+        if (!canDownload(this.file, this.options)) {
             return;
         }
 
@@ -961,10 +962,13 @@ class Preview extends EventEmitter {
 
             // If file is not downloadable, trigger an error
             if (file.is_download_available === false) {
-                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), {
-                    linkText: __('link_contact_us'),
-                    linkUrl: SUPPORT_URL
-                });
+                const details = isBoxWebApp()
+                    ? {
+                        linkText: __('link_contact_us'),
+                        linkUrl: SUPPORT_URL
+                    }
+                    : {};
+                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), details);
                 throw error;
             }
 
@@ -1021,7 +1025,7 @@ class Preview extends EventEmitter {
         }
 
         // Show download button if download permissions exist, options allow, and browser has ability
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if (canDownload(this.file, this.options)) {
             this.ui.showLoadingDownloadButton(this.download);
         }
 
@@ -1170,11 +1174,10 @@ class Preview extends EventEmitter {
         this.emitLoadMetrics();
 
         // Show or hide print/download buttons
-        // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if (canDownload(this.file, this.options)) {
             this.ui.showDownloadButton(this.download);
 
-            if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
+            if (checkFeature(this.viewer, 'print')) {
                 this.ui.showPrintButton(this.print);
             }
         }

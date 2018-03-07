@@ -2,7 +2,7 @@ import AssetLoader from '../AssetLoader';
 import PlainTextViewer from './PlainTextViewer';
 import MarkdownViewer from './MarkdownViewer';
 import CSVViewer from './CSVViewer';
-import { isVeraProtectedFile } from '../../util';
+import { isVeraProtectedFile } from '../../file';
 import { ORIGINAL_REP_NAME } from '../../constants';
 import { HTML_EXTENSIONS, TXT_EXTENSIONS } from '../../extensions';
 
