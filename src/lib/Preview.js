@@ -23,7 +23,8 @@ import {
     findScriptLocation,
     appendQueryParams,
     replacePlaceholders,
-    stripAuthFromString
+    stripAuthFromString,
+    isValidFileId
 } from './util';
 import {
     isDownloadHostBlocked,
@@ -294,13 +295,16 @@ class Preview extends EventEmitter {
         const fileIds = [];
 
         fileOrIds.forEach((fileOrId) => {
-            if (fileOrId && typeof fileOrId === 'string') {
+            if (fileOrId && isValidFileId(fileOrId)) {
                 // String id found in the collection
-                fileIds.push(fileOrId);
-            } else if (fileOrId && typeof fileOrId === 'object' && typeof fileOrId.id === 'string') {
+                fileIds.push(fileOrId.toString());
+            } else if (fileOrId && typeof fileOrId === 'object' && isValidFileId(fileOrId.id)) {
                 // Possible well-formed file object found in the collection
-                fileIds.push(fileOrId.id);
-                files.push(fileOrId);
+                const wellFormedFileObj = Object.assign({}, fileOrId, {
+                    id: fileOrId.id.toString()
+                });
+                fileIds.push(wellFormedFileObj.id);
+                files.push(wellFormedFileObj);
             } else {
                 throw new Error('Bad collection provided!');
             }
@@ -663,8 +667,8 @@ class Preview extends EventEmitter {
         const fileVersionId = this.getFileOption(fileIdOrFile, FILE_OPTION_FILE_VERSION_ID) || '';
 
         // Check what was passed to preview.show()—string file ID or some file object
-        if (typeof fileIdOrFile === 'string') {
-            const fileId = fileIdOrFile;
+        if (typeof fileIdOrFile === 'string' || typeof fileIdOrFile === 'number') {
+            const fileId = fileIdOrFile.toString();
 
             // If we want to load by file version ID, use that as key for cache
             const cacheKey = fileVersionId ? { fileVersionId } : { fileId };
