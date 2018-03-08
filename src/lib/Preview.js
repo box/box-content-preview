@@ -1042,7 +1042,7 @@ class Preview extends EventEmitter {
             const code = isFileTypeSupported ? ERROR_CODE.ACCOUNT : ERROR_CODE.UNSUPPORTED_FILE_TYPE;
             const message = isFileTypeSupported
                 ? __('error_account')
-                : replacePlaceholders(__('error_unsupported'), [`.${this.file.extension}`]);
+                : replacePlaceholders(__('error_unsupported'), [(this.file.extension || '').toUpperCase()]);
 
             throw new PreviewError(code, message);
         }
