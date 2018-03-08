@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import TextLoader from '../TextLoader';
-import * as util from '../../../util';
+import * as file from '../../../file';
 
-let file;
+let stubFile;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/TextLoader', () => {
@@ -14,7 +14,7 @@ describe('lib/viewers/text/TextLoader', () => {
             }
         ];
 
-        file = {
+        stubFile = {
             extension: 'html',
             representations: {
                 entries: [
@@ -32,13 +32,13 @@ describe('lib/viewers/text/TextLoader', () => {
 
     describe('determineViewer()', () => {
         it('should return viewer if file is not a Vera-protected file', () => {
-            sandbox.stub(util, 'isVeraProtectedFile').returns(false);
-            expect(TextLoader.determineViewer(file)).to.equal(TextLoader.viewers[0]);
+            sandbox.stub(file, 'isVeraProtectedFile').returns(false);
+            expect(TextLoader.determineViewer(stubFile)).to.equal(TextLoader.viewers[0]);
         });
 
         it('should return undefined if file is a Vera-protected file', () => {
-            sandbox.stub(util, 'isVeraProtectedFile').returns(true);
-            expect(TextLoader.determineViewer(file)).to.equal(undefined);
+            sandbox.stub(file, 'isVeraProtectedFile').returns(true);
+            expect(TextLoader.determineViewer(stubFile)).to.equal(undefined);
         });
     });
 });

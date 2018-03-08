@@ -4,7 +4,6 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import PreviewError from '../../../PreviewError';
 import * as file from '../../../file';
-import { PERMISSION_DOWNLOAD } from '../../../constants';
 import * as icons from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -94,30 +93,18 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             expect(error.addDownloadButton).to.not.be.called;
         });
 
-        it('should add download button if file has permissions and showDownload option is set', () => {
+        it('should add download button if file can be downloaded', () => {
             sandbox.stub(error, 'addDownloadButton');
-            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
-            error.options.showDownload = true;
+            sandbox.stub(file, 'canDownload').returns(true);
 
             error.load('reason');
 
             expect(error.addDownloadButton).to.be.called;
         });
 
-        it('should not add download button if file does not have download permissions', () => {
+        it('should not add download button if file can\'t be downloaded', () => {
             sandbox.stub(error, 'addDownloadButton');
-            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(false);
-            error.options.showDownload = true;
-
-            error.load('reason');
-
-            expect(error.addDownloadButton).to.not.be.called;
-        });
-
-        it('should not add download button if showDownload option is not set', () => {
-            sandbox.stub(error, 'addDownloadButton');
-            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
-            error.options.showDownload = false;
+            sandbox.stub(file, 'canDownload').returns(false);
 
             error.load('reason');
 

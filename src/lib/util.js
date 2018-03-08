@@ -684,18 +684,6 @@ export function requires360Viewer(file) {
 }
 
 /**
- * Check to see if file is a Vera-protected file.
- *
- * @public
- * @param {Object} file - File to check
- * @return {boolean} Whether file is a Vera-protected HTML file
- */
-export function isVeraProtectedFile(file) {
-    // Vera protected files will match this regex
-    return /.*\.(vera\..*|vera)\.html/i.test(file.name);
-}
-
-/**
  * Set width/height for an element.
  *
  * @public
@@ -904,4 +892,14 @@ export function getProp(object, propPath, defaultValue) {
 export function isValidFileId(fileId) {
     // Tests that the string or number contains all numbers
     return /^\d+$/.test(fileId);
+}
+
+/**
+ * Returns whether Preview is running inside the Box web application. This should be used sparingly since Preview
+ * should function based only on the provided options and not change functionality depending on environment.
+ *
+ * @return {boolean} Is Preview running in the Box WebApp
+ */
+export function isBoxWebApp() {
+    return (window.location.hostname || '').indexOf('app.box.com') !== -1;
 }

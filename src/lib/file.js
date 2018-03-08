@@ -1,5 +1,6 @@
+import Browser from './Browser';
 import { getProp, appendQueryParams } from './util';
-import { ORIGINAL_REP_NAME } from './constants';
+import { ORIGINAL_REP_NAME, PERMISSION_DOWNLOAD } from './constants';
 
 // List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
@@ -248,4 +249,32 @@ export function getCachedFile(cache, { fileId, fileVersionId }) {
     }
 
     return null;
+}
+
+/**
+ * Check to see if file is a Vera-protected file.
+ *
+ * @public
+ * @param {Object} file - File to check
+ * @return {boolean} Whether file is a Vera-protected HTML file
+ */
+export function isVeraProtectedFile(file) {
+    // Vera protected files will match this regex
+    return /.*\.(vera\..*|vera)\.html/i.test(file.name);
+}
+
+/**
+ * Helper to determine whether a file can be downloaded based on permissions, file status, browser capability, and
+ * Preview options.
+ *
+ * @param {Object} file - Box file object
+ * @param {Object} previewOptions - Preview options
+ * @return {boolean} Whether file can be downloaded
+ */
+export function canDownload(file, previewOptions) {
+    const { is_download_available: isFileDownloadable } = file;
+    const { showDownload: isDownloadEnabled } = previewOptions;
+    const havePermission = checkPermission(file, PERMISSION_DOWNLOAD);
+
+    return havePermission && isFileDownloadable && isDownloadEnabled && Browser.canDownload();
 }

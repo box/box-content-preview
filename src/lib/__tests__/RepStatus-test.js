@@ -109,7 +109,7 @@ describe('lib/RepStatus', () => {
                 })
             );
 
-            sandbox.mock(window).expects('clearTimeout').withArgs(repStatus.statusTimeout);
+            sandbox.mock(window).expects('clearTimeout');
 
             return repStatus.updateStatus().then(() => {
                 expect(repStatus.representation.status.state).to.equal(state);
