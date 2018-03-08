@@ -1507,7 +1507,7 @@ describe('lib/Preview', () => {
                 preview.loadViewer();
             } catch (e) {
                 expect(e.message).to.equal(
-                    util.replacePlaceholders(__('error_unsupported'), [`.${preview.file.extension}`])
+                    util.replacePlaceholders(__('error_unsupported'), ['ZIP'])
                 );
             }
         });
