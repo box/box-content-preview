@@ -310,8 +310,27 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
+        this.showGearHDIcon(this.getActiveTrack());
+
         if (quality) {
             this.emit('qualitychange', quality);
+        }
+    }
+
+    /**
+     * Determines if the current track is playing HD video, then shows
+     * or hides 'HD' next to the gear icon
+     *
+     * @param {Object} activeTrack - the currently playing track
+     * @return {void}
+     */
+    showGearHDIcon(activeTrack = {}) {
+        const isPlayingHD = activeTrack.videoId === this.hdVideoId;
+
+        if (isPlayingHD) {
+            this.wrapperEl.classList.add(CSS_CLASS_HD);
+        } else {
+            this.wrapperEl.classList.remove(CSS_CLASS_HD);
         }
     }
 
@@ -324,11 +343,8 @@ class DashViewer extends VideoBaseViewer {
      */
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
-        if (activeTrack.videoId === this.hdVideoId) {
-            this.wrapperEl.classList.add(CSS_CLASS_HD);
-        } else {
-            this.wrapperEl.classList.remove(CSS_CLASS_HD);
-        }
+
+        this.showGearHDIcon(activeTrack);
 
         if (!this.isLoaded()) {
             return;
