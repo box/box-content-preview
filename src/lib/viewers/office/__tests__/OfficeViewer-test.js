@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
+import Location from '../../../Location';
 import OfficeViewer from '../OfficeViewer';
 import * as util from '../../../util';
 import { CLASS_HIDDEN } from '../../../constants';
@@ -283,8 +284,10 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     describe('createFormElement()', () => {
         beforeEach(() => {
+            const origin = 'someOrigin';
+            sandbox.stub(Location, 'getOrigin').returns(origin);
             stubs.setupWOPISrc = sandbox.stub(office, 'setupWOPISrc').returns('src');
-            stubs.sessionContext = JSON.stringify({ origin: window.location.origin });
+            stubs.sessionContext = JSON.stringify({ origin });
             stubs.formEl = office.createFormElement(
                 office.options.apiHost,
                 office.options.file.id,

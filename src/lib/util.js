@@ -1,6 +1,7 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
 
+import Location from './Location';
 import { isDownloadHostBlocked, replaceDownloadHostWithDefault } from './downloadReachability';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
@@ -901,5 +902,6 @@ export function isValidFileId(fileId) {
  * @return {boolean} Is Preview running in the Box WebApp
  */
 export function isBoxWebApp() {
-    return (window.location.hostname || '').indexOf('app.box.com') !== -1;
+    const boxHostnameRegex = /(app|ent)\.(box\.com|boxcn\.net|boxenterprise\.net)/;
+    return boxHostnameRegex.test(Location.getHostname());
 }
