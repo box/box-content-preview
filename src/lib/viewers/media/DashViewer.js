@@ -310,7 +310,7 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        this.showGearHDIcon(this.getActiveTrack());
+        this.showGearHdIcon(this.getActiveTrack());
 
         if (quality) {
             this.emit('qualitychange', quality);
@@ -324,7 +324,7 @@ class DashViewer extends VideoBaseViewer {
      * @param {Object} activeTrack - the currently playing track
      * @return {void}
      */
-    showGearHDIcon(activeTrack = {}) {
+    showGearHdIcon(activeTrack = {}) {
         const isPlayingHD = activeTrack.videoId === this.hdVideoId;
 
         if (isPlayingHD) {
@@ -344,7 +344,7 @@ class DashViewer extends VideoBaseViewer {
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
 
-        this.showGearHDIcon(activeTrack);
+        this.showGearHdIcon(activeTrack);
 
         if (!this.isLoaded()) {
             return;
