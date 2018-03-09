@@ -170,14 +170,20 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should not prefetch rep content if content is false', () => {
-            sandbox.mock(util).expects('get').never();
+            sandbox
+                .mock(util)
+                .expects('get')
+                .never();
             dash.prefetch({ assets: false, content: false });
             expect(stubs.prefetchAssets).to.not.be.called;
         });
 
         it('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.returns(false);
-            sandbox.mock(util).expects('get').never();
+            sandbox
+                .mock(util)
+                .expects('get')
+                .never();
 
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).to.not.be.called;
@@ -186,7 +192,10 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should prefetch rep content if representation is ready', () => {
             const contentUrl = 'someUrl';
             stubs.createUrl.returns(contentUrl);
-            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+            sandbox
+                .mock(util)
+                .expects('get')
+                .withArgs(contentUrl, 'any');
 
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).to.not.be.called;
@@ -232,7 +241,7 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('load').withArgs('url', START_TIME_IN_SECONDS);
 
             dash.loadDashPlayer();
-        })
+        });
     });
 
     describe('requestFilter()', () => {
@@ -245,12 +254,10 @@ describe('lib/viewers/media/DashViewer', () => {
                         is_watermarked: false
                     },
                     representations: {
-                        entries: [
-                            { representation: 'dash' },
-                        ]
+                        entries: [{ representation: 'dash' }]
                     }
                 }
-            }
+            };
 
             dash.requestFilter('', stubs.req);
 
@@ -261,19 +268,17 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should append watermark cache-busting query params if file is watermarked', () => {
             stubs.createUrl = sandbox.stub(dash, 'createContentUrlWithAuthParams').returns('www.authed.com/?foo=bar');
             stubs.req = { uris: ['uri'] };
-            dash.watermarkCacheBust = '123'
+            dash.watermarkCacheBust = '123';
             dash.options = {
                 file: {
                     watermark_info: {
                         is_watermarked: true
                     },
                     representations: {
-                        entries: [
-                            { representation: 'dash' },
-                        ]
+                        entries: [{ representation: 'dash' }]
                     }
                 }
-            }
+            };
 
             dash.requestFilter('', stubs.req);
 
@@ -311,9 +316,9 @@ describe('lib/viewers/media/DashViewer', () => {
             const variant4 = { id: 4, videoId: 2, audioId: 6, active: true };
             const variant5 = { id: 5, videoId: 1, audioId: 7, active: false };
             const variant6 = { id: 6, videoId: 2, audioId: 7, active: false };
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                variant1, variant2, variant3, variant4, variant5, variant6
-            ]);
+            stubs.mockPlayer
+                .expects('getVariantTracks')
+                .returns([variant1, variant2, variant3, variant4, variant5, variant6]);
             sandbox.stub(dash, 'getActiveTrack').returns(variant4);
             sandbox.stub(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').withArgs(variant3, true);
@@ -326,9 +331,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should do nothing if enabling a videoId which is already active', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
             const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                variant1, variant2
-            ]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             sandbox.stub(dash, 'getActiveTrack').returns(variant2);
             sandbox.stub(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -341,9 +344,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should do nothing if enabling an invalid videoId', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
             const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                variant1, variant2
-            ]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             sandbox.stub(dash, 'getActiveTrack').returns(variant2);
             sandbox.stub(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -372,6 +373,8 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.sdVideoId = -1;
             stubs.enableVideoId = sandbox.stub(dash, 'enableVideoId');
             stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
+            stubs.showGearHdIcon = sandbox.stub(dash, 'showGearHdIcon');
+            stubs.getActiveTrack = sandbox.stub(dash, 'getActiveTrack');
         });
 
         it('should enforce SD if there is no HD video ID', () => {
@@ -480,7 +483,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.shakaErrorHandler(shakaError);
 
-            const [ event, error ] = dash.emit.getCall(0).args;
+            const [event, error] = dash.emit.getCall(0).args;
             expect(event).to.equal('error');
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_shaka');
@@ -570,7 +573,6 @@ describe('lib/viewers/media/DashViewer', () => {
             };
 
             Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: sandbox.mock() });
-
         });
 
         afterEach(() => {
@@ -581,7 +583,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.hdVideoId = 3;
             dash.loadUI();
             expect(dash.mediaControls.enableHDSettings).to.be.called;
-
         });
 
         it('should do nothing if there is no HD rep', () => {
@@ -714,11 +715,11 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('loadAlternateAudio()', () => {
         it('should select unique audio tracks', () => {
-            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
-            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0']};
-            const variant3 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio1']};
-            const variant4 = { videoId: 1, audioId: 1, language: 'rus', roles: ['audio1']};
-            const variant5 = { videoId: 2, audioId: 1, language: 'rus', roles: ['audio1']};
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0'] };
+            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0'] };
+            const variant3 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio1'] };
+            const variant4 = { videoId: 1, audioId: 1, language: 'rus', roles: ['audio1'] };
+            const variant5 = { videoId: 2, audioId: 1, language: 'rus', roles: ['audio1'] };
             const allVariants = [variant1, variant2, variant3, variant4, variant5];
             stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls.expects('initAlternateAudio');
@@ -732,11 +733,11 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should translate and initialize audio in sorted order', () => {
-            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
-            const variant2 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio0']};
-            const variant3 = { videoId: 0, audioId: 2, language: 'spa', roles: ['audio0']};
-            const variant4 = { videoId: 0, audioId: 3, language: 'kor', roles: ['audio0']};
-            const variant5 = { videoId: 0, audioId: 4, language: 'fra', roles: ['audio0']};
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0'] };
+            const variant2 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio0'] };
+            const variant3 = { videoId: 0, audioId: 2, language: 'spa', roles: ['audio0'] };
+            const variant4 = { videoId: 0, audioId: 3, language: 'kor', roles: ['audio0'] };
+            const variant5 = { videoId: 0, audioId: 4, language: 'fra', roles: ['audio0'] };
             const allVariants = [variant3, variant1, variant4, variant2, variant5];
             stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls
@@ -747,17 +748,15 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should not initialize alternate audio if there is none', () => {
-            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
-            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0']};
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0'] };
+            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0'] };
             const allVariants = [variant1, variant2];
             stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls.expects('initAlternateAudio').never();
 
             dash.loadAlternateAudio();
 
-            expect(dash.audioTracks).to.deep.equal([
-                { language: 'eng', role: 'audio0' }
-            ]);
+            expect(dash.audioTracks).to.deep.equal([{ language: 'eng', role: 'audio0' }]);
         });
     });
 
@@ -852,10 +851,9 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('calculateVideoDimensions()', () => {
         it('should calculate the video dimensions based on the reps', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(false);
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                { width: 200, videoId: 1 },
-                { width: 100, videoId: 2 }
-            ]);
+            stubs.mockPlayer
+                .expects('getVariantTracks')
+                .returns([{ width: 200, videoId: 1 }, { width: 100, videoId: 2 }]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(1);
             expect(dash.sdVideoId).to.equal(2);
@@ -864,10 +862,9 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should use SD video dimensions if no HD', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(false);
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                { width: 640, videoId: 1, audioId: 2 },
-                { width: 640, videoId: 1, audioId: 3 }
-            ]);
+            stubs.mockPlayer
+                .expects('getVariantTracks')
+                .returns([{ width: 640, videoId: 1, audioId: 2 }, { width: 640, videoId: 1, audioId: 3 }]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(-1);
             expect(dash.sdVideoId).to.equal(1);
@@ -876,10 +873,9 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should default video dimensions when video is audio-only', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(true);
-            stubs.mockPlayer.expects('getVariantTracks').returns([
-                { width: null, videoId: null, audioId: 1 },
-                { width: null, videoId: null, audioId: 2 }
-            ]);
+            stubs.mockPlayer
+                .expects('getVariantTracks')
+                .returns([{ width: null, videoId: null, audioId: 1 }, { width: null, videoId: null, audioId: 2 }]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(-1);
             expect(dash.sdVideoId).to.equal(-1);
@@ -1068,6 +1064,34 @@ describe('lib/viewers/media/DashViewer', () => {
             const result = dash.onKeydown('blah');
             expect(dash.toggleStats).to.not.be.called;
             expect(result).to.not.be.true;
+        });
+    });
+
+    describe('showGearHdIcon()', () => {
+        const hdTrack = {
+            videoId: 1
+        };
+
+        const sdTrack = {
+            videoId: 2
+        };
+
+        beforeEach(() => {
+            dash.hdVideoId = 1;
+        });
+
+        it('should add the hd class', () => {
+            expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
+            dash.showGearHdIcon(hdTrack);
+            expect(dash.wrapperEl).to.have.class(CSS_CLASS_HD);
+        });
+
+        it('should remove the hd class', () => {
+            expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
+            dash.showGearHdIcon(hdTrack);
+            expect(dash.wrapperEl).to.have.class(CSS_CLASS_HD);
+            dash.showGearHdIcon(sdTrack);
+            expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
         });
     });
 });
