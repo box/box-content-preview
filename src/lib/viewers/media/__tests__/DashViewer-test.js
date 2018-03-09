@@ -373,7 +373,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.sdVideoId = -1;
             stubs.enableVideoId = sandbox.stub(dash, 'enableVideoId');
             stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
-            stubs.showGearHDIcon = sandbox.stub(dash, 'showGearHDIcon');
+            stubs.showGearHdIcon = sandbox.stub(dash, 'showGearHdIcon');
             stubs.getActiveTrack = sandbox.stub(dash, 'getActiveTrack');
         });
 
@@ -1067,7 +1067,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('showGearHDIcon()', () => {
+    describe('showGearHdIcon()', () => {
         const hdTrack = {
             videoId: 1
         };
@@ -1082,15 +1082,15 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should add the hd class', () => {
             expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
-            dash.showGearHDIcon(hdTrack);
+            dash.showGearHdIcon(hdTrack);
             expect(dash.wrapperEl).to.have.class(CSS_CLASS_HD);
         });
 
         it('should remove the hd class', () => {
             expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
-            dash.showGearHDIcon(hdTrack);
+            dash.showGearHdIcon(hdTrack);
             expect(dash.wrapperEl).to.have.class(CSS_CLASS_HD);
-            dash.showGearHDIcon(sdTrack);
+            dash.showGearHdIcon(sdTrack);
             expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
         });
     });
