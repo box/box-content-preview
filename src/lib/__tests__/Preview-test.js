@@ -9,7 +9,7 @@ import PreviewError from '../PreviewError';
 import * as file from '../file';
 import * as util from '../util';
 import * as dr from '../downloadReachability';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
 
@@ -703,36 +703,33 @@ describe('lib/Preview', () => {
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
-            stubs.checkFeature = sandbox.stub(file, 'checkFeature').returns(false);
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
+            stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             preview.viewer = {
                 print: sandbox.stub()
             };
         });
 
-        it('should print if the feature and permissions exist', () => {
-            stubs.checkPermission.returns(true);
+        it('should print if file can be downloaded and feature exists', () => {
+            stubs.canDownload.returns(true);
             stubs.checkFeature.returns(true);
 
             preview.print();
             expect(preview.viewer.print).to.be.called;
         });
 
-        it('should not print if feature does not exists', () => {
-            stubs.checkFeature.returns(true);
+        it('should not print if feature does not exist', () => {
+            stubs.canDownload.returns(true);
+            stubs.checkFeature.returns(false);
 
             preview.print();
             expect(preview.viewer.print).to.not.be.called;
         });
 
-        it('should not print if permissions do not exist', () => {
-            stubs.checkPermission.returns(true);
+        it('should not print if file cannot be downloaded', () => {
+            stubs.canDownload.returns(false);
+            stubs.checkFeature.returns(false);
 
-            preview.print();
-            expect(preview.viewer.print).to.not.be.called;
-        });
-
-        it('should not print if permissions or feature do not exist', () => {
             preview.print();
             expect(preview.viewer.print).to.not.be.called;
         });
@@ -747,8 +744,7 @@ describe('lib/Preview', () => {
             });
 
             stubs.reachabilityPromise = Promise.resolve(true);
-
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
             stubs.get = sandbox.stub(dr, 'setDownloadReachability').returns(stubs.reachabilityPromise);
             stubs.openUrlInsideIframe = sandbox.stub(util, 'openUrlInsideIframe');
@@ -759,15 +755,14 @@ describe('lib/Preview', () => {
             stubs.replaceDownloadHostWithDefault = sandbox.stub(dr, 'replaceDownloadHostWithDefault').returns('default');
         });
 
-        it('should not do anything if there is no download permission', () => {
-            stubs.checkPermission.returns(false);
-
+        it('should not do anything if file cannot be downloaded', () => {
+            stubs.canDownload.returns(false);
             preview.download();
             expect(stubs.openUrlInsideIframe).to.not.be.called;
         });
 
         it('open the default download URL in an iframe if the custom host is blocked or if we were given the default', () => {
-            stubs.checkPermission.returns(true);
+            stubs.canDownload.returns(true);
             stubs.isDownloadHostBlocked.returns(true);
             stubs.isCustomDownloadHost.returns(true);
 
@@ -787,7 +782,7 @@ describe('lib/Preview', () => {
 
 
         it('should check download reachability and fallback if we do not know the status of our custom host', () => {
-            stubs.checkPermission.returns(true);
+            stubs.canDownload.returns(true);
             stubs.isCustomDownloadHost.returns(true);
 
             preview.download();
@@ -1449,7 +1444,7 @@ describe('lib/Preview', () => {
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
-            stubs.canDownload = sandbox.stub(Browser, 'canDownload').returns(false);
+            stubs.canDownload = sandbox.stub(file, 'canDownload').returns(false);
             stubs.showLoadingDownloadButton = sandbox.stub(preview.ui, 'showLoadingDownloadButton');
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
@@ -1484,49 +1479,24 @@ describe('lib/Preview', () => {
             expect(stubs.destroy).to.not.be.called;
         });
 
-        it('should throw an error if there is no preview permission', () => {
-            stubs.checkPermission.returns(false);
+        it('should throw an error if user does not have permission to preview', () => {
+            stubs.checkPermission.withArgs(sinon.match.any, PERMISSION_PREVIEW).returns(false);
             expect(() => preview.loadViewer()).to.throw(
                 PreviewError,
                 /We're sorry, you don't have permission to preview this file./
             );
         });
 
-        it('should show the loading download button if there are sufficient permissions and support', () => {
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
-            preview.options.showDownload = false;
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
-            preview.options.showDownload = true;
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-            preview.options.showDownload = true;
-            stubs.canDownload.returns(false);
-            preview.destroy();
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-            preview.options.showDownload = true;
+        it('should show the loading download button if file can be downloaded', () => {
             stubs.canDownload.returns(true);
-
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.be.called;
+        });
+
+        it('should not show the loading download button if file can\'t be downloaded', () => {
+            stubs.canDownload.returns(false);
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
         });
 
         it('should throw an unsupported error if there is no loader for general file types', () => {
@@ -1537,7 +1507,7 @@ describe('lib/Preview', () => {
                 preview.loadViewer();
             } catch (e) {
                 expect(e.message).to.equal(
-                    util.replacePlaceholders(__('error_unsupported'), [`.${preview.file.extension}`])
+                    util.replacePlaceholders(__('error_unsupported'), ['ZIP'])
                 );
             }
         });
@@ -1701,10 +1671,9 @@ describe('lib/Preview', () => {
 
     describe('finishLoading()', () => {
         beforeEach(() => {
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile');
-            stubs.canDownload = sandbox.stub(Browser, 'canDownload');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.showPrintButton = sandbox.stub(preview.ui, 'showPrintButton');
             stubs.hideLoadingIndicator = sandbox.stub(preview.ui, 'hideLoadingIndicator');
@@ -1727,64 +1696,39 @@ describe('lib/Preview', () => {
             };
 
             preview.logger = stubs.logger;
-            preview.options.showDownload = true;
+        });
+
+        it('should show download button if file can be downloaded', () => {
             stubs.canDownload.returns(true);
-            stubs.checkPermission.returns(true);
-            stubs.checkFeature.returns(true);
-        });
-
-        it('should only show download button if there is download permission', () => {
-            stubs.checkPermission.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.returns(true);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
-        });
-
-        it('should show download button if it is requested in the options', () => {
-            preview.options.showDownload = false;
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            preview.options.showDownload = true;
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
-        });
-
-        it('should show download button if download is supported by browser', () => {
-            stubs.canDownload.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            stubs.canDownload.returns(true);
-
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;
+        });
 
-            stubs.canDownload.returns(true);
-            stubs.isMobile.returns(false);
-
+        it('should not show download button if file can\'t be downloaded', () => {
+            stubs.canDownload.returns(false);
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
+            expect(stubs.showDownloadButton).to.not.be.called;
         });
 
         it('should show print button if print is supported', () => {
-            stubs.checkFeature.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showPrintButton).to.not.be.called;
-
-            stubs.checkFeature.returns(true);
-
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.canDownload.returns(true);
             preview.finishLoading();
             expect(stubs.showPrintButton).to.be.called;
+        });
+
+        it('should not show print button if print is not supported', () => {
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(false);
+            stubs.canDownload.returns(true);
+            preview.finishLoading();
+            expect(stubs.showPrintButton).to.not.be.called;
+        });
+
+        it('should not show print button if file can\'t be downloaded', () => {
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.canDownload.returns(false);
+            preview.finishLoading();
+            expect(stubs.showPrintButton).to.not.be.called;
         });
 
         it('should increment the preview count', () => {
@@ -1792,6 +1736,27 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(preview.count.success).to.equal(1);
+        });
+
+        it('should emit a metrics message for successful preview', () => {
+            const event_name = 'success';
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading();
+
+            expect(handleViewerMetrics).to.be.calledWith({ event_name });
+        });
+
+        it('should emit a metrics message for failed preview', () => {
+            const event_name = 'failure';
+            const value = false;
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading({ error: {} });
+
+            expect(handleViewerMetrics).to.be.calledWith({ event_name });
         });
 
         it('should emit the load event', () => {

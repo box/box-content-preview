@@ -1213,6 +1213,10 @@ box-annotations@^0.15.0:
     rangy "^1.3.0"
     rbush "^2.0.1"
 
+box-locales@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/box-locales/-/box-locales-0.0.1.tgz#1724959f293ae85f235b681b775d0f1a52a76b54"
+
 box-react-ui@^22.3.0:
   version "22.4.1"
   resolved "https://registry.yarnpkg.com/box-react-ui/-/box-react-ui-22.4.1.tgz#f38e787fda409956ab34f9ad982ca18ad6b4e67f"

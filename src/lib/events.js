@@ -38,6 +38,7 @@ export const ERROR_CODE = {
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
     CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
+    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
     CONTENT_DOWNLOAD: 'error_content_download'
 };
 
@@ -48,7 +49,7 @@ export const PREVIEW_ERROR = 'preview_error';
 export const PREVIEW_METRIC = 'preview_metric';
 // Milestone events for loading performance
 export const LOAD_METRIC = {
-    previewLoadEvent: 'preview_load', // Event name for preview_metric events related to loading times.
+    previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
     fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
