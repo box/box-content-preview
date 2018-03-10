@@ -22,7 +22,9 @@ const commonConfigObj = {
 };
 
 const helperObj = {};
-if (typeof SAUCE_USERNAME === 'undefined') {
+const isLocalBuild = typeof SAUCE_USERNAME === 'undefined';
+
+if (isLocalBuild) {
     helperObj.WebDriverIO = commonConfigObj;
 } else {
     // Common saucelab config
@@ -69,5 +71,6 @@ exports.config = {
     include: {},
     bootstrap: false,
     mocha: {},
-    name: 'box-content-preview'
+    name: 'box-content-preview',
+    hooks: isLocalBuild ? [] : ['./functional-tests/eventHooks.js']
 };
