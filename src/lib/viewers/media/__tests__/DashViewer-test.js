@@ -218,7 +218,7 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('addEventListener').withArgs('adaptation', sinon.match.func);
             stubs.mockPlayer.expects('addEventListener').withArgs('error', sinon.match.func);
             stubs.mockPlayer.expects('configure');
-            stubs.mockPlayer.expects('load').withArgs('url');
+            stubs.mockPlayer.expects('load').withArgs('url').returns(Promise.resolve());;
 
             dash.loadDashPlayer();
 
@@ -228,6 +228,8 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should invoke startLoadTimer()', () => {
             sandbox.stub(dash, 'startLoadTimer');
             sandbox.stub(shaka, 'Player').returns(dash.player);
+            stubs.mockPlayer.expects('load').returns(Promise.resolve());
+
             dash.loadDashPlayer();
 
             expect(dash.startLoadTimer).to.be.called;
@@ -238,7 +240,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.mediaUrl = 'url';
             dash.startTimeInSeconds = START_TIME_IN_SECONDS;
             sandbox.stub(shaka, 'Player').returns(dash.player);
-            stubs.mockPlayer.expects('load').withArgs('url', START_TIME_IN_SECONDS);
+            stubs.mockPlayer.expects('load').withArgs('url', START_TIME_IN_SECONDS).returns(Promise.resolve());
 
             dash.loadDashPlayer();
         });
@@ -502,6 +504,34 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.shakaErrorHandler(shakaError);
 
             expect(dash.emit).to.not.be.called;
+        });
+
+        it('should work when the error does not contain a details object', () => {
+            const shakaError = {
+                severity: 2, // critical severity
+                category: 1,
+                code: 1100, // HTTP Error code
+                data: ['foobar']
+            };
+            dash.shakaErrorHandler(shakaError);
+
+            const [ event, error ] = dash.emit.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_shaka');
+        });
+
+        it('should handle the download error if an HTTP shaka error is thrown', () => {
+            const shakaError = {
+                severity: 2, // critical severity
+                category: 1,
+                code: 1002, // hTTP Error code
+                data: ['foobar']
+            };
+            sandbox.stub(dash, 'handleDownloadError')
+            dash.shakaErrorHandler(shakaError);
+
+            expect(dash.handleDownloadError).to.be.called;
         });
     });
 

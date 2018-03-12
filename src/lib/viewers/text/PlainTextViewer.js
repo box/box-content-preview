@@ -182,7 +182,7 @@ class PlainTextViewer extends TextBaseViewer {
      * Loads a text file.
      *
      * @private
-     * @return {void}
+     * @return {Promise} promise to get text content
      */
     postLoad = () => {
         const { representation, file } = this.options;
@@ -194,7 +194,7 @@ class PlainTextViewer extends TextBaseViewer {
 
         const contentUrl = this.createContentUrlWithAuthParams(template);
         this.startLoadTimer();
-        get(contentUrl, headers, 'text')
+        return get(contentUrl, headers, 'text')
             .catch((error) => {
                 this.handleDownloadError(error, contentUrl);
             })
