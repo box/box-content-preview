@@ -228,9 +228,13 @@ class DocBaseViewer extends BaseViewer {
         const { file } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
-        // Don't show preload if there's a cached page since preloads are only for the 1st page
+        // Don't show preload if there's a cached page or startAt is set and > 1 since preloads are only for the 1st page
         // Also don't show preloads for watermarked files
-        if (!this.preloader || isWatermarked || this.getCachedPage() !== 1) {
+        if (
+            !this.preloader ||
+            isWatermarked ||
+            ((this.startPageNum && this.startPageNum !== 1) || this.getCachedPage() !== 1)
+        ) {
             return;
         }
 

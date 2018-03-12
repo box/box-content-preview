@@ -244,6 +244,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.showPreload();
         });
 
+        it('should not do anything if startAt is not page 1', () => {
+            sandbox.stub(docBase, 'getCachedPage').returns(2);
+            docBase.startPageNum = 3;
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
         it('should not do anything if file is watermarked', () => {
             docBase.options.file = {
                 watermark_info: {
@@ -870,17 +878,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.startLoadTimer).to.be.called;
 
         });
-        
+
         it('should handle any download error', () => {
             stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
             const doc = {
                 url: 'url'
             };
-    
+
             docBase.options.location = {
                 locale: 'en-US'
             };
-    
+
             const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
 
             return docBase.initViewer('url').catch(() => {
