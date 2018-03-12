@@ -245,7 +245,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should not do anything if startAt is not page 1', () => {
-            sandbox.stub(docBase, 'getCachedPage').returns(2);
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
             docBase.startPageNum = 3;
             sandbox.mock(docBase.preloader).expects('showPreload').never();
 
