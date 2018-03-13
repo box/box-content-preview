@@ -188,20 +188,25 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('errorHandler()', () => {
-        it('should emit the error and set a display message', () => {
-            sandbox.stub(media, 'emit');
-            const err = new Error('blah');
-            sandbox
-                .mock(window.console)
-                .expects('error')
-                .withArgs(err);
-
+        it('should handle download error if the viewer was not yet loaded', () => {
+            media.mediaUrl = 'foo'
+            sandbox.stub(media, 'isLoaded').returns(false);
+            sandbox.stub(media, 'handleDownloadError');
+            const err = new Error();
+          
             media.errorHandler(err);
 
-            const [event, error] = media.emit.getCall(0).args;
-            expect(event).to.equal('error');
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_load_media');
+            expect(media.handleDownloadError).to.be.calledWith(sinon.match.has('code'), 'foo');
+        });
+
+        it('should trigger an error if Preview is already loaded', () => {
+            sandbox.stub(media, 'isLoaded').returns(true);
+            sandbox.stub(media, 'triggerError');
+            const err = new Error();
+          
+            media.errorHandler(err);
+
+            expect(media.triggerError).to.be.calledWith(sinon.match.has('code'));
         });
     });
 
