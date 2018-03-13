@@ -320,9 +320,6 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        this.hasRetriedContentDownload = true;
-        this.load();
-
         if (isCustomDownloadHost(downloadURL)) {
             setDownloadReachability(downloadURL).then((isBlocked) => {
                 if (isBlocked) {
@@ -330,6 +327,9 @@ class BaseViewer extends EventEmitter {
                 }
             });
         }
+
+        this.hasRetriedContentDownload = true;
+        this.load();
     }
 
     /**
@@ -463,7 +463,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     viewerLoadHandler(event) {
-        const contentTemplate = getProp(this.options, 'representation.content.url_template', null);
+        const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
         const downloadHostToNotify = downloadNotificationToShow(contentTemplate);
         if (downloadHostToNotify) {
             this.previewUI.notification.show(
