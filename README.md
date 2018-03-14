@@ -209,7 +209,7 @@ Additional Methods
 
 `preview.getViewers()` lists all the available viewers.
 
-`preview.prefetchViewers()` prefetches the static assets for all the available viewers for browser to cache for performance.
+`preview.prefetchViewers(/* Array[String] */)` prefetches static assets for the specified viewers that the browser can cache for performance benefits.
 
 Events
 ------
