@@ -29,6 +29,7 @@ class DashViewer extends VideoBaseViewer {
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
+        this.shakaManifestHandler = this.shakaManifestHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
@@ -152,10 +153,11 @@ class DashViewer extends VideoBaseViewer {
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
+        this.player.addEventListener('streaming', this.shakaManifestHandler);
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
-                enabled: true
+                enabled: false
             },
             streaming: {
                 bufferingGoal: MAX_BUFFER,
@@ -240,6 +242,24 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Given a an audio ID (e.g. english track audio ID), enables the track with that audio ID
+     * while maintaining the SAME VIDEO as the active track.
+     *
+     * @private
+     * @param {number} role - The role of the audio used in the variant (provided by Shaka)
+     * @return {void}
+     */
+    enableAudioId(role) {
+        const tracks = this.player.getVariantTracks();
+        const activeTrack = this.getActiveTrack();
+        const newTrack = tracks.find((track) => track.roles[0] === role && track.videoId === activeTrack.videoId);
+        if (newTrack && newTrack.audioId !== activeTrack.audioId) {
+            this.showLoadingIcon(newTrack.id);
+            this.player.selectVariantTrack(newTrack, true);
+        }
+    }
+
+    /**
      * Enables or disables automatic adaptation
      *
      * @private
@@ -280,9 +300,10 @@ class DashViewer extends VideoBaseViewer {
      */
     handleAudioTrack() {
         const audioIdx = parseInt(this.cache.get('media-audiotracks'), 10);
-        if (this.audioTracks[audioIdx] !== undefined) {
+        const newAudioTrack = this.audioTracks[audioIdx];
+        if (newAudioTrack !== undefined) {
             const track = this.audioTracks[audioIdx];
-            this.player.selectAudioLanguage(track.language, track.role);
+            this.enableAudioId(track.role);
         }
     }
 
@@ -388,6 +409,25 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Handles streaming event which is the first time the manifest is available. See https://shaka-player-demo.appspot.com/docs/api/shaka.util.Error.html
+     *
+     * @private
+     * @param {Object} shakaError - Error to handle
+     * @return {void}
+     */
+    shakaManifestHandler() {
+        this.calculateVideoDimensions();
+        this.loadUI();
+
+        if (this.hdVideoId !== -1) {
+            this.mediaControls.enableHDSettings();
+        }
+
+        this.loadSubtitles();
+        this.loadAlternateAudio();
+    }
+
+    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
@@ -463,15 +503,10 @@ class DashViewer extends VideoBaseViewer {
             this.autoplay();
         }
 
-        this.calculateVideoDimensions();
-        this.loadUI();
         this.loadFilmStrip();
         this.resize();
         this.handleVolume();
         this.startBandwidthTracking();
-        this.handleQuality(); // should come after gettings rep ids
-        this.loadSubtitles();
-        this.loadAlternateAudio();
         this.showPlayButton();
 
         this.loaded = true;
@@ -481,17 +516,6 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
         this.mediaControls.show();
         this.mediaContainerEl.focus();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    loadUI() {
-        super.loadUI();
-
-        if (this.hdVideoId !== -1) {
-            this.mediaControls.enableHDSettings();
-        }
     }
 
     /**
