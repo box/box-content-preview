@@ -29,7 +29,7 @@ class DashViewer extends VideoBaseViewer {
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
-        this.shakaManifestHandler = this.shakaManifestHandler.bind(this);
+        this.shakaManifestLoadedHandler = this.shakaManifestLoadedHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
@@ -153,7 +153,7 @@ class DashViewer extends VideoBaseViewer {
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
-        this.player.addEventListener('streaming', this.shakaManifestHandler);
+        this.player.addEventListener('streaming', this.shakaManifestLoadedHandler);
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
@@ -252,6 +252,7 @@ class DashViewer extends VideoBaseViewer {
     enableAudioId(role) {
         const tracks = this.player.getVariantTracks();
         const activeTrack = this.getActiveTrack();
+        // We select a track that has the desired audio role but maintains the same video ID as our currently active track.
         const newTrack = tracks.find((track) => track.roles[0] === role && track.videoId === activeTrack.videoId);
         if (newTrack && newTrack.audioId !== activeTrack.audioId) {
             this.showLoadingIcon(newTrack.id);
@@ -302,8 +303,7 @@ class DashViewer extends VideoBaseViewer {
         const audioIdx = parseInt(this.cache.get('media-audiotracks'), 10);
         const newAudioTrack = this.audioTracks[audioIdx];
         if (newAudioTrack !== undefined) {
-            const track = this.audioTracks[audioIdx];
-            this.enableAudioId(track.role);
+            this.enableAudioId(newAudioTrack.role);
         }
     }
 
@@ -409,13 +409,13 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Handles streaming event which is the first time the manifest is available. See https://shaka-player-demo.appspot.com/docs/api/shaka.util.Error.html
+     * Handles streaming event which is the first time the manifest is available. See https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html#event:StreamingEvent
      *
      * @private
      * @param {Object} shakaError - Error to handle
      * @return {void}
      */
-    shakaManifestHandler() {
+    shakaManifestLoadedHandler() {
         this.calculateVideoDimensions();
         this.loadUI();
 
