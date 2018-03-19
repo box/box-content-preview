@@ -1776,7 +1776,7 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
 
-            expect(handleViewerMetrics).to.be.calledWith({ event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
         });
 
         it('should emit a metrics message for failed preview', () => {
@@ -1787,7 +1787,7 @@ describe('lib/Preview', () => {
 
             preview.finishLoading({ error: {} });
 
-            expect(handleViewerMetrics).to.be.calledWith({ event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
         });
 
         it('should emit the load event', () => {

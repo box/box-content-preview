@@ -1223,7 +1223,7 @@ class Preview extends EventEmitter {
 
             // Explicit preview failure
             this.handleViewerMetrics({
-                event_name: 'failure'
+                event: 'failure'
             });
 
             // Hookup for phantom JS health check
@@ -1243,7 +1243,7 @@ class Preview extends EventEmitter {
 
             // Explicit preview success
             this.handleViewerMetrics({
-                event_name: 'success'
+                event: 'success'
             });
 
             // If there wasn't an error and event logging is not disabled, use Events API to log a preview
