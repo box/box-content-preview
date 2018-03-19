@@ -79,6 +79,13 @@
         }
     }
 
+    // Allow other text to be selectable
+    input,
+    p,
+    span {
+        user-select: text;
+    }
+
     // This is so hover and click targets for links inside the document show
     // up correctly. We add 15px top margin since PDF.js sets the top for these
     // manually assuming there is no vertical padding on the page
