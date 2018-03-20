@@ -1715,7 +1715,7 @@ class Preview extends EventEmitter {
         }
 
         if (this.viewer && typeof this.viewer.onKeydown === 'function') {
-            consumed = !!this.viewer.onKeydown(key);
+            consumed = !!this.viewer.onKeydown(key, event);
         }
 
         if (!consumed) {

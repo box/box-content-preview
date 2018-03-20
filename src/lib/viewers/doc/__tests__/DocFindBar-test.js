@@ -265,7 +265,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             const findPrevStub = sandbox.stub(docFindBar.findPreviousButtonEl, 'removeEventListener');
             const findNextStub = sandbox.stub(docFindBar.findNextButtonEl, 'removeEventListener');
             const findCloseStub = sandbox.stub(docFindBar.findCloseButtonEl, 'removeEventListener');
-            const documentStub = sandbox.stub(document, 'removeEventListener');
 
             docFindBar.unbindDOMListeners();
             expect(barStub).to.be.calledWith('keydown', docFindBar.barKeyDownHandler);
@@ -273,11 +272,10 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(findPrevStub).to.be.calledWith('click', docFindBar.findPreviousHandler);
             expect(findNextStub).to.be.calledWith('click', docFindBar.findNextHandler);
             expect(findCloseStub).to.be.calledWith('click', docFindBar.close);
-            expect(documentStub).to.be.calledWith('keydown', docFindBar.displayFindBarHandler);
         });
     });
 
-    describe('displayFindBarHandler()', () => {
+    describe('onKeydown()', () => {
         beforeEach(() => {
             stubs.decodeKeydown = sandbox.stub(util, 'decodeKeydown');
             stubs.open = sandbox.stub(docFindBar, 'open');
@@ -292,7 +290,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             docFindBar.canDownload = false;
             stubs.decodeKeydown.returns('meta+f');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.not.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -300,7 +298,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should open and prevent default if meta+f is entered', () => {
             stubs.decodeKeydown.returns('meta+f');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -308,7 +306,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should open and prevent default if control+f is entered', () => {
             stubs.decodeKeydown.returns('control+f');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -316,7 +314,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should open and prevent default if meta+g is entered', () => {
             stubs.decodeKeydown.returns('meta+g');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -324,7 +322,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should open and prevent default if control+g is entered', () => {
             stubs.decodeKeydown.returns('control+g');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -332,7 +330,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should open and prevent default if f3 is entered', () => {
             stubs.decodeKeydown.returns('f3');
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.be.called;
             expect(stubs.event.preventDefault).to.be.called;
         });
@@ -341,7 +339,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             stubs.decodeKeydown.returns('escape');
             docFindBar.opened = false;
 
-            docFindBar.displayFindBarHandler(stubs.event);
+            docFindBar.onKeydown(stubs.event);
             expect(stubs.open).to.not.be.called;
             expect(stubs.close).to.not.be.called;
             expect(stubs.event.preventDefault).to.not.be.called;

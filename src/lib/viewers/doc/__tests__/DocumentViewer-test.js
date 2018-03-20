@@ -101,7 +101,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         });
     });
 
-    describe('onKeyDown()', () => {
+    describe('onKeydown()', () => {
         beforeEach(() => {
             stubs.zoomIn = sandbox.stub(doc, 'zoomIn');
             stubs.zoomOut = sandbox.stub(doc, 'zoomOut');
@@ -139,16 +139,22 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         });
 
         it('should fallback to doc base\'s onKeydown if no entry matches', () => {
+            const docbaseStub = sandbox.spy(DocBaseViewer.prototype, 'onKeydown');
+            const eventStub = sandbox.stub();
             stubs.fullscreen.returns(false);
-            const result = doc.onKeydown('ArrowDown');
 
+            const key = 'ArrowDown';
+            const result = doc.onKeydown(key, eventStub);
+            expect(docbaseStub).to.have.been.calledWithExactly(key, eventStub);
             expect(result).to.be.false;
             expect(stubs.nextPage).to.not.be.called;
 
-            stubs.fullscreen.returns(false);
-            const result2 = doc.onKeydown('ArrowRight');
-
+            const key2 = 'ArrowRight';
+            const result2 = doc.onKeydown(key2, eventStub);
+            expect(docbaseStub).to.have.been.calledWithExactly(key2, eventStub);
             expect(result2).to.be.true;
+
+            expect(docbaseStub).to.have.been.calledTwice;
         });
     });
 

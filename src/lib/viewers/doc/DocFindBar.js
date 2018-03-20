@@ -35,7 +35,7 @@ class DocFindBar extends EventEmitter {
         }
 
         // Bind context for callbacks
-        this.displayFindBarHandler = this.displayFindBarHandler.bind(this);
+        this.onKeydown = this.onKeydown.bind(this);
         this.findFieldHandler = this.findFieldHandler.bind(this);
         this.barKeyDownHandler = this.barKeyDownHandler.bind(this);
         this.findNextHandler = this.findNextHandler.bind(this);
@@ -213,9 +213,6 @@ class DocFindBar extends EventEmitter {
         this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.addEventListener('click', this.findNextHandler);
         this.findCloseButtonEl.addEventListener('click', this.close);
-
-        // KeyDown handler to show/hide find bar
-        document.addEventListener('keydown', this.displayFindBarHandler);
     }
 
     /**
@@ -230,9 +227,6 @@ class DocFindBar extends EventEmitter {
         this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
         this.findCloseButtonEl.removeEventListener('click', this.close);
-
-        // Remove KeyDown handler to show/hide find bar
-        document.removeEventListener('keydown', this.displayFindBarHandler);
     }
 
     //--------------------------------------------------------------------------
@@ -245,7 +239,7 @@ class DocFindBar extends EventEmitter {
      * @param {Event} event - Key event
      * @return {void}
      */
-    displayFindBarHandler(event) {
+    onKeydown(event) {
         // Lowercase keydown so we capture both lower and uppercase
         const key = decodeKeydown(event).toLowerCase();
         switch (key) {
@@ -260,8 +254,10 @@ class DocFindBar extends EventEmitter {
                 event.preventDefault();
                 break;
             default:
-                break;
+                return false;
         }
+
+        return true;
     }
 
     /**

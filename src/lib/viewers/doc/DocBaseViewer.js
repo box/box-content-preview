@@ -498,9 +498,10 @@ class DocBaseViewer extends BaseViewer {
      * Handles keyboard events for document viewer.
      *
      * @param {string} key - keydown key
+     * @param {Object} event - Key event
      * @return {boolean} consumed or not
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
@@ -515,6 +516,9 @@ class DocBaseViewer extends BaseViewer {
                 this.nextPage();
                 break;
             default:
+                if (this.findBar) {
+                    return this.findBar.onKeydown(event);
+                }
                 return false;
         }
 
