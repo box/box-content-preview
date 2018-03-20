@@ -110,6 +110,7 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.load = sandbox.stub(preview, 'load');
             stubs.updateCollection = sandbox.stub(preview, 'updateCollection');
+            stubs.parseOptions = sandbox.stub();
         });
 
         it('should set the preview options with string token', () => {
@@ -187,6 +188,20 @@ describe('lib/Preview', () => {
                 expect(spy.threw());
                 expect(e.message).to.equal('Bad access token!');
             }
+        });
+
+        it('should parse the preview options', () => {
+            preview.retryCount = 0;
+            preview.parseOptions = stubs.parseOptions;
+
+            const token = 'token';
+            const options = {
+                foo: 'bar'
+            };
+
+            preview.show(file, token, options);
+
+            expect(stubs.parseOptions).to.be.calledWith(Object.assign({}, options, { token }));
         });
     });
 
@@ -298,7 +313,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            let files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
+            const files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -752,7 +767,9 @@ describe('lib/Preview', () => {
             stubs.getDownloadURL = sandbox.stub(file, 'getDownloadURL');
             stubs.isDownloadHostBlocked = sandbox.stub(dr, 'isDownloadHostBlocked');
             stubs.isCustomDownloadHost = sandbox.stub(dr, 'isCustomDownloadHost');
-            stubs.replaceDownloadHostWithDefault = sandbox.stub(dr, 'replaceDownloadHostWithDefault').returns('default');
+            stubs.replaceDownloadHostWithDefault = sandbox
+                .stub(dr, 'replaceDownloadHostWithDefault')
+                .returns('default');
         });
 
         it('should not do anything if file cannot be downloaded', () => {
@@ -779,7 +796,6 @@ describe('lib/Preview', () => {
                 expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
             });
         });
-
 
         it('should check download reachability and fallback if we do not know the status of our custom host', () => {
             stubs.canDownload.returns(true);
@@ -877,7 +893,7 @@ describe('lib/Preview', () => {
         it('should fetch file from cache and convert file id to string when file id passed as a number', () => {
             const fileId = 123;
             preview.load(fileId);
-            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId : fileId.toString() });
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId: fileId.toString() });
         });
 
         it('should fetch file from cache using file version ID as key if file version ID is in options', () => {
@@ -974,7 +990,6 @@ describe('lib/Preview', () => {
     describe('handleTokenResponse()', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
-            stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
             stubs.setupUI = sandbox.stub(preview, 'setupUI');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
@@ -987,14 +1002,20 @@ describe('lib/Preview', () => {
 
             preview.handleTokenResponse({});
             expect(stubs.loadFromServer).to.be.called;
-            expect(stubs.parseOptions).to.not.be.called;
         });
 
-        it('should parse the preview options', () => {
+        it('should set the token option', () => {
             preview.retryCount = 0;
+            const TOKEN = 'bar';
+            const FILE_ID = '123';
+            preview.file = {
+                id: FILE_ID
+            };
+            preview.handleTokenResponse({
+                [FILE_ID]: TOKEN
+            });
 
-            preview.handleTokenResponse({});
-            expect(stubs.parseOptions).to.be.called;
+            expect(preview.options.token).to.equal(TOKEN);
         });
 
         it('should setup UI', () => {
@@ -1060,9 +1081,6 @@ describe('lib/Preview', () => {
             stubs.assign = sandbox.spy(Object, 'assign');
             stubs.disableViewers = sandbox.stub(preview, 'disableViewers');
             stubs.enableViewers = sandbox.stub(preview, 'enableViewers');
-            stubs.tokens = {
-                0: 'file0'
-            };
 
             preview.file = {
                 id: 0
@@ -1070,83 +1088,78 @@ describe('lib/Preview', () => {
         });
 
         it('should use the saved preview options', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(stubs.assign).to.be.calledWith(preview.previewOptions);
         });
 
         it('should set the container', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.container).to.equal(containerEl);
         });
 
-        it('should set the token based on the file id', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.token).to.equal(stubs.tokens[0]);
-        });
-
         it('should set shared link and shared link password', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.sharedLink).to.equal(stubs.sharedLink);
             expect(preview.options.sharedLinkPassword).to.equal(stubs.sharedLinkPassword);
         });
 
         it('should save a reference to the api host', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.apiHost).to.equal('endpoint');
 
             // Check default
             preview.previewOptions.apiHost = undefined;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.apiHost).to.equal('https://api.box.com');
         });
 
         it('should save a reference to the app host', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.appHost).to.equal(stubs.appHost);
 
             // Check default
             preview.previewOptions.appHost = undefined;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.appHost).to.equal('https://app.box.com');
         });
 
         it('should set whether to show the header or a custom logo', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.header).to.equal(stubs.header);
             expect(preview.options.logoUrl).to.equal(stubs.logoUrl);
 
             preview.previewOptions.header = undefined;
             preview.previewOptions.logoUrl = undefined;
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.header).to.equal('light');
             expect(preview.options.logoUrl).to.equal('');
         });
 
         it('should set whether to show a download link or annotations', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.showDownload).to.be.true;
             expect(preview.options.showAnnotations).to.be.true;
         });
 
         it('should set whether to skip load from the server and any server updates', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).to.be.false;
 
             preview.previewOptions.skipServerUpdate = true;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).to.be.true;
         });
 
         it('should set whether to fix dependencies', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.fixDependencies).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
             const expectedLoaders = stubs.loaders.concat(loaders);
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.loaders[0]).to.equal(expectedLoaders[0]);
             expect(preview.loaders).to.deep.equal(expectedLoaders);
         });
@@ -1161,7 +1174,7 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(stubs.disableViewers).to.be.calledWith('Office');
             expect(stubs.enableViewers).to.be.calledWith('text');
         });
@@ -1506,9 +1519,7 @@ describe('lib/Preview', () => {
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(e.message).to.equal(
-                    util.replacePlaceholders(__('error_unsupported'), ['ZIP'])
-                );
+                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), ['ZIP']));
             }
         });
 
