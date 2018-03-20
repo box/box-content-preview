@@ -6,9 +6,9 @@ import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
 import PreviewError from '../PreviewError';
+import DownloadReachability from '../DownloadReachability';
 import * as file from '../file';
 import * as util from '../util';
-import * as dr from '../downloadReachability';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
@@ -743,54 +743,85 @@ describe('lib/Preview', () => {
                 }
             });
 
-            stubs.reachabilityPromise = Promise.resolve(true);
-            stubs.canDownload = sandbox.stub(file, 'canDownload');
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.get = sandbox.stub(dr, 'setDownloadReachability').returns(stubs.reachabilityPromise);
-            stubs.openUrlInsideIframe = sandbox.stub(util, 'openUrlInsideIframe');
-            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
-            stubs.getDownloadURL = sandbox.stub(file, 'getDownloadURL');
-            stubs.isDownloadHostBlocked = sandbox.stub(dr, 'isDownloadHostBlocked');
-            stubs.isCustomDownloadHost = sandbox.stub(dr, 'isCustomDownloadHost');
-            stubs.replaceDownloadHostWithDefault = sandbox.stub(dr, 'replaceDownloadHostWithDefault').returns('default');
+            preview.ui = {
+                showNotification: sandbox.stub()
+            };
+            preview.viewer = {
+                getRepresentation: sandbox.stub(),
+                createContentUrlWithAuthParams: sandbox.stub(),
+                options: {
+                    viewer: {
+                        ASSET: ''
+                    }
+                }
+            };
+            sandbox.stub(file, 'canDownload');
+            sandbox.stub(file, 'shouldDownloadWM');
+            sandbox.stub(util, 'openUrlInsideIframe');
+            sandbox.stub(util, 'appendQueryParams');
+            sandbox.stub(DownloadReachability, 'downloadWithReachabilityCheck');
+
+            sandbox.stub(file, 'getDownloadURL');
+            sandbox.stub(preview, 'getRequestHeaders');
+            sandbox.stub(util, 'get');
         });
 
-        it('should not do anything if file cannot be downloaded', () => {
-            stubs.canDownload.returns(false);
+        it('should show error notification and not download file if file cannot be downloaded', () => {
+            file.canDownload.returns(false);
             preview.download();
-            expect(stubs.openUrlInsideIframe).to.not.be.called;
+            expect(preview.ui.showNotification).to.be.called;
+            expect(util.openUrlInsideIframe).to.not.be.called;
         });
 
-        it('open the default download URL in an iframe if the custom host is blocked or if we were given the default', () => {
-            stubs.canDownload.returns(true);
-            stubs.isDownloadHostBlocked.returns(true);
-            stubs.isCustomDownloadHost.returns(true);
+        it('should show error notification and not download watermarked file if file should be downloaded as watermarked, but file does not have a previewable representation', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(true);
+            preview.viewer.getRepresentation.returns({});
 
             preview.download();
-            return stubs.promise.then((data) => {
-                expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
+
+            expect(preview.ui.showNotification).to.be.called;
+            expect(util.openUrlInsideIframe).to.not.be.called;
+        });
+
+        it('should download watermarked representation if file should be downloaded as watermarked', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(true);
+
+            const template = 'someTemplate';
+            const representation = {
+                content: {
+                    url_template: template
+                }
+            };
+            const url = 'someurl';
+
+            preview.viewer.getRepresentation.returns(representation);
+            preview.viewer.createContentUrlWithAuthParams.withArgs(template, '').returns(url);
+
+            util.appendQueryParams.withArgs(url).returns(url);
+
+            preview.download();
+
+            expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
+        });
+
+        it('should download original file if file should not be downloaded as watermarked', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(false);
+
+            const url = 'someurl';
+            util.appendQueryParams.withArgs(url).returns(url);
+
+            const promise = Promise.resolve({
+                download_url: url
             });
-
-            stubs.isDownloadHostBlocked.returns(false);
-            stubs.isCustomDownloadHost.returns(false);
+            util.get.returns(promise);
 
             preview.download();
-            return stubs.promise.then((data) => {
-                expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
-            });
-        });
 
-
-        it('should check download reachability and fallback if we do not know the status of our custom host', () => {
-            stubs.canDownload.returns(true);
-            stubs.isCustomDownloadHost.returns(true);
-
-            preview.download();
-            return stubs.promise.then((data) => {
-                expect(stubs.openUrlInsideIframe).to.be.calledWith(data.download_url);
-                return stubs.reachabilityPromise.then(() => {
-                    expect(stubs.openUrlInsideIframe).to.be.calledWith('default');
-                });
+            return promise.then((data) => {
+                expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
         });
     });
@@ -809,7 +840,7 @@ describe('lib/Preview', () => {
         it('should reload preview by default', () => {
             preview.file = { id: '1' };
             sandbox.stub(preview, 'load');
-            preview.updateToken('dr-strange');
+            preview.updateToken('DownloadReachability-strange');
             expect(preview.reload).to.be.called;
         });
 
