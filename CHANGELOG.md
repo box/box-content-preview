@@ -1,3 +1,15 @@
+<a name="1.35.0"></a>
+## 1.35.0 (2018-03-20)
+
+* Update: box-annotations to v1.0.0 (#727) ([272038c](https://github.com/box/box-content-preview/commit/272038c)), closes [#727](https://github.com/box/box-content-preview/issues/727)
+* Mojito: Update translations (#726) ([ea62af8](https://github.com/box/box-content-preview/commit/ea62af8)), closes [#726](https://github.com/box/box-content-preview/issues/726)
+* New: Watermarking preferences (#721) ([a49f234](https://github.com/box/box-content-preview/commit/a49f234)), closes [#721](https://github.com/box/box-content-preview/issues/721)
+* Use correct property for handle viewer event (#722) ([61fa208](https://github.com/box/box-content-preview/commit/61fa208)), closes [#722](https://github.com/box/box-content-preview/issues/722)
+* Fix: Allow annotation text to be selectable (#719) ([929e5bf](https://github.com/box/box-content-preview/commit/929e5bf)), closes [#719](https://github.com/box/box-content-preview/issues/719)
+* Docs: Fix docs for prefetchViewers() (#718) ([f656064](https://github.com/box/box-content-preview/commit/f656064)), closes [#718](https://github.com/box/box-content-preview/issues/718)
+
+
+
 <a name="1.34.0"></a>
 ## 1.34.0 (2018-03-14)
 

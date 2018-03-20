@@ -13,26 +13,21 @@ import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
+import DownloadReachability from './DownloadReachability';
 import {
     get,
     getProp,
     post,
     decodeKeydown,
-    openUrlInsideIframe,
     getHeaders,
     findScriptLocation,
     appendQueryParams,
     replacePlaceholders,
     stripAuthFromString,
     isValidFileId,
-    isBoxWebApp
+    isBoxWebApp,
+    convertWatermarkPref
 } from './util';
-import {
-    isDownloadHostBlocked,
-    setDownloadReachability,
-    isCustomDownloadHost,
-    replaceDownloadHostWithDefault
-} from './downloadReachability';
 import {
     getURL,
     getDownloadURL,
@@ -44,7 +39,8 @@ import {
     isWatermarked,
     getCachedFile,
     normalizeFileVersion,
-    canDownload
+    canDownload,
+    shouldDownloadWM
 } from './file';
 import {
     API_HOST,
@@ -491,31 +487,39 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     download() {
-        const { apiHost, queryParams } = this.options;
-
+        const downloadErrorMsg = __('notification_cannot_download');
         if (!canDownload(this.file, this.options)) {
+            this.ui.showNotification(downloadErrorMsg);
             return;
         }
 
-        // Append optional query params
-        const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-        get(downloadUrl, this.getRequestHeaders()).then((data) => {
-            const defaultDownloadUrl = replaceDownloadHostWithDefault(data.download_url);
-            if (isDownloadHostBlocked() || !isCustomDownloadHost(data.download_url)) {
-                // If we know the host is blocked, or we are already using the default,
-                // use the default.
-                openUrlInsideIframe(defaultDownloadUrl);
-            } else {
-                // Try the custom host, then check reachability
-                openUrlInsideIframe(data.download_url);
-                setDownloadReachability(data.download_url).then((isBlocked) => {
-                    if (isBlocked) {
-                        // If download is unreachable, try again with default
-                        openUrlInsideIframe(defaultDownloadUrl);
-                    }
-                });
+        // Make sure to append any optional query params to requests
+        const { apiHost, queryParams } = this.options;
+
+        // If we should download the watermarked representation of the file, generate the representation URL, force
+        // the correct content disposition, and download
+        if (shouldDownloadWM(this.file, this.options)) {
+            const contentUrlTemplate = getProp(this.viewer.getRepresentation(), 'content.url_template');
+            if (!contentUrlTemplate) {
+                this.ui.showNotification(downloadErrorMsg);
+                return;
             }
-        });
+
+            const downloadUrl = appendQueryParams(
+                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.options.viewer.ASSET),
+                queryParams
+            );
+
+            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+
+            // Otherwise, get the content download URL of the original file and download
+        } else {
+            const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+            get(getDownloadUrl, this.getRequestHeaders()).then((data) => {
+                const downloadUrl = appendQueryParams(data.download_url, queryParams);
+                DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            });
+        }
     }
 
     /**
@@ -856,6 +860,22 @@ class Preview extends EventEmitter {
         // (access stats will not be incremented), but content access is still logged server-side for audit purposes
         this.options.disableEventLog = !!options.disableEventLog;
 
+        // Sets how previews of watermarked files behave.
+        // 'all' - Forces watermarked previews of supported file types regardless of collaboration or permission level,
+        //         except for `Uploader`, which cannot preview.
+        // 'any' - The default watermarking behavior in the Box Web Application. If the file type supports
+        //         watermarking, all users except for those collaborated as an `Uploader` will see a watermarked
+        //         preview. If the file type cannot be watermarked, users will see a non-watermarked preview if they
+        //         are at least a `Viewer-Uploader` and no preview otherwise.
+        // 'none' - Forces non-watermarked previews. If the file type cannot be watermarked or the user is not at least
+        //          a `Viewer-Uploader`, no preview is shown.
+        this.options.previewWMPref = options.previewWMPref || 'any';
+
+        // Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked
+        // files. If true, users will be able to download watermarked versions of supported file types as long as they
+        // have preview permissions (any collaboration role except for `Uploader`).
+        this.options.downloadWM = !!options.downloadWM;
+
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 
@@ -914,13 +934,20 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
-        const { apiHost, queryParams } = this.options;
+        const { apiHost, previewWMPref, queryParams } = this.options;
+        const params = Object.assign(
+            {
+                watermark_preference: convertWatermarkPref(previewWMPref)
+            },
+            queryParams
+        );
+
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         Timer.start(tag);
 
-        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
+        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
         get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
@@ -1023,7 +1050,7 @@ class Preview extends EventEmitter {
             throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
         }
 
-        // Show download button if download permissions exist, options allow, and browser has ability
+        // Show loading download button if user can download
         if (canDownload(this.file, this.options)) {
             this.ui.showLoadingDownloadButton(this.download);
         }
@@ -1172,7 +1199,7 @@ class Preview extends EventEmitter {
         // Log now that loading is finished
         this.emitLoadMetrics();
 
-        // Show or hide print/download buttons
+        // Show download and print buttons if user can download
         if (canDownload(this.file, this.options)) {
             this.ui.showDownloadButton(this.download);
 
@@ -1514,7 +1541,13 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchNextFiles() {
-        const { apiHost, queryParams, skipServerUpdate } = this.options;
+        const { apiHost, previewWMPref, queryParams, skipServerUpdate } = this.options;
+        const params = Object.assign(
+            {
+                watermark_preference: convertWatermarkPref(previewWMPref)
+            },
+            queryParams
+        );
 
         // Don't bother prefetching when there aren't more files or we need to skip server update
         if (this.collection.length < 2 || skipServerUpdate) {
@@ -1543,7 +1576,7 @@ class Preview extends EventEmitter {
 
                     // Append optional query params
                     const fileVersionId = this.getFileOption(fileId, FILE_OPTION_FILE_VERSION_ID) || '';
-                    const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), queryParams);
+                    const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
                     get(fileInfoUrl, this.getRequestHeaders(token))

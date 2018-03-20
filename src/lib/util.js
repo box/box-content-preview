@@ -1,8 +1,7 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
-
+import DownloadReachability from './DownloadReachability';
 import Location from './Location';
-import { isDownloadHostBlocked, replaceDownloadHostWithDefault } from './downloadReachability';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
@@ -102,15 +101,17 @@ function xhr(method, url, headers = {}, data = {}) {
  */
 function createDownloadIframe() {
     let iframe = document.querySelector('#downloadiframe');
+
+    // If no download iframe exists, create a new one
     if (!iframe) {
-        // if no existing iframe create a new one
         iframe = document.createElement('iframe');
         iframe.setAttribute('id', 'downloadiframe');
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }
+
     // Clean the iframe up
-    iframe.contentDocument.write('<head></head><body></body>');
+    iframe.src = 'about:blank';
     return iframe;
 }
 
@@ -227,8 +228,10 @@ export function openUrlInsideIframe(url) {
  */
 export function openContentInsideIframe(content) {
     const iframe = createDownloadIframe();
-    iframe.contentDocument.body.innerHTML = content;
-    iframe.contentDocument.close();
+    if (iframe.contentDocument) {
+        iframe.contentDocument.write(content);
+        iframe.contentDocument.close();
+    }
     return iframe;
 }
 
@@ -406,9 +409,9 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
-    if (isDownloadHostBlocked()) {
+    if (DownloadReachability.isDownloadHostBlocked()) {
         // eslint-disable-next-line
-        template = replaceDownloadHostWithDefault(template);
+        template = DownloadReachability.replaceDownloadHostWithDefault(template);
     }
     return template.replace('{+asset_path}', asset || '');
 }
@@ -904,4 +907,22 @@ export function isValidFileId(fileId) {
 export function isBoxWebApp() {
     const boxHostnameRegex = /(app|ent)\.(box\.com|boxcn\.net|boxenterprise\.net)/;
     return boxHostnameRegex.test(Location.getHostname());
+}
+
+/**
+ * Converts the developer-friendly Preview watermarking preference values to the values expected by the API.
+ *
+ * @param {string} previewWMPref - Preview watermarking preference as passed into Preview
+ * @return {string} Box API watermarking preference value
+ */
+export function convertWatermarkPref(previewWMPref) {
+    let value = '';
+
+    if (previewWMPref === 'all') {
+        value = 'only_watermarked';
+    } else if (previewWMPref === 'none') {
+        value = 'only_non_watermarked';
+    }
+
+    return value;
 }
