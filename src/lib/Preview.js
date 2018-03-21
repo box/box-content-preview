@@ -880,6 +880,11 @@ class Preview extends EventEmitter {
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 
+        // BFMVP-7637
+        // Force viewer to use the Original representation instead of the other performant representations
+        // till Box fixes them to render correctly
+        this.options.useOriginalRepresentation = options.useOriginalRepresentation || false;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -1081,7 +1086,7 @@ class Preview extends EventEmitter {
         this.logger.setType(viewer.NAME);
 
         // Determine the representation to use
-        const representation = loader.determineRepresentation(this.file, viewer);
+        const representation = loader.determineRepresentation(this.file, viewer, this.options.useOriginalRepresentation);
 
         // Instantiate the viewer
         const viewerOptions = this.createViewerOptions({

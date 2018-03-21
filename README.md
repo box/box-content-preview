@@ -133,6 +133,7 @@ preview.show(fileId, accessToken, {
 | fixDependencies | false | Temporarily patches AMD to properly load Preview's dependencies. You may need to enable this if your project uses RequireJS |
 | disableEventLog | false | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side) |
 | fileOptions | {} | Mapping of file ID to file-level options. See the file option table below for details |
+| useOriginalRepresentation | false | For PDF files only. Use Original representation over PDF representation |
 
 | File Option | Description |
 | --- | --- |
