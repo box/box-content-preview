@@ -1,3 +1,5 @@
+$navigationBtnWidth: 50px;
+
 .bp-is-fullscreen .bp-navigate {
     display: none;
 }
@@ -19,7 +21,7 @@
     // Override default animations to only animate opacity since width animation to auto doesn't work
     transition-property: opacity;
     white-space: nowrap;
-    width: 50px;
+    width: $navigationBtnWidth;
 
     &:hover {
         opacity: 1;

@@ -5,8 +5,13 @@
     font-size: 14px;
     height: 247px; // Error icon + text + optional download button
     text-align: center;
+    width: 100%; // IE11 flex width bug - https://caniuse.com/#search=flex
 
-    .bp-error-download {
-        padding-top: 20px;
+    .bp-error-text {
+        padding: 0 80px;
+    }
+
+    .bp-btn {
+        margin-top: 20px;
     }
 }

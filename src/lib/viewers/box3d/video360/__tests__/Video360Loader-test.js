@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Video360Loader from '../Video360Loader';
 import Browser from '../../../../Browser';
+import PreviewError from '../../../../PreviewError';
 
 const sandbox = sinon.sandbox.create();
 
@@ -25,21 +26,21 @@ describe('lib/viewers/box3d/video360/Video360Loader', () => {
         it('should throw an error if browser is not supported', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(true);
             sandbox.stub(Browser, 'getName').returns('IE11');
-            expect(() => Video360Loader.determineViewer(file)).to.throw(Error, /support preview for 360-degree videos/);
+            expect(() => Video360Loader.determineViewer(file)).to.throw(PreviewError, /support preview for 360-degree videos/);
         });
 
         it('should throw an error if on iOS', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(true);
             sandbox.stub(Browser, 'getName').returns('Chrome');
             sandbox.stub(Browser, 'isIOS').returns(true);
-            expect(() => Video360Loader.determineViewer(file)).to.throw(Error, /support preview for 360-degree videos/);
+            expect(() => Video360Loader.determineViewer(file)).to.throw(PreviewError, /support preview for 360-degree videos/);
         });
 
         it('should throw an error if browser does not support WebGL', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(false);
             sandbox.stub(Browser, 'getName').returns('Chrome');
             sandbox.stub(Browser, 'isIOS').returns(true);
-            expect(() => Video360Loader.determineViewer(file)).to.throw(Error, /support preview for 360-degree videos/);
+            expect(() => Video360Loader.determineViewer(file)).to.throw(PreviewError, /support preview for 360-degree videos/);
         });
 
         it('should return viewer if 360 is properly supported', () => {

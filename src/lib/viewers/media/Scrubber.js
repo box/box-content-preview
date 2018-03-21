@@ -215,9 +215,8 @@ class Scrubber extends EventEmitter {
         // does not include pageX, but pageX can be found in the touches list which is present for
         // touch events across all browsers.
         if (event.touches) {
-            /* eslint-disable prefer-destructuring */
+            // eslint-disable-next-line
             pageX = event.touches[0].pageX;
-            /* eslint-enable prefer-destructuring */
         }
 
         const newValue = this.computeScrubberPosition(pageX);

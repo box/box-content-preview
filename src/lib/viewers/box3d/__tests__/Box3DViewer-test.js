@@ -377,7 +377,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             expect(box3d.createSubModules).to.be.called;
             expect(box3d.attachEventHandlers).to.be.called;
-            expect(box3d.boxSdk).to.be.an.object;
+            expect(box3d.boxSdk).to.be.a('object');
         });
 
         it('should call renderer.load() with the entities.json file and options', () => {
@@ -386,6 +386,13 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             sandbox.mock(box3d.renderer).expects('load').withArgs(contentUrl, box3d.options).returns(Promise.resolve());
 
             box3d.postLoad();
+        });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(box3d, 'startLoadTimer');
+            box3d.postLoad();
+
+            expect(box3d.startLoadTimer).to.be.called;
         });
     });
 

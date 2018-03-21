@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 import Browser from './Browser';
 import { CLASS_HIDDEN } from './constants';
 

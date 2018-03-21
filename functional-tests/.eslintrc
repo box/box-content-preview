@@ -1,0 +1,12 @@
+{
+    "extends": ["../.eslintrc"],
+    "globals": {
+        "Feature": false,
+        "Before": false,
+        "Scenario": false
+    },
+    "rules": {
+        "func-names": ["off"],
+        "no-unused-expressions" : ["off"]
+    }
+}

@@ -77,7 +77,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             stubs.event = sandbox.stub(image.imageEl, 'addEventListener');
             stubs.load = sandbox.stub(image, 'finishLoading');
-            stubs.error = sandbox.stub(image, 'errorHandler');
             stubs.bind = sandbox.stub(image, 'bindDOMListeners');
 
             // load the image
@@ -86,6 +85,20 @@ describe('lib/viewers/image/ImageViewer', () => {
                 .then(() => {
                     expect(image.bindDOMListeners).to.be.called;
                     expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
+                })
+                .catch(() => {});
+        });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(image, 'startLoadTimer');
+            sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);
+            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+
+            // load the image
+            return image
+                .load(imageUrl)
+                .then(() => {
+                    expect(image.startLoadTimer).to.be.called;
                 })
                 .catch(() => {});
         });
@@ -238,16 +251,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                 const newImageSize = image.imageEl.getBoundingClientRect();
                 expect(newImageSize.width).gt(origImageSize.width);
             });
-
-            it('height', () => {
-                image.imageEl.style.height = '200px';
-
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomIn();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.height).gt(origImageSize.height);
-                expect(stubs.adjustZoom).to.be.called;
-            });
         });
 
         describe('should zoom out by modifying', () => {
@@ -272,31 +275,54 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
 
-        it('should swap height & width when image is rotated', () => {
+        it('should zoom the width & height when the image rotated', () => {
             sandbox.stub(image, 'isRotated').returns(true);
 
-            image.load(imageUrl).catch(() => {});
-            image.imageEl.style.width = '200px'; // ensures width > height
-
+            image.imageEl.style.transform = 'rotate(90deg)';
+            image.imageEl.style.width = '200px';
+            image.imageEl.setAttribute('originalWidth', '150');
+            image.imageEl.setAttribute('originalHeight', '100');
+            image.imageEl.src = imageUrl;
             const origImageSize = image.imageEl.getBoundingClientRect();
             image.zoomIn();
             const newImageSize = image.imageEl.getBoundingClientRect();
-
+            expect(newImageSize.width).gt(origImageSize.width);
             expect(newImageSize.height).gt(origImageSize.height);
             expect(stubs.adjustZoom).to.be.called;
+            image.imageEl.style.transform = '';
         });
 
         it('should reset dimensions and adjust padding when called with reset', () => {
-            image.imageEl.style.width = '10px';
-            image.imageEl.style.height = '20px';
+            image.imageEl.style.width = '1000px';
+            image.imageEl.style.height = '2000px';
+            const naturalHeight = 10;
+            const naturalWidth = 5;
+            image.imageEl.setAttribute('originalHeight', naturalHeight);
+            image.imageEl.setAttribute('originalWidth', naturalWidth);
+
             sandbox.spy(image, 'zoom');
 
             image.zoom('reset');
 
             expect(image.imageEl.style.width).to.equal('');
+            expect(image.imageEl.style.height).to.equal(`${naturalHeight}px`);
+            expect(stubs.adjustZoom).to.be.called;
+        });
+
+        it('when rotated should reset dimensions and adjust padding when called with reset', () => {
+            image.currentRotationAngle = -90;
+            image.imageEl.style.width = '1000px';
+            image.imageEl.style.height = '2000px';
+            const naturalWidth = 10;
+            const naturalHeight = 5;
+            image.imageEl.setAttribute('originalHeight', naturalHeight);
+            image.imageEl.setAttribute('originalWidth', naturalWidth);
+
+            image.zoom('reset');
+
+            expect(image.imageEl.style.width).to.equal('5px');
             expect(image.imageEl.style.height).to.equal('');
             expect(stubs.adjustZoom).to.be.called;
-            expect(image.zoom).to.be.calledWith();
         });
     });
 
@@ -377,6 +403,28 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
+    describe('getTransformWidthAndHeight', () => {
+        it('should return the same width & height if the image is not rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
+            expect(widthAndHeightObj).to.deep.equal({
+                width,
+                height
+            });
+        });
+
+        it('should return swap the width & height if the image is rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
+            expect(widthAndHeightObj).to.deep.equal({
+                width: height,
+                height: width
+            });
+        });
+    });
+
     describe('adjustImageZoomPadding()', () => {
         beforeEach(() => {
             // Set wrapper dimensions
@@ -410,6 +458,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             stubs.listeners = image.imageEl.addEventListener;
         });
 
+        it('should bind error and load listeners', () => {
+            image.bindDOMListeners();
+            expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
+            expect(stubs.listeners).to.have.been.calledWith('error', image.handleImageDownloadError);
+        });
+
         it('should bind all mobile listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
             image.bindDOMListeners();
@@ -428,7 +482,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         it('should unbind all default image listeners', () => {
             image.unbindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
-            expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
+            expect(stubs.listeners).to.have.been.calledWith('error', image.handleImageDownloadError);
         });
 
         it('should unbind all mobile listeners', () => {

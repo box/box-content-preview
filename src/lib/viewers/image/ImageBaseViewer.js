@@ -1,11 +1,12 @@
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
+import PreviewError from '../../PreviewError';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -26,7 +27,6 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
-        this.errorHandler = this.errorHandler.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -72,16 +72,14 @@ class ImageBaseViewer extends BaseViewer {
         }
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
-        loadOriginalDimensions
-            .then(() => {
-                this.loadUI();
-                this.zoom();
+        loadOriginalDimensions.then(() => {
+            this.loadUI();
+            this.zoom();
 
-                this.imageEl.classList.remove(CLASS_INVISIBLE);
-                this.loaded = true;
-                this.emit(VIEWER_EVENT.load);
-            })
-            .catch(this.errorHandler);
+            this.imageEl.classList.remove(CLASS_INVISIBLE);
+            this.loaded = true;
+            this.emit(VIEWER_EVENT.load);
+        });
     }
 
     /**
@@ -311,23 +309,19 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles image element loading errors.
+     * Handles a content download error
      *
-     * @private
-     * @param {Error} err - Error to handle
+     * @param {Error} err - Load error
+     * @param {string} imgUrl - Image src URL
      * @return {void}
      */
-    errorHandler(err) {
-        /* eslint-disable no-console */
+    handleDownloadError(err, imgUrl) {
+        // eslint-disable-next-line
         console.error(err);
-        /* eslint-enable no-console */
 
         // Display a generic error message but log the real one
-        const error = err;
-        if (err instanceof Error) {
-            error.displayMessage = __('error_refresh');
-        }
-        this.emit('error', error);
+        const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), {}, err.message);
+        super.handleDownloadError(error, imgUrl);
     }
 
     /**

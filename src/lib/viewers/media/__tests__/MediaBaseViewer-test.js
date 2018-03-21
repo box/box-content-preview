@@ -3,6 +3,7 @@ import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Cache from '../../../Cache';
+import PreviewError from '../../../PreviewError';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -136,7 +137,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             return media.load().then(() => {
                 expect(media.mediaEl.autoplay).to.be.true;
-            })
+            });
         });
 
         it('should autoplay if enabled', () => {
@@ -146,7 +147,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             return media.load().then(() => {
                 expect(media.autoplay).to.be.called;
-            })
+            });
+        });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(media, 'startLoadTimer');
+            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+
+            return media.load().then(() => {
+                expect(media.startLoadTimer).to.be.called;
+            });
         });
     });
 
@@ -177,16 +187,26 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('errorHandler', () => {
-        it('should emit the error and set a display message', () => {
-            sandbox.stub(media, 'emit');
-            const err = new Error('blah');
-            sandbox.mock(window.console).expects('error').withArgs(err);
-
+    describe('errorHandler()', () => {
+        it('should handle download error if the viewer was not yet loaded', () => {
+            media.mediaUrl = 'foo'
+            sandbox.stub(media, 'isLoaded').returns(false);
+            sandbox.stub(media, 'handleDownloadError');
+            const err = new Error();
+          
             media.errorHandler(err);
 
-            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(media.emit).to.be.calledWith('error', err);
+            expect(media.handleDownloadError).to.be.calledWith(sinon.match.has('code'), 'foo');
+        });
+
+        it('should trigger an error if Preview is already loaded', () => {
+            sandbox.stub(media, 'isLoaded').returns(true);
+            sandbox.stub(media, 'triggerError');
+            const err = new Error();
+          
+            media.errorHandler(err);
+
+            expect(media.triggerError).to.be.calledWith(sinon.match.has('code'));
         });
     });
 
@@ -194,7 +214,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should emit speed change if speed has changed', () => {
             const speed = 2;
             sandbox.stub(media, 'emit');
-            sandbox.stub(media.cache, 'get').withArgs('media-speed').returns(speed);
+            sandbox
+                .stub(media.cache, 'get')
+                .withArgs('media-speed')
+                .returns(speed);
             media.mediaEl = document.createElement('video');
             media.mediaEl.playbackRate = 1;
 
@@ -208,8 +231,14 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('handleVolume()', () => {
         beforeEach(() => {
             stubs.volume = 50;
-            stubs.has = sandbox.stub(media.cache, 'has').withArgs('media-volume').returns(true);
-            stubs.get = sandbox.stub(media.cache, 'get').withArgs('media-volume').returns(stubs.volume);
+            stubs.has = sandbox
+                .stub(media.cache, 'has')
+                .withArgs('media-volume')
+                .returns(true);
+            stubs.get = sandbox
+                .stub(media.cache, 'get')
+                .withArgs('media-volume')
+                .returns(stubs.volume);
             stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
         });
 
@@ -302,7 +331,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaControls.addListener).to.be.calledWith('togglemute', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('ratechange', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('autoplaychange', sinon.match.func);
-
         });
     });
 
@@ -320,6 +348,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('setMediaTime()', () => {
         it('should set the time on the media element', () => {
             media.mediaEl = document.createElement('video');
+            media.mediaEl.duration = 4;
             const newTime = 3.14;
 
             media.setMediaTime(newTime);
@@ -464,19 +493,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('removePauseEventListener()', () => {
         it('should remove pause event listener if it exists', () => {
-            let pauseListener = null
+            let pauseListener = null;
             media.mediaEl = { removeEventListener: sandbox.stub() };
 
             media.pauseListener = pauseListener;
             media.removePauseEventListener();
-            expect(media.mediaEl.removeEventListener).to.be.not.be.called
+            expect(media.mediaEl.removeEventListener).to.be.not.be.called;
 
             pauseListener = () => {};
             media.pauseListener = pauseListener;
             media.removePauseEventListener();
             expect(media.mediaEl.removeEventListener).to.be.calledWith('timeupdate', pauseListener);
-
-
         });
     });
 
@@ -952,6 +979,138 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should return false if another key is pressed', () => {
             expect(media.onKeydown('Esc')).to.be.false;
             expect(media.mediaControls.show.callCount).to.equal(0);
+        });
+    });
+
+    describe('getStartTimeInSeconds()', () => {
+        it('should parse seconds', () => {
+            const startAt = {
+                unit: 'seconds',
+                value: 55
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(55);
+        });
+
+        it('should parse timestamp', () => {
+            const startAt = {
+                unit: 'timestamp',
+                value: '1m2s'
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(62);
+        });
+
+        it('should return the default value if invalid unit', () => {
+            const startAt = {
+                unit: 'foo',
+                value: 55
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+        });
+
+        it('should return the default value if invalid value', () => {
+            const startAt = {
+                unit: 'seconds',
+                value: 'foo'
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+        });
+
+        it('should return the default value if invalid startAt', () => {
+            let startAt = {
+                value: 'foo'
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+
+            startAt = {
+                unit: 'seconds'
+            };
+
+            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+        });
+    });
+
+    describe('convertTimestampToSeconds()', () => {
+        const ONE_MINUTE_IN_SECONDS = 60;
+        const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
+
+        it('should parse the timestamp with just seconds', () => {
+            const timestamp = '3s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(3);
+        });
+
+        it('should parse the timestamp with just seconds and ms as floating point', () => {
+            const timestamp = '3.5432s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(3.5432);
+        });
+
+        it('should parse the timestamp with minutes, and seconds', () => {
+            const timestamp = '2m3s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(2 * ONE_MINUTE_IN_SECONDS + 3);
+        });
+
+        it('should parse the timestamp with hours and seconds', () => {
+            const timestamp = '4h3s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(4 * ONE_HOUR_IN_SECONDS + 3);
+        });
+
+        it('should parse the timestamp with just minutes', () => {
+            const timestamp = '4m';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(4 * ONE_MINUTE_IN_SECONDS);
+        });
+
+        it('should parse the timestamp with hours and minutes', () => {
+            const timestamp = '6h7m';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+                6 * ONE_HOUR_IN_SECONDS + 7 * ONE_MINUTE_IN_SECONDS
+            );
+        });
+
+        it('should parse the timestamp with just hours', () => {
+            const timestamp = '8h';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(8 * ONE_HOUR_IN_SECONDS);
+        });
+
+        it('should parse the timestamp with hours, minutes and seconds', () => {
+            const timestamp = '5h30m15s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15
+            );
+        });
+
+        it('should parse the timestamp with hours, minutes, and seconds', () => {
+            const timestamp = '5h30m15s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15
+            );
+        });
+
+        it('should parse the timestamp with hours, minutes, seconds (large values and decimal)', () => {
+            const timestamp = '5h75m653.546s';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+                5 * ONE_HOUR_IN_SECONDS + 75 * ONE_MINUTE_IN_SECONDS + 653.546
+            );
+        });
+
+        it('should return 0 if invalid string passed', () => {
+            let timestamp = '5h3m2s5d';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+
+            timestamp = '5h3m2ss';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+
+            timestamp = '5hms';
+            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+
+            expect(media.convertTimestampToSeconds()).to.equal(0);
+
+            expect(media.convertTimestampToSeconds('fdsfds')).to.equal(0);
+
+            expect(media.convertTimestampToSeconds('ah1m3s')).to.equal(0);
         });
     });
 });

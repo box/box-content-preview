@@ -2,6 +2,7 @@ import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
+import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
@@ -30,6 +31,12 @@ const VIEWERS = [
         EXT: DOCUMENT_EXTENSIONS
     },
     {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
+        REP: 'pdf',
+        EXT: DOCUMENT_EXTENSIONS
+    },
+    {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
         REP: ORIGINAL_REP_NAME,
@@ -40,6 +47,12 @@ const VIEWERS = [
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
+        REP: ORIGINAL_REP_NAME,
+        EXT: ['pdf', 'lcdpdf']
+    },
+    {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['pdf', 'lcdpdf']
     }

@@ -43,9 +43,10 @@ class Notification {
      * @public
      * @param {string} message - Notification message
      * @param {string} [buttonText] - Optional text to show in button
+     * @param {boolean} persist - Should the notification show until dismissal or respect the timeout
      * @return {void}
      */
-    show(message, buttonText) {
+    show(message, buttonText, persist = false) {
         this.messageEl.textContent = message;
 
         if (buttonText) {
@@ -58,7 +59,7 @@ class Notification {
         this.notificationEl.focus();
 
         // Hide notification automatically after a delay
-        this.timeout = setTimeout(this.hide.bind(this), HIDE_TIMEOUT_MS);
+        this.timeout = persist ? null : setTimeout(this.hide.bind(this), HIDE_TIMEOUT_MS);
     }
 
     /**

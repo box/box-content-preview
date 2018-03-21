@@ -365,7 +365,7 @@ class Model3DRenderer extends Box3DRenderer {
      * @return {void}
      */
     onUnsupportedRepresentation() {
-        this.emit('error', new Error(__('error_default')));
+        this.emit('error', new Error(__('error_unsupported')));
     }
 
     /**

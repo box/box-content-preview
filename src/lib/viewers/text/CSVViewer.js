@@ -2,7 +2,8 @@ import TextBaseViewer from './TextBaseViewer';
 import { createAssetUrlCreator, get } from '../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
-import { VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import PreviewError from '../../PreviewError';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 
@@ -51,11 +52,13 @@ class CSVViewer extends TextBaseViewer {
                     const workerSrc = URL.createObjectURL(papaWorkerBlob);
                     Papa.SCRIPT_PATH = workerSrc;
 
+                    this.startLoadTimer();
                     const urlWithAuth = this.createContentUrlWithAuthParams(template);
                     Papa.parse(urlWithAuth, {
                         download: true,
                         error: (err, file, inputElem, reason) => {
-                            this.emit('error', reason);
+                            const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
+                            this.handleDownloadError(error, urlWithAuth);
                         },
                         complete: (results) => {
                             if (this.isDestroyed() || !results) {

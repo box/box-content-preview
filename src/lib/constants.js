@@ -7,6 +7,7 @@ export const CLASS_BOX_PREVIEW_BUTTON = 'bp-btn';
 export const CLASS_BOX_PREVIEW_CONTAINER = 'bp-container';
 export const CLASS_BOX_PREVIEW_FIND_BAR = 'bp-find-bar';
 export const CLASS_BOX_PREVIEW_HAS_HEADER = 'bp-has-header';
+export const CLASS_BOX_PREVIEW_HAS_NAVIGATION = 'bp-has-navigation';
 export const CLASS_BOX_PREVIEW_HEADER = 'bp-header';
 export const CLASS_BOX_PREVIEW_BASE_HEADER = 'bp-base-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'bp-header-btns';
@@ -97,16 +98,12 @@ export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pd
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in karma.conf.js, which is needed for tests
 export const DOC_STATIC_ASSETS_VERSION = '1.17.0';
-export const MEDIA_STATIC_ASSETS_VERSION = '1.8.0';
+export const MEDIA_STATIC_ASSETS_VERSION = '1.33.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 
-//  Maps file extension to error message.
-export const FILE_EXT_ERROR_MAP = {
-    numbers: __('error_iwork'),
-    pages: __('error_iwork'),
-    key: __('error_iwork')
-};
-
 export const PREVIEW_SCRIPT_NAME = 'preview.js';
+
+export const FILE_OPTION_FILE_VERSION_ID = 'fileVersionId';
+export const FILE_OPTION_START = 'startAt';

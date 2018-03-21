@@ -1,5 +1,7 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
+import DownloadReachability from './DownloadReachability';
+import Location from './Location';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
@@ -7,7 +9,7 @@ const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
-const CLIENT_VERSION = __VERSION__;
+export const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
 /**
@@ -66,7 +68,7 @@ function checkStatus(response) {
     }
 
     const error = new Error(response.statusText);
-    error.response = response;
+    error.response = response; // Need to pass response through so we can see what kind of HTTP error this was
     throw error;
 }
 
@@ -99,15 +101,17 @@ function xhr(method, url, headers = {}, data = {}) {
  */
 function createDownloadIframe() {
     let iframe = document.querySelector('#downloadiframe');
+
+    // If no download iframe exists, create a new one
     if (!iframe) {
-        // if no existing iframe create a new one
         iframe = document.createElement('iframe');
         iframe.setAttribute('id', 'downloadiframe');
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }
+
     // Clean the iframe up
-    iframe.contentDocument.write('<head></head><body></body>');
+    iframe.src = 'about:blank';
     return iframe;
 }
 
@@ -224,8 +228,10 @@ export function openUrlInsideIframe(url) {
  */
 export function openContentInsideIframe(content) {
     const iframe = createDownloadIframe();
-    iframe.contentDocument.body.innerHTML = content;
-    iframe.contentDocument.close();
+    if (iframe.contentDocument) {
+        iframe.contentDocument.write(content);
+        iframe.contentDocument.close();
+    }
     return iframe;
 }
 
@@ -277,12 +283,18 @@ export function createScript(url) {
  *
  * @public
  * @param {string} url - Asset urls
+ * @param {boolean} preload - Whether or not to use preload, default false
  * @return {HTMLElement} Prefetch link element
  */
-export function createPrefetch(url) {
+export function createPrefetch(url, preload = false) {
     const link = document.createElement('link');
-    link.rel = 'prefetch';
+    link.rel = preload ? 'preload' : 'prefetch';
     link.href = url;
+
+    if (preload) {
+        link.as = url.indexOf('.js') !== -1 ? 'script' : 'style';
+    }
+
     return link;
 }
 
@@ -397,6 +409,10 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
+    if (DownloadReachability.isDownloadHostBlocked()) {
+        // eslint-disable-next-line
+        template = DownloadReachability.replaceDownloadHostWithDefault(template);
+    }
     return template.replace('{+asset_path}', asset || '');
 }
 
@@ -433,14 +449,16 @@ export function createAssetUrlCreator(location) {
  *
  * @public
  * @param {Array} urls - Asset urls
+ * @param {boolean} preload - Use preload instead of prefetch, default false
  * @return {void}
  */
-export function prefetchAssets(urls) {
+export function prefetchAssets(urls, preload = false) {
     const { head } = document;
+    const rel = preload ? 'preload' : 'prefetch';
 
     urls.forEach((url) => {
-        if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
-            head.appendChild(createPrefetch(url));
+        if (!head.querySelector(`link[rel="${rel}"][href="${url}"]`)) {
+            head.appendChild(createPrefetch(url, preload));
         }
     });
 }
@@ -467,18 +485,25 @@ export function loadStylesheets(urls) {
  *
  * @public
  * @param {Array} urls - Asset urls
- * @param {string} [disableRequireJS] - Should requireJS be temporarily disabled
+ * @param {string} [disableAMD] - Temporarily disable AMD definitions while external scripts are loading
  * @return {Promise} Promise to load scripts
  */
-export function loadScripts(urls, disableRequireJS = false) {
+export function loadScripts(urls, disableAMD = false) {
     const { head } = document;
     const promises = [];
-    const { define, require, requirejs } = window;
 
-    if (disableRequireJS) {
-        window.define = undefined;
-        window.require = undefined;
-        window.requirejs = undefined;
+    // Preview expects third party assets to be loaded into the global scope. However, many of our third party
+    // assets include a UMD module definition, and a parent application using RequireJS or a similar AMD module loader
+    // will trigger the AMD check in these UMD definitions and prevent the necessary assets from being loaded in the
+    // global scope. If `disableAMD` is passed, we get around this by temporarily disabling `define()` until Preview's
+    // scripts are loaded.
+
+    /* eslint-disable no-undef */
+    const amdPresent = !!window.define && typeof define === 'function' && !!define.amd;
+    const defineRef = amdPresent ? define : undefined;
+
+    if (disableAMD && amdPresent) {
+        define = undefined;
     }
 
     urls.forEach((url) => {
@@ -496,17 +521,13 @@ export function loadScripts(urls, disableRequireJS = false) {
 
     return Promise.all(promises)
         .then(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
             }
         })
         .catch(() => {
-            if (disableRequireJS) {
-                window.define = define;
-                window.require = require;
-                window.requirejs = requirejs;
+            if (disableAMD && amdPresent) {
+                define = defineRef;
             }
         });
 }
@@ -633,7 +654,7 @@ export function findScriptLocation(name, script) {
  *
  * @public
  * @param {string} string - String to be interpolated
- * @param {string[]} placeholderValues - Custom values to replace into string
+ * @param {Array} placeholderValues - Ordered array of replacement strings
  * @return {string} Properly translated string with replaced custom variable
  */
 export function replacePlaceholders(string, placeholderValues) {
@@ -647,9 +668,8 @@ export function replacePlaceholders(string, placeholderValues) {
         // extracting the index that is supposed to replace the matched placeholder
         const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
 
-        /* eslint-disable no-plusplus */
+        // eslint-disable-next-line
         return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
-        /* eslint-enable no-plusplus */
     });
 }
 
@@ -665,18 +685,6 @@ export function requires360Viewer(file) {
     // extension of '360' (e.g. file.360.mp4)
     const basename = file.name.slice(0, file.name.lastIndexOf('.'));
     return basename.endsWith('.360');
-}
-
-/**
- * Check to see if file is a Vera-protected file.
- *
- * @public
- * @param {Object} file - File to check
- * @return {boolean} Whether file is a Vera-protected HTML file
- */
-export function isVeraProtectedFile(file) {
-    // Vera protected files will match this regex
-    return /.*\.(vera\..*|vera)\.html/i.test(file.name);
 }
 
 /**
@@ -836,4 +844,85 @@ export function getClosestPageToPinch(x, y, visiblePages) {
     }
 
     return closestPage;
+}
+
+/**
+ * Strip out auth related fields from a string.
+ *
+ * @param {string} str - A string containing any auth related fields.
+ * @return {string} A string with [FILTERED] replacing any auth related fields.
+ */
+export function stripAuthFromString(str) {
+    if (typeof str !== 'string') {
+        return str;
+    }
+
+    // Strip out "access_token"
+    return str.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
+}
+
+/**
+ * Simplified lodash.get, this returns the value of a nested property with string path `propPath`. If that property
+ * does not exist on the object, then return `defaultValue`.
+ *
+ * @param {Object} object - Object to fetch property from
+ * @param {string} propPath - String path to property, e.g. 'b.c' if you are trying to fetch a.b.c
+ * @param {*} defaultValue - Default value if property is undefined
+ * @return {*} Value of prop if defined, defaultValue otherwise
+ */
+export function getProp(object, propPath, defaultValue) {
+    let value = object;
+    const path = propPath.split('.');
+
+    for (let i = 0; i < path.length; i++) {
+        // Checks against null or undefined
+        if (value == null) {
+            return defaultValue;
+        }
+
+        value = value[path[i]];
+    }
+
+    return value !== undefined ? value : defaultValue;
+}
+
+/**
+ * Checks that a fileId is of the expected type.
+ * A fileId can be a number, or a string represenation of a number
+ *
+ * @param {number} fileId - The file id
+ * @return {boolean} True if it is valid
+ */
+export function isValidFileId(fileId) {
+    // Tests that the string or number contains all numbers
+    return /^\d+$/.test(fileId);
+}
+
+/**
+ * Returns whether Preview is running inside the Box web application. This should be used sparingly since Preview
+ * should function based only on the provided options and not change functionality depending on environment.
+ *
+ * @return {boolean} Is Preview running in the Box WebApp
+ */
+export function isBoxWebApp() {
+    const boxHostnameRegex = /(app|ent)\.(box\.com|boxcn\.net|boxenterprise\.net)/;
+    return boxHostnameRegex.test(Location.getHostname());
+}
+
+/**
+ * Converts the developer-friendly Preview watermarking preference values to the values expected by the API.
+ *
+ * @param {string} previewWMPref - Preview watermarking preference as passed into Preview
+ * @return {string} Box API watermarking preference value
+ */
+export function convertWatermarkPref(previewWMPref) {
+    let value = '';
+
+    if (previewWMPref === 'all') {
+        value = 'only_watermarked';
+    } else if (previewWMPref === 'none') {
+        value = 'only_non_watermarked';
+    }
+
+    return value;
 }

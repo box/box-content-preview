@@ -42,6 +42,8 @@ class IFrameViewer extends BaseViewer {
             src = `${appHost}/dicom_viewer/${file.id}`;
         }
 
+        // Note that the load time for this will be negligible
+        this.startLoadTimer();
         this.iframeEl.src = src;
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);

@@ -24,9 +24,17 @@
     }
 
     /* Override Box UI */
-    ol,
     ul {
-        list-style: initial;
+        list-style: disc;
+    }
+
+    ol {
+        list-style: decimal;
+    }
+
+    ol ul,
+    ul ul {
+        list-style: circle;
     }
 }
 

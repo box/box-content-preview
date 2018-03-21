@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -7,6 +7,7 @@ import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
+import PreviewError from '../../PreviewError';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
@@ -23,8 +24,8 @@ import {
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { JS, CSS } from './docAssets';
-import { VIEWER_EVENT } from '../../events';
+import { JS, PRELOAD_JS, CSS } from './docAssets';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -45,6 +46,7 @@ const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const PAGES_UNIT_NAME = 'pages';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -100,6 +102,8 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = LOAD_TIMEOUT_MS;
+
+        this.startPageNum = this.getStartPage(this.startAt);
     }
 
     /**
@@ -156,6 +160,35 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Converts a value and unit to page number
+     *
+     * @param {Object} startAt - the unit and value that describes where to start the preview
+     * @return {number|undefined} a page number > 0
+     */
+    getStartPage(startAt = {}) {
+        let convertedValue;
+
+        const { unit, value } = startAt;
+
+        if (!value || !unit) {
+            return convertedValue;
+        }
+
+        if (unit === PAGES_UNIT_NAME) {
+            convertedValue = parseInt(value, 10);
+
+            if (!convertedValue || convertedValue < 1) {
+                // Negative values aren't allowed, fall back to default behavior
+                return undefined;
+            }
+        } else {
+            console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+        }
+
+        return convertedValue;
+    }
+
+    /**
      * Prefetches assets for a document.
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
@@ -169,6 +202,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (assets) {
             this.prefetchAssets(JS, CSS);
+            this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
         if (preload && !isWatermarked) {
@@ -196,9 +230,13 @@ class DocBaseViewer extends BaseViewer {
         const { file } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
-        // Don't show preload if there's a cached page since preloads are only for the 1st page
+        // Don't show preload if there's a cached page or startAt is set and > 1 since preloads are only for the 1st page
         // Also don't show preloads for watermarked files
-        if (!this.preloader || isWatermarked || this.getCachedPage() !== 1) {
+        if (
+            !this.preloader ||
+            isWatermarked ||
+            ((this.startPageNum && this.startPageNum !== 1) || this.getCachedPage() !== 1)
+        ) {
             return;
         }
 
@@ -366,11 +404,12 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNumber) {
-        if (!pageNumber || pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
+        const parsedPageNumber = parseInt(pageNumber, 10);
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
-        this.pdfViewer.currentPageNumber = pageNumber;
+        this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
@@ -499,12 +538,7 @@ class DocBaseViewer extends BaseViewer {
         this.bindDOMListeners();
 
         // Initialize pdf.js in container
-        this.pdfViewer = new PDFJS.PDFViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
-        });
+        this.pdfViewer = this.initPdfViewer();
 
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
@@ -538,6 +572,9 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders[X_BOX_ACCEPT_ENCODING_HEADER] = X_BOX_ACCEPT_ENCODING_IDENTITY;
         }
 
+        // Start timing document load
+        this.startLoadTimer();
+
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
@@ -552,18 +589,29 @@ class DocBaseViewer extends BaseViewer {
                 }
             })
             .catch((err) => {
-                /* eslint-disable no-console */
+                // eslint-disable-next-line
                 console.error(err);
-                /* eslint-enable no-console */
 
                 // Display a generic error message but log the real one
-                const error = err;
-                if (error instanceof Error) {
-                    error.displayMessage = __('error_document');
-                }
-
-                this.triggerError(error);
+                const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), {}, err.message);
+                this.handleDownloadError(error, pdfUrl);
             });
+    }
+
+    /**
+     * Initialize pdf.js viewer.
+     *
+     * @protected
+     * @override
+     * @return {PDFJS.PDFViewer} PDF viewer type
+     */
+    initPdfViewer() {
+        return new PDFJS.PDFViewer({
+            container: this.docEl,
+            linkService: new PDFJS.PDFLinkService(),
+            // Enhanced text selection uses more memory, so disable on mobile
+            enhanceTextSelection: !this.isMobile
+        });
     }
 
     /**
@@ -604,6 +652,8 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Set pdf.js worker, image, and character map locations
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
@@ -857,8 +907,11 @@ class DocBaseViewer extends BaseViewer {
 
         this.loadUI();
 
-        // Set current page to previously opened page or first page
-        this.setPage(this.getCachedPage());
+        const { pagesCount, currentScale } = this.pdfViewer;
+
+        // Set page to the user-defined page, previously opened page, or first page
+        const startPage = this.startPageNum || this.getCachedPage();
+        this.setPage(startPage);
 
         // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
         this.docEl.classList.add(CLASS_IS_SCROLLABLE);
@@ -867,9 +920,9 @@ class DocBaseViewer extends BaseViewer {
         if (!this.loaded) {
             this.loaded = true;
             this.emit(VIEWER_EVENT.load, {
-                numPages: this.pdfViewer.pagesCount,
+                numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
-                scale: this.pdfViewer.currentScale
+                scale: currentScale
             });
 
             // Add page IDs to each page after page structure is available

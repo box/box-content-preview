@@ -9,3 +9,4 @@ reports
 dist
 src/i18n/json
 jsconfig.json
+functional-tests/output

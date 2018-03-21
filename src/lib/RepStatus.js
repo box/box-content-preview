@@ -1,12 +1,11 @@
 import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
+import PreviewError from './PreviewError';
+import Timer from './Timer';
+import { ERROR_CODE, LOAD_METRIC } from './events';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
-
-const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
-const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
-const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
 
 class RepStatus extends EventEmitter {
     /**
@@ -42,13 +41,15 @@ class RepStatus extends EventEmitter {
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
+     * @param {string} options.fileId - File ID
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
+    constructor({ representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
         super();
         this.representation = representation;
         this.logger = logger;
+        this.fileId = fileId;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -80,6 +81,9 @@ class RepStatus extends EventEmitter {
             return Promise.resolve();
         }
 
+        const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
+        Timer.start(tag);
+
         return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
@@ -106,30 +110,35 @@ class RepStatus extends EventEmitter {
      */
     handleResponse() {
         const status = RepStatus.getStatus(this.representation);
-        let errorCode;
+        const convertTag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
+        const code = RepStatus.getErrorCode(this.representation);
+        let errorMessage;
+        let error;
 
         switch (status) {
             case 'error':
-                switch (RepStatus.getErrorCode(this.representation)) {
-                    case ERROR_PASSWORD_PROTECTED:
-                        errorCode = __('error_password_protected');
+                switch (code) {
+                    case ERROR_CODE.CONVERSION_PASSWORD_PROTECTED:
+                        errorMessage = __('error_password_protected');
                         break;
-                    case ERROR_TRY_AGAIN_LATER:
-                        errorCode = __('error_try_again_later');
+                    case ERROR_CODE.CONVERSION_TRY_AGAIN_LATER:
+                        errorMessage = __('error_try_again_later');
                         break;
-                    case ERROR_UNSUPPORTED_FORMAT:
-                        errorCode = __('error_bad_file');
+                    case ERROR_CODE.CONVERSION_UNSUPPORTED_FORMAT:
+                        errorMessage = __('error_bad_file');
                         break;
                     default:
-                        errorCode = __('error_refresh');
+                        errorMessage = __('error_refresh');
                         break;
                 }
 
-                this.reject(errorCode);
+                error = new PreviewError(code, errorMessage, { representation: this.representation });
+                this.reject(error);
                 break;
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
+                Timer.stop(convertTag);
                 this.resolve();
                 break;
 

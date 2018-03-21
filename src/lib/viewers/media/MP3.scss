@@ -1,11 +1,21 @@
 @import 'mediaBase';
+@import '../../_navigation';
+
+.bp-has-navigation {
+    .bp-media-mp3 {
+        .bp-media-container {
+            width: calc(100% - #{2 * $navigationBtnWidth}); // to prevent overlap in mobile devices
+        }
+    }
+}
 
 .bp-media-mp3 {
     .bp-media-container {
         height: 60px; // same as controls
+        max-width: 360px;
         outline: 0 none;
         overflow: visible; // to show settings popup
-        width: 360px;
+        width: 100%;
     }
 
     .bp-media-fullscreen-icon {

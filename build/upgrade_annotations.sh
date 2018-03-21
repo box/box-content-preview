@@ -50,19 +50,17 @@ reset_to_master() {
         git remote add github-upstream git@github.com:box/box-content-preview.git || return 1
     fi
 
+    # Fetch latest code
+    git fetch github-upstream || return 1;
+    git checkout master || return 1
+
     # The master branch should not have any commits
     if [[ $(git log --oneline ...github-upstream/master) != "" ]] ; then
         echo "----------------------------------------------------"
-        echo "Error in resetting to master!"
+        echo "Your branch has unmerged commits!"
         echo "----------------------------------------------------"
         exit 1
     fi
-
-    # Update to latest code on GitHub master
-    git checkout master || return 1
-
-    # Fetch latest code with tags
-    git fetch github-upstream || return 1;
 
     # Reset to latest code and clear unstashed changes
     git reset --hard github-upstream/master || return 1

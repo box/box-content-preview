@@ -1,24 +1,28 @@
 import EventEmitter from 'events';
-import debounce from 'lodash.debounce';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+import Browser from '../Browser';
+import DownloadReachability from '../DownloadReachability';
 import {
+    getProp,
     appendQueryParams,
     appendAuthParams,
-    getHeaders,
     createContentUrl,
+    getHeaders,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
-    createAssetUrlCreator
+    createAssetUrlCreator,
+    replacePlaceholders
 } from '../util';
-import Browser from '../Browser';
 import {
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -28,7 +32,9 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
+import PreviewError from '../PreviewError';
+import Timer from '../Timer';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -94,6 +100,12 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Whether viewer is being used on a touch device */
     hasTouch;
 
+    /** @property {Object} - Viewer startAt options */
+    startAt;
+
+    /** @property {boolean} - Has the viewer retried downloading the content */
+    hasRetriedContentDownload = false;
+
     /**
      * [constructor]
      *
@@ -133,6 +145,7 @@ class BaseViewer extends EventEmitter {
         if (this.options.file) {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
+            this.startAt = getProp(this.options, `fileOptions.${this.options.file.id}.${FILE_OPTION_START}`, {});
         }
 
         this.finishLoadingSetup();
@@ -253,10 +266,23 @@ class BaseViewer extends EventEmitter {
                 this.resetLoadTimeout();
                 return;
             }
+
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.triggerError();
+                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT, __('error_refresh'));
+                this.triggerError(error);
             }
         }, this.loadTimeout);
+    }
+
+    /**
+     * Start the load timer for fullDocumentLoad event.
+     *
+     * @protected
+     * @return {void}
+     */
+    startLoadTimer() {
+        const tag = Timer.createTag(this.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        Timer.start(tag);
     }
 
     /**
@@ -266,8 +292,38 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAssetError(err) {
-        this.triggerError(err);
+        const originalMessage = err ? err.message : '';
+        const error = new PreviewError(ERROR_CODE.LOAD_ASSET, '', {}, originalMessage);
+        this.triggerError(error);
         this.destroyed = true;
+    }
+
+    /**
+     * Handles a download error when using a non default host.
+     *
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.hasRetriedContentDownload) {
+            this.triggerError(err);
+            return;
+        }
+
+        if (DownloadReachability.isCustomDownloadHost(downloadURL)) {
+            DownloadReachability.setDownloadReachability(downloadURL).then((isBlocked) => {
+                if (isBlocked) {
+                    this.emitMetric(
+                        DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED,
+                        DownloadReachability.getHostnameFromUrl(downloadURL)
+                    );
+                }
+            });
+        }
+
+        this.hasRetriedContentDownload = true;
+        this.load();
     }
 
     /**
@@ -275,11 +331,17 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error|string} [err] - Optional error or string with message
+     * @param {Error|PreviewError} [err] - Error object related to the error that happened.
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', err instanceof Error ? err : new Error(err || __('error_refresh')));
+        const message = err ? err.message : '';
+        const error =
+            err instanceof PreviewError
+                ? err
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
+
+        this.emit('error', error);
     }
 
     /**
@@ -325,6 +387,11 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
+        if (this.hasRetriedContentDownload) {
+            // eslint-disable-next-line
+            template = DownloadReachability.replaceDownloadHostWithDefault(template);
+        }
+
         // Append optional query params
         const { queryParams } = this.options;
         return appendQueryParams(createContentUrl(template, asset), queryParams);
@@ -341,7 +408,7 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        const urlWithAuthParams = this.appendAuthParams(createContentUrl(template, asset));
+        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
 
         // Append optional query params
         const { queryParams } = this.options;
@@ -383,23 +450,34 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles the viewer load to potentially set up Box Annotations.
+     * Handles the viewer load to finish viewer setup after loading.
      *
      * @private
      * @param {Object} event - load event data
      * @return {void}
      */
     viewerLoadHandler(event) {
+        const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
+        const downloadHostToNotify = DownloadReachability.getDownloadNotificationToShow(contentTemplate);
+        if (downloadHostToNotify) {
+            this.previewUI.notification.show(
+                replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
+                __('notification_button_default_text'),
+                true
+            );
+
+            DownloadReachability.setDownloadHostNotificationShown(downloadHostToNotify);
+            this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.NOTIFICATION_SHOWN, {
+                host: downloadHostToNotify
+            });
+        }
+
         if (event && event.scale) {
             this.scale = event.scale;
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch((err) => {
-                /* eslint-disable no-console */
-                console.error('Annotation assets failed to load', err);
-                /* eslint-enable no-console */
-            });
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {});
         }
     }
 
@@ -480,6 +558,22 @@ class BaseViewer extends EventEmitter {
             data,
             viewerName: viewer ? viewer.NAME : '',
             fileId: file.id
+        });
+    }
+
+    /**
+     * Emits a viewer metric
+     *
+     * @protected
+     * @emits metric
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emitMetric(event, data) {
+        super.emit(VIEWER_EVENT.metric, {
+            event,
+            data
         });
     }
 
@@ -577,27 +671,24 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @param {string} option - to get
-     * @return {Object} Value of a viewer option
+     * @return {Object|undefined} Value of a viewer option
      */
     getViewerOption(option) {
         const { viewers, viewer } = this.options;
-        if (viewers && viewers[viewer.NAME]) {
-            return viewers[viewer.NAME][option];
-        }
-        return null;
+        const viewerName = getProp(viewer, 'NAME');
+        return getProp(viewers, `${viewerName}.${option}`);
     }
 
     /**
      * Loads assets needed for a viewer
      *
      * @protected
-     * @param {Array} [js] - js assets
-     * @param {Array} [css] - css assets
-     * @param {boolean} [isViewerAsset] is the asset to load third party
+     * @param {Array} [js] - JS assets
+     * @param {Array} [css] - CSS assets
+     * @param {boolean} [isViewerAsset] - Whether we are loading a third party viewer asset
      * @return {Promise} Promise to load scripts
      */
     loadAssets(js, css, isViewerAsset = true) {
-        const disableRequireJS = isViewerAsset && !!this.options.pauseRequireJS;
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
@@ -606,7 +697,8 @@ class BaseViewer extends EventEmitter {
         loadStylesheets((css || []).map(assetUrlCreator));
 
         // Then load the scripts needed for this preview
-        return loadScripts((js || []).map(assetUrlCreator), disableRequireJS).then(() => {
+        const disableAMD = isViewerAsset && this.options.fixDependencies;
+        return loadScripts((js || []).map(assetUrlCreator), disableAMD).then(() => {
             if (isViewerAsset) {
                 this.emit('assetsloaded');
             }
@@ -619,18 +711,19 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
+     * @param {boolean} preload - Use preload instead of prefetch, default false
      * @return {void}
      */
-    prefetchAssets(js, css) {
+    prefetchAssets(js, css, preload = false) {
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // Prefetch the stylesheets needed for this preview
-        prefetchAssets((css || []).map(assetUrlCreator));
+        prefetchAssets((css || []).map(assetUrlCreator), preload);
 
         // Prefetch the scripts needed for this preview
-        prefetchAssets((js || []).map(assetUrlCreator));
+        prefetchAssets((js || []).map(assetUrlCreator), preload);
     }
 
     /**
@@ -640,12 +733,13 @@ class BaseViewer extends EventEmitter {
      * @return {RepStatus} Instance of RepStatus
      */
     getRepStatus(representation) {
-        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const { token, sharedLink, sharedLinkPassword, logger, file } = this.options;
         const repStatus = new RepStatus({
             representation: representation || this.options.representation,
             token,
             sharedLink,
             sharedLinkPassword,
+            fileId: file.id,
             logger: representation ? null : logger // Do not log to main preview status if rep is passed in
         });
 
@@ -719,8 +813,13 @@ class BaseViewer extends EventEmitter {
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
-        /* global BoxAnnotations */
-        const boxAnnotations = this.options.boxAnnotations || new BoxAnnotations(viewerOptions);
+        if (!global.BoxAnnotations) {
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
+            this.triggerError(error);
+            return;
+        }
+
+        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (this.annotatorConf) {
@@ -764,11 +863,31 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Returns whether or not user has permissions to load annotations on the current file
+     *
+     * @param {Object} permissions Permissions on the current file
+     * @return {boolean} Whether or not user has the correct permissions
+     */
+    hasAnnotationPermissions(permissions) {
+        if (!permissions) {
+            return false;
+        }
+
+        const canViewAnnotations = !!(permissions.can_view_annotations_all || permissions.can_view_annotations_self);
+        return !permissions.can_annotate && !canViewAnnotations;
+    }
+
+    /**
      * Returns whether or not annotations are enabled for this viewer.
      *
      * @return {boolean} Whether or not viewer is annotatable
      */
     areAnnotationsEnabled() {
+        // Do not attempt to fetch annotations if the user cannot create or view annotations
+        if (!this.hasAnnotationPermissions(this.options.file)) {
+            return false;
+        }
+
         // Respect viewer-specific annotation option if it is set
         if (
             window.BoxAnnotations &&
@@ -874,6 +993,8 @@ class BaseViewer extends EventEmitter {
             createError: __('annotations_create_error'),
             deleteError: __('annotations_delete_error'),
             authError: __('annotations_authorization_error'),
+            doneButton: __('annotation_done'),
+            closeButton: __('annotation_close'),
             cancelButton: __('annotation_cancel'),
             saveButton: __('annotation_save'),
             postButton: __('annotation_post'),
@@ -902,6 +1023,15 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    /**
+     * Returns the representation used for Preview.
+     *
+     * @return {Object} Box representation used/to be used by Preview
+     */
+    getRepresentation() {
+        return this.options.representation;
     }
 }
 

@@ -326,10 +326,6 @@ class Model3DControls extends Box3DControls {
 
     /** @inheritdoc */
     destroy() {
-        if (this.controls) {
-            this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
-        }
-
         this.animationClipsPullup.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
         this.animationClipsPullup.destroy();
         this.animationClipsPullup = null;

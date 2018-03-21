@@ -5,10 +5,13 @@ import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
+import PreviewError from '../PreviewError';
+import DownloadReachability from '../DownloadReachability';
 import * as file from '../file';
 import * as util from '../util';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import { VIEWER_EVENT } from '../events';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW } from '../constants';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
+import Timer from '../Timer';
 
 const tokens = require('../tokens');
 
@@ -95,6 +98,12 @@ describe('lib/Preview', () => {
             preview.destroy();
             expect(preview.viewer).to.equal(undefined);
         });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.destroy();
+            expect(stubs.emitLoadMetrics).to.be.called;
+        });
     });
 
     describe('show()', () => {
@@ -110,7 +119,6 @@ describe('lib/Preview', () => {
                 viewer: 'viewer'
             });
         });
-
 
         it('should set the preview options with function token', () => {
             const foo = () => {};
@@ -162,8 +170,9 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
-            }
+                authenticated_download_url: 'url',
+                is_download_available: true
+            };
 
             preview.show(file, 'foken');
             expect(stubs.load).to.be.calledWith(file);
@@ -230,7 +239,8 @@ describe('lib/Preview', () => {
                 extension: 'docx',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
         });
 
@@ -280,7 +290,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids', () => {
-            let array = ['1', '2', '3', '4'];
+            const array = ['1', '2', '3', '4'];
 
             preview.updateCollection(array);
             expect(stubs.updateFileCache).to.be.calledWith([]);
@@ -288,7 +298,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            let files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
+            let files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -296,21 +306,21 @@ describe('lib/Preview', () => {
         });
 
         it('should throw when bad array of files passed in', () => {
-            let files = ['1', { }, '3'];
+            const files = ['1', {}, '3'];
 
             expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
             expect(stubs.updateFileCache).to.not.be.called;
         });
 
         it('should throw when bad array of file ids passed in', () => {
-            let files = ['', '3'];
+            const files = ['', '3'];
 
             expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
             expect(stubs.updateFileCache).to.not.be.called;
         });
 
         it('should reset the preview collection to an empty array', () => {
-            let array = '1,2,3,4';
+            const array = '1,2,3,4';
 
             preview.updateCollection(array);
             expect(stubs.updateFileCache).to.be.calledWith([]);
@@ -337,6 +347,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.error = sandbox.stub(console, 'error');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
         });
 
         it('should format the metadata into an array', () => {
@@ -369,11 +380,16 @@ describe('lib/Preview', () => {
                 }
             ];
 
-            stubs.checkFileValid.onCall(0).returns(true).onCall(1).returns(false);
+            stubs.checkFileValid
+                .onCall(0)
+                .returns(true)
+                .onCall(1)
+                .returns(false);
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
+            expect(stubs.emitPreviewError).calledOnce;
         });
 
         it('should not cache a file if it is watermarked', () => {
@@ -447,25 +463,44 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: () => {}
             };
 
-            sandbox.stub(preview.cache, 'get').withArgs(fileId).returns(someFile);
-            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
+            sandbox
+                .stub(file, 'getCachedFile')
+                .withArgs(preview.cache, sinon.match.any)
+                .returns(someFile);
+            sandbox
+                .stub(preview, 'getLoader')
+                .withArgs(someFile)
+                .returns(loader);
         });
 
         it('should short circuit if no appropriate viewer is found', () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
-            sandbox.mock(loader).expects('determineRepresentation').never();
-            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .never();
+            sandbox
+                .mock(viewer)
+                .expects('CONSTRUCTOR')
+                .never();
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should get the appropriate viewer', () => {
-            sandbox.mock(loader).expects('determineViewer').withArgs(someFile).returns(viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineViewer')
+                .withArgs(someFile)
+                .returns(viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should determine representation', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
-            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -494,7 +529,10 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(true)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(true)
                     };
                 }
             };
@@ -512,7 +550,10 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(false)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(false)
                     };
                 }
             };
@@ -540,48 +581,57 @@ describe('lib/Preview', () => {
     });
 
     describe('prefetchViewers()', () => {
-        let prefetchStub;
+        describe('prefetch stubbed', () => {
+            let prefetchStub;
 
-        beforeEach(() => {
-            prefetchStub = sandbox.stub();
-            const stubViewer = () => {
-                return { prefetch: prefetchStub };
-            };
+            beforeEach(() => {
+                prefetchStub = sandbox.stub();
+                const stubViewer = () => {
+                    return { prefetch: prefetchStub };
+                };
 
-            const mockViewers = [
-                {
-                    NAME: 'viewer1',
-                    CONSTRUCTOR: stubViewer
-                },
-                {
-                    NAME: 'viewer2',
-                    CONSTRUCTOR: stubViewer
-                },
-                {
-                    NAME: 'viewer3',
-                    CONSTRUCTOR: stubViewer
-                }
-            ];
+                const mockViewers = [
+                    {
+                        NAME: 'viewer1',
+                        CONSTRUCTOR: stubViewer
+                    },
+                    {
+                        NAME: 'viewer2',
+                        CONSTRUCTOR: stubViewer
+                    },
+                    {
+                        NAME: 'viewer3',
+                        CONSTRUCTOR: stubViewer
+                    }
+                ];
 
-            stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
-        });
-
-        it('should prefetch no viewers if no viewer names are specified', () => {
-            preview.prefetchViewers();
-            expect(prefetchStub).to.not.be.called;
-        });
-
-        it('should prefetch only passed in viewers', () => {
-            const viewerToPrefetch = preview.getViewers()[0];
-            const viewerName = viewerToPrefetch.NAME;
-
-            preview.prefetchViewers([viewerName]);
-            expect(prefetchStub).to.be.calledOnce;
-            expect(prefetchStub).to.be.calledWith({
-                assets: true,
-                preload: false,
-                content: false
+                stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
             });
+
+            it('should prefetch no viewers if no viewer names are specified', () => {
+                preview.prefetchViewers();
+                expect(prefetchStub).to.not.be.called;
+            });
+
+            it('should prefetch only passed in viewers', () => {
+                const viewerToPrefetch = preview.getViewers()[0];
+                const viewerName = viewerToPrefetch.NAME;
+
+                preview.prefetchViewers([viewerName]);
+                expect(prefetchStub).to.be.calledOnce;
+                expect(prefetchStub).to.be.calledWith({
+                    assets: true,
+                    preload: false,
+                    content: false
+                });
+            });
+        });
+
+        it('should not throw when prefetching the viewers', () => {
+            // Get the list of all possible viewers and extract the names
+            const PREVIEW_SDK_VIEWERS_TO_PREFETCH = preview.getViewers().map((viewer) => viewer.NAME);
+
+            expect(() => preview.prefetchViewers(PREVIEW_SDK_VIEWERS_TO_PREFETCH)).to.not.throw();
         });
     });
 
@@ -653,36 +703,33 @@ describe('lib/Preview', () => {
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
-            stubs.checkFeature = sandbox.stub(file, 'checkFeature').returns(false);
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
+            stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             preview.viewer = {
                 print: sandbox.stub()
             };
         });
 
-        it('should print if the feature and permissions exist', () => {
-            stubs.checkPermission.returns(true);
+        it('should print if file can be downloaded and feature exists', () => {
+            stubs.canDownload.returns(true);
             stubs.checkFeature.returns(true);
 
             preview.print();
             expect(preview.viewer.print).to.be.called;
         });
 
-        it('should not print if feature does not exists', () => {
-            stubs.checkFeature.returns(true);
+        it('should not print if feature does not exist', () => {
+            stubs.canDownload.returns(true);
+            stubs.checkFeature.returns(false);
 
             preview.print();
             expect(preview.viewer.print).to.not.be.called;
         });
 
-        it('should not print if permissions do not exist', () => {
-            stubs.checkPermission.returns(true);
+        it('should not print if file cannot be downloaded', () => {
+            stubs.canDownload.returns(false);
+            stubs.checkFeature.returns(false);
 
-            preview.print();
-            expect(preview.viewer.print).to.not.be.called;
-        });
-
-        it('should not print if permissions or feature do not exist', () => {
             preview.print();
             expect(preview.viewer.print).to.not.be.called;
         });
@@ -692,30 +739,89 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve({
                 data: {
-                    download_url: 'dl.box'
+                    download_url: 'dl.boxcloud.com'
                 }
             });
 
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.openUrlInsideIframe = sandbox.stub(util, 'openUrlInsideIframe');
-            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
-            stubs.getDownloadURL = sandbox.stub(file, 'getDownloadURL');
+            preview.ui = {
+                showNotification: sandbox.stub()
+            };
+            preview.viewer = {
+                getRepresentation: sandbox.stub(),
+                createContentUrlWithAuthParams: sandbox.stub(),
+                options: {
+                    viewer: {
+                        ASSET: ''
+                    }
+                }
+            };
+            sandbox.stub(file, 'canDownload');
+            sandbox.stub(file, 'shouldDownloadWM');
+            sandbox.stub(util, 'openUrlInsideIframe');
+            sandbox.stub(util, 'appendQueryParams');
+            sandbox.stub(DownloadReachability, 'downloadWithReachabilityCheck');
+
+            sandbox.stub(file, 'getDownloadURL');
+            sandbox.stub(preview, 'getRequestHeaders');
+            sandbox.stub(util, 'get');
         });
 
-        it('should not do anything if there is no download permission', () => {
-            stubs.checkPermission.returns(false);
-
+        it('should show error notification and not download file if file cannot be downloaded', () => {
+            file.canDownload.returns(false);
             preview.download();
-            expect(stubs.openUrlInsideIframe).to.not.be.called;
+            expect(preview.ui.showNotification).to.be.called;
+            expect(util.openUrlInsideIframe).to.not.be.called;
         });
 
-        it('get the file and then open in an iframe', () => {
-            stubs.checkPermission.returns(true);
+        it('should show error notification and not download watermarked file if file should be downloaded as watermarked, but file does not have a previewable representation', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(true);
+            preview.viewer.getRepresentation.returns({});
 
             preview.download();
-            return stubs.promise.then((data) => {
-                expect(stubs.openUrlInsideIframe).to.be.calledWith(data.download_url);
+
+            expect(preview.ui.showNotification).to.be.called;
+            expect(util.openUrlInsideIframe).to.not.be.called;
+        });
+
+        it('should download watermarked representation if file should be downloaded as watermarked', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(true);
+
+            const template = 'someTemplate';
+            const representation = {
+                content: {
+                    url_template: template
+                }
+            };
+            const url = 'someurl';
+
+            preview.viewer.getRepresentation.returns(representation);
+            preview.viewer.createContentUrlWithAuthParams.withArgs(template, '').returns(url);
+
+            util.appendQueryParams.withArgs(url).returns(url);
+
+            preview.download();
+
+            expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
+        });
+
+        it('should download original file if file should not be downloaded as watermarked', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(false);
+
+            const url = 'someurl';
+            util.appendQueryParams.withArgs(url).returns(url);
+
+            const promise = Promise.resolve({
+                download_url: url
+            });
+            util.get.returns(promise);
+
+            preview.download();
+
+            return promise.then((data) => {
+                expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
         });
     });
@@ -734,7 +840,7 @@ describe('lib/Preview', () => {
         it('should reload preview by default', () => {
             preview.file = { id: '1' };
             sandbox.stub(preview, 'load');
-            preview.updateToken('dr-strange');
+            preview.updateToken('DownloadReachability-strange');
             expect(preview.reload).to.be.called;
         });
 
@@ -762,7 +868,8 @@ describe('lib/Preview', () => {
                 extension: 'pdf',
                 representations: {},
                 watermark_info: {},
-                authenticated_download_url: 'url'
+                authenticated_download_url: 'url',
+                is_download_available: true
             };
 
             stubs.promise = Promise.resolve({
@@ -773,6 +880,10 @@ describe('lib/Preview', () => {
             stubs.handleTokenResponse = sandbox.stub(preview, 'handleTokenResponse');
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
+
+            stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
+
+            preview.fileVersions = {};
         });
 
         it('should cleanup any existing viewer', () => {
@@ -788,12 +899,37 @@ describe('lib/Preview', () => {
             expect(Browser.getBrowserInfo).to.not.be.called; // cached from preview constructor
         });
 
+        it('should fetch file from cache using file ID as key if file version ID is not in options', () => {
+            const fileId = '123';
+            preview.load(fileId);
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId });
+        });
+
+        it('should fetch file from cache and convert file id to string when file id passed as a number', () => {
+            const fileId = 123;
+            preview.load(fileId);
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId : fileId.toString() });
+        });
+
+        it('should fetch file from cache using file version ID as key if file version ID is in options', () => {
+            const fileId = '123';
+            const fileVersionId = '1234';
+
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs(fileId, 'fileVersionId')
+                .returns(fileVersionId);
+            preview.load(fileId);
+
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileVersionId });
+        });
+
         it('should clear the retry timeout', () => {
             preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
         });
 
-        it('should set the retry count', () => {
+        it('should set the retry count if we are retrying by file ID', () => {
             preview.retryCount = 0;
             preview.file.id = '0';
 
@@ -806,14 +942,43 @@ describe('lib/Preview', () => {
             expect(preview.retryCount).to.equal(0);
         });
 
+        it('should set the retry count if we are retrying by file version ID', () => {
+            preview.retryCount = 0;
+
+            // The current file we are attempting to preview has file version '1234'
+            preview.file.file_version = {
+                id: '1234'
+            };
+
+            // Calling load() with file version ID '1234'
+            stubs.getFileVersionId = sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs(sinon.match.any, 'fileVersionId')
+                .returns('1234');
+            preview.load('0');
+
+            // Expect retry count to go up by 1
+            expect(preview.retryCount).to.equal(1);
+
+            // Calling load() with file version ID '12345'
+            stubs.getFileVersionId.returns('12345');
+            preview.load('0');
+
+            // Expect retry count to reset to 0 since it doesn't match current file version ID '1234'
+            expect(preview.retryCount).to.equal(0);
+        });
+
         it('should throw an error if incompatible file object is passed in', () => {
             const spy = sandbox.spy(preview, 'load');
             const file = {
                 not: 'the',
                 right: 'fields'
-            }
+            };
 
-            expect(preview.load.bind(preview, file)).to.throw(Error, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
+            expect(preview.load.bind(preview, file)).to.throw(
+                PreviewError,
+                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
+            );
         });
 
         it('should get the tokens when file id is available', () => {
@@ -892,9 +1057,10 @@ describe('lib/Preview', () => {
             previewUIMock.expects('showLoadingIndicator');
             previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
 
             preview.setupUI();
-        })
+        });
     });
 
     describe('parseOptions()', () => {
@@ -917,7 +1083,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
-                pauseRequireJS: true,
+                fixDependencies: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1003,9 +1169,9 @@ describe('lib/Preview', () => {
             expect(preview.options.skipServerUpdate).to.be.true;
         });
 
-        it('should set whether to pause requireJS when loading dependencies', () => {
+        it('should set whether to fix dependencies', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.pauseRequireJS).to.be.true;
+            expect(preview.options.fixDependencies).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -1097,6 +1263,13 @@ describe('lib/Preview', () => {
                 expect(stubs.handleFetchError).to.not.be.called;
             });
         });
+
+        it('should start a Timer for file info timing', () => {
+            const startStub = sandbox.stub(Timer, 'start');
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.loadFromServer();
+            expect(startStub).to.calledWith(expectedTag);
+        });
     });
 
     describe('handleFileInfoResponse()', () => {
@@ -1105,8 +1278,12 @@ describe('lib/Preview', () => {
                 setFile: sandbox.stub(),
                 setCacheStale: sandbox.stub()
             };
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
 
-            stubs.get = sandbox.stub(preview.cache, 'get').returns(true);
+            stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
             stubs.set = sandbox.stub(preview.cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
@@ -1116,52 +1293,78 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
             stubs.isWatermarked = sandbox.stub(file, 'isWatermarked').returns(false);
             stubs.file = {
-                id: 0,
+                id: '123',
                 name: 'file',
                 file_version: {
+                    id: '1234',
                     sha1: 2
                 },
                 representations: {
                     entries: []
                 }
             };
+            preview.fileVersions = {};
+        });
+
+        it('should normalize the file version object from server if previewing a file verison', () => {
+            preview.file.id = '123';
+            sandbox.stub(file, 'normalizeFileVersion').returns({
+                id: preview.file.id,
+                shared_link: {},
+                file_version: {
+                    id: '1234'
+                }
+            });
+            const fileVersion = {
+                id: '1234'
+            };
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs('123', 'fileVersionId')
+                .returns(fileVersion.id);
+
+            preview.handleFileInfoResponse(fileVersion);
+
+            expect(file.normalizeFileVersion).to.be.calledWith(fileVersion, preview.file.id);
         });
 
         it('should do nothing if the preview is closed', () => {
             preview.open = false;
+            preview.file.id = '123';
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
 
         it('should do nothing if response comes back for an incorrect file', () => {
-            preview.open = true;
             preview.file = {
-                id: 0
+                id: '123',
+                file_version: {
+                    id: '1234'
+                }
             };
-            stubs.file.id = 1;
+            stubs.file.file_version.id = '1233';
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
 
         it('should save a reference to the file and update the logger', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
             expect(preview.logger.setFile).to.be.called;
         });
 
-        it('should get the latest cache, then update it with the new file', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
+        it('should trigger error if file is not downloadable', () => {
+            stubs.file.is_download_available = false;
+            preview.handleFileInfoResponse(stubs.file);
 
-            stubs.get.returns({
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_file_not_downloadable');
+        });
+
+        it('should get the latest cache, then update it with the new file', () => {
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1170,19 +1373,14 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 0;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.get).to.be.calledWith(stubs.file.id);
+            expect(stubs.getCachedFile).to.be.calledWith(preview.cache, { fileVersionId: stubs.file.file_version.id });
             expect(stubs.cacheFile).to.be.calledWith(preview.cache, stubs.file);
             expect(stubs.loadViewer).to.not.be.called;
         });
 
         it('should uncache the file if the file is watermarked', () => {
             stubs.isWatermarked.returns(true);
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1195,23 +1393,13 @@ describe('lib/Preview', () => {
         });
 
         it('should load the viewer if the file is not in the cache', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
-            stubs.get.returns(false);
+            stubs.getCachedFile.returns(null);
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.loadViewer).to.be.called;
         });
 
         it('should load the viewer if the cached file is not valid', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.checkFileValid.returns(false);
 
             preview.handleFileInfoResponse(stubs.file);
@@ -1219,12 +1407,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1238,13 +1421,8 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
             stubs.isWatermarked.returns(true);
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1258,15 +1436,29 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
-            preview.open = true;
-            preview.file = {
-                id: 0
-            };
-
-            stubs.get.throws(new Error());
-
+            const error = new PreviewError('some_code');
+            stubs.getCachedFile.throws(error);
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.triggerError).to.be.called;
+            expect(stubs.triggerError).to.be.calledWith(error);
+        });
+
+        it('should trigger a viewer load error if a non-PreviewError is thrown', () => {
+            stubs.getCachedFile.throws(new Error('random'));
+            preview.handleFileInfoResponse(stubs.file);
+
+            const error = stubs.triggerError.getCall(0).args[0];
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+        });
+
+        it('should stop the Timer for file info time', () => {
+            const stopStub = sandbox.stub(Timer, 'stop');
+            preview.file = {
+                id: 12345
+            };
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            preview.handleFileInfoResponse(stubs.file);
+            expect(stopStub).to.be.calledWith();
         });
     });
 
@@ -1283,7 +1475,7 @@ describe('lib/Preview', () => {
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
-            stubs.canDownload = sandbox.stub(Browser, 'canDownload').returns(false);
+            stubs.canDownload = sandbox.stub(file, 'canDownload').returns(false);
             stubs.showLoadingDownloadButton = sandbox.stub(preview.ui, 'showLoadingDownloadButton');
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
@@ -1318,75 +1510,47 @@ describe('lib/Preview', () => {
             expect(stubs.destroy).to.not.be.called;
         });
 
-        it('should throw an error if there is no preview permission', () => {
-            stubs.checkPermission.returns(false);
-            const spy = sandbox.spy(preview, 'loadViewer');
-
-            try {
-                preview.loadViewer();
-            } catch (e) {
-                expect(spy.threw('Error'));
-            }
+        it('should throw an error if user does not have permission to preview', () => {
+            stubs.checkPermission.withArgs(sinon.match.any, PERMISSION_PREVIEW).returns(false);
+            expect(() => preview.loadViewer()).to.throw(
+                PreviewError,
+                /We're sorry, you don't have permission to preview this file./
+            );
         });
 
-        it('should show the loading download button if there are sufficient permissions and support', () => {
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
-            preview.options.showDownload = false;
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
-            preview.options.showDownload = true;
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-            preview.destroy();
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-            preview.options.showDownload = true;
-            stubs.canDownload.returns(false);
-            preview.destroy();
-
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
-            preview.options.showDownload = true;
+        it('should show the loading download button if file can be downloaded', () => {
             stubs.canDownload.returns(true);
-
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
-        it('should throw a generic error if there is no loader for general file types', () => {
+        it('should not show the loading download button if file can\'t be downloaded', () => {
+            stubs.canDownload.returns(false);
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
+        });
+
+        it('should throw an unsupported error if there is no loader for general file types', () => {
             preview.file.extension = 'zip';
             stubs.getLoader.returns(undefined);
-            const spy = sandbox.spy(preview, 'loadViewer');
 
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(spy.threw('Error', __('error_default')));
+                expect(e.message).to.equal(
+                    util.replacePlaceholders(__('error_unsupported'), ['ZIP'])
+                );
             }
         });
 
-        it('should throw a specific error if there is no loader for a specific file type', () => {
-            preview.file.extension = 'key';
+        it('should throw an account upgrade error if there is no loader but the file type is supported', () => {
+            preview.file.extension = 'mp4';
             stubs.getLoader.returns(undefined);
-            const spy = sandbox.spy(preview, 'loadViewer');
 
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(spy.threw('Error', __('error_iwork')));
+                expect(e.message).to.equal(__('error_account'));
             }
         });
 
@@ -1437,6 +1601,7 @@ describe('lib/Preview', () => {
             preview.attachViewerListeners();
             expect(preview.viewer.addListener).to.be.calledWith('error', sinon.match.func);
             expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.default, sinon.match.func);
+            expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.metric, sinon.match.func);
         });
     });
 
@@ -1505,14 +1670,41 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.calledWith(data.event, data.data);
             expect(preview.emit).to.be.calledWith(VIEWER_EVENT.default, data);
         });
+
+        it('should not emit any messages error events', () => {
+            sandbox.stub(preview, 'emit');
+            const data = {
+                event: 'error',
+                data: ':('
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.emit).to.not.be.called;
+        });
+    });
+
+    describe('handleViewerMetrics()', () => {
+        it('should create a formatted event and emit a preview_metric', () => {
+            sandbox.stub(preview, 'createLogEvent');
+            sandbox.stub(preview, 'emit');
+            const fakeEvent = {
+                event: 'test',
+                data: 7
+            };
+
+            const fakeLog = {
+                event_name: fakeEvent.event,
+                value: fakeEvent.data
+            };
+            preview.handleViewerMetrics(fakeEvent);
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
+        });
     });
 
     describe('finishLoading()', () => {
         beforeEach(() => {
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile');
-            stubs.canDownload = sandbox.stub(Browser, 'canDownload');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.showPrintButton = sandbox.stub(preview.ui, 'showPrintButton');
             stubs.hideLoadingIndicator = sandbox.stub(preview.ui, 'hideLoadingIndicator');
@@ -1535,64 +1727,39 @@ describe('lib/Preview', () => {
             };
 
             preview.logger = stubs.logger;
-            preview.options.showDownload = true;
+        });
+
+        it('should show download button if file can be downloaded', () => {
             stubs.canDownload.returns(true);
-            stubs.checkPermission.returns(true);
-            stubs.checkFeature.returns(true);
-        });
-
-        it('should only show download button if there is download permission', () => {
-            stubs.checkPermission.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.returns(true);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
-        });
-
-        it('should show download button if it is requested in the options', () => {
-            preview.options.showDownload = false;
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            preview.options.showDownload = true;
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
-        });
-
-        it('should show download button if download is supported by browser', () => {
-            stubs.canDownload.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showDownloadButton).to.not.be.called;
-
-            stubs.canDownload.returns(true);
-
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;
+        });
 
-            stubs.canDownload.returns(true);
-            stubs.isMobile.returns(false);
-
+        it('should not show download button if file can\'t be downloaded', () => {
+            stubs.canDownload.returns(false);
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
+            expect(stubs.showDownloadButton).to.not.be.called;
         });
 
         it('should show print button if print is supported', () => {
-            stubs.checkFeature.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showPrintButton).to.not.be.called;
-
-            stubs.checkFeature.returns(true);
-
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.canDownload.returns(true);
             preview.finishLoading();
             expect(stubs.showPrintButton).to.be.called;
+        });
+
+        it('should not show print button if print is not supported', () => {
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(false);
+            stubs.canDownload.returns(true);
+            preview.finishLoading();
+            expect(stubs.showPrintButton).to.not.be.called;
+        });
+
+        it('should not show print button if file can\'t be downloaded', () => {
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.canDownload.returns(false);
+            preview.finishLoading();
+            expect(stubs.showPrintButton).to.not.be.called;
         });
 
         it('should increment the preview count', () => {
@@ -1600,6 +1767,27 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(preview.count.success).to.equal(1);
+        });
+
+        it('should emit a metrics message for successful preview', () => {
+            const event_name = 'success';
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading();
+
+            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
+        });
+
+        it('should emit a metrics message for failed preview', () => {
+            const event_name = 'failure';
+            const value = false;
+
+            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+
+            preview.finishLoading({ error: {} });
+
+            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
         });
 
         it('should emit the load event', () => {
@@ -1656,14 +1844,23 @@ describe('lib/Preview', () => {
             expect(stubs.hideLoadingIndicator).to.be.called;
         });
 
-        it('should set up the notification', () => {
-            preview.finishLoading();
-            expect(stubs.setupNotification).to.be.called;
-        });
-
         it('should prefetch next files', () => {
             preview.finishLoading();
             expect(stubs.prefetchNextFiles).to.be.called;
+        });
+
+        it('should stop the timer for full document load if a file exists', () => {
+            preview.file.id = 1234;
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            sandbox.stub(Timer, 'stop');
+            preview.finishLoading();
+            expect(Timer.stop).to.be.calledWith(expectedTag);
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.finishLoading();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -1706,7 +1903,10 @@ describe('lib/Preview', () => {
 
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
             const promiseReject = Promise.reject({});
-            sandbox.stub(util, 'post').onCall(0).returns(promiseReject);
+            sandbox
+                .stub(util, 'post')
+                .onCall(0)
+                .returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = undefined;
 
@@ -1720,7 +1920,7 @@ describe('lib/Preview', () => {
 
     describe('handleFetchError()', () => {
         beforeEach(() => {
-            stubs.unset = sandbox.stub(preview.cache, 'unset');
+            stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.load = sandbox.stub(preview, 'load');
             stubs.error = {
@@ -1737,7 +1937,7 @@ describe('lib/Preview', () => {
             preview.open = false;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.unset).to.not.be.called;
+            expect(stubs.uncacheFile).to.not.be.called;
         });
 
         it('should clear the current file from the cache', () => {
@@ -1747,7 +1947,7 @@ describe('lib/Preview', () => {
             preview.open = true;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.unset).to.be.called;
+            expect(stubs.uncacheFile).to.be.called;
         });
 
         it('should trigger an error if we have hit our retry count limit', () => {
@@ -1793,7 +1993,7 @@ describe('lib/Preview', () => {
             expect(stubs.load).to.be.calledWith(1);
         });
 
-        it('should retry using exponential backoff', () => {
+        it('should retry using full jitter', () => {
             preview.file = {
                 id: '0'
             };
@@ -1802,9 +2002,6 @@ describe('lib/Preview', () => {
             preview.retryCount = 3;
 
             preview.handleFetchError(stubs.error);
-
-            clock.tick(7000);
-            expect(stubs.load).to.not.be.called;
 
             clock.tick(8001);
             expect(stubs.load).to.be.called;
@@ -1815,8 +2012,11 @@ describe('lib/Preview', () => {
                 id: '0'
             };
             stubs.error.headers = {
-                get: sandbox.stub().withArgs('Retry-After').returns(5)
-            }
+                get: sandbox
+                    .stub()
+                    .withArgs('Retry-After')
+                    .returns(5)
+            };
             const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 1;
@@ -1838,7 +2038,7 @@ describe('lib/Preview', () => {
         };
 
         beforeEach(() => {
-            stubs.unset = sandbox.stub(preview.cache, 'unset');
+            stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.finishLoading = sandbox.stub(preview, 'finishLoading');
             stubs.getErrorViewer = sandbox.stub(preview, 'getErrorViewer').returns(ErrorViewer);
@@ -1847,23 +2047,25 @@ describe('lib/Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.emit = sandbox.stub(preview, 'emit');
+            stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
 
             preview.open = true;
         });
 
-        it('should do nothing if the preview is closed', () => {
+        it('should only log an error if the preview is closed', () => {
             preview.open = false;
 
-            preview.triggerError();
-            expect(stubs.unset).to.not.be.called;
+            preview.triggerError(new Error('fail'));
+            expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
+            expect(stubs.emitPreviewError).to.be.called;
         });
 
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
             preview.triggerError();
             expect(preview.open).to.be.false;
-            expect(stubs.unset).to.be.called;
+            expect(stubs.uncacheFile).to.be.called;
             expect(stubs.destroy).to.be.called;
         });
 
@@ -1877,12 +2079,204 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('createLogEvent()', () => {
+        it('should create a log object containing correct file info properties', () => {
+            const id = '12345';
+            preview.file = {
+                id
+            };
+
+            const log = preview.createLogEvent();
+            expect(log.timestamp).to.exist;
+            expect(log.file_id).to.equal(id);
+            expect(log.file_version_id).to.exist;
+            expect(log.content_type).to.exist;
+            expect(log.extension).to.exist;
+            expect(log.locale).to.exist;
+        });
+
+        it('should use empty string for file_id, if no file', () => {
+            preview.file = undefined;
+            const log = preview.createLogEvent();
+
+            expect(log.file_id).to.equal('');
+        });
+
+        it('should use empty string for file_version_id, if no file version', () => {
+            preview.file = {
+                id: '12345',
+                file_version: undefined
+            };
+            const log = preview.createLogEvent();
+
+            expect(log.file_version_id).to.equal('');
+        });
+    });
+
+    describe('emitPreviewError()', () => {
+        it('should emit a "preview_error" message with an object describing the error', (done) => {
+            const code = 'an_error';
+            const displayMessage = 'Oh no!';
+            const error = new PreviewError(code, displayMessage);
+
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal('an_error');
+                expect(data.error.displayMessage).to.equal('Oh no!');
+                done();
+            });
+
+            preview.emitPreviewError(error);
+        });
+
+        it('should emit a "preview_error" message with info about the preview session', (done) => {
+            const fileId = '1234';
+            const fileVersionId = '999';
+
+            preview.file = {
+                id: fileId,
+                file_version: {
+                    id: fileVersionId
+                }
+            };
+
+            preview.on('preview_error', (data) => {
+                expect(data.file_id).to.equal(fileId);
+                expect(data.file_version_id).to.equal(fileVersionId);
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        it('should use a default browser error code if none is present', (done) => {
+            preview.on('preview_error', (data) => {
+                expect(data.error.code).to.equal(ERROR_CODE.BROWSER_GENERIC);
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        it('should strip any auth from the message and displayMessage if it is present', (done) => {
+            const message = 'A message';
+            const displayMessage = 'A display message';
+            const auth = 'access_token="1234abcd"';
+            const filtered = 'access_token=[FILTERED]';
+            preview.on('preview_error', (data) => {
+                expect(data.error.message).to.equal(`${message}?${filtered}`);
+                expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`);
+                done();
+            });
+
+            const error = new PreviewError('bad_thing', `${displayMessage}?${auth}`, {}, `${message}?${auth}`);
+            preview.emitPreviewError(error);
+        });
+    });
+
+    describe('emitLoadMetrics()', () => {
+        const fileId = 123456;
+        const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
+
+        beforeEach(() => {
+            preview.file = {
+                id: fileId
+            };
+
+            // Make sure the first milestone (fileInfoTime) has been met
+            Timer.start(fileInfoTag);
+            Timer.stop(fileInfoTag);
+            Timer.get(fileInfoTag).elapsed = 20;
+        });
+
+        afterEach(() => {
+            Timer.reset();
+        });
+
+        it('should reset the Timer and escape early if no file or file id', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.file = undefined;
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
+
+        it('should reset the timer and escape early if the first load milestone is not hit', () => {
+            Timer.reset(); // Clear out all entries in the Timer
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.not.be.called;
+        });
+
+        it('should emit a preview_metric event', (done) => {
+            preview.on(PREVIEW_METRIC, () => {
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event with event_name "preview_load"', () => {
+            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            Timer.start(tag);
+            Timer.stop(tag);
+
+            Timer.get(tag).elapsed = 10;
+            Timer.get(fileInfoTag).elapsed = 20;
+
+            const expectedTime = 30; // 10ms + 20ms
+
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.value).to.equal(expectedTime);
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event where the value property equals the sum of all load events', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
+                expect(metric[LOAD_METRIC.convertTime]).to.exist;
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should reset the Timer', () => {
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.emitLoadMetrics();
+            expect(Timer.reset).to.be.called;
+            expect(preview.emit).to.be.called;
+        });
+
+        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
+            Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
+            preview.on(PREVIEW_METRIC, (metric) => {
+                expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
+                expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
+            });
+            preview.emitLoadMetrics();
+        });
+    });
+
     describe('getRequestHeaders()', () => {
         beforeEach(() => {
             stubs.canPlayDash = sandbox.stub(Browser, 'canPlayDash').returns(false);
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
-                'X-Rep-Hints': '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
+                'X-Rep-Hints':
+                    '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
             };
 
             preview.options.sharedLink = 'link';
@@ -2078,9 +2472,17 @@ describe('lib/Preview', () => {
                 navigation: 0
             };
 
-            preview.collection = {
-                2: 'file'
-            };
+            preview.collection = ['file', 'file2', 'file3'];
+        });
+
+        it('should do nothing if the collection is invalid', () => {
+            preview.collection = 'foo';
+            preview.navigateToIndex(1);
+            expect(stubs.emit).to.not.be.called;
+
+            preview.collection = [];
+            preview.navigateToIndex(1);
+            expect(stubs.emit).to.not.be.called;
         });
 
         it('should emit the navigation event', () => {
@@ -2095,7 +2497,7 @@ describe('lib/Preview', () => {
 
         it('should load the requested file', () => {
             preview.navigateToIndex(2);
-            expect(stubs.load).to.be.calledWith('file');
+            expect(stubs.load).to.be.calledWith('file3');
         });
     });
 
@@ -2244,6 +2646,50 @@ describe('lib/Preview', () => {
             preview.keydownHandler(stubs.event);
             expect(stubs.event.preventDefault).to.be.called;
             expect(stubs.event.stopPropagation).to.be.called;
+        });
+    });
+
+    describe('getFileOption()', () => {
+        it('should return matching file option', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        fileVersionId: '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption('123', 'fileVersionId')).to.equal('1234');
+        });
+
+        it('should return matching file option when file object is passed', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        fileVersionId: '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption({ id: '123' }, 'fileVersionId')).to.equal('1234');
+        });
+
+        it('should return undefined when no matching file option is set', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        fileVersionId: '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption({ id: '1234' }, 'fileVersionId')).to.equal(undefined);
+            expect(preview.getFileOption('1234', 'fileVersionId')).to.equal(undefined);
+            expect(preview.getFileOption('123', 'location')).to.equal(undefined);
+
+            preview.previewOptions = undefined;
+
+            expect(preview.getFileOption('123', 'fileVersionId')).to.equal(undefined);
         });
     });
 });

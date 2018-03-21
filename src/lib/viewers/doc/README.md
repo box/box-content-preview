@@ -77,30 +77,58 @@ The presentation viewer renders previews of powerpoint files.
 
 ## Behavior
 
-The presentation viewer remembers which slide you were viewing upon closing the preview. The next time that file is opened, you will immediately be brought to that page. Scrolling the mouse up and down, or swiping up and down on mobile will transition between slides. Zooming in or out will increase or decrease the size of the slide respectively. If the zoom level causes the content to overflow, scrolling the mouse will allow you to scroll around the slide. To return to normal scrolling behavior, the user must zoom out until the overflow is removed. In order to disable the presentation viewer, call Preview's `disableViewers()` method before show like so: `preview.disableViewers(['Presentation']);`
+The presentation viewer remembers which slide you were viewing upon closing the preview. The next time that file is opened, you will immediately be brought to that page. Scrolling the mouse up and down, or swiping up and down on mobile will transition between slides. Zooming in or out will increase or decrease the size of the slide respectively. If the zoom level causes the content to overflow, scrolling the mouse will allow you to scroll around the slide. To return to normal scrolling behavior, the user must zoom out until the overflow is removed.
 
 ### Controls:
 
-* Zoom In
-* Zoom Out
-* Set Page: either with the up and down arrows, or by clicking the page number and entering text
-* Fullscreen: can be exited with the escape key
+See document viewer controls.
 
 ## Supported File Extensions
 
-`gslide, gslides, ppt, pptx, odp`
+`gslide, gslides, ppt, pptx, odp` are shown by default. Additionally, all document formats can be shown by [disabling the
+document viewer](https://github.com/box/box-content-preview#additional-methods)
 
 ## Options
 
-| Option | Type | Description |
-| --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
-| disableFindBar | boolean | Optional. Setting to true will enable the browser's findBar in place of the viewers. Defaults to false |
+See [document viewer options](#options).
 
 ## Events
 
-See document viewer events.
+See [document viewer events](#events).
 
 ## Methods
 
-See document viewer methods.
+See [document viewer methods](#methods).
+
+# Single Page Viewer
+
+The single page viewer renders previews of document files one page at a time.
+
+## Screenshot
+
+![Screenshot of single page viewer](../../../../images/document.png)
+
+## Behavior
+
+The single page viewer replicates the behavior of the single page viewer from PDF.js. See example [here](https://github.com/mozilla/pdf.js/blob/master/examples/components/singlepageviewer.html).
+In order to enable this viewer, both the Document and Presentation viewer must be disabled. See [here](https://github.com/box/box-content-preview#additional-methods) for more information.
+
+### Controls:
+
+See [document viewer controls](#controls).
+
+## Supported File Extensions
+
+See [document viewer supported extensions](#supported-file-extensions).
+
+## Options
+
+See [document viewer options](#options).
+
+## Events
+
+See [document viewer events](#events).
+
+## Methods
+
+See [document viewer methods](#methods).

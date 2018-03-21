@@ -1,3 +1,164 @@
+<a name="1.35.0"></a>
+## 1.35.0 (2018-03-20)
+
+* Update: box-annotations to v1.0.0 (#727) ([272038c](https://github.com/box/box-content-preview/commit/272038c)), closes [#727](https://github.com/box/box-content-preview/issues/727)
+* Mojito: Update translations (#726) ([ea62af8](https://github.com/box/box-content-preview/commit/ea62af8)), closes [#726](https://github.com/box/box-content-preview/issues/726)
+* New: Watermarking preferences (#721) ([a49f234](https://github.com/box/box-content-preview/commit/a49f234)), closes [#721](https://github.com/box/box-content-preview/issues/721)
+* Use correct property for handle viewer event (#722) ([61fa208](https://github.com/box/box-content-preview/commit/61fa208)), closes [#722](https://github.com/box/box-content-preview/issues/722)
+* Fix: Allow annotation text to be selectable (#719) ([929e5bf](https://github.com/box/box-content-preview/commit/929e5bf)), closes [#719](https://github.com/box/box-content-preview/issues/719)
+* Docs: Fix docs for prefetchViewers() (#718) ([f656064](https://github.com/box/box-content-preview/commit/f656064)), closes [#718](https://github.com/box/box-content-preview/issues/718)
+
+
+
+<a name="1.34.0"></a>
+## 1.34.0 (2018-03-14)
+
+* Update: box-annotations to v0.16.0 (#717) ([8763a4a](https://github.com/box/box-content-preview/commit/8763a4a)), closes [#717](https://github.com/box/box-content-preview/issues/717)
+* Update: Uppercase unsupported file types (#710) ([b3ddc6a](https://github.com/box/box-content-preview/commit/b3ddc6a)), closes [#710](https://github.com/box/box-content-preview/issues/710)
+* Fix: Avoid use of Number.isFinite() (#711) ([0f31aee](https://github.com/box/box-content-preview/commit/0f31aee)), closes [#711](https://github.com/box/box-content-preview/issues/711)
+* Fix: HD gear icon when manually changing quality (#706) ([7c27360](https://github.com/box/box-content-preview/commit/7c27360)), closes [#706](https://github.com/box/box-content-preview/issues/706)
+* Fix: startAt should disable document preload (#714) ([8c38180](https://github.com/box/box-content-preview/commit/8c38180)), closes [#714](https://github.com/box/box-content-preview/issues/714)
+* Chore: Add util tests and fix file tests (#709) ([1102077](https://github.com/box/box-content-preview/commit/1102077)), closes [#709](https://github.com/box/box-content-preview/issues/709)
+* Chore: Adding download reachability checks to other viewers (#705) ([ac73b92](https://github.com/box/box-content-preview/commit/ac73b92)), closes [#705](https://github.com/box/box-content-preview/issues/705)
+* Chore: update status for jobs in saucelabs (#713) ([d133dc0](https://github.com/box/box-content-preview/commit/d133dc0)), closes [#713](https://github.com/box/box-content-preview/issues/713)
+* Chore: Use box-locales to get the locale list (#708) ([cac7279](https://github.com/box/box-content-preview/commit/cac7279)), closes [#708](https://github.com/box/box-content-preview/issues/708)
+* Mojito: Update translations (#707) ([14de771](https://github.com/box/box-content-preview/commit/14de771)), closes [#707](https://github.com/box/box-content-preview/issues/707)
+* Mojito: Update translations (#712) ([7da455b](https://github.com/box/box-content-preview/commit/7da455b)), closes [#712](https://github.com/box/box-content-preview/issues/712)
+
+
+
+<a name="1.33.0"></a>
+# 1.33.0 (2018-03-07)
+
+* Create load timeout error and guard trigger error (#693) ([8f66050](https://github.com/box/box-content-preview/commit/8f66050))
+* Chore: add unit test for prefetching actual viewers (#692) ([a7fc08c](https://github.com/box/box-content-preview/commit/a7fc08c))
+* Chore: Adding download reachability checks to Downloads, Document and Image Viewers (#669) ([6468d63](https://github.com/box/box-content-preview/commit/6468d63))
+* Chore: support for numeric file id (#695) ([040d148](https://github.com/box/box-content-preview/commit/040d148))
+* Chore: use handViewerMetrics() to log successful/failed preview (#700) ([621ab20](https://github.com/box/box-content-preview/commit/621ab20))
+* Fix: move startAt from constructor to setup (#690) ([164e036](https://github.com/box/box-content-preview/commit/164e036))
+* Fix: Polyfill Reflect.construct and Array.from for IE11 (#694) ([3f136a7](https://github.com/box/box-content-preview/commit/3f136a7))
+* Fix: Preview error viewer in platform and IE11 (#696) ([cc09a61](https://github.com/box/box-content-preview/commit/cc09a61))
+* Fix: Removing reliance on String includes (#699) ([6724275](https://github.com/box/box-content-preview/commit/6724275))
+* Update: box-annotations to v0.15.0 (#704) ([b1a0e03](https://github.com/box/box-content-preview/commit/b1a0e03))
+* Upgrade: shaka player to 2.3.3 (#703) ([de8d73f](https://github.com/box/box-content-preview/commit/de8d73f))
+* New: timestamp unit for startAt (#691) ([79ec9da](https://github.com/box/box-content-preview/commit/79ec9da))
+* Mojito: Update translations (#697) ([4d43624](https://github.com/box/box-content-preview/commit/4d43624))
+* Mojito: Update translations (#701) ([bd97236](https://github.com/box/box-content-preview/commit/bd97236))
+
+
+
+<a name="1.32.0"></a>
+# 1.32.0 (2018-02-28)
+
+* Update: box-annotations to v0.14.0 (#689) ([b789807](https://github.com/box/box-content-preview/commit/b789807))
+* Update: Change undownloadable error message (#681) ([fea0cbe](https://github.com/box/box-content-preview/commit/fea0cbe))
+* Update: Modify file info retry logic (#675) ([565f675](https://github.com/box/box-content-preview/commit/565f675))
+* Mojito: Update translations (#683) ([aeae547](https://github.com/box/box-content-preview/commit/aeae547))
+* Mojito: Update translations (#688) ([d13b39b](https://github.com/box/box-content-preview/commit/d13b39b))
+* New: startAt file option support for media and document viewers (#663) ([34e7e37](https://github.com/box/box-content-preview/commit/34e7e37))
+* Fix: Downgrade pdf.js (#687) ([018f71c](https://github.com/box/box-content-preview/commit/018f71c))
+* Fix: filmstrip on previously played video (#680) ([d701f65](https://github.com/box/box-content-preview/commit/d701f65))
+* Chore: Adding yarn install before common package.json scripts (#682) ([5e8bacc](https://github.com/box/box-content-preview/commit/5e8bacc))
+* Chore: Allow viewers to emit metrics (#679) ([4ed0168](https://github.com/box/box-content-preview/commit/4ed0168))
+* Chore: Refactor preview errors (#674) ([ee559fc](https://github.com/box/box-content-preview/commit/ee559fc))
+
+
+
+<a name="1.31.0"></a>
+# 1.31.0 (2018-02-20)
+
+* Release: 1.31.0 ([be3d597](https://github.com/box/box-content-preview/commit/be3d597))
+* Release: 1.32.0 ([18add25](https://github.com/box/box-content-preview/commit/18add25))
+* Mojito: Update translations (#656) ([8f823e0](https://github.com/box/box-content-preview/commit/8f823e0))
+* Mojito: Update translations (#672) ([45e17df](https://github.com/box/box-content-preview/commit/45e17df))
+* Update: Add un-downloadable error case (#667) ([28a64aa](https://github.com/box/box-content-preview/commit/28a64aa))
+* Update: Rename `pauseRequireJS` option to `fixDependencies` (#631) ([77fa2e2](https://github.com/box/box-content-preview/commit/77fa2e2))
+* Chore: change travis notifications (#661) ([efe8b04](https://github.com/box/box-content-preview/commit/efe8b04))
+* Chore: modify email for travis notifications (#664) ([120adc9](https://github.com/box/box-content-preview/commit/120adc9))
+* Chore: pass file id to RepStatus for easier timers (#660) ([6bfb193](https://github.com/box/box-content-preview/commit/6bfb193))
+* Chore: update readme and changlog to reflect correct versions (#671) ([f5bbc39](https://github.com/box/box-content-preview/commit/f5bbc39))
+* Fix: define check (#668) ([2edc0ff](https://github.com/box/box-content-preview/commit/2edc0ff))
+* Fix: markdown ul and ol css overrides (#651) ([822a98c](https://github.com/box/box-content-preview/commit/822a98c))
+* Upgrade: pdf.js 2.0.363 (#659) ([754faa4](https://github.com/box/box-content-preview/commit/754faa4))
+* Upgrade: Shaka Player 2.3.2 (#657) ([58f15cf](https://github.com/box/box-content-preview/commit/58f15cf))
+* Revert "Chore: modify email for travis notifications (#664)" (#666) ([1a5c04b](https://github.com/box/box-content-preview/commit/1a5c04b))
+* Docs: Add documentation for singlePageViewer (#662) ([78a0b52](https://github.com/box/box-content-preview/commit/78a0b52))
+
+
+
+<a name="1.30.0"></a>
+# 1.30.0 (2018-02-13)
+
+* Update: box-annotations to v0.13.0 (#655) ([ebeb0fc](https://github.com/box/box-content-preview/commit/ebeb0fc))
+* New: Emit preview metric and error messages (#648) ([d5606d1](https://github.com/box/box-content-preview/commit/d5606d1))
+* Revert "Chore: Add download reachability checks to Document and Image viewers (#611)" (#654) ([ddcbdbb](https://github.com/box/box-content-preview/commit/ddcbdbb))
+* Mojito: Update translations (#642) ([ad4a4ff](https://github.com/box/box-content-preview/commit/ad4a4ff))
+* Mojito: Update translations (#652) ([fa6e736](https://github.com/box/box-content-preview/commit/fa6e736))
+* Chore: add config for saucelabs naming (#638) ([beee7ea](https://github.com/box/box-content-preview/commit/beee7ea))
+* Chore: Add download reachability checks to Document and Image viewers (#611) ([dd259b0](https://github.com/box/box-content-preview/commit/dd259b0))
+* Chore: add promise polyfill to functional tests (#644) ([6671431](https://github.com/box/box-content-preview/commit/6671431))
+* Chore: add retries to functional tests (#646) ([fe5ebdc](https://github.com/box/box-content-preview/commit/fe5ebdc))
+* Chore: change functional tests to keep browser state between tests (#645) ([e68af74](https://github.com/box/box-content-preview/commit/e68af74))
+* Chore: functional test framework using CodeceptJS (#628) ([8cab696](https://github.com/box/box-content-preview/commit/8cab696))
+* Chore: modify browser in codecept config (#643) ([ce3d50c](https://github.com/box/box-content-preview/commit/ce3d50c))
+* Chore: Removing soon to be deprecated JWT addon in travis (#637) ([46d7720](https://github.com/box/box-content-preview/commit/46d7720))
+* Chore: Replace slack notifications with email (#649) ([8d8cb0a](https://github.com/box/box-content-preview/commit/8d8cb0a))
+* Chore: update functional tests to add mobile tag (#639) ([9d2e5be](https://github.com/box/box-content-preview/commit/9d2e5be))
+* Chore: update node version in development setup (#635) ([48ae594](https://github.com/box/box-content-preview/commit/48ae594))
+* Chore: update travis config for saucelabs (#647) ([c15c454](https://github.com/box/box-content-preview/commit/c15c454))
+* Fix: remove filesystem helper from codecept config (#636) ([fd1fc62](https://github.com/box/box-content-preview/commit/fd1fc62))
+
+
+
+<a name="1.29.0"></a>
+# 1.29.0 (2018-02-06)
+
+* Update: Add annotation button strings for localizing (#623) ([ed63a02](https://github.com/box/box-content-preview/commit/ed63a02))
+* Update: box-annotations to v0.11.1 (#620) ([149f1b6](https://github.com/box/box-content-preview/commit/149f1b6))
+* Update: box-annotations to v0.12.0 (#632) ([be4a532](https://github.com/box/box-content-preview/commit/be4a532))
+* Chore: No longer silently handle errors in callbacks (#626) ([7d4146b](https://github.com/box/box-content-preview/commit/7d4146b))
+* Chore: Refactor lodash (#627) ([e6297a7](https://github.com/box/box-content-preview/commit/e6297a7))
+* New: Add in SinglePageViewer for pdfs (#606) ([1ad415c](https://github.com/box/box-content-preview/commit/1ad415c))
+* New: Option to disable `preview` event log (#630) ([79c0290](https://github.com/box/box-content-preview/commit/79c0290)), closes [#471](https://github.com/box/box-content-preview/issues/471)
+* New: Support previews of non-current file versions (#608) ([e7e154c](https://github.com/box/box-content-preview/commit/e7e154c)), closes [#570](https://github.com/box/box-content-preview/issues/570)
+* Fix: Annotations upgrade script (#613) ([9d086a9](https://github.com/box/box-content-preview/commit/9d086a9))
+* Fix: Bind close method in DocFindBar (#615) ([faac9c0](https://github.com/box/box-content-preview/commit/faac9c0)), closes [#615](https://github.com/box/box-content-preview/issues/615)
+* Fix: Generate i18n json files before running prod webpack build (#616) ([fbdeb78](https://github.com/box/box-content-preview/commit/fbdeb78))
+* Fix: No longer account for header above notification wrapper (#621) ([d29f320](https://github.com/box/box-content-preview/commit/d29f320))
+* Fix: use getBoundingClientRect in settings menu to prevent scrollbar when zoomed (#622) ([943269c](https://github.com/box/box-content-preview/commit/943269c))
+* Mojito: Update translations (#625) ([01b7d83](https://github.com/box/box-content-preview/commit/01b7d83))
+
+
+
+<a name="1.28.0"></a>
+# 1.28.0 (2018-01-31)
+
+* Update: box-annotations to v0.11.0 (#612) ([cb281a6](https://github.com/box/box-content-preview/commit/cb281a6))
+* Chore: Add safety check in util.replaceHeader() (#610) ([3a47c2e](https://github.com/box/box-content-preview/commit/3a47c2e))
+* Chore: Allow notifications to persist (#605) ([e8992c7](https://github.com/box/box-content-preview/commit/e8992c7))
+* Chore: remove useless event unbinding (#604) ([618f106](https://github.com/box/box-content-preview/commit/618f106))
+* Fix: Image viewer flickering in IE11 during reset zoom (#594) ([d43094f](https://github.com/box/box-content-preview/commit/d43094f))
+* Fix: Prevent navigation on empty collections (#607) ([217fbce](https://github.com/box/box-content-preview/commit/217fbce))
+* Mojito: Update translations (#602) ([fd711bb](https://github.com/box/box-content-preview/commit/fd711bb))
+
+
+
+<a name="1.27.0"></a>
+# 1.27.0 (2018-01-24)
+
+* Event names into separate file (#589) ([3805904](https://github.com/box/box-content-preview/commit/3805904))
+* Fix settings menu title cut off by scrollbar (#599) ([cdb627e](https://github.com/box/box-content-preview/commit/cdb627e)), closes [#599](https://github.com/box/box-content-preview/issues/599)
+* Update README.md ([e590ff9](https://github.com/box/box-content-preview/commit/e590ff9))
+* Update: box-annotations to v0.10.0 (#601) ([a2397ce](https://github.com/box/box-content-preview/commit/a2397ce))
+* Fix: Disable annotations if user has neither annotate nor view permissions (#598) ([d8c4ebd](https://github.com/box/box-content-preview/commit/d8c4ebd))
+* Fix: mobile audio controls overlap with navigation (#590) ([a7ed4fc](https://github.com/box/box-content-preview/commit/a7ed4fc))
+* Fix: Properly binding imageViewer.updatePannability() (#600) ([e18aeb6](https://github.com/box/box-content-preview/commit/e18aeb6))
+* Docs: Add self-hosting instructions to README.md (#597) ([56cbb11](https://github.com/box/box-content-preview/commit/56cbb11))
+* Mojito: Update translations (#596) ([fd635b2](https://github.com/box/box-content-preview/commit/fd635b2))
+* New: Specific error messages for unsupported/tariff restricted files (#593) ([941070e](https://github.com/box/box-content-preview/commit/941070e))
+
+
+
 <a name="1.26.0"></a>
 # 1.26.0 (2018-01-18)
 

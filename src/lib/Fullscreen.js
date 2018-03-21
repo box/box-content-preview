@@ -28,7 +28,7 @@ class Fullscreen extends EventEmitter {
     }
 
     /**
-     * Binds DOM listeners for Fullscreen.
+     * Unbinds DOM listeners for Fullscreen.
      *
      * @protected
      * @return {void}

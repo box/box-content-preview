@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import RepStatus from '../RepStatus';
 import * as util from '../util';
+import { LOAD_METRIC } from '../events';
+import Timer from '../Timer';
+import { STATUS_SUCCESS } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let repStatus;
@@ -9,6 +12,7 @@ const STATUS_UPDATE_INTERVAL_MS = 2000;
 
 describe('lib/RepStatus', () => {
     let rep;
+    const fileId = '12345';
 
     beforeEach(() => {
         rep = {
@@ -21,7 +25,8 @@ describe('lib/RepStatus', () => {
         const logger = () => {};
         repStatus = new RepStatus({
             representation: rep,
-            logger
+            logger,
+            fileId
         });
     });
 
@@ -33,6 +38,8 @@ describe('lib/RepStatus', () => {
         }
 
         repStatus = null;
+
+        Timer.reset();
     });
 
     describe('getStatus()', () => {
@@ -74,7 +81,7 @@ describe('lib/RepStatus', () => {
             });
 
             expect(repStatus.representation).to.deep.equal(rep);
-            expect(repStatus.logger).to.be.an.object;
+            expect(repStatus.logger).to.be.a('object');
             expect(repStatus.infoUrl).to.equal(infoUrl);
             expect(repStatus.promise).to.be.a.promise;
         });
@@ -82,7 +89,7 @@ describe('lib/RepStatus', () => {
 
     describe('destroy()', () => {
         it('should clear the status timeout', () => {
-            sandbox.mock(window).expects('clearTimeout').withArgs(repStatus.statusTimeout);
+            sandbox.mock(window).expects('clearTimeout');
             repStatus.destroy();
         });
     });
@@ -101,8 +108,6 @@ describe('lib/RepStatus', () => {
                     }
                 })
             );
-
-            sandbox.mock(window).expects('clearTimeout').withArgs(repStatus.statusTimeout);
 
             return repStatus.updateStatus().then(() => {
                 expect(repStatus.representation.status.state).to.equal(state);
@@ -134,6 +139,13 @@ describe('lib/RepStatus', () => {
             repStatus.infoUrl = '';
             expect(repStatus.updateStatus()).to.be.instanceof(Promise);
         });
+
+        it('should start a convert time Timer', () => {
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            repStatus.updateStatus();
+
+            expect(Timer.get(tag)).to.exist;
+        });
     });
 
     describe('handleResponse()', () => {
@@ -143,31 +155,43 @@ describe('lib/RepStatus', () => {
             repStatus.updateStatus = () => {};
         });
 
-        it('should reject with the refresh message if the rep status is error', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_refresh'));
+        it('should reject with the refresh message if the rep status is error', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_refresh'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the protected message if the rep status is error due to a password protected PDF', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_password_protected'));
+        it('should reject with the protected message if the rep status is error due to a password protected PDF', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_password_protected'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_password_protected';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the try again message if the rep status is error due to unavailability', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_try_again_later'));
+        it('should reject with the try again message if the rep status is error due to unavailability', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_try_again_later'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_try_again_later';
 
             repStatus.handleResponse();
         });
 
-        it('should reject with the unsupported format message if the rep status is error due a bad file', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_bad_file'));
+        it('should reject with the unsupported format message if the rep status is error due a bad file', (done) => {
+            sandbox.mock(repStatus).expects('reject').callsFake((err) => {
+                expect(err.displayMessage).to.equal(__('error_bad_file'));
+                done();
+            });
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_unsupported_format';
 
@@ -210,6 +234,16 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
             clock.tick(STATUS_UPDATE_INTERVAL_MS + 1);
             clock.restore();
+        });
+
+        it('should stop a convert time Timer on success converting', () => {
+            repStatus.representation.status.state = STATUS_SUCCESS;
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            Timer.start(tag);
+            repStatus.handleResponse();
+
+            // Elapsed will not exist if stop isn't called
+            expect(Timer.get(tag).elapsed).to.exist;
         });
     });
 

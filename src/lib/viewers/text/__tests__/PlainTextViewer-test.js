@@ -209,12 +209,12 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const getPromise = Promise.resolve(someText);
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'finishLoading');
-            text.options.file.size = 196608 + 1; // 192KB + 1
+            text.options.file.size = 196608 + 1; // 192KB + 1;
 
-            text.postLoad();
+            const promise = text.postLoad();
 
-            return getPromise.then(() => {
-                expect(text.finishLoading).to.be.calledWith(`${someText}...`, false);
+            return promise.then(() => {
+                expect(text.finishLoading).to.be.called;
             });
         });
 
@@ -226,10 +226,36 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
 
+            const promise = text.postLoad();
+
+            return promise.then(() => {
+                expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
+            });
+        });
+
+        it('should invoke startLoadTimer()', () => {
+            sandbox.stub(text, 'startLoadTimer');
+            sandbox.stub(util, 'get').returns(Promise.resolve(''));
+
+            const someText = 'blah';
+            const getPromise = Promise.resolve(someText);
+
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
+                expect(text.startLoadTimer).to.be.called;
+            });
+        });
+
+        it('should handle a download error', () => {
+            const getPromise = Promise.reject();
+            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(text, 'handleDownloadError');
+
+            const promise = text.postLoad();
+
+            return promise.catch(() => {
+                expect(text.handleDownloadError).to.be.called;
             });
         });
     });
@@ -300,21 +326,24 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         });
 
         it('should setup the print iframe', () => {
+            const appendStub = sandbox.stub();
+
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub());
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: sandbox.stub()
+                        appendChild: appendStub
                     }
                 }
             });
             text.options.location = 'en-US';
+            sandbox.stub(window, 'setTimeout');
 
             text.preparePrint(['blah']);
 
             expect(util.createAssetUrlCreator).to.be.calledWith(text.options.location);
             expect(util.openContentInsideIframe).to.be.calledWith(text.textEl.outerHTML);
-            expect(text.printframe.contentDocument.head.appendChild).to.be.called.once;
+            expect(appendStub).to.be.called;
         });
 
         it('should enable printing via print popup after a delay', () => {
