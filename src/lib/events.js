@@ -21,6 +21,7 @@ export const ERROR_CODE = {
     BAD_INPUT: 'error_bad_input',
     LOAD_ANNOTATIONS: 'error_load_annotations',
     LOAD_ASSET: 'error_load_asset',
+    LOAD_CSV: 'error_load_csv',
     LOAD_DOCUMENT: 'error_load_document',
     LOAD_MEDIA: 'error_load_media',
     LOAD_VIEWER: 'error_load_viewer',

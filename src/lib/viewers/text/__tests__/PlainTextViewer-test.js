@@ -209,12 +209,12 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const getPromise = Promise.resolve(someText);
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'finishLoading');
-            text.options.file.size = 196608 + 1; // 192KB + 1
+            text.options.file.size = 196608 + 1; // 192KB + 1;
 
-            text.postLoad();
+            const promise = text.postLoad();
 
-            return getPromise.then(() => {
-                expect(text.finishLoading).to.be.calledWith(`${someText}...`, false);
+            return promise.then(() => {
+                expect(text.finishLoading).to.be.called;
             });
         });
 
@@ -226,9 +226,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
 
-            text.postLoad();
+            const promise = text.postLoad();
 
-            return getPromise.then(() => {
+            return promise.then(() => {
                 expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
             });
         });
@@ -244,6 +244,18 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             return getPromise.then(() => {
                 expect(text.startLoadTimer).to.be.called;
+            });
+        });
+
+        it('should handle a download error', () => {
+            const getPromise = Promise.reject();
+            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(text, 'handleDownloadError');
+
+            const promise = text.postLoad();
+
+            return promise.catch(() => {
+                expect(text.handleDownloadError).to.be.called;
             });
         });
     });

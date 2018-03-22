@@ -234,9 +234,16 @@ class MediaBaseViewer extends BaseViewer {
         // eslint-disable-next-line
         console.error(err);
 
-        // Display a generic error message but log the real one
-        const error = new PreviewError(ERROR_CODE.LOAD_MEDIA, __('error_refresh'), {}, err.message);
-        this.emit('error', error);
+        const errorCode = getProp(err, 'target.error.code');
+        const errorDetails = errorCode ? { error_code: errorCode } : {};
+
+        const error = new PreviewError(ERROR_CODE.LOAD_MEDIA, __('error_refresh'), errorDetails);
+
+        if (!this.isLoaded()) {
+            this.handleDownloadError(error, this.mediaUrl);
+        } else {
+            this.triggerError(error);
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
+import Location from '../../Location';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
@@ -179,7 +180,7 @@ class OfficeViewer extends BaseViewer {
             formEl.submit();
 
             // Tell Office Online that we are ready to receive messages
-            iframeEl.contentWindow.postMessage(MESSAGE_HOST_READY, window.location.origin);
+            iframeEl.contentWindow.postMessage(MESSAGE_HOST_READY, Location.getOrigin());
         } else {
             iframeEl.src = this.setupRunmodeURL(appHost, file.id, sharedLink);
         }
@@ -280,7 +281,7 @@ class OfficeViewer extends BaseViewer {
     createFormElement(apiHost, fileId, sharedLink, locale) {
         // Setting the action URL
         const WOPISrc = this.setupWOPISrc(apiHost, fileId, sharedLink);
-        const origin = { origin: window.location.origin };
+        const origin = { origin: Location.getOrigin() };
         const formEl = this.containerEl.appendChild(document.createElement('form'));
         // We pass our origin in the sessionContext so that Microsoft will pass
         // this to the checkFileInfo endpoint. From their we can set it as the
