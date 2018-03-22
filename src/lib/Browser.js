@@ -3,7 +3,7 @@ const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
 const EXT_LOSE_CONTEXT = 'WEBGL_lose_context';
-const EVENT_WEBGL_CONEXT_LOST = 'webglcontextlost';
+const EVENT_WEBGL_CONTEXT_LOST = 'webglcontextlost';
 
 let { userAgent } = navigator;
 let name;
@@ -184,7 +184,7 @@ class Browser {
         if (!gl) {
             const canvas = document.createElement('canvas');
             // Should stop 'Rats! WebGL hit a snag' error when checking WebGL support
-            canvas.addEventListener(EVENT_WEBGL_CONEXT_LOST, (e) => {
+            canvas.addEventListener(EVENT_WEBGL_CONTEXT_LOST, (e) => {
                 /* istanbul ignore next */
                 e.preventDefault();
                 /* istanbul ignore next */
@@ -353,10 +353,8 @@ class Browser {
             swf: Browser.hasFlash(),
             svg: Browser.hasSVG(),
             mse: Browser.hasMSE(),
-            webgl: Browser.hasWebGL(),
             mp3: Browser.canPlayMP3(),
             dash: Browser.canPlayDash(),
-            box3d: Browser.supportsModel3D(),
             h264: {
                 baseline: Browser.canPlayH264Baseline(),
                 main: Browser.canPlayH264Main(),
