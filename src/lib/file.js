@@ -298,9 +298,8 @@ export function canDownload(file, previewOptions) {
 
     // Can download watermarked representation if base check passes, user has preview permissions, Preview is configured
     // to force watermarked downloads, and the file is watermarked
-    const canDownloadWatermarked = passBaseDownloadCheck &&
-        hasPreviewPermission &&
-        shouldDownloadWM(file, previewOptions);
+    const canDownloadWatermarked =
+        passBaseDownloadCheck && hasPreviewPermission && shouldDownloadWM(file, previewOptions);
 
     return canDownloadOriginal || canDownloadWatermarked;
 }
