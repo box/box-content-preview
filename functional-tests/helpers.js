@@ -2,7 +2,9 @@ const {
     SELECTOR_BOX_PREVIEW,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOADED,
-    SELECTOR_BOX_PREVIEW_NAV_VISIBLE
+    SELECTOR_BOX_PREVIEW_NAV_VISIBLE,
+    FILE_ID_VIDEO,
+    FILE_ID_DOC
 } = require('./constants');
 
 const { BROWSER_PLATFORM } = process.env;
@@ -109,6 +111,15 @@ exports.disableDash = (I) => {
             fileOptions: fileOptions // eslint-disable-line object-shorthand
         });
     }, FILE_ID_VIDEO);
+};
+exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
+    I.executeScript(
+        function(previewFileId, previewOptions) {
+            window.showPreview(previewFileId, previewOptions);
+        },
+        fileId,
+        options
+    );
 };
 /* eslint-enable prefer-arrow-callback, no-var */
 

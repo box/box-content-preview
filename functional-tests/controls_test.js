@@ -1,5 +1,4 @@
 const {
-    SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_DOC_CURRENT_PAGE,
     SELECTOR_BOX_PREVIEW_ZOOM_OUT_BUTTON,
     SELECTOR_DOC_FIRST_PAGE,
@@ -13,7 +12,7 @@ const {
 } = require('./constants');
 const assert = require('assert');
 
-const { makeNavAppear, zoom, getIsFullscreen } = require('./helpers');
+const { makeNavAppear, zoom, getIsFullscreen, showPreview, waitForLoad } = require('./helpers');
 
 const { CI } = process.env;
 
@@ -21,7 +20,8 @@ Feature('Controls', { retries: CI ? 3 : 0 });
 
 Before((I) => {
     I.amOnPage('/functional-tests/index.html');
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+    showPreview(I);
+    waitForLoad(I);
 });
 
 Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {

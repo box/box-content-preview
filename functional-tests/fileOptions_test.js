@@ -14,7 +14,7 @@ const {
     FILE_ID_MP3
 } = require('./constants');
 
-const { navigateToNextItem, makeNavAppear, navigateToPrevItem, waitForLoad } = require('./helpers');
+const { navigateToNextItem, makeNavAppear, navigateToPrevItem, waitForLoad, showPreview } = require('./helpers');
 
 const { CI } = process.env;
 const DOC_START = '2';
@@ -27,32 +27,59 @@ Feature('File Options', { retries: CI ? 3 : 0 });
 
 Before((I) => {
     I.amOnPage('/functional-tests/index.html');
-    /* eslint-disable */
-    I.executeScript(function() {
-        var fileOptions = {};
-        fileOptions[FILE_ID_DOC] = {
+
+    const fileOptions = {
+        [FILE_ID_DOC]: {
             startAt: {
                 value: 2,
                 unit: 'pages'
             }
-        };
-        fileOptions[FILE_ID_VIDEO] = {
+        },
+        [FILE_ID_VIDEO]: {
             startAt: {
                 value: 15,
                 unit: 'seconds'
             }
-        };
-        fileOptions[FILE_ID_MP3] = {
+        },
+        [FILE_ID_MP3]: {
             startAt: {
                 value: 3,
                 unit: 'seconds'
             }
-        };
-        window.showPreview(FILE_ID_DOC, {
-            collection: [FILE_ID_DOC, FILE_ID_VIDEO, FILE_ID_MP3],
-            fileOptions: fileOptions
-        });
+        }
+    };
+
+    showPreview(I, FILE_ID_DOC, {
+        collection: [FILE_ID_DOC, FILE_ID_VIDEO, FILE_ID_MP3],
+        fileOptions
     });
+
+    /* eslint-disable */
+    // I.executeScript(function() {
+    //     var fileOptions = {};
+    //     fileOptions[FILE_ID_DOC] = {
+    //         startAt: {
+    //             value: 2,
+    //             unit: 'pages'
+    //         }
+    //     };
+    //     fileOptions[FILE_ID_VIDEO] = {
+    //         startAt: {
+    //             value: 15,
+    //             unit: 'seconds'
+    //         }
+    //     };
+    //     fileOptions[FILE_ID_MP3] = {
+    //         startAt: {
+    //             value: 3,
+    //             unit: 'seconds'
+    //         }
+    //     };
+    //     window.showPreview(FILE_ID_DOC, {
+    //         collection: [FILE_ID_DOC, FILE_ID_VIDEO, FILE_ID_MP3],
+    //         fileOptions: fileOptions
+    //     });
+    // });
     /* eslint-enable */
 
     I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
