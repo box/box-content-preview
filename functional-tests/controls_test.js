@@ -78,7 +78,8 @@ Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safa
     makeNavAppear(I);
     I.click(SELECTOR_BOX_PREVIEW_PAGE_NUM_WRAPPER);
     I.waitForVisible(SELECTOR_BOX_PREVIEW_NUM_INPUT);
-    I.fillField(SELECTOR_BOX_PREVIEW_NUM_INPUT, '2');
+    I.click(SELECTOR_BOX_PREVIEW_NUM_INPUT);
+    I.pressKey('2');
     I.pressKey('Enter');
     I.waitForVisible(SELECTOR_BOX_PREVIEW_NEXT_PAGE);
     I.seeElement(SECOND_PAGE);
