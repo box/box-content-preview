@@ -16,18 +16,17 @@
     <script src="../dist/dev/en-US/preview.js"></script>
 
 </head>
+
 <body>
     <div class="preview-container"></div>
     <script>
         var ACCESS_TOKEN = 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP';
         var preview = new Box.Preview();
 
-        var showPreview = function(fileId, options = {}) {
+        function showPreview(fileId, options = {}) {
             options.container = '.preview-container';
             preview.show(fileId, ACCESS_TOKEN, options);
-        } 
-
-
+        }
     </script>
 </body>
 

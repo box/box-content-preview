@@ -1,7 +1,6 @@
 const {
     SELECTOR_BOX_PREVIEW,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
-    SELECTOR_BOX_PREVIEW_ERROR,
     SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_NAV_VISIBLE
 } = require('./constants');
@@ -93,6 +92,23 @@ exports.navigateToPrevItem = (I) => {
         window.preview.navigateLeft();
     });
     I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
+};
+exports.disableDash = (I) => {
+    I.executeScript(function(videoId) {
+        var fileOptions = {};
+        window.preview.disableViewers('Dash');
+        fileOptions[videoId] = {
+            startAt: {
+                value: 10,
+                unit: 'seconds'
+            }
+        };
+
+        window.showPreview(videoId, {
+            container: '.preview-container',
+            fileOptions: fileOptions // eslint-disable-line object-shorthand
+        });
+    }, FILE_ID_VIDEO);
 };
 /* eslint-enable prefer-arrow-callback, no-var */
 

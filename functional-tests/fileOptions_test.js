@@ -1,12 +1,17 @@
+import { disableDash } from './helpers';
+
 const {
     SELECTOR_MEDIA_TIMESTAMP,
     SELECTOR_DOC_CURRENT_PAGE,
-    SELECTOR_BOX_PREVIEW_LOGO,
+    SELECTOR_BOX_PREVIEW_LOADED,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_DOC,
     SELECTOR_BOX_PREVIEW_MP3,
     SELECTOR_BOX_PREVIEW_DASH,
-    SELECTOR_BOX_PREVIEW_MP4
+    SELECTOR_BOX_PREVIEW_MP4,
+    FILE_ID_DOC,
+    FILE_ID_VIDEO,
+    FILE_ID_MP3
 } = require('./constants');
 
 const { navigateToNextItem, makeNavAppear, navigateToPrevItem, waitForLoad } = require('./helpers');
@@ -21,9 +26,36 @@ const SELECTOR_VIDEO = 'video';
 Feature('File Options', { retries: CI ? 3 : 0 });
 
 Before((I) => {
-    I.amOnPage('/functional-tests/file-options.html');
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOGO);
-    waitForLoad(I);
+    I.amOnPage('/functional-tests/index.html');
+    /* eslint-disable */
+    I.executeScript(function() {
+        var fileOptions = {};
+        fileOptions[FILE_ID_DOC] = {
+            startAt: {
+                value: 2,
+                unit: 'pages'
+            }
+        };
+        fileOptions[FILE_ID_VIDEO] = {
+            startAt: {
+                value: 15,
+                unit: 'seconds'
+            }
+        };
+        fileOptions[FILE_ID_MP3] = {
+            startAt: {
+                value: 3,
+                unit: 'seconds'
+            }
+        };
+        window.showPreview(FILE_ID_DOC, {
+            collection: [FILE_ID_DOC, FILE_ID_VIDEO, FILE_ID_MP3],
+            fileOptions: fileOptions
+        });
+    });
+    /* eslint-enable */
+
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
     I.waitForElement(SELECTOR_BOX_PREVIEW_DOC);
 });
 
@@ -54,13 +86,10 @@ Scenario(
         I.seeTextEquals(MP3_START, SELECTOR_MEDIA_TIMESTAMP);
 
         // video (mp4)
-        /* eslint-disable prefer-arrow-callback */
-        I.executeScript(function() {
-            window.disableDash();
-        });
+        disableDash(I);
+
         I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
-        /* eslint-enable prefer-arrow-callback */
-        waitForLoad(I);
+        I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
 
         makeNavAppear(I, SELECTOR_VIDEO);
@@ -87,13 +116,9 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', { re
     // mp3 is not supported :(
     navigateToPrevItem(I);
     // video (mp4)
-    /* eslint-disable prefer-arrow-callback */
-    waitForLoad(I);
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
 
-    I.executeScript(function() {
-        window.disableDash();
-    });
-    /* eslint-enable prefer-arrow-callback */
+    disableDash(I);
 
     waitForLoad(I);
     I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
@@ -102,3 +127,5 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', { re
     I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
     I.seeTextEquals(MP4_START, SELECTOR_MEDIA_TIMESTAMP);
 });
+
+Scenario();

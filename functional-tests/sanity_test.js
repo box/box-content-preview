@@ -1,6 +1,6 @@
+const { FILE_ID_DOC, SELECTOR_BOX_PREVIEW_LOADED } = require('./constants');
+
 Feature('Sanity', { retries: 3 });
-const bpLoaded = '.bp-loaded';
-const FILE_ID_DOC = '93392244621';
 
 Before((I) => {
     I.amOnPage('/functional-tests/index.html');
@@ -8,19 +8,13 @@ Before((I) => {
 
 Scenario('Sanity test @ci @chrome @firefox @edge @safari @ie @android @ios', (I) => {
     Before(() => {
-        I.executeScript(() => {
-            window.showPreview(FILE_ID_DOC, {
-                showDownload: true
-            });
+        /* eslint-disable */
+        I.executeScript(function() {
+            window.showPreview(FILE_ID_DOC, {});
         });
+        /* eslint-enable */
     });
-    I.waitForElement(bpLoaded);
-    I.waitForVisible(bpLoaded);
-    I.waitForText('The Content Platform for Your Apps');
-});
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
 
-Scenario('Sanity error test @ci @chrome @firefox @edge @safari @ie @android @ios', (I) => {
-    I.waitForElement(bpLoaded);
-    I.waitForVisible(bpLoaded);
     I.waitForText('The Content Platform for Your Apps');
 });
