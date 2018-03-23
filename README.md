@@ -125,7 +125,7 @@ preview.show(fileId, accessToken, {
 | sharedLink |  | Shared link URL |
 | sharedLinkPassword |  | Shared link password |
 | collection |  | List of file IDs to iterate over for previewing |
-| header | 'light' | String value of `none` or `dark` or `light` that controls header visibility and theme |
+| header | `light` | String value of `none` or `dark` or `light` that controls header visibility and theme |
 | logoUrl |  | URL of logo to show in header |
 | showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details |
 | showDownload | false | Whether download button is shown |
@@ -133,6 +133,8 @@ preview.show(fileId, accessToken, {
 | fixDependencies | false | Temporarily patches AMD to properly load Preview's dependencies. You may need to enable this if your project uses RequireJS |
 | disableEventLog | false | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side) |
 | fileOptions | {} | Mapping of file ID to file-level options. See the file option table below for details |
+| previewWMPref | `any` | String value of `all`, `any`, or `none` that sets how previews of watermarked files behave. See https://community.box.com/t5/Sharing-Content-with-Box/Watermarking-Files/ta-p/30766 for more information about watermarking and https://community.box.com/t5/Collaborate-By-Inviting-Others/Understanding-Collaborator-Permission-Levels/ta-p/144 for more information about permissions and collaboration roles.<br><br>`all` forces watermarked previews. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, no preview is shown.<br><br>`any` is the default watermarking behavior in the Box Web Application. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise.<br><br>`none` forces non-watermarked previews. Users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise. |
+| downloadWM | false | Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked files. If true, users will be able to download watermarked versions of supported file types as long as they have `can_preview` permissions (any collaboration role except for `Uploader`). |
 
 | File Option | Description |
 | --- | --- |

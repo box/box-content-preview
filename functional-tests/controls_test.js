@@ -47,7 +47,7 @@ Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @an
     assert.ok(parseInt(zoomedOutHeight, 10) < parseInt(zoomedInHeight, 10));
 });
 
-Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safari @android @ios @test', function*(I) {
+Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
     const FIRST_PAGE = '#bp-page-1';
     const SECOND_PAGE = '#bp-page-2';
 
