@@ -48,28 +48,12 @@ export const CODE_EXTENSIONS = [
     'yaml'
 ];
 
+export const PRESENTATION_EXTENSIONS = ['gslide', 'gslides', 'odp', 'ppt', 'pptx'];
+
 export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
     .concat(HTML_EXTENSIONS)
-    .concat([
-        'doc',
-        'docx',
-        'gdoc',
-        'gsheet',
-        'gslide',
-        'gslides',
-        'msg',
-        'odp',
-        'ods',
-        'odt',
-        'pdf',
-        'ppt',
-        'pptx',
-        'rtf',
-        'wpd',
-        'xls',
-        'xlsm',
-        'xlsx'
-    ]);
+    .concat(PRESENTATION_EXTENSIONS)
+    .concat(['doc', 'docx', 'gdoc', 'gsheet', 'msg', 'ods', 'odt', 'pdf', 'rtf', 'wpd', 'xls', 'xlsm', 'xlsx']);
 
 export const TXT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS);
 

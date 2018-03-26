@@ -5,7 +5,7 @@ import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
-import { DOCUMENT_EXTENSIONS } from '../../extensions';
+import { DOCUMENT_EXTENSIONS, PRESENTATION_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
 // or the original as a fallback. Additionally, we include multiple entries for the presentation viewer so that it can be
@@ -15,7 +15,7 @@ const VIEWERS = [
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
-        EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx']
+        EXT: PRESENTATION_EXTENSIONS
     },
     {
         NAME: 'Document',
