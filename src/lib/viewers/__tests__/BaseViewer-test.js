@@ -500,7 +500,7 @@ describe('lib/viewers/BaseViewer', () => {
                     sinon.assert.failException;
                 })
                 .catch((error) => {
-                    expect(error).to.equal(sinon.match.error);
+                    expect(error).to.be.an('error');
                     expect(error.message).to.equal('message');
                 });
         });
