@@ -527,9 +527,9 @@ class Box3DRenderer extends EventEmitter {
             if (!this.vrCommonLoadPromise) {
                 if (commonEntities) {
                     this.vrCommonLoadPromise = this.box3d.importEntitiesFromUrl(
-                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${
-                            commonEntities
-                        }/entities.json`,
+                        `${
+                            this.staticBaseURI
+                        }third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`,
                         { isExternal: true }
                     );
                 } else {
@@ -539,9 +539,9 @@ class Box3DRenderer extends EventEmitter {
             if (!this.vrGamepadLoadPromises[controllerName]) {
                 this.vrGamepadLoadPromises[controllerName] = this.vrCommonLoadPromise.then(() => {
                     return this.box3d.importEntitiesFromUrl(
-                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${
-                            controllerName
-                        }/entities.json`,
+                        `${
+                            this.staticBaseURI
+                        }third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`,
                         { isExternal: true }
                     );
                 });

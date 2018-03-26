@@ -1,13 +1,15 @@
 const { SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD, SELECTOR_DOWNLOAD_IFRAME } = require('./constants');
 const { expect } = require('chai');
 
-Feature('Header', { retries: 3 });
+const { CI } = process.env;
+
+Feature('Header', { retries: CI ? 3 : 0 });
 
 Before((I) => {
     I.amOnPage('/functional-tests/index.html');
 });
 
-Scenario('Download the file @ci', function*(I) {
+Scenario('Download the file @ci @chrome @firefox @edge @safari @ie', function*(I) {
     I.waitForVisible(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
     I.click(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
     I.waitForElement(SELECTOR_DOWNLOAD_IFRAME);

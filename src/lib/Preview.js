@@ -13,17 +13,20 @@ import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
+import DownloadReachability from './DownloadReachability';
 import {
     get,
     getProp,
     post,
     decodeKeydown,
-    openUrlInsideIframe,
     getHeaders,
     findScriptLocation,
     appendQueryParams,
     replacePlaceholders,
-    stripAuthFromString
+    stripAuthFromString,
+    isValidFileId,
+    isBoxWebApp,
+    convertWatermarkPref
 } from './util';
 import {
     getURL,
@@ -35,13 +38,14 @@ import {
     uncacheFile,
     isWatermarked,
     getCachedFile,
-    normalizeFileVersion
+    normalizeFileVersion,
+    canDownload,
+    shouldDownloadWM
 } from './file';
 import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
-    PERMISSION_DOWNLOAD,
     PERMISSION_PREVIEW,
     PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
@@ -163,6 +167,7 @@ class Preview extends EventEmitter {
         this.handleFileInfoResponse = this.handleFileInfoResponse.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
         this.handleViewerEvents = this.handleViewerEvents.bind(this);
+        this.handleViewerMetrics = this.handleViewerMetrics.bind(this);
         this.triggerError = this.triggerError.bind(this);
         this.throttledMousemoveHandler = this.getGlobalMousemoveHandler().bind(this);
         this.navigateLeft = this.navigateLeft.bind(this);
@@ -287,13 +292,16 @@ class Preview extends EventEmitter {
         const fileIds = [];
 
         fileOrIds.forEach((fileOrId) => {
-            if (fileOrId && typeof fileOrId === 'string') {
+            if (fileOrId && isValidFileId(fileOrId)) {
                 // String id found in the collection
-                fileIds.push(fileOrId);
-            } else if (fileOrId && typeof fileOrId === 'object' && typeof fileOrId.id === 'string') {
+                fileIds.push(fileOrId.toString());
+            } else if (fileOrId && typeof fileOrId === 'object' && isValidFileId(fileOrId.id)) {
                 // Possible well-formed file object found in the collection
-                fileIds.push(fileOrId.id);
-                files.push(fileOrId);
+                const wellFormedFileObj = Object.assign({}, fileOrId, {
+                    id: fileOrId.id.toString()
+                });
+                fileIds.push(wellFormedFileObj.id);
+                files.push(wellFormedFileObj);
             } else {
                 throw new Error('Bad collection provided!');
             }
@@ -464,7 +472,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
+        if (canDownload(this.file, this.options) && checkFeature(this.viewer, 'print')) {
             this.viewer.print();
         }
     }
@@ -476,13 +484,37 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     download() {
+        const downloadErrorMsg = __('notification_cannot_download');
+        if (!canDownload(this.file, this.options)) {
+            this.ui.showNotification(downloadErrorMsg);
+            return;
+        }
+
+        // Make sure to append any optional query params to requests
         const { apiHost, queryParams } = this.options;
 
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            // Append optional query params
-            const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            get(downloadUrl, this.getRequestHeaders()).then((data) => {
-                openUrlInsideIframe(data.download_url);
+        // If we should download the watermarked representation of the file, generate the representation URL, force
+        // the correct content disposition, and download
+        if (shouldDownloadWM(this.file, this.options)) {
+            const contentUrlTemplate = getProp(this.viewer.getRepresentation(), 'content.url_template');
+            if (!contentUrlTemplate) {
+                this.ui.showNotification(downloadErrorMsg);
+                return;
+            }
+
+            const downloadUrl = appendQueryParams(
+                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.options.viewer.ASSET),
+                queryParams
+            );
+
+            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+
+            // Otherwise, get the content download URL of the original file and download
+        } else {
+            const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+            get(getDownloadUrl, this.getRequestHeaders()).then((data) => {
+                const downloadUrl = appendQueryParams(data.download_url, queryParams);
+                DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
         }
     }
@@ -640,8 +672,8 @@ class Preview extends EventEmitter {
         const fileVersionId = this.getFileOption(fileIdOrFile, FILE_OPTION_FILE_VERSION_ID) || '';
 
         // Check what was passed to preview.show()—string file ID or some file object
-        if (typeof fileIdOrFile === 'string') {
-            const fileId = fileIdOrFile;
+        if (typeof fileIdOrFile === 'string' || typeof fileIdOrFile === 'number') {
+            const fileId = fileIdOrFile.toString();
 
             // If we want to load by file version ID, use that as key for cache
             const cacheKey = fileVersionId ? { fileVersionId } : { fileId };
@@ -747,6 +779,9 @@ class Preview extends EventEmitter {
             this.throttledMousemoveHandler
         );
 
+        // Set up the notification
+        this.ui.setupNotification();
+
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
 
@@ -826,6 +861,25 @@ class Preview extends EventEmitter {
         // (access stats will not be incremented), but content access is still logged server-side for audit purposes
         this.options.disableEventLog = !!options.disableEventLog;
 
+        // Sets how previews of watermarked files behave.
+        // 'all' - Forces watermarked previews of supported file types regardless of collaboration or permission level,
+        //         except for `Uploader`, which cannot preview.
+        // 'any' - The default watermarking behavior in the Box Web Application. If the file type supports
+        //         watermarking, all users except for those collaborated as an `Uploader` will see a watermarked
+        //         preview. If the file type cannot be watermarked, users will see a non-watermarked preview if they
+        //         are at least a `Viewer-Uploader` and no preview otherwise.
+        // 'none' - Forces non-watermarked previews. If the user is not at least a `Viewer-Uploader`, no preview is
+        //          shown.
+        this.options.previewWMPref = options.previewWMPref || 'any';
+
+        // Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked
+        // files. If true, users will be able to download watermarked versions of supported file types as long as they
+        // have preview permissions (any collaboration role except for `Uploader`).
+        this.options.downloadWM = !!options.downloadWM;
+
+        // Options that are applicable to certain file ids
+        this.options.fileOptions = options.fileOptions || {};
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -881,13 +935,20 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
-        const { apiHost, queryParams } = this.options;
+        const { apiHost, previewWMPref, queryParams } = this.options;
+        const params = Object.assign(
+            {
+                watermark_preference: convertWatermarkPref(previewWMPref)
+            },
+            queryParams
+        );
+
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         Timer.start(tag);
 
-        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), queryParams);
+        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
         get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
@@ -928,10 +989,13 @@ class Preview extends EventEmitter {
 
             // If file is not downloadable, trigger an error
             if (file.is_download_available === false) {
-                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), {
-                    linkText: __('link_contact_us'),
-                    linkUrl: SUPPORT_URL
-                });
+                const details = isBoxWebApp()
+                    ? {
+                        linkText: __('link_contact_us'),
+                        linkUrl: SUPPORT_URL
+                    }
+                    : {};
+                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), details);
                 throw error;
             }
 
@@ -987,8 +1051,8 @@ class Preview extends EventEmitter {
             throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
         }
 
-        // Show download button if download permissions exist, options allow, and browser has ability
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        // Show loading download button if user can download
+        if (canDownload(this.file, this.options)) {
             this.ui.showLoadingDownloadButton(this.download);
         }
 
@@ -1005,7 +1069,7 @@ class Preview extends EventEmitter {
             const code = isFileTypeSupported ? ERROR_CODE.ACCOUNT : ERROR_CODE.UNSUPPORTED_FILE_TYPE;
             const message = isFileTypeSupported
                 ? __('error_account')
-                : replacePlaceholders(__('error_unsupported'), [`.${this.file.extension}`]);
+                : replacePlaceholders(__('error_unsupported'), [(this.file.extension || '').toUpperCase()]);
 
             throw new PreviewError(code, message);
         }
@@ -1136,12 +1200,11 @@ class Preview extends EventEmitter {
         // Log now that loading is finished
         this.emitLoadMetrics();
 
-        // Show or hide print/download buttons
-        // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        // Show download and print buttons if user can download
+        if (canDownload(this.file, this.options)) {
             this.ui.showDownloadButton(this.download);
 
-            if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
+            if (checkFeature(this.viewer, 'print')) {
                 this.ui.showPrintButton(this.print);
             }
         }
@@ -1158,6 +1221,11 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
+            // Explicit preview failure
+            this.handleViewerMetrics({
+                event: 'failure'
+            });
+
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
                 window.callPhantom(0);
@@ -1171,6 +1239,11 @@ class Preview extends EventEmitter {
                 viewer: this.viewer,
                 metrics: this.logger.done(this.count),
                 file: this.file
+            });
+
+            // Explicit preview success
+            this.handleViewerMetrics({
+                event: 'success'
             });
 
             // If there wasn't an error and event logging is not disabled, use Events API to log a preview
@@ -1196,9 +1269,6 @@ class Preview extends EventEmitter {
 
         // Hide the loading indicator
         this.ui.hideLoadingIndicator();
-
-        // Set up the notification
-        this.ui.setupNotification();
 
         // Prefetch next few files
         this.prefetchNextFiles();
@@ -1472,7 +1542,13 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchNextFiles() {
-        const { apiHost, queryParams, skipServerUpdate } = this.options;
+        const { apiHost, previewWMPref, queryParams, skipServerUpdate } = this.options;
+        const params = Object.assign(
+            {
+                watermark_preference: convertWatermarkPref(previewWMPref)
+            },
+            queryParams
+        );
 
         // Don't bother prefetching when there aren't more files or we need to skip server update
         if (this.collection.length < 2 || skipServerUpdate) {
@@ -1501,7 +1577,7 @@ class Preview extends EventEmitter {
 
                     // Append optional query params
                     const fileVersionId = this.getFileOption(fileId, FILE_OPTION_FILE_VERSION_ID) || '';
-                    const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), queryParams);
+                    const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
                     get(fileInfoUrl, this.getRequestHeaders(token))

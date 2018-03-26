@@ -1,5 +1,6 @@
+import Browser from './Browser';
 import { getProp, appendQueryParams } from './util';
-import { ORIGINAL_REP_NAME } from './constants';
+import { ORIGINAL_REP_NAME, PERMISSION_DOWNLOAD, PERMISSION_PREVIEW } from './constants';
 
 // List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
@@ -248,4 +249,57 @@ export function getCachedFile(cache, { fileId, fileVersionId }) {
     }
 
     return null;
+}
+
+/**
+ * Check to see if file is a Vera-protected file.
+ *
+ * @public
+ * @param {Object} file - File to check
+ * @return {boolean} Whether file is a Vera-protected HTML file
+ */
+export function isVeraProtectedFile(file) {
+    // Vera protected files will match this regex
+    return /.*\.(vera\..*|vera)\.html/i.test(file.name);
+}
+
+/**
+ * Helper to determine whether we should download the watermarked representation of a file or original.
+ *
+ * @param {Object} file - Box file object
+ * @param {Object} previewOptions - Preview options
+ * @return {boolean} Whether to download watermarked representation or not
+ */
+export function shouldDownloadWM(file, previewOptions) {
+    const { downloadWM } = previewOptions;
+    return downloadWM && isWatermarked(file);
+}
+
+/**
+ * Helper to determine whether a the original or watermarked representation of a file can be downloaded based on
+ * permissions, file status, browser capability, and preview options.
+ *
+ * @param {Object} file - Box file object
+ * @param {Object} previewOptions - Preview options
+ * @return {boolean} Whether file can be downloaded (original OR watermarked representation)
+ */
+export function canDownload(file, previewOptions) {
+    const { is_download_available: isFileDownloadable } = file;
+    const { showDownload } = previewOptions;
+    const hasDownloadPermission = checkPermission(file, PERMISSION_DOWNLOAD);
+    const hasPreviewPermission = checkPermission(file, PERMISSION_PREVIEW);
+
+    // All downloads require that the file is downloadable as reported by the API, Preview is configured to show the
+    // download button, and the browser supports downloads
+    const passBaseDownloadCheck = isFileDownloadable && showDownload && Browser.canDownload();
+
+    // Can download the original file if the base check passes and user has explicit download permissions
+    const canDownloadOriginal = passBaseDownloadCheck && hasDownloadPermission;
+
+    // Can download watermarked representation if base check passes, user has preview permissions, Preview is configured
+    // to force watermarked downloads, and the file is watermarked
+    const canDownloadWatermarked =
+        passBaseDownloadCheck && hasPreviewPermission && shouldDownloadWM(file, previewOptions);
+
+    return canDownloadOriginal || canDownloadWatermarked;
 }

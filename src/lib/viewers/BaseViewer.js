@@ -3,23 +3,26 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+import Browser from '../Browser';
+import DownloadReachability from '../DownloadReachability';
 import {
     getProp,
     appendQueryParams,
     appendAuthParams,
-    getHeaders,
     createContentUrl,
+    getHeaders,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
-    createAssetUrlCreator
+    createAssetUrlCreator,
+    replacePlaceholders
 } from '../util';
-import Browser from '../Browser';
 import {
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -29,7 +32,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -97,6 +100,12 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Whether viewer is being used on a touch device */
     hasTouch;
 
+    /** @property {Object} - Viewer startAt options */
+    startAt;
+
+    /** @property {boolean} - Has the viewer retried downloading the content */
+    hasRetriedContentDownload = false;
+
     /**
      * [constructor]
      *
@@ -136,6 +145,7 @@ class BaseViewer extends EventEmitter {
         if (this.options.file) {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
+            this.startAt = getProp(this.options, `fileOptions.${this.options.file.id}.${FILE_OPTION_START}`, {});
         }
 
         this.finishLoadingSetup();
@@ -256,8 +266,10 @@ class BaseViewer extends EventEmitter {
                 this.resetLoadTimeout();
                 return;
             }
+
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.triggerError();
+                const error = new PreviewError(ERROR_CODE.VIEWER_LOAD_TIMEOUT, __('error_refresh'));
+                this.triggerError(error);
             }
         }, this.loadTimeout);
     }
@@ -287,18 +299,48 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Handles a download error when using a non default host.
+     *
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.hasRetriedContentDownload) {
+            this.triggerError(err);
+            return;
+        }
+
+        if (DownloadReachability.isCustomDownloadHost(downloadURL)) {
+            DownloadReachability.setDownloadReachability(downloadURL).then((isBlocked) => {
+                if (isBlocked) {
+                    this.emitMetric(
+                        DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED,
+                        DownloadReachability.getHostnameFromUrl(downloadURL)
+                    );
+                }
+            });
+        }
+
+        this.hasRetriedContentDownload = true;
+        this.load();
+    }
+
+    /**
      * Emits error event with refresh message.
      *
      * @protected
      * @emits error
-     * @param {Error|string} [err] - Optional error or string with message
+     * @param {Error|PreviewError} [err] - Error object related to the error that happened.
      * @return {void}
      */
     triggerError(err) {
+        const message = err ? err.message : '';
         const error =
             err instanceof PreviewError
                 ? err
-                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, err.message);
+                : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
+
         this.emit('error', error);
     }
 
@@ -345,6 +387,11 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
+        if (this.hasRetriedContentDownload) {
+            // eslint-disable-next-line
+            template = DownloadReachability.replaceDownloadHostWithDefault(template);
+        }
+
         // Append optional query params
         const { queryParams } = this.options;
         return appendQueryParams(createContentUrl(template, asset), queryParams);
@@ -361,7 +408,7 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        const urlWithAuthParams = this.appendAuthParams(createContentUrl(template, asset));
+        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
 
         // Append optional query params
         const { queryParams } = this.options;
@@ -403,13 +450,28 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles the viewer load to potentially set up Box Annotations.
+     * Handles the viewer load to finish viewer setup after loading.
      *
      * @private
      * @param {Object} event - load event data
      * @return {void}
      */
     viewerLoadHandler(event) {
+        const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
+        const downloadHostToNotify = DownloadReachability.getDownloadNotificationToShow(contentTemplate);
+        if (downloadHostToNotify) {
+            this.previewUI.notification.show(
+                replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
+                __('notification_button_default_text'),
+                true
+            );
+
+            DownloadReachability.setDownloadHostNotificationShown(downloadHostToNotify);
+            this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.NOTIFICATION_SHOWN, {
+                host: downloadHostToNotify
+            });
+        }
+
         if (event && event.scale) {
             this.scale = event.scale;
         }
@@ -963,6 +1025,15 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    /**
+     * Returns the representation used for Preview.
+     *
+     * @return {Object} Box representation used/to be used by Preview
+     */
+    getRepresentation() {
+        return this.options.representation;
     }
 }
 

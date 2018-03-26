@@ -17,6 +17,8 @@ import {
     STATUS_ERROR,
     STATUS_PENDING,
     STATUS_SUCCESS,
+    X_BOX_ACCEPT_ENCODING_HEADER,
+    X_BOX_ACCEPT_ENCODING_IDENTITY
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
@@ -30,6 +32,7 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PAGES_UNIT_NAME = 'pages';
 
 const sandbox = sinon.sandbox.create();
 let docBase;
@@ -238,6 +241,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should not do anything if there is a previously cached page', () => {
             sandbox.stub(docBase, 'getCachedPage').returns(2);
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if startAt is not page 1', () => {
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            docBase.startPageNum = 3;
             sandbox.mock(docBase.preloader).expects('showPreload').never();
 
             docBase.showPreload();
@@ -841,6 +852,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        it('should set a x-box-accept-encoding header when range requests are enabled', () => {
+            docBase.options.location = {
+                locale: 'en-GB'
+            };
+            const isDisbled = PDFJS.disableRange;
+            sandbox.stub(Browser, 'isIOS').returns(false);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            PDFJS.disableRange = false;
+            
+            return docBase.initViewer('').then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url: '',
+                    rangeChunkSize: 524288,
+                    httpHeaders: {
+                        [X_BOX_ACCEPT_ENCODING_HEADER]: X_BOX_ACCEPT_ENCODING_IDENTITY
+                    }
+                });
+
+                // Reset to original value
+                PDFJS.disableRange = isDisbled;
+            });
+        });
+
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
@@ -867,6 +902,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.initViewer('url');
 
             expect(docBase.startLoadTimer).to.be.called;
+
+        });
+
+        it('should handle any download error', () => {
+            stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
+            const doc = {
+                url: 'url'
+            };
+
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+
+            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
+
+            return docBase.initViewer('url').catch(() => {
+                expect(stubs.handleDownloadError).to.be.called;
+            });
         });
     });
 
@@ -1285,6 +1338,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
             expect(docBase.loaded).to.be.true;
         });
+
+        it('should set the start page based', () => {
+            const START_PAGE_NUM = 2;
+            const PAGES_COUNT = 3;
+            docBase.startPageNum = START_PAGE_NUM;
+            docBase.pdfViewer = {
+                pagesCount: PAGES_COUNT
+            };
+            docBase.pagesinitHandler();
+
+            expect(stubs.setPage).to.have.been.calledWith(START_PAGE_NUM);
+        });
     });
 
     describe('pagerenderedHandler()', () => {
@@ -1645,6 +1710,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pinchScale).to.equal(1);
             expect(docBase.pinchPage).to.equal(null);
         });
+    });
 
+    describe('getStartPage()', () => {
+        it('should return the start page as a number', () => {
+            const startAt = {
+                value : 3,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage(startAt)).to.equal(3);
+        });
+
+        it('should return the floored number if a floating point number is passed', () => {
+            const startAt = {
+                value : 4.1,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage(startAt)).to.equal(4);
+        });
+
+        it('should return undefined if a value < 1 is passed', () => {
+            let startAt = {
+                value : 0,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
+
+            startAt = {
+                value : -100,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid unit is passed', () => {
+            const startAt = {
+                value : 3,
+                unit : 'foo'
+            };
+
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid value is passed', () => {
+            const startAt = {
+                value : 'foo',
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
+
+        it('should return undefined if no unit and value is passed', () => {
+            const startAt = {};
+            expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
     });
 });

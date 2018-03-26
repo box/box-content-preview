@@ -21,6 +21,7 @@ export const ERROR_CODE = {
     BAD_INPUT: 'error_bad_input',
     LOAD_ANNOTATIONS: 'error_load_annotations',
     LOAD_ASSET: 'error_load_asset',
+    LOAD_CSV: 'error_load_csv',
     LOAD_DOCUMENT: 'error_load_document',
     LOAD_MEDIA: 'error_load_media',
     LOAD_VIEWER: 'error_load_viewer',
@@ -37,7 +38,9 @@ export const ERROR_CODE = {
     CONVERSION_GENERIC: 'error_conversion_generic',
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
-    CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format'
+    CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
+    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
+    CONTENT_DOWNLOAD: 'error_content_download'
 };
 
 export const PREVIEW_LOAD_EVENT = '';
@@ -47,9 +50,15 @@ export const PREVIEW_ERROR = 'preview_error';
 export const PREVIEW_METRIC = 'preview_metric';
 // Milestone events for loading performance
 export const LOAD_METRIC = {
-    previewLoadEvent: 'preview_load', // Event name for preview_metric events related to loading times.
+    previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
     fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
     fullDocumentLoadTime: 'full_document_load_time' // How long it took to load the document so it could be previewed.
+};
+
+// Events around download reachability
+export const DOWNLOAD_REACHABILITY_METRICS = {
+    NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
+    DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked'
 };

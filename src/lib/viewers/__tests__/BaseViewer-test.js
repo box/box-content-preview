@@ -4,12 +4,13 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
+import DownloadReachability from '../../DownloadReachability';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as file from '../../file';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
-import { VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
 let base;
@@ -169,6 +170,22 @@ describe('lib/viewers/BaseViewer', () => {
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
         });
+
+        it('should trigger an error if the viewer times out', () => {
+            const triggerStub = sandbox.stub(base, 'triggerError');
+            sandbox.stub(window, 'setTimeout').callsFake((func) => func());
+
+            base.loaded = false;
+            base.destroyed = false;
+
+            base.resetLoadTimeout();
+            const [ error ] = triggerStub.getCall(0).args;
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
+
+            // Test cleanup
+            clearTimeout(base.loadTimeoutId);
+        });
     });
 
     describe('startLoadTimer()', () => {
@@ -201,6 +218,40 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('handleDownloadError()', () => {
+        beforeEach(() => {
+            sandbox.stub(base, 'triggerError');
+            sandbox.stub(DownloadReachability, 'isCustomDownloadHost');
+            sandbox.stub(DownloadReachability, 'setDownloadReachability');
+            sandbox.stub(base, 'load');
+            sandbox.stub(base, 'emitMetric');
+        });
+
+        it('should trigger an error  if we have already retried', () => {
+            base.hasRetriedContentDownload = true;
+            base.handleDownloadError('error', 'https://dl.boxcloud.com');
+            expect(base.triggerError).to.be.called;
+            expect(base.load).to.not.be.called;
+        });
+
+        it('should retry load, and check download reachability if we are on a custom host', () => {
+            base.hasRetriedContentDownload = false;
+            DownloadReachability.isCustomDownloadHost.returns(false);
+
+            base.handleDownloadError('error', 'https://dl.boxcloud.com');
+            expect(base.load).to.be.called;
+            expect(DownloadReachability.setDownloadReachability).to.be.not.called;
+
+            base.hasRetriedContentDownload = false;
+            // Now try on a custom host
+            DownloadReachability.isCustomDownloadHost.returns(true);
+            DownloadReachability.setDownloadReachability.returns(Promise.resolve(true))
+            base.handleDownloadError('error', 'https://dl3.boxcloud.com');
+            expect(DownloadReachability.setDownloadReachability).to.be.called;
+
+        });
+    });
+
     describe('triggerError()', () => {
         it('should emit PreviewError event', () => {
             const stub = sandbox.stub(base, 'emit');
@@ -214,6 +265,39 @@ describe('lib/viewers/BaseViewer', () => {
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_load_viewer');
             expect(error.message).to.equal('blah');
+        });
+
+        it('should emit a load viewer error if no error provided', () => {
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError();
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal('error_load_viewer');
+
+        });
+
+        it('should pass through the error if it is a PreviewError', () => {
+            const code = 'my_special_error';
+            const displayMessage = 'Such a special error!';
+            const message = 'Bad things have happened';
+            const details = {
+                what: 'what?!'
+            };
+            const err = new PreviewError(code, displayMessage, details, message);
+            const stub = sandbox.stub(base, 'emit');
+            base.triggerError(err);
+
+            expect(base.emit).to.be.called;
+            const [ event, error ] = stub.getCall(0).args;
+            expect(event).to.equal('error');
+            expect(error).to.be.instanceof(PreviewError);
+            expect(error.code).to.equal(code);
+            expect(error.displayMessage).to.equal(displayMessage);
+            expect(error.details).to.equal(details);
+            expect(error.message).to.equal(message);
         });
     });
 
@@ -278,6 +362,15 @@ describe('lib/viewers/BaseViewer', () => {
             const result = base.createContentUrl(url, 'bar');
             expect(result).to.equal('urlbar');
             expect(util.createContentUrl).to.be.calledWith(url, 'bar');
+        });
+
+        it('should fallback to the default host if we have retried', () => {
+            base.hasRetriedContentDownload = true;
+            sandbox.stub(DownloadReachability, 'replaceDownloadHostWithDefault');
+            sandbox.stub(util, 'createContentUrl');
+
+            base.createContentUrl('https://dl3.boxcloud.com', '');
+            expect(DownloadReachability.replaceDownloadHostWithDefault).to.be.called;
         });
     });
 
@@ -358,6 +451,30 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.annotationsLoadPromise = Promise.resolve();
             stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
+            base.options.representation = {
+                content: {
+                    url_template: 'dl.boxcloud.com'
+                }
+            };
+            stubs.getDownloadNotificationToShow = sandbox.stub(DownloadReachability, 'getDownloadNotificationToShow').returns(undefined);
+
+        });
+
+        it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
+            const result = stubs.getDownloadNotificationToShow.returns('dl3.boxcloud.com');
+            base.previewUI =
+            {
+                notification: {
+                    show: sandbox.stub()
+
+                }
+            }
+
+            sandbox.stub(DownloadReachability, 'setDownloadHostNotificationShown');
+
+            base.viewerLoadHandler({ scale: 1.5 });
+            expect(base.previewUI.notification.show).to.be.called;
+            expect(DownloadReachability.setDownloadHostNotificationShown).to.be.called;
         });
 
         it('should set the scale if it exists', () => {
@@ -1099,7 +1216,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
 
-        it('should disable controls and enter draw anontation mode with notification', () => {
+        it('should disable controls and enter drawing anontation mode with notification', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeEnter,
                 data:  {
@@ -1203,6 +1320,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
             expect(combinedOptions.randomOption).to.equal('derp');
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
+        });
+    });
+
+    describe('getRepresentation()', () => {
+        it('should return the representation the viewer is/will use to preview', () => {
+            base.options.representation = { some: 'stuff' };
+            expect(base.getRepresentation()).to.equal(base.options.representation);
         });
     });
 });

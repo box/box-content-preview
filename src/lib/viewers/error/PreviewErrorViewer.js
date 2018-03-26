@@ -1,8 +1,6 @@
 import BaseViewer from '../BaseViewer';
-import Browser from '../../Browser';
 import PreviewError from '../../PreviewError';
-import { checkPermission } from '../../file';
-import { PERMISSION_DOWNLOAD } from '../../constants';
+import { canDownload } from '../../file';
 import { getIconFromExtension, getIconFromName } from '../../icons/icons';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { stripAuthFromString } from '../../util';
@@ -32,7 +30,7 @@ class PreviewErrorViewer extends BaseViewer {
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.iconEl.className = 'bp-icon bp-icon-file';
 
-        this.messageEl = this.infoEl.appendChild(document.createElement('div'));
+        this.messageEl = this.infoEl.appendChild(document.createElement('p'));
         this.messageEl.className = 'bp-error-text';
     }
 
@@ -75,7 +73,7 @@ class PreviewErrorViewer extends BaseViewer {
                 : new PreviewError(ERROR_CODE.GENERIC, __('error_generic'), {}, err.message);
 
         const { displayMessage, details, message } = error;
-        const { file, showDownload } = this.options;
+        const { file } = this.options;
 
         this.icon = getIconFromName('FILE_DEFAULT');
 
@@ -100,7 +98,7 @@ class PreviewErrorViewer extends BaseViewer {
         // Add optional link or download button
         if (details && details.linkText && details.linkUrl) {
             this.addLinkButton(details.linkText, details.linkUrl);
-        } else if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
+        } else if (canDownload(file, this.options)) {
             this.addDownloadButton();
         }
 

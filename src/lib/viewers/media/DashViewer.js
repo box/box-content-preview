@@ -16,6 +16,8 @@ const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
+const SHAKA_CODE_ERROR_RECOVERABLE = 1;
+
 class DashViewer extends VideoBaseViewer {
     /**
      * @inheritdoc
@@ -169,7 +171,7 @@ class DashViewer extends VideoBaseViewer {
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
 
         this.startLoadTimer();
-        this.player.load(this.mediaUrl);
+        this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
     }
 
     /**
@@ -310,8 +312,27 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
+        this.showGearHdIcon(this.getActiveTrack());
+
         if (quality) {
             this.emit('qualitychange', quality);
+        }
+    }
+
+    /**
+     * Determines if the current track is playing HD video, then shows
+     * or hides 'HD' next to the gear icon
+     *
+     * @param {Object} activeTrack - the currently playing track
+     * @return {void}
+     */
+    showGearHdIcon(activeTrack = {}) {
+        const isPlayingHD = activeTrack.videoId === this.hdVideoId;
+
+        if (isPlayingHD) {
+            this.wrapperEl.classList.add(CSS_CLASS_HD);
+        } else {
+            this.wrapperEl.classList.remove(CSS_CLASS_HD);
         }
     }
 
@@ -324,11 +345,8 @@ class DashViewer extends VideoBaseViewer {
      */
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
-        if (activeTrack.videoId === this.hdVideoId) {
-            this.wrapperEl.classList.add(CSS_CLASS_HD);
-        } else {
-            this.wrapperEl.classList.remove(CSS_CLASS_HD);
-        }
+
+        this.showGearHdIcon(activeTrack);
 
         if (!this.isLoaded()) {
             return;
@@ -347,18 +365,25 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     shakaErrorHandler(shakaError) {
+        const normalizedShakaError = shakaError.detail ? shakaError.detail : shakaError;
         const error = new PreviewError(
             ERROR_CODE.SHAKA,
             __('error_refresh'),
             {},
-            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${
-                shakaError.detail.severity
-            }, Data = ${shakaError.detail.data.toString()}`
+            `Shaka error. Code = ${normalizedShakaError.code}, Category = ${
+                normalizedShakaError.category
+            }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`
         );
 
-        if (shakaError.detail.severity > 1) {
+        if (normalizedShakaError.severity > SHAKA_CODE_ERROR_RECOVERABLE) {
+            // Anything greater than a recoverable error should be critical
+            if (normalizedShakaError.code === shaka.util.Error.Code.HTTP_ERROR) {
+                const downloadURL = normalizedShakaError.data[0];
+                this.handleDownloadError(error, downloadURL);
+                return;
+            }
             // critical error
-            this.emit('error', error);
+            this.triggerError(error);
         }
     }
 

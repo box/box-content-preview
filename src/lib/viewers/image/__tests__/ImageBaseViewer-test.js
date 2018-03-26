@@ -27,7 +27,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         containerEl = document.querySelector('.container');
-        imageBase = new ImageBaseViewer(containerEl);
+        imageBase = new ImageBaseViewer({
+            file: {
+                id: '1234'
+            }
+        });
         imageBase.containerEl = containerEl;
         imageBase.imageEl = document.createElement('div');
 
@@ -233,13 +237,15 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             };
 
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
+            promise
+                .then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
+                    done();
+                })
+                .catch(() => {
+                    Assert.fail();
+                });
         });
 
         it('should default to 300x150 when naturalHeight and naturalWidth are 0x0', (done) => {
@@ -254,13 +260,15 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(300);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(150);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
+            promise
+                .then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(300);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(150);
+                    done();
+                })
+                .catch(() => {
+                    Assert.fail();
+                });
         });
 
         it('should resolve when the get call fails', (done) => {
@@ -284,7 +292,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 'bp-image-zoom-out-icon',
                 ICON_ZOOM_OUT
             );
-            expect(imageBase.controls.add).to.be.calledWith(__('zoom_in'), imageBase.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
+            expect(imageBase.controls.add).to.be.calledWith(
+                __('zoom_in'),
+                imageBase.zoomIn,
+                'bp-image-zoom-in-icon',
+                ICON_ZOOM_IN
+            );
         });
     });
 
@@ -531,21 +544,30 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
-    describe('errorHandler()', () => {
+    describe('handleDownloadError()', () => {
+        const handleDownloadErrorFunc = BaseViewer.prototype.handleDownloadError;
+
         beforeEach(() => {
-            stubs.emit = sandbox.stub(imageBase, 'emit');
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub()
+            });        
         });
 
-        it('should console log error and emit preview error', () => {
-            const err = new Error('blah');
-            sandbox.mock(window.console).expects('error').withArgs(err);
+        afterEach(() => {
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
+                value: handleDownloadErrorFunc
+            });
+        });
 
-            imageBase.errorHandler(err);
+        it('should call the parent method with an error display message and the image URL', () => {
+            const err = new Error('downloadError')
 
-            const [ event, error ] = stubs.emit.getCall(0).args;
-            expect(event).to.equal('error');
+            imageBase.handleDownloadError(err, 'foo');
+
+            const [ error, URL ] = BaseViewer.prototype.handleDownloadError.getCall(0).args;
+            expect(URL).to.equal('foo');
             expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_image_sizing');
+            expect(error.code).to.equal('error_content_download');
         });
     });
 
@@ -555,7 +577,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
             stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
-            stubs.errorHandler = sandbox.stub(imageBase, 'errorHandler');
+            imageBase.options = {
+                file: {
+                    id: 1
+                },
+                viewer: {
+                    viewerName: "Image"
+                }
+            }
         });
 
         it('should do nothing if already destroyed', () => {
@@ -568,12 +597,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.zoom).to.not.have.been.called;
             expect(stubs.setOriginalImageSize).to.not.have.been.called;
             expect(stubs.loadUI).to.not.have.been.called;
-            expect(stubs.errorHandler).to.not.have.been.called;
         });
 
         it('should load UI if not destroyed', (done) => {
             imageBase.on(VIEWER_EVENT.load, () => {
-                expect(stubs.errorHandler).to.not.have.been.called;
                 expect(imageBase.loaded).to.be.true;
                 expect(stubs.zoom).to.have.been.called;
                 expect(stubs.loadUI).to.have.been.called;

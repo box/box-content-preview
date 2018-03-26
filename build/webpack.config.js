@@ -13,6 +13,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const version = isRelease ? require('../package.json').version : 'dev';
 const fs = require('fs');
 const license = require('./license');
+const locales = require('box-locales');
 
 let rsyncLocation = '';
 if (fs.existsSync('build/rsync.json')) {
@@ -27,34 +28,7 @@ const thirdParty = path.resolve('src/third-party');
 const staticFolder = path.resolve('dist');
 
 const languages = isRelease
-    ? [
-        'en-AU',
-        'en-CA',
-        'en-GB',
-        'en-US',
-        'en-x-pseudo',
-        'bn-IN',
-        'da-DK',
-        'de-DE',
-        'es-419',
-        'es-ES',
-        'fi-FI',
-        'fr-CA',
-        'fr-FR',
-        'hi-IN',
-        'it-IT',
-        'ja-JP',
-        'ko-KR',
-        'nb-NO',
-        'nl-NL',
-        'pl-PL',
-        'pt-BR',
-        'ru-RU',
-        'sv-SE',
-        'tr-TR',
-        'zh-CN',
-        'zh-TW'
-    ]
+    ? locales
     : ['en-US']; // Only 1 language needed for dev
 
 /* eslint-disable key-spacing, require-jsdoc */

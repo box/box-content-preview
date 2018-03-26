@@ -1,3 +1,4 @@
+# @chrome @firefox @edge @safari @ie @android @ios
 language: node_js
 node_js:
 - '8'
@@ -14,9 +15,15 @@ aliases:
           sauce_connect: true
         script: yarn run functional-tests-ci
         cache: yarn
-    - &sauce-labs-mobile
+    - &sauce-labs-ios
       <<: *sauce-labs
       script: yarn run functional-tests-ci --grep @mobile
+    - &sauce-labs-chrome
+      <<: *sauce-labs
+      script: yarn run functional-tests-ci --grep @chrome
+    - &sauce-labs-firefox
+      <<: *sauce-labs
+      script: yarn run functional-tests-ci --grep @firefox
 stages:
 - ci
 - name: sauce-labs - windows 10
@@ -33,33 +40,37 @@ jobs:
   - <<: *sauce-labs
     stage: sauce-labs - windows 10
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="MicrosoftEdge"
-  - <<: *sauce-labs
+    script: yarn run functional-tests-ci --grep @edge
+  - <<: *sauce-labs-chrome
     stage: sauce-labs - windows 10
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="chrome"
-  - <<: *sauce-labs
+  - <<: *sauce-labs-firefox
     stage: sauce-labs - windows 10
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="firefox"
   - <<: *sauce-labs
     stage: sauce-labs - windows 10
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="internet explorer"
+    script: yarn run functional-tests-ci --grep @ie
   - <<: *sauce-labs
     stage: sauce-labs - osx
     env: BROWSER_PLATFORM="macOS 10.13" BROWSER_NAME="safari"
-  - <<: *sauce-labs
+    script: yarn run functional-tests-ci --grep @safari
+  - <<: *sauce-labs-chrome
     stage: sauce-labs - osx
     env: BROWSER_PLATFORM="macOS 10.13" BROWSER_NAME="chrome"
-  - <<: *sauce-labs
+  - <<: *sauce-labs-firefox
     stage: sauce-labs - osx
     env: BROWSER_PLATFORM="macOS 10.13" BROWSER_NAME="firefox"
-  - <<: *sauce-labs-mobile
+  - <<: *sauce-labs-ios
     stage: sauce-labs - mobile
     env: BROWSER_PLATFORM="iOS" DEVICE_NAME="iPhone X Simulator" PLATFORM_VERSION="11.2" BROWSER_NAME="Safari"
-  - <<: *sauce-labs-mobile
+  - <<: *sauce-labs-ios
     stage: sauce-labs - mobile
     env: BROWSER_PLATFORM="iOS" DEVICE_NAME="iPhone 6 Simulator" PLATFORM_VERSION="11.2" BROWSER_NAME="Safari"
-  - <<: *sauce-labs-mobile
+  - <<: *sauce-labs-ios
     stage: sauce-labs - mobile
     env: BROWSER_PLATFORM="iOS" DEVICE_NAME="iPad Simulator" PLATFORM_VERSION="11.2" BROWSER_NAME="Safari"
-  - <<: *sauce-labs-mobile
+  - <<: *sauce-labs
     stage: sauce-labs - mobile
-    env: BROWSER_PLATFORM="Android" DEVICE_NAME="Android Emulator" PLATFORM_VERSION="6.0" BROWSER_NAME="Chrome"
+    env: BROWSER_PLATFORM="Android" DEVICE_NAME="Android GoogleAPI Emulator" PLATFORM_VERSION="7.1" BROWSER_NAME="Chrome"
+    script: yarn run functional-tests-ci --grep @android

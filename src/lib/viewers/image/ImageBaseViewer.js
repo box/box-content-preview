@@ -27,7 +27,6 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
-        this.errorHandler = this.errorHandler.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -73,16 +72,14 @@ class ImageBaseViewer extends BaseViewer {
         }
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
-        loadOriginalDimensions
-            .then(() => {
-                this.loadUI();
-                this.zoom();
+        loadOriginalDimensions.then(() => {
+            this.loadUI();
+            this.zoom();
 
-                this.imageEl.classList.remove(CLASS_INVISIBLE);
-                this.loaded = true;
-                this.emit(VIEWER_EVENT.load);
-            })
-            .catch(this.errorHandler);
+            this.imageEl.classList.remove(CLASS_INVISIBLE);
+            this.loaded = true;
+            this.emit(VIEWER_EVENT.load);
+        });
     }
 
     /**
@@ -312,19 +309,19 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles image element loading errors.
+     * Handles a content download error
      *
-     * @private
-     * @param {Error} err - Error to handle
+     * @param {Error} err - Load error
+     * @param {string} imgUrl - Image src URL
      * @return {void}
      */
-    errorHandler(err) {
+    handleDownloadError(err, imgUrl) {
         // eslint-disable-next-line
         console.error(err);
 
         // Display a generic error message but log the real one
-        const error = new PreviewError(ERROR_CODE.IMAGE_SIZING, __('error_refresh'), {}, err.message);
-        this.emit('error', error);
+        const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), {}, err.message);
+        super.handleDownloadError(error, imgUrl);
     }
 
     /**

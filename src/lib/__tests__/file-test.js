@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Cache from '../Cache';
+import Browser from '../Browser';
 import {
     getURL,
     getDownloadURL,
@@ -11,7 +12,10 @@ import {
     uncacheFile,
     getRepresentation,
     normalizeFileVersion,
-    getCachedFile
+    getCachedFile,
+    isVeraProtectedFile,
+    canDownload,
+    shouldDownloadWM
 } from '../file';
 
 const sandbox = sinon.sandbox.create();
@@ -322,6 +326,99 @@ describe('lib/file', () => {
         it('should null if neither file ID nor file version ID is provided', () => {
             getCachedFile(cache, {});
             expect(cache.get).to.not.be.called;
+        });
+    });
+
+    describe('isVeraProtectedFile()', () => {
+        [
+            'some.vera.pdf.html',
+            '.vera.test.html',
+            'blah.vera..html',
+            'another.vera.3.html',
+            'test.vera.html'
+        ].forEach((fileName) => {
+            it('should return true if file is named like a Vera-protected file', () => {
+                expect(isVeraProtectedFile({ name: fileName })).to.be.true;
+            });
+        });
+
+        [
+            'vera.pdf.html',
+            'test.vera1.pdf.html',
+            'blah.vera..htm',
+            'another.verahtml',
+        ].forEach((fileName) => {
+            it('should return false if file is not named like a Vera-protected file', () => {
+                expect(isVeraProtectedFile({ name: fileName })).to.be.false;
+            });
+        });
+    });
+
+    describe('shouldDownloadWM()', () => {
+        [
+            [false, false, false],
+            [false, true, false],
+            [true, true, true],
+            [true, false, false],
+        ].forEach(([downloadWM, isWatermarked, expected]) => {
+            it('should return whether we should download the watermarked representation or original file', () => {
+                const previewOptions = { downloadWM };
+                const file = {
+                    watermark_info: {
+                        is_watermarked: isWatermarked
+                    }
+                };
+
+                expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
+            });
+        });
+    });
+
+    describe('canDownload()', () => {
+        let file;
+        let options;
+
+        beforeEach(() => {
+            file = {
+                is_download_available: false,
+                permissions: {
+                    can_download: false,
+                    can_preview: false
+                },
+                watermark_info: {
+                    is_watermarked: false
+                }
+            };
+            options = {
+                showDownload: false
+            };
+        });
+
+        [
+            // Can download original
+            [false, false, false, false, false, false, false, false],
+            [false, false, false, true, false, false, false, false],
+            [false, false, true, false, false, false, false, false],
+            [false, true, false, false, false, false, false, false],
+            [true, false, false, false, false, false, false, false],
+            [true, true, true, true, false, false, false, true],
+
+            // Can download watermarked (don't need download permission)
+            [true, true, false, true, true, false, false, false],
+            [true, true, false, true, true, true, false, false],
+            [true, true, false, true, true, true, true, true],
+        ].forEach(([isDownloadable, isDownloadEnabled, hasDownloadPermission, isBrowserSupported, hasPreviewPermission, isWatermarked, downloadWM, expectedResult]) => {
+            it('should return true if original or watermarked file can be downloaded', () => {
+                file.permissions.can_download = hasDownloadPermission;
+                file.permissions.can_preview = hasPreviewPermission;
+                file.is_download_available = isDownloadable;
+                file.watermark_info.is_watermarked = isWatermarked;
+                options.showDownload = isDownloadable;
+                options.downloadWM = downloadWM;
+                sandbox.stub(Browser, 'canDownload').returns(isBrowserSupported);
+
+                expect(canDownload(file, options)).to.equal(expectedResult);
+            });
         });
     });
 });

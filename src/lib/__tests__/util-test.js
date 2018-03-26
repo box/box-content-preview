@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
+import Location from '../Location';
 import * as util from '../util';
-import { stripAuthFromString } from '../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -12,7 +12,10 @@ describe('lib/util', () => {
     });
 
     describe('get()', () => {
-        const url = 'foo?bar=bum';
+        let url;
+        beforeEach(() => {
+            url = 'foo?bar=bum';
+        });
 
         afterEach(() => {
             fetchMock.restore();
@@ -167,20 +170,31 @@ describe('lib/util', () => {
         });
     });
 
-    describe('openUrlInsideIframe()', () => {
-        it('should return a download iframe with correct source', () => {
-            const src = 'admiralackbar';
-            const iframe = util.openUrlInsideIframe(src);
-            expect(iframe.getAttribute('id')).to.equal('downloadiframe');
-            expect(iframe.getAttribute('src')).to.equal(src);
-        });
-    });
+    describe('iframe', () => {
+        let iframe;
 
-    describe('openContentInsideIframe()', () => {
-        it('should return a download iframe with correct content', () => {
-            const src = 'moncalamari';
-            const iframe = util.openContentInsideIframe(src);
-            expect(iframe.contentDocument.body.innerHTML).to.equal(src);
+        afterEach(() => {
+            if (iframe && iframe.parentElement) {
+                iframe.parentElement.removeChild(iframe);
+            }
+        });
+
+        describe('openUrlInsideIframe()', () => {
+            it('should return a download iframe with correct source', () => {
+                const src = 'admiralackbar';
+                iframe = util.openUrlInsideIframe(src);
+
+                expect(iframe.getAttribute('id')).to.equal('downloadiframe');
+                expect(iframe.getAttribute('src')).to.equal(src);
+            });
+        });
+
+        describe('openContentInsideIframe()', () => {
+            it('should return a download iframe with content', () => {
+                const content = '<div class="test">moncalamari</div>';
+                iframe = util.openContentInsideIframe(content);
+                expect(iframe.contentDocument.querySelector('.test')).to.exist;
+            });
         });
     });
 
@@ -326,6 +340,11 @@ describe('lib/util', () => {
 
         it('should return correct content url when no asset_path', () => {
             expect(util.createContentUrl('foo', 'bar')).to.equal('foo');
+        });
+
+        it('should replace the download host with the default if we are falling back', () => {
+            sessionStorage.setItem('download_host_fallback', 'true');
+            expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).to.equal('https://dl.boxcloud.com');
         });
     });
 
@@ -596,31 +615,6 @@ describe('lib/util', () => {
         });
     });
 
-    describe('isVeraProtectedFile()', () => {
-        [
-            'some.vera.pdf.html',
-            '.vera.test.html',
-            'blah.vera..html',
-            'another.vera.3.html',
-            'test.vera.html'
-        ].forEach((fileName) => {
-            it('should return true if file is named like a Vera-protected file', () => {
-                expect(util.isVeraProtectedFile({ name: fileName })).to.be.true;
-            });
-        });
-
-        [
-            'vera.pdf.html',
-            'test.vera1.pdf.html',
-            'blah.vera..htm',
-            'another.verahtml',
-        ].forEach((fileName) => {
-            it('should return false if file is not named like a Vera-protected file', () => {
-                expect(util.isVeraProtectedFile({ name: fileName })).to.be.false;
-            });
-        });
-    });
-
     describe('setDimensions()', () => {
         it('should set dimensions for the specified element', () => {
             const element = document.createElement('div');
@@ -772,13 +766,13 @@ describe('lib/util', () => {
             const random = `here's my string ${accessToken} khjfsadlkjfsad`;
             const randomFiltered = `here's my string ${accessFiltered}`; // It strips everything starting at 'access_token='
 
-            expect(stripAuthFromString(query)).to.equal(queryFiltered);
-            expect(stripAuthFromString(random)).to.equal(randomFiltered);
+            expect(util.stripAuthFromString(query)).to.equal(queryFiltered);
+            expect(util.stripAuthFromString(random)).to.equal(randomFiltered);
         });
 
         it('should return passed in param if not string', () => {
             const obj = { foo: 'bar' };
-            expect(stripAuthFromString(obj)).to.equal(obj);
+            expect(util.stripAuthFromString(obj)).to.equal(obj);
         });
     });
 
@@ -810,6 +804,57 @@ describe('lib/util', () => {
             expect(util.getProp(a, 'b.c', 'default')).to.equal('default');
             expect(util.getProp(a, 'test', 'default')).to.equal('default');
             expect(util.getProp(a, 'foo.bar', 'default')).to.equal('default');
+        });
+    });
+
+    describe('isValidFileId()', () => {
+        it('should be valid if fileId is a numeric string', () => {
+            expect(util.isValidFileId('1')).to.be.true;
+        });
+
+        it('should be valid if fileId is a number', () => {
+            expect(util.isValidFileId(1)).to.be.true;
+        });
+
+        it('should be invalid if fileId is undefined', () => {
+            expect(util.isValidFileId()).to.be.false;
+        });
+
+        it('should be invalid if fileId is NaN', () => {
+            expect(util.isValidFileId(NaN)).to.be.false;
+        });
+
+        it('should be invalid if fileId is a mixed string', () => {
+            expect(util.isValidFileId('1234foo')).to.be.false;
+        });
+    });
+
+    describe('isBoxWebApp()', () => {
+        [
+            ['https://test.app.box.com', true],
+            ['https://foo.ent.box.com', true],
+            ['https://bar.app.boxcn.net', true],
+            ['https://baz.ent.boxenterprise.net', true],
+            ['https://haha.box.net', false],
+            ['https://some.other.domain', false]
+        ]
+        .forEach(([hostname, expectedResult]) => {
+            it('should return true when window location is a Box domain', () => {
+                sandbox.stub(Location, 'getHostname').returns(hostname);
+                expect(util.isBoxWebApp()).to.equal(expectedResult);
+            });
+        });
+    });
+
+    describe('convertWatermarkPref()', () => {
+        [
+            ['any', ''],
+            ['all', 'only_watermarked'],
+            ['none', 'only_non_watermarked']
+        ].forEach(([previewWMPref, expected]) => {
+            it('should convert previewWMPref to value expected by the API', () => {
+                expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
+            });
         });
     });
 });

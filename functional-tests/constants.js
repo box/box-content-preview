@@ -1,4 +1,26 @@
 // Unfortunately node doesnt support native imports (yet)
-
 exports.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.bp-btn-download';
 exports.SELECTOR_DOWNLOAD_IFRAME = '#downloadiframe';
+exports.SELECTOR_NAVIGATION_LEFT = '.bp-navigate-left';
+exports.SELECTOR_NAVIGATION_RIGHT = '.bp-navigate-right';
+exports.SELECTOR_BOX_PREVIEW_LOADED = '.bp-loaded';
+exports.SELECTOR_BOX_PREVIEW_LOGO = '.bp-default-logo';
+exports.CLASS_BOX_PREVIEW_LOADING_WRAPPER = '.bp-loading-wrapper';
+exports.SELECTOR_DOC_CURRENT_PAGE = '.bp-current-page';
+exports.SELECTOR_MEDIA_TIMESTAMP = '.bp-media-controls-timecode';
+exports.SELECTOR_BOX_PREVIEW = '.bp';
+exports.SELECTOR_BOX_PREVIEW_DOC = '.bp-doc';
+exports.SELECTOR_BOX_PREVIEW_MP3 = '.bp-media-mp3';
+exports.SELECTOR_BOX_PREVIEW_DASH = '.bp-media-dash';
+exports.SELECTOR_BOX_PREVIEW_MP4 = '.bp-media-mp4';
+exports.SELECTOR_BOX_PREVIEW_ZOOM_OUT_BUTTON = '.bp-doc-zoom-out-icon';
+exports.SELECTOR_BOX_PREVIEW_ZOOM_IN_BUTTON = '.bp-doc-zoom-in-icon';
+exports.SELECTOR_DOC_FIRST_PAGE = '.page[data-page-number="1"]';
+exports.SELECTOR_BOX_PREVIEW_NEXT_PAGE = '.bp-next-page';
+exports.SELECTOR_BOX_PREVIEW_PREVIOUS_PAGE = '.bp-previous-page';
+exports.SELECTOR_BOX_PREVIEW_NUM_INPUT = '.bp-page-num-input';
+exports.SELECTOR_BOX_PREVIEW_ENTER_FULLSCREEN_ICON = '.bp-enter-fullscreen-icon';
+exports.SELECTOR_BOX_PREVIEW_EXIT_FULLSCREEN_ICON = '.bp-exit-fullscreen-icon';
+exports.SELECTOR_BOX_PREVIEW_PAGE_NUM_WRAPPER = '.bp-page-num-wrapper';
+exports.SELECTOR_BOX_PREVIEW_ERROR = '.bp-error';
+exports.SELECTOR_BOX_PREVIEW_NAV_VISIBLE = '.bp-is-navigation-visible';
