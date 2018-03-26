@@ -500,4 +500,21 @@ describe('lib/Browser', () => {
             expect(hasIssue).to.be.false;
         });
     });
+
+    describe('getBrowserInfo()', () => {
+        it('should return browser capabilities', () => {
+            const browserInfo = Browser.getBrowserInfo();
+            const expectedFields = [
+                'name',
+                'swf',
+                'svg',
+                'mse',
+                'mp3',
+                'dash',
+                'h264'
+            ];
+
+            expect(expectedFields.every((field) => typeof browserInfo[field] !== 'undefined')).to.be.true;
+        });
+    });
 });

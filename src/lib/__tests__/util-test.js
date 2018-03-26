@@ -99,23 +99,6 @@ describe('lib/util', () => {
                 expect(typeof response === 'object').to.be.true;
             });
         });
-
-        it('set the download host fallback and try again if we\'re fetching from a non default host', () => {
-            url = 'dl7.boxcloud.com'
-            fetchMock.get(url, {
-                status: 500
-            });
-
-            return util.get(url, 'any')
-            .then(() => {
-                expect(response.status).to.equal(200);
-            })
-            .catch(() => {
-                fetchMock.get(url, {
-                    status: 200
-                });
-            })
-        });
     });
 
     describe('post()', () => {
@@ -187,20 +170,31 @@ describe('lib/util', () => {
         });
     });
 
-    describe('openUrlInsideIframe()', () => {
-        it('should return a download iframe with correct source', () => {
-            const src = 'admiralackbar';
-            const iframe = util.openUrlInsideIframe(src);
-            expect(iframe.getAttribute('id')).to.equal('downloadiframe');
-            expect(iframe.getAttribute('src')).to.equal(src);
-        });
-    });
+    describe('iframe', () => {
+        let iframe;
 
-    describe('openContentInsideIframe()', () => {
-        it('should return a download iframe with correct content', () => {
-            const src = 'moncalamari';
-            const iframe = util.openContentInsideIframe(src);
-            expect(iframe.contentDocument.body.innerHTML).to.equal(src);
+        afterEach(() => {
+            if (iframe && iframe.parentElement) {
+                iframe.parentElement.removeChild(iframe);
+            }
+        });
+
+        describe('openUrlInsideIframe()', () => {
+            it('should return a download iframe with correct source', () => {
+                const src = 'admiralackbar';
+                iframe = util.openUrlInsideIframe(src);
+
+                expect(iframe.getAttribute('id')).to.equal('downloadiframe');
+                expect(iframe.getAttribute('src')).to.equal(src);
+            });
+        });
+
+        describe('openContentInsideIframe()', () => {
+            it('should return a download iframe with content', () => {
+                const content = '<div class="test">moncalamari</div>';
+                iframe = util.openContentInsideIframe(content);
+                expect(iframe.contentDocument.querySelector('.test')).to.exist;
+            });
         });
     });
 
@@ -836,7 +830,7 @@ describe('lib/util', () => {
     });
 
     describe('isBoxWebApp()', () => {
-            [
+        [
             ['https://test.app.box.com', true],
             ['https://foo.ent.box.com', true],
             ['https://bar.app.boxcn.net', true],
@@ -849,6 +843,18 @@ describe('lib/util', () => {
                 sandbox.stub(Location, 'getHostname').returns(hostname);
                 expect(util.isBoxWebApp()).to.equal(expectedResult);
             });
-        })
+        });
+    });
+
+    describe('convertWatermarkPref()', () => {
+        [
+            ['any', ''],
+            ['all', 'only_watermarked'],
+            ['none', 'only_non_watermarked']
+        ].forEach(([previewWMPref, expected]) => {
+            it('should convert previewWMPref to value expected by the API', () => {
+                expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
+            });
+        });
     });
 });

@@ -3,6 +3,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+import Browser from '../Browser';
+import DownloadReachability from '../DownloadReachability';
 import {
     getProp,
     appendQueryParams,
@@ -15,17 +17,6 @@ import {
     createAssetUrlCreator,
     replacePlaceholders
 } from '../util';
-
-import {
-    setDownloadReachability,
-    isCustomDownloadHost,
-    replaceDownloadHostWithDefault,
-    setDownloadHostNotificationShown,
-    downloadNotificationToShow,
-    getHostnameFromUrl
-} from '../downloadReachability';
-
-import Browser from '../Browser';
 import {
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
@@ -320,10 +311,13 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        if (isCustomDownloadHost(downloadURL)) {
-            setDownloadReachability(downloadURL).then((isBlocked) => {
+        if (DownloadReachability.isCustomDownloadHost(downloadURL)) {
+            DownloadReachability.setDownloadReachability(downloadURL).then((isBlocked) => {
                 if (isBlocked) {
-                    this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED, getHostnameFromUrl(downloadURL));
+                    this.emitMetric(
+                        DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED,
+                        DownloadReachability.getHostnameFromUrl(downloadURL)
+                    );
                 }
             });
         }
@@ -395,7 +389,7 @@ class BaseViewer extends EventEmitter {
     createContentUrl(template, asset) {
         if (this.hasRetriedContentDownload) {
             // eslint-disable-next-line
-            template = replaceDownloadHostWithDefault(template);
+            template = DownloadReachability.replaceDownloadHostWithDefault(template);
         }
 
         // Append optional query params
@@ -464,7 +458,7 @@ class BaseViewer extends EventEmitter {
      */
     viewerLoadHandler(event) {
         const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
-        const downloadHostToNotify = downloadNotificationToShow(contentTemplate);
+        const downloadHostToNotify = DownloadReachability.getDownloadNotificationToShow(contentTemplate);
         if (downloadHostToNotify) {
             this.previewUI.notification.show(
                 replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
@@ -472,7 +466,7 @@ class BaseViewer extends EventEmitter {
                 true
             );
 
-            setDownloadHostNotificationShown(downloadHostToNotify);
+            DownloadReachability.setDownloadHostNotificationShown(downloadHostToNotify);
             this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.NOTIFICATION_SHOWN, {
                 host: downloadHostToNotify
             });
@@ -1029,6 +1023,15 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    /**
+     * Returns the representation used for Preview.
+     *
+     * @return {Object} Box representation used/to be used by Preview
+     */
+    getRepresentation() {
+        return this.options.representation;
     }
 }
 

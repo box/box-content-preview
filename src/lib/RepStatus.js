@@ -41,6 +41,7 @@ class RepStatus extends EventEmitter {
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
+     * @param {string} options.fileId - File ID
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
