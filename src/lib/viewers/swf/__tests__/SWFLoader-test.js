@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* global swfobject */
 import SWFLoader from '../SWFLoader';
 import AssetLoader from '../../AssetLoader';
 import Browser from '../../../Browser';
@@ -22,7 +20,7 @@ describe('lib/viewers/SWFLoader', () => {
             sandbox.stub(Browser, 'hasFlash').returns(true);
             const stub = sandbox.stub(AssetLoader.prototype, 'determineViewer');
             SWFLoader.determineViewer();
-            expect(stub).to.have.been.called;
+            expect(stub).to.have.been.called; // eslint-disable-line no-unused-expressions
         });
     });
 });
