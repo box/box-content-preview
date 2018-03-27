@@ -16,5 +16,8 @@
         "declaration-no-important": true,
         "no-descending-specificity": null,
         "order/properties-alphabetical-order": [true, { "severity": "warning" }]
-    }
+    },
+    "ignoreFiles": [
+        "**/*.md"
+    ]
 }

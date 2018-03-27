@@ -5,7 +5,7 @@ let logger;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/Logger', () => {
-    let dateNowStub = sandbox.stub(Date, 'now');
+    const dateNowStub = sandbox.stub(Date, 'now');
 
     beforeEach(() => {
         dateNowStub.returns(0);
@@ -41,7 +41,7 @@ describe('lib/Logger', () => {
     });
 
     it('should set and get correctly', () => {
-        dateNowStub.returns(0); 
+        dateNowStub.returns(0);
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });

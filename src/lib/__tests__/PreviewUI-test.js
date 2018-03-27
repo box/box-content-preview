@@ -8,7 +8,10 @@ const sandbox = sinon.sandbox.create();
 describe('lib/PreviewUI', () => {
     let containerEl;
     let options;
+
+    /* eslint-disable require-jsdoc */
     const handler = () => {};
+    /* eslint-enable require-jsdoc */
 
     before(() => {
         fixture.setBase('src/lib');
@@ -19,7 +22,7 @@ describe('lib/PreviewUI', () => {
         fixture.load('__tests__/PreviewUI-test.html');
         containerEl = document.querySelector('.ui');
         options = {
-            container: containerEl,
+            container: containerEl
         };
     });
 
@@ -34,8 +37,14 @@ describe('lib/PreviewUI', () => {
 
             sandbox.stub(ui.progressBar, 'destroy');
             const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
-            sandbox.mock(contentContainerEl).expects('removeEventListener').withArgs('mousemove', handler);
-            sandbox.mock(document).expects('removeEventListener').withArgs('keydown', handler);
+            sandbox
+                .mock(contentContainerEl)
+                .expects('removeEventListener')
+                .withArgs('mousemove', handler);
+            sandbox
+                .mock(document)
+                .expects('removeEventListener')
+                .withArgs('keydown', handler);
 
             ui.cleanup();
 
@@ -100,8 +109,14 @@ describe('lib/PreviewUI', () => {
             it('should remove nav event listeners if collection only has one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
 
                 ui.showNavigation('1', ['1']);
             });
@@ -109,24 +124,42 @@ describe('lib/PreviewUI', () => {
             it('should reset nav event listeners if collection has more than one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
 
                 ui.showNavigation('1', ['1', '2']);
             });
 
             it('should show left nav arrow if passed in ID is not the first in the collection', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(leftNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(leftNavEl.classList)
+                    .expects('remove')
+                    .withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('2', ['1', '2']);
             });
 
             it('should show right nav arrow if passed in ID is not the last in the collection', () => {
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(rightNavEl).expects('addEventListener').withArgs('click');
-                sandbox.mock(rightNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('addEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl.classList)
+                    .expects('remove')
+                    .withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('1', ['1', '2']);
             });
@@ -134,7 +167,9 @@ describe('lib/PreviewUI', () => {
             it('should add a class if navigation is present', () => {
                 const { contentContainer } = ui;
                 ui.showNavigation('1', ['1']);
-                let isShowingNavigation = contentContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
+                let isShowingNavigation = contentContainer.classList.contains(
+                    constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION
+                );
                 expect(isShowingNavigation).to.be.false;
                 ui.showNavigation('1', ['1', '2']);
                 isShowingNavigation = contentContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
@@ -149,7 +184,10 @@ describe('lib/PreviewUI', () => {
             it('should set up and show print button', () => {
                 const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);
                 buttonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
+                sandbox
+                    .mock(buttonEl)
+                    .expects('addEventListener')
+                    .withArgs('click', handler);
 
                 ui.showPrintButton(handler);
 
@@ -160,11 +198,12 @@ describe('lib/PreviewUI', () => {
 
         describe('showDownloadButton()', () => {
             it('should set up and show download button', () => {
-                const buttonEl = containerEl.querySelector(
-                    constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD
-                );
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
                 buttonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
+                sandbox
+                    .mock(buttonEl)
+                    .expects('addEventListener')
+                    .withArgs('click', handler);
 
                 ui.showDownloadButton(handler);
 
@@ -175,11 +214,12 @@ describe('lib/PreviewUI', () => {
 
         describe('showLoadingDownloadButton()', () => {
             it('should set up and show loading download button', () => {
-                const buttonEl = containerEl.querySelector(
-                    constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD
-                );
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
                 buttonEl.classList.add(constants.CLASS_INVISIBLE);
-                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
+                sandbox
+                    .mock(buttonEl)
+                    .expects('addEventListener')
+                    .withArgs('click', handler);
 
                 ui.showLoadingDownloadButton(handler);
 
@@ -217,7 +257,7 @@ describe('lib/PreviewUI', () => {
             it('should set up the notification', () => {
                 ui.setupNotification();
                 expect(containerEl).to.contain(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
-            })
+            });
         });
     });
 
@@ -265,7 +305,6 @@ describe('lib/PreviewUI', () => {
         });
     });
 
-
     describe('replaceHeader()', () => {
         const newHeader = document.createElement('div');
 
@@ -281,7 +320,6 @@ describe('lib/PreviewUI', () => {
             const baseHeader = containerEl.querySelector('.bp-base-header');
             expect(newHeader).to.have.class('bp-is-hidden');
             expect(baseHeader).to.not.have.class('bp-is-hidden');
-
         });
 
         it('should hide all headers and then show the specified header', () => {
@@ -290,7 +328,6 @@ describe('lib/PreviewUI', () => {
             const baseHeader = containerEl.querySelector('.bp-base-header');
             expect(newHeader).to.not.have.class('bp-is-hidden');
             expect(baseHeader).to.have.class('bp-is-hidden');
-
         });
     });
 });
