@@ -1,3 +1,10 @@
+<a name="1.35.1"></a>
+## <small>1.35.1 (2018-03-27)</small>
+
+* New: Enable Preview support for iWork file types (#741) ([84e0257](https://github.com/box/box-content-preview/commit/84e0257)), closes [#741](https://github.com/box/box-content-preview/issues/741)
+
+
+
 <a name="1.35.0"></a>
 ## 1.35.0 (2018-03-20)
 
