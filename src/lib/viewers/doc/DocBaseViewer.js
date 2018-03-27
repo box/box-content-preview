@@ -17,7 +17,9 @@ import {
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
+    X_BOX_ACCEPT_ENCODING_HEADER,
+    X_BOX_ACCEPT_ENCODING_IDENTITY
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -562,6 +564,12 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders = {
                 'If-None-Match': 'webkit-no-cache'
             };
+        }
+
+        // If range requests are enabled, request the non-gzip compressed version of the representation
+        if (!PDFJS.disableRange) {
+            docInitParams.httpHeaders = docInitParams.httpHeaders || {};
+            docInitParams.httpHeaders[X_BOX_ACCEPT_ENCODING_HEADER] = X_BOX_ACCEPT_ENCODING_IDENTITY;
         }
 
         // Start timing document load

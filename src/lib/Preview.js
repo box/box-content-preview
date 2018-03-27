@@ -867,8 +867,8 @@ class Preview extends EventEmitter {
         //         watermarking, all users except for those collaborated as an `Uploader` will see a watermarked
         //         preview. If the file type cannot be watermarked, users will see a non-watermarked preview if they
         //         are at least a `Viewer-Uploader` and no preview otherwise.
-        // 'none' - Forces non-watermarked previews. If the file type cannot be watermarked or the user is not at least
-        //          a `Viewer-Uploader`, no preview is shown.
+        // 'none' - Forces non-watermarked previews. If the user is not at least a `Viewer-Uploader`, no preview is
+        //          shown.
         this.options.previewWMPref = options.previewWMPref || 'any';
 
         // Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked

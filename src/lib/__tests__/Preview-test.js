@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
-import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
@@ -122,7 +121,8 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview options with function token', () => {
-            const foo = () => {};
+            const foo = () => {}; // eslint-disable-line require-jsdoc
+
             preview.show('123', foo, { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
                 token: foo,
@@ -160,7 +160,7 @@ describe('lib/Preview', () => {
         });
 
         it('should load file matching the passed in file object', () => {
-            const file = {
+            const file123 = {
                 id: '123',
                 permissions: {},
                 shared_link: null,
@@ -175,8 +175,8 @@ describe('lib/Preview', () => {
                 is_download_available: true
             };
 
-            preview.show(file, 'foken');
-            expect(stubs.load).to.be.calledWith(file);
+            preview.show(file123, 'foken');
+            expect(stubs.load).to.be.calledWith(file123);
         });
 
         it('should throw an error if auth token is a random object', () => {
@@ -601,9 +601,12 @@ describe('lib/Preview', () => {
 
             beforeEach(() => {
                 prefetchStub = sandbox.stub();
+
+                /* eslint-disable require-jsdoc */
                 const stubViewer = () => {
                     return { prefetch: prefetchStub };
                 };
+                /* eslint-enable require-jsdoc */
 
                 const mockViewers = [
                     {
@@ -835,7 +838,7 @@ describe('lib/Preview', () => {
 
             preview.download();
 
-            return promise.then((data) => {
+            return promise.then(() => {
                 expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
         });
@@ -984,13 +987,12 @@ describe('lib/Preview', () => {
         });
 
         it('should throw an error if incompatible file object is passed in', () => {
-            const spy = sandbox.spy(preview, 'load');
-            const file = {
+            const invalidFile = {
                 not: 'the',
                 right: 'fields'
             };
 
-            expect(preview.load.bind(preview, file)).to.throw(
+            expect(preview.load.bind(preview, invalidFile)).to.throw(
                 PreviewError,
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
             );
@@ -1468,7 +1470,7 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: 12345
             };
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
             preview.handleFileInfoResponse(stubs.file);
             expect(stopStub).to.be.calledWith();
         });
@@ -1481,9 +1483,12 @@ describe('lib/Preview', () => {
                 addListener: sandbox.stub(),
                 getName: sandbox.stub()
             };
+
+            /* eslint-disable require-jsdoc */
             function Viewer() {
                 return stubs.viewer;
             }
+            /* eslint-enable require-jsdoc */
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
@@ -1780,24 +1785,23 @@ describe('lib/Preview', () => {
         });
 
         it('should emit a metrics message for successful preview', () => {
-            const event_name = 'success';
+            const eventName = 'success';
 
             const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
 
             preview.finishLoading();
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
         });
 
         it('should emit a metrics message for failed preview', () => {
-            const event_name = 'failure';
-            const value = false;
+            const eventName = 'failure';
 
             const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
 
             preview.finishLoading({ error: {} });
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
         });
 
         it('should emit the load event', () => {
@@ -1899,7 +1903,7 @@ describe('lib/Preview', () => {
         });
 
         it('should reset the log retry count if the post fails and retry limit has been reached', () => {
-            const promiseReject = Promise.reject({});
+            const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox.stub(util, 'post').returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
@@ -1912,7 +1916,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
-            const promiseReject = Promise.reject({});
+            const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox
                 .stub(util, 'post')
                 .onCall(0)
