@@ -99,21 +99,15 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
         </div>
-        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${
-    MEDIA_QUALITY_SD
-} tabindex="0" role="menuitemradio">
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${MEDIA_QUALITY_SD} tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">480p</div>
         </div>
-        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${
-    MEDIA_QUALITY_HD
-} tabindex="0" role="menuitemradio">
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${MEDIA_QUALITY_HD} tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">1080p</div>
         </div>
-        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="quality" data-value=${
-    MEDIA_QUALITY_AUTO
-} tabindex="0" role="menuitemradio" aria-checked="true">
+        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="quality" data-value=${MEDIA_QUALITY_AUTO} tabindex="0" role="menuitemradio" aria-checked="true">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
         </div>
