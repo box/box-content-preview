@@ -41,7 +41,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.imageAsset = {
                 destroy: sandbox.stub()
             };
-            const imageAsset = renderer.imageAsset;
+            const { imageAsset } = renderer;
             renderer.destroy();
 
             expect(imageAsset.destroy).to.be.called;
@@ -69,7 +69,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.textureAsset = {
                 destroy: sandbox.stub()
             };
-            const textureAsset = renderer.textureAsset;
+            const { textureAsset } = renderer;
 
             sandbox.stub(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();

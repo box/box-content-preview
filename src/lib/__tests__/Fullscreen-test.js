@@ -80,7 +80,7 @@ describe('lib/Fullscreen', () => {
 
         it('should be called only once when the fullscreenchange event is emitted', () => {
             const spy = sandbox.spy(fullscreen, 'fullscreenchangeHandler');
-            //rebind the dom listeners to use the spy
+            // rebind the dom listeners to use the spy
             fullscreen.bindDOMListeners();
 
             const event = new Event('webkitfullscreenchange');

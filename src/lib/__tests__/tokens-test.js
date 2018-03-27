@@ -1,6 +1,7 @@
 import getTokens from '../tokens';
 
 describe('lib/tokens', () => {
+    /* eslint-disable require-jsdoc */
     function stringTokenFunction() {
         return Promise.resolve('token');
     }
@@ -11,11 +12,10 @@ describe('lib/tokens', () => {
                 [ids[0].replace('file_', '')]: 'token1',
                 [ids[1].replace('file_', '')]: 'token2'
             });
-        } else {
-            return Promise.resolve({
-                [ids[0].replace('file_', '')]: 'token1'
-            });
         }
+        return Promise.resolve({
+            [ids[0].replace('file_', '')]: 'token1'
+        });
     }
 
     function mapTypedIdTokenFunction(ids) {
@@ -24,12 +24,12 @@ describe('lib/tokens', () => {
                 [ids[0]]: 'token1',
                 [ids[1]]: 'token2'
             });
-        } else {
-            return Promise.resolve({
-                [ids[0]]: 'token1'
-            });
         }
+        return Promise.resolve({
+            [ids[0]]: 'token1'
+        });
     }
+    /* eslint-enable require-jsdoc */
 
     describe('getTokens', () => {
         it('should throw an error when no id provided', () => {

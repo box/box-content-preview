@@ -1,26 +1,15 @@
 /* eslint-disable no-unused-expressions */
 import PageControls from '../PageControls';
 import Controls from '../Controls';
-import { CLASS_HIDDEN } from './../constants';
 import fullscreen from '../Fullscreen';
 import Browser from '../Browser';
-import { decodeKeydown } from '../util';
-import { ICON_DROP_DOWN, ICON_DROP_UP } from '../icons/icons';
 
 let pageControls;
-let clock;
 let stubs = {};
 
 const sandbox = sinon.sandbox.create();
 
-const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
-const RESET_TIMEOUT_CLOCK_TICK = 2001;
-
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
-const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-page-num-wrapper';
-const CONTROLS_CURRENT_PAGE = 'bp-current-page';
-const CONTROLS_PAGE_NUM_INPUT_CLASS = 'bp-page-num-input';
-const CONTROLS_TOTAL_PAGES = 'bp-total-pages';
 const PAGE_NUM = 'bp-page-num';
 const PREV_PAGE = 'bp-previous-page';
 const NEXT_PAGE = 'bp-next-page';
@@ -206,7 +195,7 @@ describe('lib/PageControls', () => {
         beforeEach(() => {
             pageControls.currentPageEl = {
                 textContent: '1'
-            }
+            };
         });
 
         describe('getCurrentPageNumber()', () => {
@@ -223,12 +212,11 @@ describe('lib/PageControls', () => {
                 expect(currPageNum).to.equal(3);
             });
         });
-    })
-
+    });
 
     describe('getTotalPages()', () => {
         it('should return the total number of pages', () => {
-            pageControls.add(1 , 10);
+            pageControls.add(1, 10);
             expect(pageControls.getTotalPages()).to.equal(10);
         });
     });
@@ -271,7 +259,7 @@ describe('lib/PageControls', () => {
             };
             pageControls.contentEl = {
                 focus: sandbox.stub()
-            }
+            };
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Explorer');
             stubs.hidePageNumInput = sandbox.stub(pageControls, 'hidePageNumInput');
         });
