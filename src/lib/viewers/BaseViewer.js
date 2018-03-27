@@ -873,8 +873,11 @@ class BaseViewer extends EventEmitter {
             return false;
         }
 
-        const canViewAnnotations = !!(permissions.can_view_annotations_all || permissions.can_view_annotations_self);
-        return !permissions.can_annotate && !canViewAnnotations;
+        return !!(
+            permissions.can_annotate ||
+            permissions.can_view_annotations_all ||
+            permissions.can_view_annotations_self
+        );
     }
 
     /**
@@ -884,7 +887,8 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Do not attempt to fetch annotations if the user cannot create or view annotations
-        if (!this.hasAnnotationPermissions(this.options.file)) {
+        const { permissions } = this.options.file;
+        if (!this.hasAnnotationPermissions(permissions)) {
             return false;
         }
 

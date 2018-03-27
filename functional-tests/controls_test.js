@@ -1,9 +1,9 @@
 const {
     SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_DOC_CURRENT_PAGE,
-    SELECTOR_BOX_PREVIEW_ZOOM_OUT,
+    SELECTOR_BOX_PREVIEW_ZOOM_OUT_BUTTON,
     SELECTOR_DOC_FIRST_PAGE,
-    SELECTOR_BOX_PREVIEW_ZOOM_IN,
+    SELECTOR_BOX_PREVIEW_ZOOM_IN_BUTTON,
     SELECTOR_BOX_PREVIEW_NEXT_PAGE,
     SELECTOR_BOX_PREVIEW_PREVIOUS_PAGE,
     SELECTOR_BOX_PREVIEW_NUM_INPUT,
@@ -29,7 +29,7 @@ Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @an
     const origWidth = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollWidth');
     const origHeight = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollHeight');
 
-    zoom(I, SELECTOR_BOX_PREVIEW_ZOOM_OUT);
+    zoom(I, SELECTOR_BOX_PREVIEW_ZOOM_OUT_BUTTON);
 
     const zoomedOutWidth = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollWidth');
     const zoomedOutHeight = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollHeight');
@@ -38,7 +38,7 @@ Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @an
     assert.ok(parseInt(origHeight, 10) > parseInt(zoomedOutHeight, 10));
 
     // zoom in
-    zoom(I, SELECTOR_BOX_PREVIEW_ZOOM_IN);
+    zoom(I, SELECTOR_BOX_PREVIEW_ZOOM_IN_BUTTON);
 
     const zoomedInWidth = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollWidth');
     const zoomedInHeight = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollHeight');
@@ -78,7 +78,8 @@ Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safa
     makeNavAppear(I);
     I.click(SELECTOR_BOX_PREVIEW_PAGE_NUM_WRAPPER);
     I.waitForVisible(SELECTOR_BOX_PREVIEW_NUM_INPUT);
-    I.fillField(SELECTOR_BOX_PREVIEW_NUM_INPUT, '2');
+    I.click(SELECTOR_BOX_PREVIEW_NUM_INPUT);
+    I.pressKey('2');
     I.pressKey('Enter');
     I.waitForVisible(SELECTOR_BOX_PREVIEW_NEXT_PAGE);
     I.seeElement(SECOND_PAGE);

@@ -1,11 +1,6 @@
-import {
-    uuidv4,
-    getClientLogDetails,
-    createPreviewError
-} from '../logUtils';
+import { uuidv4, getClientLogDetails } from '../logUtils';
 import { CLIENT_VERSION } from '../util';
 import Browser from '../Browser';
-
 
 const sandbox = sinon.sandbox.create();
 

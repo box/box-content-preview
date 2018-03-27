@@ -40,7 +40,8 @@ export const ERROR_CODE = {
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
     CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
     VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
-    CONTENT_DOWNLOAD: 'error_content_download'
+    CONTENT_DOWNLOAD: 'error_content_download',
+    FLASH_NOT_ENABLED: 'error_flash_not_enabled'
 };
 
 export const PREVIEW_LOAD_EVENT = '';

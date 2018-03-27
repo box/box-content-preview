@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
-import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
@@ -110,6 +109,7 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.load = sandbox.stub(preview, 'load');
             stubs.updateCollection = sandbox.stub(preview, 'updateCollection');
+            stubs.parseOptions = sandbox.stub();
         });
 
         it('should set the preview options with string token', () => {
@@ -121,7 +121,8 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview options with function token', () => {
-            const foo = () => {};
+            const foo = () => {}; // eslint-disable-line require-jsdoc
+
             preview.show('123', foo, { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
                 token: foo,
@@ -159,7 +160,7 @@ describe('lib/Preview', () => {
         });
 
         it('should load file matching the passed in file object', () => {
-            const file = {
+            const file123 = {
                 id: '123',
                 permissions: {},
                 shared_link: null,
@@ -174,8 +175,8 @@ describe('lib/Preview', () => {
                 is_download_available: true
             };
 
-            preview.show(file, 'foken');
-            expect(stubs.load).to.be.calledWith(file);
+            preview.show(file123, 'foken');
+            expect(stubs.load).to.be.calledWith(file123);
         });
 
         it('should throw an error if auth token is a random object', () => {
@@ -187,6 +188,20 @@ describe('lib/Preview', () => {
                 expect(spy.threw());
                 expect(e.message).to.equal('Bad access token!');
             }
+        });
+
+        it('should parse the preview options', () => {
+            preview.retryCount = 0;
+            preview.parseOptions = stubs.parseOptions;
+
+            const token = 'token';
+            const options = {
+                foo: 'bar'
+            };
+
+            preview.show(file, token, options);
+
+            expect(stubs.parseOptions).to.be.calledWith(Object.assign({}, options, { token }));
         });
     });
 
@@ -298,7 +313,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview collection to an array of file ids when files passed in', () => {
-            let files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
+            const files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
             expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
@@ -586,9 +601,12 @@ describe('lib/Preview', () => {
 
             beforeEach(() => {
                 prefetchStub = sandbox.stub();
+
+                /* eslint-disable require-jsdoc */
                 const stubViewer = () => {
                     return { prefetch: prefetchStub };
                 };
+                /* eslint-enable require-jsdoc */
 
                 const mockViewers = [
                     {
@@ -820,7 +838,7 @@ describe('lib/Preview', () => {
 
             preview.download();
 
-            return promise.then((data) => {
+            return promise.then(() => {
                 expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
         });
@@ -908,7 +926,7 @@ describe('lib/Preview', () => {
         it('should fetch file from cache and convert file id to string when file id passed as a number', () => {
             const fileId = 123;
             preview.load(fileId);
-            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId : fileId.toString() });
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId: fileId.toString() });
         });
 
         it('should fetch file from cache using file version ID as key if file version ID is in options', () => {
@@ -969,13 +987,12 @@ describe('lib/Preview', () => {
         });
 
         it('should throw an error if incompatible file object is passed in', () => {
-            const spy = sandbox.spy(preview, 'load');
-            const file = {
+            const invalidFile = {
                 not: 'the',
                 right: 'fields'
             };
 
-            expect(preview.load.bind(preview, file)).to.throw(
+            expect(preview.load.bind(preview, invalidFile)).to.throw(
                 PreviewError,
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
             );
@@ -1005,7 +1022,6 @@ describe('lib/Preview', () => {
     describe('handleTokenResponse()', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
-            stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
             stubs.setupUI = sandbox.stub(preview, 'setupUI');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
@@ -1018,14 +1034,20 @@ describe('lib/Preview', () => {
 
             preview.handleTokenResponse({});
             expect(stubs.loadFromServer).to.be.called;
-            expect(stubs.parseOptions).to.not.be.called;
         });
 
-        it('should parse the preview options', () => {
+        it('should set the token option', () => {
             preview.retryCount = 0;
+            const TOKEN = 'bar';
+            const FILE_ID = '123';
+            preview.file = {
+                id: FILE_ID
+            };
+            preview.handleTokenResponse({
+                [FILE_ID]: TOKEN
+            });
 
-            preview.handleTokenResponse({});
-            expect(stubs.parseOptions).to.be.called;
+            expect(preview.options.token).to.equal(TOKEN);
         });
 
         it('should setup UI', () => {
@@ -1091,9 +1113,6 @@ describe('lib/Preview', () => {
             stubs.assign = sandbox.spy(Object, 'assign');
             stubs.disableViewers = sandbox.stub(preview, 'disableViewers');
             stubs.enableViewers = sandbox.stub(preview, 'enableViewers');
-            stubs.tokens = {
-                0: 'file0'
-            };
 
             preview.file = {
                 id: 0
@@ -1101,83 +1120,78 @@ describe('lib/Preview', () => {
         });
 
         it('should use the saved preview options', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(stubs.assign).to.be.calledWith(preview.previewOptions);
         });
 
         it('should set the container', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.container).to.equal(containerEl);
         });
 
-        it('should set the token based on the file id', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.token).to.equal(stubs.tokens[0]);
-        });
-
         it('should set shared link and shared link password', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.sharedLink).to.equal(stubs.sharedLink);
             expect(preview.options.sharedLinkPassword).to.equal(stubs.sharedLinkPassword);
         });
 
         it('should save a reference to the api host', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.apiHost).to.equal('endpoint');
 
             // Check default
             preview.previewOptions.apiHost = undefined;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.apiHost).to.equal('https://api.box.com');
         });
 
         it('should save a reference to the app host', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.appHost).to.equal(stubs.appHost);
 
             // Check default
             preview.previewOptions.appHost = undefined;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.appHost).to.equal('https://app.box.com');
         });
 
         it('should set whether to show the header or a custom logo', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.header).to.equal(stubs.header);
             expect(preview.options.logoUrl).to.equal(stubs.logoUrl);
 
             preview.previewOptions.header = undefined;
             preview.previewOptions.logoUrl = undefined;
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.header).to.equal('light');
             expect(preview.options.logoUrl).to.equal('');
         });
 
         it('should set whether to show a download link or annotations', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.showDownload).to.be.true;
             expect(preview.options.showAnnotations).to.be.true;
         });
 
         it('should set whether to skip load from the server and any server updates', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).to.be.false;
 
             preview.previewOptions.skipServerUpdate = true;
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).to.be.true;
         });
 
         it('should set whether to fix dependencies', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.options.fixDependencies).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
             const expectedLoaders = stubs.loaders.concat(loaders);
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(preview.loaders[0]).to.equal(expectedLoaders[0]);
             expect(preview.loaders).to.deep.equal(expectedLoaders);
         });
@@ -1192,7 +1206,7 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            preview.parseOptions(preview.previewOptions);
             expect(stubs.disableViewers).to.be.calledWith('Office');
             expect(stubs.enableViewers).to.be.calledWith('text');
         });
@@ -1456,7 +1470,7 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: 12345
             };
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
             preview.handleFileInfoResponse(stubs.file);
             expect(stopStub).to.be.calledWith();
         });
@@ -1469,9 +1483,12 @@ describe('lib/Preview', () => {
                 addListener: sandbox.stub(),
                 getName: sandbox.stub()
             };
+
+            /* eslint-disable require-jsdoc */
             function Viewer() {
                 return stubs.viewer;
             }
+            /* eslint-enable require-jsdoc */
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
@@ -1537,9 +1554,7 @@ describe('lib/Preview', () => {
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(e.message).to.equal(
-                    util.replacePlaceholders(__('error_unsupported'), ['ZIP'])
-                );
+                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), ['ZIP']));
             }
         });
 
@@ -1770,24 +1785,23 @@ describe('lib/Preview', () => {
         });
 
         it('should emit a metrics message for successful preview', () => {
-            const event_name = 'success';
+            const eventName = 'success';
 
             const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
 
             preview.finishLoading();
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
         });
 
         it('should emit a metrics message for failed preview', () => {
-            const event_name = 'failure';
-            const value = false;
+            const eventName = 'failure';
 
             const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
 
             preview.finishLoading({ error: {} });
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: event_name });
+            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
         });
 
         it('should emit the load event', () => {
@@ -1889,7 +1903,7 @@ describe('lib/Preview', () => {
         });
 
         it('should reset the log retry count if the post fails and retry limit has been reached', () => {
-            const promiseReject = Promise.reject({});
+            const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox.stub(util, 'post').returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
@@ -1902,7 +1916,7 @@ describe('lib/Preview', () => {
         });
 
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
-            const promiseReject = Promise.reject({});
+            const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox
                 .stub(util, 'post')
                 .onCall(0)

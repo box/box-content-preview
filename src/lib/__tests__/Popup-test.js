@@ -107,7 +107,7 @@ describe('lib/Popup', () => {
         });
 
         it('should set the button handler if it exists', () => {
-            const handler = () => {};
+            const handler = () => {}; // eslint-disable-line require-jsdoc
 
             popup.show('message', 'button', undefined);
             expect(popup.buttonEl.handler).to.equal(undefined);

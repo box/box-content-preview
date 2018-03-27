@@ -216,6 +216,9 @@ class Preview extends EventEmitter {
         // if proper valid file objects were passed in.
         this.updateCollection(options.collection);
 
+        // Parse the preview options
+        this.parseOptions(this.previewOptions);
+
         // Load the preview
         this.load(fileIdOrFile);
     }
@@ -750,8 +753,8 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Parse the preview options supplied by show()
-        this.parseOptions(this.previewOptions, tokenMap);
+        // Set the authorization token
+        this.options.token = tokenMap[this.file.id];
 
         this.setupUI();
 
@@ -795,10 +798,9 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {Object} previewOptions - Options specified by show()
-     * @param {Object} tokenMap - Map of file ID to access token
      * @return {void}
      */
-    parseOptions(previewOptions, tokenMap) {
+    parseOptions(previewOptions) {
         const options = Object.assign({}, previewOptions);
 
         // Reset all options
@@ -806,9 +808,6 @@ class Preview extends EventEmitter {
 
         // Container for preview
         this.options.container = options.container;
-
-        // Authorization token
-        this.options.token = tokenMap[this.file.id];
 
         // Shared link URL
         this.options.sharedLink = options.sharedLink;

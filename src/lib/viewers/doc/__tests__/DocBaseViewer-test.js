@@ -962,7 +962,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
-            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
             sandbox.stub(docBase, 'startLoadTimer');
             docBase.initViewer('url');
@@ -980,7 +980,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 locale: 'en-US'
             };
 
-            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
 
             return docBase.initViewer('url').catch(() => {
                 expect(stubs.handleDownloadError).to.be.called;
@@ -1553,9 +1553,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         beforeEach(() => {
             event = {
-                touches: {
-                    length: 2
-                },
                 stopPropagation: sandbox.stub(),
                 preventDefault: sandbox.stub(),
                 pageX: 0,

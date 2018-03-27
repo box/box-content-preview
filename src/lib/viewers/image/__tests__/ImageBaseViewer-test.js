@@ -34,12 +34,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
         imageBase.containerEl = containerEl;
         imageBase.imageEl = document.createElement('div');
-
-        event = {
-            preventDefault: sandbox.stub(),
-            stopPropagation: sandbox.stub(),
-            touches: [0, 0]
-        };
     });
 
     afterEach(() => {
@@ -52,7 +46,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         imageBase = null;
         stubs = {};
-        event = {};
     });
 
     describe('destroy()', () => {
@@ -258,7 +251,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 getAttribute: (name) => imageEl[name]
             };
 
-            const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
+            sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise
                 .then(() => {
@@ -273,7 +266,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         it('should resolve when the get call fails', (done) => {
             const imageEl = {};
-            const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
+            sandbox.stub(util, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise.then(() => Assert.fail()).catch(() => done());
         });
@@ -550,7 +543,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         beforeEach(() => {
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
                 value: sandbox.stub()
-            });        
+            });
         });
 
         afterEach(() => {
@@ -560,11 +553,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
 
         it('should call the parent method with an error display message and the image URL', () => {
-            const err = new Error('downloadError')
+            const err = new Error('downloadError');
 
             imageBase.handleDownloadError(err, 'foo');
 
-            const [ error, URL ] = BaseViewer.prototype.handleDownloadError.getCall(0).args;
+            const [error, URL] = BaseViewer.prototype.handleDownloadError.getCall(0).args;
             expect(URL).to.equal('foo');
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_content_download');
@@ -582,9 +575,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                     id: 1
                 },
                 viewer: {
-                    viewerName: "Image"
+                    viewerName: 'Image'
                 }
-            }
+            };
         });
 
         it('should do nothing if already destroyed', () => {

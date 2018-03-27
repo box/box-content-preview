@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import createReactClass from 'create-react-class';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
@@ -81,7 +81,11 @@ describe('lib/viewers/text/CSVViewer', () => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns(workerUrl));
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.mock() });
 
-            sandbox.mock(util).expects('get').withArgs(workerUrl, 'blob').returns(Promise.resolve(blob));
+            sandbox
+                .mock(util)
+                .expects('get')
+                .withArgs(workerUrl, 'blob')
+                .returns(Promise.resolve(blob));
 
             return csv.load().then(() => {
                 expect(URL.createObjectURL).to.be.calledWith(blob);
@@ -111,8 +115,7 @@ describe('lib/viewers/text/CSVViewer', () => {
         });
         /* eslint-enable no-undef */
 
-
-        it('should invoke startLoadTimer()', () => {            
+        it('should invoke startLoadTimer()', () => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.stub() });
             csv.options.token = 'token';
@@ -138,14 +141,20 @@ describe('lib/viewers/text/CSVViewer', () => {
             const contentUrl = 'someContentUrl';
             sandbox.stub(csv, 'createContentUrlWithAuthParams').returns(contentUrl);
             sandbox.stub(csv, 'isRepresentationReady').returns(true);
-            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+            sandbox
+                .mock(util)
+                .expects('get')
+                .withArgs(contentUrl, 'any');
 
             csv.prefetch({ assets: false, content: true });
         });
 
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(csv, 'isRepresentationReady').returns(false);
-            sandbox.mock(util).expects('get').never();
+            sandbox
+                .mock(util)
+                .expects('get')
+                .never();
             csv.prefetch({ assets: false, content: true });
         });
     });
@@ -170,6 +179,7 @@ describe('lib/viewers/text/CSVViewer', () => {
 
     describe('finishLoading()', () => {
         it('should render CSV and finish setting up UI', () => {
+            /* eslint-disable react/prefer-es6-class */
             window.BoxCSV = createReactClass({
                 destroy: sandbox.stub(),
                 renderCSV: sandbox.mock(),
@@ -177,6 +187,7 @@ describe('lib/viewers/text/CSVViewer', () => {
                     return '';
                 }
             });
+            /* eslint-enable react/prefer-es6-class */
             sandbox.stub(csv, 'loadUI');
             sandbox.stub(csv, 'emit');
 
