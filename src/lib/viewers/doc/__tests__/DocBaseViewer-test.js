@@ -761,7 +761,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('onKeyDown()', () => {
+    describe('onKeydown()', () => {
         beforeEach(() => {
             stubs.previousPage = sandbox.stub(docBase, 'previousPage');
             stubs.nextPage = sandbox.stub(docBase, 'nextPage');
@@ -783,6 +783,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const rightBracket = docBase.onKeydown(']');
             expect(stubs.nextPage).to.be.called.once;
             expect(rightBracket).to.equal(true);
+        });
+
+        it('should call the findBar onKeydown if present', () => {
+            const keys = 'ctrl+f';
+            const mockEvent = sandbox.stub();
+            const onKeydownStub = sandbox.stub().withArgs(mockEvent);
+            docBase.findBar = {
+                onKeydown: onKeydownStub,
+                destroy: sandbox.stub()
+            };
+            docBase.onKeydown(keys, mockEvent);
+            expect(onKeydownStub).to.have.been.calledOnce;
         });
 
         it('should return false if there is no match', () => {
