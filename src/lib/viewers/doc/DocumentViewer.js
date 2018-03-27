@@ -38,9 +38,10 @@ class DocumentViewer extends DocBaseViewer {
      *
      * @override
      * @param {string} key - Keydown key
+     * @param {Object} event - Key event
      * @return {boolean} Consumed or not
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         if (key === 'Shift++') {
             this.zoomIn();
             return true;
@@ -55,7 +56,7 @@ class DocumentViewer extends DocBaseViewer {
             return true;
         }
 
-        return super.onKeydown(key);
+        return super.onKeydown(key, event);
     }
 
     //--------------------------------------------------------------------------
