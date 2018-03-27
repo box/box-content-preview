@@ -15,7 +15,7 @@ const VIEWERS = [
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
-        EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx']
+        EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx', 'key']
     },
     {
         NAME: 'Document',

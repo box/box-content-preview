@@ -254,7 +254,7 @@ describe('lib/Controls', () => {
 
     describe('clickHandler()', () => {
         it('should stop block hiding', () => {
-            controls.clickHandler(event);
+            controls.clickHandler();
             expect(controls.shouldHide).to.be.true;
         });
     });
@@ -297,5 +297,5 @@ describe('lib/Controls', () => {
             document.activeElement.classList.remove('bp-page-num-input');
             expect(controls.isPageNumFocused()).to.be.false;
         });
-    })
+    });
 });

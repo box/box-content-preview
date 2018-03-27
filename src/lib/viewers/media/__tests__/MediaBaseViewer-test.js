@@ -2,8 +2,6 @@
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
-import Cache from '../../../Cache';
-import PreviewError from '../../../PreviewError';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -189,11 +187,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('errorHandler()', () => {
         it('should handle download error if the viewer was not yet loaded', () => {
-            media.mediaUrl = 'foo'
+            media.mediaUrl = 'foo';
             sandbox.stub(media, 'isLoaded').returns(false);
             sandbox.stub(media, 'handleDownloadError');
             const err = new Error();
-          
+
             media.errorHandler(err);
 
             expect(media.handleDownloadError).to.be.calledWith(sinon.match.has('code'), 'foo');
@@ -203,7 +201,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'isLoaded').returns(true);
             sandbox.stub(media, 'triggerError');
             const err = new Error();
-          
+
             media.errorHandler(err);
 
             expect(media.triggerError).to.be.calledWith(sinon.match.has('code'));
@@ -582,7 +580,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('pause()', () => {
         it('should pause the media when no time parameter is passed', () => {
-            const pauseListener = () => {};
+            const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
                 pause: sandbox.stub()
@@ -597,7 +595,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         it('should add eventListener to pause the media when valid time parameter is passed', () => {
-            const pauseListener = () => {};
+            const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
                 addEventListener: sandbox.stub()

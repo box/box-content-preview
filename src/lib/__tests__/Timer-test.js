@@ -17,21 +17,21 @@ describe('lib/Timer', () => {
             Timer.start(tag);
             expect(Timer.get(tag)).to.exist;
         });
-        
+
         it('should do nothing if it has already been started', () => {
             sandbox.spy(global.performance, 'now');
             Timer.start(tag);
             Timer.start(tag);
             expect(global.performance.now).to.be.calledOnce;
         });
-        
+
         it('should set time.start to current time, using performance', () => {
             const time = 100;
             sandbox.stub(global.performance, 'now').returns(time);
             Timer.start(tag);
             expect(Timer.get(tag).start).to.equal(time);
         });
-        
+
         it('should reset end and elapsed of the time object', () => {
             // Setup so that we can call start again, but elapsed and end have value in them
             Timer.start(tag);
@@ -55,7 +55,7 @@ describe('lib/Timer', () => {
 
         it('should do nothing if no time has been started', () => {
             sandbox.spy(global.performance, 'now');
-            Timer.times[tag] = { start: undefined }
+            Timer.times[tag] = { start: undefined };
 
             Timer.stop(tag);
             expect(global.performance.now).to.not.be.called;
@@ -63,7 +63,7 @@ describe('lib/Timer', () => {
 
         it('should do nothing if it has already been stopped', () => {
             sandbox.spy(global.performance, 'now');
-            Timer.times[tag] = { start: 1234, end: 2234 }
+            Timer.times[tag] = { start: 1234, end: 2234 };
 
             Timer.stop(tag);
             expect(global.performance.now).to.not.be.called;
@@ -71,7 +71,7 @@ describe('lib/Timer', () => {
 
         it('should set the end prop, and calculate the elapsed time', () => {
             sandbox.stub(global.performance, 'now').returns(5);
-            Timer.times[tag] = { start: 3 }
+            Timer.times[tag] = { start: 3 };
 
             Timer.stop(tag);
             expect(Timer.get(tag).elapsed).to.equal(2); // 5 - 3 = 2
@@ -104,7 +104,7 @@ describe('lib/Timer', () => {
 
         it('should reset all of the time structures, when no params supplied', () => {
             Timer.start(tag);
-            Timer.stop(tag);            
+            Timer.stop(tag);
             const other = 'another_tag';
             Timer.start(other);
             Timer.stop(other);
@@ -122,8 +122,8 @@ describe('lib/Timer', () => {
 
     describe('createTag()', () => {
         it('should create a compliant tag that follows file_<ID>_<NAME>', () => {
-            const tag = Timer.createTag('my_id', 'my_name');
-            expect(tag).to.equal('file_my_id_my_name');
+            const createdTag = Timer.createTag('my_id', 'my_name');
+            expect(createdTag).to.equal('file_my_id_my_name');
         });
     });
 

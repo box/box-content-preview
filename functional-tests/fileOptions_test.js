@@ -7,10 +7,11 @@ const {
     SELECTOR_BOX_PREVIEW_DOC,
     SELECTOR_BOX_PREVIEW_MP3,
     SELECTOR_BOX_PREVIEW_DASH,
-    SELECTOR_BOX_PREVIEW_MP4
+    SELECTOR_BOX_PREVIEW_MP4,
+    SELECTOR_BOX_PREVIEW_ERROR
 } = require('./constants');
 
-const { navigateToNextItem, makeNavAppear, navigateToPrevItem } = require('./helpers');
+const { navigateToNextItem, makeNavAppear, navigateToPrevItem, waitForLoad } = require('./helpers');
 
 const { CI } = process.env;
 const DOC_START = '2';
@@ -23,14 +24,15 @@ Feature('File Options', { retries: CI ? 3 : 0 });
 
 Before((I) => {
     I.amOnPage('/functional-tests/file-options.html');
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
     I.waitForElement(SELECTOR_BOX_PREVIEW_LOGO);
+    waitForLoad(I);
     I.waitForElement(SELECTOR_BOX_PREVIEW_DOC);
 });
 
 // Excludes ie
 Scenario(
     'Check preview starts at correct spot for all file types @ci @chrome @firefox @edge @safari @android @ios',
+    { retries: 5 },
     (I) => {
         // document
         makeNavAppear(I);
@@ -39,7 +41,7 @@ Scenario(
         navigateToNextItem(I);
 
         // video (dash)
-        I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+        waitForLoad(I);
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         makeNavAppear(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
@@ -47,6 +49,7 @@ Scenario(
         navigateToNextItem(I);
 
         // mp3
+        waitForLoad(I);
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP3);
         makeNavAppear(I);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
@@ -59,7 +62,7 @@ Scenario(
         });
         I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
         /* eslint-enable prefer-arrow-callback */
-        I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+        waitForLoad(I);
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
 
         makeNavAppear(I, SELECTOR_VIDEO);
@@ -69,7 +72,7 @@ Scenario(
 );
 
 // Sacuelabs ie11 doesn't like audio files
-Scenario('Check preview starts at correct spot for all file types @ci @ie', (I) => {
+Scenario('Check preview starts at correct spot for all file types @ci @ie', { retries: 5 }, (I) => {
     // document
     makeNavAppear(I);
     I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
@@ -77,6 +80,7 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', (I) 
     navigateToNextItem(I);
 
     // video (dash)
+    waitForLoad(I);
     I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
     makeNavAppear(I, SELECTOR_VIDEO);
     I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
@@ -86,14 +90,14 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', (I) 
     navigateToPrevItem(I);
     // video (mp4)
     /* eslint-disable prefer-arrow-callback */
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+    waitForLoad(I);
 
     I.executeScript(function() {
         window.disableDash();
     });
     /* eslint-enable prefer-arrow-callback */
 
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+    waitForLoad(I);
     I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
 
     makeNavAppear(I, SELECTOR_VIDEO);

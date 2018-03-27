@@ -61,7 +61,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should not call Box3D cleanup path if no Box3D engine', () => {
-            sandbox.mock(renderer).expects('disableVr').never();
+            sandbox
+                .mock(renderer)
+                .expects('disableVr')
+                .never();
             renderer.box3d = null;
             renderer.destroy();
         });
@@ -267,7 +270,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                     two: 'b'
                 };
 
-                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader, entities) => {
+                sandbox.stub(renderer, 'createBox3d').callsFake((loader, entities) => {
                     expect(entities).to.deep.equal(expectedEntities);
                     done();
                 });
@@ -279,7 +282,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
 
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
-                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader) => {
+                const createBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader) => {
                     sandbox.stub(loader.queue, 'add').callsFake((fn) => fn());
                     const resource = {
                         once: (event, cb) => cb()
@@ -288,7 +291,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
                     loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
-                    expect(creatBox3DStub).to.be.called;
+                    expect(createBox3DStub).to.be.called;
                     done();
                 });
 
@@ -367,10 +370,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                     this.getAssetByClass = sandbox.stub().returns({
                         load: function load() {}
                     });
-                    this.canvas = { addEventListener: () => {}};
+                    this.canvas = { addEventListener: () => {} };
                     sandbox.stub(this.canvas, 'addEventListener').callsFake(() => {
-                        renderer.handleContextRestored()
-                    })
+                        renderer.handleContextRestored();
+                    });
                 }
             };
             window.Box3D = Box3DFake;
@@ -578,9 +581,11 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
     describe('resize()', () => {
         it('should do nothing if Box3D doesn\'t exist', () => {
+            /* eslint-disable require-jsdoc */
             const shouldNotThrow = () => {
                 renderer.resize();
             };
+            /* eslint-enable require-jsdoc */
 
             expect(shouldNotThrow).to.not.throw(Error);
         });
@@ -589,7 +594,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             renderer.box3d = {
                 trigger: () => {}
             };
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('resize');
+            sandbox
+                .mock(renderer.box3d)
+                .expects('trigger')
+                .withArgs('resize');
             renderer.resize();
         });
     });
@@ -607,7 +615,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should enable the component if it available on the camera', () => {
             const component = { enable: sandbox.stub() };
-            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            cameraMock
+                .expects('getComponentByScriptId')
+                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
+                .returns(component);
             renderer.enableCameraControls();
             expect(component.enable).to.be.called;
         });
@@ -626,7 +637,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should disable the component if it available on the camera', () => {
             const component = { disable: sandbox.stub() };
-            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            cameraMock
+                .expects('getComponentByScriptId')
+                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
+                .returns(component);
             renderer.disableCameraControls();
             expect(component.disable).to.be.called;
         });

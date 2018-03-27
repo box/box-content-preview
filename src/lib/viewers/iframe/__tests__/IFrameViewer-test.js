@@ -87,10 +87,10 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
         });
 
         it('should invoke startLoadTimer()', () => {
-            sandbox.stub(iframe, 'startLoadTimer');
+            const stub = sandbox.stub(iframe, 'startLoadTimer');
             iframe.load();
 
-            expect(iframe.startLoadTimer).to.be.called;
+            expect(stub).to.have.been.called; // eslint-disable-line no-unused-expressions
         });
     });
 });
