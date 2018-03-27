@@ -255,16 +255,22 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
 
         describe('registerItem()', () => {
             it('should throw an error if no uniqueId provided', () => {
+                /* eslint-disable require-jsdoc */
                 const registerFail = () => {
                     registry.registerItem();
                 };
+                /* eslint-enable require-jsdoc */
+
                 expect(registerFail).to.throw(Error);
             });
 
             it('should throw an error if no element provided', () => {
+                /* eslint-disable require-jsdoc */
                 const registerFail = () => {
                     registry.registerItem('uuid');
                 };
+                /* eslint-enable require-jsdoc */
+
                 expect(registerFail).to.throw(Error);
             });
 
@@ -408,7 +414,7 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
             });
 
             it('should remove the list of events from the registry, for an item', () => {
-                const events = registeredItem.events;
+                const { events } = registeredItem;
                 const eventNames = Object.keys(registeredItem.events);
 
                 registry.unregisterItem(registeredItem);

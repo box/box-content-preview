@@ -279,26 +279,32 @@ describe('lib/util', () => {
 
         it('should append query params to url', () => {
             const url = 'foo';
-            expect(util.appendQueryParams(url, {
-                foo: 'bar',
-                baz: 'boo'
-            })).to.equal(`${url}/?foo=bar&baz=boo`);
+            expect(
+                util.appendQueryParams(url, {
+                    foo: 'bar',
+                    baz: 'boo'
+                })
+            ).to.equal(`${url}/?foo=bar&baz=boo`);
         });
 
         it('should correctly append new query params to url', () => {
             const url = 'foo?test=hah';
-            expect(util.appendQueryParams(url, {
-                foo: 'bar',
-                baz: 'boo'
-            })).to.equal(`foo/?test=hah&foo=bar&baz=boo`);
+            expect(
+                util.appendQueryParams(url, {
+                    foo: 'bar',
+                    baz: 'boo'
+                })
+            ).to.equal('foo/?test=hah&foo=bar&baz=boo');
         });
 
         it('should replace values for existing keys', () => {
-            const url = 'test.com/?foo=hah'
-            expect(util.appendQueryParams(url, {
-                foo: 'bar',
-                baz: 'boo'
-            })).to.equal('test.com/?foo=bar&baz=boo');
+            const url = 'test.com/?foo=hah';
+            expect(
+                util.appendQueryParams(url, {
+                    foo: 'bar',
+                    baz: 'boo'
+                })
+            ).to.equal('test.com/?foo=bar&baz=boo');
         });
     });
 
@@ -387,22 +393,22 @@ describe('lib/util', () => {
         describe('prefetchAssets()', () => {
             it('should insert links into the document', () => {
                 util.prefetchAssets(['foo', 'bar']);
-                const head = document.head;
+                const { head } = document;
                 assert.ok(head.querySelector('link[rel="prefetch"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="prefetch"][href="bar"]') instanceof HTMLLinkElement);
             });
 
             it('should insert links with preload if specified', () => {
                 util.prefetchAssets(['foo'], true);
-                const head = document.head;
+                const { head } = document;
                 assert.ok(head.querySelector('link[rel="preload"][href="foo"]') instanceof HTMLLinkElement);
-            })
+            });
         });
 
         describe('loadStylesheets()', () => {
             it('should insert styles into the document', () => {
                 util.loadStylesheets(['foo', 'bar']);
-                const head = document.head;
+                const { head } = document;
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="bar"]') instanceof HTMLLinkElement);
             });
@@ -411,21 +417,24 @@ describe('lib/util', () => {
         describe('loadScripts()', () => {
             it('should insert scripts into the document', () => {
                 util.loadScripts(['foo', 'bar']).catch(() => {});
-                const head = document.head;
+                const { head } = document;
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
 
             it('should disable AMD until scripts are loaded or fail to load', () => {
+                /* eslint-disable require-jsdoc */
                 const defineFunc = () => {};
+                /* eslint-enable require-jsdoc */
+
                 defineFunc.amd = { jquery: '' };
                 window.define = defineFunc;
 
                 const promise = util.loadScripts(['foo', 'bar'], true);
-                expect(define).to.equal(undefined);
+                expect(window.define).to.equal(undefined);
 
                 return promise.then(() => {
-                    expect(define).to.equal(defineFunc);
+                    expect(window.define).to.equal(defineFunc);
                 });
             });
         });
@@ -731,17 +740,17 @@ describe('lib/util', () => {
                 last: {
                     id: 2
                 }
-            }
+            };
 
             const midpointStub = sandbox.stub(document, 'querySelector');
             midpointStub.onCall(0).returns(page1);
             midpointStub.onCall(1).returns(page2);
 
             sandbox.stub(util, 'getMidpoint').returns([0, 0]);
-            const distanceStub = sandbox.stub(util, 'getDistance').returns(100)
+            sandbox.stub(util, 'getDistance').returns(100);
 
             const result = util.getClosestPageToPinch(0, 0, visiblePages);
-            expect(result.id).to.equal(page1.id)
+            expect(result.id).to.equal(page1.id);
         });
 
         it('should return null if there are no pages', () => {
@@ -779,7 +788,7 @@ describe('lib/util', () => {
     describe('getProp()', () => {
         it('should return prop value as specified by path', () => {
             const someProp = 'some-prop';
-            let a = {
+            const a = {
                 b: {
                     c: 'value',
                     b: ''
@@ -795,7 +804,7 @@ describe('lib/util', () => {
         });
 
         it('should return default value if prop does not exist or value is undefined', () => {
-            let a = {
+            const a = {
                 b: {},
                 test: undefined,
                 foo: null
@@ -837,8 +846,7 @@ describe('lib/util', () => {
             ['https://baz.ent.boxenterprise.net', true],
             ['https://haha.box.net', false],
             ['https://some.other.domain', false]
-        ]
-        .forEach(([hostname, expectedResult]) => {
+        ].forEach(([hostname, expectedResult]) => {
             it('should return true when window location is a Box domain', () => {
                 sandbox.stub(Location, 'getHostname').returns(hostname);
                 expect(util.isBoxWebApp()).to.equal(expectedResult);
@@ -847,14 +855,12 @@ describe('lib/util', () => {
     });
 
     describe('convertWatermarkPref()', () => {
-        [
-            ['any', ''],
-            ['all', 'only_watermarked'],
-            ['none', 'only_non_watermarked']
-        ].forEach(([previewWMPref, expected]) => {
-            it('should convert previewWMPref to value expected by the API', () => {
-                expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
-            });
-        });
+        [['any', ''], ['all', 'only_watermarked'], ['none', 'only_non_watermarked']].forEach(
+            ([previewWMPref, expected]) => {
+                it('should convert previewWMPref to value expected by the API', () => {
+                    expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
+                });
+            }
+        );
     });
 });

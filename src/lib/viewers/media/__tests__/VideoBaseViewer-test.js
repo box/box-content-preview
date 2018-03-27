@@ -39,7 +39,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             destroy: sandbox.stub(),
             show: sandbox.stub(),
             toggle: sandbox.stub(),
-            resizeTimeScrubber: sandbox.stub(),
+            resizeTimeScrubber: sandbox.stub()
         };
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -60,7 +60,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('setup()', () => {
         it('should set up media element, play button, and lower lights', () => {
-            const lowerLights = VideoBaseViewer.prototype.lowerLights;
+            const { lowerLights } = VideoBaseViewer.prototype;
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: sandbox.stub()
@@ -124,19 +124,18 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 type: 'touchstart',
                 preventDefault: sandbox.stub(),
                 stopPropagation: sandbox.stub()
-            }
+            };
 
             videoBase.pointerHandler(event);
             expect(event.stopPropagation).to.be.called;
             expect(event.preventDefault).to.be.called;
             expect(videoBase.mediaControls.toggle).to.be.called;
-
         });
 
         it('should toggle play on click', () => {
             const event = {
-                type: 'click',
-            }
+                type: 'click'
+            };
             const togglePlayStub = sandbox.stub(videoBase, 'togglePlay');
 
             videoBase.pointerHandler(event);

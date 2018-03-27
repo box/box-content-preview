@@ -62,8 +62,8 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         multiImage = new MultiImageViewer(options);
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
-        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', { 
-            value: sandbox.stub().returns(Promise.resolve()) 
+        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', {
+            value: sandbox.stub().returns(Promise.resolve())
         });
         multiImage.containerEl = containerEl;
     });
@@ -201,7 +201,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should set the single image el and error handler if it is not the first image', () => {
-            multiImage.singleImageEls = [,stubs.singleImageEl];
+            multiImage.singleImageEls = [null, stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 1);
             expect(multiImage.singleImageEls[1].src).to.not.equal(undefined);
@@ -229,14 +229,10 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
         });
     });
-    
+
     describe('setOriginalImageSize()', () => {
         beforeEach(() => {
-            multiImage.singleImageEls = [
-                stubs.singleImageEl,
-                stubs.singleImageEl,
-                stubs.singleImageEl
-            ];
+            multiImage.singleImageEls = [stubs.singleImageEl, stubs.singleImageEl, stubs.singleImageEl];
         });
 
         it('should return a promise', () => {
@@ -245,7 +241,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should return a promise that resolves after each image has a proper size', (done) => {
-            // We've overridden super.setOriginalImageSize() to resolve immediately 
+            // We've overridden super.setOriginalImageSize() to resolve immediately
             multiImage.setOriginalImageSize().then(() => {
                 done();
             });
@@ -341,10 +337,9 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-
     describe('loadUI()', () => {
         it('should create page controls and bind the page control listeners', () => {
-            stubs.bindPageControlListeners = sandbox.stub(multiImage, 'bindPageControlListeners')
+            stubs.bindPageControlListeners = sandbox.stub(multiImage, 'bindPageControlListeners');
 
             multiImage.loadUI();
             expect(multiImage.pageControls instanceof PageControls).to.be.true;
@@ -360,11 +355,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.pageControls = {
                 add: sandbox.stub(),
                 addListener: sandbox.stub()
-            }
+            };
 
             multiImage.controls = {
                 add: sandbox.stub()
-            }
+            };
         });
 
         it('should add the page controls and bind the pagechange listener', () => {
@@ -377,10 +372,19 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         it('should finish binding the document controls', () => {
             multiImage.bindPageControlListeners();
 
-            expect(multiImage.controls.add).to.be.calledWith(__('enter_fullscreen'), multiImage.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-            expect(multiImage.controls.add).to.be.calledWith(__('exit_fullscreen'), multiImage.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(multiImage.controls.add).to.be.calledWith(
+                __('enter_fullscreen'),
+                multiImage.toggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
+            expect(multiImage.controls.add).to.be.calledWith(
+                __('exit_fullscreen'),
+                multiImage.toggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
         });
-
     });
 
     describe('handleMultiImageDownloadError()', () => {
@@ -395,18 +399,17 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             ];
 
             sandbox.stub(multiImage, 'handleDownloadError');
-            sandbox.stub(multiImage, 'unbindImageListeners')
+            sandbox.stub(multiImage, 'unbindImageListeners');
         });
 
         it('unbind the image listeners, clear the image Els array, and handle the download error', () => {
-            const src = multiImage.singleImageEls[0].src;
-            
+            const { src } = multiImage.singleImageEls[0];
+
             multiImage.handleMultiImageDownloadError('err');
-            
+
             expect(multiImage.singleImageEls).to.deep.equal([]);
             expect(multiImage.handleDownloadError).to.be.calledWith('err', src);
             expect(multiImage.unbindImageListeners).to.be.calledTwice;
-
         });
     });
 
@@ -458,15 +461,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('setPage()', () => {
         beforeEach(() => {
-            multiImage.singleImageEls = [,
-                stubs.singleImageEl,
-                stubs.singleImageEl,
-                stubs.singleImageEl
-            ];
+            multiImage.singleImageEls = [null, stubs.singleImageEl, stubs.singleImageEl, stubs.singleImageEl];
             sandbox.stub(multiImage, 'emit');
             stubs.isValidPageChange = sandbox.stub(multiImage, 'isValidPageChange');
-            stubs.updateCurrentPage = sandbox.stub(multiImage, 'updateCurrentPage')
-        })
+            stubs.updateCurrentPage = sandbox.stub(multiImage, 'updateCurrentPage');
+        });
 
         it('should do nothing if the page change is invalid', () => {
             multiImage.setPage(-2);
@@ -493,10 +492,10 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.isValidPageChange = sandbox.stub(multiImage, 'isValidPageChange');
             multiImage.pageControls = {
                 updateCurrentPage: sandbox.stub()
-            }
+            };
 
             stubs.emit = sandbox.stub(multiImage, 'emit');
-            multiImage.currentPageNumber = 1
+            multiImage.currentPageNumber = 1;
         });
 
         it('should do nothing if the requested page change is invalid', () => {
@@ -539,7 +538,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should return false if the page number is the same as the current page number', () => {
-            let result = multiImage.isValidPageChange(3);
+            const result = multiImage.isValidPageChange(3);
             expect(result).to.be.false;
         });
 
@@ -558,7 +557,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     describe('scrollHandler()', () => {
         beforeEach(() => {
             stubs.requestAnimationFrame = sandbox.stub(window, 'requestAnimationFrame');
-        })
+        });
 
         it('should do nothing if the scroll check handler already exists', () => {
             multiImage.scrollCheckHandler = true;
@@ -585,12 +584,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.wrapperEl = {
                 scrollTop: 100
-            }
+            };
             stubs.wrapperEl = multiImage.wrapperEl;
 
             multiImage.previousScrollTop = 0;
-
-        })
+        });
 
         it('should determine the current page number based on scroll', () => {
             multiImage.handlePageChangeFromScroll();

@@ -218,7 +218,7 @@ describe('lib/file', () => {
         });
 
         it('should append file version to original rep content URL', () => {
-            const cache = {
+            cache = {
                 set: sandbox.stub()
             };
 
@@ -242,7 +242,7 @@ describe('lib/file', () => {
                 file_version: {
                     id: '1234'
                 }
-            }
+            };
 
             cacheFile(cache, file);
             expect(cache.set).to.be.calledWith(`file_${file.id}`, file);
@@ -330,24 +330,15 @@ describe('lib/file', () => {
     });
 
     describe('isVeraProtectedFile()', () => {
-        [
-            'some.vera.pdf.html',
-            '.vera.test.html',
-            'blah.vera..html',
-            'another.vera.3.html',
-            'test.vera.html'
-        ].forEach((fileName) => {
-            it('should return true if file is named like a Vera-protected file', () => {
-                expect(isVeraProtectedFile({ name: fileName })).to.be.true;
-            });
-        });
+        ['some.vera.pdf.html', '.vera.test.html', 'blah.vera..html', 'another.vera.3.html', 'test.vera.html'].forEach(
+            (fileName) => {
+                it('should return true if file is named like a Vera-protected file', () => {
+                    expect(isVeraProtectedFile({ name: fileName })).to.be.true;
+                });
+            }
+        );
 
-        [
-            'vera.pdf.html',
-            'test.vera1.pdf.html',
-            'blah.vera..htm',
-            'another.verahtml',
-        ].forEach((fileName) => {
+        ['vera.pdf.html', 'test.vera1.pdf.html', 'blah.vera..htm', 'another.verahtml'].forEach((fileName) => {
             it('should return false if file is not named like a Vera-protected file', () => {
                 expect(isVeraProtectedFile({ name: fileName })).to.be.false;
             });
@@ -355,23 +346,20 @@ describe('lib/file', () => {
     });
 
     describe('shouldDownloadWM()', () => {
-        [
-            [false, false, false],
-            [false, true, false],
-            [true, true, true],
-            [true, false, false],
-        ].forEach(([downloadWM, isWatermarked, expected]) => {
-            it('should return whether we should download the watermarked representation or original file', () => {
-                const previewOptions = { downloadWM };
-                const file = {
-                    watermark_info: {
-                        is_watermarked: isWatermarked
-                    }
-                };
+        [[false, false, false], [false, true, false], [true, true, true], [true, false, false]].forEach(
+            ([downloadWM, isFileWatermarked, expected]) => {
+                it('should return whether we should download the watermarked representation or original file', () => {
+                    const previewOptions = { downloadWM };
+                    const file = {
+                        watermark_info: {
+                            is_watermarked: isFileWatermarked
+                        }
+                    };
 
-                expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
-            });
-        });
+                    expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
+                });
+            }
+        );
     });
 
     describe('canDownload()', () => {
@@ -406,19 +394,30 @@ describe('lib/file', () => {
             // Can download watermarked (don't need download permission)
             [true, true, false, true, true, false, false, false],
             [true, true, false, true, true, true, false, false],
-            [true, true, false, true, true, true, true, true],
-        ].forEach(([isDownloadable, isDownloadEnabled, hasDownloadPermission, isBrowserSupported, hasPreviewPermission, isWatermarked, downloadWM, expectedResult]) => {
-            it('should return true if original or watermarked file can be downloaded', () => {
-                file.permissions.can_download = hasDownloadPermission;
-                file.permissions.can_preview = hasPreviewPermission;
-                file.is_download_available = isDownloadable;
-                file.watermark_info.is_watermarked = isWatermarked;
-                options.showDownload = isDownloadable;
-                options.downloadWM = downloadWM;
-                sandbox.stub(Browser, 'canDownload').returns(isBrowserSupported);
+            [true, true, false, true, true, true, true, true]
+        ].forEach(
+            ([
+                isDownloadable,
+                isDownloadEnabled, // eslint-disable-line no-unused-vars
+                hasDownloadPermission,
+                isBrowserSupported,
+                hasPreviewPermission,
+                isFileWatermarked,
+                downloadWM,
+                expectedResult
+            ]) => {
+                it('should return true if original or watermarked file can be downloaded', () => {
+                    file.permissions.can_download = hasDownloadPermission;
+                    file.permissions.can_preview = hasPreviewPermission;
+                    file.is_download_available = isDownloadable;
+                    file.watermark_info.is_watermarked = isFileWatermarked;
+                    options.showDownload = isDownloadable;
+                    options.downloadWM = downloadWM;
+                    sandbox.stub(Browser, 'canDownload').returns(isBrowserSupported);
 
-                expect(canDownload(file, options)).to.equal(expectedResult);
-            });
-        });
+                    expect(canDownload(file, options)).to.equal(expectedResult);
+                });
+            }
+        );
     });
 });
