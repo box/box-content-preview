@@ -1,5 +1,6 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
+import { decode } from 'box-react-ui/lib/utils/keys';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 
@@ -540,66 +541,7 @@ export function loadScripts(urls, disableAMD = false) {
  * @return {string} Decoded keydown key
  */
 export function decodeKeydown(event) {
-    let modifier = '';
-
-    // KeyboardEvent.key is the new spec supported in Chrome, Firefox and IE.
-    // KeyboardEvent.keyIdentifier is the old spec supported in Safari.
-    // Priority is given to the new spec.
-    let key = event.key || event.keyIdentifier || '';
-
-    // Get the modifiers on their own
-    if (event.ctrlKey) {
-        modifier = 'Control';
-    } else if (event.shiftKey) {
-        modifier = 'Shift';
-    } else if (event.metaKey) {
-        modifier = 'Meta';
-    }
-
-    // The key and keyIdentifier specs also include modifiers.
-    // Since we are manually getting the modifiers above we do
-    // not want to trap them again here.
-    if (key === modifier) {
-        key = '';
-    }
-
-    // keyIdentifier spec returns UTF8 char codes
-    // Need to convert them back to ascii.
-    if (key.indexOf('U+') === 0) {
-        if (key === 'U+001B') {
-            key = 'Escape';
-        } else {
-            key = String.fromCharCode(key.replace('U+', '0x'));
-        }
-    }
-
-    // If nothing was pressed just return
-    if (!key) {
-        return '';
-    }
-
-    // Special casing for space bar
-    if (key === ' ') {
-        key = 'Space';
-    }
-
-    // Edge bug which outputs "Esc" instead of "Escape"
-    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5290772/
-    if (key === 'Esc') {
-        key = 'Escape';
-    }
-
-    // keyIdentifier spec does not prefix the word Arrow.
-    // Newer key spec does it automatically.
-    if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
-        key = `Arrow${key}`;
-    }
-
-    if (modifier) {
-        modifier += '+';
-    }
-
-    return modifier + key;
+    return decode(event);
 }
 
 /**
