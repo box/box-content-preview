@@ -1,3 +1,14 @@
+<a name="1.37.0"></a>
+## 1.37.0 (2018-03-28)
+
+* Fix: Download watermarked (#746) ([de4475d](https://github.com/box/box-content-preview/commit/de4475d)), closes [#746](https://github.com/box/box-content-preview/issues/746)
+* Fix: Only check flash for SWF files (#747) ([85b8ee4](https://github.com/box/box-content-preview/commit/85b8ee4)), closes [#747](https://github.com/box/box-content-preview/issues/747)
+* Update: box-annotations to v1.1.1 (#751) ([8b267aa](https://github.com/box/box-content-preview/commit/8b267aa)), closes [#751](https://github.com/box/box-content-preview/issues/751)
+* Chore: Remove unused babel-polyfill (#737) ([85f6d7e](https://github.com/box/box-content-preview/commit/85f6d7e)), closes [#737](https://github.com/box/box-content-preview/issues/737)
+* Chore: Use key decoder from box react ui to prevent duplication (#749) ([575821f](https://github.com/box/box-content-preview/commit/575821f)), closes [#749](https://github.com/box/box-content-preview/issues/749)
+
+
+
 <a name="1.36.0"></a>
 ## 1.36.0 (2018-03-27)
 
