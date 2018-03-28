@@ -29,11 +29,12 @@ class SWFLoader extends AssetLoader {
      * @inheritdoc
      */
     determineViewer(file, disabledViewers = []) {
-        if (!Browser.hasFlash()) {
+        const viewer = super.determineViewer(file, disabledViewers);
+        if (viewer && !Browser.hasFlash()) {
             throw new PreviewError(ERROR_CODE.FLASH_NOT_ENABLED, __('error_flash_not_enabled'));
         }
 
-        return super.determineViewer(file, disabledViewers);
+        return viewer;
     }
 }
 

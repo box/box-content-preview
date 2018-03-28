@@ -1,5 +1,3 @@
-require('babel-polyfill');
-
 const isRelease = process.env.NODE_ENV === 'production';
 const isDev = process.env.NODE_ENV === 'dev';
 

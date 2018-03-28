@@ -39,8 +39,6 @@ The upstream source is the project under the Box organization on GitHub. To add 
 git remote add upstream git@github.com:box/box-content-preview.git
 ```
 
-This will come in useful later.
-
 ### Step 4: Create a feature branch
 
 Create a branch with a descriptive name, such as `add-search`.
