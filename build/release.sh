@@ -12,11 +12,7 @@ major_release=false
 minor_release=false
 patch_release=false
 
-
-reset_to_master() {
-    # Update to latest code on GitHub master
-    git checkout master || return 1
-
+reset_tags() {
     # Wipe tags
     git tag -l | xargs git tag -d || return 1
 
@@ -27,6 +23,32 @@ reset_to_master() {
 
     # Fetch latest code with tags
     git fetch --tags github-upstream || return 1;
+}
+
+
+reset_to_previous_version() {
+    if OLD_VERSION === "XXX"; then
+        echo "----------------------------------------------------------------------"
+        echo "Error while cleaning workspace!"
+        echo "----------------------------------------------------------------------"
+        return 1;
+    fi
+
+    # Reset and fetch upstream with tags
+    reset_tags || return 1;
+
+    # Reset to previous release version and clear unstashed changes
+    git reset --hard OLD_VERSION || return 1
+    git clean -f  || return 1
+}
+
+
+reset_to_master() {
+    # Update to latest code on GitHub master
+    git checkout master || return 1
+
+    # Reset and fetch upstream with tags
+    reset_tags || return 1;
 
     # Reset to latest code and clear unstashed changes
     git reset --hard github-upstream/master || return 1
@@ -205,7 +227,13 @@ if ! push_new_release; then
     echo "Cleaning workspace by checking out master and removing tags"
     echo "----------------------------------------------------------------------"
 
-    if ! reset_to_master; then
+
+    if $patch_release; then
+        # Only reset to previous version for patch releases
+        reset_to_previous_version || return 1
+
+    # Reset to upstream/master for major/minor releases
+    else if ! reset_to_master; then
         echo "----------------------------------------------------------------------"
         echo "Error while cleaning workspace!"
         echo "----------------------------------------------------------------------"
