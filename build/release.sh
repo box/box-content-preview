@@ -37,7 +37,7 @@ reset_to_previous_version() {
     # Reset and fetch upstream with tags
     reset_tags || return 1;
 
-    # Reset to latest code and clear unstashed changes
+    # Reset to previous release version and clear unstashed changes
     git reset --hard OLD_VERSION || return 1
     git clean -f  || return 1
 }
