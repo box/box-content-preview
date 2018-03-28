@@ -94,8 +94,8 @@ module.exports = (config) => config.set({
     ],
 
     files: [
+        'https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js',
         `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/three.min.js`,
-        'node_modules/babel-polyfill/dist/polyfill.js',
         `src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/**/*.js`,
         `src/third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/**/*.js`,
         `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/**/*.js`,
