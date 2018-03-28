@@ -954,6 +954,27 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getRepresentation()', () => {
+        it('should return the representation the viewer is/will use to preview', () => {
+            base.options.representation = { some: 'stuff' };
+            expect(base.getRepresentation()).to.equal(base.options.representation);
+        });
+    });
+
+    describe('getAssetPath()', () => {
+        it('should return the asset path the viewer is/will use for preview representation content', () => {
+            base.options.viewer = {
+                ASSET: '1.jpg'
+            };
+            expect(base.getAssetPath()).to.equal(base.options.viewer.ASSET);
+        });
+
+        it('should return empty string if viewer does not have a special asset path', () => {
+            base.options.viewer = {};
+            expect(base.getAssetPath()).to.equal('');
+        });
+    });
+
     describe('loadAnnotator()', () => {
         const conf = {
             annotationsEnabled: true,
@@ -1323,13 +1344,6 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
             expect(combinedOptions.randomOption).to.equal('derp');
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
-        });
-    });
-
-    describe('getRepresentation()', () => {
-        it('should return the representation the viewer is/will use to preview', () => {
-            base.options.representation = { some: 'stuff' };
-            expect(base.getRepresentation()).to.equal(base.options.representation);
         });
     });
 });
