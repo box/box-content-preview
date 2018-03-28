@@ -766,6 +766,7 @@ describe('lib/Preview', () => {
             };
             preview.viewer = {
                 getRepresentation: sandbox.stub(),
+                getAssetPath: sandbox.stub(),
                 createContentUrlWithAuthParams: sandbox.stub(),
                 options: {
                     viewer: {
@@ -815,12 +816,14 @@ describe('lib/Preview', () => {
             const url = 'someurl';
 
             preview.viewer.getRepresentation.returns(representation);
-            preview.viewer.createContentUrlWithAuthParams.withArgs(template, '').returns(url);
+            preview.viewer.getAssetPath.returns('1.jpg');
+            preview.viewer.createContentUrlWithAuthParams.withArgs(template, '1.jpg').returns(url);
 
-            util.appendQueryParams.withArgs(url).returns(url);
+            util.appendQueryParams.returns(url);
 
             preview.download();
 
+            expect(util.appendQueryParams).to.be.calledWith(url, { response_content_disposition_type: 'attachment' });
             expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
         });
 
@@ -829,7 +832,7 @@ describe('lib/Preview', () => {
             file.shouldDownloadWM.returns(false);
 
             const url = 'someurl';
-            util.appendQueryParams.withArgs(url).returns(url);
+            util.appendQueryParams.returns(url);
 
             const promise = Promise.resolve({
                 download_url: url
