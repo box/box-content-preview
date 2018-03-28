@@ -306,14 +306,14 @@ Development Setup
 -----------------
 1. Install Node v8.9.4 or higher.
 2. Install yarn package manager `https://yarnpkg.com/en/docs/install`. Alternatively, you can replace any `yarn` command with `npm`.
-2. Fork the upstream repo `https://github.com/box/box-content-preview`.
-3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-content-preview.git`.
-4. Navigate to the cloned folder `cd box-content-preview`
-5. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-content-preview.git`.
-6. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
-7. Install dependencies `yarn install`
-8. Test your first build! `yarn run build`
-9. To automatically rsync files after a Webpack build, add a build/rsync.json file with a `location` field. This file should look like:
+3. Fork the upstream repo `https://github.com/box/box-content-preview`.
+4. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-content-preview.git`.
+5. Navigate to the cloned folder `cd box-content-preview`
+6. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-content-preview.git`.
+7. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
+8. Install dependencies `yarn install`
+9. Test your first build! `yarn run build`
+10. To automatically rsync files after a Webpack build, add a build/rsync.json file with a `location` field. This file should look like:
 ```
 {
     "location": "YOUR_DESIRED_RSYNC_LOCATION_HERE"
