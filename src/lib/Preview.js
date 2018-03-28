@@ -505,9 +505,11 @@ class Preview extends EventEmitter {
                 return;
             }
 
+            // This allows the browser to download representation content
+            const params = Object.assign({ response_content_disposition_type: 'attachment' }, queryParams);
             const downloadUrl = appendQueryParams(
-                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.options.viewer.ASSET),
-                queryParams
+                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
+                params
             );
 
             DownloadReachability.downloadWithReachabilityCheck(downloadUrl);

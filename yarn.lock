@@ -1309,13 +1309,17 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-1.1.0.tgz#cb98a1351d573d6098a4f08737918c88c32ffd11"
+box-annotations@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-1.1.1.tgz#5228db6baffd80ea49599b0055e8e0254bacc2e0"
 
 box-locales@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/box-locales/-/box-locales-0.0.1.tgz#1724959f293ae85f235b681b775d0f1a52a76b54"
+
+box-react-ui@^22.7.0:
+  version "22.7.0"
+  resolved "https://registry.yarnpkg.com/box-react-ui/-/box-react-ui-22.7.0.tgz#14ff057cc7b76fcedda35765817ce83306d7058e"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
