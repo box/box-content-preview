@@ -783,6 +783,24 @@ class BaseViewer extends EventEmitter {
         }
     }
 
+    /**
+     * Returns the representation used for Preview.
+     *
+     * @return {Object} Box representation used/to be used by Preview
+     */
+    getRepresentation() {
+        return this.options.representation;
+    }
+
+    /**
+     * Returns the asset path to access representation content for Preview.
+     *
+     * @return {string} Asset path
+     */
+    getAssetPath() {
+        return getProp(this, 'options.viewer.ASSET', '');
+    }
+
     //--------------------------------------------------------------------------
     // Annotations
     //--------------------------------------------------------------------------
@@ -1027,15 +1045,6 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
-    }
-
-    /**
-     * Returns the representation used for Preview.
-     *
-     * @return {Object} Box representation used/to be used by Preview
-     */
-    getRepresentation() {
-        return this.options.representation;
     }
 }
 
