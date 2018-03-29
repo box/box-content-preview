@@ -1,5 +1,7 @@
 Please fill out the following template so we can reproduce and fix your issue as quickly as possible!
 
+**Note:** if your issue includes a potential security vulnerability, please do not file it here. Instead, email the issue to security@box.com for support.
+
 Environment:
 - Preview version:
 - Browser name and version:
