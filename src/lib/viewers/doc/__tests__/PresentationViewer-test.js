@@ -177,8 +177,14 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         });
 
         it('should fallback to doc base\'s onKeydown if no entry matches', () => {
-            const result = presentation.onKeydown('ArrowRight');
+            const docbaseStub = sandbox.spy(DocBaseViewer.prototype, 'onKeydown');
+            const eventStub = sandbox.stub();
 
+            const key = 'ArrowRight';
+
+            const result = presentation.onKeydown(key, eventStub);
+
+            expect(docbaseStub).to.have.been.calledWithExactly(key, eventStub);
             expect(result).to.be.true;
             expect(stubs.nextPage).to.be.called;
 
