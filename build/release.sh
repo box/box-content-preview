@@ -78,7 +78,7 @@ increment_version() {
     # Old version
     OLD_VERSION=$(./build/current_version.sh)
 
-    # The master branch should not match the previous release tag
+    # The current branch should not match the previous release tag
     if [[ $(git log --oneline ...v$OLD_VERSION) == "" ]] ; then
         echo "----------------------------------------------------"
         echo "Your release has no new commits!"
