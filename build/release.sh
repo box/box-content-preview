@@ -14,6 +14,9 @@ patch_release=false
 
 reset_tags() {
     # Wipe tags
+    echo "----------------------------------------------------------------------"
+    echo "Wiping local tags"
+    echo "----------------------------------------------------------------------"
     git tag -l | xargs git tag -d || return 1
 
     # Add the upstream remote if it is not present
@@ -22,6 +25,9 @@ reset_tags() {
     fi
 
     # Fetch latest code with tags
+    echo "----------------------------------------------------------------------"
+    echo "Fetching latest upstream code + tags"
+    echo "----------------------------------------------------------------------"
     git fetch --tags github-upstream || return 1;
 }
 
@@ -38,6 +44,9 @@ reset_to_previous_version() {
     reset_tags || return 1;
 
     # Reset to previous release version and clear unstashed changes
+    echo "----------------------------------------------------------------------"
+    echo "Resetting to v" $OLD_VERSION
+    echo "----------------------------------------------------------------------"
     git reset --hard OLD_VERSION || return 1
     git clean -f  || return 1
 }
@@ -51,6 +60,9 @@ reset_to_master() {
     reset_tags || return 1;
 
     # Reset to latest code and clear unstashed changes
+    echo "----------------------------------------------------------------------"
+    echo "Resetting to upstream/master"
+    echo "----------------------------------------------------------------------"
     git reset --hard github-upstream/master || return 1
     git clean -f  || return 1
 }
