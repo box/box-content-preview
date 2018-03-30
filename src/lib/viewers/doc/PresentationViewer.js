@@ -85,7 +85,7 @@ class PresentationViewer extends DocBaseViewer {
      * @param {string} key - Keydown key
      * @return {boolean} Consumed or not
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         if (key === 'ArrowUp') {
             this.previousPage();
             return true;
@@ -94,7 +94,7 @@ class PresentationViewer extends DocBaseViewer {
             return true;
         }
 
-        return super.onKeydown(key);
+        return super.onKeydown(key, event);
     }
 
     /**
