@@ -702,6 +702,8 @@ class DocBaseViewer extends BaseViewer {
             this.loadingIconDiv.classList.add(CLASS_SPINNER);
             this.loadingIconDiv.innerHTML = '<div></div>';
         };
+
+        Browser.checkBlendModeSupport();
     }
 
     /**
