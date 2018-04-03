@@ -1,3 +1,10 @@
+<a name="1.37.1"></a>
+## <small>1.37.1 (2018-04-03)</small>
+
+* Fix: presentation viewer keyboard shortcuts (#754) ([4f3d6f2](https://github.com/box/box-content-preview/commit/4f3d6f2)), closes [#754](https://github.com/box/box-content-preview/issues/754)
+
+
+
 <a name="1.37.0"></a>
 ## 1.37.0 (2018-03-28)
 
