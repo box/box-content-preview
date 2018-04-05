@@ -253,7 +253,7 @@ if ! push_new_release; then
         reset_to_previous_version || return 1
 
     # Reset to upstream/master for major/minor releases
-    else if ! reset_to_master; then
+    elif ! reset_to_master; then
         echo "----------------------------------------------------------------------"
         echo "Error while cleaning workspace!"
         echo "----------------------------------------------------------------------"
