@@ -592,7 +592,6 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('shakaManifestLoadedHandler()', () => {
         beforeEach(() => {
             sandbox.stub(dash, 'calculateVideoDimensions');
-            sandbox.stub(dash, 'loadUI');
             sandbox.stub(dash, 'loadSubtitles');
             sandbox.stub(dash, 'loadAlternateAudio');
         });
@@ -601,18 +600,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.shakaManifestLoadedHandler();
 
             expect(dash.calculateVideoDimensions).to.be.called;
-            expect(dash.loadUI).to.be.called;
-        });
-
-        it('should enable HD settings if there is an HD rep', () => {
-            dash.hdVideoId = -1;
-            stubs.mockControls.expects('enableHDSettings').never();
-            dash.shakaManifestLoadedHandler();
-
-            dash.hdVideoId = 1;
-            stubs.mockControls.expects('enableHDSettings');
-            dash.shakaManifestLoadedHandler();
-
         });
 
         it('should load subtitles and additional audio tracks', () => {
@@ -657,6 +644,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'isAutoplayEnabled').returns(true);
             sandbox.stub(dash, 'autoplay');
             sandbox.stub(dash, 'loadFilmStrip');
+            sandbox.stub(dash, 'loadUI');
             sandbox.stub(dash, 'resize');
             sandbox.stub(dash, 'handleVolume');
             sandbox.stub(dash, 'startBandwidthTracking');
@@ -665,12 +653,43 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.loadeddataHandler();
             expect(dash.autoplay).to.be.called;
+            expect(dash.loadUI).to.be.called;
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
             expect(dash.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
             expect(dash.mediaControls.show).to.be.called;
+        });
+    });
+
+    describe('loadUI()', () => {
+        beforeEach(() => {
+            stubs.loadUI = DashViewer.prototype.loadUI;
+            dash.mediaControls = {
+                enableHDSettings: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                removeAllListeners: sandbox.stub(),
+                destroy: sandbox.stub()
+            };
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: sandbox.mock() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: stubs.loadUI });
+        });
+
+        it('should enable HD settings if an HD rep exists', () => {
+            dash.hdVideoId = 3;
+            dash.loadUI();
+            expect(dash.mediaControls.enableHDSettings).to.be.called;
+        });
+
+        it('should do nothing if there is no HD rep', () => {
+            dash.hdVideoId = -1;
+            dash.loadUI();
+            expect(dash.mediaControls.enableHDSettings).to.not.be.called;
         });
     });
 
@@ -908,7 +927,7 @@ describe('lib/viewers/media/DashViewer', () => {
         beforeEach(() => {
             sandbox.stub(dash, 'enableAudioId');
         });
-    
+
         it('should select correct audio', () => {
             dash.audioTracks = [
                 { language: 'eng', role: 'audio0' },
@@ -918,7 +937,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash.cache, 'get').returns('1');
 
             dash.handleAudioTrack();
-            expect(dash.enableAudioId).to.be.calledWith('audio1')
+            expect(dash.enableAudioId).to.be.calledWith('audio1');
         });
 
         it('should not select audio if index out of bounds', () => {
@@ -931,7 +950,6 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.handleAudioTrack();
             expect(dash.enableAudioId).to.not.be.called;
-
         });
     });
 
