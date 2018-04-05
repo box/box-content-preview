@@ -417,12 +417,6 @@ class DashViewer extends VideoBaseViewer {
      */
     shakaManifestLoadedHandler() {
         this.calculateVideoDimensions();
-        this.loadUI();
-
-        if (this.hdVideoId !== -1) {
-            this.mediaControls.enableHDSettings();
-        }
-
         this.loadSubtitles();
         this.loadAlternateAudio();
     }
@@ -503,6 +497,7 @@ class DashViewer extends VideoBaseViewer {
             this.autoplay();
         }
 
+        this.loadUI();
         this.loadFilmStrip();
         this.resize();
         this.handleVolume();
@@ -516,6 +511,17 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
         this.mediaControls.show();
         this.mediaContainerEl.focus();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    loadUI() {
+        super.loadUI();
+
+        if (this.hdVideoId !== -1) {
+            this.mediaControls.enableHDSettings();
+        }
     }
 
     /**
