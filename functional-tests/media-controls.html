@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .preview-container {
+            border: 1px solid #eee;
+            height: 490px;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="../dist/dev/en-US/preview.css">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
+    <script src="../dist/dev/en-US/preview.js"></script>
+
+</head>
+
+<body>
+    <div class="preview-container"></div>
+    <script>
+        var ACCESS_TOKEN = 'edRiUpeLD9A1nLyWqc1gZOt2OnSNNYp9';
+
+        var FILE_ID_VIDEO = '286114565199';
+        var FILE_ID_MP3 = '286509191779';
+
+        var preview = new Box.Preview();
+        preview.show(FILE_ID_VIDEO, ACCESS_TOKEN, {
+            container: '.preview-container',
+            showDownload: false,
+            collection: [FILE_ID_VIDEO, FILE_ID_MP3],
+        });
+
+        function disableDash() {
+            preview.disableViewers('Dash');
+
+            preview.show(FILE_ID_VIDEO, ACCESS_TOKEN, {
+                container: '.preview-container',
+                showDownload: false,
+            });
+        }
+    </script>
+</body>
+
+</html>

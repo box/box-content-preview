@@ -8,6 +8,7 @@ exports.SELECTOR_BOX_PREVIEW_LOGO = '.bp-default-logo';
 exports.CLASS_BOX_PREVIEW_LOADING_WRAPPER = '.bp-loading-wrapper';
 exports.SELECTOR_DOC_CURRENT_PAGE = '.bp-current-page';
 exports.SELECTOR_MEDIA_TIMESTAMP = '.bp-media-controls-timecode';
+exports.SELECTOR_MEDIA_DURATION = '.bp-media-controls-duration';
 exports.SELECTOR_BOX_PREVIEW = '.bp';
 exports.SELECTOR_BOX_PREVIEW_DOC = '.bp-doc';
 exports.SELECTOR_BOX_PREVIEW_MP3 = '.bp-media-mp3';

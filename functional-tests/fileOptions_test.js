@@ -1,5 +1,4 @@
 const {
-    SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_MEDIA_TIMESTAMP,
     SELECTOR_DOC_CURRENT_PAGE,
     SELECTOR_BOX_PREVIEW_LOGO,
@@ -7,8 +6,7 @@ const {
     SELECTOR_BOX_PREVIEW_DOC,
     SELECTOR_BOX_PREVIEW_MP3,
     SELECTOR_BOX_PREVIEW_DASH,
-    SELECTOR_BOX_PREVIEW_MP4,
-    SELECTOR_BOX_PREVIEW_ERROR
+    SELECTOR_BOX_PREVIEW_MP4
 } = require('./constants');
 
 const { navigateToNextItem, makeNavAppear, navigateToPrevItem, waitForLoad } = require('./helpers');
