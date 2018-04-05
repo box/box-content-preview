@@ -9,7 +9,7 @@ let { userAgent } = navigator;
 let name;
 let gl;
 let supportsWebGL;
-let supportsBlendModes;
+let supportsBlendMode;
 let hasCheckedBlendModes = false;
 
 class Browser {
@@ -243,12 +243,16 @@ class Browser {
             // Check to see if the current browser supports globalCompositeOperation, which would be the case if the
             // set value is respected.
             if (ctx.globalCompositeOperation !== 'multiply') {
+                supportsBlendMode = false;
                 this.blendModeFallback();
-                hasCheckedBlendModes = true;
+            } else {
+                supportsBlendMode = true;
             }
+
+            hasCheckedBlendModes = true;
         }
 
-        return supportsBlendModes;
+        return supportsBlendMode;
     }
 
     /**
