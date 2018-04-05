@@ -1,3 +1,11 @@
+<a name="1.38.1"></a>
+## <small>1.38.1 (2018-04-05)</small>
+
+* Fix: release script (#757) ([82d5766](https://github.com/box/box-content-preview/commit/82d5766)), closes [#757](https://github.com/box/box-content-preview/issues/757)
+* Fix: Revert media duration setting to on loadeddata (#759) ([ea4d36f](https://github.com/box/box-content-preview/commit/ea4d36f)), closes [#759](https://github.com/box/box-content-preview/issues/759)
+
+
+
 <a name="1.38.0"></a>
 ## 1.38.0 (2018-04-03)
 
