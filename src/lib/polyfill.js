@@ -392,4 +392,28 @@ if (!String.prototype.startsWith) {
         return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
     };
 }
+
+// Provides a partial workaround when blend modes are not supported (IE11).
+// See issue https://github.com/mozilla/pdf.js/issues/5264.
+// NOTE: This is not a full blend mode polyfill, but a way to see blended content
+// that would otherwise be unviewable.way to see blended content that would otherwise be unviewable.
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+ctx.globalCompositeOperation = 'multiply';
+
+// Check to see if the current browser supports globalCompositeOperation, which would be the case if the
+// set value is respected.
+if (ctx.globalCompositeOperation !== 'multiply') {
+    // Define custom behavior for blending when blend modes are not supported.
+    Object.defineProperty(CanvasRenderingContext2D.prototype, 'globalCompositeOperation', {
+        set: function(value) {
+            // We only manually blend if the mode is not 'source-over'
+            // which is the only supported blend mode that does no blending.
+            if (value !== 'source-over' && this.globalAlpha === 1) {
+                // Choose 50% to give equal visibility to top and bottom elements.
+                this.globalAlpha = 0.5;
+            }
+        }
+    });
+}
 /* eslint-enable */
