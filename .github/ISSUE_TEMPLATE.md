@@ -16,7 +16,7 @@ Steps to reproduce the problem:
 
 What is the expected behavior? (Screenshots can be helpful here)
 
-What went wrong? (Screenshots or console logs can be helpful here)
+What went wrong? (Screenshots, console logs, or HAR files can be helpful here)
 
 Link to application or sample code:
 
