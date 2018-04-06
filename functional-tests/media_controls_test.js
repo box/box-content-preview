@@ -6,8 +6,20 @@ const {
     SELECTOR_BOX_PREVIEW_MP3,
     SELECTOR_BOX_PREVIEW_DASH,
     SELECTOR_BOX_PREVIEW_MP4,
+    SELECTOR_MEDIA_CONTAINER,
     SELECTOR_MEDIA_CONTROLS_GEAR,
-    SELECTOR_MEDIA_CONTROLS_QUALITY_ITEM
+    SELECTOR_MEDIA_SETTINGS_QUALITY_ITEM,
+    SELECTOR_MEDIA_SETTINGS_MENU_QUALITY,
+    SELECTOR_MEDIA_SETTINGS_LABEL,
+    SELECTOR_MEDIA_CONTROLS_HD,
+    SELECTOR_HD_SETTINGS_VALUE,
+    SELECTOR_MEDIA_CONTROLS_CC_ICON,
+    SELECTOR_MEDIA_SETTINGS_SUBTITLES_ON,
+    SELECTOR_MEDIA_SETTINGS_SUBTITLES_ITEM,
+    SELECTOR_MEDIA_SETTINGS_AUDIOTRACKS_ITEM,
+    SELECTOR_MEDIA_SETTINGS_AUTOPLAY_ITEM,
+    SELECTOR_MEDIA_SETTINGS_SPEED_ITEM,
+    TEXT_1080P
 } = require('./constants');
 
 const { navigateToNextItem, makeNavAppear, waitForLoad } = require('./helpers');
@@ -79,7 +91,7 @@ Scenario(
 // Exclude IE as it can't handle media files with saucelabs
 // Exclude iOS because it doesn't HD/subtitles/audiotracks etc.
 Scenario(
-    'Check that the media controls show the correct settings items @ci @chrome @firefox @edge @safari, @android',
+    'Check that the media controls show the correct settings items @ci @chrome @firefox @edge @safari',
     { retries: 3 },
     (I) => {
         // Video (dash)
@@ -89,15 +101,15 @@ Scenario(
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Click on the Gear
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
-        I.waitForVisible(SELECTOR_MEDIA_CONTROLS_QUALITY_ITEM);
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_QUALITY_ITEM);
         // Click on the quality item
-        I.click(SELECTOR_MEDIA_CONTROLS_QUALITY_ITEM);
+        I.click(`${SELECTOR_MEDIA_SETTINGS_QUALITY_ITEM} ${SELECTOR_MEDIA_SETTINGS_LABEL}`);
         // Find the 1080 text
-        I.waitForText('1080p');
+        I.waitForText(TEXT_1080P);
         // Click the 1080 text
-        I.click('//div[@data-value="hd"]');
+        I.click(SELECTOR_HD_SETTINGS_VALUE);
         // Check that the HD icon is there
-        I.waitForVisible('.bp-media-controls-hd');
+        I.waitForVisible(SELECTOR_MEDIA_CONTROLS_HD);
 
         navigateToNextItem(I);
 
@@ -106,22 +118,23 @@ Scenario(
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         makeNavAppear(I, SELECTOR_VIDEO);
         // Wait for the CC button to be visisble
-        I.waitForVisible('.bp-media-controls-cc-icon-text');
+        I.waitForVisible(SELECTOR_MEDIA_CONTROLS_CC_ICON);
 
         // Look for this class bp-media-settings-subtitles-on
-        I.seeElement('.bp-media-settings-subtitles-on');
+        I.seeElement(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ON);
 
         // Click the CC button
-        I.click('.bp-media-cc-icon');
+        I.click(SELECTOR_MEDIA_CONTROLS_CC_ICON);
 
         // Look for this class bp-media-settings-subtitles-on
-        I.dontSeeElement('.bp-media-settings-subtitles-on');
+        I.dontSeeElement(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ON);
 
         // Click on the Gear
+        I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Wait for audio tracks and for subtitles items to be visisble
-        I.waitForVisible('//div[@data-type="subtitles"]');
-        I.waitForVisible('//div[@data-type="audiotracks"]');
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ITEM);
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_AUDIOTRACKS_ITEM);
 
         navigateToNextItem(I);
 
@@ -131,8 +144,8 @@ Scenario(
         // Click on the Gear
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Look for autoplay and speed
-        I.waitForVisible('//div[@data-type="autoplay"]');
-        I.waitForVisible('//div[@data-type="speed"]');
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_AUTOPLAY_ITEM);
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_SPEED_ITEM);
 
         navigateToNextItem(I);
 
@@ -140,14 +153,15 @@ Scenario(
         I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
         /* eslint-enable prefer-arrow-callback */
         waitForLoad(I);
-        I.waitForElement('.bp-media-container');
+        I.waitForElement(SELECTOR_MEDIA_CONTAINER);
 
         makeNavAppear(I, SELECTOR_VIDEO);
         // Click on the Gear
+        I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Look for autoplay and speed
-        I.waitForVisible('//div[@data-type="autoplay"]');
-        I.waitForVisible('//div[@data-type="speed"]');
-        I.waitForNotVisible('.bp-media-settings-menu-quality');
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_AUTOPLAY_ITEM);
+        I.waitForVisible(SELECTOR_MEDIA_SETTINGS_SPEED_ITEM);
+        I.dontSeeElement(SELECTOR_MEDIA_SETTINGS_MENU_QUALITY);
     }
 );
