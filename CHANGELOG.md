@@ -1,3 +1,10 @@
+<a name="1.38.2"></a>
+## <small>1.38.2 (2018-04-09)</small>
+
+* Fix: Remove use of manifest loaded event (#763) ([643fafa](https://github.com/box/box-content-preview/commit/643fafa)), closes [#763](https://github.com/box/box-content-preview/issues/763)
+
+
+
 <a name="1.38.1"></a>
 ## <small>1.38.1 (2018-04-05)</small>
 
