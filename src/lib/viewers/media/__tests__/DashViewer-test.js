@@ -216,7 +216,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.mediaUrl = 'url';
             sandbox.stub(shaka, 'Player').returns(dash.player);
             stubs.mockPlayer.expects('addEventListener').withArgs('adaptation', sinon.match.func);
-            stubs.mockPlayer.expects('addEventListener').withArgs('streaming', sinon.match.func);
             stubs.mockPlayer.expects('addEventListener').withArgs('error', sinon.match.func);
             stubs.mockPlayer.expects('configure');
             stubs.mockPlayer
@@ -589,27 +588,6 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('shakaManifestLoadedHandler()', () => {
-        beforeEach(() => {
-            sandbox.stub(dash, 'calculateVideoDimensions');
-            sandbox.stub(dash, 'loadSubtitles');
-            sandbox.stub(dash, 'loadAlternateAudio');
-        });
-
-        it('should calculate video dimensions and load UI', () => {
-            dash.shakaManifestLoadedHandler();
-
-            expect(dash.calculateVideoDimensions).to.be.called;
-        });
-
-        it('should load subtitles and additional audio tracks', () => {
-            dash.shakaManifestLoadedHandler();
-
-            expect(dash.loadSubtitles).to.be.called;
-            expect(dash.loadAlternateAudio).to.be.called;
-        });
-    });
-
     describe('addEventListenersForMediaControls()', () => {
         const listenerFunc = DashViewer.prototype.addEventListenersForMediaControls;
 
@@ -650,12 +628,18 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'startBandwidthTracking');
             sandbox.stub(dash, 'handleQuality');
             sandbox.stub(dash, 'showPlayButton');
+            sandbox.stub(dash, 'calculateVideoDimensions');
+            sandbox.stub(dash, 'loadSubtitles');
+            sandbox.stub(dash, 'loadAlternateAudio');
 
             dash.loadeddataHandler();
             expect(dash.autoplay).to.be.called;
             expect(dash.loadUI).to.be.called;
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
+            expect(dash.calculateVideoDimensions).to.be.called;
+            expect(dash.loadSubtitles).to.be.called;
+            expect(dash.loadAlternateAudio).to.be.called;
             expect(dash.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);

@@ -22,13 +22,15 @@
         var ACCESS_TOKEN = 'edRiUpeLD9A1nLyWqc1gZOt2OnSNNYp9';
 
         var FILE_ID_VIDEO = '286114565199';
+        var FILE_ID_VIDEO_SUBTITLES_TRACKS = '286840567797';
         var FILE_ID_MP3 = '286509191779';
+        var FILE_ID_VIDEO_SMALL = '286114192023';
 
         var preview = new Box.Preview();
         preview.show(FILE_ID_VIDEO, ACCESS_TOKEN, {
             container: '.preview-container',
             showDownload: false,
-            collection: [FILE_ID_VIDEO, FILE_ID_MP3],
+            collection: [FILE_ID_VIDEO, FILE_ID_VIDEO_SUBTITLES_TRACKS, FILE_ID_MP3, FILE_ID_VIDEO_SMALL],
         });
 
         function disableDash() {
