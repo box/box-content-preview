@@ -29,7 +29,6 @@ class DashViewer extends VideoBaseViewer {
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
-        this.shakaManifestLoadedHandler = this.shakaManifestLoadedHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
@@ -153,7 +152,6 @@ class DashViewer extends VideoBaseViewer {
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
-        this.player.addEventListener('streaming', this.shakaManifestLoadedHandler);
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
@@ -409,19 +407,6 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Handles streaming event which is the first time the manifest is available. See https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html#event:StreamingEvent
-     *
-     * @private
-     * @param {Object} shakaError - Error to handle
-     * @return {void}
-     */
-    shakaManifestLoadedHandler() {
-        this.calculateVideoDimensions();
-        this.loadSubtitles();
-        this.loadAlternateAudio();
-    }
-
-    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
@@ -497,11 +482,14 @@ class DashViewer extends VideoBaseViewer {
             this.autoplay();
         }
 
+        this.calculateVideoDimensions();
         this.loadUI();
         this.loadFilmStrip();
         this.resize();
         this.handleVolume();
         this.startBandwidthTracking();
+        this.loadSubtitles();
+        this.loadAlternateAudio();
         this.showPlayButton();
 
         this.loaded = true;
