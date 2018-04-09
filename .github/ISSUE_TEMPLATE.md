@@ -2,6 +2,8 @@ Please fill out the following template so we can reproduce and fix your issue as
 
 **Note:** if your issue includes a potential security vulnerability, please do not file it here. Instead, email the issue to security@box.com for support.
 
+**Note:** if your issue involves annotations.js/css, please report the issue [here](https://github.com/box/box-annotations/issues/new).
+
 Environment:
 - Preview version:
 - Browser name and version:
@@ -14,7 +16,7 @@ Steps to reproduce the problem:
 
 What is the expected behavior? (Screenshots can be helpful here)
 
-What went wrong? (Screenshots can be helpful here)
+What went wrong? (Screenshots, console logs, or HAR files can be helpful here)
 
 Link to application or sample code:
 
