@@ -8,7 +8,8 @@ const {
     BROWSER_PLATFORM,
     PLATFORM_VERSION,
     DEVICE_NAME,
-    DEFAULT_WAIT_TIME = 90000
+    DEFAULT_WAIT_TIME = 90000,
+    RUN_LOCALLY=false
 } = process.env;
 const MOBILE_PLATFORMS = ['iOS', 'Android'];
 
@@ -22,7 +23,7 @@ const commonConfigObj = {
 };
 
 const helperObj = {};
-const isLocalBuild = typeof SAUCE_USERNAME === 'undefined';
+const isLocalBuild = typeof SAUCE_USERNAME === 'undefined' || RUN_LOCALLY;
 
 if (isLocalBuild) {
     helperObj.WebDriverIO = commonConfigObj;
