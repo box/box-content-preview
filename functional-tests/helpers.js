@@ -3,7 +3,6 @@ const {
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_NAV_VISIBLE,
-    FILE_ID_VIDEO,
     FILE_ID_DOC
 } = require('./constants');
 
@@ -73,6 +72,18 @@ function makeNavAppear(I, selector = SELECTOR_BOX_PREVIEW) {
     );
 }
 
+/**
+ * Waits for the loaded class to be applied
+ *
+ * @param {Object} I - the codeceptjs I
+ *
+ * @return {void}
+ */
+function waitForLoad(I) {
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+    I.dontSee('didn\'t load');
+}
+
 exports.getIsFullscreen = function() {
     return (
         document.fullscreenElement ||
@@ -83,6 +94,8 @@ exports.getIsFullscreen = function() {
 };
 
 exports.makeNavAppear = makeNavAppear;
+exports.waitForLoad = waitForLoad;
+
 exports.navigateToNextItem = (I) => {
     I.executeScript(function() {
         window.preview.navigateRight();
@@ -96,21 +109,9 @@ exports.navigateToPrevItem = (I) => {
     I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
 };
 exports.disableDash = (I) => {
-    I.executeScript(function(videoId) {
-        var fileOptions = {};
+    I.executeScript(function() {
         window.preview.disableViewers('Dash');
-        fileOptions[videoId] = {
-            startAt: {
-                value: 10,
-                unit: 'seconds'
-            }
-        };
-
-        window.showPreview(videoId, {
-            container: '.preview-container',
-            fileOptions: fileOptions // eslint-disable-line object-shorthand
-        });
-    }, FILE_ID_VIDEO);
+    });
 };
 exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
     I.executeScript(
@@ -120,6 +121,8 @@ exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
         fileId,
         options
     );
+
+    waitForLoad(I);
 };
 /* eslint-enable prefer-arrow-callback, no-var */
 
@@ -127,9 +130,4 @@ exports.zoom = (I, selector) => {
     makeNavAppear(I);
     I.waitForVisible(selector);
     I.click(selector);
-};
-
-exports.waitForLoad = (I) => {
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
-    I.dontSee('didn\'t load');
 };

@@ -11,11 +11,6 @@ Before((I) => {
     showPreview(I, FILE_ID_DOC, {
         showDownload: true
     });
-    /* eslint-disable */
-    // I.executeScript(function() {
-    //     window.showPreview(FILE_ID_DOC, );
-    // });
-    /* eslint-enable */
 });
 
 Scenario('Download the file @ci @chrome @firefox @edge @safari @ie', function*(I) {
