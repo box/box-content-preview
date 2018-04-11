@@ -1,3 +1,10 @@
+<a name="1.39.1"></a>
+## <small>1.39.1 (2018-04-11)</small>
+
+* Update: box-annotations to v1.3.1 (#765) ([bd4c3e3](https://github.com/box/box-content-preview/commit/bd4c3e3)), closes [#765](https://github.com/box/box-content-preview/issues/765)
+
+
+
 <a name="1.39.0"></a>
 ## 1.39.0 (2018-04-10)
 
