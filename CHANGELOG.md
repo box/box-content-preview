@@ -1,3 +1,10 @@
+<a name="1.39.2"></a>
+## <small>1.39.2 (2018-04-12)</small>
+
+* Revert "Fix: Add blend mode fallbacks if not supported (#758)" (#769) ([8b38712](https://github.com/box/box-content-preview/commit/8b38712)), closes [#758](https://github.com/box/box-content-preview/issues/758) [#769](https://github.com/box/box-content-preview/issues/769)
+
+
+
 <a name="1.39.1"></a>
 ## <small>1.39.1 (2018-04-11)</small>
 
