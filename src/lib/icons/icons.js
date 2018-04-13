@@ -163,7 +163,7 @@ export const ICON_FILE_MAP = {};
 });
 
 // EXCEL ICON EXTENSIONS
-['xls', 'xlsm', 'xlsx'].forEach((extension) => {
+['xls', 'xlsb', 'xlsm', 'xlsx'].forEach((extension) => {
     ICON_FILE_MAP[extension] = 'FILE_EXCEL';
 });
 

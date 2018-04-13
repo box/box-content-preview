@@ -70,6 +70,7 @@ export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
         'rtf',
         'wpd',
         'xls',
+        'xlsb',
         'xlsm',
         'xlsx'
     ]);
