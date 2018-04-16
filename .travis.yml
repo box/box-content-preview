@@ -15,32 +15,32 @@ aliases:
         - sleep 5
         addons:
           sauce_connect: true
-        script: yarn run functional-tests-ci
+        script: travis_retry yarn run functional-tests-ci
     - &sauce-labs-ios
       <<: *sauce-labs
-      script: yarn run functional-tests-ci --grep @mobile
+      script: travis_retry yarn run functional-tests-ci --grep @mobile
     - &sauce-labs-chrome
       <<: *sauce-labs
-      script: yarn run functional-tests-ci --grep @chrome
+      script: travis_retry yarn run functional-tests-ci --grep @chrome
     - &sauce-labs-firefox
       <<: *sauce-labs
-      script: yarn run functional-tests-ci --grep @firefox
+      script: travis_retry yarn run functional-tests-ci --grep @firefox
 jobs:
   include:
   - script: yarn run ci
   - <<: *sauce-labs
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="MicrosoftEdge"
-    script: yarn run functional-tests-ci --grep @edge
+    script: travis_retry yarn run functional-tests-ci --grep @edge
   - <<: *sauce-labs-chrome
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="chrome"
   - <<: *sauce-labs-firefox
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="firefox"
   - <<: *sauce-labs
     env: BROWSER_PLATFORM="Windows 10" BROWSER_NAME="internet explorer"
-    script: yarn run functional-tests-ci --grep @ie
+    script: travis_retry yarn run functional-tests-ci --grep @ie
   - <<: *sauce-labs
     env: BROWSER_PLATFORM="macOS 10.13" BROWSER_NAME="safari"
-    script: yarn run functional-tests-ci --grep @safari
+    script: travis_retry yarn run functional-tests-ci --grep @safari
   - <<: *sauce-labs-chrome
     env: BROWSER_PLATFORM="macOS 10.13" BROWSER_NAME="chrome"
   - <<: *sauce-labs-firefox
@@ -53,4 +53,4 @@ jobs:
     env: BROWSER_PLATFORM="iOS" DEVICE_NAME="iPad Simulator" PLATFORM_VERSION="11.2" BROWSER_NAME="Safari"
   - <<: *sauce-labs
     env: BROWSER_PLATFORM="Android" DEVICE_NAME="Android GoogleAPI Emulator" PLATFORM_VERSION="7.1" BROWSER_NAME="Chrome"
-    script: yarn run functional-tests-ci --grep @android
+    script: travis_retry yarn run functional-tests-ci --grep @android
