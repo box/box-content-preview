@@ -1431,6 +1431,7 @@ class Preview extends EventEmitter {
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
             extension: file.extension || '',
             locale: getProp(this.location, 'locale', ''),
+            rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             ...getClientLogDetails()
         };
 
