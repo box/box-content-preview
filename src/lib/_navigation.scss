@@ -26,6 +26,10 @@ $navigationBtnWidth: 50px;
     &:hover {
         opacity: 1;
     }
+
+    &:focus {
+        opacity: 1;
+    }
 }
 
 .bp-is-navigation-visible .bp-navigate {
