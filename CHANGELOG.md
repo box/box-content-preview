@@ -1,3 +1,28 @@
+<a name="1.39.0"></a>
+## 1.39.0 (2018-04-10)
+
+* Update: box-annotations to v1.3.0 (#764) ([77bb4cc](https://github.com/box/box-content-preview/commit/77bb4cc)), closes [#764](https://github.com/box/box-content-preview/issues/764)
+* Update: Issue template (#762) ([23a0059](https://github.com/box/box-content-preview/commit/23a0059)), closes [#762](https://github.com/box/box-content-preview/issues/762)
+* Fix: Add blend mode fallbacks if not supported (#758) ([95def3b](https://github.com/box/box-content-preview/commit/95def3b)), closes [#758](https://github.com/box/box-content-preview/issues/758)
+* Fix: release script (#757) ([203e55d](https://github.com/box/box-content-preview/commit/203e55d)), closes [#757](https://github.com/box/box-content-preview/issues/757)
+* Fix: Remove use of manifest loaded event (#763) ([99edac8](https://github.com/box/box-content-preview/commit/99edac8)), closes [#763](https://github.com/box/box-content-preview/issues/763)
+* Fix: Revert media duration setting to on loadeddata (#759) ([df798d1](https://github.com/box/box-content-preview/commit/df798d1)), closes [#759](https://github.com/box/box-content-preview/issues/759)
+
+
+
+<a name="1.38.0"></a>
+## 1.38.0 (2018-04-03)
+
+* Mojito: Update translations (#755) ([94e605f](https://github.com/box/box-content-preview/commit/94e605f)), closes [#755](https://github.com/box/box-content-preview/issues/755)
+* Update: box-annotations to v1.2.0 (#756) ([9a2fd61](https://github.com/box/box-content-preview/commit/9a2fd61)), closes [#756](https://github.com/box/box-content-preview/issues/756)
+* Chore: Add nsp package and include with CI build (#748) ([f3b83d6](https://github.com/box/box-content-preview/commit/f3b83d6)), closes [#748](https://github.com/box/box-content-preview/issues/748)
+* Chore: Only reset to upstream/master for major/minor releases (#750) ([aa2b8ab](https://github.com/box/box-content-preview/commit/aa2b8ab)), closes [#750](https://github.com/box/box-content-preview/issues/750)
+* Docs: Updating issue template (#753) ([a90bc73](https://github.com/box/box-content-preview/commit/a90bc73)), closes [#753](https://github.com/box/box-content-preview/issues/753)
+* Fix: presentation viewer keyboard shortcuts (#754) ([9014bad](https://github.com/box/box-content-preview/commit/9014bad)), closes [#754](https://github.com/box/box-content-preview/issues/754)
+* Fix: Retain quality setting when setting/switching audio tracks (#720) ([adc84e1](https://github.com/box/box-content-preview/commit/adc84e1)), closes [#720](https://github.com/box/box-content-preview/issues/720)
+
+
+
 <a name="1.37.0"></a>
 ## 1.37.0 (2018-03-28)
 
