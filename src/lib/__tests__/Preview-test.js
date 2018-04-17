@@ -2110,6 +2110,7 @@ describe('lib/Preview', () => {
             expect(log.content_type).to.exist;
             expect(log.extension).to.exist;
             expect(log.locale).to.exist;
+            expect(log.rep_type).to.exist;
         });
 
         it('should use empty string for file_id, if no file', () => {
@@ -2127,6 +2128,18 @@ describe('lib/Preview', () => {
             const log = preview.createLogEvent();
 
             expect(log.file_version_id).to.equal('');
+        });
+
+        it('should use empty string for rep_type, if no representation type available in viewer options', () => {
+            preview.file = {
+                id: '12345'
+            };
+
+            preview.viewer = {};
+
+            const log = preview.createLogEvent();
+
+            expect(log.rep_type).to.equal('');
         });
     });
 

@@ -17,7 +17,6 @@ const MOBILE_PLATFORMS = ['iOS', 'Android'];
 const commonConfigObj = {
     browser: BROWSER_NAME,
     url: 'http://localhost:8000',
-    smartWait: DEFAULT_WAIT_TIME,
     restart: true,
     waitForTimeout: DEFAULT_WAIT_TIME
 };
