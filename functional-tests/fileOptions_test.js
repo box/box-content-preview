@@ -77,3 +77,28 @@ Scenario(
         I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
     }
 );
+
+// Excludes ie, mp3 doesnt work in saucelabs
+Scenario('Check preview starts at correct spot for all file types @ci @ie', { retries: 5 }, (I) => {
+    // Video (DASH)
+    showPreview(I, FILE_ID_VIDEO, { fileOptions });
+
+    makeNavAppear(I, SELECTOR_VIDEO);
+    I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
+    I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
+
+    // Document
+    showPreview(I, FILE_ID_DOC, { fileOptions });
+
+    makeNavAppear(I);
+    I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
+    I.seeTextEquals(DOC_START, SELECTOR_DOC_CURRENT_PAGE);
+
+    // Video (MP4)
+    disableDash(I);
+    showPreview(I, FILE_ID_VIDEO, { fileOptions });
+
+    makeNavAppear(I, SELECTOR_VIDEO);
+    I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
+    I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
+});
