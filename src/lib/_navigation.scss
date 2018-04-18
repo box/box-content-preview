@@ -23,10 +23,7 @@ $navigationBtnWidth: 50px;
     white-space: nowrap;
     width: $navigationBtnWidth;
 
-    &:hover {
-        opacity: 1;
-    }
-
+    &:hover,
     &:focus {
         opacity: 1;
     }
