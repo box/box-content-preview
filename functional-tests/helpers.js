@@ -124,10 +124,31 @@ exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
 
     waitForLoad(I);
 };
+exports.showMediaControls = (I) => {
+    I.executeScript(function() {
+        var container = document.querySelector('.bp-container');
+        container.classList.add('bp-media-controls-is-visible');
+    });
+    I.waitForVisible('.bp-media-controls-container');
+};
+/**
+ * Shows the document controls
+ * @param {Object} I - the codeceptjs I
+ *
+ * @return {void}
+ */
+function showDocumentControls(I) {
+    I.executeScript(function() {
+        var container = document.querySelector('.bp-container');
+        container.classList.add('box-show-preview-controls');
+    });
+    I.waitForVisible('.bp-controls-wrapper');
+}
+exports.showDocumentControls = showDocumentControls;
 /* eslint-enable prefer-arrow-callback, no-var */
 
 exports.zoom = (I, selector) => {
-    makeNavAppear(I);
+    showDocumentControls(I);
     I.waitForVisible(selector);
     I.click(selector);
 };

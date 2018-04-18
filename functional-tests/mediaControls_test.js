@@ -25,7 +25,7 @@ const {
     TEXT_1080P
 } = require('./constants');
 
-const { showPreview, makeNavAppear, disableDash } = require('./helpers');
+const { showPreview, showMediaControls, disableDash } = require('./helpers');
 
 const { CI } = process.env;
 const DEFAULT_START = '0:00';
@@ -48,7 +48,7 @@ Scenario(
         // Video (DASH)
         showPreview(I, FILE_ID_VIDEO);
 
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_DURATION, SELECTOR_MEDIA_DURATION);
@@ -57,7 +57,7 @@ Scenario(
         showPreview(I, FILE_ID_VIDEO_SUBTITLES_TRACKS);
 
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_WITH_SUBTITLES_TRACKS_DURATION, SELECTOR_MEDIA_DURATION);
@@ -66,7 +66,7 @@ Scenario(
         showPreview(I, FILE_ID_MP3);
 
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP3);
-        makeNavAppear(I);
+        showMediaControls(I);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(AUDIO_DURATION, SELECTOR_MEDIA_DURATION);
@@ -77,7 +77,7 @@ Scenario(
 
         I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_DURATION, SELECTOR_MEDIA_DURATION);
@@ -94,7 +94,7 @@ Scenario(
         showPreview(I, FILE_ID_VIDEO);
 
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Click on the Gear
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
@@ -112,7 +112,7 @@ Scenario(
         showPreview(I, FILE_ID_VIDEO_SUBTITLES_TRACKS);
 
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         // Wait for the CC button to be visisble
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_CC_ICON);
         // Look for this class bp-media-settings-subtitles-on
@@ -142,7 +142,7 @@ Scenario(
         showPreview(I, FILE_ID_VIDEO_SMALL);
 
         I.waitForElement(SELECTOR_MEDIA_CONTAINER);
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         // Click on the Gear
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
