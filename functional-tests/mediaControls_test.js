@@ -1,7 +1,10 @@
 const {
+    FILE_ID_MP3,
+    FILE_ID_VIDEO,
+    FILE_ID_VIDEO_SMALL,
+    FILE_ID_VIDEO_SUBTITLES_TRACKS,
     SELECTOR_MEDIA_TIMESTAMP,
     SELECTOR_MEDIA_DURATION,
-    SELECTOR_BOX_PREVIEW_LOGO,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_MP3,
     SELECTOR_BOX_PREVIEW_DASH,
@@ -22,7 +25,7 @@ const {
     TEXT_1080P
 } = require('./constants');
 
-const { navigateToNextItem, makeNavAppear, waitForLoad } = require('./helpers');
+const { showPreview, makeNavAppear, disableDash } = require('./helpers');
 
 const { CI } = process.env;
 const DEFAULT_START = '0:00';
@@ -34,10 +37,7 @@ const SELECTOR_VIDEO = 'video';
 Feature('Media Controls', { retries: CI ? 3 : 0 });
 
 Before((I) => {
-    I.amOnPage('/functional-tests/media-controls.html');
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOGO);
-    waitForLoad(I);
-    I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
+    I.amOnPage('/functional-tests/index.html');
 });
 
 // Exclude IE as it can't handle media files with saucelabs
@@ -45,42 +45,38 @@ Scenario(
     'Check that the media controls show the correct time current/total times @ci @chrome @firefox @edge @safari @android @ios',
     { retries: 3 },
     (I) => {
-        // video (dash)
-        waitForLoad(I);
-        I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
+        // Video (DASH)
+        showPreview(I, FILE_ID_VIDEO);
+
         makeNavAppear(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_DURATION, SELECTOR_MEDIA_DURATION);
-        navigateToNextItem(I);
 
-        // video (tracks and subtitles)
-        waitForLoad(I);
+        // Video (tracks and subtitles)
+        showPreview(I, FILE_ID_VIDEO_SUBTITLES_TRACKS);
+
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         makeNavAppear(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_WITH_SUBTITLES_TRACKS_DURATION, SELECTOR_MEDIA_DURATION);
-        navigateToNextItem(I);
 
-        // mp3
-        waitForLoad(I);
+        // MP3
+        showPreview(I, FILE_ID_MP3);
+
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP3);
         makeNavAppear(I);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(AUDIO_DURATION, SELECTOR_MEDIA_DURATION);
 
-        // video (mp4)
-        /* eslint-disable prefer-arrow-callback */
-        I.executeScript(function() {
-            window.disableDash();
-        });
-        I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
-        /* eslint-enable prefer-arrow-callback */
-        waitForLoad(I);
-        I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
+        // Video (MP4)
+        disableDash(I);
+        showPreview(I, FILE_ID_VIDEO);
 
+        I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
+        I.waitForElement(SELECTOR_BOX_PREVIEW_MP4);
         makeNavAppear(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(DEFAULT_START, SELECTOR_MEDIA_TIMESTAMP);
@@ -94,8 +90,9 @@ Scenario(
     'Check that the media controls show the correct settings items @ci @chrome @firefox @edge @safari',
     { retries: 3 },
     (I) => {
-        // Video (dash)
-        waitForLoad(I);
+        // Video (DASH)
+        showPreview(I, FILE_ID_VIDEO);
+
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         makeNavAppear(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
@@ -111,24 +108,19 @@ Scenario(
         // Check that the HD icon is there
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_HD);
 
-        navigateToNextItem(I);
-
         // Video with tracks
-        waitForLoad(I);
+        showPreview(I, FILE_ID_VIDEO_SUBTITLES_TRACKS);
+
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         makeNavAppear(I, SELECTOR_VIDEO);
         // Wait for the CC button to be visisble
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_CC_ICON);
-
         // Look for this class bp-media-settings-subtitles-on
         I.seeElement(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ON);
-
         // Click the CC button
         I.click(SELECTOR_MEDIA_CONTROLS_CC_ICON);
-
         // Look for this class bp-media-settings-subtitles-on
         I.dontSeeElement(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ON);
-
         // Click on the Gear
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
@@ -136,10 +128,9 @@ Scenario(
         I.waitForVisible(SELECTOR_MEDIA_SETTINGS_SUBTITLES_ITEM);
         I.waitForVisible(SELECTOR_MEDIA_SETTINGS_AUDIOTRACKS_ITEM);
 
-        navigateToNextItem(I);
+        // MP3
+        showPreview(I, FILE_ID_MP3);
 
-        // mp3
-        waitForLoad(I);
         I.waitForElement(SELECTOR_BOX_PREVIEW_MP3);
         // Click on the Gear
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
@@ -147,14 +138,10 @@ Scenario(
         I.waitForVisible(SELECTOR_MEDIA_SETTINGS_AUTOPLAY_ITEM);
         I.waitForVisible(SELECTOR_MEDIA_SETTINGS_SPEED_ITEM);
 
-        navigateToNextItem(I);
+        // Video (no HD)
+        showPreview(I, FILE_ID_VIDEO_SMALL);
 
-        // video (no HD)
-        I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
-        /* eslint-enable prefer-arrow-callback */
-        waitForLoad(I);
         I.waitForElement(SELECTOR_MEDIA_CONTAINER);
-
         makeNavAppear(I, SELECTOR_VIDEO);
         // Click on the Gear
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);

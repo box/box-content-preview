@@ -1,9 +1,9 @@
 const {
     SELECTOR_BOX_PREVIEW,
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
-    SELECTOR_BOX_PREVIEW_ERROR,
     SELECTOR_BOX_PREVIEW_LOADED,
-    SELECTOR_BOX_PREVIEW_NAV_VISIBLE
+    SELECTOR_BOX_PREVIEW_NAV_VISIBLE,
+    FILE_ID_DOC
 } = require('./constants');
 
 const { BROWSER_PLATFORM } = process.env;
@@ -72,6 +72,18 @@ function makeNavAppear(I, selector = SELECTOR_BOX_PREVIEW) {
     );
 }
 
+/**
+ * Waits for the loaded class to be applied
+ *
+ * @param {Object} I - the codeceptjs I
+ *
+ * @return {void}
+ */
+function waitForLoad(I) {
+    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
+    I.dontSee('didn\'t load');
+}
+
 exports.getIsFullscreen = function() {
     return (
         document.fullscreenElement ||
@@ -82,6 +94,8 @@ exports.getIsFullscreen = function() {
 };
 
 exports.makeNavAppear = makeNavAppear;
+exports.waitForLoad = waitForLoad;
+
 exports.navigateToNextItem = (I) => {
     I.executeScript(function() {
         window.preview.navigateRight();
@@ -94,15 +108,26 @@ exports.navigateToPrevItem = (I) => {
     });
     I.waitForElement(CLASS_BOX_PREVIEW_LOADING_WRAPPER);
 };
+exports.disableDash = (I) => {
+    I.executeScript(function() {
+        window.preview.disableViewers('Dash');
+    });
+};
+exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
+    I.executeScript(
+        function(previewFileId, previewOptions) {
+            window.showPreview(previewFileId, previewOptions);
+        },
+        fileId,
+        options
+    );
+
+    waitForLoad(I);
+};
 /* eslint-enable prefer-arrow-callback, no-var */
 
 exports.zoom = (I, selector) => {
     makeNavAppear(I);
     I.waitForVisible(selector);
     I.click(selector);
-};
-
-exports.waitForLoad = (I) => {
-    I.waitForElement(SELECTOR_BOX_PREVIEW_LOADED);
-    I.dontSee('didn\'t load');
 };

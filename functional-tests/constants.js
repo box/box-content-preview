@@ -1,4 +1,6 @@
 // Unfortunately node doesnt support native imports (yet)
+
+// CSS selectors
 exports.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.bp-btn-download';
 exports.SELECTOR_DOWNLOAD_IFRAME = '#downloadiframe';
 exports.SELECTOR_NAVIGATION_LEFT = '.bp-navigate-left';
@@ -41,3 +43,11 @@ exports.SELECTOR_BOX_PREVIEW_NAV_VISIBLE = '.bp-is-navigation-visible';
 exports.CLASS_BOX_PREVIEW_LOADING_WRAPPER = '.bp-loading-wrapper';
 
 exports.TEXT_1080P = '1080p';
+
+// file ids
+exports.FILE_ID_DOC = '287707140303';
+exports.FILE_ID_VIDEO = '286114565199';
+exports.FILE_ID_MP3 = '286509191779';
+exports.FILE_ID_VIDEO = '286114565199';
+exports.FILE_ID_VIDEO_SUBTITLES_TRACKS = '286840567797';
+exports.FILE_ID_VIDEO_SMALL = '286114192023';
