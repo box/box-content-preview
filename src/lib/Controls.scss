@@ -49,7 +49,7 @@
 
     /* stylelint-enable property-no-vendor-prefix */
 
-    .bp-page-num-input {
+    input[type="number"].bp-page-num-input {
         font-size: 14px;
         margin: 0 auto;
         position: absolute;
@@ -75,7 +75,7 @@
             display: none;
         }
 
-        .bp-page-num-input {
+        input[type="number"].bp-page-num-input {
             display: inline-block;
             position: static;
             visibility: visible;
