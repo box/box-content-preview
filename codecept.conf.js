@@ -39,7 +39,7 @@ if (isLocalBuild) {
             'tunnel-identifier': TRAVIS_JOB_NUMBER,
             browserName: BROWSER_NAME,
             platform: BROWSER_PLATFORM,
-            maxDuration: 120,
+            maxDuration: 180,
             commandTimeout: 100
         }
     };
