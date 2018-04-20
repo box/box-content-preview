@@ -38,7 +38,9 @@ if (isLocalBuild) {
             build: TRAVIS_JOB_NUMBER,
             'tunnel-identifier': TRAVIS_JOB_NUMBER,
             browserName: BROWSER_NAME,
-            platform: BROWSER_PLATFORM
+            platform: BROWSER_PLATFORM,
+            maxDuration: 120,
+            commandTimeout: 100
         }
     };
 
