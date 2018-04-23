@@ -1473,6 +1473,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     emitLoadMetrics() {
+        if (!this.file || !this.file.id) {
+            return;
+        }
+
         const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
         const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
@@ -1480,7 +1484,7 @@ class Preview extends EventEmitter {
 
         // Do nothing if there is nothing worth logging.
         const infoTime = Timer.get(infoTag) || {};
-        if (!infoTime.elapsed || !this.file || !this.file.id) {
+        if (!infoTime.elapsed) {
             Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
             return;
         }

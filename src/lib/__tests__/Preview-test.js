@@ -2222,12 +2222,12 @@ describe('lib/Preview', () => {
             Timer.reset();
         });
 
-        it('should reset the Timer and escape early if no file or file id', () => {
+        it('should do nothingescape early if no file or file id', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
             preview.file = undefined;
             preview.emitLoadMetrics();
-            expect(Timer.reset).to.be.called;
+            expect(Timer.reset).to.not.be.called;
             expect(preview.emit).to.not.be.called;
         });
 
