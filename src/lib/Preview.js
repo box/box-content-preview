@@ -1474,21 +1474,20 @@ class Preview extends EventEmitter {
      */
     emitLoadMetrics() {
         if (!this.file || !this.file.id) {
-            Timer.reset();
             return;
         }
 
-        // Do nothing if there is nothing worth logging.
         const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
-        const infoTime = Timer.get(infoTag) || {};
-        if (!infoTime.elapsed) {
-            Timer.reset();
-            return;
-        }
-
         const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
         const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
         const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+
+        // Do nothing if there is nothing worth logging.
+        const infoTime = Timer.get(infoTag) || {};
+        if (!infoTime.elapsed) {
+            Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
+            return;
+        }
 
         const timerList = [
             infoTime,
@@ -1511,7 +1510,7 @@ class Preview extends EventEmitter {
 
         this.emit(PREVIEW_METRIC, event);
 
-        Timer.reset();
+        Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
     }
 
     /**
