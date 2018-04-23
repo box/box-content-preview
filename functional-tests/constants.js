@@ -40,6 +40,9 @@ exports.SELECTOR_BOX_PREVIEW_PAGE_NUM_WRAPPER = '.bp-page-num-wrapper';
 exports.SELECTOR_BOX_PREVIEW_ERROR = '.bp-error';
 exports.SELECTOR_BOX_PREVIEW_NAV_VISIBLE = '.bp-is-navigation-visible';
 
+exports.CLASS_CONTAINER = '.bp-container';
+exports.CLASS_CONTROLS_CONTAINER = '.bp-media-controls-container';
+exports.CLASS_CONTROLS_WRAPPER = '.bp-controls-wrapper';
 exports.CLASS_BOX_PREVIEW_LOADING_WRAPPER = '.bp-loading-wrapper';
 
 exports.TEXT_1080P = '1080p';

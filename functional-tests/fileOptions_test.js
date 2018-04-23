@@ -7,7 +7,7 @@ const {
     FILE_ID_MP3
 } = require('./constants');
 
-const { makeNavAppear, disableDash, showPreview } = require('./helpers');
+const { showMediaControls, showDocumentControls, disableDash, showPreview } = require('./helpers');
 
 const { CI } = process.env;
 const DOC_START = '2';
@@ -50,21 +50,21 @@ Scenario(
         // Document
         showPreview(I, FILE_ID_DOC, { fileOptions });
 
-        makeNavAppear(I);
+        showDocumentControls(I);
         I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
         I.seeTextEquals(DOC_START, SELECTOR_DOC_CURRENT_PAGE);
 
         // Video (DASH)
         showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
 
         // MP3
         showPreview(I, FILE_ID_MP3, { fileOptions });
 
-        makeNavAppear(I);
+        showMediaControls(I);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(MP3_START, SELECTOR_MEDIA_TIMESTAMP);
 
@@ -72,7 +72,7 @@ Scenario(
         disableDash(I);
         showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-        makeNavAppear(I, SELECTOR_VIDEO);
+        showMediaControls(I, SELECTOR_VIDEO);
         I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
         I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
     }
@@ -83,14 +83,14 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', { re
     // Video (DASH)
     showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-    makeNavAppear(I, SELECTOR_VIDEO);
+    showMediaControls(I, SELECTOR_VIDEO);
     I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
     I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
 
     // Document
     showPreview(I, FILE_ID_DOC, { fileOptions });
 
-    makeNavAppear(I);
+    showDocumentControls(I);
     I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
     I.seeTextEquals(DOC_START, SELECTOR_DOC_CURRENT_PAGE);
 
@@ -98,7 +98,7 @@ Scenario('Check preview starts at correct spot for all file types @ci @ie', { re
     disableDash(I);
     showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-    makeNavAppear(I, SELECTOR_VIDEO);
+    showMediaControls(I, SELECTOR_VIDEO);
     I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
     I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
 });

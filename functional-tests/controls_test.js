@@ -13,7 +13,7 @@ const {
 } = require('./constants');
 const assert = require('assert');
 
-const { makeNavAppear, zoom, getIsFullscreen, showPreview } = require('./helpers');
+const { makeNavAppear, zoom, getIsFullscreen, showPreview, showDocumentControls } = require('./helpers');
 
 const { CI } = process.env;
 
@@ -50,7 +50,7 @@ Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @an
 Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
     const FIRST_PAGE = '#bp-page-1';
     const SECOND_PAGE = '#bp-page-2';
-
+    showDocumentControls(I);
     makeNavAppear(I);
 
     // go to page 2
@@ -86,7 +86,7 @@ Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safa
 });
 
 Scenario('Check document preview fullscreen @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
-    makeNavAppear(I);
+    showDocumentControls(I);
 
     // Enter fullscreem
     I.waitForVisible(SELECTOR_BOX_PREVIEW_ENTER_FULLSCREEN_ICON);
@@ -97,7 +97,7 @@ Scenario('Check document preview fullscreen @ci @chrome @firefox @edge @ie @safa
 
     assert.ok(isFullscreen);
 
-    makeNavAppear(I);
+    showDocumentControls(I);
 
     // Exit fullscreem
     I.waitForVisible(SELECTOR_BOX_PREVIEW_EXIT_FULLSCREEN_ICON);

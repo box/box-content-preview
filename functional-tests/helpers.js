@@ -3,7 +3,10 @@ const {
     CLASS_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_NAV_VISIBLE,
-    FILE_ID_DOC
+    FILE_ID_DOC,
+    CLASS_CONTAINER,
+    CLASS_CONTROLS_WRAPPER,
+    CLASS_CONTROLS_CONTAINER
 } = require('./constants');
 
 const { BROWSER_PLATFORM } = process.env;
@@ -124,10 +127,31 @@ exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
 
     waitForLoad(I);
 };
+exports.showMediaControls = (I) => {
+    I.executeScript(function(containerClass) {
+        var container = document.querySelector(containerClass);
+        container.classList.add('bp-media-controls-is-visible');
+    }, CLASS_CONTAINER);
+    I.waitForVisible(CLASS_CONTROLS_CONTAINER);
+};
+/**
+ * Shows the document controls
+ * @param {Object} I - the codeceptjs I
+ *
+ * @return {void}
+ */
+function showDocumentControls(I) {
+    I.executeScript(function(containerClass) {
+        var container = document.querySelector(containerClass);
+        container.classList.add('box-show-preview-controls');
+    }, CLASS_CONTAINER);
+    I.waitForVisible(CLASS_CONTROLS_WRAPPER);
+}
+exports.showDocumentControls = showDocumentControls;
 /* eslint-enable prefer-arrow-callback, no-var */
 
 exports.zoom = (I, selector) => {
-    makeNavAppear(I);
+    showDocumentControls(I);
     I.waitForVisible(selector);
     I.click(selector);
 };
