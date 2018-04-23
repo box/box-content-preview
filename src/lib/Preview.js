@@ -62,7 +62,8 @@ import {
     PREVIEW_METRIC,
     LOAD_METRIC,
     DURATION_METRIC,
-    PREVIEW_END_EVENT
+    PREVIEW_END_EVENT,
+    PREVIEW_DOWNLOAD_ATTEMPT_EVENT
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
@@ -198,19 +199,16 @@ class Preview extends EventEmitter {
             const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
             Timer.stop(previewDurationTag);
 
-            let viewerStatus = this.viewer.isLoaded() ? 'success' : 'pending';
-            viewerStatus = this.viewer.options.viewer.NAME === 'Error' ? 'error' : viewerStatus;
-
             const event = {
-                event_name: LOAD_METRIC.previewLoadEvent,
+                event_name: PREVIEW_END_EVENT,
                 value: {
-                    viewer_status: viewerStatus, // Status of preview at the time of preview end
+                    viewer_status: this.viewer.getLoadStatus(), // Status of preview at the time of preview end
                     duration: previewDurationTag.elapsed // Duration of preview
                 },
                 ...this.createLogEvent()
             };
 
-            this.emit(PREVIEW_END_EVENT, event);
+            this.emit(PREVIEW_METRIC, event);
             Timer.reset(previewDurationTag);
 
             this.viewer.destroy();
@@ -549,6 +547,16 @@ class Preview extends EventEmitter {
                 DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
         }
+
+        const downloadAttemptEvent = {
+            event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
+            value: {
+                viewer_status: this.viewer.getLoadStatus() // Status of preview at the time of preview end
+            },
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, downloadAttemptEvent);
     }
 
     /**
