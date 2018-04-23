@@ -186,6 +186,45 @@
     outline: 0;
 }
 
+.bp-controls {
+    /* Inputs */
+    input[type="text"],
+    input[type="number"],
+    div[contentEditable="true"],
+    textarea {
+        color: $twos;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+        -webkit-font-smoothing: antialiased;
+        padding: 7px;
+        transition: border-color linear .15s, box-shadow linear .1s;
+        width: 262px;
+    }
+
+    input[type="text"]:hover,
+    input[type="number"]:hover,
+    div[contentEditable="true"]:hover,
+    textarea:hover {
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .15);
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    div[contentEditable="true"]:focus,
+    textarea:focus {
+        border: 1px solid $primary-color;
+        box-shadow: none;
+        outline: 0;
+    }
+
+    input::-webkit-input-placeholder,
+    input::-moz-placeholder,
+    input:-ms-input-placeholder {
+        color: #ccc;
+    }
+}
+
 //------------------------------------------------------------------------------
 // Menus
 //------------------------------------------------------------------------------
