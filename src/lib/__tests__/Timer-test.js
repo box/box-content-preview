@@ -118,6 +118,28 @@ describe('lib/Timer', () => {
             expect(Timer.get(other).end).to.not.exist;
             expect(Timer.get(other).elapsed).to.not.exist;
         });
+
+        it('should reset multiple tags given an array of tags', () => {
+            Timer.start(tag);
+            Timer.stop(tag);
+            const other = 'other_tag';
+            Timer.start(other);
+            Timer.stop(other);
+            const another = 'another_tag';
+            Timer.start(another);
+            Timer.stop(another);
+            Timer.reset([tag, other]);
+
+            expect(Timer.get(tag).start).to.not.exist;
+            expect(Timer.get(tag).end).to.not.exist;
+            expect(Timer.get(tag).elapsed).to.not.exist;
+            expect(Timer.get(other).start).to.not.exist;
+            expect(Timer.get(other).end).to.not.exist;
+            expect(Timer.get(other).elapsed).to.not.exist;
+            expect(Timer.get(another).start).to.exist;
+            expect(Timer.get(another).end).to.exist;
+            expect(Timer.get(another).elapsed).to.exist;
+        });
     });
 
     describe('createTag()', () => {

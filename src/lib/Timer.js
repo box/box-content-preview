@@ -63,14 +63,20 @@ class Timer {
      * Resets the values in a certain time structure, if it exists.
      *
      * @public
-     * @param {string} [tag] - If provided, will reset a specific time structure associated with the tag.
-     *                         If empty, resets everything.
+     * @param {string|string[]} [tagOrTags] - If provided, will reset a specific time structure associated with
+     * the tag or array of tags. If empty, resets all tags.
+     *
      * @return {void}
      */
-    reset(tag) {
-        if (tag) {
-            const time = this.get(tag);
+    reset(tagOrTags) {
+        if (!tagOrTags) {
+            Object.keys(this.times).forEach(this.reset.bind(this));
+            return;
+        }
 
+        const tagArray = typeof tagOrTags === 'string' ? [tagOrTags] : tagOrTags;
+        tagArray.forEach((tag) => {
+            const time = this.get(tag);
             // If nothing exists, there's no reason to reset it
             if (!time) {
                 return;
@@ -79,9 +85,7 @@ class Timer {
             time.start = undefined;
             time.end = undefined;
             time.elapsed = undefined;
-        } else {
-            Object.keys(this.times).forEach(this.reset.bind(this));
-        }
+        });
     }
 
     /**
