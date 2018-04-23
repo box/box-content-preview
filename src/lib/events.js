@@ -58,6 +58,10 @@ export const LOAD_METRIC = {
     fullDocumentLoadTime: 'full_document_load_time' // How long it took to load the document so it could be previewed.
 };
 
+// Event fired from preview with preview duration metrics
+export const DURATION_METRIC = 'preview_duration_metric';
+export const PREVIEW_END_EVENT = 'preview_end';
+
 // Events around download reachability
 export const DOWNLOAD_REACHABILITY_METRICS = {
     NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',

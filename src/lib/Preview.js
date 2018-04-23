@@ -55,7 +55,15 @@ import {
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID
 } from './constants';
-import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
+import {
+    VIEWER_EVENT,
+    ERROR_CODE,
+    PREVIEW_ERROR,
+    PREVIEW_METRIC,
+    LOAD_METRIC,
+    DURATION_METRIC,
+    PREVIEW_END_EVENT
+} from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
 
@@ -186,6 +194,25 @@ class Preview extends EventEmitter {
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
+            // Log a preview end event
+            const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
+            Timer.stop(previewDurationTag);
+
+            let viewerStatus = this.viewer.isLoaded() ? 'success' : 'pending';
+            viewerStatus = this.viewer.options.viewer.NAME === 'Error' ? 'error' : viewerStatus;
+
+            const event = {
+                event_name: LOAD_METRIC.previewLoadEvent,
+                value: {
+                    viewer_status: viewerStatus, // Status of preview at the time of preview end
+                    duration: previewDurationTag.elapsed // Duration of preview
+                },
+                ...this.createLogEvent()
+            };
+
+            this.emit(PREVIEW_END_EVENT, event);
+            Timer.reset(previewDurationTag);
+
             this.viewer.destroy();
         }
 
@@ -793,6 +820,10 @@ class Preview extends EventEmitter {
         // Setup loading UI and progress bar
         this.ui.showLoadingIndicator();
         this.ui.startProgressBar();
+
+        // Start the preview duration timer when the user starts to perceive preview's load
+        const previewDurationTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        Timer.start(previewDurationTag);
     }
 
     /**
