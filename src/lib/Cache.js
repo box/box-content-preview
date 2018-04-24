@@ -1,3 +1,5 @@
+import { isLocalStorageAvailable } from './util';
+
 class Cache {
     //--------------------------------------------------------------------------
     // Public
@@ -115,8 +117,7 @@ class Cache {
     }
 
     /**
-     * Checks whether localStorage is available or not, derived from
-     * https://goo.gl/XE10Gu.
+     * Checks whether localStorage is available.
      *
      * @NOTE(tjin): This check is cached to not have to write/read from disk
      * every time this check is needed, but this will not catch instances where
@@ -128,14 +129,7 @@ class Cache {
      */
     localStorageAvailable() {
         if (this.available === undefined) {
-            try {
-                const x = '__storage_test__';
-                localStorage.setItem(x, x);
-                localStorage.removeItem(x);
-                this.available = true;
-            } catch (e) {
-                this.available = false;
-            }
+            this.available = isLocalStorageAvailable();
         }
 
         return this.available;

@@ -868,3 +868,21 @@ export function convertWatermarkPref(previewWMPref) {
 
     return value;
 }
+
+/**
+ * Checks whether localStorage is available or not, derived from
+ * https://goo.gl/XE10Gu.
+ *
+ *
+ * @return {boolean} Whether or not localStorage is available or not.
+ */
+export function isLocalStorageAvailable() {
+    try {
+        const x = '__storage_test__';
+        localStorage.setItem(x, x);
+        localStorage.removeItem(x);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}

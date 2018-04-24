@@ -13,6 +13,7 @@ describe('lib/DownloadReachability', () => {
     beforeEach(() => {
         sessionStorage.clear();
         localStorage.clear();
+        sandbox.stub(DownloadReachability, 'isStorageAvailable').returns(true);
     });
 
     afterEach(() => {
@@ -92,7 +93,7 @@ describe('lib/DownloadReachability', () => {
 
         it('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
             let result = DownloadReachability.getDownloadNotificationToShow('https://foo.com');
-            expect(result).to.be.undefined;
+            expect(result).to.be.null;
 
             sessionStorage.setItem('download_host_fallback', 'true');
             result = DownloadReachability.getDownloadNotificationToShow('https://dl5.boxcloud.com');
@@ -101,7 +102,7 @@ describe('lib/DownloadReachability', () => {
             const shownHostsArr = ['dl5.boxcloud.com'];
             localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
             result = DownloadReachability.getDownloadNotificationToShow('https://dl5.boxcloud.com');
-            expect(result).to.be.undefined;
+            expect(result).to.be.null;
         });
     });
 
