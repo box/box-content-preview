@@ -201,10 +201,7 @@ class Preview extends EventEmitter {
 
             const event = {
                 event_name: PREVIEW_END_EVENT,
-                value: {
-                    viewer_status: this.viewer.getLoadStatus(), // Status of preview at the time of preview end
-                    duration: previewDurationTag.elapsed // Duration of preview
-                },
+                value: previewDurationTag.elapsed,
                 ...this.createLogEvent()
             };
 
@@ -550,9 +547,6 @@ class Preview extends EventEmitter {
 
         const downloadAttemptEvent = {
             event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
-            value: {
-                viewer_status: this.viewer.getLoadStatus() // Status of preview at the time of preview end
-            },
             ...this.createLogEvent()
         };
 
@@ -830,7 +824,7 @@ class Preview extends EventEmitter {
         this.ui.startProgressBar();
 
         // Start the preview duration timer when the user starts to perceive preview's load
-        const previewDurationTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
+        const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
         Timer.start(previewDurationTag);
     }
 

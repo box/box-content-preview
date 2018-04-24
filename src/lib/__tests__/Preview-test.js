@@ -79,6 +79,12 @@ describe('lib/Preview', () => {
             };
         });
 
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.destroy();
+            expect(stubs.emitLoadMetrics).to.be.called;
+        });
+
         it('should destroy the viewer if it exists', () => {
             preview.viewer = {
                 destroy: undefined
@@ -93,15 +99,22 @@ describe('lib/Preview', () => {
             expect(stubs.viewer.destroy).to.be.called;
         });
 
+        it('should stop the duration timer, reset it, and log a preview end event', () => {
+            sandbox.stub(Timer, 'createTag').returns('duration_tag');
+            sandbox.stub(Timer, 'stop');
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.viewer = stubs.viewer;
+
+            preview.destroy();
+            expect(Timer.createTag).to.be.called;
+            expect(Timer.stop).to.be.calledWith('duration_tag');
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, sinon.match.object);
+        });
+
         it('should clear the viewer', () => {
             preview.destroy();
             expect(preview.viewer).to.equal(undefined);
-        });
-
-        it('should invoke emitLoadMetrics()', () => {
-            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
-            preview.destroy();
-            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -774,6 +787,7 @@ describe('lib/Preview', () => {
                     }
                 }
             };
+            sandbox.stub(preview, 'emit');
             sandbox.stub(file, 'canDownload');
             sandbox.stub(file, 'shouldDownloadWM');
             sandbox.stub(util, 'openUrlInsideIframe');
@@ -844,6 +858,22 @@ describe('lib/Preview', () => {
             return promise.then(() => {
                 expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
+        });
+
+        it('should emit the download attempted metric', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(false);
+
+            const url = 'someurl';
+            util.appendQueryParams.returns(url);
+
+            const promise = Promise.resolve({
+                download_url: url
+            });
+
+            util.get.returns(promise);
+            preview.download();
+            expect(preview.emit).to.be.calledWith('preview_metric');
         });
     });
 

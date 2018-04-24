@@ -365,23 +365,6 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Returns the viewer's load status. Either error, loaded, or pending.
-     *
-     * @public
-     * @return {boolean} true if destroyed
-     */
-    getLoadStatus() {
-        if (this.isLoaded()) {
-            if (this.options.viewer.NAME === 'Error') {
-                return 'error';
-            }
-
-            return 'loaded';
-        }
-
-        return 'pending';
-    }
-    /**
      * Appends auth params to the content url
      *
      * @protected
