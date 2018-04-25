@@ -27,7 +27,7 @@ class Cache {
     set(key, value, useLocalStorage) {
         this.cache[key] = value;
 
-        if (useLocalStorage && this.localStorageAvailable()) {
+        if (useLocalStorage && this.isLocalStorageAvailable()) {
             localStorage.setItem(this.generateKey(key), JSON.stringify(value));
         }
     }
@@ -40,7 +40,7 @@ class Cache {
      * @return {void}
      */
     unset(key) {
-        if (this.localStorageAvailable()) {
+        if (this.isLocalStorageAvailable()) {
             localStorage.removeItem(this.generateKey(key));
         }
 
@@ -109,7 +109,7 @@ class Cache {
      * @return {boolean} Whether the cache has key
      */
     inLocalStorage(key) {
-        if (!this.localStorageAvailable()) {
+        if (!this.isLocalStorageAvailable()) {
             return false;
         }
 
@@ -127,7 +127,7 @@ class Cache {
      * @private
      * @return {boolean} Whether or not localStorage is available or not.
      */
-    localStorageAvailable() {
+    isLocalStorageAvailable() {
         if (this.available === undefined) {
             this.available = isLocalStorageAvailable();
         }

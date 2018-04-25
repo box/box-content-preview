@@ -15,7 +15,7 @@ describe('Cache', () => {
     });
 
     it('should set and get correctly', () => {
-        sandbox.stub(cache, 'localStorageAvailable').returns(true);
+        sandbox.stub(cache, 'isLocalStorageAvailable').returns(true);
         const getSpy = sandbox.spy(localStorage, 'getItem');
         const setSpy = sandbox.spy(localStorage, 'setItem');
 
