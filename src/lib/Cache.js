@@ -1,3 +1,5 @@
+import { isLocalStorageAvailable } from './util';
+
 class Cache {
     //--------------------------------------------------------------------------
     // Public
@@ -25,7 +27,7 @@ class Cache {
     set(key, value, useLocalStorage) {
         this.cache[key] = value;
 
-        if (useLocalStorage && this.localStorageAvailable()) {
+        if (useLocalStorage && this.isLocalStorageAvailable()) {
             localStorage.setItem(this.generateKey(key), JSON.stringify(value));
         }
     }
@@ -38,7 +40,7 @@ class Cache {
      * @return {void}
      */
     unset(key) {
-        if (this.localStorageAvailable()) {
+        if (this.isLocalStorageAvailable()) {
             localStorage.removeItem(this.generateKey(key));
         }
 
@@ -107,7 +109,7 @@ class Cache {
      * @return {boolean} Whether the cache has key
      */
     inLocalStorage(key) {
-        if (!this.localStorageAvailable()) {
+        if (!this.isLocalStorageAvailable()) {
             return false;
         }
 
@@ -115,8 +117,7 @@ class Cache {
     }
 
     /**
-     * Checks whether localStorage is available or not, derived from
-     * https://goo.gl/XE10Gu.
+     * Checks whether localStorage is available.
      *
      * @NOTE(tjin): This check is cached to not have to write/read from disk
      * every time this check is needed, but this will not catch instances where
@@ -126,16 +127,9 @@ class Cache {
      * @private
      * @return {boolean} Whether or not localStorage is available or not.
      */
-    localStorageAvailable() {
+    isLocalStorageAvailable() {
         if (this.available === undefined) {
-            try {
-                const x = '__storage_test__';
-                localStorage.setItem(x, x);
-                localStorage.removeItem(x);
-                this.available = true;
-            } catch (e) {
-                this.available = false;
-            }
+            this.available = isLocalStorageAvailable();
         }
 
         return this.available;

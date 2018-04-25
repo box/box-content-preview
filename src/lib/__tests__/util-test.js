@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import Location from '../Location';
 import * as util from '../util';
+import DownloadReachability from '../DownloadReachability';
 
 const sandbox = sinon.sandbox.create();
 
@@ -336,6 +337,9 @@ describe('lib/util', () => {
     /* eslint-enable no-undef */
 
     describe('createContentUrl()', () => {
+        beforeEach(() => {
+            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
+        });
         it('should return correct content url when no asset name', () => {
             expect(util.createContentUrl('foo{+asset_path}', null)).to.equal('foo');
         });
@@ -349,7 +353,7 @@ describe('lib/util', () => {
         });
 
         it('should replace the download host with the default if we are falling back', () => {
-            sessionStorage.setItem('download_host_fallback', 'true');
+            DownloadReachability.isDownloadHostBlocked.returns(true);
             expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).to.equal('https://dl.boxcloud.com');
         });
     });

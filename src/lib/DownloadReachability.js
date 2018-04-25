@@ -1,4 +1,4 @@
-import { openUrlInsideIframe } from './util';
+import { openUrlInsideIframe, isLocalStorageAvailable } from './util';
 
 const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
 const PROD_CUSTOM_HOST_SUFFIX = 'boxcloud.com';
@@ -7,7 +7,28 @@ const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
 const NUMBERED_HOST_PREFIX_REGEX = /^https:\/\/dl\d+\./;
 const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/[A-Za-z0-9]+./;
 
+let IS_STORAGE_AVAILABLE;
+
 class DownloadReachability {
+    /**
+     * Checks whether localStorage and localStorage are available.
+     *
+     * This check is cached to not have to write/read from disk
+     * every time this check is needed, but this will not catch instances where
+     * localStorage/sessionStorage was available the first time this is called, but becomes
+     * unavailable at a later time.
+     *
+     * @private
+     * @return {boolean} Whether or not localStorage and sessionStorage are available or not.
+     */
+    static isStorageAvailable() {
+        if (IS_STORAGE_AVAILABLE === undefined) {
+            IS_STORAGE_AVAILABLE = isLocalStorageAvailable();
+        }
+
+        return IS_STORAGE_AVAILABLE;
+    }
+
     /**
      * Extracts the hostname from a URL
      *
@@ -61,7 +82,9 @@ class DownloadReachability {
      * @return {void}
      */
     static setDownloadHostFallback() {
-        sessionStorage.setItem(DOWNLOAD_HOST_FALLBACK_KEY, 'true');
+        if (DownloadReachability.isStorageAvailable()) {
+            sessionStorage.setItem(DOWNLOAD_HOST_FALLBACK_KEY, 'true');
+        }
     }
 
     /**
@@ -71,7 +94,11 @@ class DownloadReachability {
      * @return {boolean} Whether the sessionStorage indicates that a download host has been blocked
      */
     static isDownloadHostBlocked() {
-        return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true';
+        if (DownloadReachability.isStorageAvailable()) {
+            return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true';
+        }
+
+        return false;
     }
 
     /**
@@ -82,6 +109,10 @@ class DownloadReachability {
      * @return {void}
      */
     static setDownloadHostNotificationShown(downloadHost) {
+        if (!DownloadReachability.isStorageAvailable()) {
+            return;
+        }
+
         const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
         shownHostsArr.push(downloadHost);
         localStorage.setItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY, JSON.stringify(shownHostsArr));
@@ -92,9 +123,13 @@ class DownloadReachability {
      *
      * @public
      * @param {string} downloadUrl - Content download URL
-     * @return {string|undefined} Which host should we show a notification for, if any
+     * @return {string|null} Which host should we show a notification for, if any
      */
     static getDownloadNotificationToShow(downloadUrl) {
+        if (!DownloadReachability.isStorageAvailable()) {
+            return null;
+        }
+
         const contentHostname = DownloadReachability.getHostnameFromUrl(downloadUrl);
         const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
 
@@ -102,7 +137,7 @@ class DownloadReachability {
             !shownHostsArr.includes(contentHostname) &&
             DownloadReachability.isCustomDownloadHost(downloadUrl)
             ? contentHostname
-            : undefined;
+            : null;
     }
 
     /**
