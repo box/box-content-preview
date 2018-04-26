@@ -196,17 +196,23 @@ class Preview extends EventEmitter {
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             // Log a preview end event
-            const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
-            Timer.stop(previewDurationTag);
+            if (this.file && this.file.id) {
+                const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
+                const previewDurationTimer = Timer.get(previewDurationTag);
+                Timer.stop(previewDurationTag);
 
-            const event = {
-                event_name: PREVIEW_END_EVENT,
-                value: previewDurationTag.elapsed,
-                ...this.createLogEvent()
-            };
+                const event = {
+                    event_name: PREVIEW_END_EVENT,
+                    value: {
+                        duration: previewDurationTimer ? previewDurationTimer.elapsed : null,
+                        viewer_status: this.viewer.getLoadStatus()
+                    },
+                    ...this.createLogEvent()
+                };
 
-            this.emit(PREVIEW_METRIC, event);
-            Timer.reset(previewDurationTag);
+                Timer.reset(previewDurationTag);
+                this.emit(PREVIEW_METRIC, event);
+            }
 
             this.viewer.destroy();
         }
@@ -547,6 +553,7 @@ class Preview extends EventEmitter {
 
         const downloadAttemptEvent = {
             event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
+            value: this.viewer ? this.viewer.getLoadStatus() : null,
             ...this.createLogEvent()
         };
 

@@ -61,10 +61,8 @@ export const LOAD_METRIC = {
 export const DURATION_METRIC = 'preview_duration_metric';
 // Event fired from preview with preview duration metrics
 export const PREVIEW_END_EVENT = 'preview_end';
-
 // Event fired when the user attempts to download the file
 export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
-
 // Events around download reachability
 export const DOWNLOAD_REACHABILITY_METRICS = {
     NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',

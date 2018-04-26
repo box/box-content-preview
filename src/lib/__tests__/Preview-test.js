@@ -75,7 +75,8 @@ describe('lib/Preview', () => {
             };
 
             stubs.viewer = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
+                getLoadStatus: sandbox.stub()
             };
         });
 
@@ -87,7 +88,8 @@ describe('lib/Preview', () => {
 
         it('should destroy the viewer if it exists', () => {
             preview.viewer = {
-                destroy: undefined
+                destroy: undefined,
+                getLoadStatus: sandbox.stub()
             };
 
             preview.destroy();
@@ -100,7 +102,25 @@ describe('lib/Preview', () => {
         });
 
         it('should stop the duration timer, reset it, and log a preview end event', () => {
+            preview.file = {
+                id: 1
+            };
+            stubs.viewer.getLoadStatus.returns('loaded');
+            sandbox.stub(preview, 'createLogEvent');
+            const durationTimer = {
+                elapsed: 7
+            };
+
+            const mockEventObject = {
+                event_name: 'preview_end',
+                value: {
+                    duration: durationTimer.elapsed,
+                    viewer_status: 'loaded'
+                }
+            };
+
             sandbox.stub(Timer, 'createTag').returns('duration_tag');
+            sandbox.stub(Timer, 'get').returns(durationTimer);
             sandbox.stub(Timer, 'stop');
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
@@ -109,7 +129,8 @@ describe('lib/Preview', () => {
             preview.destroy();
             expect(Timer.createTag).to.be.called;
             expect(Timer.stop).to.be.calledWith('duration_tag');
-            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, sinon.match.object);
+            expect(stubs.viewer.getLoadStatus).to.be.called;
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, mockEventObject);
         });
 
         it('should clear the viewer', () => {
@@ -780,6 +801,7 @@ describe('lib/Preview', () => {
             preview.viewer = {
                 getRepresentation: sandbox.stub(),
                 getAssetPath: sandbox.stub(),
+                getLoadStatus: sandbox.stub(),
                 createContentUrlWithAuthParams: sandbox.stub(),
                 options: {
                     viewer: {
