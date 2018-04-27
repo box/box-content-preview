@@ -45,7 +45,7 @@ class Timer {
         }
 
         time.end = global.performance.now();
-        time.elapsed = time.end - time.start;
+        time.elapsed = Math.round(time.end - time.start);
     }
 
     /**

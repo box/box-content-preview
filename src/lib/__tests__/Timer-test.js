@@ -71,10 +71,10 @@ describe('lib/Timer', () => {
 
         it('should set the end prop, and calculate the elapsed time', () => {
             sandbox.stub(global.performance, 'now').returns(5);
-            Timer.times[tag] = { start: 3 };
+            Timer.times[tag] = { start: 3.5 };
 
             Timer.stop(tag);
-            expect(Timer.get(tag).elapsed).to.equal(2); // 5 - 3 = 2
+            expect(Timer.get(tag).elapsed).to.equal(2); // 5 - 3.5 = 1.5, rounded = 2
         });
     });
 
