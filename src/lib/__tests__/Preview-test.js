@@ -75,13 +75,21 @@ describe('lib/Preview', () => {
             };
 
             stubs.viewer = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
+                getLoadStatus: sandbox.stub()
             };
+        });
+
+        it('should invoke emitLoadMetrics()', () => {
+            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
+            preview.destroy();
+            expect(stubs.emitLoadMetrics).to.be.called;
         });
 
         it('should destroy the viewer if it exists', () => {
             preview.viewer = {
-                destroy: undefined
+                destroy: undefined,
+                getLoadStatus: sandbox.stub()
             };
 
             preview.destroy();
@@ -93,15 +101,41 @@ describe('lib/Preview', () => {
             expect(stubs.viewer.destroy).to.be.called;
         });
 
+        it('should stop the duration timer, reset it, and log a preview end event', () => {
+            preview.file = {
+                id: 1
+            };
+            stubs.viewer.getLoadStatus.returns('loaded');
+            sandbox.stub(preview, 'createLogEvent');
+            const durationTimer = {
+                elapsed: 7
+            };
+
+            const mockEventObject = {
+                event_name: 'preview_end',
+                value: {
+                    duration: durationTimer.elapsed,
+                    viewer_status: 'loaded'
+                }
+            };
+
+            sandbox.stub(Timer, 'createTag').returns('duration_tag');
+            sandbox.stub(Timer, 'get').returns(durationTimer);
+            sandbox.stub(Timer, 'stop');
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(preview, 'emit');
+            preview.viewer = stubs.viewer;
+
+            preview.destroy();
+            expect(Timer.createTag).to.be.called;
+            expect(Timer.stop).to.be.calledWith('duration_tag');
+            expect(stubs.viewer.getLoadStatus).to.be.called;
+            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, mockEventObject);
+        });
+
         it('should clear the viewer', () => {
             preview.destroy();
             expect(preview.viewer).to.equal(undefined);
-        });
-
-        it('should invoke emitLoadMetrics()', () => {
-            stubs.emitLoadMetrics = sandbox.stub(preview, 'emitLoadMetrics');
-            preview.destroy();
-            expect(stubs.emitLoadMetrics).to.be.called;
         });
     });
 
@@ -767,6 +801,7 @@ describe('lib/Preview', () => {
             preview.viewer = {
                 getRepresentation: sandbox.stub(),
                 getAssetPath: sandbox.stub(),
+                getLoadStatus: sandbox.stub(),
                 createContentUrlWithAuthParams: sandbox.stub(),
                 options: {
                     viewer: {
@@ -774,6 +809,7 @@ describe('lib/Preview', () => {
                     }
                 }
             };
+            sandbox.stub(preview, 'emit');
             sandbox.stub(file, 'canDownload');
             sandbox.stub(file, 'shouldDownloadWM');
             sandbox.stub(util, 'openUrlInsideIframe');
@@ -844,6 +880,22 @@ describe('lib/Preview', () => {
             return promise.then(() => {
                 expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
+        });
+
+        it('should emit the download attempted metric', () => {
+            file.canDownload.returns(true);
+            file.shouldDownloadWM.returns(false);
+
+            const url = 'someurl';
+            util.appendQueryParams.returns(url);
+
+            const promise = Promise.resolve({
+                download_url: url
+            });
+
+            util.get.returns(promise);
+            preview.download();
+            expect(preview.emit).to.be.calledWith('preview_metric');
         });
     });
 

@@ -55,7 +55,16 @@ import {
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID
 } from './constants';
-import { VIEWER_EVENT, ERROR_CODE, PREVIEW_ERROR, PREVIEW_METRIC, LOAD_METRIC } from './events';
+import {
+    VIEWER_EVENT,
+    ERROR_CODE,
+    PREVIEW_ERROR,
+    PREVIEW_METRIC,
+    LOAD_METRIC,
+    DURATION_METRIC,
+    PREVIEW_END_EVENT,
+    PREVIEW_DOWNLOAD_ATTEMPT_EVENT
+} from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
 
@@ -186,6 +195,25 @@ class Preview extends EventEmitter {
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
+            // Log a preview end event
+            if (this.file && this.file.id) {
+                const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
+                const previewDurationTimer = Timer.get(previewDurationTag);
+                Timer.stop(previewDurationTag);
+
+                const event = {
+                    event_name: PREVIEW_END_EVENT,
+                    value: {
+                        duration: previewDurationTimer ? previewDurationTimer.elapsed : null,
+                        viewer_status: this.viewer.getLoadStatus()
+                    },
+                    ...this.createLogEvent()
+                };
+
+                Timer.reset(previewDurationTag);
+                this.emit(PREVIEW_METRIC, event);
+            }
+
             this.viewer.destroy();
         }
 
@@ -522,6 +550,14 @@ class Preview extends EventEmitter {
                 DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
         }
+
+        const downloadAttemptEvent = {
+            event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
+            value: this.viewer ? this.viewer.getLoadStatus() : null,
+            ...this.createLogEvent()
+        };
+
+        this.emit(PREVIEW_METRIC, downloadAttemptEvent);
     }
 
     /**
@@ -793,6 +829,10 @@ class Preview extends EventEmitter {
         // Setup loading UI and progress bar
         this.ui.showLoadingIndicator();
         this.ui.startProgressBar();
+
+        // Start the preview duration timer when the user starts to perceive preview's load
+        const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
+        Timer.start(previewDurationTag);
     }
 
     /**
