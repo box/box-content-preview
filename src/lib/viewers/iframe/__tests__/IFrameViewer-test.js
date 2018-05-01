@@ -57,7 +57,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
         it('should load a boxnote and fire load event', (done) => {
             iframe.on('load', () => {
-                assert.equal(iframe.iframeEl.src, 'https://app.box.com/notes/123?isReadonly=1&is_preview=1');
+                assert.equal(iframe.iframeEl.src, 'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1');
                 done();
             });
 
@@ -68,7 +68,10 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.options.sharedLink = 'https://app.box.com/s/foobar';
 
             iframe.on('load', () => {
-                assert.equal(iframe.iframeEl.src, 'https://app.box.com/notes/123?isReadonly=1&is_preview=1&s=foobar');
+                assert.equal(
+                    iframe.iframeEl.src,
+                    'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1&s=foobar'
+                );
                 done();
             });
 
