@@ -84,6 +84,10 @@ $item-hover-color: #f6fafd;
     &:hover {
         background-color: $item-hover-color;
 
+        .bp-media-settings-icon svg {
+            fill: $blue-steel;
+        }
+
         .bp-media-settings-label {
             color: lighten($blue-steel, 50%);
         }
@@ -200,9 +204,5 @@ $item-hover-color: #f6fafd;
 
     .bp-media-settings-selected & svg {
         visibility: visible;
-    }
-
-    &:hover svg {
-        fill: $white;
     }
 }
