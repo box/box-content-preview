@@ -1309,9 +1309,9 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-1.6.0.tgz#2754b5e37d6b43be9e9f8584afff6984cf59d7ce"
+box-annotations@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.0.0.tgz#b09981fcece48a9828575478f7acade1cb9d4632"
 
 box-locales@^0.0.1:
   version "0.0.1"
