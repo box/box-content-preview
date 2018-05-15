@@ -30,7 +30,7 @@ class IFrameViewer extends BaseViewer {
         const { extension } = file;
 
         if (extension === 'boxnote') {
-            src = `${appHost}/notes/${file.id}?isReadonly=1&is_preview=1`;
+            src = `${appHost}/notes_embedded/${file.id}?isReadonly=1&is_preview=1`;
 
             // Append shared name if needed, Box Notes uses ?s=SHARED_NAME
             const sharedNameIndex = sharedLink.indexOf('/s/');

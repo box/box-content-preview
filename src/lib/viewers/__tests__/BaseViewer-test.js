@@ -917,6 +917,23 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getLoadStatus()', () => {
+        it('should return the correct string based on load status and viewer type', () => {
+            base.loaded = false;
+            expect(base.getLoadStatus()).to.equal('loading');
+
+            base.loaded = true;
+            base.options.viewer = {
+                NAME: 'Error'
+            };
+
+            expect(base.getLoadStatus()).to.equal('error');
+
+            base.options.viewer.NAME = 'Dash';
+            expect(base.getLoadStatus()).to.equal('loaded');
+        });
+    });
+
     describe('isRepresentationReady()', () => {
         it('should return whether the representation has a successful status', () => {
             const representation = {

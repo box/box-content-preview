@@ -36,6 +36,12 @@ import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } 
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
+const VIEWER_STATUSES = {
+    error: 'error',
+    loaded: 'loaded',
+    loading: 'loading'
+};
+
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
 
@@ -748,6 +754,20 @@ class BaseViewer extends EventEmitter {
 
         this.repStatuses.push(repStatus);
         return repStatus;
+    }
+
+    /**
+     * Returns a string representing the viewer's loading status. Either loading, loaded, or error
+     *
+     * @public
+     * @return {string} A string representing the viewer's load status
+     */
+    getLoadStatus() {
+        if (this.loaded) {
+            return this.options.viewer.NAME === 'Error' ? VIEWER_STATUSES.error : VIEWER_STATUSES.loaded;
+        }
+
+        return VIEWER_STATUSES.loading;
     }
 
     /**
