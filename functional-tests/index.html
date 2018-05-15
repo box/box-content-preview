@@ -20,13 +20,11 @@
 <body>
     <div class="preview-container"></div>
     <script>
-        var ACCESS_TOKEN = 'edRiUpeLD9A1nLyWqc1gZOt2OnSNNYp9';
         var preview = new Box.Preview();
-
-        function showPreview(fileId, options) {
+        function showPreview(fileId, token, options) {
             options = options || {};
             options.container = '.preview-container';
-            preview.show(fileId, ACCESS_TOKEN, options);
+            preview.show(fileId, token, options);
         }
     </script>
 </body>

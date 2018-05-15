@@ -117,11 +117,13 @@ exports.disableDash = (I) => {
     });
 };
 exports.showPreview = (I, fileId = FILE_ID_DOC, options = {}) => {
+    const { ACCESS_TOKEN } = process.env;
     I.executeScript(
-        function(previewFileId, previewOptions) {
-            window.showPreview(previewFileId, previewOptions);
+        function(previewFileId, accessToken, previewOptions) {
+            window.showPreview(previewFileId, accessToken, previewOptions);
         },
         fileId,
+        ACCESS_TOKEN,
         options
     );
 
