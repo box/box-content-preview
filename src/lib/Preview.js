@@ -771,10 +771,15 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        // Fetch access tokens before proceeding
-        getTokens(this.file.id, this.previewOptions.token)
-            .then(this.handleTokenResponse)
-            .catch(this.handleFetchError);
+        const couldPreviewOfflineWithoutToken = typeof fileIdOrFile === 'object' && this.options.skipServerUpdate;
+        if (couldPreviewOfflineWithoutToken) {
+            this.handleTokenResponse({});
+        } else {
+            // Fetch access tokens before proceeding
+            getTokens(this.file.id, this.previewOptions.token)
+                .then(this.handleTokenResponse)
+                .catch(this.handleFetchError);
+        }
     }
 
     /**
@@ -798,6 +803,9 @@ class Preview extends EventEmitter {
 
         // Load from cache if the current file is valid, otherwise load file info from server
         if (checkFileValid(this.file)) {
+            /* Save file in cache. This also adds the 'ORIGINAL' representation.
+            * It is required to preview files offline */
+            cacheFile(this.cache, this.file);
             this.loadFromCache();
         } else {
             this.loadFromServer();

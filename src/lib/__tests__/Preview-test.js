@@ -1002,6 +1002,15 @@ describe('lib/Preview', () => {
             expect(preview.retryTimeout).to.equal(undefined);
         });
 
+        it('should load preview when a well-formed file object is passed and server update should be skipped', () => {
+            const previewOptions = { skipServerUpdate: true };
+            preview.parseOptions(previewOptions);
+
+            preview.load(stubs.file);
+            expect(stubs.handleTokenResponse).to.be.calledWith({});
+            expect(stubs.getTokens).to.not.be.called;
+        });
+
         it('should set the retry count if we are retrying by file ID', () => {
             preview.retryCount = 0;
             preview.file.id = '0';
@@ -1114,6 +1123,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.returns(true);
 
             preview.handleTokenResponse({});
+            expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
         });
