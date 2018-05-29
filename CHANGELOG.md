@@ -1,3 +1,12 @@
+<a name="1.44.0"></a>
+## 1.44.0 (2018-05-29)
+
+* Update: box-annotations to v2.0.1 (#798) ([20023dc](https://github.com/box/box-content-preview/commit/20023dc)), closes [#798](https://github.com/box/box-content-preview/issues/798)
+* Update: box-annotations to v2.1.0 (#803) ([0826bf9](https://github.com/box/box-content-preview/commit/0826bf9)), closes [#803](https://github.com/box/box-content-preview/issues/803)
+* Fix: Add HEIC to image icon list (#800) ([736966e](https://github.com/box/box-content-preview/commit/736966e)), closes [#800](https://github.com/box/box-content-preview/issues/800)
+
+
+
 <a name="1.43.0"></a>
 ## 1.43.0 (2018-05-15)
 
