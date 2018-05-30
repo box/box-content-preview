@@ -194,6 +194,7 @@ export const ICON_FILE_MAP = {};
     'dcm',
     'eps',
     'gif',
+    'heic',
     'jpg',
     'jpeg',
     'png',
