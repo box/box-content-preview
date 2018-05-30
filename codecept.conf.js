@@ -40,7 +40,8 @@ if (isLocalBuild) {
             browserName: BROWSER_NAME,
             platform: BROWSER_PLATFORM,
             maxDuration: 180,
-            commandTimeout: 100
+            commandTimeout: 100,
+            extendedDebugging: true
         }
     };
 
