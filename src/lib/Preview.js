@@ -803,8 +803,7 @@ class Preview extends EventEmitter {
 
         // Load from cache if the current file is valid, otherwise load file info from server
         if (checkFileValid(this.file)) {
-            /* Save file in cache. This also adds the 'ORIGINAL' representation.
-            * It is required to preview files offline */
+            // Save file in cache. This also adds the 'ORIGINAL' representation. It is required to preview files offline
             cacheFile(this.cache, this.file);
             this.loadFromCache();
         } else {
