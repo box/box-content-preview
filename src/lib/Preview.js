@@ -771,8 +771,8 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        const couldPreviewOfflineWithoutToken = typeof fileIdOrFile === 'object' && this.options.skipServerUpdate;
-        if (couldPreviewOfflineWithoutToken) {
+        const isPreviewOffline = typeof fileIdOrFile === 'object' && this.options.skipServerUpdate;
+        if (isPreviewOffline) {
             this.handleTokenResponse({});
         } else {
             // Fetch access tokens before proceeding
