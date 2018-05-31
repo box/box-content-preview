@@ -1003,8 +1003,7 @@ describe('lib/Preview', () => {
         });
 
         it('should load preview when a well-formed file object is passed and server update should be skipped', () => {
-            const previewOptions = { skipServerUpdate: true };
-            preview.parseOptions(previewOptions);
+            preview.options.skipServerUpdate = true;
 
             preview.load(stubs.file);
             expect(stubs.handleTokenResponse).to.be.calledWith({});
