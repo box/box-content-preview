@@ -1035,18 +1035,6 @@ class Preview extends EventEmitter {
             this.file = file;
             this.logger.setFile(file);
 
-            // If file is not downloadable, trigger an error
-            if (file.is_download_available === false) {
-                const details = isBoxWebApp()
-                    ? {
-                        linkText: __('link_contact_us'),
-                        linkUrl: SUPPORT_URL
-                    }
-                    : {};
-                const error = new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), details);
-                throw error;
-            }
-
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
 
@@ -1092,6 +1080,17 @@ class Preview extends EventEmitter {
         // If preview is closed don't do anything
         if (!this.open) {
             return;
+        }
+
+        // Check if file is downloadable
+        if (this.file.is_download_available === false) {
+            const details = isBoxWebApp()
+                ? {
+                    linkText: __('link_contact_us'),
+                    linkUrl: SUPPORT_URL
+                }
+                : {};
+            throw new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), details);
         }
 
         // Check if preview permissions exist

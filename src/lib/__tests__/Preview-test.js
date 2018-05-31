@@ -1432,15 +1432,6 @@ describe('lib/Preview', () => {
             expect(preview.logger.setFile).to.be.called;
         });
 
-        it('should trigger error if file is not downloadable', () => {
-            stubs.file.is_download_available = false;
-            preview.handleFileInfoResponse(stubs.file);
-
-            const error = stubs.triggerError.getCall(0).args[0];
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_file_not_downloadable');
-        });
-
         it('should get the latest cache, then update it with the new file', () => {
             stubs.getCachedFile.returns({
                 file_version: {
@@ -1579,6 +1570,10 @@ describe('lib/Preview', () => {
                 setType: sandbox.stub()
             };
 
+            preview.file = {
+                is_download_available: true
+            };
+
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
             preview.open = true;
@@ -1586,9 +1581,16 @@ describe('lib/Preview', () => {
 
         it('should do nothing if the preview is closed', () => {
             preview.open = false;
-
             preview.loadViewer();
             expect(stubs.destroy).to.not.be.called;
+        });
+
+        it('should trigger error if file is not downloadable', () => {
+            preview.file.is_download_available = false;
+            expect(() => preview.loadViewer()).to.throw(
+                PreviewError,
+                /Oops! It looks like something is wrong with this file./
+            );
         });
 
         it('should throw an error if user does not have permission to preview', () => {
