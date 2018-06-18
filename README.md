@@ -22,7 +22,7 @@ Current Version
 * Version: v1.45.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/1.45.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/1.45.0/en-US/preview.js  
 https://cdn01.boxcdn.net/platform/preview/1.45.0/en-US/preview.css
 
 Supported Locales
