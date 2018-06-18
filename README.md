@@ -173,6 +173,27 @@ Wish to learn more about when, why and how you can use Token Exchange with the C
 | User wants basic preview functionality + ability to edit own annotations| base_preview + annotation_edit |
 | User wants basic preview functionality + ability to view all annotations + ability to edit own annotations| base_preview + annotation_view_all + annotation_edit|
 
+Token Generator Function
+------------------------
+The Preview library optionally takes a token generator function instead of a string token. Using a token generator function allows you to dynamically determine what tokens Preview should use. For example, you can pass in different access tokens for each file or make sure your token is refreshed and valid before showing a preview. The token generator function should return a promise that resolves in either a single string token that applies to all of the files being previewed or a map of typed file IDs to access token for those files.
+
+```javascript
+// Example token generator function that resolves to a single access token
+var singleTokenGenerator = function() {
+    return someApi.getToken().then(function(data) {
+        return data.token;
+    });
+};
+
+// Example token generator function that resolves to a map of tokens
+var mapTokenGenerator = function() {
+    return Promise.resolve({
+        file_1234: 'some_token_abcd',
+        file_2345: 'some_token_bcde'
+    });
+};
+```
+
 Viewers
 -------
 The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. Call `preview.getViewers()` to get the list of possible viewers.
