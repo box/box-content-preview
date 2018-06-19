@@ -1092,13 +1092,6 @@ describe('lib/Preview', () => {
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
         });
 
-        it('should short circuit and load from server if it is a retry', () => {
-            preview.retryCount = 1;
-
-            preview.handleTokenResponse({});
-            expect(stubs.loadFromServer).to.be.called;
-        });
-
         it('should set the token option', () => {
             preview.retryCount = 0;
             const TOKEN = 'bar';
@@ -1999,7 +1992,10 @@ describe('lib/Preview', () => {
     });
 
     describe('handleFetchError()', () => {
+        let clock;
+
         beforeEach(() => {
+            clock = sandbox.useFakeTimers();
             stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.load = sandbox.stub(preview, 'load');
@@ -2008,6 +2004,10 @@ describe('lib/Preview', () => {
                     status: 400
                 }
             };
+        });
+
+        afterEach(() => {
+            clock.restore();
         });
 
         it('should do nothing if the preview is closed', () => {
@@ -2061,7 +2061,6 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: '0'
             };
-            const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 1;
             preview.file.id = 1;
@@ -2077,7 +2076,6 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: '0'
             };
-            const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 3;
 
@@ -2097,7 +2095,6 @@ describe('lib/Preview', () => {
                     .withArgs('Retry-After')
                     .returns(5)
             };
-            const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 1;
 
