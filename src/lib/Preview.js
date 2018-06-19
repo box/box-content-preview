@@ -754,9 +754,7 @@ class Preview extends EventEmitter {
             );
         }
 
-        // Retry up to RETRY_COUNT if we are reloading same file. If load is called during a preview when file version
-        // ID has been specified, count as a retry only if the current file verison ID matches that specified file
-        // version ID
+        // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {
             if (fileVersionId === currentFileVersionId) {
                 this.retryCount += 1;
@@ -764,13 +762,18 @@ class Preview extends EventEmitter {
                 this.retryCount = 0;
             }
 
-            // Otherwise, count this as a retry if the file ID we are trying to load matches the current file ID
+            // Otherwise, increment retry count if file ID to load matches current file ID
         } else if (this.file.id === currentFileId) {
             this.retryCount += 1;
+
+            // Otherwise, reset retry count
         } else {
             this.retryCount = 0;
         }
 
+        // @TODO: This may not be the best way to detect if we are offline. Make sure this works well if we decided to
+        // combine Box Elements + Preview. This could potentially break if we have Box Elements fetch the file object
+        // and pass the well-formed file object directly to the preview library to render.
         const isPreviewOffline = typeof fileIdOrFile === 'object' && this.options.skipServerUpdate;
         if (isPreviewOffline) {
             this.handleTokenResponse({});
@@ -790,12 +793,6 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     handleTokenResponse(tokenMap) {
-        // If this is a retry, short-circuit and load from server
-        if (this.retryCount > 0) {
-            this.loadFromServer();
-            return;
-        }
-
         // Set the authorization token
         this.options.token = tokenMap[this.file.id];
 
@@ -1379,7 +1376,7 @@ class Preview extends EventEmitter {
         // Nuke the cache
         uncacheFile(this.cache, this.file);
 
-        // Check if hit the retry limit
+        // Check if we hit the retry limit for fetching file info
         if (this.retryCount > RETRY_COUNT) {
             let errorCode = ERROR_CODE.EXCEEDED_RETRY_LIMIT;
             let errorMessage = __('error_refresh');
