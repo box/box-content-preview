@@ -6,11 +6,11 @@ DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files with Google Closure... Warnings are okay!"
 echo "-----------------------------------------------------------------------------------"
-java -jar build/closure-compiler-v20161201.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.min.js
+java -jar build/closure-compiler-v20180610.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.min.js
 
-java -jar build/closure-compiler-v20161201.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.min.js
+java -jar build/closure-compiler-v20180610.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.min.js
 
-java -jar build/closure-compiler-v20161201.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.min.js
+java -jar build/closure-compiler-v20180610.jar --rewrite_polyfills false --language_out ECMASCRIPT5 --js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.js --js_output_file src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.min.js
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"
 echo "-----------------------------------------------------------------------------------"

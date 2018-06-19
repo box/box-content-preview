@@ -118,7 +118,7 @@
     "prod": "yarn run build-rb && BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
     "release": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run prod",
     "test": "yarn install && NODE_ENV=test node --max_old_space_size=4096 ./node_modules/.bin/karma start build/karma.conf.js",
-    "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh",
+    "upgrade-pdfjs": "./build/upgrade_pdfjs.sh",
     "upgrade-annotations": "./build/upgrade_annotations.sh",
     "watch": "yarn install && BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
     "major": "./build/release.sh -m",
