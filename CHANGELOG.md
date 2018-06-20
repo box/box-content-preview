@@ -1,3 +1,14 @@
+<a name="1.46.0"></a>
+## 1.46.0 (2018-06-20)
+
+* Fix: Retry logic (#808) ([906d47a](https://github.com/box/box-content-preview/commit/906d47a)), closes [#808](https://github.com/box/box-content-preview/issues/808)
+* Add docs for token generator function (#807) ([8791f4e](https://github.com/box/box-content-preview/commit/8791f4e)), closes [#807](https://github.com/box/box-content-preview/issues/807)
+* Update README.md ([35b2462](https://github.com/box/box-content-preview/commit/35b2462))
+* Mojito: Update translations (#806) ([18b5fde](https://github.com/box/box-content-preview/commit/18b5fde)), closes [#806](https://github.com/box/box-content-preview/issues/806)
+* Mojito: Update translations (#809) ([2a83b31](https://github.com/box/box-content-preview/commit/2a83b31)), closes [#809](https://github.com/box/box-content-preview/issues/809)
+
+
+
 <a name="1.45.0"></a>
 ## 1.45.0 (2018-06-05)
 
