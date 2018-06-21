@@ -348,10 +348,21 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.mockIframe = util.openContentInsideIframe(image.imageEl.outerHTML);
-            stubs.focus = sandbox.stub(stubs.mockIframe.contentWindow, 'focus');
-            stubs.execCommand = sandbox.stub(stubs.mockIframe.contentWindow.document, 'execCommand');
-            stubs.print = sandbox.stub(stubs.mockIframe.contentWindow, 'print');
+            stubs.execCommand = sandbox.stub();
+            stubs.focus = sandbox.stub();
+            stubs.print = sandbox.stub();
+            stubs.mockIframe = {
+                contentWindow: {
+                    document: {
+                        execCommand: stubs.execCommand
+                    },
+                    focus: stubs.focus,
+                    print: stubs.print
+                },
+                contentDocument: {
+                    querySelector: sandbox.stub().returns(containerEl.querySelector('img'))
+                }
+            };
 
             stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
             stubs.getName = sandbox.stub(Browser, 'getName');

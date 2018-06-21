@@ -2,7 +2,7 @@ import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
-import { openContentInsideIframe } from '../../util';
+import * as util from '../../util';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -277,7 +277,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     print() {
-        this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
+        this.printframe = util.openContentInsideIframe(this.imageEl.outerHTML);
         this.printframe.contentWindow.focus();
 
         this.printImage = this.printframe.contentDocument.querySelector('img');
