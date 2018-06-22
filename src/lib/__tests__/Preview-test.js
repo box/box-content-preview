@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-expressions */
-import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
 import loaders from '../loaders';
 import Logger from '../Logger';
@@ -40,7 +39,6 @@ describe('lib/Preview', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        fetchMock.restore();
         preview.destroy();
         preview = null;
         stubs = null;

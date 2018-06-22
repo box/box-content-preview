@@ -16,6 +16,7 @@ class TextBaseViewer extends BaseViewer {
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
     }
+
     /**
      * @inheritdoc
      */
