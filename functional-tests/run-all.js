@@ -6,7 +6,7 @@ const util = require('util');
 const colors = require('colors');
 const exec = util.promisify(require('child_process').exec);
 
-const { SAUCE_USERNAME, SAUCE_ACCESS_KEY, TRAVIS_JOB_NUMBER } = process.env;
+const { SAUCE_USERNAME, SAUCE_ACCESS_KEY, TRAVIS_JOB_NUMBER, ACCESS_TOKEN } = process.env;
 
 // browsers
 const CHROME = 'chrome';
@@ -35,8 +35,8 @@ const envArr = [
     `BROWSER_PLATFORM="${android}" DEVICE_NAME="Android GoogleAPI Emulator" PLATFORM_VERSION="7.1" BROWSER_NAME="Chrome"`
 ];
 
-if (!TRAVIS_JOB_NUMBER || !SAUCE_USERNAME || !TRAVIS_JOB_NUMBER) {
-    throw new Error('missing TRAVIS_JOB_NUMBER, SAUCE_USERNAME, or TRAVIS_JOB_NUMBER');
+if (!TRAVIS_JOB_NUMBER || !SAUCE_USERNAME || !TRAVIS_JOB_NUMBER || !ACCESS_TOKEN) {
+    throw new Error('missing ACCESS_TOKEN, TRAVIS_JOB_NUMBER, SAUCE_USERNAME, or TRAVIS_JOB_NUMBER');
 }
 
 const processArr = [];
@@ -55,7 +55,7 @@ async.eachLimit(
             grepStr = '--grep "@ie"';
         }
 
-        const cmd = `cd .. && CI=true SAUCE_USERNAME=${SAUCE_USERNAME} SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY} TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER} ${envStr} node ./node_modules/codeceptjs/bin/codecept.js run --steps ${grepStr}`;
+        const cmd = `cd .. && CI=true ACCESS_TOKEN=${ACCESS_TOKEN} SAUCE_USERNAME=${SAUCE_USERNAME} SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY} TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER} ${envStr} node ./node_modules/codeceptjs/bin/codecept.js run --steps ${grepStr}`;
 
         console.log('Running cmd: ', cmd);
         const process = exec(cmd);
