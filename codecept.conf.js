@@ -9,7 +9,7 @@ const {
     PLATFORM_VERSION,
     DEVICE_NAME,
     DEFAULT_WAIT_TIME = 90000,
-    RUN_LOCALLY=false
+    RUN_LOCALLY = false
 } = process.env;
 const MOBILE_PLATFORMS = ['iOS', 'Android'];
 
@@ -18,10 +18,16 @@ const commonConfigObj = {
     browser: BROWSER_NAME,
     url: 'http://localhost:8000',
     restart: true,
-    waitForTimeout: DEFAULT_WAIT_TIME
+    waitForTimeout: DEFAULT_WAIT_TIME,
+    manualStart: true
 };
 
-const helperObj = {};
+const helperObj = {
+    Browser: {
+        require: './functional-tests/browser_helper'
+    }
+};
+
 const isLocalBuild = typeof SAUCE_USERNAME === 'undefined' || RUN_LOCALLY;
 
 if (isLocalBuild) {
@@ -60,7 +66,6 @@ if (isLocalBuild) {
             deviceOrientation: 'portrait',
             appiumVersion: '1.7.2',
             platformName: BROWSER_PLATFORM
-
         });
         helperObj.Appium = mixedInSauceObj;
     }
