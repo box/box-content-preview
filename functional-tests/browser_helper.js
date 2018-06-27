@@ -1,7 +1,7 @@
 const Helper = codecept_helper;
 
 const NUM_RETRIES = 5;
-const BROWSER_START_TIMEOUT = 30000;
+const BROWSER_START_TIMEOUT = 100000;
 
 class Browser extends Helper {
     timeout() {
