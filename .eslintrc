@@ -124,6 +124,18 @@
                 "object": true,
                 "array": false
             }
+        ],
+        "react/button-has-type": [
+            "off"
+        ],
+        "no-else-return": [
+            "error",
+            {
+                "allowElseIf": true
+            }
+        ],
+        "import/no-cycle": [
+            "off"
         ]
     },
     "settings": {
