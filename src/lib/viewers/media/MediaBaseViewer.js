@@ -46,6 +46,7 @@ class MediaBaseViewer extends BaseViewer {
         this.handleAutoplay = this.handleAutoplay.bind(this);
         this.mediaendHandler = this.mediaendHandler.bind(this);
     }
+
     /**
      * @inheritdoc
      */

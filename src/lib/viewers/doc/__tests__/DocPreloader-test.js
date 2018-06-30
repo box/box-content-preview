@@ -141,7 +141,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should clean up preload after transition ends', () => {
             docPreloader.wrapperEl = document.createElement('div');
-            sandbox.stub()
+            sandbox.stub();
 
             docPreloader.hidePreload();
             docPreloader.wrapperEl.dispatchEvent(new Event('transitionend'));
@@ -151,7 +151,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should clean up preload after scroll event', () => {
             docPreloader.wrapperEl = document.createElement('div');
-            sandbox.stub()
+            sandbox.stub();
 
             docPreloader.hidePreload();
             docPreloader.wrapperEl.dispatchEvent(new Event('scroll'));
@@ -162,19 +162,26 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
     describe('cleanupPreload()', () => {
         it('should remove wrapper, clear out preload and image element, and revoke object URL', () => {
-            docPreloader.wrapperEl = document.createElement('div');
+            const removeChildStub = sandbox.stub();
+
+            docPreloader.wrapperEl = {
+                parentNode: {
+                    removeChild: removeChildStub
+                }
+            };
             docPreloader.preloadEl = document.createElement('div');
             docPreloader.imageEl = document.createElement('img');
             docPreloader.srcUrl = 'blah';
-            containerEl.appendChild(docPreloader.wrapperEl);
-
-            sandbox.mock(URL).expects('revokeObjectURL').withArgs(docPreloader.srcUrl);
+            sandbox
+                .mock(URL)
+                .expects('revokeObjectURL')
+                .withArgs(docPreloader.srcUrl);
 
             docPreloader.cleanupPreload();
 
             expect(docPreloader.preloadEl).to.be.undefined;
             expect(docPreloader.imageEl).to.be.undefined;
-            expect(containerEl).to.not.contain(docPreloader.wrapperEl);
+            expect(removeChildStub).to.be.called;
         });
     });
 
@@ -421,7 +428,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 },
                 getTag: sandbox.stub().returns('')
             };
-            docPreloader.readEXIF(fakeImageEl)
+            docPreloader
+                .readEXIF(fakeImageEl)
                 .then(() => Assert.fail())
                 .catch((err) => {
                     expect(err).to.be.an('error');
@@ -430,7 +438,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should return a promise that eventually rejects if EXIF parser is not available', () => {
             window.EXIF = null;
-            return docPreloader.readEXIF(fakeImageEl)
+            return docPreloader
+                .readEXIF(fakeImageEl)
                 .then(() => Assert.fail())
                 .catch((err) => {
                     expect(err).to.be.an('error');
@@ -452,7 +461,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl)
+            return docPreloader
+                .readEXIF(fakeImageEl)
                 .then(() => Assert.fail())
                 .catch((err) => {
                     expect(err).to.be.an('error');
@@ -474,7 +484,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl)
+            return docPreloader
+                .readEXIF(fakeImageEl)
                 .then(() => Assert.fail())
                 .catch((err) => {
                     expect(err).to.be.an('error');
@@ -496,7 +507,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl)
+            return docPreloader
+                .readEXIF(fakeImageEl)
                 .then((response) => {
                     response.should.deep.equal({
                         pdfWidth: pdfWidth * PDFJS_CSS_UNITS,
@@ -522,7 +534,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl)
+            return docPreloader
+                .readEXIF(fakeImageEl)
                 .then((response) => {
                     response.should.deep.equal({
                         pdfWidth: pdfHeight * PDFJS_CSS_UNITS,

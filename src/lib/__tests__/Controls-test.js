@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Controls from '../Controls';
-import { CLASS_HIDDEN } from './../constants';
+import { CLASS_HIDDEN } from '../constants';
 
 let controls;
 let clock;
