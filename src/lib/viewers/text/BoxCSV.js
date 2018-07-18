@@ -43,7 +43,7 @@ class BoxCSV {
         return row % 2 === 0 ? 'bp-text-csv-even-row' : 'bp-text-csv-odd-row';
     }
 
-    /* eslint-disable */
+    /* eslint-disable react/prop-types */
     /**
      * Renders cell
      *
@@ -63,7 +63,7 @@ class BoxCSV {
             </div>
         );
     };
-    /* eslint-enable */
+    /* eslint-enable react/prop-types */
 
     /**
      * Renders CSV into an html table

@@ -162,16 +162,12 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
     describe('cleanupPreload()', () => {
         it('should remove wrapper, clear out preload and image element, and revoke object URL', () => {
-            const removeChildStub = sandbox.stub();
-
-            docPreloader.wrapperEl = {
-                parentNode: {
-                    removeChild: removeChildStub
-                }
-            };
+            docPreloader.wrapperEl = document.createElement('div');
             docPreloader.preloadEl = document.createElement('div');
             docPreloader.imageEl = document.createElement('img');
             docPreloader.srcUrl = 'blah';
+            containerEl.appendChild(docPreloader.wrapperEl);
+
             sandbox
                 .mock(URL)
                 .expects('revokeObjectURL')
@@ -181,7 +177,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             expect(docPreloader.preloadEl).to.be.undefined;
             expect(docPreloader.imageEl).to.be.undefined;
-            expect(removeChildStub).to.be.called;
+            expect(containerEl).to.not.contain(docPreloader.wrapperEl);
         });
     });
 

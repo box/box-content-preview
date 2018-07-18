@@ -39,7 +39,6 @@ class PageControls extends EventEmitter {
 
     /** @property {HTMLElement} - Page number input element */
     pageNumInputEl;
-
     /**
      * [constructor]
      *

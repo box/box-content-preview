@@ -133,7 +133,6 @@ describe('lib/DownloadReachability', () => {
         afterEach(() => {
             fetchMock.restore();
         });
-
         it('should catch an errored response', () => {
             const setDownloadHostFallbackStub = sandbox.stub(DownloadReachability, 'setDownloadHostFallback');
             fetchMock.head('https://dl3.boxcloud.com', { throws: new Error() });
