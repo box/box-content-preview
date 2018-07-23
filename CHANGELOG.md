@@ -1,3 +1,10 @@
+<a name="1.47.1"></a>
+## <small>1.47.1 (2018-07-23)</small>
+
+* Fix: Fix scenario where skills are present with no transcript (#824) ([a04725a](https://github.com/box/box-content-preview/commit/a04725a)), closes [#824](https://github.com/box/box-content-preview/issues/824)
+
+
+
 <a name="1.47.0"></a>
 ## 1.47.0 (2018-07-18)
 
