@@ -469,16 +469,24 @@ class DashViewer extends VideoBaseViewer {
 
         // Convert Box Skill transcript cards to Shaka Text Cues
         const skillsCards = getProp(this.options, 'file.metadata.global.boxSkillsCards.cards');
-        if (skillsCards) {
-            const transcriptCard = skillsCards.find((card) => card.skill_card_type === 'transcript');
-            const entries = transcriptCard.entries || [];
-            entries.forEach((entry) => {
-                // Set defaults if transcript data is malformed (start/end: 0s, text: '')
-                const { appears = [{}], text = '' } = entry;
-                const { start = 0, end = 0 } = Array.isArray(appears) && appears.length > 0 ? appears[0] : {};
-                textCues.push(new shaka.text.Cue(start, end, text));
-            });
+        // No skills are available on the file
+        if (!skillsCards) {
+            return;
         }
+
+        const transcriptCard = skillsCards.find((card) => card.skill_card_type === 'transcript');
+        // No transcript can be found in the skills data
+        if (!transcriptCard) {
+            return;
+        }
+
+        const entries = transcriptCard.entries || [];
+        entries.forEach((entry) => {
+            // Set defaults if transcript data is malformed (start/end: 0s, text: '')
+            const { appears = [{}], text = '' } = entry;
+            const { start = 0, end = 0 } = Array.isArray(appears) && appears.length > 0 ? appears[0] : {};
+            textCues.push(new shaka.text.Cue(start, end, text));
+        });
 
         if (textCues.length > 0) {
             this.autoCaptionDisplayer = new shaka.text.SimpleTextDisplayer(this.mediaEl);
