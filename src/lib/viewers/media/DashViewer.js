@@ -472,7 +472,7 @@ class DashViewer extends VideoBaseViewer {
         const textCues = this.createTextCues(transcriptCard);
 
         // Don't do anything if there are no cues
-        if (!textCues) {
+        if (!textCues.length) {
             return;
         }
 
@@ -501,16 +501,12 @@ class DashViewer extends VideoBaseViewer {
      */
     createTextCues(transcriptCard) {
         const entries = getProp(transcriptCard, 'entries', []);
-        const textCues = [];
-
-        entries.forEach((entry) => {
+        return entries.map((entry) => {
             // Set defaults if transcript data is malformed (start/end: 0s, text: '')
             const { appears = [{}], text = '' } = entry;
             const { start = 0, end = 0 } = Array.isArray(appears) && appears.length > 0 ? appears[0] : {};
-            textCues.push(new shaka.text.Cue(start, end, text));
+            return new shaka.text.Cue(start, end, text);
         });
-
-        return textCues;
     }
 
     /**
