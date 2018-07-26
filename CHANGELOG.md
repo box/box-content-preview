@@ -1,3 +1,11 @@
+<a name="1.48.0"></a>
+## 1.48.0 (2018-07-26)
+
+* Chore: Support auto captions in legacy and edited captions (#825) ([7b23933](https://github.com/box/box-content-preview/commit/7b23933)), closes [#825](https://github.com/box/box-content-preview/issues/825)
+* Fix: Fix scenario where skills are present with no transcript (#824) ([26b8c9b](https://github.com/box/box-content-preview/commit/26b8c9b)), closes [#824](https://github.com/box/box-content-preview/issues/824)
+
+
+
 <a name="1.47.0"></a>
 ## 1.47.0 (2018-07-18)
 
