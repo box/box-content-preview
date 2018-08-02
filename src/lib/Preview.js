@@ -690,10 +690,10 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {string|Object} fileIdOrFile - Box File ID or well-formed Box File object
-     * @param {Function} callback - Optional load callback
+     * @param {Function} loadCallback - Optional load callback
      * @return {void}
      */
-    load(fileIdOrFile, callback) {
+    load(fileIdOrFile, loadCallback) {
         // Clean up any existing previews before loading
         this.destroy();
 
@@ -776,7 +776,7 @@ class Preview extends EventEmitter {
         // combine Box Elements + Preview. This could potentially break if we have Box Elements fetch the file object
         // and pass the well-formed file object directly to the preview library to render.
         const isPreviewOffline = typeof fileIdOrFile === 'object' && this.options.skipServerUpdate;
-        callback = callback || function() {};
+        const callback = loadCallback || function () {};
         if (isPreviewOffline) {
             this.handleTokenResponse({});
             callback();
