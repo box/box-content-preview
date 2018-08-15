@@ -1525,15 +1525,8 @@ class Preview extends EventEmitter {
         const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
         const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
 
-        // Do nothing if there is nothing worth logging.
-        const infoTime = Timer.get(infoTag) || {};
-        if (!infoTime.elapsed) {
-            Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
-            return;
-        }
-
         const timerList = [
-            infoTime,
+            Timer.get(infoTag) || {},
             Timer.get(convertTag) || {},
             Timer.get(downloadTag) || {},
             Timer.get(fullLoadTag) || {}
