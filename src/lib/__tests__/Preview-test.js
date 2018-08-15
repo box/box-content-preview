@@ -2282,7 +2282,7 @@ describe('lib/Preview', () => {
             Timer.reset();
         });
 
-        it('should do nothingescape early if no file or file id', () => {
+        it('should do nothing and escape early if no file or file id', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
             preview.file = undefined;
@@ -2291,23 +2291,22 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.not.be.called;
         });
 
-        it('should reset the timer and escape early if the first load milestone is not hit', () => {
-            Timer.reset(); // Clear out all entries in the Timer
-            sandbox.stub(Timer, 'reset');
-            sandbox.stub(preview, 'emit');
-            preview.emitLoadMetrics();
-            expect(Timer.reset).to.be.called;
-            expect(preview.emit).to.not.be.called;
-        });
-
         it('should emit a preview_metric event', (done) => {
-            preview.on(PREVIEW_METRIC, () => {
+            preview.once(PREVIEW_METRIC, () => {
                 done();
             });
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event with event_name "preview_load"', () => {
+        it('should emit a preview_metric event with event_name "load"', (done) => {
+            preview.once(PREVIEW_METRIC, (metric) => {
+                expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        it('should emit a preview_metric event where the value property equals the sum of all load events', (done) => {
             const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
             Timer.start(tag);
             Timer.stop(tag);
@@ -2317,25 +2316,20 @@ describe('lib/Preview', () => {
 
             const expectedTime = 30; // 10ms + 20ms
 
-            preview.on(PREVIEW_METRIC, (metric) => {
+            preview.once(PREVIEW_METRIC, (metric) => {
                 expect(metric.value).to.equal(expectedTime);
+                done();
             });
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event where the value property equals the sum of all load events', () => {
-            preview.on(PREVIEW_METRIC, (metric) => {
-                expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
-            });
-            preview.emitLoadMetrics();
-        });
-
-        it('should emit a preview_metric event with an object, with all of the proper load properties', () => {
-            preview.on(PREVIEW_METRIC, (metric) => {
+        it('should emit a preview_metric event with an object, with all of the proper load properties', (done) => {
+            preview.once(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
                 expect(metric[LOAD_METRIC.convertTime]).to.exist;
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
                 expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+                done();
             });
             preview.emitLoadMetrics();
         });
@@ -2348,13 +2342,14 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.called;
         });
 
-        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', () => {
+        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', (done) => {
             Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
-            preview.on(PREVIEW_METRIC, (metric) => {
+            preview.once(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
                 expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
                 expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
+                done();
             });
             preview.emitLoadMetrics();
         });
