@@ -299,7 +299,7 @@ class BaseViewer extends EventEmitter {
      */
     handleAssetError(err) {
         const originalMessage = err ? err.message : '';
-        const error = new PreviewError(ERROR_CODE.LOAD_ASSET, '', {}, originalMessage);
+        const error = err instanceof PreviewError ? err : new PreviewError(ERROR_CODE.LOAD_ASSET, originalMessage, {});
         this.triggerError(error);
         this.destroyed = true;
     }
