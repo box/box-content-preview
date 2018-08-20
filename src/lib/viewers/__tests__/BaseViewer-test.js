@@ -205,6 +205,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.destroyed).to.be.true;
         });
 
+        it('should use the original error if it is a PreviewError', () => {
+            sandbox.stub(base, 'triggerError');
+            const originalError = new PreviewError('foo', 'bar');
+            base.handleAssetError(originalError);
+            expect(base.triggerError).to.be.calledWith(originalError);
+        });
+
         it('should pass along the error if provided', () => {
             const stub = sandbox.stub(base, 'triggerError');
 
