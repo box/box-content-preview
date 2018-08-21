@@ -166,6 +166,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'resize');
             sandbox.stub(media, 'showMedia');
 
+            media.options.autoFocus = true;
             media.loadeddataHandler();
 
             expect(media.handleVolume).to.be.called;

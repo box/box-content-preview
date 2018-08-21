@@ -209,7 +209,10 @@ class MediaBaseViewer extends BaseViewer {
 
         // Make media element visible after resize
         this.showMedia();
-        this.mediaContainerEl.focus();
+
+        if (this.options.autoFocus) {
+            this.mediaContainerEl.focus();
+        }
     }
 
     /**

@@ -585,7 +585,10 @@ class DashViewer extends VideoBaseViewer {
         // Make media element visible after resize
         this.showMedia();
         this.mediaControls.show();
-        this.mediaContainerEl.focus();
+
+        if (this.options.autoFocus) {
+            this.mediaContainerEl.focus();
+        }
     }
 
     /**
