@@ -1,10 +1,3 @@
-<a name="1.49.0"></a>
-## 1.49.0 (2018-08-21)
-
-* Fix: Display correct error when handling an asset error (#829) ([2f70273](https://github.com/box/box-content-preview/commit/2f70273)), closes [#829](https://github.com/box/box-content-preview/issues/829)
-
-
-
 <a name="1.48.0"></a>
 ## 1.48.0 (2018-07-26)
 
