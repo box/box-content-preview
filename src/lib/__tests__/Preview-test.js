@@ -1245,6 +1245,16 @@ describe('lib/Preview', () => {
             expect(preview.options.fixDependencies).to.be.true;
         });
 
+        it('should allow auto focussing by default', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.autoFocus).to.be.true;
+        });
+
+        it('should not allow auto focussing when told not to', () => {
+            preview.parseOptions({ ...preview.previewOptions, autoFocus: false });
+            expect(preview.options.autoFocus).to.be.false;
+        });
+
         it('should add user created loaders before standard loaders', () => {
             const expectedLoaders = stubs.loaders.concat(loaders);
 
@@ -1905,10 +1915,23 @@ describe('lib/Preview', () => {
         });
 
         it('should focus the viewer container', () => {
+            preview.options.autoFocus = true;
             preview.viewer.containerEl = {
                 focus: () => {}
             };
             sandbox.mock(preview.viewer.containerEl).expects('focus');
+            preview.finishLoading();
+        });
+
+        it('should not focus the viewer container with autoFocus is false', () => {
+            preview.options.autoFocus = false;
+            preview.viewer.containerEl = {
+                focus: () => {}
+            };
+            sandbox
+                .mock(preview.viewer.containerEl)
+                .expects('focus')
+                .never();
             preview.finishLoading();
         });
 
