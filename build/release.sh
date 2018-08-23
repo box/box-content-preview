@@ -12,6 +12,9 @@ major_release=false
 minor_release=false
 patch_release=false
 
+# LTS compatibility
+node_validation_script_path="./build/validateNodeVersion.js"
+
 reset_tags() {
     # Wipe tags
     echo "----------------------------------------------------------------------"
@@ -178,6 +181,20 @@ push_to_github() {
     fi
 }
 
+# Validates whether or not the supported version of NodeJS is being used
+validate_node_version() {
+    isValidNodeVersion=$(node $node_validation_script_path)
+    if ! $isValidNodeVersion == 'false' ; then
+        echo "----------------------------------------------------------------------"
+        echo "Invalid version of Node. Must be LTS version >= v8.9.4"
+        echo "----------------------------------------------------------------------"
+        exit 1
+    else
+        echo "----------------------------------------------------------------------"
+        echo "Valid version of Node"
+        echo "----------------------------------------------------------------------"
+    fi
+}
 
 # Check out latest code from git, build assets, increment version, and push tags
 push_new_release() {
@@ -236,6 +253,8 @@ while getopts "mnp" opt; do
     esac
 done
 
+# Before running release, make sure using correct version of NodeJS
+validate_node_version;
 
 # Execute this entire script
 if ! push_new_release; then
