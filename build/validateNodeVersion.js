@@ -1,4 +1,4 @@
-const https = require('https');
+const axios = require('axios');
 
 const SUPPORTED_LTS = "Carbon";
 const VERSION = process.versions.node;
@@ -7,15 +7,11 @@ const MIN_MAJOR_SUPPORT = 8;
 const MIN_MINOR_SUPPORT = 9;
 const MIN_PATCH_SUPPORT = 4;
 
-let body = '';
-
 function fail() {
-    body = '';
     console.log(false);
 }
 
 function pass() {
-    body = '';
     console.log(true);
 }
 
@@ -69,11 +65,12 @@ function getVersionFromString(versionString) {
 /**
  * Validates that the current version of node is valid for use.
  *
+ * @param {Object} response - Axios response object
  * @returns {void}
  */
-function validateNodeVersion() {
+function validateNodeVersion(response) {
     // Version list comes back as an array
-    const versionList = JSON.parse(body);
+    const versionList = response.data;
 
     // Versions from NodeJS listing come in format 'vXX.XX.XX'
     const formattedVersion = `v${VERSION}`;
@@ -103,12 +100,6 @@ if (!compareVersion(major, minor, patch)) {
     return fail();
 }
 
-https.get(NODE_JS_VERSION_LIST_URL, response => {
-  response.on('data', data => {
-    body += data;
-  });
-
-  response.on('end', validateNodeVersion);
-
-  response.on('error', fail);
-});
+axios.get(NODE_JS_VERSION_LIST_URL)
+    .then(validateNodeVersion)
+    .catch(fail);
