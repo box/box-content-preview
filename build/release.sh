@@ -198,6 +198,9 @@ validate_node_version() {
 
 # Check out latest code from git, build assets, increment version, and push tags
 push_new_release() {
+    # Before running release, make sure using correct version of NodeJS
+    validate_node_version;
+
     # Get latest commited code and tags
     if $patch_release; then
         echo "----------------------------------------------------------------------"
@@ -253,8 +256,7 @@ while getopts "mnp" opt; do
     esac
 done
 
-# Before running release, make sure using correct version of NodeJS
-validate_node_version;
+push_new_release
 
 # Execute this entire script
 if ! push_new_release; then

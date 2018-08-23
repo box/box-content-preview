@@ -68,16 +68,10 @@ function getVersionFromString(versionString) {
 
 /**
  * Validates that the current version of node is valid for use.
+ *
  * @returns {void}
  */
 function validateNodeVersion() {
-    // split into major/minor/patch
-    const { major, minor, patch } = getVersionFromString(VERSION);
-
-    if (!compareVersion(major, minor, patch)) {
-        return fail();
-    }
-
     // Version list comes back as an array
     const versionList = JSON.parse(body);
 
@@ -99,6 +93,14 @@ function validateNodeVersion() {
     } else {
         fail();
     }
+}
+
+
+// Split into major/minor/patch and check that it passes before
+// requesting the release list from NodeJS
+const { major, minor, patch } = getVersionFromString(VERSION);
+if (!compareVersion(major, minor, patch)) {
+    return fail();
 }
 
 https.get(NODE_JS_VERSION_LIST_URL, response => {
