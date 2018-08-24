@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import { decodeKeydown } from '../../util';
+import { USER_DOCUMENT_FIND_EVENTS, VIEWER_EVENT } from '../../events';
 import { CLASS_HIDDEN } from '../../constants';
 import { ICON_FIND_DROP_DOWN, ICON_FIND_DROP_UP, ICON_CLOSE, ICON_SEARCH } from '../../icons/icons';
 
@@ -328,6 +329,11 @@ class DocFindBar extends EventEmitter {
                     this.currentMatch = 1;
                 }
             }
+
+            // Emit a metric that the user navigated forward in the find bar
+            this.emit(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.NEXT
+            });
         }
     }
 
@@ -351,6 +357,11 @@ class DocFindBar extends EventEmitter {
                     this.currentMatch = this.findController.matchCount;
                 }
             }
+
+            // Emit a metric that the user navigated back in the find bar
+            this.emit(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS
+            });
         }
     }
 
@@ -370,6 +381,10 @@ class DocFindBar extends EventEmitter {
         if (!this.opened) {
             this.opened = true;
             this.bar.classList.remove(CLASS_HIDDEN);
+            // Emit a metric that the user opened the find bar
+            this.emit(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.OPEN
+            });
         }
         this.findFieldEl.select();
         this.findFieldEl.focus();
