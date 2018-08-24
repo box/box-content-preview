@@ -638,6 +638,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'loadSubtitles');
             sandbox.stub(dash, 'loadAlternateAudio');
 
+            dash.options.autoFocus = true;
             dash.loadeddataHandler();
             expect(dash.autoplay).to.be.called;
             expect(dash.loadUI).to.be.called;
