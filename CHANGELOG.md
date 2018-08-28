@@ -1,3 +1,11 @@
+<a name="1.50.0"></a>
+## 1.50.0 (2018-08-28)
+
+* Chore: Adding find bar metrics (#835) ([15f6984](https://github.com/box/box-content-preview/commit/15f6984)), closes [#835](https://github.com/box/box-content-preview/issues/835)
+* Fix: Preview should not auto focus itself unless told to do so (#833) ([d5ce4ef](https://github.com/box/box-content-preview/commit/d5ce4ef)), closes [#833](https://github.com/box/box-content-preview/issues/833)
+
+
+
 <a name="1.49.0"></a>
 ## 1.49.0 (2018-08-21)
 
