@@ -123,11 +123,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should destroy the find bar', () => {
             docBase.findBar = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
 
             docBase.destroy();
             expect(docBase.findBar.destroy).to.be.called;
+            expect(docBase.findBar.removeListener).to.be.called;
         });
 
         it('should clean up the PDF network requests', () => {
@@ -481,7 +483,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 setFindFieldElValue: sandbox.stub(),
                 findFieldHandler: sandbox.stub(),
                 open: sandbox.stub(),
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
 
             sandbox.stub(docBase, 'setPage');
@@ -791,7 +794,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const onKeydownStub = sandbox.stub().withArgs(mockEvent);
             docBase.findBar = {
                 onKeydown: onKeydownStub,
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
             docBase.onKeydown(keys, mockEvent);
             expect(onKeydownStub).to.have.been.calledOnce;
