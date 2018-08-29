@@ -1,4 +1,4 @@
-$navigationBtnWidth: 40px;
+$navigationBtnWidth: 50px;
 
 .bp-is-fullscreen .bp-navigate {
     display: none;
@@ -41,7 +41,6 @@ $navigationBtnWidth: 40px;
     }
 
     & > svg {
-        margin-left: -5px;
         width: 50px;
     }
 }
@@ -56,11 +55,10 @@ $navigationBtnWidth: 40px;
 
 .bp-navigate-left {
     border-radius: 0 2px 2px 0;
-    left: 0;
-    left: 10px;
+    left: 15px;
 }
 
 .bp-navigate-right {
     border-radius: 2px 0 0 2px;
-    right: 10px;
+    right: 15px;
 }
