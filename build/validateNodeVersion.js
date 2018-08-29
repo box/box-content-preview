@@ -8,11 +8,11 @@ const MIN_MINOR_SUPPORT = 9;
 const MIN_PATCH_SUPPORT = 4;
 
 function fail() {
-    console.log(false);
+    process.exit(1);
 }
 
 function pass() {
-    console.log(true);
+    process.exit(0);
 }
 
 /**

@@ -183,9 +183,9 @@ push_to_github() {
 
 # Validates whether or not the supported version of NodeJS is being used
 validate_node_version() {
-    isValidNodeVersion=$(node $node_validation_script_path)
+    $(node $node_validation_script_path)
 
-    if ! $isValidNodeVersion == 'false' ; then
+    if [ "$?" -eq "1" ] ; then
         echo "----------------------------------------------------------------------"
         echo "Invalid version of Node. Must be LTS version >= v8.9.4"
         echo "----------------------------------------------------------------------"
