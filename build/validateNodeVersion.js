@@ -7,10 +7,21 @@ const MIN_MAJOR_SUPPORT = 8;
 const MIN_MINOR_SUPPORT = 9;
 const MIN_PATCH_SUPPORT = 4;
 
+
+/**
+ * Exit with code 1 so that calling script can see that current node version was NOT valid.
+ *
+ * @returns {void}
+ */
 function fail() {
     process.exit(1);
 }
 
+/**
+ * Exit with code 0 so that calling script can see that current node version was valid.
+ *
+ * @returns {void}
+ */
 function pass() {
     process.exit(0);
 }
