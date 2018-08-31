@@ -165,16 +165,14 @@
 .bp-media-controls-cc-icon-text {
     background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
     border-radius: 4px;
-    bottom: 2px;
     color: $white;
     display: inline-block;
     font-size: 12px;
     font-weight: 600;
-    height: 22px;
+    height: 24px;
     letter-spacing: .1em;
-    line-height: 22px;
+    line-height: 24px;
     padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
-    position: relative; // For lining up the bottom with other buttons in the controls bar
     width: 24px;
 
     &:hover {
