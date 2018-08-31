@@ -74,6 +74,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
+        this.emitMetric = this.emitMetric.bind(this);
     }
 
     /**
@@ -132,6 +133,7 @@ class DocBaseViewer extends BaseViewer {
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
+            this.findBar.removeListener(VIEWER_EVENT.metric, this.emitMetric);
         }
 
         // Clean up PDF network requests
@@ -317,6 +319,7 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
         this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
+        this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
     }
 
     /**
@@ -525,6 +528,18 @@ class DocBaseViewer extends BaseViewer {
         }
 
         return true;
+    }
+
+    /**
+     * Emits a viewer metric. Useful for unpacking a message that comes from another class.
+     *
+     * @protected
+     * @emits metric
+     * @param {Object} event - Event object
+     * @return {void}
+     */
+    emitMetric(event) {
+        super.emitMetric(event.name, event.data);
     }
 
     //--------------------------------------------------------------------------

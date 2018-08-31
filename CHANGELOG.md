@@ -1,3 +1,22 @@
+<a name="1.50.0"></a>
+## 1.50.0 (2018-08-28)
+
+* Chore: Adding find bar metrics (#835) ([15f6984](https://github.com/box/box-content-preview/commit/15f6984)), closes [#835](https://github.com/box/box-content-preview/issues/835)
+* Fix: Preview should not auto focus itself unless told to do so (#833) ([d5ce4ef](https://github.com/box/box-content-preview/commit/d5ce4ef)), closes [#833](https://github.com/box/box-content-preview/issues/833)
+
+
+
+<a name="1.49.0"></a>
+## 1.49.0 (2018-08-21)
+
+* Revert "Release: 1.49.0" (#831) ([acb4523](https://github.com/box/box-content-preview/commit/acb4523)), closes [#831](https://github.com/box/box-content-preview/issues/831)
+* Revert "Release: 1.49.0" (#832) ([9bcf3c0](https://github.com/box/box-content-preview/commit/9bcf3c0)), closes [#832](https://github.com/box/box-content-preview/issues/832)
+* Release: 1.49.0 ([32e2c1d](https://github.com/box/box-content-preview/commit/32e2c1d))
+* Release: 1.49.0 ([47cf6f4](https://github.com/box/box-content-preview/commit/47cf6f4))
+* Fix: Display correct error when handling an asset error (#829) ([2f70273](https://github.com/box/box-content-preview/commit/2f70273)), closes [#829](https://github.com/box/box-content-preview/issues/829)
+
+
+
 <a name="1.48.0"></a>
 ## 1.48.0 (2018-07-26)
 

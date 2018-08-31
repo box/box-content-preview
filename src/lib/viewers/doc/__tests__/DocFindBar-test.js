@@ -2,6 +2,7 @@
 import DocFindBar from '../DocFindBar';
 import { CLASS_HIDDEN } from '../../../constants';
 import * as util from '../../../util';
+import { VIEWER_EVENT, USER_DOCUMENT_FIND_EVENTS } from '../../../events';
 
 const CLASS_FIND_MATCH_NOT_FOUND = 'bp-find-match-not-found';
 
@@ -233,7 +234,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         it('should set the findFieldEl value', () => {
             docFindBar.findFieldEl = {
                 removeEventListener: sandbox.stub()
-            }
+            };
 
             docFindBar.setFindFieldElValue('test');
 
@@ -479,6 +480,18 @@ describe('lib/viewers/doc/DocFindBar', () => {
             docFindBar.findNextHandler(true);
             expect(docFindBar.currentMatch).to.equal(1);
         });
+
+        it('should emit the find next event', () => {
+            sandbox.stub(docFindBar, 'emit');
+            docFindBar.findFieldEl.value = 'test';
+            docFindBar.findController.matchCount = 1;
+            docFindBar.currentMatch = 2;
+
+            docFindBar.findNextHandler(true);
+            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.NEXT
+            });
+        });
     });
 
     describe('findPreviousHandler()', () => {
@@ -517,6 +530,17 @@ describe('lib/viewers/doc/DocFindBar', () => {
             docFindBar.findPreviousHandler(true);
             expect(docFindBar.currentMatch).to.equal(5);
         });
+
+        it('should emit a find previous metric', () => {
+            sandbox.stub(docFindBar, 'emit');
+            docFindBar.findFieldEl.value = 'test';
+            docFindBar.currentMatch = 0;
+
+            docFindBar.findPreviousHandler(true);
+            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS
+            });
+        });
     });
     describe('open()', () => {
         beforeEach(() => {
@@ -542,11 +566,15 @@ describe('lib/viewers/doc/DocFindBar', () => {
         });
 
         it('should open the find bar if it is not open', () => {
+            sandbox.stub(docFindBar, 'emit');
             docFindBar.opened = false;
 
             docFindBar.open();
             expect(docFindBar.opened).to.equal(true);
             expect(stubs.remove).to.be.called;
+            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+                name: USER_DOCUMENT_FIND_EVENTS.OPEN
+            });
         });
 
         it('should not open the find bar if it is already open', () => {

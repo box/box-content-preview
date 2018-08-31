@@ -873,6 +873,9 @@ class Preview extends EventEmitter {
         // Custom logo URL
         this.options.logoUrl = options.logoUrl || '';
 
+        // Allow autofocussing
+        this.options.autoFocus = options.autoFocus !== false;
+
         // Whether download button should be shown
         this.options.showDownload = !!options.showDownload;
 
@@ -1307,7 +1310,7 @@ class Preview extends EventEmitter {
         }
 
         // Programmatically focus on the viewer after it loads
-        if (this.viewer && this.viewer.containerEl) {
+        if (this.options.autoFocus && this.viewer && this.viewer.containerEl) {
             this.viewer.containerEl.focus();
         }
 

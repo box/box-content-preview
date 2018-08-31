@@ -1,6 +1,6 @@
 {
   "name": "box-content-preview",
-  "version": "1.48.0",
+  "version": "1.50.0",
   "description": "Box Content Preview UI Element",
   "author": "Box (https://www.box.com/)",
   "license": "SEE LICENSE IN LICENSE",
@@ -11,6 +11,7 @@
   "devDependencies": {
     "@commitlint/cli": "^5.2.0",
     "autoprefixer": "^7.2.1",
+    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",

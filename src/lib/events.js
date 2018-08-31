@@ -67,3 +67,9 @@ export const DOWNLOAD_REACHABILITY_METRICS = {
     NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
     DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked'
 };
+// Events fired when using find in preview
+export const USER_DOCUMENT_FIND_EVENTS = {
+    NEXT: 'user_document_find_next', // The user navigates to the next find entry
+    OPEN: 'user_document_find_open', // The user opens the find bar
+    PREVIOUS: 'user_document_find_previous' // The user navigates to the previous find entry
+};
