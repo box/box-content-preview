@@ -44,7 +44,6 @@ export const ERROR_CODE = {
     FLASH_NOT_ENABLED: 'error_flash_not_enabled'
 };
 
-export const PREVIEW_LOAD_EVENT = '';
 // Event fired from Preview with error details
 export const PREVIEW_ERROR = 'preview_error';
 // Event fired from Preview with performance metrics
