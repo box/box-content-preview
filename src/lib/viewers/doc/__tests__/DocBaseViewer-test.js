@@ -920,27 +920,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        it('should set a x-box-accept-encoding header when range requests are enabled', () => {
-            docBase.options.location = {
-                locale: 'en-GB'
-            };
-            const isDisbled = PDFJS.disableRange;
-            sandbox.stub(Browser, 'isIOS').returns(false);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
-
-            PDFJS.disableRange = false;
-
-            return docBase.initViewer('').then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: '',
-                    rangeChunkSize: 524288
-                });
-
-                // Reset to original value
-                PDFJS.disableRange = isDisbled;
-            });
-        });
-
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
