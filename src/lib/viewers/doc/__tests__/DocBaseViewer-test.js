@@ -16,9 +16,7 @@ import {
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
     STATUS_PENDING,
-    STATUS_SUCCESS,
-    X_BOX_ACCEPT_ENCODING_HEADER,
-    X_BOX_ACCEPT_ENCODING_IDENTITY
+    STATUS_SUCCESS
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
@@ -935,10 +933,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             return docBase.initViewer('').then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
                     url: '',
-                    rangeChunkSize: 524288,
-                    httpHeaders: {
-                        [X_BOX_ACCEPT_ENCODING_HEADER]: X_BOX_ACCEPT_ENCODING_IDENTITY
-                    }
+                    rangeChunkSize: 524288
                 });
 
                 // Reset to original value
