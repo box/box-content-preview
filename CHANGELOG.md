@@ -1,3 +1,10 @@
+<a name="1.52.0"></a>
+## 1.52.0 (2018-09-11)
+
+* Chore: remove x-box-accept-encoding header to prevent OPTIONS call (#841) ([8ebf984](https://github.com/box/box-content-preview/commit/8ebf984)), closes [#841](https://github.com/box/box-content-preview/issues/841)
+
+
+
 <a name="1.51.0"></a>
 ## 1.51.0 (2018-09-04)
 
