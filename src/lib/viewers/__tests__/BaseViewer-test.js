@@ -59,7 +59,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'finishLoadingSetup');
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             base.options.showAnnotations = true;
 
             base.setup();
@@ -79,12 +79,12 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
-            expect(base.loadAnnotator).to.be.called;
+            expect(base.loadBoxAnnotations).to.be.called;
         });
 
         it('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'finishLoadingSetup');
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
 
@@ -97,25 +97,25 @@ describe('lib/viewers/BaseViewer', () => {
         it('should not load annotations assets if global preview showAnnotations option is false', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'finishLoadingSetup');
             base.options.showAnnotations = false;
 
             base.setup();
 
-            expect(base.loadAnnotator).to.not.be.called;
+            expect(base.loadBoxAnnotations).to.not.be.called;
         });
 
         it('should not load annotations assets if expiring embed is a shared link', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'finishLoadingSetup');
             base.options.sharedLink = 'url';
 
             base.setup();
 
-            expect(base.loadAnnotator).to.not.be.called;
+            expect(base.loadBoxAnnotations).to.not.be.called;
         });
     });
 
@@ -453,7 +453,6 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('viewerLoadHandler()', () => {
         beforeEach(() => {
-            base.annotationsLoadPromise = Promise.resolve();
             stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
             base.options.representation = {
                 content: {
@@ -463,6 +462,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.getDownloadNotificationToShow = sandbox
                 .stub(DownloadReachability, 'getDownloadNotificationToShow')
                 .returns(undefined);
+            sandbox.stub(base, 'initAnnotations');
         });
 
         it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
@@ -485,27 +485,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.scale).to.equal(1.5);
         });
 
-        it('should handle the annotations load promise', () => {
+        it('should show annotations if showAnnotations option is true', () => {
+            base.options.showAnnotations = true;
             base.viewerLoadHandler({ scale: 1.5 });
-            return base.annotationsLoadPromise.then(() => {
-                expect(base.annotationsLoadHandler).to.be.called;
-            });
+            expect(base.initAnnotations).to.be.called;
         });
 
-        it('should handle the annotations load promise', () => {
-            stubs.annotationsLoadHandler.callsFake(() => {
-                throw new Error('message');
-            });
-
+        it('should show annotations if showAnnotations option is false', () => {
+            base.options.showAnnotations = false;
             base.viewerLoadHandler({ scale: 1.5 });
-            return base.annotationsLoadPromise
-                .then(() => {
-                    sinon.assert.failException;
-                })
-                .catch((error) => {
-                    expect(error).to.be.an('error');
-                    expect(error.message).to.equal('message');
-                });
+            expect(base.initAnnotations).to.not.be.called;
         });
     });
 
@@ -580,7 +569,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should cleanup the base viewer', () => {
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
 
@@ -667,7 +656,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
-            sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
             event = {
@@ -999,7 +988,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('loadAnnotator()', () => {
+    describe('loadBoxAnnotations()', () => {
         const conf = {
             annotationsEnabled: true,
             types: {
@@ -1009,7 +998,7 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
-            sandbox.stub(base, 'loadAssets');
+            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             };
@@ -1018,28 +1007,30 @@ describe('lib/viewers/BaseViewer', () => {
         it('should resolve the promise if a BoxAnnotations instance was passed into Preview', (done) => {
             base.options.boxAnnotations = new window.BoxAnnotations({});
 
-            base.loadAnnotator();
+            base.loadBoxAnnotations().then(() => done());
             expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
-            base.annotationsLoadPromise.then(() => done());
         });
 
-        it('should load the annotations assets', () => {
-            base.loadAnnotator();
+        it('should load the annotations assets', (done) => {
+            base.loadBoxAnnotations().then(() => done());
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
         });
     });
 
     describe('annotationsLoadHandler()', () => {
+        const annotatorMock = {};
         const conf = {
             annotationsEnabled: true,
             types: {
                 point: true,
                 highlight: false
-            }
+            },
+            CONSTRUCTOR: sandbox.stub().returns(annotatorMock)
         };
 
         beforeEach(() => {
             base.options.viewer = { NAME: 'viewerName' };
+            base.options.location = { locale: 'en-US' };
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             };
@@ -1047,22 +1038,18 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'initAnnotations');
         });
 
-        it('should determine the annotator', () => {
+        it('should determine and instantiate the annotator', () => {
             base.annotationsLoadHandler();
             expect(base.annotatorConf).to.equal(conf);
+            expect(base.annotator).to.equal(annotatorMock);
         });
 
         it('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub()
+                determineAnnotator: sandbox.stub().returns(conf)
             };
             base.annotationsLoadHandler();
             expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
-        });
-
-        it('should init annotations if a conf is present', () => {
-            base.annotationsLoadHandler();
-            expect(base.initAnnotations).to.be.called;
         });
     });
 

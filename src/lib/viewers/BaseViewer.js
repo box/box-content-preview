@@ -180,7 +180,7 @@ class BaseViewer extends EventEmitter {
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.loadAnnotator();
+            this.loadBoxAnnotations().then(this.annotationsLoadHandler);
         }
     }
 
@@ -482,8 +482,8 @@ class BaseViewer extends EventEmitter {
             this.scale = event.scale;
         }
 
-        if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {});
+        if (this.options.showAnnotations) {
+            this.initAnnotations();
         }
     }
 
@@ -826,22 +826,23 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Loads the appropriate annotator and loads the file's annotations
+     * Loads the BoxAnnotations static assets
      *
      * @protected
-     * @return {void}
+     * @return {Promise} promise that is resolved when the assets are loaded
      */
-    loadAnnotator() {
+    loadBoxAnnotations() {
         // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
-        this.annotationsLoadPromise =
-            window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
-                ? Promise.resolve()
-                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
+        if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
+            return Promise.resolve();
+        }
+
+        return this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
     }
 
     /**
-     * Fetches the Box Annotations library. Creates an instance of BoxAnnotations
-     * if one isn't passed in to the preview options
+     * Creates an instance of BoxAnnotations if one isn't passed in to the preview options
+     * and instantiates the appropriate annotator
      *
      * @protected
      * @return {void}
@@ -860,9 +861,11 @@ class BaseViewer extends EventEmitter {
         const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
-        if (this.annotatorConf) {
-            this.initAnnotations();
-        }
+        const annotatorOptions = this.createAnnotatorOptions({
+            annotator: this.annotatorConf,
+            modeButtons: ANNOTATION_BUTTONS
+        });
+        this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
     }
 
     /**
@@ -872,12 +875,6 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     initAnnotations() {
-        // Construct and init annotator
-        const annotatorOptions = this.createAnnotatorOptions({
-            annotator: this.annotatorConf,
-            modeButtons: ANNOTATION_BUTTONS
-        });
-        this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
         this.annotator.init(this.scale);
 
         // Once the annotator instance has been created, emit it so that clients can attach their events.
