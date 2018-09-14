@@ -861,6 +861,10 @@ class BaseViewer extends EventEmitter {
         const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
+        if (!this.annotatorConf) {
+            return;
+        }
+
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             modeButtons: ANNOTATION_BUTTONS
