@@ -453,7 +453,6 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('viewerLoadHandler()', () => {
         beforeEach(() => {
-            stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
             base.options.representation = {
                 content: {
                     url_template: 'dl.boxcloud.com'
@@ -485,14 +484,17 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.scale).to.equal(1.5);
         });
 
-        it('should show annotations if showAnnotations option is true', () => {
-            base.options.showAnnotations = true;
+        it('should show annotations if annotatorPromise exists', (done) => {
+            base.annotatorPromise = new Promise((resolve) => {
+                resolve();
+                done();
+            });
             base.viewerLoadHandler({ scale: 1.5 });
             expect(base.initAnnotations).to.be.called;
         });
 
-        it('should show annotations if showAnnotations option is false', () => {
-            base.options.showAnnotations = false;
+        it('should show annotations if annotatorPromise does not exist', () => {
+            base.annotatorPromise = null;
             base.viewerLoadHandler({ scale: 1.5 });
             expect(base.initAnnotations).to.not.be.called;
         });
@@ -1004,20 +1006,20 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should resolve the promise if a BoxAnnotations instance was passed into Preview', (done) => {
+        it('should resolve the promise if a BoxAnnotations instance was passed into Preview', () => {
             base.options.boxAnnotations = new window.BoxAnnotations({});
 
-            base.loadBoxAnnotations().then(() => done());
+            base.loadBoxAnnotations();
             expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
         });
 
-        it('should load the annotations assets', (done) => {
-            base.loadBoxAnnotations().then(() => done());
+        it('should load the annotations assets', () => {
+            base.loadBoxAnnotations();
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
         });
     });
 
-    describe('annotationsLoadHandler()', () => {
+    describe('createAnnotator()', () => {
         const annotatorMock = {};
         const conf = {
             annotationsEnabled: true,
@@ -1031,6 +1033,7 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.options.viewer = { NAME: 'viewerName' };
             base.options.location = { locale: 'en-US' };
+            base.options.showAnnotations = true;
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             };
@@ -1039,7 +1042,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should determine and instantiate the annotator', () => {
-            base.annotationsLoadHandler();
+            base.createAnnotator();
             expect(base.annotatorConf).to.equal(conf);
             expect(base.annotator).to.equal(annotatorMock);
         });
@@ -1048,7 +1051,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.boxAnnotations = {
                 determineAnnotator: sandbox.stub().returns(conf)
             };
-            base.annotationsLoadHandler();
+            base.createAnnotator();
             expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
         });
     });

@@ -138,8 +138,9 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
-        this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
+        this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
+        this.initAnnotations = this.initAnnotations.bind(this);
     }
 
     /**
@@ -180,7 +181,7 @@ class BaseViewer extends EventEmitter {
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.loadBoxAnnotations().then(this.annotationsLoadHandler);
+            this.loadBoxAnnotations();
         }
     }
 
@@ -232,6 +233,9 @@ class BaseViewer extends EventEmitter {
         }
 
         this.destroyed = true;
+        this.annotatorPromise = null;
+        this.boxAnnotationsPromise = null;
+        this.annotatorPromiseResolver = null;
         this.emit('destroy');
     }
 
@@ -482,8 +486,9 @@ class BaseViewer extends EventEmitter {
             this.scale = event.scale;
         }
 
-        if (this.options.showAnnotations) {
-            this.initAnnotations();
+        // Ensures that the annotator has been created first
+        if (this.annotatorPromise) {
+            this.annotatorPromise.then(this.initAnnotations);
         }
     }
 
@@ -829,15 +834,21 @@ class BaseViewer extends EventEmitter {
      * Loads the BoxAnnotations static assets
      *
      * @protected
-     * @return {Promise} promise that is resolved when the assets are loaded
+     * @return {void}
      */
     loadBoxAnnotations() {
         // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
         if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
-            return Promise.resolve();
+            return;
         }
 
-        return this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
+        this.boxAnnotationsPromise = this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
+
+        // Creates a promise that the annotations will be fetched and stores the
+        // resolve function to be fulfilled when the annotator is created
+        this.annotatorPromise = new Promise((resolve) => {
+            this.annotatorPromiseResolver = resolve;
+        });
     }
 
     /**
@@ -847,7 +858,11 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @return {void}
      */
-    annotationsLoadHandler() {
+    createAnnotator() {
+        if (!this.options.showAnnotations) {
+            return;
+        }
+
         // Set viewer-specific annotation options
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
@@ -870,6 +885,10 @@ class BaseViewer extends EventEmitter {
             modeButtons: ANNOTATION_BUTTONS
         });
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
+
+        if (this.annotatorPromiseResolver) {
+            this.annotatorPromiseResolver();
+        }
     }
 
     /**
