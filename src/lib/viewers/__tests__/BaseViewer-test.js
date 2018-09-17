@@ -79,7 +79,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
-            expect(base.loadBoxAnnotations).to.be.called;
+            expect(base.annotatorPromise).to.not.be.undefined;
+            expect(base.annotatorPromiseResolver).to.not.be.undefined;
         });
 
         it('should add a mobile class to the container if on mobile', () => {
@@ -1013,9 +1014,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
         });
 
-        it('should load the annotations assets', () => {
+        it('should load the annotations assets if showAnnotations option is true', () => {
+            base.options.showAnnotations = true;
             base.loadBoxAnnotations();
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
+        });
+
+        it('should not load the annotations assets if showAnnotations option is false', () => {
+            base.options.showAnnotations = false;
+            base.loadBoxAnnotations();
+            expect(base.loadAssets).to.not.be.called;
         });
     });
 

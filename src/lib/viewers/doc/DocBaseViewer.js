@@ -277,9 +277,9 @@ class DocBaseViewer extends BaseViewer {
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
-        return Promise.all([this.boxAnnotationsPromise, this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
+        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
-            .then(this.createAnnotator)
+            .then(this.loadBoxAnnotations)
             .catch(this.handleAssetError);
     }
 

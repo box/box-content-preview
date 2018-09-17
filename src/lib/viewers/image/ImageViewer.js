@@ -56,12 +56,13 @@ class ImageViewer extends ImageBaseViewer {
         const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
-        return Promise.all([this.boxAnnotationsPromise, this.getRepStatus().getPromise()])
+        return this.getRepStatus()
+            .getPromise()
             .then(() => {
                 this.startLoadTimer();
                 this.imageEl.src = downloadUrl;
             })
-            .then(this.createAnnotator)
+            .then(this.loadBoxAnnotations)
             .catch(this.handleAssetError);
     }
 
