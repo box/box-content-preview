@@ -835,17 +835,17 @@ class BaseViewer extends EventEmitter {
      * Loads the BoxAnnotations static assets
      *
      * @protected
-     * @return {void}
+     * @return {Promise} promise that is resolved when the assets are loaded
      */
     loadBoxAnnotations() {
         if (
             !this.options.showAnnotations ||
             (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations)
         ) {
-            return;
+            return Promise.resolve();
         }
 
-        this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false).then(this.createAnnotator);
+        return this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
     }
 
     /**
@@ -856,6 +856,10 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     createAnnotator() {
+        if (!this.options.showAnnotations) {
+            return;
+        }
+
         // Set viewer-specific annotation options
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
