@@ -410,12 +410,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(docBase, 'handleAssetAndRepLoad');
             sandbox.stub(docBase, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(docBase, 'loadAssets');
+            sandbox.stub(docBase, 'loadBoxAnnotations');
 
             return docBase.load().then(() => {
                 expect(docBase.loadAssets).to.be.called;
                 expect(docBase.setup).to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
                 expect(docBase.handleAssetAndRepLoad).to.be.called;
+                expect(docBase.loadBoxAnnotations).to.be.called;
             });
         });
     });

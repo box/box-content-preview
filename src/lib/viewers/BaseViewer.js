@@ -138,8 +138,10 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
-        this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
+        this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
+        this.initAnnotations = this.initAnnotations.bind(this);
+        this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
     }
 
     /**
@@ -176,11 +178,12 @@ class BaseViewer extends EventEmitter {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
-        // Attempts to load annotations assets and initializes annotations if
-        // the assets are available, the showAnnotations flag is true, and the
-        // expiring embed is not a shared link
+        // Creates a promise that the annotator will be constructed if annotations are
+        // enabled and the expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.loadAnnotator();
+            this.annotatorPromise = new Promise((resolve) => {
+                this.annotatorPromiseResolver = resolve;
+            });
         }
     }
 
@@ -232,6 +235,8 @@ class BaseViewer extends EventEmitter {
         }
 
         this.destroyed = true;
+        this.annotatorPromise = null;
+        this.annotatorPromiseResolver = null;
         this.emit('destroy');
     }
 
@@ -482,8 +487,9 @@ class BaseViewer extends EventEmitter {
             this.scale = event.scale;
         }
 
-        if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {});
+        // Ensures that the annotator has been created first
+        if (this.annotatorPromise) {
+            this.annotatorPromise.then(this.initAnnotations);
         }
     }
 
@@ -826,27 +832,34 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Loads the appropriate annotator and loads the file's annotations
+     * Loads the BoxAnnotations static assets
      *
      * @protected
-     * @return {void}
+     * @return {Promise} promise that is resolved when the assets are loaded
      */
-    loadAnnotator() {
-        // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
-        this.annotationsLoadPromise =
-            window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
-                ? Promise.resolve()
-                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
+    loadBoxAnnotations() {
+        if (
+            !this.options.showAnnotations ||
+            (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations)
+        ) {
+            return Promise.resolve();
+        }
+
+        return this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
     }
 
     /**
-     * Fetches the Box Annotations library. Creates an instance of BoxAnnotations
-     * if one isn't passed in to the preview options
+     * Creates an instance of BoxAnnotations if one isn't passed in to the preview options
+     * and instantiates the appropriate annotator
      *
      * @protected
      * @return {void}
      */
-    annotationsLoadHandler() {
+    createAnnotator() {
+        if (!this.options.showAnnotations) {
+            return;
+        }
+
         // Set viewer-specific annotation options
         const viewerOptions = {};
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
@@ -860,8 +873,18 @@ class BaseViewer extends EventEmitter {
         const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
-        if (this.annotatorConf) {
-            this.initAnnotations();
+        if (!this.annotatorConf) {
+            return;
+        }
+
+        const annotatorOptions = this.createAnnotatorOptions({
+            annotator: this.annotatorConf,
+            modeButtons: ANNOTATION_BUTTONS
+        });
+        this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
+
+        if (this.annotatorPromiseResolver) {
+            this.annotatorPromiseResolver();
         }
     }
 
@@ -872,12 +895,6 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     initAnnotations() {
-        // Construct and init annotator
-        const annotatorOptions = this.createAnnotatorOptions({
-            annotator: this.annotatorConf,
-            modeButtons: ANNOTATION_BUTTONS
-        });
-        this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
         this.annotator.init(this.scale);
 
         // Once the annotator instance has been created, emit it so that clients can attach their events.

@@ -279,6 +279,8 @@ class DocBaseViewer extends BaseViewer {
 
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
+            .then(this.loadBoxAnnotations)
+            .then(this.createAnnotator)
             .catch(this.handleAssetError);
     }
 

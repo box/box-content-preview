@@ -62,6 +62,8 @@ class ImageViewer extends ImageBaseViewer {
                 this.startLoadTimer();
                 this.imageEl.src = downloadUrl;
             })
+            .then(this.loadBoxAnnotations)
+            .then(this.createAnnotator)
             .catch(this.handleAssetError);
     }
 
