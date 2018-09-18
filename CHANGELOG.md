@@ -1,3 +1,10 @@
+<a name="1.53.0"></a>
+## 1.53.0 (2018-09-18)
+
+* Fix: init annotations after file rep is fetched (#842) ([20cc3c5](https://github.com/box/box-content-preview/commit/20cc3c5)), closes [#842](https://github.com/box/box-content-preview/issues/842)
+
+
+
 <a name="1.52.0"></a>
 ## 1.52.0 (2018-09-11)
 
