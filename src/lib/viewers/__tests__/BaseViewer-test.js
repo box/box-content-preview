@@ -1014,14 +1014,14 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
         });
 
-        it('should load the annotations assets if showAnnotations option is true', () => {
-            base.options.showAnnotations = true;
+        it('should load the annotations assets if annotations are enabled true', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             base.loadBoxAnnotations();
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
         });
 
-        it('should not load the annotations assets if showAnnotations option is false', () => {
-            base.options.showAnnotations = false;
+        it('should not load the annotations assets if annotations are not enabled', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
             base.loadBoxAnnotations();
             expect(base.loadAssets).to.not.be.called;
         });
@@ -1049,13 +1049,22 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'initAnnotations');
         });
 
+        it('should not create the annotator if annotations are not enabled', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
+            base.createAnnotator();
+            expect(base.annotatorConf).to.be.undefined;
+            expect(base.annotator).to.be.undefined;
+        });
+
         it('should determine and instantiate the annotator', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             base.createAnnotator();
             expect(base.annotatorConf).to.equal(conf);
             expect(base.annotator).to.equal(annotatorMock);
         });
 
         it('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             base.options.boxAnnotations = {
                 determineAnnotator: sandbox.stub().returns(conf)
             };
