@@ -839,7 +839,7 @@ class BaseViewer extends EventEmitter {
      */
     loadBoxAnnotations() {
         if (
-            !this.options.showAnnotations ||
+            !this.areAnnotationsEnabled() ||
             (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations)
         ) {
             return Promise.resolve();
@@ -856,7 +856,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     createAnnotator() {
-        if (!this.options.showAnnotations) {
+        if (!this.areAnnotationsEnabled()) {
             return;
         }
 
