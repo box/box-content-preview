@@ -1,3 +1,10 @@
+<a name="1.53.1"></a>
+## <small>1.53.1 (2018-09-19)</small>
+
+* Fix: Check to see if viewers want to show annotations (#843) ([21a8eab](https://github.com/box/box-content-preview/commit/21a8eab)), closes [#843](https://github.com/box/box-content-preview/issues/843)
+
+
+
 <a name="1.53.0"></a>
 ## 1.53.0 (2018-09-18)
 
