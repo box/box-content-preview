@@ -17,10 +17,19 @@ import {
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
+    QUERY_PARAM_PDF_ENCODING,
+    PDFEncodingTypes
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
+import {
+    appendQueryParams,
+    get,
+    createAssetUrlCreator,
+    getMidpoint,
+    getDistance,
+    getClosestPageToPinch
+} from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
@@ -583,6 +592,14 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders = {
                 'If-None-Match': 'webkit-no-cache'
             };
+        }
+
+        // If range requests are disabled, request the gzip compressed version of the representation
+        if (PDFJS.disableRange) {
+            const { url } = docInitParams;
+            docInitParams.url = appendQueryParams(url, {
+                [QUERY_PARAM_PDF_ENCODING]: PDFEncodingTypes.GZIP
+            });
         }
 
         // Start timing document load
