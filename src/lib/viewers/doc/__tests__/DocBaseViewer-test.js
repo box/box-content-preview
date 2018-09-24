@@ -21,7 +21,6 @@ import {
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
-import { skipPartiallyEmittedExpressions } from 'typescript';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
