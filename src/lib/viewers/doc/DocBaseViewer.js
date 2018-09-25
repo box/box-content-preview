@@ -18,8 +18,8 @@ import {
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     STATUS_SUCCESS,
-    QUERY_PARAM_PDF_ENCODING,
-    PDFEncodingTypes
+    QUERY_PARAM_ENCODING,
+    ENCODING_TYPES
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import {
@@ -581,8 +581,17 @@ class DocBaseViewer extends BaseViewer {
                     : RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
+        let url = pdfUrl;
+
+        // If range requests are disabled, request the gzip compressed version of the representation
+        if (PDFJS.disableRange) {
+            url = appendQueryParams(url, {
+                [QUERY_PARAM_ENCODING]: ENCODING_TYPES.GZIP
+            });
+        }
+
         const docInitParams = {
-            url: pdfUrl,
+            url,
             rangeChunkSize
         };
 
@@ -592,14 +601,6 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders = {
                 'If-None-Match': 'webkit-no-cache'
             };
-        }
-
-        // If range requests are disabled, request the gzip compressed version of the representation
-        if (PDFJS.disableRange) {
-            const { url } = docInitParams;
-            docInitParams.url = appendQueryParams(url, {
-                [QUERY_PARAM_PDF_ENCODING]: PDFEncodingTypes.GZIP
-            });
         }
 
         // Start timing document load

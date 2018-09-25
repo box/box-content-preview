@@ -16,7 +16,9 @@ import {
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
     STATUS_PENDING,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
+    QUERY_PARAM_ENCODING,
+    ENCODING_TYPES
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
@@ -862,7 +864,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
-                    url,
+                    url: sinon.match.string,
                     rangeChunkSize
                 });
             });
@@ -880,7 +882,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
-                    url,
+                    url: sinon.match.string,
                     rangeChunkSize: defaultChunkSize
                 });
             });
@@ -898,7 +900,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
-                    url,
+                    url: sinon.match.string,
                     rangeChunkSize: largeChunkSize
                 });
             });
@@ -913,7 +915,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             return docBase.initViewer('').then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
-                    url: '',
+                    url: sinon.match.string,
                     rangeChunkSize: 1048576,
                     httpHeaders: {
                         'If-None-Match': 'webkit-no-cache'
@@ -929,7 +931,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             };
             const defaultChunkSize = 1048576; // Taken from RANGE_REQUEST_CHUNK_SIZE_US
             const url = 'www.myTestPDF.com/123456';
-            const paramsList = 'encoding=gzip';
+            const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
             const isDisabled = PDFJS.disableRange;
             sandbox.stub(Browser, 'isIOS').returns(false);
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
