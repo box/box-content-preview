@@ -103,3 +103,9 @@ export const PREVIEW_SCRIPT_NAME = 'preview.js';
 
 export const FILE_OPTION_FILE_VERSION_ID = 'fileVersionId';
 export const FILE_OPTION_START = 'startAt';
+
+// Query parameter for requesting compressed representations
+export const QUERY_PARAM_ENCODING = 'encoding';
+export const ENCODING_TYPES = {
+    GZIP: 'gzip'
+};
