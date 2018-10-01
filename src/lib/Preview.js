@@ -871,7 +871,7 @@ class Preview extends EventEmitter {
         this.options.header = options.header || 'light';
 
         // Header element for when using external header outside of the provided container
-        this.options.headerElement = options.headerElement || options.container;
+        this.options.headerElement = options.headerElement;
 
         // Custom logo URL
         this.options.logoUrl = options.logoUrl || '';
