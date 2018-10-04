@@ -92,6 +92,8 @@ class MultiImageViewer extends ImageBaseViewer {
 
                 this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
             })
+            .then(this.loadBoxAnnotations)
+            .then(this.createAnnotator)
             .catch(this.handleAssetError);
     }
 
