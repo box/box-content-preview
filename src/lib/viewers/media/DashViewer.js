@@ -406,7 +406,10 @@ class DashViewer extends VideoBaseViewer {
         const error = new PreviewError(
             ERROR_CODE.SHAKA,
             __('error_refresh'),
-            {},
+            {
+                code: normalizedShakaError.code,
+                severity: normalizedShakaError.severity
+            },
             `Shaka error. Code = ${normalizedShakaError.code}, Category = ${
                 normalizedShakaError.category
             }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`
