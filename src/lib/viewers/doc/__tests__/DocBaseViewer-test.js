@@ -419,13 +419,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.setup).to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
                 expect(docBase.handleAssetAndRepLoad).to.be.called;
-                expect(docBase.loadBoxAnnotations).to.be.called;
             });
         });
     });
 
     describe('handleAssetAndRepLoad', () => {
-        it('should setup pdfjs, init viewer, print, and find', () => {
+        it('should setup pdfjs, init viewer, print, and find', (done) => {
             const url = 'foo';
             docBase.pdfUrl = url;
             docBase.pdfViewer = {
@@ -436,6 +435,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
             const initPrintStub = sandbox.stub(docBase, 'initPrint');
             const initFindStub = sandbox.stub(docBase, 'initFind');
+            const loadBoxAnnotations = sandbox.stub(docBase, 'loadBoxAnnotations').returns(Promise.resolve());
+            const createAnnotator = sandbox.stub(docBase, 'createAnnotator').returns(
+                new Promise((resolve) => {
+                    resolve();
+                    done();
+                })
+            );
 
             docBase.handleAssetAndRepLoad();
 
@@ -443,6 +449,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
             expect(initPrintStub).to.be.called;
             expect(initFindStub).to.be.called;
+            expect(loadBoxAnnotations).to.be.called;
+            expect(createAnnotator).to.be.called;
         });
     });
 

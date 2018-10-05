@@ -1083,6 +1083,17 @@ class BaseViewer extends EventEmitter {
             })
         );
     }
+
+    /**
+     * Method that is run after all the assets and rep are loaded. In this
+     * base class, it will attempt to load the Box Annotations and create
+     * the annotator
+     *
+     * @return {void}
+     */
+    handleAssetAndRepLoad() {
+        this.loadBoxAnnotations().then(this.createAnnotator);
+    }
 }
 
 export default BaseViewer;
