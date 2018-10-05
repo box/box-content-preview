@@ -318,16 +318,64 @@ describe('lib/PreviewUI', () => {
             ui.replaceHeader('.bp-invalid-header');
 
             const baseHeader = containerEl.querySelector('.bp-base-header');
-            expect(newHeader).to.have.class('bp-is-hidden');
-            expect(baseHeader).to.not.have.class('bp-is-hidden');
+            expect(newHeader).to.have.class(constants.CLASS_HIDDEN);
+            expect(baseHeader).to.not.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should hide all headers and then show the specified header', () => {
             ui.replaceHeader('.bp-draw-header');
 
             const baseHeader = containerEl.querySelector('.bp-base-header');
-            expect(newHeader).to.not.have.class('bp-is-hidden');
-            expect(baseHeader).to.have.class('bp-is-hidden');
+            expect(newHeader).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(baseHeader).to.have.class(constants.CLASS_HIDDEN);
+        });
+    });
+
+    describe('setupHeader()', () => {
+        beforeEach(() => {
+            containerEl = ui.setup(options);
+        });
+
+        afterEach(() => {
+            ui.cleanup();
+        });
+
+        it('should show the header container and default header', () => {
+            const headerContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
+            headerContainerEl.classList.add(constants.CLASS_HIDDEN);
+
+            ui.setupHeader();
+
+            const uiHeaderContainerEl = ui.container.querySelector(constants.SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
+            expect(uiHeaderContainerEl).to.not.have.class(constants.CLASS_HIDDEN);
+            const baseHeaderEl = uiHeaderContainerEl.firstElementChild;
+            expect(baseHeaderEl).to.have.class(constants.CLASS_BOX_PREVIEW_HEADER);
+            expect(baseHeaderEl).to.have.class(constants.CLASS_BOX_PREVIEW_BASE_HEADER);
+        });
+
+        it('should set the header theme to dark', () => {
+            expect(containerEl).to.not.have.class(constants.CLASS_BOX_PREVIEW_THEME_DARK);
+
+            ui.setupHeader('dark');
+
+            expect(containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_THEME_DARK);
+        });
+
+        it('should override the logo url if specified', () => {
+            const url = 'http://test/foo';
+
+            expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT)).to.not.have.class(
+                constants.CLASS_HIDDEN
+            );
+
+            ui.setupHeader('', url);
+
+            const customLogoEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+            expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT)).to.have.class(
+                constants.CLASS_HIDDEN
+            );
+            expect(customLogoEl).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(customLogoEl.src).to.equal(url);
         });
     });
 });

@@ -3,24 +3,25 @@ import shellTemplate from './shell.html';
 import Notification from './Notification';
 import { insertTemplate } from './util';
 import {
-    CLASS_HIDDEN,
-    CLASS_INVISIBLE,
     CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HAS_NAVIGATION,
     CLASS_BOX_PREVIEW_HEADER,
     CLASS_BOX_PREVIEW_THEME_DARK,
+    CLASS_HIDDEN,
+    CLASS_INVISIBLE,
     CLASS_PREVIEW_LOADED,
-    SELECTOR_BOX_PREVIEW_CONTAINER,
-    SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
+    SELECTOR_BOX_PREVIEW_BTN_PRINT,
+    SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
+    SELECTOR_BOX_PREVIEW_HEADER_CONTAINER,
     SELECTOR_BOX_PREVIEW_LOADING_TEXT,
     SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
     SELECTOR_BOX_PREVIEW_LOGO_DEFAULT,
+    SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT
 } from './constants';
@@ -368,7 +369,10 @@ class PreviewUI {
      * @return {void}
      */
     setupHeader(headerTheme, logoUrl) {
-        const headerEl = this.container.firstElementChild;
+        const headerContainerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
+        headerContainerEl.classList.remove(CLASS_HIDDEN);
+
+        const headerEl = headerContainerEl.firstElementChild;
         headerEl.className = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
         this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
 
