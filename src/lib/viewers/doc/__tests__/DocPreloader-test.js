@@ -558,4 +558,31 @@ describe('lib/viewers/doc/DocPreloader', () => {
             expect(docPreloader.checkDocumentLoaded()).to.be.false;
         });
     });
+
+    describe('resize()', () => {
+        beforeEach(() => {
+            sandbox.stub(docPreloader, 'getScaledDimensions').returns({
+                scaledWidth: 1000,
+                scaledHeight: 800
+            });
+            sandbox.stub(util, 'setDimensions');
+            docPreloader.preloadEl = document.createElement('div');
+            docPreloader.preloadEl.innerHTML = `<img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" /><div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" />`;
+        });
+
+        it('should short circuit if there is no pdf data', () => {
+            docPreloader.resize();
+            expect(docPreloader.getScaledDimensions).to.not.be.called;
+        });
+
+        it('should resize all the elements', () => {
+            docPreloader.pdfData = {
+                pdfWidth: 800,
+                pdfHeight: 600
+            };
+            docPreloader.resize();
+            expect(docPreloader.getScaledDimensions).to.be.called;
+            expect(util.setDimensions).to.be.calledTwice;
+        });
+    });
 });

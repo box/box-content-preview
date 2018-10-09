@@ -38,6 +38,9 @@ class DocPreloader extends EventEmitter {
     /** @property {HTMLElement} - Preload overlay element */
     overlayEl;
 
+    /** @property {Object} - The EXIF data for the PDF */
+    pdfData;
+
     /** @property {HTMLElement} - Preload container element */
     preloadEl;
 
@@ -230,6 +233,7 @@ class DocPreloader extends EventEmitter {
         // Calculate pdf width, height, and number of pages from EXIF if possible
         return this.readEXIF(this.imageEl)
             .then((pdfData) => {
+                this.pdfData = pdfData;
                 const { pdfWidth, pdfHeight, numPages } = pdfData;
                 const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
                 this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
@@ -242,6 +246,25 @@ class DocPreloader extends EventEmitter {
                 this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
             });
     };
+
+    /**
+     * Resizes the preload and placeholder elements
+     *
+     * @return {void}
+     */
+    resize() {
+        if (!this.pdfData || !this.preloadEl) {
+            return;
+        }
+
+        const { pdfWidth, pdfHeight } = this.pdfData;
+        const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+        // Scale preload and placeholder elements
+        const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_CONTENT);
+        for (let i = 0; i < preloadEls.length; i++) {
+            setDimensions(preloadEls[i], scaledWidth, scaledHeight);
+        }
+    }
 
     /**
      * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.
