@@ -561,7 +561,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
     describe('resize()', () => {
         beforeEach(() => {
-            sandbox.stub(docPreloader, 'getScaledDimensions').returns({
+            sandbox.stub(docPreloader, 'getScaledWidthAndHeight').returns({
                 scaledWidth: 1000,
                 scaledHeight: 800
             });
@@ -572,7 +572,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should short circuit if there is no pdf data', () => {
             docPreloader.resize();
-            expect(docPreloader.getScaledDimensions).to.not.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).to.not.be.called;
         });
 
         it('should resize all the elements', () => {
@@ -581,8 +581,28 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 pdfHeight: 600
             };
             docPreloader.resize();
-            expect(docPreloader.getScaledDimensions).to.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).to.be.called;
             expect(util.setDimensions).to.be.calledTwice;
+        });
+    });
+
+    describe('getScaledWidthAndHeight()', () => {
+        const scaledDimensions = {
+            scaledWidth: 1000,
+            scaledHeight: 800
+        };
+        const pdfData = {
+            pdfWidth: 800,
+            pdfHeight: 600
+        };
+        beforeEach(() => {
+            sandbox.stub(docPreloader, 'getScaledDimensions').returns(scaledDimensions);
+        });
+
+        it('should return the scaled width and height', () => {
+            const scaledWidthAndHeight = docPreloader.getScaledWidthAndHeight(pdfData);
+            expect(docPreloader.getScaledDimensions).to.be.calledWith(pdfData.pdfWidth, pdfData.pdfHeight);
+            expect(scaledWidthAndHeight).to.deep.equal(scaledDimensions);
         });
     });
 });

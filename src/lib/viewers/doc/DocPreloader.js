@@ -234,9 +234,8 @@ class DocPreloader extends EventEmitter {
         return this.readEXIF(this.imageEl)
             .then((pdfData) => {
                 this.pdfData = pdfData;
-                const { pdfWidth, pdfHeight, numPages } = pdfData;
-                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
+                const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
+                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(pdfData.numPages, NUM_PAGES_MAX));
 
                 // Otherwise, use the preload image's natural dimensions as a base to scale from
             })
@@ -248,6 +247,22 @@ class DocPreloader extends EventEmitter {
     };
 
     /**
+     * Gets the scaled width and height from the EXIF data
+     *
+     * @param {Object} pdfData - the EXIF data from the image
+     * @return {Object} the scaled width and height the
+     */
+    getScaledWidthAndHeight(pdfData) {
+        const { pdfWidth, pdfHeight } = pdfData;
+        const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+
+        return {
+            scaledWidth,
+            scaledHeight
+        };
+    }
+
+    /**
      * Resizes the preload and placeholder elements
      *
      * @return {void}
@@ -257,8 +272,7 @@ class DocPreloader extends EventEmitter {
             return;
         }
 
-        const { pdfWidth, pdfHeight } = this.pdfData;
-        const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+        const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(this.pdfData);
         // Scale preload and placeholder elements
         const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_CONTENT);
         for (let i = 0; i < preloadEls.length; i++) {
