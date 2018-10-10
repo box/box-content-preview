@@ -547,6 +547,8 @@ describe('lib/viewers/media/DashViewer', () => {
             const [event, error] = dash.emit.getCall(0).args;
             expect(event).to.equal('error');
             expect(error).to.be.instanceof(PreviewError);
+            expect(error.details.code).to.equal(shakaError.detail.code);
+            expect(error.details.severity).to.equal(shakaError.detail.severity);
             expect(error.code).to.equal('error_shaka');
         });
 
