@@ -95,6 +95,7 @@ Scenario(
 
         I.waitForElement(SELECTOR_BOX_PREVIEW_DASH);
         showMediaControls(I, SELECTOR_VIDEO);
+
         I.waitForVisible(SELECTOR_MEDIA_CONTROLS_GEAR);
         // Click on the Gear
         I.click(SELECTOR_MEDIA_CONTROLS_GEAR);
