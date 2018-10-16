@@ -583,4 +583,28 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
     });
+
+    describe('handleAssetAndRepLoad', () => {
+        it('should setup image src', (done) => {
+            const url = 'foo';
+            const imageEl = document.createElement('img');
+
+            image.imageEl = imageEl;
+            const startLoadTimer = sandbox.stub(image, 'startLoadTimer');
+            const loadBoxAnnotations = sandbox.stub(image, 'loadBoxAnnotations').returns(Promise.resolve());
+            const createAnnotator = sandbox.stub(image, 'createAnnotator').returns(
+                new Promise((resolve) => {
+                    resolve();
+                    done();
+                })
+            );
+
+            image.handleAssetAndRepLoad(url);
+
+            expect(startLoadTimer).to.be.called;
+            expect(imageEl.url).to.be.equal(url);
+            expect(loadBoxAnnotations).to.be.called;
+            expect(createAnnotator).to.be.called;
+        });
+    });
 });

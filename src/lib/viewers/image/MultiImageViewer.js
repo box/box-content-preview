@@ -22,6 +22,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.scrollHandler = this.scrollHandler.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
     }
 
     /**
@@ -81,18 +82,28 @@ class MultiImageViewer extends ImageBaseViewer {
 
         return this.getRepStatus()
             .getPromise()
-            .then(() => {
-                const template = this.options.representation.content.url_template;
-                this.imageUrls = this.constructImageUrls(template);
-
-                // Start load timer
-                this.startLoadTimer();
-
-                this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
-
-                this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
-            })
+            .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Loads the multipart image for viewing
+     *
+     * @override
+     * @return {void}
+     */
+    handleAssetAndRepLoad() {
+        const template = this.options.representation.content.url_template;
+        this.imageUrls = this.constructImageUrls(template);
+
+        // Start load timer
+        this.startLoadTimer();
+
+        this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
+
+        this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
+
+        super.handleAssetAndRepLoad();
     }
 
     /**

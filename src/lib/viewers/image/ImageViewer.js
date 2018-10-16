@@ -17,6 +17,7 @@ class ImageViewer extends ImageBaseViewer {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
@@ -58,13 +59,21 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
-            .then(() => {
-                this.startLoadTimer();
-                this.imageEl.src = downloadUrl;
-            })
-            .then(this.loadBoxAnnotations)
-            .then(this.createAnnotator)
+            .then(() => this.handleAssetAndRepLoad(downloadUrl))
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Loads the image to be viewed
+     *
+     * @override
+     * @return {void}
+     */
+    handleAssetAndRepLoad(downloadUrl) {
+        this.startLoadTimer();
+        this.imageEl.src = downloadUrl;
+
+        super.handleAssetAndRepLoad();
     }
 
     /**
