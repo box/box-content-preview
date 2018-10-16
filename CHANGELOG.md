@@ -1,3 +1,13 @@
+<a name="1.55.0"></a>
+## 1.55.0 (2018-10-16)
+
+* Update: box-annotations to v2.3.0 (#851) ([ed4d81e](https://github.com/box/box-content-preview/commit/ed4d81e)), closes [#851](https://github.com/box/box-content-preview/issues/851)
+* Fix: Adding annotations back to MultiImageViewer (#847) ([6e0ecb0](https://github.com/box/box-content-preview/commit/6e0ecb0)), closes [#847](https://github.com/box/box-content-preview/issues/847)
+* Fix: Pass shaka data to error detail so it can be logged (#848) ([8fdd344](https://github.com/box/box-content-preview/commit/8fdd344)), closes [#848](https://github.com/box/box-content-preview/issues/848)
+* Fix: resize preload in document viewer (#850) ([d29afa6](https://github.com/box/box-content-preview/commit/d29afa6)), closes [#850](https://github.com/box/box-content-preview/issues/850)
+
+
+
 <a name="1.54.0"></a>
 ## 1.54.0 (2018-10-09)
 
