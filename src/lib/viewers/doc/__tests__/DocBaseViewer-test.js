@@ -1028,6 +1028,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(BaseViewer.prototype.resize).to.not.be.called;
         });
 
+        it('should resize the preload', () => {
+            docBase.pdfViewer = null;
+            docBase.preloader = {
+                resize: sandbox.stub()
+            };
+            docBase.resize();
+            expect(docBase.preloader.resize).to.be.called;
+            expect(BaseViewer.prototype.resize).to.not.be.called;
+        });
+
         it('should update the pdfViewer and reset the page', () => {
             docBase.resize();
             expect(docBase.pdfViewer.update).to.be.called;

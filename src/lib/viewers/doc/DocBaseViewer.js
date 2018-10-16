@@ -654,6 +654,9 @@ class DocBaseViewer extends BaseViewer {
      */
     resize() {
         if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
+            if (this.preloader) {
+                this.preloader.resize();
+            }
             return;
         }
 
