@@ -36,6 +36,7 @@ export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
+export const CLASS_MULTI_IMAGE_PAGE = 'bp-multi-image-page';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_TRANSPARENT = 'bp-is-transparent';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
