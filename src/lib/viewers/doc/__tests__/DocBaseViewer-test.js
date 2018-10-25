@@ -39,6 +39,18 @@ let docBase;
 let containerEl;
 let stubs = {};
 
+const STANDARD_HEADERS = [
+    'Accept',
+    'Accept-Language',
+    'Content-Language',
+    'Content-Type',
+    'DPR',
+    'Downlink',
+    'Save-Data',
+    'Viewport-Width',
+    'Width'
+];
+
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
@@ -930,6 +942,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     }
                 });
             });
+        });
+
+        it('should avoid preflight requests by not adding non-standard headers', (done) => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            // Excluding IOS for If-None-Match cache busting
+            sandbox.stub(Browser, 'isIOS').returns(false);
+            sandbox.stub(PDFJS, 'getDocument').callsFake((docInitParams) => {
+                return new Promise(() => {
+                    const { httpHeaders = {} } = docInitParams;
+                    const headerKeys = Object.keys(httpHeaders);
+
+                    const containsNonStandardHeader = headerKeys.some((header) => {
+                        return !STANDARD_HEADERS.includes(header);
+                    });
+
+                    expect(containsNonStandardHeader).to.be.false;
+                    done();
+                });
+            });
+
+            return docBase.initViewer('');
         });
 
         it('should append encoding query parameter for gzip content when range requests are disabled', () => {
