@@ -1,3 +1,13 @@
+<a name="1.56.0"></a>
+## 1.56.0 (2018-10-31)
+
+* Chore: Add test to check PDFjs headers to avoid preflight (#855) ([d8077f5](https://github.com/box/box-content-preview/commit/d8077f5)), closes [#855](https://github.com/box/box-content-preview/issues/855)
+* Chore: Enable PDF signatures in future builds of PDF.js (#852) ([4d61afa](https://github.com/box/box-content-preview/commit/4d61afa)), closes [#852](https://github.com/box/box-content-preview/issues/852)
+* Chore: Upgrade Box Annotations to v3.0.0 (#856) ([3d4bd9e](https://github.com/box/box-content-preview/commit/3d4bd9e)), closes [#856](https://github.com/box/box-content-preview/issues/856)
+* Fix: Prevent extra multi image page padding added by preview consumers (#854) ([3f8ee16](https://github.com/box/box-content-preview/commit/3f8ee16)), closes [#854](https://github.com/box/box-content-preview/issues/854)
+
+
+
 <a name="1.55.0"></a>
 ## 1.55.0 (2018-10-16)
 
