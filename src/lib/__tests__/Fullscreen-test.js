@@ -100,7 +100,6 @@ describe('lib/Fullscreen', () => {
             const target = document.createElement('div');
             sandbox.stub(target, 'focus');
             const event = { target };
-            event.__proto__ = Event.prototype;
 
             fullscreen.fullscreenchangeHandler(event);
 

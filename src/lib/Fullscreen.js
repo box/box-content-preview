@@ -102,10 +102,9 @@ class Fullscreen extends EventEmitter {
                 // Focus on the fullscreen element so keyboard
                 // events are triggered without an extra click
                 if (el) {
-                    let element = el;
-                    if (el instanceof Event) {
-                        element = el.target;
-                    }
+                    // If el has target property, then it is an Event
+                    // otherwise it is a HTMLElement
+                    const element = el.target || el;
 
                     element.focus();
                 }
