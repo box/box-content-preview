@@ -43,7 +43,10 @@ describe('lib/Fullscreen', () => {
             sandbox.stub(fullscreen, 'isFullscreen').returns(true);
             sandbox.stub(fullscreen, 'emit');
 
-            fullscreen.fullscreenchangeHandler({});
+            const element = document.createElement('div');
+            sandbox.stub(element, 'focus');
+
+            fullscreen.fullscreenchangeHandler(element);
 
             expect(fullscreen.emit).to.have.been.calledWith('enter');
         });
@@ -87,6 +90,35 @@ describe('lib/Fullscreen', () => {
 
             window.document.dispatchEvent(event);
             expect(spy).to.be.called.once;
+        });
+
+        it('should focus element from passed in event', () => {
+            sandbox.stub(fullscreen, 'isSupported').returns(true);
+            sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+            sandbox.stub(fullscreen, 'emit');
+
+            const target = document.createElement('div');
+            sandbox.stub(target, 'focus');
+            const event = { target };
+            event.__proto__ = Event.prototype;
+
+            fullscreen.fullscreenchangeHandler(event);
+
+            expect(fullscreen.emit).to.have.been.calledWith('enter');
+            expect(target.focus.called).to.be.true;
+        });
+
+        it('should focus element from passed element', () => {
+            sandbox.stub(fullscreen, 'isSupported').returns(true);
+            sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+            sandbox.stub(fullscreen, 'emit');
+
+            const element = document.createElement('div');
+            sandbox.stub(element, 'focus');
+            fullscreen.fullscreenchangeHandler(element);
+
+            expect(fullscreen.emit).to.have.been.calledWith('enter');
+            expect(element.focus.called).to.be.true;
         });
     });
 
