@@ -522,9 +522,9 @@ class BaseViewer extends EventEmitter {
         this.containerEl.classList.toggle(CLASS_FULLSCREEN);
 
         if (this.containerEl.classList.contains(CLASS_FULLSCREEN)) {
-            this.emit('fullscreenenter');
+            this.emit(VIEWER_EVENT.fullscreenEnter);
         } else {
-            this.emit('fullscreenexit');
+            this.emit(VIEWER_EVENT.fullscreenExit);
         }
 
         if (!fullscreen.isSupported()) {

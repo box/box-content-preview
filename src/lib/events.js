@@ -1,16 +1,18 @@
 // Events emitted by Viewers
 export const VIEWER_EVENT = {
-    download: 'download', // Begin downloading the file.
-    reload: 'reload', // Reload preview.
-    load: 'load', // Preview is finished loading.
-    progressStart: 'progressstart', // Begin using loading indicator.
-    progressEnd: 'progressend', // Stop using loading indicator.
-    notificationShow: 'notificationshow', // Show notification modal.
-    notificationHide: 'notificationhide', // Hide notification modal.
-    mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
-    error: 'error', // When an error occurs.
     default: 'viewerevent', // The default viewer event.
-    metric: 'viewermetric' // A viewer metric.
+    download: 'download', // Begin downloading the file.
+    error: 'error', // When an error occurs.
+    fullscreenEnter: 'fullscreenenter', // When entering fullscreen
+    fullscreenExit: 'fullscreenexit', // When exiting fullscreen
+    load: 'load', // Preview is finished loading.
+    mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
+    metric: 'viewermetric', // A viewer metric.
+    notificationHide: 'notificationhide', // Hide notification modal.
+    notificationShow: 'notificationshow', // Show notification modal.
+    progressEnd: 'progressend', // Stop using loading indicator.
+    progressStart: 'progressstart', // Begin using loading indicator.
+    reload: 'reload' // Reload preview.
 };
 
 // Error codes logged by preview with "preview_error" events
