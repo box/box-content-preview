@@ -536,6 +536,21 @@ describe('lib/viewers/BaseViewer', () => {
             base.onFullscreenToggled();
             expect(base.resize).to.be.called;
         });
+
+        it('should emit the fullscreen events when toggling', () => {
+            const enterCallback = sandbox.stub();
+            const exitCallback = sandbox.stub();
+            base.addListener('fullscreenenter', enterCallback);
+            base.addListener('fullscreenexit', exitCallback);
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.true;
+            expect(enterCallback.called).to.be.true;
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.false;
+            expect(exitCallback.called).to.be.true;
+        });
     });
 
     describe('resize()', () => {

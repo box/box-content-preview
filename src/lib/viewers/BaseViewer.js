@@ -520,6 +520,13 @@ class BaseViewer extends EventEmitter {
      */
     onFullscreenToggled() {
         this.containerEl.classList.toggle(CLASS_FULLSCREEN);
+
+        if (this.containerEl.classList.contains(CLASS_FULLSCREEN)) {
+            this.emit('fullscreenenter');
+        } else {
+            this.emit('fullscreenexit');
+        }
+
         if (!fullscreen.isSupported()) {
             this.containerEl.classList.toggle(CLASS_FULLSCREEN_UNSUPPORTED);
         }
