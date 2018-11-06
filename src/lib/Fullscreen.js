@@ -115,9 +115,6 @@ class Fullscreen extends EventEmitter {
      * @return {void}
      */
     focusFullscreenElement = (el) => {
-        if (!el) {
-            return;
-        }
         // Focus on the fullscreen element so keyboard
         // events are triggered without an extra click
         // If el has target property, then it is an Event
