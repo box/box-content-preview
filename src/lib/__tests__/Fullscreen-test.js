@@ -38,6 +38,18 @@ describe('lib/Fullscreen', () => {
     });
 
     describe('fullscreenchangeHandler()', () => {
+        before(() => {
+            fixture.setBase('src/lib');
+        });
+
+        beforeEach(() => {
+            fixture.load('__tests__/Fullscreen-test.html');
+        });
+
+        afterEach(() => {
+            fixture.cleanup();
+        });
+
         it('should emit enter if we are entering fullscreen and if true fullscreen is supported', () => {
             sandbox.stub(fullscreen, 'isSupported').returns(true);
             sandbox.stub(fullscreen, 'isFullscreen').returns(true);
@@ -81,6 +93,16 @@ describe('lib/Fullscreen', () => {
             fullscreen.fullscreenchangeHandler({});
 
             expect(fullscreen.emit).to.have.been.calledWith('exit');
+        });
+
+        it('should be called only once when the fullscreenchange event is emitted', () => {
+            const spy = sandbox.spy(fullscreen, 'fullscreenchangeHandler');
+            sandbox.stub(fullscreen, 'focusFullscreenElement').returns(true);
+            // rebind the dom listeners to use the spy
+            fullscreen.bindDOMListeners();
+            const event = new Event('webkitfullscreenchange', { bubbles: true });
+            document.getElementById('test-container').dispatchEvent(event);
+            expect(spy).to.be.called.once;
         });
     });
 
