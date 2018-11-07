@@ -1,3 +1,12 @@
+<a name="1.57.0"></a>
+## 1.57.0 (2018-11-07)
+
+* Chore: Remove outline from preview container (#860) ([5d9415e](https://github.com/box/box-content-preview/commit/5d9415e)), closes [#860](https://github.com/box/box-content-preview/issues/860)
+* Update: box-annotations to v3.1.0 (#859) ([64c5806](https://github.com/box/box-content-preview/commit/64c5806)), closes [#859](https://github.com/box/box-content-preview/issues/859)
+* Fix: Add tabindex to preview container (#858) ([a37fdb7](https://github.com/box/box-content-preview/commit/a37fdb7)), closes [#858](https://github.com/box/box-content-preview/issues/858)
+
+
+
 <a name="1.56.0"></a>
 ## 1.56.0 (2018-10-31)
 
