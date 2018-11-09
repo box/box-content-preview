@@ -582,9 +582,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('pause()', () => {
         it('should pause the media when no time parameter is passed', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
+            const currentTime = 10;
             media.mediaEl = {
                 duration: 100,
-                pause: sandbox.stub()
+                pause: sandbox.stub(),
+                currentTime
             };
             media.pauseListener = pauseListener;
             sandbox.stub(media, 'removePauseEventListener');
@@ -592,10 +594,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.pause();
             expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.mediaEl.pause.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('pause');
+            expect(media.emit).to.be.calledWith('pause', {
+                userInitiated: false,
+                time: currentTime
+            });
         });
 
-        it('should emit the current time of the media file being previewed', () => {
+        it('should update userInitiated flag IF the pause has been triggered by user interaction', () => {
             const currentTime = 15.978;
             media.mediaEl = {
                 duration: 100,
@@ -604,8 +609,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             };
             sandbox.stub(media, 'removePauseEventListener');
             sandbox.stub(media, 'emit');
-            media.pause();
-            expect(media.emit).to.be.calledWith('pause', currentTime);
+            media.pause(undefined, true);
+            expect(media.emit).to.be.calledWith('pause', {
+                userInitiated: true,
+                time: currentTime
+            });
         });
 
         it('should add eventListener to pause the media when valid time parameter is passed', () => {
