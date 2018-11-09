@@ -595,6 +595,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.emit).to.be.calledWith('pause');
         });
 
+        it('should emit the current time of the media file being previewed', () => {
+            const currentTime = 15.978;
+            media.mediaEl = {
+                duration: 100,
+                pause: sandbox.stub(),
+                currentTime
+            };
+            sandbox.stub(media, 'removePauseEventListener');
+            sandbox.stub(media, 'emit');
+            media.pause();
+            expect(media.emit).to.be.calledWith('pause', currentTime);
+        });
+
         it('should add eventListener to pause the media when valid time parameter is passed', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {

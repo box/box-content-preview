@@ -599,7 +599,7 @@ class MediaBaseViewer extends BaseViewer {
             this.mediaEl.addEventListener('timeupdate', this.pauseListener);
         } else {
             this.mediaEl.pause();
-            this.emit('pause');
+            this.emit('pause', this.mediaEl.currentTime);
         }
     }
 
