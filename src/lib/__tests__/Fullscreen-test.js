@@ -38,30 +38,47 @@ describe('lib/Fullscreen', () => {
     });
 
     describe('fullscreenchangeHandler()', () => {
+        before(() => {
+            fixture.setBase('src/lib');
+        });
+
+        beforeEach(() => {
+            fixture.load('__tests__/Fullscreen-test.html');
+        });
+
+        afterEach(() => {
+            fixture.cleanup();
+        });
+
         it('should emit enter if we are entering fullscreen and if true fullscreen is supported', () => {
             sandbox.stub(fullscreen, 'isSupported').returns(true);
             sandbox.stub(fullscreen, 'isFullscreen').returns(true);
             sandbox.stub(fullscreen, 'emit');
+            sandbox.stub(fullscreen, 'focusFullscreenElement');
 
             fullscreen.fullscreenchangeHandler({});
 
             expect(fullscreen.emit).to.have.been.calledWith('enter');
+            expect(fullscreen.focusFullscreenElement.called).to.be.true;
         });
 
         it('should emit exit if we are exiting fullscreen and if true fullscreen is supported', () => {
             sandbox.stub(fullscreen, 'isSupported').returns(true);
             sandbox.stub(fullscreen, 'isFullscreen').returns(false);
             sandbox.stub(fullscreen, 'emit');
+            sandbox.stub(fullscreen, 'focusFullscreenElement');
 
             fullscreen.fullscreenchangeHandler({});
 
             expect(fullscreen.emit).to.have.been.calledWith('exit');
+            expect(fullscreen.focusFullscreenElement.called).to.be.false;
         });
 
         it('should emit enter if we are entering fullscreen and if true fullscreen is not supported', () => {
             sandbox.stub(fullscreen, 'isSupported').returns(false);
             sandbox.stub(fullscreen, 'isFullscreen').returns(false);
             sandbox.stub(fullscreen, 'emit');
+            sandbox.stub(fullscreen, 'focusFullscreenElement');
 
             fullscreen.fullscreenchangeHandler({});
 
@@ -80,12 +97,11 @@ describe('lib/Fullscreen', () => {
 
         it('should be called only once when the fullscreenchange event is emitted', () => {
             const spy = sandbox.spy(fullscreen, 'fullscreenchangeHandler');
+            sandbox.stub(fullscreen, 'focusFullscreenElement').returns(true);
             // rebind the dom listeners to use the spy
             fullscreen.bindDOMListeners();
-
-            const event = new Event('webkitfullscreenchange');
-
-            window.document.dispatchEvent(event);
+            const event = new Event('webkitfullscreenchange', { bubbles: true });
+            document.getElementById('test-container').dispatchEvent(event);
             expect(spy).to.be.called.once;
         });
     });
@@ -211,6 +227,27 @@ describe('lib/Fullscreen', () => {
             fullscreen.toggle(element);
 
             expect(fullscreen.fullscreenchangeHandler).to.have.been.calledWith(element);
+        });
+    });
+
+    describe('focusFullscreenElement()', () => {
+        it('should focus the element when element passed in', () => {
+            const element = document.createElement('div');
+            sandbox.stub(element, 'focus');
+
+            fullscreen.focusFullscreenElement(element);
+
+            expect(element.focus.called).to.be.true;
+        });
+
+        it('should focus the element when event is passed in', () => {
+            const element = document.createElement('div');
+            sandbox.stub(element, 'focus');
+            const event = { target: element };
+
+            fullscreen.focusFullscreenElement(event);
+
+            expect(element.focus.called).to.be.true;
         });
     });
 });
