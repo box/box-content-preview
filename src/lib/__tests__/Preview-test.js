@@ -1623,7 +1623,7 @@ describe('lib/Preview', () => {
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), ['ZIP']));
+                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), ['zip']));
             }
         });
 
