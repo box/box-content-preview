@@ -601,8 +601,7 @@ class MediaBaseViewer extends BaseViewer {
         } else {
             this.mediaEl.pause();
             this.emit('pause', {
-                userInitiated,
-                time: this.mediaEl.currentTime
+                userInitiated
             });
         }
     }
