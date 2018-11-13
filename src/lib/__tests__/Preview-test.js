@@ -1617,13 +1617,12 @@ describe('lib/Preview', () => {
         });
 
         it('should throw an unsupported error if there is no loader for general file types', () => {
-            preview.file.extension = 'zip';
             stubs.getLoader.returns(undefined);
 
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), ['zip']));
+                expect(e.message).to.equal(__('error_unsupported'));
             }
         });
 

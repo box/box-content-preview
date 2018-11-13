@@ -22,7 +22,6 @@ import {
     getHeaders,
     findScriptLocation,
     appendQueryParams,
-    replacePlaceholders,
     stripAuthFromString,
     isValidFileId,
     isBoxWebApp,
@@ -1124,9 +1123,7 @@ class Preview extends EventEmitter {
                 message = __('error_account');
             } else {
                 code = ERROR_CODE.UNSUPPORTED_FILE_TYPE;
-                message = this.file.extension
-                    ? replacePlaceholders(__('error_unsupported'), [this.file.extension])
-                    : __('error_unsupported_unknown_type');
+                message = __('error_unsupported');
             }
 
             throw new PreviewError(code, message);
