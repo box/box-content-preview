@@ -1,4 +1,4 @@
-DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
+DOC_STATIC_ASSETS_VERSION=$1 || $(./build/current_version.sh)
 
 # Minify using Google Closure Compiler, options:
 # Output to ECMASCRIPT5 / ES5 (Box supports Chrome, IE11, Firefox, Safari, and newer versions of iOS, Android)
