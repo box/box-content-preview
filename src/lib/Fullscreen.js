@@ -111,24 +111,14 @@ class Fullscreen extends EventEmitter {
      * Focuses the element
      *
      * @private
-     * @param {HTMLElement|Event} elementOrEvent - Fullscreen element or event
      * @return {void}
      */
-    focusFullscreenElement = (elementOrEvent) => {
+    focusFullscreenElement = () => {
         // Focus on the fullscreen element so keyboard
         // events are triggered without an extra click
         // If el has target property, then it is an Event
         // otherwise it is a HTMLElement
-        let element;
-        if (elementOrEvent.target) {
-            // This is an element
-            // On certain browsers (Firefox), the actual target is on the activeElement property of the event target
-            element = elementOrEvent.target.activeElement || elementOrEvent.target;
-        } else {
-            element = elementOrEvent;
-        }
-
-        element.focus();
+        fscreen.fullscreenElement.focus();
     };
 
     /**
