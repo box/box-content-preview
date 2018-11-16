@@ -100,7 +100,7 @@ class Fullscreen extends EventEmitter {
         enter = (this.isSupported() && this.isFullscreen()) || (!this.isSupported() && !this.isFullscreen(el));
 
         if (enter) {
-            this.focusFullscreenElement(el);
+            this.focusFullscreenElement();
             this.emit('enter');
         } else {
             this.emit('exit');
@@ -111,17 +111,12 @@ class Fullscreen extends EventEmitter {
      * Focuses the element
      *
      * @private
-     * @param {HTMLElement|Event} el - Fullscreen element or event
      * @return {void}
      */
-    focusFullscreenElement = (el) => {
+    focusFullscreenElement = () => {
         // Focus on the fullscreen element so keyboard
         // events are triggered without an extra click
-        // If el has target property, then it is an Event
-        // otherwise it is a HTMLElement
-        const element = el.target || el;
-
-        element.focus();
+        fscreen.fullscreenElement.focus();
     };
 
     /**
