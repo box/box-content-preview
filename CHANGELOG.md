@@ -1,3 +1,11 @@
+<a name="1.58.0"></a>
+## 1.58.0 (2018-11-13)
+
+* Update: box-annotations to v3.2.0 (#863) ([18b7832](https://github.com/box/box-content-preview/commit/18b7832)), closes [#863](https://github.com/box/box-content-preview/issues/863)
+* New: Enable PDF Signatures in PDF.js (#853) ([15fc355](https://github.com/box/box-content-preview/commit/15fc355)), closes [#853](https://github.com/box/box-content-preview/issues/853)
+
+
+
 <a name="1.57.0"></a>
 ## 1.57.0 (2018-11-07)
 
