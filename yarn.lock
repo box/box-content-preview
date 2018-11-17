@@ -1519,10 +1519,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.2.0.tgz#0e792f5e8927df2d808d897d26c29d76b3fec9f7"
-  integrity sha512-1m++fHi2yphtkqNcCvJ6NmA4sYhi8maxjH53Id3/k7fuXpBllrWV9o7a6m4a3HxgWQ3vtWUt962qUpnXhoFAbA==
+box-annotations@^2.3.0:
+  version "2.3.0"
+  resolved "https://box.jfrog.io/box/api/npm/boxnpm/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
+  integrity sha1-XKw4Fx9/jZKDZZ4rJDMQ8Z1at9M=
 
 box-locales@^0.0.1:
   version "0.0.1"
