@@ -1,3 +1,11 @@
+<a name="1.58.1"></a>
+## <small>1.58.1 (2018-11-17)</small>
+
+* Fix: Better error message for file of unknown type (#862) ([d46e8ff](https://github.com/box/box-content-preview/commit/d46e8ff)), closes [#862](https://github.com/box/box-content-preview/issues/862)
+* Fix: Downgrade annotations to 2.3.0 ([4904408](https://github.com/box/box-content-preview/commit/4904408))
+
+
+
 <a name="1.58.0"></a>
 ## 1.58.0 (2018-11-13)
 
