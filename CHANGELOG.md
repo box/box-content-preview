@@ -1,3 +1,10 @@
+<a name="1.58.2"></a>
+## <small>1.58.2 (2018-11-20)</small>
+
+* Fix: Focus on correct element when entering fullscreen in Firefox (#864) ([75f70c2](https://github.com/box/box-content-preview/commit/75f70c2)), closes [#864](https://github.com/box/box-content-preview/issues/864)
+
+
+
 <a name="1.58.1"></a>
 ## <small>1.58.1 (2018-11-17)</small>
 
