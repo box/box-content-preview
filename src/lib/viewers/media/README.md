@@ -45,7 +45,7 @@ The DASH viewer fires the following events
 | bandwidthhistory | Gives bandwidth history when the preview is destroyed | {array} bandwidth information |
 | switchhistory | Gives quality switching history when the preview is destroyed | {array} quality switch objects |
 | adaptation | Quality adapts to a change in bandwidth | {number} bandwidth |
-| play | The video plays ||
+| play | The video plays | 1. {boolean} **userInitiated**: true if a user initiated the pause via input |
 | autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
