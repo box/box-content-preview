@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
-import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
+import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
 import Timer from './Timer';
 import { ERROR_CODE, LOAD_METRIC } from './events';
@@ -142,8 +142,8 @@ class RepStatus extends EventEmitter {
                 this.resolve();
                 break;
 
-            case 'none':
-            case 'pending':
+            case STATUS_NONE:
+            case STATUS_PENDING:
                 // If we are doing some logging, log that the file needed conversion
                 if (this.logger) {
                     this.logger.setUnConverted();
@@ -151,10 +151,12 @@ class RepStatus extends EventEmitter {
 
                 this.emit('conversionpending');
 
-                // Check status again after delay
+                // Check status again after delay or
+                // If status is none, request immediately since conversion
+                // won't kick of until representation is requested
                 this.statusTimeout = setTimeout(() => {
                     this.updateStatus();
-                }, STATUS_UPDATE_INTERVAL_MS);
+                }, status === STATUS_NONE ? 0 : STATUS_UPDATE_INTERVAL_MS);
                 break;
 
             default:
