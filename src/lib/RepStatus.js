@@ -153,7 +153,7 @@ class RepStatus extends EventEmitter {
 
                 // Check status again after delay or
                 // If status is none, request immediately since conversion
-                // won't kick of until representation is requested
+                // won't kick off until representation is requested
                 this.statusTimeout = setTimeout(() => {
                     this.updateStatus();
                 }, status === STATUS_NONE ? 0 : STATUS_UPDATE_INTERVAL_MS);
