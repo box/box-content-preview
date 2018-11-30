@@ -1,3 +1,10 @@
+<a name="1.58.3"></a>
+## <small>1.58.3 (2018-11-30)</small>
+
+* Chore: Copy doc assets to new  bundle (#872) ([4c51f42](https://github.com/box/box-content-preview/commit/4c51f42)), closes [#872](https://github.com/box/box-content-preview/issues/872)
+
+
+
 <a name="1.58.2"></a>
 ## <small>1.58.2 (2018-11-20)</small>
 
