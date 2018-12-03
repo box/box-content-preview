@@ -932,7 +932,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Binds listeners for document controls. Overridden.
+     * Binds listeners for document controls
      *
      * @protected
      * @return {void}
