@@ -44,6 +44,7 @@ import FIND_DROP_UP from './arrow_drop_up.svg';
 import CLOSE from './close.svg';
 import SEARCH from './search.svg';
 import PRINT_CHECKMARK from './print_checkmark.svg';
+import THUMBNAILS_TOGGLE from './thumbnails-toggle-icon.svg';
 
 export const ICON_DROP_DOWN = DROP_DOWN;
 export const ICON_DROP_UP = DROP_UP;
@@ -68,6 +69,7 @@ export const ICON_FIND_DROP_UP = FIND_DROP_UP;
 export const ICON_CLOSE = CLOSE;
 export const ICON_SEARCH = SEARCH;
 export const ICON_PRINT_CHECKMARK = PRINT_CHECKMARK;
+export const ICON_THUMBNAILS_TOGGLE = THUMBNAILS_TOGGLE;
 
 const FILE_LOADING_ICONS = {
     FILE_AUDIO,

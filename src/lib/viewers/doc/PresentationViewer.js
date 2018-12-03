@@ -2,7 +2,6 @@ import throttle from 'lodash/throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -175,30 +174,6 @@ class PresentationViewer extends DocBaseViewer {
             this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
-    }
-
-    /**
-     * Adds event listeners for presentation controls
-     *
-     * @override
-     * @return {void}
-     * @protected
-     */
-    bindControlListeners() {
-        super.bindControlListeners();
-
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
-
-        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
-
-        this.controls.add(
-            __('enter_fullscreen'),
-            this.toggleFullscreen,
-            'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
-        );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**
