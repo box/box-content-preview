@@ -1908,6 +1908,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         beforeEach(() => {
             docBase.pdfViewer = {
                 pagesCount: 4,
+                currentPageNumber: 1,
                 cleanup: sandbox.stub()
             };
 
@@ -1945,7 +1946,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ICON_ZOOM_IN
             );
 
-            expect(docBase.pageControls.add).to.be.called;
+            expect(docBase.pageControls.add).to.be.calledWith(1, 4);
 
             expect(docBase.controls.add).to.be.calledWith(
                 __('enter_fullscreen'),
