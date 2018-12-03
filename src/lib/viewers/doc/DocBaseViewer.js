@@ -29,7 +29,14 @@ import {
     getDistance,
     getClosestPageToPinch
 } from '../../util';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import {
+    ICON_PRINT_CHECKMARK,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IN,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_THUMBNAILS_TOGGLE
+} from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC } from '../../events';
 import Timer from '../../Timer';
@@ -83,6 +90,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
+        this.toggleThumbnails = this.toggleThumbnails.bind(this);
     }
 
     /**
@@ -971,12 +979,31 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Binds listeners for document controls. Overridden.
+     * Binds listeners for document controls
      *
      * @protected
      * @return {void}
      */
-    bindControlListeners() {}
+    bindControlListeners() {
+        this.controls.add(
+            __('toggle_thumbnails'),
+            this.toggleThumbnails,
+            'bp-toggle-thumbnails-icon',
+            ICON_THUMBNAILS_TOGGLE
+        );
+        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
+
+        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    }
 
     /**
      * Handler for 'pagesinit' event.
@@ -1237,6 +1264,14 @@ class DocBaseViewer extends BaseViewer {
         this.pinchScale = 1;
         this.pinchPage = null;
     }
+
+    /**
+     * Callback when the toggle thumbnail sidebar button is clicked.
+     *
+     * @protected
+     * @return {void}
+     */
+    toggleThumbnails() {}
 }
 
 export default DocBaseViewer;
