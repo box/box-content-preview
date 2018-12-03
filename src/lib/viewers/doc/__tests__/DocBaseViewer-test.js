@@ -21,7 +21,14 @@ import {
     ENCODING_TYPES
 } from '../../../constants';
 
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import {
+    ICON_PRINT_CHECKMARK,
+    ICON_THUMBNAILS_TOGGLE,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IN,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -1894,6 +1901,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should return undefined if no unit and value is passed', () => {
             const startAt = {};
             expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
+    });
+
+    describe('bindControlListeners()', () => {
+        beforeEach(() => {
+            docBase.pdfViewer = {
+                pagesCount: 4,
+                cleanup: sandbox.stub()
+            };
+
+            docBase.controls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pageControls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+        });
+
+        it('should add the correct controls', () => {
+            docBase.bindControlListeners();
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('toggle_thumbnails'),
+                docBase.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
+            );
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                docBase.zoomOut,
+                'bp-doc-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
+            expect(docBase.controls.add).to.be.calledWith(
+                __('zoom_in'),
+                docBase.zoomIn,
+                'bp-doc-zoom-in-icon',
+                ICON_ZOOM_IN
+            );
+
+            expect(docBase.pageControls.add).to.be.called;
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('enter_fullscreen'),
+                docBase.toggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
+            expect(docBase.controls.add).to.be.calledWith(
+                __('exit_fullscreen'),
+                docBase.toggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
         });
     });
 });

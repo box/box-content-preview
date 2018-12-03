@@ -296,52 +296,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         });
     });
 
-    describe('bindControlListeners()', () => {
-        beforeEach(() => {
-            presentation.pdfViewer = {
-                pagesCount: 4,
-                currentPageNumber: 1,
-                cleanup: sandbox.stub()
-            };
-
-            presentation.pageControls = {
-                add: sandbox.stub(),
-                removeListener: sandbox.stub()
-            };
-        });
-
-        it('should add the correct controls', () => {
-            presentation.bindControlListeners();
-            expect(presentation.controls.add).to.be.calledWith(
-                __('zoom_out'),
-                presentation.zoomOut,
-                'bp-exit-zoom-out-icon',
-                ICON_ZOOM_OUT
-            );
-            expect(presentation.controls.add).to.be.calledWith(
-                __('zoom_in'),
-                presentation.zoomIn,
-                'bp-enter-zoom-in-icon',
-                ICON_ZOOM_IN
-            );
-
-            expect(presentation.pageControls.add).to.be.calledWith(1, 4);
-
-            expect(presentation.controls.add).to.be.calledWith(
-                __('enter_fullscreen'),
-                presentation.toggleFullscreen,
-                'bp-enter-fullscreen-icon',
-                ICON_FULLSCREEN_IN
-            );
-            expect(presentation.controls.add).to.be.calledWith(
-                __('exit_fullscreen'),
-                presentation.toggleFullscreen,
-                'bp-exit-fullscreen-icon',
-                ICON_FULLSCREEN_OUT
-            );
-        });
-    });
-
     describe('mobileScrollHandler()', () => {
         beforeEach(() => {
             stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
