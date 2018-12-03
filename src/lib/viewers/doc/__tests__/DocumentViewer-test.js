@@ -4,13 +4,6 @@ import DocBaseViewer from '../DocBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_ZOOM_IN,
-    ICON_ZOOM_OUT,
-    ICON_THUMBNAILS_TOGGLE
-} from '../../../icons/icons';
 
 const sandbox = sinon.sandbox.create();
 

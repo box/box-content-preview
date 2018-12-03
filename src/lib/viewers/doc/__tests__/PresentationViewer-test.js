@@ -5,8 +5,6 @@ import DocBaseViewer from '../DocBaseViewer';
 import PresentationPreloader from '../PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
 
-import { ICON_ZOOM_OUT, ICON_ZOOM_IN, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
-
 const sandbox = sinon.sandbox.create();
 
 let containerEl;
