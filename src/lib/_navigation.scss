@@ -17,12 +17,12 @@ $navigationBtnWidth: 50px;
     text-decoration: none;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1;
 
     // Override default animations to only animate opacity since width animation to auto doesn't work
     transition-property: opacity;
     white-space: nowrap;
     width: $navigationBtnWidth;
+    z-index: 1;
 
     &:hover,
     &:focus {
