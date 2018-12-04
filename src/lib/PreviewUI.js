@@ -21,7 +21,7 @@ import {
     SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
     SELECTOR_BOX_PREVIEW_LOGO_DEFAULT,
-    SELECTOR_BOX_PREVIEW,
+    SELECTOR_BOX_PREVIEW_BODY,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT
 } from './constants';
@@ -109,7 +109,7 @@ class PreviewUI {
         insertTemplate(this.container, shellTemplate);
 
         this.container = this.container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
-        this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
+        this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW_BODY);
 
         // Setup the header, buttons, and theme
         if (options.header !== 'none') {

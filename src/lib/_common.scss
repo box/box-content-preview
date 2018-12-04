@@ -34,7 +34,8 @@ $header-height: 48px;
 }
 
 .bp-header-container:not(.bp-is-hidden) {
-    + .bp:not(.bp-is-fullscreen) {
+    + .bp:not(.bp-is-fullscreen),
+    + .bp-body:not(.bp-is-fullscreen) {
         top: $header-height;
     }
 }
@@ -117,34 +118,51 @@ $header-height: 48px;
     }
 }
 
-.bp {
-    align-items: center;
-    background-color: $ffive;
-    border: 0 none;
+.bp-body {
     bottom: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     left: 0;
-    margin: 0;
-    outline: none;
-    -webkit-overflow-scrolling: touch;
-    padding: 0;
     position: absolute;
     right: 0;
     top: 0;
 
-    // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
-    &.bp-fullscreen-unsupported {
-        bottom: 0;
-        left: 0;
-        position: fixed;
-        right: 0;
-        top: 0;
+    .bp-thumbnails-container {
+        background-color: $ffive;
+        border-right: solid 1px $seesee;
+        width: 180px;
     }
 
-    &.bp-dark {
-        background-color: $black;
+    .bp {
+        align-items: center;
+        background-color: $ffive;
+        border: 0 none;
+        bottom: 0;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        left: 0;
+        margin: 0;
+        outline: none;
+        -webkit-overflow-scrolling: touch;
+        padding: 0;
+        position: relative;
+        right: 0;
+        top: 0;
+
+        // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
+        &.bp-fullscreen-unsupported {
+            bottom: 0;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
+
+        &.bp-dark {
+            background-color: $black;
+        }
     }
 }
 

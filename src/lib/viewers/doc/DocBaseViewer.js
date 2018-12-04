@@ -99,6 +99,8 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
+        this.thumbnailsSidebarEl = this.options.container.querySelector('.bp-thumbnails-container');
+
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
@@ -1235,7 +1237,11 @@ class DocBaseViewer extends BaseViewer {
      * @protected
      * @return {void}
      */
-    toggleThumbnails() {}
+    toggleThumbnails() {
+        this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
+
+        this.resize();
+    }
 }
 
 export default DocBaseViewer;
