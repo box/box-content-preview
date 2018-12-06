@@ -103,8 +103,12 @@ $header-height: 48px;
         fill: $white;
     }
 
-    .bp {
+    .bp-body {
         background-color: $sunset-grey;
+
+        .bp-thumbnails-container {
+            border-right-color: $twos;
+        }
     }
 
     .bp-error,
@@ -119,6 +123,7 @@ $header-height: 48px;
 }
 
 .bp-body {
+    background-color: $ffive;
     bottom: 0;
     display: flex;
     flex-direction: row;
@@ -128,28 +133,22 @@ $header-height: 48px;
     top: 0;
 
     .bp-thumbnails-container {
-        background-color: $ffive;
         border-right: solid 1px $seesee;
-        width: 180px;
+        flex: 0 0 180px;
     }
 
     .bp {
         align-items: center;
-        background-color: $ffive;
         border: 0 none;
-        bottom: 0;
         display: flex;
-        flex: 1;
+        flex: 1 1 100%;
         flex-direction: column;
         justify-content: center;
-        left: 0;
         margin: 0;
         outline: none;
         -webkit-overflow-scrolling: touch;
         padding: 0;
         position: relative;
-        right: 0;
-        top: 0;
 
         // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
         &.bp-fullscreen-unsupported {

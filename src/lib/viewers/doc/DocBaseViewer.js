@@ -19,7 +19,8 @@ import {
     PRELOAD_REP_NAME,
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES
+    ENCODING_TYPES,
+    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import {
@@ -99,8 +100,6 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.thumbnailsSidebarEl = this.options.container.querySelector('.bp-thumbnails-container');
-
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
@@ -122,6 +121,8 @@ class DocBaseViewer extends BaseViewer {
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
+
+        this.thumbnailsSidebarEl = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
     }
 
     /**
@@ -1238,6 +1239,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     toggleThumbnails() {
+        if (!this.thumbnailsSidebarEl) {
+            return;
+        }
+
         this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
 
         this.resize();

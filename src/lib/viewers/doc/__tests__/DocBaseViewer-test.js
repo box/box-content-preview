@@ -18,7 +18,8 @@ import {
     STATUS_PENDING,
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES
+    ENCODING_TYPES,
+    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../../constants';
 
 import {
@@ -1960,6 +1961,31 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 'bp-exit-fullscreen-icon',
                 ICON_FULLSCREEN_OUT
             );
+        });
+    });
+
+    describe('toggleThumbnails()', () => {
+        beforeEach(() => {
+            sandbox.stub(docBase, 'resize');
+        });
+
+        it('should do nothing if thumbnails sidebar does not exit', () => {
+            docBase.thumbnailsSidebarEl = undefined;
+
+            docBase.toggleThumbnails();
+
+            expect(docBase.resize).not.to.be.called;
+        });
+
+        it('should toggle the bp-is-hidden class and resize the viewer', () => {
+            const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
+            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+
+            docBase.toggleThumbnails();
+
+            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(docBase.resize).to.be.called;
         });
     });
 });

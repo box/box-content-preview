@@ -34,6 +34,7 @@ export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
+export const CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER = 'bp-thumbnails-container';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
@@ -69,6 +70,7 @@ export const SELECTOR_BOX_PREVIEW_LOGO_CUSTOM = `.${CLASS_BOX_PREVIEW_LOGO_CUSTO
 export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFAULT}`;
 export const SELECTOR_BOX_PREVIEW_PROGRESS_BAR = `.${CLASS_BOX_PREVIEW_PROGRESS_BAR}`;
 export const SELECTOR_BOX_PREVIEW_NOTIFICATION = `.${CLASS_BOX_PREVIEW_NOTIFICATION}`;
+export const SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER = `.${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_PREVIEW = 'can_preview';
