@@ -18,18 +18,18 @@ import {
     replacePlaceholders
 } from '../util';
 import {
-    CLASS_FULLSCREEN,
-    CLASS_FULLSCREEN_UNSUPPORTED,
-    CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    CLASS_FULLSCREEN_UNSUPPORTED,
+    CLASS_FULLSCREEN,
+    CLASS_HIDDEN,
     FILE_OPTION_START,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
-    STATUS_VIEWABLE,
-    SELECTOR_BOX_PREVIEW_CONTENT
+    STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -142,7 +142,7 @@ class BaseViewer extends EventEmitter {
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
-        this.insertViewerWrapper = this.insertViewerWrapper.bind(this);
+        this.createViewer = this.createViewer.bind(this);
     }
 
     /**
@@ -1097,12 +1097,12 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Method to insert the viewer wrapper before any other children
+     * Method to insert the viewer wrapper
      *
-     * @param {Element} element Element to be inserted into the DOM
-     * @return {Element} inserted element
+     * @param {HTMLElement} element Element to be inserted into the DOM
+     * @return {HTMLElement} inserted element
      */
-    insertViewerWrapper(element) {
+    createViewer(element) {
         if (!element) {
             return null;
         }
@@ -1113,7 +1113,10 @@ class BaseViewer extends EventEmitter {
         if (!firstChildEl) {
             addedElement = this.containerEl.appendChild(element);
         } else {
-            addedElement = firstChildEl.parentNode.insertBefore(element, firstChildEl);
+            // Need to insert the viewer wrapper as the first element in the container
+            // so that we can perserve the natural stacking context to have the prev/next
+            // file buttons on top of the previewed content
+            addedElement = this.containerEl.insertBefore(element, firstChildEl);
         }
 
         return addedElement;

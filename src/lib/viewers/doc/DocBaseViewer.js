@@ -100,7 +100,7 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.insertViewerWrapper(document.createElement('div'));
+        this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
         if (Browser.getName() === 'Safari') {
@@ -122,10 +122,9 @@ class DocBaseViewer extends BaseViewer {
 
         this.startPageNum = this.getStartPage(this.startAt);
 
-        const thumbnailsSidebarEl = document.createElement('div');
-        thumbnailsSidebarEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER, CLASS_HIDDEN);
-        this.containerEl.parentNode.insertBefore(thumbnailsSidebarEl, this.containerEl);
-        this.thumbnailsSidebarEl = thumbnailsSidebarEl;
+        this.thumbnailsSidebarEl = document.createElement('div');
+        this.thumbnailsSidebarEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER, CLASS_HIDDEN);
+        this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
     }
 
     /**

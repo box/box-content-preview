@@ -171,7 +171,7 @@ class OfficeViewer extends BaseViewer {
     setupIframe() {
         const { appHost, apiHost, file, sharedLink, location: { locale } } = this.options;
         const iframeEl = this.createIframeElement();
-        this.insertViewerWrapper(iframeEl);
+        this.createViewer(iframeEl);
 
         if (this.platformSetup) {
             const formEl = this.createFormElement(apiHost, file.id, sharedLink, locale);

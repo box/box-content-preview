@@ -9,7 +9,7 @@ class IFrameViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.iframeEl = this.insertViewerWrapper(document.createElement('iframe'));
+        this.iframeEl = this.createViewer(document.createElement('iframe'));
         this.iframeEl.setAttribute('width', '100%');
         this.iframeEl.setAttribute('height', '100%');
         this.iframeEl.setAttribute('frameborder', 0);

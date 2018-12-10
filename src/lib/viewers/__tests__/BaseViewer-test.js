@@ -1395,16 +1395,16 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('insertViewerWrapper()', () => {
+    describe('createViewer()', () => {
         it('should return null if no element is provided', () => {
-            expect(base.insertViewerWrapper()).to.be.null;
+            expect(base.createViewer()).to.be.null;
         });
 
         it('should append the element if containerEl has no first child', () => {
             base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
             const newDiv = document.createElement('div');
             sandbox.stub(base.containerEl, 'appendChild');
-            base.insertViewerWrapper(newDiv);
+            base.createViewer(newDiv);
             expect(base.containerEl.appendChild).to.be.called;
         });
 
@@ -1417,7 +1417,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base.containerEl, 'insertBefore');
             const newDiv = document.createElement('div');
             newDiv.className = 'new-div';
-            base.insertViewerWrapper(newDiv);
+            base.createViewer(newDiv);
             expect(base.containerEl.insertBefore).to.be.called;
         });
     });
