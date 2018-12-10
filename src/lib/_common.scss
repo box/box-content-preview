@@ -104,10 +104,6 @@ $header-height: 48px;
 
     .bp {
         background-color: $sunset-grey;
-
-        .bp-thumbnails-container {
-            border-right-color: $twos;
-        }
     }
 
     .bp-error,
@@ -148,11 +144,6 @@ $header-height: 48px;
 
     &.bp-dark {
         background-color: $black;
-    }
-
-    .bp-thumbnails-container {
-        border-right: solid 1px $seesee;
-        flex: 0 0 180px;
     }
 
     .bp-content {
