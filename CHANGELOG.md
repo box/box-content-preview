@@ -1,3 +1,61 @@
+<a name="1.60.0"></a>
+## 1.60.0 (2018-11-28)
+
+* Fix: Add NodeList.forEach polyfill for IE (#869) ([8f3a024](https://github.com/box/box-content-preview/commit/8f3a024)), closes [#869](https://github.com/box/box-content-preview/issues/869)
+* Fix: Don't wait when rep status is none (#871) ([893e724](https://github.com/box/box-content-preview/commit/893e724)), closes [#871](https://github.com/box/box-content-preview/issues/871)
+* Mojito: Update translations (#865) ([258f3f5](https://github.com/box/box-content-preview/commit/258f3f5)), closes [#865](https://github.com/box/box-content-preview/issues/865)
+* Chore: Update media player docs to reflect userInitiated change (#870) ([1a71790](https://github.com/box/box-content-preview/commit/1a71790)), closes [#870](https://github.com/box/box-content-preview/issues/870)
+
+
+
+<a name="1.59.0"></a>
+## 1.59.0 (2018-11-20)
+
+* Update: box-annotations to 3.3.0 (#867) ([712a3db](https://github.com/box/box-content-preview/commit/712a3db)), closes [#867](https://github.com/box/box-content-preview/issues/867)
+* Chore: Emit pause event with flag if initiated by user  (#861) ([8d7091c](https://github.com/box/box-content-preview/commit/8d7091c)), closes [#861](https://github.com/box/box-content-preview/issues/861)
+* Fix: Better error message for file of unknown type (#862) ([de1246a](https://github.com/box/box-content-preview/commit/de1246a)), closes [#862](https://github.com/box/box-content-preview/issues/862)
+* Fix: Downgrade annotations to 2.3.0 (#866) ([0589f23](https://github.com/box/box-content-preview/commit/0589f23)), closes [#866](https://github.com/box/box-content-preview/issues/866)
+* Fix: Focus on correct element when entering fullscreen in Firefox (#864) ([3d7cf79](https://github.com/box/box-content-preview/commit/3d7cf79)), closes [#864](https://github.com/box/box-content-preview/issues/864)
+
+
+
+<a name="1.58.0"></a>
+## 1.58.0 (2018-11-13)
+
+* Update: box-annotations to v3.2.0 (#863) ([18b7832](https://github.com/box/box-content-preview/commit/18b7832)), closes [#863](https://github.com/box/box-content-preview/issues/863)
+* New: Enable PDF Signatures in PDF.js (#853) ([15fc355](https://github.com/box/box-content-preview/commit/15fc355)), closes [#853](https://github.com/box/box-content-preview/issues/853)
+
+
+
+<a name="1.57.0"></a>
+## 1.57.0 (2018-11-07)
+
+* Chore: Remove outline from preview container (#860) ([5d9415e](https://github.com/box/box-content-preview/commit/5d9415e)), closes [#860](https://github.com/box/box-content-preview/issues/860)
+* Update: box-annotations to v3.1.0 (#859) ([64c5806](https://github.com/box/box-content-preview/commit/64c5806)), closes [#859](https://github.com/box/box-content-preview/issues/859)
+* Fix: Add tabindex to preview container (#858) ([a37fdb7](https://github.com/box/box-content-preview/commit/a37fdb7)), closes [#858](https://github.com/box/box-content-preview/issues/858)
+
+
+
+<a name="1.56.0"></a>
+## 1.56.0 (2018-10-31)
+
+* Chore: Add test to check PDFjs headers to avoid preflight (#855) ([d8077f5](https://github.com/box/box-content-preview/commit/d8077f5)), closes [#855](https://github.com/box/box-content-preview/issues/855)
+* Chore: Enable PDF signatures in future builds of PDF.js (#852) ([4d61afa](https://github.com/box/box-content-preview/commit/4d61afa)), closes [#852](https://github.com/box/box-content-preview/issues/852)
+* Chore: Upgrade Box Annotations to v3.0.0 (#856) ([3d4bd9e](https://github.com/box/box-content-preview/commit/3d4bd9e)), closes [#856](https://github.com/box/box-content-preview/issues/856)
+* Fix: Prevent extra multi image page padding added by preview consumers (#854) ([3f8ee16](https://github.com/box/box-content-preview/commit/3f8ee16)), closes [#854](https://github.com/box/box-content-preview/issues/854)
+
+
+
+<a name="1.55.0"></a>
+## 1.55.0 (2018-10-16)
+
+* Update: box-annotations to v2.3.0 (#851) ([ed4d81e](https://github.com/box/box-content-preview/commit/ed4d81e)), closes [#851](https://github.com/box/box-content-preview/issues/851)
+* Fix: Adding annotations back to MultiImageViewer (#847) ([6e0ecb0](https://github.com/box/box-content-preview/commit/6e0ecb0)), closes [#847](https://github.com/box/box-content-preview/issues/847)
+* Fix: Pass shaka data to error detail so it can be logged (#848) ([8fdd344](https://github.com/box/box-content-preview/commit/8fdd344)), closes [#848](https://github.com/box/box-content-preview/issues/848)
+* Fix: resize preload in document viewer (#850) ([d29afa6](https://github.com/box/box-content-preview/commit/d29afa6)), closes [#850](https://github.com/box/box-content-preview/issues/850)
+
+
+
 <a name="1.54.0"></a>
 ## 1.54.0 (2018-10-09)
 

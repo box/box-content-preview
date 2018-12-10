@@ -36,6 +36,7 @@ export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
+export const CLASS_MULTI_IMAGE_PAGE = 'bp-multi-image-page';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_TRANSPARENT = 'bp-is-transparent';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
@@ -77,9 +78,10 @@ export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'jpg';
 
 export const STATUS_ERROR = 'error';
+export const STATUS_NONE = 'none';
+export const STATUS_PENDING = 'pending';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_VIEWABLE = 'viewable';
-export const STATUS_PENDING = 'pending';
 
 // X-Rep-Hints for Representations API
 export const X_REP_HINT_BASE = '[3d][pdf][text][mp3]';
@@ -95,7 +97,7 @@ export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pd
 
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in karma.conf.js, which is needed for tests
-export const DOC_STATIC_ASSETS_VERSION = '1.17.0';
+export const DOC_STATIC_ASSETS_VERSION = '1.60.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '1.33.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';

@@ -35,3 +35,11 @@ echo "--------------------------------------------------------------------------
 echo "Decreasing # of cached pages on mobile web"
 echo "-----------------------------------------------------------------------------------"
 sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.js
+
+# Deletes code hiding PDF signatures.
+# For preview purposes, it is acceptable to show signatures without verifying them.
+echo "-----------------------------------------------------------------------------------"
+echo "Enabling PDF signatures"
+echo "-----------------------------------------------------------------------------------"
+# Deletes a block of code that starts with `if (data.fieldType === 'Sig') {``, and ends with `}`
+sed -e "/if (data.fieldType === 'Sig') {/,/}/d" -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.js

@@ -583,10 +583,11 @@ class MediaBaseViewer extends BaseViewer {
      * Pause media
      *
      * @param {number} time - time at which media is paused
+     * @param {boolean} [userInitiated] - True if user input initiated the pause
      * @emits pause
      * @return {void}
      */
-    pause(time) {
+    pause(time, userInitiated = false) {
         const hasValidTime = this.isValidTime(time);
         // Remove eventListener because segment completed playing or user paused manually
         this.removePauseEventListener();
@@ -599,7 +600,9 @@ class MediaBaseViewer extends BaseViewer {
             this.mediaEl.addEventListener('timeupdate', this.pauseListener);
         } else {
             this.mediaEl.pause();
-            this.emit('pause');
+            this.emit('pause', {
+                userInitiated
+            });
         }
     }
 
@@ -613,7 +616,7 @@ class MediaBaseViewer extends BaseViewer {
         if (this.mediaEl.paused) {
             this.play();
         } else {
-            this.pause();
+            this.pause(undefined, true);
         }
     }
 

@@ -2,7 +2,7 @@ import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
 import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE } from '../../constants';
 import { pageNumberFromScroll } from '../../util';
 
 const PADDING_BUFFER = 100;
@@ -22,6 +22,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.scrollHandler = this.scrollHandler.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
     }
 
     /**
@@ -81,18 +82,28 @@ class MultiImageViewer extends ImageBaseViewer {
 
         return this.getRepStatus()
             .getPromise()
-            .then(() => {
-                const template = this.options.representation.content.url_template;
-                this.imageUrls = this.constructImageUrls(template);
-
-                // Start load timer
-                this.startLoadTimer();
-
-                this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
-
-                this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
-            })
+            .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Loads the multipart image for viewing
+     *
+     * @override
+     * @return {void}
+     */
+    handleAssetAndRepLoad() {
+        const template = this.options.representation.content.url_template;
+        this.imageUrls = this.constructImageUrls(template);
+
+        // Start load timer
+        this.startLoadTimer();
+
+        this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
+
+        this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
+
+        super.handleAssetAndRepLoad();
     }
 
     /**
@@ -132,7 +143,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         // Set page number. Page is index + 1.
         this.singleImageEls[index].setAttribute('data-page-number', index + 1);
-        this.singleImageEls[index].classList.add('page');
+        this.singleImageEls[index].classList.add(CLASS_MULTI_IMAGE_PAGE);
 
         this.singleImageEls[index].src = imageUrl;
     }

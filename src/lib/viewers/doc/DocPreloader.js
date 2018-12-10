@@ -38,6 +38,9 @@ class DocPreloader extends EventEmitter {
     /** @property {HTMLElement} - Preload overlay element */
     overlayEl;
 
+    /** @property {Object} - The EXIF data for the PDF */
+    pdfData;
+
     /** @property {HTMLElement} - Preload container element */
     preloadEl;
 
@@ -230,9 +233,9 @@ class DocPreloader extends EventEmitter {
         // Calculate pdf width, height, and number of pages from EXIF if possible
         return this.readEXIF(this.imageEl)
             .then((pdfData) => {
-                const { pdfWidth, pdfHeight, numPages } = pdfData;
-                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
+                this.pdfData = pdfData;
+                const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
+                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(pdfData.numPages, NUM_PAGES_MAX));
 
                 // Otherwise, use the preload image's natural dimensions as a base to scale from
             })
@@ -242,6 +245,40 @@ class DocPreloader extends EventEmitter {
                 this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
             });
     };
+
+    /**
+     * Gets the scaled width and height from the EXIF data
+     *
+     * @param {Object} pdfData - the EXIF data from the image
+     * @return {Object} the scaled width and height the
+     */
+    getScaledWidthAndHeight(pdfData) {
+        const { pdfWidth, pdfHeight } = pdfData;
+        const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+
+        return {
+            scaledWidth,
+            scaledHeight
+        };
+    }
+
+    /**
+     * Resizes the preload and placeholder elements
+     *
+     * @return {void}
+     */
+    resize() {
+        if (!this.pdfData || !this.preloadEl) {
+            return;
+        }
+
+        const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(this.pdfData);
+        // Scale preload and placeholder elements
+        const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_CONTENT);
+        for (let i = 0; i < preloadEls.length; i++) {
+            setDimensions(preloadEls[i], scaledWidth, scaledHeight);
+        }
+    }
 
     /**
      * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.

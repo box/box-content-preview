@@ -39,6 +39,18 @@ let docBase;
 let containerEl;
 let stubs = {};
 
+const STANDARD_HEADERS = [
+    'Accept',
+    'Accept-Language',
+    'Content-Language',
+    'Content-Type',
+    'DPR',
+    'Downlink',
+    'Save-Data',
+    'Viewport-Width',
+    'Width'
+];
+
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
@@ -419,13 +431,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.setup).to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
                 expect(docBase.handleAssetAndRepLoad).to.be.called;
-                expect(docBase.loadBoxAnnotations).to.be.called;
             });
         });
     });
 
     describe('handleAssetAndRepLoad', () => {
-        it('should setup pdfjs, init viewer, print, and find', () => {
+        it('should setup pdfjs, init viewer, print, and find', (done) => {
             const url = 'foo';
             docBase.pdfUrl = url;
             docBase.pdfViewer = {
@@ -436,6 +447,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
             const initPrintStub = sandbox.stub(docBase, 'initPrint');
             const initFindStub = sandbox.stub(docBase, 'initFind');
+            const loadBoxAnnotations = sandbox.stub(docBase, 'loadBoxAnnotations').returns(Promise.resolve());
+            const createAnnotator = sandbox.stub(docBase, 'createAnnotator').returns(
+                new Promise((resolve) => {
+                    resolve();
+                    done();
+                })
+            );
 
             docBase.handleAssetAndRepLoad();
 
@@ -443,6 +461,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
             expect(initPrintStub).to.be.called;
             expect(initFindStub).to.be.called;
+            expect(loadBoxAnnotations).to.be.called;
+            expect(createAnnotator).to.be.called;
         });
     });
 
@@ -924,6 +944,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        it('should avoid preflight requests by not adding non-standard headers', (done) => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            // Excluding IOS for If-None-Match cache busting
+            sandbox.stub(Browser, 'isIOS').returns(false);
+            sandbox.stub(PDFJS, 'getDocument').callsFake((docInitParams) => {
+                return new Promise(() => {
+                    const { httpHeaders = {} } = docInitParams;
+                    const headerKeys = Object.keys(httpHeaders);
+
+                    const containsNonStandardHeader = headerKeys.some((header) => {
+                        return !STANDARD_HEADERS.includes(header);
+                    });
+
+                    expect(containsNonStandardHeader).to.be.false;
+                    done();
+                });
+            });
+
+            return docBase.initViewer('');
+        });
+
         it('should append encoding query parameter for gzip content when range requests are disabled', () => {
             // en-US allows for disabled range requests
             docBase.options.location = {
@@ -1025,6 +1068,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should do nothing if the page views are not ready', () => {
             docBase.pdfViewer.pageViewsReady = false;
             docBase.resize();
+            expect(BaseViewer.prototype.resize).to.not.be.called;
+        });
+
+        it('should resize the preload', () => {
+            docBase.pdfViewer = null;
+            docBase.preloader = {
+                resize: sandbox.stub()
+            };
+            docBase.resize();
+            expect(docBase.preloader.resize).to.be.called;
             expect(BaseViewer.prototype.resize).to.not.be.called;
         });
 

@@ -592,7 +592,22 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.pause();
             expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.mediaEl.pause.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('pause');
+            expect(media.emit).to.be.calledWith('pause', {
+                userInitiated: false
+            });
+        });
+
+        it('should update userInitiated flag IF the pause has been triggered by user interaction', () => {
+            media.mediaEl = {
+                duration: 100,
+                pause: sandbox.stub()
+            };
+            sandbox.stub(media, 'removePauseEventListener');
+            sandbox.stub(media, 'emit');
+            media.pause(undefined, true);
+            expect(media.emit).to.be.calledWith('pause', {
+                userInitiated: true
+            });
         });
 
         it('should add eventListener to pause the media when valid time parameter is passed', () => {

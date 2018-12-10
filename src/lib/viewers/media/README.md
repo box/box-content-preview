@@ -47,7 +47,7 @@ The DASH viewer fires the following events
 | adaptation | Quality adapts to a change in bandwidth | {number} bandwidth |
 | play | The video plays ||
 | autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
-| pause | The video pauses ||
+| pause | The video pauses | 1. {boolean} **userInitiated**: true if a user initiated the pause via input |
 | seeked | The video skips to a time | {number} time |
 | assetsloaded | The viewer's third party assets have loaded ||
 

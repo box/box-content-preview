@@ -2,6 +2,7 @@
 import MultiImageViewer from '../MultiImageViewer';
 import PageControls from '../../../PageControls';
 import fullscreen from '../../../Fullscreen';
+import { CLASS_MULTI_IMAGE_PAGE } from '../../../constants';
 import BaseViewer from '../../BaseViewer';
 import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
@@ -226,7 +227,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.singleImageEls = [stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
-            expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
+            expect(stubs.singleImageEl.classList.add).to.be.calledWith(CLASS_MULTI_IMAGE_PAGE);
         });
     });
 

@@ -250,7 +250,7 @@ describe('lib/RepStatus', () => {
             expect(repStatus.emit).to.be.calledWith('conversionpending');
         });
 
-        it('should update status after a timeout', () => {
+        it('should update status after a timeout and update interval when pending', () => {
             const clock = sinon.useFakeTimers();
             repStatus.logger = false;
             sandbox.mock(repStatus).expects('updateStatus');
@@ -258,6 +258,17 @@ describe('lib/RepStatus', () => {
 
             repStatus.handleResponse();
             clock.tick(STATUS_UPDATE_INTERVAL_MS + 1);
+            clock.restore();
+        });
+
+        it('should update status immediately after a timeout when none', () => {
+            const clock = sinon.useFakeTimers();
+            repStatus.logger = false;
+            sandbox.mock(repStatus).expects('updateStatus');
+            repStatus.representation.status.state = 'none';
+
+            repStatus.handleResponse();
+            clock.tick(1);
             clock.restore();
         });
 

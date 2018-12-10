@@ -1,6 +1,6 @@
 {
   "name": "box-content-preview",
-  "version": "1.54.0",
+  "version": "1.60.0",
   "description": "Box Content Preview UI Element",
   "author": "Box (https://www.box.com/)",
   "license": "SEE LICENSE IN LICENSE",
@@ -24,7 +24,7 @@
     "babel-preset-es2015": "^6.24.0",
     "babel-preset-es2016": "^6.24.1",
     "babel-preset-react": "^6.23.0",
-    "box-annotations": "^2.2.0",
+    "box-annotations": "2.3.0",
     "box-locales": "^0.0.1",
     "box-react-ui": "^22.7.0",
     "chai": "^4.1.2",

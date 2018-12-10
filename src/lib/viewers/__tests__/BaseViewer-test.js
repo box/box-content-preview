@@ -1377,4 +1377,21 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
         });
     });
+
+    describe('handleAssetAndRepLoad()', () => {
+        it('should load annotations and create the annotator', (done) => {
+            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
+            sandbox.stub(base, 'createAnnotator').returns(
+                new Promise((resolve) => {
+                    resolve();
+                    done();
+                })
+            );
+
+            base.handleAssetAndRepLoad();
+
+            expect(base.loadBoxAnnotations).to.be.called;
+            expect(base.createAnnotator).to.be.called;
+        });
+    });
 });
