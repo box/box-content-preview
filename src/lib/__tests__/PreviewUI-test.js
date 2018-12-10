@@ -36,7 +36,7 @@ describe('lib/PreviewUI', () => {
             const resultEl = ui.setup(options, handler, null, null, handler);
 
             sandbox.stub(ui.progressBar, 'destroy');
-            const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BODY);
+            const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
             sandbox
                 .mock(contentContainerEl)
                 .expects('removeEventListener')
@@ -230,7 +230,7 @@ describe('lib/PreviewUI', () => {
 
         describe('showLoadingIndicator()', () => {
             it('should show loading indicator', () => {
-                const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BODY);
+                const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
                 contentContainerEl.classList.add(constants.CLASS_PREVIEW_LOADED);
 
                 ui.showLoadingIndicator();
@@ -241,7 +241,7 @@ describe('lib/PreviewUI', () => {
 
         describe('hideLoadingIndicator()', () => {
             it('should hide loading indicator', () => {
-                const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BODY);
+                const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
             });

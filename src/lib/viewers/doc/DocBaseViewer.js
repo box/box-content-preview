@@ -20,7 +20,7 @@ import {
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
-    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import {
@@ -100,7 +100,7 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.containerEl.appendChild(document.createElement('div'));
+        this.docEl = this.insertViewerWrapper(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
         if (Browser.getName() === 'Safari') {
@@ -122,7 +122,10 @@ class DocBaseViewer extends BaseViewer {
 
         this.startPageNum = this.getStartPage(this.startAt);
 
-        this.thumbnailsSidebarEl = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
+        const thumbnailsSidebarEl = document.createElement('div');
+        thumbnailsSidebarEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER, CLASS_HIDDEN);
+        this.containerEl.parentNode.insertBefore(thumbnailsSidebarEl, this.containerEl);
+        this.thumbnailsSidebarEl = thumbnailsSidebarEl;
     }
 
     /**

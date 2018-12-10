@@ -34,8 +34,7 @@ $header-height: 48px;
 }
 
 .bp-header-container:not(.bp-is-hidden) {
-    + .bp:not(.bp-is-fullscreen),
-    + .bp-body:not(.bp-is-fullscreen) {
+    + .bp:not(.bp-is-fullscreen) {
         top: $header-height;
     }
 }
@@ -103,7 +102,7 @@ $header-height: 48px;
         fill: $white;
     }
 
-    .bp-body {
+    .bp {
         background-color: $sunset-grey;
 
         .bp-thumbnails-container {
@@ -122,46 +121,45 @@ $header-height: 48px;
     }
 }
 
-.bp-body {
+.bp {
     background-color: $ffive;
+    border: 0 none;
     bottom: 0;
     display: flex;
+    flex: 1 1 100%;
     flex-direction: row;
     left: 0;
+    margin: 0;
+    outline: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
     position: absolute;
     right: 0;
     top: 0;
+
+    // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
+    &.bp-fullscreen-unsupported {
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
+
+    &.bp-dark {
+        background-color: $black;
+    }
 
     .bp-thumbnails-container {
         border-right: solid 1px $seesee;
         flex: 0 0 180px;
     }
 
-    .bp {
+    .bp-content {
         align-items: center;
-        border: 0 none;
         display: flex;
-        flex: 1 1 100%;
-        flex-direction: column;
-        justify-content: center;
-        margin: 0;
-        outline: none;
-        -webkit-overflow-scrolling: touch;
-        padding: 0;
+        flex: 1 1 auto;
         position: relative;
-
-        // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
-        &.bp-fullscreen-unsupported {
-            bottom: 0;
-            left: 0;
-            position: fixed;
-            right: 0;
-            top: 0;
-        }
-
-        &.bp-dark {
-            background-color: $black;
-        }
     }
 }
 

@@ -22,7 +22,6 @@ $navigationBtnWidth: 50px;
     transition-property: opacity;
     white-space: nowrap;
     width: $navigationBtnWidth;
-    z-index: 1;
 
     &:hover,
     &:focus {

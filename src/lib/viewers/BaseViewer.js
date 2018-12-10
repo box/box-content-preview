@@ -23,13 +23,13 @@ import {
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
-    SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
-    STATUS_VIEWABLE
+    STATUS_VIEWABLE,
+    SELECTOR_BOX_PREVIEW_CONTENT
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -142,6 +142,7 @@ class BaseViewer extends EventEmitter {
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
+        this.insertViewerWrapper = this.insertViewerWrapper.bind(this);
     }
 
     /**
@@ -164,8 +165,8 @@ class BaseViewer extends EventEmitter {
             container = document.querySelector(container);
         }
 
-        // From the perspective of viewers bp holds everything
-        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+        // From the perspective of viewers bp-content holds everything
+        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
         // Attach event listeners
         this.addCommonListeners();
@@ -1093,6 +1094,29 @@ class BaseViewer extends EventEmitter {
      */
     handleAssetAndRepLoad() {
         this.loadBoxAnnotations().then(this.createAnnotator);
+    }
+
+    /**
+     * Method to insert the viewer wrapper before any other children
+     *
+     * @param {Element} element Element to be inserted into the DOM
+     * @return {Element} inserted element
+     */
+    insertViewerWrapper(element) {
+        if (!element) {
+            return null;
+        }
+
+        const firstChildEl = this.containerEl.firstChild;
+        let addedElement;
+
+        if (!firstChildEl) {
+            addedElement = this.containerEl.appendChild(element);
+        } else {
+            addedElement = firstChildEl.parentNode.insertBefore(element, firstChildEl);
+        }
+
+        return addedElement;
     }
 }
 

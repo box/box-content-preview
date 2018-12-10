@@ -15,7 +15,7 @@ class CSVViewer extends TextBaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.csvEl = this.containerEl.appendChild(document.createElement('div'));
+        this.csvEl = this.insertViewerWrapper(document.createElement('div'));
         this.csvEl.className = 'bp-text bp-text-csv';
     }
 

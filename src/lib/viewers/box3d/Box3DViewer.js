@@ -68,7 +68,7 @@ class Box3DViewer extends BaseViewer {
 
         this.renderer = null;
 
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl = this.insertViewerWrapper(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
         this.contextNotification = new Notification(this.wrapperEl);
 

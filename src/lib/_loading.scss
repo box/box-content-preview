@@ -29,8 +29,14 @@
     animation-duration: 1s;
     animation-iteration-count: 1;
     animation-name: fadeIn;
+    bottom: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
     transition: .25s opacity, .25s transform;
 
     .bp-loaded & {
@@ -39,7 +45,7 @@
 }
 
 // Only the loading wrapper should be interactable inside the Preview container
-.bp-body:not(.bp-loaded) {
+.bp:not(.bp-loaded) {
     pointer-events: none;
 
     & .bp-loading-wrapper {

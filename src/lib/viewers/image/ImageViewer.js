@@ -31,7 +31,7 @@ class ImageViewer extends ImageBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl = this.insertViewerWrapper(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));

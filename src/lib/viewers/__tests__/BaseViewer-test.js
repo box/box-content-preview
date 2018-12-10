@@ -75,7 +75,7 @@ describe('lib/viewers/BaseViewer', () => {
                 showAnnotations: true
             });
 
-            expect(base.containerEl).to.have.class('bp');
+            expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -91,7 +91,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.setup();
 
-            const container = document.querySelector('.bp');
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
             expect(container).to.have.class('bp-is-mobile');
         });
 
@@ -1392,6 +1392,33 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.loadBoxAnnotations).to.be.called;
             expect(base.createAnnotator).to.be.called;
+        });
+    });
+
+    describe('insertViewerWrapper()', () => {
+        it('should return null if no element is provided', () => {
+            expect(base.insertViewerWrapper()).to.be.null;
+        });
+
+        it('should append the element if containerEl has no first child', () => {
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            const newDiv = document.createElement('div');
+            sandbox.stub(base.containerEl, 'appendChild');
+            base.insertViewerWrapper(newDiv);
+            expect(base.containerEl.appendChild).to.be.called;
+        });
+
+        it('should insert the provided element before the other children', () => {
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            const existingChild = document.createElement('div');
+            existingChild.className = 'existing-child';
+            base.containerEl.appendChild(existingChild);
+
+            sandbox.stub(base.containerEl, 'insertBefore');
+            const newDiv = document.createElement('div');
+            newDiv.className = 'new-div';
+            base.insertViewerWrapper(newDiv);
+            expect(base.containerEl.insertBefore).to.be.called;
         });
     });
 });

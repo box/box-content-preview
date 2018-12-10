@@ -19,7 +19,8 @@ import {
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
-    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER
+    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    SELECTOR_BOX_PREVIEW_CONTENT
 } from '../../../constants';
 
 import {
@@ -69,7 +70,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
-        containerEl = document.querySelector('.container');
+        containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         docBase = new DocBaseViewer({
             cache: {
                 set: () => {},
