@@ -123,7 +123,7 @@ class DocBaseViewer extends BaseViewer {
         this.startPageNum = this.getStartPage(this.startAt);
 
         this.thumbnailsSidebarEl = document.createElement('div');
-        this.thumbnailsSidebarEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER, CLASS_HIDDEN);
+        this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
         this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
     }
 
