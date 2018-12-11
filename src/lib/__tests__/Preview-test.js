@@ -1185,7 +1185,8 @@ describe('lib/Preview', () => {
                 showAnnotations: true,
                 fixDependencies: true,
                 collection: stubs.collection,
-                loaders: stubs.loaders
+                loaders: stubs.loaders,
+                enableThumbnailsSidebar: true
             };
 
             stubs.assign = sandbox.spy(Object, 'assign');
@@ -1297,6 +1298,11 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
             expect(stubs.disableViewers).to.be.calledWith('Office');
             expect(stubs.enableViewers).to.be.calledWith('text');
+        });
+
+        it('should set whether to enable thumbnails sidebar', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.enableThumbnailsSidebar).to.be.true;
         });
     });
 
