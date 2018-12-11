@@ -123,9 +123,11 @@ class DocBaseViewer extends BaseViewer {
 
         this.startPageNum = this.getStartPage(this.startAt);
 
-        this.thumbnailsSidebarEl = document.createElement('div');
-        this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
-        this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+        if (this.options.enableThumbnailsSidebar) {
+            this.thumbnailsSidebarEl = document.createElement('div');
+            this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
+            this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+        }
     }
 
     /**
@@ -990,12 +992,15 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindControlListeners() {
-        this.controls.add(
-            __('toggle_thumbnails'),
-            this.toggleThumbnails,
-            'bp-toggle-thumbnails-icon',
-            ICON_THUMBNAILS_TOGGLE
-        );
+        if (this.options.enableThumbnailsSidebar) {
+            this.controls.add(
+                __('toggle_thumbnails'),
+                this.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
+            );
+        }
+
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
 

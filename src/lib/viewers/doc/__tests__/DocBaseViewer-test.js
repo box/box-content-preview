@@ -20,7 +20,8 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    SELECTOR_BOX_PREVIEW_CONTENT
+    SELECTOR_BOX_PREVIEW_CONTENT,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../../constants';
 import {
     ICON_PRINT_CHECKMARK,
@@ -87,7 +88,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             file: {
                 id: '0',
                 extension: 'ppt'
-            }
+            },
+            enableThumbnailsSidebar: true
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         docBase.containerEl = containerEl;
@@ -110,14 +112,43 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should correctly set a doc element, viewer element, and a timeout', () => {
+        it('should correctly set a doc element, viewer element, thumbnails sidebar element, and a timeout', () => {
             expect(docBase.docEl.classList.contains('bp-doc')).to.be.true;
             expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
 
             expect(docBase.viewerEl.classList.contains('pdfViewer')).to.be.true;
             expect(docBase.viewerEl.parentNode).to.equal(docBase.docEl);
 
+            expect(docBase.thumbnailsSidebarEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER)).to.be.true;
+            expect(docBase.thumbnailsSidebarEl.parentNode).to.equal(docBase.containerEl.parentNode);
+
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
+        });
+
+        it('should not set a thumbnails sidebar element if the option is not enabled', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+
+            expect(docBase.thumbnailsSidebarEl).to.be.undefined;
         });
     });
 
@@ -2078,6 +2109,58 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.toggleFullscreen,
                 'bp-exit-fullscreen-icon',
                 ICON_FULLSCREEN_OUT
+            );
+        });
+
+        it('should not add the toggle thumbnails control if the option is not enabled', () => {
+            // Create a new instance that has enableThumbnailsSidebar as false
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+
+            docBase.controls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pageControls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pdfViewer = {
+                pagesCount: 4,
+                currentPageNumber: 1,
+                cleanup: sandbox.stub()
+            };
+
+            // Invoke the method to test
+            docBase.bindControlListeners();
+
+            // Check expectations
+            expect(docBase.controls.add).to.not.be.calledWith(
+                __('toggle_thumbnails'),
+                docBase.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
             );
         });
     });
