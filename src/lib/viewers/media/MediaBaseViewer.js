@@ -54,7 +54,7 @@ class MediaBaseViewer extends BaseViewer {
         super.setup();
 
         // Media Wrapper
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl = this.createViewer(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_MEDIA;
 
         // Media Container

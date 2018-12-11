@@ -18,12 +18,12 @@ import {
     replacePlaceholders
 } from '../util';
 import {
-    CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    CLASS_HIDDEN,
     FILE_OPTION_START,
-    SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
@@ -141,6 +141,7 @@ class BaseViewer extends EventEmitter {
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
+        this.createViewer = this.createViewer.bind(this);
     }
 
     /**
@@ -163,8 +164,8 @@ class BaseViewer extends EventEmitter {
             container = document.querySelector(container);
         }
 
-        // From the perspective of viewers bp holds everything
-        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+        // From the perspective of viewers bp-content holds everything
+        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
         // Attach event listeners
         this.addCommonListeners();
@@ -1098,6 +1099,32 @@ class BaseViewer extends EventEmitter {
      */
     handleAssetAndRepLoad() {
         this.loadBoxAnnotations().then(this.createAnnotator);
+    }
+
+    /**
+     * Method to insert the viewer wrapper
+     *
+     * @param {HTMLElement} element Element to be inserted into the DOM
+     * @return {HTMLElement} inserted element
+     */
+    createViewer(element) {
+        if (!element) {
+            return null;
+        }
+
+        const firstChildEl = this.containerEl.firstChild;
+        let addedElement;
+
+        if (!firstChildEl) {
+            addedElement = this.containerEl.appendChild(element);
+        } else {
+            // Need to insert the viewer wrapper as the first element in the container
+            // so that we can perserve the natural stacking context to have the prev/next
+            // file buttons on top of the previewed content
+            addedElement = this.containerEl.insertBefore(element, firstChildEl);
+        }
+
+        return addedElement;
     }
 }
 
