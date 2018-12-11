@@ -18,7 +18,8 @@ import {
     PRELOAD_REP_NAME,
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES
+    ENCODING_TYPES,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import {
@@ -97,7 +98,7 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.containerEl.appendChild(document.createElement('div'));
+        this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
         if (Browser.getName() === 'Safari') {
@@ -118,6 +119,10 @@ class DocBaseViewer extends BaseViewer {
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
+
+        this.thumbnailsSidebarEl = document.createElement('div');
+        this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
+        this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
     }
 
     /**
@@ -1264,7 +1269,15 @@ class DocBaseViewer extends BaseViewer {
      * @protected
      * @return {void}
      */
-    toggleThumbnails() {}
+    toggleThumbnails() {
+        if (!this.thumbnailsSidebarEl) {
+            return;
+        }
+
+        this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
+
+        this.resize();
+    }
 }
 
 export default DocBaseViewer;

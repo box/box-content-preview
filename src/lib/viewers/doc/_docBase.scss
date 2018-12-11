@@ -1,5 +1,20 @@
 @import '../../boxuiVariables';
 
+.bp {
+    .bp-thumbnails-container {
+        border-right: solid 1px $seesee;
+        flex: 0 0 180px;
+    }
+}
+
+.bp-theme-dark {
+    .bp {
+        .bp-thumbnails-container {
+            border-right-color: $twos;
+        }
+    }
+}
+
 .bp-doc {
     bottom: 0;
     height: 100%;

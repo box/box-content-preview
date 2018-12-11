@@ -32,7 +32,7 @@ class MultiImageViewer extends ImageBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl = this.createViewer(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));

@@ -21,7 +21,7 @@ class SWFViewer extends BaseViewer {
     setup() {
         // Call super() to set up common layout
         super.setup();
-        this.playerEl = this.containerEl.appendChild(document.createElement('div'));
+        this.playerEl = this.createViewer(document.createElement('div'));
         this.playerEl.id = 'flash-player';
     }
 
