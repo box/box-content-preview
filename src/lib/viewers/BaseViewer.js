@@ -342,16 +342,17 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @emits error
      * @param {Error|PreviewError} [err] - Error object related to the error that happened.
+     * @param {boolean} [isSilentFailure] - Whether or not the error should be a silent error or fail Preview
      * @return {void}
      */
-    triggerError(err) {
+    triggerError(err, isSilentFailure = false) {
         const message = err ? err.message : '';
         const error =
             err instanceof PreviewError
                 ? err
                 : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
 
-        this.emit('error', error);
+        this.emit('error', error, isSilentFailure);
     }
 
     /**
@@ -869,7 +870,8 @@ class BaseViewer extends EventEmitter {
 
         if (!global.BoxAnnotations) {
             const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
-            this.triggerError(error);
+            this.emit(VIEWER_EVENT.notificationShow, error.displayMessage);
+            this.triggerError(error, true);
             return;
         }
 

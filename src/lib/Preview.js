@@ -1443,14 +1443,15 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {Error} err - Error
+     * @param {boolean} [isSilentFailure] - Error
      * @return {void}
      */
-    triggerError(err) {
+    triggerError(err, isSilentFailure = false) {
         // Always log preview errors
         this.emitPreviewError(err);
 
         // If preview is closed don't do anything
-        if (!this.open) {
+        if (!this.open || isSilentFailure) {
             return;
         }
 
