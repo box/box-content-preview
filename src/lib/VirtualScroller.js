@@ -1,162 +1,161 @@
-import isFinite from 'lodash/isFinite';
-
 class VirtualScroller {
+    /**
+     * [constructor]
+     *
+     * @param {HTMLElement} container - The HTMLElement that will contain the virtual scroller
+     * @return {VirtualScroller} Instance of VirtualScroller
+     */
     constructor(container) {
-        /*
-            config {
-                container:          HTMLElement
-                totalNumItems:      Number
-                itemHeight:         Number
-                maxItemsRendered:   Number
-                containerHeight:    Number
-                renderItemFn:       Function
-            }
-         */
         this.container = container;
-        this.previousScrollTop = 0;
-        this.renderedItems = {};
 
-        this.getPositionOfHighestItem = this.getPositionOfHighestItem.bind(this);
-        this.getPositionOfLowestItem = this.getPositionOfLowestItem.bind(this);
-        this.handleOnScroll = this.handleOnScroll.bind(this);
-        this.pruneRows = this.pruneRows.bind(this);
-        this.renderRows = this.renderRows.bind(this);
+        this.previousScrollTop = 0;
+
+        this.onScrollHandler = this.onScrollHandler.bind(this);
+        this.renderItems = this.renderItems.bind(this);
     }
 
+    /**
+     * Destroys the virtual scroller
+     *
+     * @return {void}
+     */
     destroy() {
         if (this.containerEl) {
             this.containerEl.remove();
         }
 
-        this.renderedItems = {};
-
         this.containerEl = null;
         this.contentEl = null;
     }
 
+    /**
+     * Initializes the virtual scroller
+     *
+     * @param {Object} config - The config
+     * @return {void}
+     */
     init(config) {
-        if (!config.totalNumItems || !config.itemHeight) {
-            throw new Error('Need to provide totalNumItems and itemHeight');
+        if (!config.totalItems || !config.itemHeight) {
+            throw new Error('Need to provide totalItems and itemHeight');
         }
 
-        this.totalNumItems = config.totalNumItems;
+        // The total number items to be scrolled
+        this.totalItems = config.totalItems;
+
+        // The height of each individual item
         this.itemHeight = config.itemHeight;
+
+        // The height of the visible container
         this.containerHeight = config.containerHeight;
-        this.pageSize = Math.ceil(this.containerHeight / this.itemHeight);
-        this.maxItemsRendered = config.maxItemsRendered || Math.ceil(this.pageSize * 1.5);
+
+        // The callback function that to allow users generate the item
         this.renderItemFn = config.renderItemFn;
+
+        // Allows the user to specify the margin at the top of the container before the first item is rendered
         this.marginTop = config.marginTop || 0;
+
+        // Allows the user to specify the margin at the bottom of the container after the last item is rendered
         this.marginBottom = config.marginBottom || 0;
 
+        // The number of items that can fit in view
+        this.totalViewItems = Math.ceil(this.containerHeight / this.itemHeight);
+
+        // The height of the buffer before virtual scroll renders the next set
+        this.maxBufferHeight = this.totalViewItems * this.itemHeight;
+
+        // The max number of items to render at any one given time
+        this.maxRenderedItems = Math.ceil(this.totalViewItems * 3);
+
+        // Create the scrolling container element
         this.containerEl = document.createElement('div');
         this.containerEl.className = 'vs-container';
 
+        // Create the true height content container
         this.contentEl = document.createElement('div');
         this.contentEl.className = 'vs-content-container';
-        this.contentEl.style.height = `${this.totalNumItems * this.itemHeight + this.marginTop + this.marginBottom}px`;
+        this.contentEl.style.height = `${this.totalItems * this.itemHeight + this.marginTop + this.marginBottom}px`;
 
         this.containerEl.appendChild(this.contentEl);
         this.container.appendChild(this.containerEl);
 
-        this.renderRows(0, Math.min(this.maxItemsRendered, this.totalNumItems));
+        this.renderItems();
 
         this.bindDOMListeners();
     }
 
+    /**
+     * Binds DOM listeners
+     *
+     * @return {void}
+     */
     bindDOMListeners() {
-        this.containerEl.addEventListener('scroll', this.handleOnScroll);
+        this.containerEl.addEventListener('scroll', this.onScrollHandler);
     }
 
-    handleOnScroll(e) {
+    /**
+     * Unbinds DOM listeners
+     *
+     * @return {void}
+     */
+    unbindDOMListeners() {
+        if (this.containerEl) {
+            this.containerEl.removeEventListener('scroll', this.onScrollHandler);
+        }
+    }
+
+    /**
+     * Handler for 'scroll' event
+     *
+     * @param {Event} e - The scroll event
+     * @return {void}
+     */
+    onScrollHandler(e) {
         const { scrollTop } = e.target;
-        console.log(scrollTop);
-        const direction = scrollTop - this.prevScrollTop > 0 ? 'down' : 'up';
-        this.prevScrollTop = scrollTop;
 
-        if (direction === 'down') {
-            const lowestTop = this.getPositionOfLowestItem();
-            if (lowestTop - (scrollTop + this.containerHeight) < this.itemHeight) {
-                // add next pages
-                const newRowsOffset = Math.floor(lowestTop / this.itemHeight) + 1;
-                const rowsToRender =
-                    newRowsOffset + this.pageSize > this.totalNumItems
-                        ? this.totalNumItems - newRowsOffset
-                        : this.pageSize;
+        if (Math.abs(scrollTop - this.previousScrollTop) > this.maxBufferHeight) {
+            // The first item to be re-rendered will be a totalViewItems height up from the
+            // item at the current location
+            const firstIndex = Math.floor(scrollTop / this.itemHeight) - this.totalViewItems;
+            this.renderItems(firstIndex < 0 ? 0 : firstIndex);
 
-                if (rowsToRender > 0) {
-                    this.renderRows(newRowsOffset, rowsToRender);
-
-                    // prune previous pages
-                    const removeRowsOffset =
-                        Math.floor(Math.max(scrollTop - this.containerHeight, 0) / this.itemHeight) - 1;
-                    const startIndex = parseInt(this.contentEl.firstElementChild.dataset.item, 10);
-                    this.pruneRows(startIndex, removeRowsOffset);
-                }
-            }
-        } else {
-            const highestTop = this.getPositionOfHighestItem();
-            if (scrollTop - highestTop < this.itemHeight) {
-                // add next pages
-                const nextRowOffset = Math.floor(highestTop / this.itemHeight);
-                const newRowsOffset = Math.max(nextRowOffset - this.pageSize, 0);
-                const rowsToRender = nextRowOffset - this.pageSize > 0 ? this.pageSize : nextRowOffset;
-
-                if (rowsToRender > 0) {
-                    this.renderRows(newRowsOffset, rowsToRender, true);
-
-                    // prune unnecessary pages
-                    const removeRowsOffset = Math.ceil((scrollTop + 2 * this.containerHeight) / this.itemHeight);
-                    const removeEndOffset = parseInt(this.contentEl.lastElementChild.dataset.item, 10);
-                    this.pruneRows(removeRowsOffset, removeEndOffset);
-                }
-            }
+            this.previousScrollTop = scrollTop;
         }
     }
 
-    getPositionOfLowestItem() {
-        const bottomStyle = this.contentEl.lastElementChild.style.top;
-        return bottomStyle.substr(0, bottomStyle.indexOf('px'));
-    }
-
-    getPositionOfHighestItem() {
-        const topStyle = this.contentEl.firstElementChild.style.top;
-        return topStyle.substr(0, topStyle.indexOf('px'));
-    }
-
-    pruneRows(startIndex, endIndex) {
-        if (!isFinite(startIndex) || !isFinite(endIndex) || endIndex < startIndex) {
-            return;
+    /**
+     * Render a set of items, starting from the offset index
+     *
+     * @param {number} offset  - The offset to start rendering items
+     * @return {void}
+     */
+    renderItems(offset = 0) {
+        let count = this.maxRenderedItems;
+        // If the default count of items to render exceeds the totalItems count
+        // then just render the difference
+        if (count + offset > this.totalItems) {
+            count = this.totalItems - offset;
         }
 
-        console.log(`pruning rows starting from ${startIndex} to ${endIndex}`);
-        for (let i = startIndex; i <= endIndex; i++) {
-            if (this.renderedItems[i]) {
-                this.renderedItems[i].remove();
-                this.renderedItems[i] = null;
-            }
-        }
-    }
-
-    renderRows(offset = 0, count = 15, above = false) {
-        console.log(`rendering ${count} rows starting from ${offset}`);
         let numItemsRendered = 0;
         const fragment = document.createDocumentFragment();
+
         while (numItemsRendered < count) {
-            const rowIndex = offset + numItemsRendered;
-            const rowEl = this.renderRow(offset + numItemsRendered, this.itemHeight);
+            const rowEl = this.renderItem(offset + numItemsRendered, this.itemHeight);
             fragment.appendChild(rowEl);
-            this.renderedItems[rowIndex] = rowEl;
             numItemsRendered += 1;
         }
 
-        if (above) {
-            this.contentEl.insertBefore(fragment, this.contentEl.firstChild);
-        } else {
-            this.contentEl.appendChild(fragment);
-        }
+        this.contentEl.innerHTML = '';
+        this.contentEl.appendChild(fragment);
     }
 
-    renderRow(rowIndex, itemHeight) {
+    /**
+     * Render a single item
+     *
+     * @param {*} rowIndex - The index of the item to be rendered
+     * @return {HTMLElement} The newly created row item
+     */
+    renderItem(rowIndex) {
         const rowEl = document.createElement('div');
         const topPosition = this.itemHeight * rowIndex + this.marginTop;
 
@@ -164,11 +163,11 @@ class VirtualScroller {
         try {
             renderedThumbnail = this.renderItemFn.call(this, rowIndex);
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
 
         rowEl.style.top = `${topPosition}px`;
-        rowEl.style.height = `${itemHeight}px`;
+        rowEl.style.height = `${this.itemHeight}px`;
         rowEl.classList.add('vs-content-item');
         rowEl.dataset.item = rowIndex;
 

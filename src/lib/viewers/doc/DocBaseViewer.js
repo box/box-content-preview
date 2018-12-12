@@ -1013,14 +1013,13 @@ class DocBaseViewer extends BaseViewer {
 
     initThumbnails() {
         this.thumbnailsSidebar.init({
-            totalNumItems: this.pdfViewer.pagesCount,
-            // totalNumItems: 50,
+            totalItems: this.pdfViewer.pagesCount,
             itemHeight: 115,
-            containerHeight: this.docEl.getBoundingClientRect().height,
+            containerHeight: this.docEl.clientHeight,
             marginTop: 7.5,
             marginBottom: 7.5,
             renderItemFn: (page) => {
-                const thumbnail = document.createElement('div');
+                const thumbnail = document.createElement('button');
                 thumbnail.className = 'bp-thumbnail';
                 thumbnail.textContent = `${page}`;
                 return thumbnail;
