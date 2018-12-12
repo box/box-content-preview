@@ -8,6 +8,7 @@ import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
+import VirtualScroller from '../../VirtualScroller';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
@@ -126,6 +127,8 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
             this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+
+            this.thumbnailsSidebar = new VirtualScroller(this.thumbnailsSidebarEl);
         }
     }
 
@@ -178,6 +181,10 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.printPopup) {
             this.printPopup.destroy();
+        }
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.destroy();
         }
 
         super.destroy();
@@ -1000,6 +1007,25 @@ class DocBaseViewer extends BaseViewer {
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
         }
+
+        this.initThumbnails();
+    }
+
+    initThumbnails() {
+        this.thumbnailsSidebar.init({
+            totalNumItems: this.pdfViewer.pagesCount,
+            // totalNumItems: 50,
+            itemHeight: 115,
+            containerHeight: this.docEl.getBoundingClientRect().height,
+            marginTop: 7.5,
+            marginBottom: 7.5,
+            renderItemFn: (page) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'bp-thumbnail';
+                thumbnail.textContent = `${page}`;
+                return thumbnail;
+            }
+        });
     }
 
     /**
