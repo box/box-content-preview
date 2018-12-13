@@ -1008,7 +1008,9 @@ class DocBaseViewer extends BaseViewer {
             this.setupPageIds();
         }
 
-        this.initThumbnails();
+        if (this.thumbnailsSidebar) {
+            this.initThumbnails();
+        }
     }
 
     initThumbnails() {
