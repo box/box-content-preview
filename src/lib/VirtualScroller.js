@@ -152,7 +152,7 @@ class VirtualScroller {
     /**
      * Render a single item
      *
-     * @param {*} rowIndex - The index of the item to be rendered
+     * @param {number} rowIndex - The index of the item to be rendered
      * @return {HTMLElement} The newly created row item
      */
     renderItem(rowIndex) {
@@ -162,8 +162,9 @@ class VirtualScroller {
         let renderedThumbnail;
         try {
             renderedThumbnail = this.renderItemFn.call(this, rowIndex);
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            // eslint-disable-next-line
+            console.error(`Error rendering thumbnail - ${err}`);
         }
 
         rowEl.style.top = `${topPosition}px`;
