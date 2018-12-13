@@ -127,8 +127,6 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
             this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
-
-            this.thumbnailsSidebar = new VirtualScroller(this.thumbnailsSidebarEl);
         }
     }
 
@@ -1008,12 +1006,13 @@ class DocBaseViewer extends BaseViewer {
             this.setupPageIds();
         }
 
-        if (this.thumbnailsSidebar) {
+        if (this.options.enableThumbnailsSidebar) {
             this.initThumbnails();
         }
     }
 
     initThumbnails() {
+        this.thumbnailsSidebar = new VirtualScroller(this.thumbnailsSidebarEl);
         this.thumbnailsSidebar.init({
             totalItems: this.pdfViewer.pagesCount,
             itemHeight: 115,

@@ -1,12 +1,18 @@
+import isFinite from 'lodash/isFinite';
+import isFunction from 'lodash/isFunction';
+import { VIRTUAL_SCROLLER_BUFFERED_ITEM_MULTIPLIER } from './constants';
+
 class VirtualScroller {
+    static TOTAL_VIEW_MULTIPLIER = 3;
+
     /**
      * [constructor]
      *
-     * @param {HTMLElement} container - The HTMLElement that will contain the virtual scroller
+     * @param {HTMLElement} anchor - The HTMLElement that will anchor the virtual scroller
      * @return {VirtualScroller} Instance of VirtualScroller
      */
-    constructor(container) {
-        this.container = container;
+    constructor(anchor) {
+        this.anchorEl = anchor;
 
         this.previousScrollTop = 0;
 
@@ -25,7 +31,7 @@ class VirtualScroller {
         }
 
         this.containerEl = null;
-        this.contentEl = null;
+        this.listEl = null;
     }
 
     /**
@@ -35,9 +41,7 @@ class VirtualScroller {
      * @return {void}
      */
     init(config) {
-        if (!config.totalItems || !config.itemHeight) {
-            throw new Error('Need to provide totalItems and itemHeight');
-        }
+        this.validateRequiredConfig(config);
 
         // The total number items to be scrolled
         this.totalItems = config.totalItems;
@@ -64,23 +68,48 @@ class VirtualScroller {
         this.maxBufferHeight = this.totalViewItems * this.itemHeight;
 
         // The max number of items to render at any one given time
-        this.maxRenderedItems = Math.ceil(this.totalViewItems * 3);
+        this.maxRenderedItems = this.totalViewItems * VIRTUAL_SCROLLER_BUFFERED_ITEM_MULTIPLIER;
 
         // Create the scrolling container element
         this.containerEl = document.createElement('div');
-        this.containerEl.className = 'vs-container';
+        this.containerEl.className = 'bp-vs';
 
         // Create the true height content container
-        this.contentEl = document.createElement('div');
-        this.contentEl.className = 'vs-content-container';
-        this.contentEl.style.height = `${this.totalItems * this.itemHeight + this.marginTop + this.marginBottom}px`;
+        this.listEl = document.createElement('ol');
+        this.listEl.className = 'bp-vs-list';
+        this.listEl.style.height = `${this.totalItems * this.itemHeight + this.marginTop + this.marginBottom}px`;
 
-        this.containerEl.appendChild(this.contentEl);
-        this.container.appendChild(this.containerEl);
+        this.containerEl.appendChild(this.listEl);
+        this.anchorEl.appendChild(this.containerEl);
 
         this.renderItems();
 
         this.bindDOMListeners();
+    }
+
+    /**
+     * Utility function to validate the required config is present
+     *
+     * @param {Object} config - the config object
+     * @return {void}
+     * @throws Error
+     */
+    validateRequiredConfig(config) {
+        if (!config.totalItems || !isFinite(config.totalItems)) {
+            throw new Error('totalItems is required');
+        }
+
+        if (!config.itemHeight || !isFinite(config.itemHeight)) {
+            throw new Error('itemHeight is required');
+        }
+
+        if (!config.renderItemFn || !isFunction(config.renderItemFn)) {
+            throw new Error('renderItemFn is required');
+        }
+
+        if (!config.containerHeight || !isFinite(config.containerHeight)) {
+            throw new Error('containerHeight is required');
+        }
     }
 
     /**
@@ -116,7 +145,7 @@ class VirtualScroller {
             // The first item to be re-rendered will be a totalViewItems height up from the
             // item at the current location
             const firstIndex = Math.floor(scrollTop / this.itemHeight) - this.totalViewItems;
-            this.renderItems(firstIndex < 0 ? 0 : firstIndex);
+            this.renderItems(Math.max(firstIndex, 0));
 
             this.previousScrollTop = scrollTop;
         }
@@ -140,13 +169,16 @@ class VirtualScroller {
         const fragment = document.createDocumentFragment();
 
         while (numItemsRendered < count) {
-            const rowEl = this.renderItem(offset + numItemsRendered, this.itemHeight);
+            const rowEl = this.renderItem(offset + numItemsRendered);
             fragment.appendChild(rowEl);
             numItemsRendered += 1;
         }
 
-        this.contentEl.innerHTML = '';
-        this.contentEl.appendChild(fragment);
+        while (this.listEl.firstChild) {
+            this.listEl.removeChild(this.listEl.firstChild);
+        }
+
+        this.listEl.appendChild(fragment);
     }
 
     /**
@@ -156,7 +188,7 @@ class VirtualScroller {
      * @return {HTMLElement} The newly created row item
      */
     renderItem(rowIndex) {
-        const rowEl = document.createElement('div');
+        const rowEl = document.createElement('li');
         const topPosition = this.itemHeight * rowIndex + this.marginTop;
 
         let renderedThumbnail;
@@ -169,8 +201,7 @@ class VirtualScroller {
 
         rowEl.style.top = `${topPosition}px`;
         rowEl.style.height = `${this.itemHeight}px`;
-        rowEl.classList.add('vs-content-item');
-        rowEl.dataset.item = rowIndex;
+        rowEl.classList.add('bp-vs-list-item');
 
         if (renderedThumbnail) {
             rowEl.appendChild(renderedThumbnail);

@@ -117,3 +117,5 @@ export const QUERY_PARAM_ENCODING = 'encoding';
 export const ENCODING_TYPES = {
     GZIP: 'gzip'
 };
+
+export const VIRTUAL_SCROLLER_BUFFERED_ITEM_MULTIPLIER = 3;

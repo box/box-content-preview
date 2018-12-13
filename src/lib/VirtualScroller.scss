@@ -1,16 +1,18 @@
-.vs-container {
+.bp-vs {
     flex: 1 0 auto;
     overflow-y: auto;
 
-    .vs-content-container {
+    .bp-vs-list {
+        margin: 0;
+        padding: 0;
         position: relative;
+    }
 
-        .vs-content-item {
-            box-sizing: border-box;
-            display: flex;
-            left: 0;
-            position: absolute;
-            right: 0;
-        }
+    .bp-vs-list-item {
+        box-sizing: border-box;
+        display: flex;
+        left: 0;
+        position: absolute;
+        right: 0;
     }
 }

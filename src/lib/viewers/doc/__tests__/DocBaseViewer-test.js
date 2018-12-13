@@ -33,7 +33,6 @@ import {
     ICON_FULLSCREEN_OUT
 } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
-import VirtualScroller from '../../../VirtualScroller';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1482,7 +1481,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer = {
                 currentScale: 'unknown'
             };
-            docBase.thumbnailsSidebar = {};
 
             docBase.pagesinitHandler();
             expect(stubs.loadUI).to.be.called;
@@ -1490,15 +1488,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
             expect(stubs.setupPages).to.be.called;
             expect(stubs.initThumbnails).to.be.called;
-
-            docBase.thumbnailsSidebar = null;
         });
 
         it('should not init thumbnails if not enabled', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+            stubs.loadUI = sandbox.stub(docBase, 'loadUI');
+            stubs.setPage = sandbox.stub(docBase, 'setPage');
+            stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
+            stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+            stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
+
             docBase.pdfViewer = {
                 currentScale: 'unknown'
             };
-            docBase.thumbnailsSidebar = null;
 
             docBase.pagesinitHandler();
             expect(stubs.loadUI).to.be.called;
