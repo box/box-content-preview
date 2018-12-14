@@ -1,5 +1,6 @@
 import isFinite from 'lodash/isFinite';
 import isFunction from 'lodash/isFunction';
+import throttle from 'lodash/throttle';
 
 const BUFFERED_ITEM_MULTIPLIER = 3;
 
@@ -48,7 +49,9 @@ class VirtualScroller {
 
         this.previousScrollTop = 0;
 
+        this.createListElement = this.createListElement.bind(this);
         this.onScrollHandler = this.onScrollHandler.bind(this);
+        this.throttledOnScrollHandler = throttle(this.onScrollHandler, 50);
         this.renderItems = this.renderItems.bind(this);
     }
 
@@ -89,9 +92,7 @@ class VirtualScroller {
         this.scrollingEl.className = 'bp-vs';
 
         // Create the true height content container
-        this.listEl = document.createElement('ol');
-        this.listEl.className = 'bp-vs-list';
-        this.listEl.style.height = `${this.totalItems * (this.itemHeight + this.margin) + this.margin}px`;
+        this.listEl = this.createListElement();
 
         this.scrollingEl.appendChild(this.listEl);
         this.anchorEl.appendChild(this.scrollingEl);
@@ -132,7 +133,7 @@ class VirtualScroller {
      * @return {void}
      */
     bindDOMListeners() {
-        this.scrollingEl.addEventListener('scroll', this.onScrollHandler);
+        this.scrollingEl.addEventListener('scroll', this.throttledOnScrollHandler, { passive: true });
     }
 
     /**
@@ -142,7 +143,7 @@ class VirtualScroller {
      */
     unbindDOMListeners() {
         if (this.scrollingEl) {
-            this.scrollingEl.removeEventListener('scroll', this.onScrollHandler);
+            this.scrollingEl.removeEventListener('scroll', this.throttledOnScrollHandler);
         }
     }
 
@@ -180,19 +181,17 @@ class VirtualScroller {
         }
 
         let numItemsRendered = 0;
-        const fragment = document.createDocumentFragment();
 
+        // Create a new list element to be swapped out for the existing one
+        const newListEl = this.createListElement();
         while (numItemsRendered < count) {
             const rowEl = this.renderItem(offset + numItemsRendered);
-            fragment.appendChild(rowEl);
+            newListEl.appendChild(rowEl);
             numItemsRendered += 1;
         }
 
-        while (this.listEl.firstChild) {
-            this.listEl.removeChild(this.listEl.firstChild);
-        }
-
-        this.listEl.appendChild(fragment);
+        this.scrollingEl.replaceChild(newListEl, this.listEl);
+        this.listEl = newListEl;
     }
 
     /**
@@ -222,6 +221,18 @@ class VirtualScroller {
         }
 
         return rowEl;
+    }
+
+    /**
+     * Utility to create the list element
+     *
+     * @return {HTMLElement} The list element
+     */
+    createListElement() {
+        const newListEl = document.createElement('ol');
+        newListEl.className = 'bp-vs-list';
+        newListEl.style.height = `${this.totalItems * (this.itemHeight + this.margin) + this.margin}px`;
+        return newListEl;
     }
 }
 
