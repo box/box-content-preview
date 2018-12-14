@@ -1474,6 +1474,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
             stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+            stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1486,6 +1487,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
             expect(stubs.setupPages).to.be.called;
+            expect(stubs.initThumbnails).to.be.called;
+        });
+
+        it('should not init thumbnails if not enabled', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+            stubs.loadUI = sandbox.stub(docBase, 'loadUI');
+            stubs.setPage = sandbox.stub(docBase, 'setPage');
+            stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
+            stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+            stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
+
+            docBase.pdfViewer = {
+                currentScale: 'unknown'
+            };
+
+            docBase.pagesinitHandler();
+            expect(stubs.loadUI).to.be.called;
+            expect(stubs.setPage).to.be.called;
+            expect(docBase.docEl).to.have.class('bp-is-scrollable');
+            expect(stubs.setupPages).to.be.called;
+            expect(stubs.initThumbnails).not.to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
