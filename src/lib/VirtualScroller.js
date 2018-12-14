@@ -80,9 +80,9 @@ class VirtualScroller {
         this.containerHeight = config.containerHeight;
         this.renderItemFn = config.renderItemFn;
         this.margin = config.margin || 0;
-        this.totalViewItems = Math.ceil(this.containerHeight / (this.itemHeight + this.margin));
+        this.totalViewItems = Math.floor(this.containerHeight / (this.itemHeight + this.margin));
         this.maxBufferHeight = this.totalViewItems * this.itemHeight;
-        this.maxRenderedItems = this.totalViewItems * BUFFERED_ITEM_MULTIPLIER;
+        this.maxRenderedItems = (this.totalViewItems + 1) * BUFFERED_ITEM_MULTIPLIER;
 
         // Create the scrolling container element
         this.scrollingEl = document.createElement('div');

@@ -63,6 +63,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const PAGES_UNIT_NAME = 'pages';
+const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -1013,17 +1014,27 @@ class DocBaseViewer extends BaseViewer {
 
     initThumbnails() {
         this.thumbnailsSidebar = new VirtualScroller(this.thumbnailsSidebarEl);
-        this.thumbnailsSidebar.init({
-            totalItems: this.pdfViewer.pagesCount,
-            itemHeight: 100,
-            containerHeight: this.docEl.clientHeight,
-            margin: 15,
-            renderItemFn: (page) => {
-                const thumbnail = document.createElement('button');
-                thumbnail.className = 'bp-thumbnail';
-                thumbnail.textContent = `${page}`;
-                return thumbnail;
-            }
+
+        // Get the first page of the document, and use its dimensions
+        // to set the thumbnails size of the thumbnails sidebar
+        this.pdfViewer.pdfDocument.getPage(1).then((page) => {
+            const desiredWidth = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH;
+            const viewport = page.getViewport(1);
+            const scale = desiredWidth / viewport.width;
+            const scaledViewport = page.getViewport(scale);
+
+            this.thumbnailsSidebar.init({
+                totalItems: this.pdfViewer.pagesCount,
+                itemHeight: scaledViewport.height,
+                containerHeight: this.docEl.clientHeight,
+                margin: 15,
+                renderItemFn: (itemIndex) => {
+                    const thumbnail = document.createElement('button');
+                    thumbnail.className = 'bp-thumbnail';
+                    thumbnail.textContent = `${itemIndex}`;
+                    return thumbnail;
+                }
+            });
         });
     }
 
