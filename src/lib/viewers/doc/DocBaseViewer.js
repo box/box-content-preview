@@ -1015,10 +1015,9 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebar = new VirtualScroller(this.thumbnailsSidebarEl);
         this.thumbnailsSidebar.init({
             totalItems: this.pdfViewer.pagesCount,
-            itemHeight: 115,
+            itemHeight: 100,
             containerHeight: this.docEl.clientHeight,
-            marginTop: 7.5,
-            marginBottom: 7.5,
+            margin: 15,
             renderItemFn: (page) => {
                 const thumbnail = document.createElement('button');
                 thumbnail.className = 'bp-thumbnail';

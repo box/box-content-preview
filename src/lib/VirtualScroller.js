@@ -1,9 +1,41 @@
 import isFinite from 'lodash/isFinite';
 import isFunction from 'lodash/isFunction';
-import { VIRTUAL_SCROLLER_BUFFERED_ITEM_MULTIPLIER } from './constants';
+
+const BUFFERED_ITEM_MULTIPLIER = 3;
 
 class VirtualScroller {
-    static TOTAL_VIEW_MULTIPLIER = 3;
+    /** @property {HTMLElement} - The anchor element for this Virtual Scroller */
+    anchorEl;
+
+    /** @property {HTMLElement} - The reference to the scrolling element container */
+    scrollingEl;
+
+    /** @property {number} - The height of the scrolling container */
+    containerHeight;
+
+    /** @property {number} - The height of a single list item */
+    itemHeight;
+
+    /** @property {HTMLElement} - The reference to the list element */
+    listEl;
+
+    /** @property {number} - The margin at the top of the list and below every list item */
+    margin;
+
+    /** @property {number} -  The height of the buffer before virtual scroll renders the next set */
+    maxBufferHeight;
+
+    /** @property {number} - The max number of items to render at any one given time */
+    maxRenderedItems;
+
+    /** @property {Function} - The callback function that to allow users generate the item */
+    renderItemFn;
+
+    /** @property {number} - The total number items to be scrolled */
+    totalItems;
+
+    /** @property {number} - The number of items that can fit in the visible scrolling element */
+    totalViewItems;
 
     /**
      * [constructor]
@@ -26,11 +58,11 @@ class VirtualScroller {
      * @return {void}
      */
     destroy() {
-        if (this.containerEl) {
-            this.containerEl.remove();
+        if (this.scrollingEl) {
+            this.scrollingEl.remove();
         }
 
-        this.containerEl = null;
+        this.scrollingEl = null;
         this.listEl = null;
     }
 
@@ -43,44 +75,26 @@ class VirtualScroller {
     init(config) {
         this.validateRequiredConfig(config);
 
-        // The total number items to be scrolled
         this.totalItems = config.totalItems;
-
-        // The height of each individual item
         this.itemHeight = config.itemHeight;
-
-        // The height of the visible container
         this.containerHeight = config.containerHeight;
-
-        // The callback function that to allow users generate the item
         this.renderItemFn = config.renderItemFn;
-
-        // Allows the user to specify the margin at the top of the container before the first item is rendered
-        this.marginTop = config.marginTop || 0;
-
-        // Allows the user to specify the margin at the bottom of the container after the last item is rendered
-        this.marginBottom = config.marginBottom || 0;
-
-        // The number of items that can fit in view
-        this.totalViewItems = Math.ceil(this.containerHeight / this.itemHeight);
-
-        // The height of the buffer before virtual scroll renders the next set
+        this.margin = config.margin || 0;
+        this.totalViewItems = Math.ceil(this.containerHeight / (this.itemHeight + this.margin));
         this.maxBufferHeight = this.totalViewItems * this.itemHeight;
-
-        // The max number of items to render at any one given time
-        this.maxRenderedItems = this.totalViewItems * VIRTUAL_SCROLLER_BUFFERED_ITEM_MULTIPLIER;
+        this.maxRenderedItems = this.totalViewItems * BUFFERED_ITEM_MULTIPLIER;
 
         // Create the scrolling container element
-        this.containerEl = document.createElement('div');
-        this.containerEl.className = 'bp-vs';
+        this.scrollingEl = document.createElement('div');
+        this.scrollingEl.className = 'bp-vs';
 
         // Create the true height content container
         this.listEl = document.createElement('ol');
         this.listEl.className = 'bp-vs-list';
-        this.listEl.style.height = `${this.totalItems * this.itemHeight + this.marginTop + this.marginBottom}px`;
+        this.listEl.style.height = `${this.totalItems * (this.itemHeight + this.margin) + this.margin}px`;
 
-        this.containerEl.appendChild(this.listEl);
-        this.anchorEl.appendChild(this.containerEl);
+        this.scrollingEl.appendChild(this.listEl);
+        this.anchorEl.appendChild(this.scrollingEl);
 
         this.renderItems();
 
@@ -118,7 +132,7 @@ class VirtualScroller {
      * @return {void}
      */
     bindDOMListeners() {
-        this.containerEl.addEventListener('scroll', this.onScrollHandler);
+        this.scrollingEl.addEventListener('scroll', this.onScrollHandler);
     }
 
     /**
@@ -127,8 +141,8 @@ class VirtualScroller {
      * @return {void}
      */
     unbindDOMListeners() {
-        if (this.containerEl) {
-            this.containerEl.removeEventListener('scroll', this.onScrollHandler);
+        if (this.scrollingEl) {
+            this.scrollingEl.removeEventListener('scroll', this.onScrollHandler);
         }
     }
 
@@ -144,7 +158,7 @@ class VirtualScroller {
         if (Math.abs(scrollTop - this.previousScrollTop) > this.maxBufferHeight) {
             // The first item to be re-rendered will be a totalViewItems height up from the
             // item at the current location
-            const firstIndex = Math.floor(scrollTop / this.itemHeight) - this.totalViewItems;
+            const firstIndex = Math.floor(scrollTop / (this.itemHeight + this.margin)) - this.totalViewItems;
             this.renderItems(Math.max(firstIndex, 0));
 
             this.previousScrollTop = scrollTop;
@@ -189,7 +203,7 @@ class VirtualScroller {
      */
     renderItem(rowIndex) {
         const rowEl = document.createElement('li');
-        const topPosition = this.itemHeight * rowIndex + this.marginTop;
+        const topPosition = (this.itemHeight + this.margin) * rowIndex + this.margin;
 
         let renderedThumbnail;
         try {
