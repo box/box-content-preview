@@ -50,8 +50,7 @@ class VirtualScroller {
         this.previousScrollTop = 0;
 
         this.createListElement = this.createListElement.bind(this);
-        this.onScrollHandler = this.onScrollHandler.bind(this);
-        this.throttledOnScrollHandler = throttle(this.onScrollHandler, 50);
+        this.onScrollHandler = throttle(this.onScrollHandler.bind(this), 50);
         this.renderItems = this.renderItems.bind(this);
     }
 
