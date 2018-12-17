@@ -13,7 +13,7 @@ Before((I) => {
     });
 });
 
-Scenario('Download the file @ci @chrome @firefox @edge @safari @ie', function*(I) {
+Scenario('Download the file', function*(I) {
     I.waitForVisible(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
     I.click(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
     I.waitForElement(SELECTOR_DOWNLOAD_IFRAME);

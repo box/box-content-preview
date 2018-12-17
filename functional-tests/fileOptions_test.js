@@ -41,38 +41,33 @@ Before((I) => {
     I.amOnPage('/functional-tests/index.html');
 });
 
-// Excludes ie
-Scenario(
-    'Check preview starts at correct spot for all file types @ci @chrome @firefox @edge @safari @android @ios',
-    { retries: 5 },
-    (I) => {
-        // Document
-        showPreview(I, FILE_ID_DOC, { fileOptions });
+Scenario('Check preview starts at correct spot for all file types', { retries: 5 }, (I) => {
+    // Document
+    showPreview(I, FILE_ID_DOC, { fileOptions });
 
-        showDocumentControls(I);
-        I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
-        I.seeTextEquals(DOC_START, SELECTOR_DOC_CURRENT_PAGE);
+    showDocumentControls(I);
+    I.waitForVisible(SELECTOR_DOC_CURRENT_PAGE);
+    I.seeTextEquals(DOC_START, SELECTOR_DOC_CURRENT_PAGE);
 
-        // Video (DASH)
-        showPreview(I, FILE_ID_VIDEO, { fileOptions });
+    // Video (DASH)
+    showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-        showMediaControls(I);
-        I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
-        I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
+    showMediaControls(I);
+    I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
+    I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
 
-        // MP3
-        showPreview(I, FILE_ID_MP3, { fileOptions });
+    // MP3
+    showPreview(I, FILE_ID_MP3, { fileOptions });
 
-        showMediaControls(I);
-        I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
-        I.seeTextEquals(MP3_START, SELECTOR_MEDIA_TIMESTAMP);
+    showMediaControls(I);
+    I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
+    I.seeTextEquals(MP3_START, SELECTOR_MEDIA_TIMESTAMP);
 
-        // Video (MP4)
-        disableDash(I);
-        showPreview(I, FILE_ID_VIDEO, { fileOptions });
+    // Video (MP4)
+    disableDash(I);
+    showPreview(I, FILE_ID_VIDEO, { fileOptions });
 
-        showMediaControls(I);
-        I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
-        I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
-    }
-);
+    showMediaControls(I);
+    I.waitForVisible(SELECTOR_MEDIA_TIMESTAMP);
+    I.seeTextEquals(VIDEO_START, SELECTOR_MEDIA_TIMESTAMP);
+});
