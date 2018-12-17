@@ -13,4 +13,4 @@ jobs:
           sudo: required
           addons:
               chrome: beta
-          script: travis_retry yarn run functional-tests-ci --grep "@ci"
+          script: travis_retry yarn run functional-tests-ci
