@@ -7,7 +7,7 @@ Before((I) => {
     I.amOnPage('/functional-tests/index.html');
 });
 
-Scenario('Sanity test @ci @chrome @firefox @edge @safari @ie @android @ios', (I) => {
+Scenario('Sanity test', (I) => {
     showPreview(I, FILE_ID_DOC);
     I.waitForText('The Content Platform for Your Apps');
 });

@@ -24,7 +24,7 @@ Before((I) => {
     showPreview(I, FILE_ID_DOC);
 });
 
-Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
+Scenario('Check document preview zoom', function*(I) {
     // zoom out
     const origWidth = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollWidth');
     const origHeight = yield I.grabAttributeFrom(SELECTOR_DOC_FIRST_PAGE, 'scrollHeight');
@@ -47,7 +47,7 @@ Scenario('Check document preview zoom @ci @chrome @firefox @edge @ie @safari @an
     assert.ok(parseInt(zoomedOutHeight, 10) < parseInt(zoomedInHeight, 10));
 });
 
-Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
+Scenario('Check document preview navigation', function*(I) {
     const FIRST_PAGE = '#bp-page-1';
     const SECOND_PAGE = '#bp-page-2';
     showDocumentControls(I);
@@ -85,7 +85,7 @@ Scenario('Check document preview navigation @ci @chrome @firefox @edge @ie @safa
     I.seeElement(SECOND_PAGE);
 });
 
-Scenario('Check document preview fullscreen @ci @chrome @firefox @edge @ie @safari @android @ios', function*(I) {
+Scenario('Check document preview fullscreen', function*(I) {
     showDocumentControls(I);
 
     // Enter fullscreem
