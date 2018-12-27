@@ -1140,6 +1140,47 @@ describe('lib/Preview', () => {
 
             preview.setupUI();
         });
+
+        it('should setup everything even though container is not falsy', () => {
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIndicator');
+            previewUIMock.expects('startProgressBar');
+            previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
+
+            preview.container = {};
+
+            preview.setupUI();
+        });
+
+        it('should setup everything even though retryCount is > 0', () => {
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIndicator');
+            previewUIMock.expects('startProgressBar');
+            previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
+
+            preview.container = undefined;
+            preview.retryCount = 1;
+
+            preview.setupUI();
+        });
+
+        it('should not setup anything if container is truthy and retryCount > 0', () => {
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup').never();
+            previewUIMock.expects('showLoadingIndicator').never();
+            previewUIMock.expects('startProgressBar').never();
+            previewUIMock.expects('showNavigation').never();
+            previewUIMock.expects('setupNotification').never();
+
+            preview.container = {};
+            preview.retryCount = 1;
+
+            preview.setupUI();
+        });
     });
 
     describe('parseOptions()', () => {

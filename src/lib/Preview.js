@@ -814,6 +814,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     setupUI() {
+        // Do nothing if container is already setup and in the middle of retrying
+        if (this.container && this.retryCount > 0) {
+            return;
+        }
+
         // Setup the shell
         this.container = this.ui.setup(
             this.options,
