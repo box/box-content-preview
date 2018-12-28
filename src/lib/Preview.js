@@ -795,7 +795,10 @@ class Preview extends EventEmitter {
         // Set the authorization token
         this.options.token = tokenMap[this.file.id];
 
-        this.setupUI();
+        // Do nothing if container is already setup and in the middle of retrying
+        if (!(this.ui.isSetup() && this.retryCount > 0)) {
+            this.setupUI();
+        }
 
         // Load from cache if the current file is valid, otherwise load file info from server
         if (checkFileValid(this.file)) {
@@ -814,11 +817,6 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     setupUI() {
-        // Do nothing if container is already setup and in the middle of retrying
-        if (this.container && this.retryCount > 0) {
-            return;
-        }
-
         // Setup the shell
         this.container = this.ui.setup(
             this.options,

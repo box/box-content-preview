@@ -1090,6 +1090,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
+            stubs.ui = sandbox.stub(preview.ui, 'isSetup');
         });
 
         it('should set the token option', () => {
@@ -1127,6 +1128,26 @@ describe('lib/Preview', () => {
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
         });
+
+        it('should setup UI if ui is not setup', () => {
+            stubs.ui.returns(false);
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.be.called;
+        });
+
+        it('should setup UI if not retrying', () => {
+            stubs.ui.returns(true);
+            preview.retryCount = 0;
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.be.called;
+        });
+
+        it('should not setup UI if UI is setup and is retrying', () => {
+            stubs.ui.returns(true);
+            preview.retryCount = 1;
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.not.be.called;
+        });
     });
 
     describe('setupUI', () => {
@@ -1137,47 +1158,6 @@ describe('lib/Preview', () => {
             previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
             previewUIMock.expects('setupNotification');
-
-            preview.setupUI();
-        });
-
-        it('should setup everything even though container is not falsy', () => {
-            const previewUIMock = sandbox.mock(preview.ui);
-            previewUIMock.expects('setup');
-            previewUIMock.expects('showLoadingIndicator');
-            previewUIMock.expects('startProgressBar');
-            previewUIMock.expects('showNavigation');
-            previewUIMock.expects('setupNotification');
-
-            preview.container = {};
-
-            preview.setupUI();
-        });
-
-        it('should setup everything even though retryCount is > 0', () => {
-            const previewUIMock = sandbox.mock(preview.ui);
-            previewUIMock.expects('setup');
-            previewUIMock.expects('showLoadingIndicator');
-            previewUIMock.expects('startProgressBar');
-            previewUIMock.expects('showNavigation');
-            previewUIMock.expects('setupNotification');
-
-            preview.container = undefined;
-            preview.retryCount = 1;
-
-            preview.setupUI();
-        });
-
-        it('should not setup anything if container is truthy and retryCount > 0', () => {
-            const previewUIMock = sandbox.mock(preview.ui);
-            previewUIMock.expects('setup').never();
-            previewUIMock.expects('showLoadingIndicator').never();
-            previewUIMock.expects('startProgressBar').never();
-            previewUIMock.expects('showNavigation').never();
-            previewUIMock.expects('setupNotification').never();
-
-            preview.container = {};
-            preview.retryCount = 1;
 
             preview.setupUI();
         });

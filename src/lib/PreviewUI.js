@@ -129,6 +129,16 @@ class PreviewUI {
     }
 
     /**
+     * Whether the UI has been setup yet
+     *
+     * @public
+     * @return {boolean} Whether the UI has been setup
+     */
+    isSetup() {
+        return this.container && this.container.innerHTML !== '';
+    }
+
+    /**
      * Shows navigation arrows if there is a need
      *
      * @public
