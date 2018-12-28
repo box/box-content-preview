@@ -10,4 +10,5 @@ Before((I) => {
 Scenario('Sanity test', (I) => {
     showPreview(I, FILE_ID_DOC);
     I.waitForText('The Content Platform for Your Apps');
+    console.log('hi');
 });
