@@ -110,7 +110,7 @@
     "debug": "yarn install && NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
     "dev": "yarn install && BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "functional-tests": "python -m SimpleHTTPServer 8000 & node ./node_modules/codeceptjs/bin/codecept.js run-multiple parallel --verbose ; pkill -i python -m SimpleHTTPServer 8000",
-    "functional-tests-ci": "yarn run clean && yarn run build-rb && yarn run build-ci && node ./node_modules/codeceptjs/bin/codecept.js run-multiple parallel",
+    "functional-tests-ci": "yarn run clean && yarn run build-rb && yarn run build-ci && ACCESS_TOKEN=$ACCESS_TOKEN node ./node_modules/codeceptjs/bin/codecept.js run-multiple parallel",
     "lint": "NODE_ENV=dev ./node_modules/.bin/eslint src/lib && ./node_modules/.bin/stylelint 'src/lib/**/*.scss'",
     "precommit": "lint-staged",
     "prepush": "yarn run lint",
