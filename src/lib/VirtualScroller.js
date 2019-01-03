@@ -3,6 +3,7 @@ import isFunction from 'lodash/isFunction';
 import throttle from 'lodash/throttle';
 
 const BUFFERED_ITEM_MULTIPLIER = 3;
+const SCROLL_THROTTLE_MS = 50;
 
 class VirtualScroller {
     /** @property {HTMLElement} - The anchor element for this Virtual Scroller */
@@ -50,7 +51,7 @@ class VirtualScroller {
         this.previousScrollTop = 0;
 
         this.createListElement = this.createListElement.bind(this);
-        this.onScrollHandler = throttle(this.onScrollHandler.bind(this), 50);
+        this.onScrollHandler = throttle(this.onScrollHandler.bind(this), SCROLL_THROTTLE_MS);
         this.renderItems = this.renderItems.bind(this);
     }
 
