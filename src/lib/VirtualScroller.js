@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import isFunction from 'lodash/isFunction';
 import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 
 const BUFFERED_ITEM_MULTIPLIER = 3;
 const SCROLL_THROTTLE_MS = 50;
@@ -51,7 +52,10 @@ class VirtualScroller {
         this.previousScrollTop = 0;
 
         this.createListElement = this.createListElement.bind(this);
-        this.onScrollHandler = throttle(this.onScrollHandler.bind(this), SCROLL_THROTTLE_MS);
+        this.onScrollHandler = this.onScrollHandler.bind(this);
+        this.onScrollEndHandler = this.onScrollEndHandler.bind(this);
+        this.throttledOnScrollHandler = throttle(this.onScrollHandler, 150);
+        this.debouncedOnScrollEnd = debounce(this.onScrollEndHandler, 151);
         this.renderItems = this.renderItems.bind(this);
     }
 
@@ -83,6 +87,9 @@ class VirtualScroller {
         this.containerHeight = config.containerHeight;
         this.renderItemFn = config.renderItemFn;
         this.margin = config.margin || 0;
+        this.onScrollEnd = config.onScrollEnd;
+        this.onScrollStart = config.onScrollStart;
+
         this.totalViewItems = Math.floor(this.containerHeight / (this.itemHeight + this.margin));
         this.maxBufferHeight = this.totalViewItems * this.itemHeight;
         this.maxRenderedItems = (this.totalViewItems + 1) * BUFFERED_ITEM_MULTIPLIER;
@@ -134,6 +141,8 @@ class VirtualScroller {
      */
     bindDOMListeners() {
         this.scrollingEl.addEventListener('scroll', this.throttledOnScrollHandler, { passive: true });
+        this.scrollingEl.addEventListener('scroll', this.debouncedOnScrollEnd, { passive: true });
+        this.scrollingEl.addEventListener('scroll', this.debouncedOnScrollStart, { passive: true });
     }
 
     /**
@@ -144,6 +153,8 @@ class VirtualScroller {
     unbindDOMListeners() {
         if (this.scrollingEl) {
             this.scrollingEl.removeEventListener('scroll', this.throttledOnScrollHandler);
+            this.scrollingEl.removeEventListener('scroll', this.debouncedOnScrollEnd);
+            this.scrollingEl.removeEventListener('scroll', this.debouncedOnScrollStart);
         }
     }
 
@@ -156,6 +167,8 @@ class VirtualScroller {
     onScrollHandler(e) {
         const { scrollTop } = e.target;
 
+        this.onScrollStartHandler(e);
+
         if (Math.abs(scrollTop - this.previousScrollTop) > this.maxBufferHeight) {
             // The first item to be re-rendered will be a totalViewItems height up from the
             // item at the current location
@@ -163,6 +176,18 @@ class VirtualScroller {
             this.renderItems(Math.max(firstIndex, 0));
 
             this.previousScrollTop = scrollTop;
+        }
+    }
+
+    onScrollEndHandler(e) {
+        if (this.onScrollEnd) {
+            this.onScrollEnd(e);
+        }
+    }
+
+    onScrollStartHandler(e) {
+        if (this.onScrollStart) {
+            this.onScrollStart(e);
         }
     }
 
