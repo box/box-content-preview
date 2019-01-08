@@ -261,22 +261,23 @@ class VirtualScroller {
         //          |--------------------|
         //   newStartOffset          newEndOffset
         if (curStartOffset <= offset && offset <= curEndOffset) {
-            // clone elements from offset to curEndOffset
-            // then render from curEnd+1 to count new items
             newStartOffset = curEndOffset + 1;
+            // clone elements from newStartOffset to curEndOffset
             this.cloneItems(newListEl, children, offset - curStartOffset, curEndOffset - curStartOffset);
+            // then create elements from curEnd + 1 to newEndOffset
             this.createItems(newListEl, newStartOffset, newEndOffset);
+
             // Scenario #2: New end offset falls within the current range of items rendered
             //                |--------------------|
             //              curStart            curEnd
             //          |--------------------|
             //    newStartOffset        newEndOffset
         } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
-            // render from offset to curStart-1
-            // clone elements from curStartOffset to offset+count
-            // newEndOffset = curStartOffset;
+            // create elements from newStartOffset to curStart - 1
             this.createItems(newListEl, offset, curStartOffset - 1);
+            // then clone elements from curStartOffset to newEndOffset
             this.cloneItems(newListEl, children, 0, newEndOffset - curStartOffset);
+
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
             //                        curStart            curEnd
