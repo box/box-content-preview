@@ -4,7 +4,8 @@ import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 
 const BUFFERED_ITEM_MULTIPLIER = 3;
-const SCROLL_THROTTLE_MS = 50;
+const THROTTLE_SCROLL_THRESHOLD = 150;
+const DEBOUNCE_SCROLL_THRESHOLD = 151;
 
 class VirtualScroller {
     /** @property {HTMLElement} - The anchor element for this Virtual Scroller */
@@ -31,6 +32,9 @@ class VirtualScroller {
     /** @property {number} - The max number of items to render at any one given time */
     maxRenderedItems;
 
+    /** @property {number} - The previously recorded scrollTop value */
+    previousScrollTop;
+
     /** @property {Function} - The callback function that to allow users generate the item */
     renderItemFn;
 
@@ -50,16 +54,16 @@ class VirtualScroller {
         this.anchorEl = anchor;
 
         this.previousScrollTop = 0;
-        this.renderIndex = 0;
 
         this.createListElement = this.createListElement.bind(this);
         this.onScrollEndHandler = this.onScrollEndHandler.bind(this);
         this.onScrollHandler = this.onScrollHandler.bind(this);
         this.getInfo = this.getInfo.bind(this);
         this.renderItems = this.renderItems.bind(this);
+        this.getMaxRenderedItems = this.getMaxRenderedItems.bind(this);
 
-        this.debouncedOnScrollEnd = debounce(this.onScrollEndHandler, 151);
-        this.throttledOnScrollHandler = throttle(this.onScrollHandler, 150);
+        this.debouncedOnScrollEnd = debounce(this.onScrollEndHandler, DEBOUNCE_SCROLL_THRESHOLD);
+        this.throttledOnScrollHandler = throttle(this.onScrollHandler, THROTTLE_SCROLL_THRESHOLD);
     }
 
     /**
@@ -173,8 +177,6 @@ class VirtualScroller {
     onScrollHandler(e) {
         const { scrollTop } = e.target;
 
-        this.onScrollStartHandler(e);
-
         if (Math.abs(scrollTop - this.previousScrollTop) > this.maxBufferHeight) {
             // The first item to be re-rendered will be a totalViewItems height up from the
             // item at the current location
@@ -185,6 +187,11 @@ class VirtualScroller {
         }
     }
 
+    /**
+     * Debounced scroll handler to signal when scrolling has stopped
+     *
+     * @return {void}
+     */
     onScrollEndHandler() {
         if (this.onScrollEnd) {
             const data = this.getInfo();
@@ -192,6 +199,11 @@ class VirtualScroller {
         }
     }
 
+    /**
+     * Gets information about what the current start offset, end offset and rendered items array
+     *
+     * @return {Object} - info object
+     */
     getInfo() {
         const curStartOffset = this.listEl.firstElementChild
             ? Number.parseInt(this.listEl.firstElementChild.dataset.bpVsRowIndex, 10)
@@ -207,10 +219,13 @@ class VirtualScroller {
         };
     }
 
-    onScrollStartHandler(e) {
-        if (this.onScrollStart) {
-            this.onScrollStart(e);
-        }
+    /**
+     * Get the max rendered items
+     *
+     * @return {number} - the value of `maxRenderedItems`
+     */
+    getMaxRenderedItems() {
+        return this.maxRenderedItems;
     }
 
     /**
@@ -222,14 +237,7 @@ class VirtualScroller {
     renderItems(offset = 0) {
         // calculate the diff between what is already rendered
         // and what needs to be rendered
-        const curStartOffset = this.listEl.firstElementChild
-            ? Number.parseInt(this.listEl.firstElementChild.dataset.bpVsRowIndex, 10)
-            : -1;
-        const curEndOffset = this.listEl.lastElementChild
-            ? Number.parseInt(this.listEl.lastElementChild.dataset.bpVsRowIndex, 10)
-            : -1;
-
-        console.log(`renderItems offset=${offset}, curStartOffset=${curStartOffset}, curEndOffset=${curEndOffset}`);
+        const { startOffset: curStartOffset, endOffset: curEndOffset } = this.getInfo();
 
         if (curStartOffset === offset) {
             return;
@@ -256,7 +264,6 @@ class VirtualScroller {
             // clone elements from offset to curEndOffset
             // then render from curEnd+1 to count new items
             newStartOffset = curEndOffset + 1;
-            console.log(`cloneItems from ${offset} to ${curEndOffset}`);
             this.cloneItems(newListEl, children, offset - curStartOffset, curEndOffset - curStartOffset);
             this.createItems(newListEl, newStartOffset, newEndOffset);
             // Scenario #2: New end offset falls within the current range of items rendered
@@ -269,7 +276,6 @@ class VirtualScroller {
             // clone elements from curStartOffset to offset+count
             // newEndOffset = curStartOffset;
             this.createItems(newListEl, offset, curStartOffset - 1);
-            console.log(`cloneItems from ${curStartOffset} to ${newEndOffset}`);
             this.cloneItems(newListEl, children, 0, newEndOffset - curStartOffset);
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
@@ -282,17 +288,41 @@ class VirtualScroller {
 
         this.scrollingEl.replaceChild(newListEl, this.listEl);
         this.listEl = newListEl;
-        this.renderIndex = offset;
     }
 
+    /**
+     * Clones a subset of the HTMLElements from the oldList to the newList.
+     * The newList element is modified.
+     *
+     * @param {HTMLElement} newList - the new `li` element
+     * @param {Array<HTMLElement>} oldList - the children of the old `li` element
+     * @param {number} start - start index
+     * @param {number} end  - end index
+     * @return {void}
+     */
     cloneItems(newList, oldList, start, end) {
+        if (!newList || !oldList || start < 0 || end < 0) {
+            return;
+        }
+
         for (let i = start; i <= end; i++) {
             newList.appendChild(oldList[i].cloneNode(true));
         }
     }
 
+    /**
+     * Creates new HTMLElements appended to the newList
+     *
+     * @param {HTMLElement} newList - the new `li` element
+     * @param {number} start - start index
+     * @param {number} end  - end index
+     * @return {void}
+     */
     createItems(newList, start, end) {
-        console.log(`createItems from ${start} to ${end}`);
+        if (!newList || start < 0 || end < 0) {
+            return;
+        }
+
         for (let i = start; i <= end; i++) {
             const newEl = this.renderItem(i);
             newList.appendChild(newEl);

@@ -8,7 +8,6 @@ import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
-import VirtualScroller from '../../VirtualScroller';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
@@ -64,7 +63,6 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const PAGES_UNIT_NAME = 'pages';
-const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
