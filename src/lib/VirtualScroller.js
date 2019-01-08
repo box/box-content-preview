@@ -84,7 +84,7 @@ class VirtualScroller {
      * Initializes the virtual scroller
      *
      * @param {Object} config - The config
-     * @return {Promise} - promise resolved when init has finished
+     * @return {void}
      */
     init(config) {
         this.validateRequiredConfig(config);
