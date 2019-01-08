@@ -931,7 +931,6 @@ class Preview extends EventEmitter {
         this.options.fileOptions = options.fileOptions || {};
 
         // Option to enable use of thumbnails sidebar for document types
-        // this.options.enableThumbnailsSidebar = !!options.enableThumbnailsSidebar;
         this.options.enableThumbnailsSidebar = !!options.enableThumbnailsSidebar;
 
         // Prefix any user created loaders before our default ones

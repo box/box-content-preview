@@ -17,6 +17,7 @@ class ThumbnailsSidebar {
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.processNextWorkItem = this.processNextWorkItem.bind(this);
         this.makeThumbnailImage = this.makeThumbnailImage.bind(this);
+        this.renderThumbnails = this.renderThumbnails.bind(this);
     }
 
     destroy() {
@@ -50,23 +51,35 @@ class ThumbnailsSidebar {
                 containerHeight: this.anchorEl.parentNode.clientHeight,
                 margin: 15,
                 renderItemFn: (itemIndex) => this.renderThumbnail(itemIndex),
-                onScrollEnd: (e) => {
-                    console.log('scroll end', e);
+                onScrollEnd: (data) => {
+                    console.log('scroll end', data);
                     this.processWorkQueue = true;
-                    this.processNextWorkItem();
+                    // this.processNextWorkItem();
+                    this.renderThumbnails(data);
                 },
-                onScrollStart: (e) => {
+                /* onScrollStart: (e) => {
                     console.log('scroll start', e);
                     this.processWorkQueue = false;
-                }
+                }, */
+                onInit: this.renderThumbnails
             });
+        });
+    }
+
+    renderThumbnails(data) {
+        data.items.forEach((thumbnail, index) => {
+            if (thumbnail.classList.contains('bp-thumbnail-image-loaded')) {
+                return;
+            }
+
+            this.requestThumbnailImage(index + data.startOffset, thumbnail);
         });
     }
 
     renderThumbnail(itemIndex) {
         const thumbnail = document.createElement('button');
 
-        this.requestThumbnailImage(itemIndex, thumbnail);
+        // this.requestThumbnailImage(itemIndex, thumbnail);
         // this.makeThumbnailImage(itemIndex)
         //     .then((dataUrl) => {
         //         this.thumbnailImageCache[itemIndex] = dataUrl;
@@ -109,6 +122,7 @@ class ThumbnailsSidebar {
 
                         this.thumbnailImageCache[itemIndex] = imageEl;
                         thumbnail.appendChild(imageEl);
+                        thumbnail.classList.add('bp-thumbnail-image-loaded');
                     });
                 this.workInProgress += 1;
             });
@@ -131,6 +145,7 @@ class ThumbnailsSidebar {
     }
 
     makeThumbnailImage(itemIndex) {
+        console.log(`making thumbnail for ${itemIndex}`);
         if (this.thumbnailImageCache[itemIndex]) {
             return Promise.resolve(this.thumbnailImageCache[itemIndex]);
         }
