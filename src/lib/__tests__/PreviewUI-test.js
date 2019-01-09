@@ -378,4 +378,21 @@ describe('lib/PreviewUI', () => {
             expect(customLogoEl.src).to.equal(url);
         });
     });
+
+    describe('isSetup()', () => {
+        it('should return false if container is falsy', () => {
+            ui.container = false;
+            expect(ui.isSetup()).to.be.false;
+        });
+
+        it('should return false if container innerHTML is empty', () => {
+            ui.container = { innerHTML: '' };
+            expect(ui.isSetup()).to.be.false;
+        });
+
+        it('should return true if container innerHTML is not empty', () => {
+            ui.container = { innerHTML: 'foo' };
+            expect(ui.isSetup()).to.be.true;
+        });
+    });
 });

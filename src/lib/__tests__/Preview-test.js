@@ -1090,6 +1090,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
+            stubs.ui = sandbox.stub(preview.ui, 'isSetup');
         });
 
         it('should set the token option', () => {
@@ -1126,6 +1127,26 @@ describe('lib/Preview', () => {
             preview.handleTokenResponse({});
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
+        });
+
+        it('should setup UI if ui is not setup', () => {
+            stubs.ui.returns(false);
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.be.called;
+        });
+
+        it('should setup UI if not retrying', () => {
+            stubs.ui.returns(true);
+            preview.retryCount = 0;
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.be.called;
+        });
+
+        it('should not setup UI if UI is setup and is retrying', () => {
+            stubs.ui.returns(true);
+            preview.retryCount = 1;
+            preview.handleTokenResponse({});
+            expect(stubs.setupUI).to.not.be.called;
         });
     });
 
