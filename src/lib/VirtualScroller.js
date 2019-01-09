@@ -58,11 +58,10 @@ class VirtualScroller {
         this.createListElement = this.createListElement.bind(this);
         this.onScrollEndHandler = this.onScrollEndHandler.bind(this);
         this.onScrollHandler = this.onScrollHandler.bind(this);
-        this.getInfo = this.getInfo.bind(this);
+        this.getCurrentListInfo = this.getCurrentListInfo.bind(this);
         this.renderItems = this.renderItems.bind(this);
-        this.getMaxRenderedItems = this.getMaxRenderedItems.bind(this);
 
-        this.debouncedOnScrollEnd = debounce(this.onScrollEndHandler, DEBOUNCE_SCROLL_THRESHOLD);
+        this.debouncedOnScrollEndHandler = debounce(this.onScrollEndHandler, DEBOUNCE_SCROLL_THRESHOLD);
         this.throttledOnScrollHandler = throttle(this.onScrollHandler, THROTTLE_SCROLL_THRESHOLD);
     }
 
@@ -116,8 +115,8 @@ class VirtualScroller {
         this.bindDOMListeners();
 
         if (config.onInit) {
-            const data = this.getInfo();
-            config.onInit(data);
+            const listInfo = this.getCurrentListInfo();
+            config.onInit(listInfo);
         }
     }
 
@@ -153,7 +152,7 @@ class VirtualScroller {
      */
     bindDOMListeners() {
         this.scrollingEl.addEventListener('scroll', this.throttledOnScrollHandler, { passive: true });
-        this.scrollingEl.addEventListener('scroll', this.debouncedOnScrollEnd, { passive: true });
+        this.scrollingEl.addEventListener('scroll', this.debouncedOnScrollEndHandler, { passive: true });
     }
 
     /**
@@ -164,7 +163,7 @@ class VirtualScroller {
     unbindDOMListeners() {
         if (this.scrollingEl) {
             this.scrollingEl.removeEventListener('scroll', this.throttledOnScrollHandler);
-            this.scrollingEl.removeEventListener('scroll', this.debouncedOnScrollEnd);
+            this.scrollingEl.removeEventListener('scroll', this.debouncedOnScrollEndHandler);
         }
     }
 
@@ -194,8 +193,8 @@ class VirtualScroller {
      */
     onScrollEndHandler() {
         if (this.onScrollEnd) {
-            const data = this.getInfo();
-            this.onScrollEnd(data);
+            const listInfo = this.getCurrentListInfo();
+            this.onScrollEnd(listInfo);
         }
     }
 
@@ -204,28 +203,19 @@ class VirtualScroller {
      *
      * @return {Object} - info object
      */
-    getInfo() {
-        const curStartOffset = this.listEl.firstElementChild
-            ? Number.parseInt(this.listEl.firstElementChild.dataset.bpVsRowIndex, 10)
-            : -1;
-        const curEndOffset = this.listEl.lastElementChild
-            ? Number.parseInt(this.listEl.lastElementChild.dataset.bpVsRowIndex, 10)
-            : -1;
-        const items = this.anchorEl.querySelectorAll('.bp-vs-list-item > *');
+    getCurrentListInfo() {
+        const { firstElementChild, lastElementChild } = this.listEl;
+
+        const curStartOffset = firstElementChild ? Number.parseInt(firstElementChild.dataset.bpVsRowIndex, 10) : -1;
+        const curEndOffset = lastElementChild ? Number.parseInt(lastElementChild.dataset.bpVsRowIndex, 10) : -1;
+
+        const items = Array.prototype.slice.call(this.listEl.children).map((listItemEl) => listItemEl.children[0]);
+
         return {
             startOffset: curStartOffset,
             endOffset: curEndOffset,
-            items: Array.prototype.slice.call(items)
+            items
         };
-    }
-
-    /**
-     * Get the max rendered items
-     *
-     * @return {number} - the value of `maxRenderedItems`
-     */
-    getMaxRenderedItems() {
-        return this.maxRenderedItems;
     }
 
     /**
@@ -237,7 +227,7 @@ class VirtualScroller {
     renderItems(offset = 0) {
         // calculate the diff between what is already rendered
         // and what needs to be rendered
-        const { startOffset: curStartOffset, endOffset: curEndOffset } = this.getInfo();
+        const { startOffset: curStartOffset, endOffset: curEndOffset } = this.getCurrentListInfo();
 
         if (curStartOffset === offset) {
             return;
@@ -255,35 +245,34 @@ class VirtualScroller {
         const newListEl = this.createListElement();
         const children = Array.prototype.slice.call(this.listEl.children);
 
-        // Scenario #1: New start offset falls within the current range of items rendered
-        //      |--------------------|
-        //  curStart            curEnd
-        //          |--------------------|
-        //   newStartOffset          newEndOffset
         if (curStartOffset <= offset && offset <= curEndOffset) {
+            // Scenario #1: New start offset falls within the current range of items rendered
+            //      |--------------------|
+            //  curStartOffset       curEndOffset
+            //          |--------------------|
+            //   newStartOffset          newEndOffset
             newStartOffset = curEndOffset + 1;
             // clone elements from newStartOffset to curEndOffset
             this.cloneItems(newListEl, children, offset - curStartOffset, curEndOffset - curStartOffset);
             // then create elements from curEnd + 1 to newEndOffset
             this.createItems(newListEl, newStartOffset, newEndOffset);
-
+        } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
             // Scenario #2: New end offset falls within the current range of items rendered
             //                |--------------------|
-            //              curStart            curEnd
+            //          curStartOffset        curEndOffset
             //          |--------------------|
             //    newStartOffset        newEndOffset
-        } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
+
             // create elements from newStartOffset to curStart - 1
             this.createItems(newListEl, offset, curStartOffset - 1);
             // then clone elements from curStartOffset to newEndOffset
             this.cloneItems(newListEl, children, 0, newEndOffset - curStartOffset);
-
+        } else {
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
-            //                        curStart            curEnd
+            //                    curStartOffset        curEndOffset
             //  |--------------------|
             // newStartOffset    newEndOffset
-        } else {
             this.createItems(newListEl, newStartOffset, newEndOffset);
         }
 

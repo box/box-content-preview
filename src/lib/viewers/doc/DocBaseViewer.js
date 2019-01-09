@@ -8,6 +8,7 @@ import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
+import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
@@ -41,7 +42,6 @@ import {
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
-import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;

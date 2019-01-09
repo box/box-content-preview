@@ -1,3 +1,4 @@
+import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 
 const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
@@ -25,10 +26,10 @@ class ThumbnailsSidebar {
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = {};
 
-        this.renderBasicThumbnail = this.renderBasicThumbnail.bind(this);
+        this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
-        this.makeThumbnailImage = this.makeThumbnailImage.bind(this);
-        this.renderThumbnailImages = this.renderThumbnailImages.bind(this);
+        this.createThumbnailImage = this.createThumbnailImage.bind(this);
+        this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
     }
 
     /**
@@ -39,10 +40,10 @@ class ThumbnailsSidebar {
     destroy() {
         if (this.virtualScroller) {
             this.virtualScroller.destroy();
+            this.virtualScroller = null;
         }
 
         this.thumbnailImageCache = null;
-        this.virtualScroller = null;
         this.pdfViewer = null;
     }
 
@@ -57,10 +58,18 @@ class ThumbnailsSidebar {
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
         this.pdfViewer.pdfDocument.getPage(1).then((page) => {
-            const desiredWidth = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH;
-            const viewport = page.getViewport(1);
-            this.scale = desiredWidth / viewport.width;
-            this.pageRatio = viewport.width / viewport.height;
+            const { width, height } = page.getViewport(1);
+
+            // If the dimensions of the page are invalid then don't proceed further
+            if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
+                console.error('Page dimensions invalid when initializing the thumbnails sidebar');
+                return;
+            }
+
+            // Amount to scale down from fullsize to thumbnail size
+            this.scale = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width;
+            // Width : Height ratio of the page
+            this.pageRatio = width / height;
             const scaledViewport = page.getViewport(this.scale);
 
             this.virtualScroller.init({
@@ -68,70 +77,68 @@ class ThumbnailsSidebar {
                 itemHeight: scaledViewport.height,
                 containerHeight: this.anchorEl.parentNode.clientHeight,
                 margin: THUMBNAIL_MARGIN,
-                renderItemFn: (itemIndex) => this.renderBasicThumbnail(itemIndex),
-                onScrollEnd: this.renderThumbnailImages,
-                onInit: this.renderThumbnailImages
+                renderItemFn: this.createPlaceholderThumbnail,
+                onScrollEnd: this.generateThumbnailImages,
+                onInit: this.generateThumbnailImages
             });
         });
     }
 
     /**
-     * Renders the thumbnail images
+     * Generates the thumbnail images that are not yet created
      *
-     * @param {Object} data - VirtualScroller data object which contains startOffset, endOffset, and the thumbnail elements
+     * @param {Object} currentListInfo - VirtualScroller info object which contains startOffset, endOffset, and the thumbnail elements
      * @return {void}
      */
-    renderThumbnailImages(data) {
-        data.items.forEach((thumbnail, index) => {
-            if (thumbnail.classList.contains('bp-thumbnail-image-loaded')) {
+    generateThumbnailImages({ items, startOffset }) {
+        items.forEach((thumbnailEl, index) => {
+            if (thumbnailEl.classList.contains('bp-thumbnail-image-loaded')) {
                 return;
             }
 
-            this.requestThumbnailImage(index + data.startOffset, thumbnail);
+            this.requestThumbnailImage(index + startOffset, thumbnailEl);
         });
     }
 
     /**
-     * Renders the basic thumbnail with page indication
+     * Creates the placeholder thumbnail with page indication. This element will
+     * not yet have the image of the page
      *
      * @param {number} itemIndex - The item index into the overall list (0 indexed)
      * @return {HTMLElement} - thumbnail button element
      */
-    renderBasicThumbnail(itemIndex) {
-        const thumbnail = document.createElement('button');
-        thumbnail.className = 'bp-thumbnail';
-        thumbnail.appendChild(this.createPageNumber(itemIndex + 1));
-        return thumbnail;
+    createPlaceholderThumbnail(itemIndex) {
+        const thumbnailEl = document.createElement('button');
+        thumbnailEl.className = 'bp-thumbnail';
+        thumbnailEl.setAttribute('type', 'button');
+        thumbnailEl.appendChild(this.createPageNumber(itemIndex + 1));
+        return thumbnailEl;
     }
 
     /**
      * Request the thumbnail image to be made
      *
      * @param {number} itemIndex - the item index in the overall list (0 indexed)
-     * @param {HTMLElement} thumbnail - the thumbnail button element
+     * @param {HTMLElement} thumbnailEl - the thumbnail button element
      * @return {void}
      */
-    requestThumbnailImage(itemIndex, thumbnail) {
+    requestThumbnailImage(itemIndex, thumbnailEl) {
         requestAnimationFrame(() => {
-            if (!this.anchorEl.contains(thumbnail)) {
-                return;
-            }
-
-            this.makeThumbnailImage(itemIndex).then((imageEl) => {
-                this.thumbnailImageCache[itemIndex] = imageEl;
-                thumbnail.appendChild(imageEl);
-                thumbnail.classList.add('bp-thumbnail-image-loaded');
+            this.createThumbnailImage(itemIndex).then((imageEl) => {
+                thumbnailEl.appendChild(imageEl);
+                thumbnailEl.classList.add('bp-thumbnail-image-loaded');
             });
         });
     }
 
     /**
-     * Make a thumbnail image
+     * Make a thumbnail image element
      *
      * @param {number} itemIndex - the item index for the overall list (0 indexed)
      * @return {Promise} - promise reolves with the image HTMLElement
      */
-    makeThumbnailImage(itemIndex) {
+    createThumbnailImage(itemIndex) {
+        // If this page has already been cached, use it
         if (this.thumbnailImageCache[itemIndex]) {
             return Promise.resolve(this.thumbnailImageCache[itemIndex]);
         }
@@ -151,10 +158,14 @@ class ThumbnailsSidebar {
                 });
             })
             .then(() => {
-                const image = document.createElement('img');
-                image.src = canvas.toDataURL();
-                image.style.maxWidth = '100%';
-                return image;
+                const imageEl = document.createElement('img');
+                imageEl.src = canvas.toDataURL();
+                imageEl.style.maxWidth = '100%';
+
+                // Cache this image element for future use
+                this.thumbnailImageCache[itemIndex] = imageEl;
+
+                return imageEl;
             });
     }
 
