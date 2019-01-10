@@ -9,8 +9,14 @@ class ThumbnailsSidebar {
     /** @property {HTMLElement} - The anchor element for this ThumbnailsSidebar */
     anchorEl;
 
+    /** @property {number} - The width : height ratio of the pages of the document */
+    pageRatio;
+
     /** @property {PDfViewer} - The PDFJS viewer instance */
     pdfViewer;
+
+    /** @property {number} - The percentage (0-1) to scale down from the full page to thumbnail size */
+    scale;
 
     /** @property {Object} - Cache for the thumbnail image elements */
     thumbnailImageCache;
@@ -91,6 +97,10 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     generateThumbnailImages({ items, startOffset }) {
+        if (!isFinite(startOffset) || startOffset < 0) {
+            return;
+        }
+
         items.forEach((thumbnailEl, index) => {
             if (thumbnailEl.classList.contains('bp-thumbnail-image-loaded')) {
                 return;

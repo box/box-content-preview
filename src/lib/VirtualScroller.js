@@ -204,12 +204,24 @@ class VirtualScroller {
      * @return {Object} - info object
      */
     getCurrentListInfo() {
-        const { firstElementChild, lastElementChild } = this.listEl;
+        const { firstElementChild, lastElementChild, children } = this.listEl;
 
-        const curStartOffset = firstElementChild ? Number.parseInt(firstElementChild.dataset.bpVsRowIndex, 10) : -1;
-        const curEndOffset = lastElementChild ? Number.parseInt(lastElementChild.dataset.bpVsRowIndex, 10) : -1;
+        // Parse the row index from the data-attribute
+        let curStartOffset = firstElementChild ? Number.parseInt(firstElementChild.dataset.bpVsRowIndex, 10) : -1;
+        let curEndOffset = lastElementChild ? Number.parseInt(lastElementChild.dataset.bpVsRowIndex, 10) : -1;
 
-        const items = Array.prototype.slice.call(this.listEl.children).map((listItemEl) => listItemEl.children[0]);
+        // If the data-attribute value is not present default to invalid -1
+        curStartOffset = isFinite(curStartOffset) ? curStartOffset : -1;
+        curEndOffset = isFinite(curEndOffset) ? curEndOffset : -1;
+
+        let items = [];
+
+        if (children) {
+            // Extract an array of the user's created HTMLElements
+            items = Array.prototype.slice
+                .call(children)
+                .map((listItemEl) => (listItemEl && listItemEl.children ? listItemEl.children[0] : null));
+        }
 
         return {
             startOffset: curStartOffset,
@@ -290,11 +302,24 @@ class VirtualScroller {
      * @return {void}
      */
     cloneItems(newListEl, oldListEl, start, end) {
-        if (!newListEl || !oldListEl || start < 0 || end < 0) {
+        if (
+            !newListEl ||
+            !oldListEl ||
+            start === null ||
+            start === undefined ||
+            end === null ||
+            end === undefined ||
+            start < 0 ||
+            end < 0
+        ) {
             return;
         }
 
         const { children } = oldListEl;
+
+        if (!children || start >= children.length || end >= children.length) {
+            return;
+        }
 
         for (let i = start; i <= end; i++) {
             newListEl.appendChild(children[i].cloneNode(true));
@@ -304,19 +329,27 @@ class VirtualScroller {
     /**
      * Creates new HTMLElements appended to the newList
      *
-     * @param {HTMLElement} newList - the new `li` element
+     * @param {HTMLElement} newListEl - the new `li` element
      * @param {number} start - start index
      * @param {number} end  - end index
      * @return {void}
      */
-    createItems(newList, start, end) {
-        if (!newList || start < 0 || end < 0) {
+    createItems(newListEl, start, end) {
+        if (
+            !newListEl ||
+            start === null ||
+            start === undefined ||
+            end === null ||
+            end === undefined ||
+            start < 0 ||
+            end < 0
+        ) {
             return;
         }
 
         for (let i = start; i <= end; i++) {
             const newEl = this.renderItem(i);
-            newList.appendChild(newEl);
+            newListEl.appendChild(newEl);
         }
     }
 
