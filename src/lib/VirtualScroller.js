@@ -243,7 +243,6 @@ class VirtualScroller {
 
         // Create a new list element to be swapped out for the existing one
         const newListEl = this.createListElement();
-        const children = Array.prototype.slice.call(this.listEl.children);
 
         if (curStartOffset <= offset && offset <= curEndOffset) {
             // Scenario #1: New start offset falls within the current range of items rendered
@@ -253,7 +252,7 @@ class VirtualScroller {
             //   newStartOffset          newEndOffset
             newStartOffset = curEndOffset + 1;
             // clone elements from newStartOffset to curEndOffset
-            this.cloneItems(newListEl, children, offset - curStartOffset, curEndOffset - curStartOffset);
+            this.cloneItems(newListEl, this.listEl, offset - curStartOffset, curEndOffset - curStartOffset);
             // then create elements from curEnd + 1 to newEndOffset
             this.createItems(newListEl, newStartOffset, newEndOffset);
         } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
@@ -266,7 +265,7 @@ class VirtualScroller {
             // create elements from newStartOffset to curStart - 1
             this.createItems(newListEl, offset, curStartOffset - 1);
             // then clone elements from curStartOffset to newEndOffset
-            this.cloneItems(newListEl, children, 0, newEndOffset - curStartOffset);
+            this.cloneItems(newListEl, this.listEl, 0, newEndOffset - curStartOffset);
         } else {
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
@@ -284,19 +283,21 @@ class VirtualScroller {
      * Clones a subset of the HTMLElements from the oldList to the newList.
      * The newList element is modified.
      *
-     * @param {HTMLElement} newList - the new `li` element
-     * @param {Array<HTMLElement>} oldList - the children of the old `li` element
+     * @param {HTMLElement} newListEl - the new `ol` element
+     * @param {HTMLElement} oldListEl - the old `ol` element
      * @param {number} start - start index
      * @param {number} end  - end index
      * @return {void}
      */
-    cloneItems(newList, oldList, start, end) {
-        if (!newList || !oldList || start < 0 || end < 0) {
+    cloneItems(newListEl, oldListEl, start, end) {
+        if (!newListEl || !oldListEl || start < 0 || end < 0) {
             return;
         }
 
+        const { children } = oldListEl;
+
         for (let i = start; i <= end; i++) {
-            newList.appendChild(oldList[i].cloneNode(true));
+            newListEl.appendChild(children[i].cloneNode(true));
         }
     }
 
