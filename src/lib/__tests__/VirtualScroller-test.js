@@ -146,35 +146,50 @@ describe('VirtualScroller', () => {
 
     describe('renderItems()', () => {
         let newListEl;
+        const curListEl = {};
 
         beforeEach(() => {
             virtualScroller.scrollingEl = { replaceChild: () => {} };
+            virtualScroller.listEl = curListEl;
             newListEl = { appendChild: () => {} };
             stubs.createListElement = sandbox.stub(virtualScroller, 'createListElement').returns(newListEl);
             stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
             stubs.replaceChild = sandbox.stub(virtualScroller.scrollingEl, 'replaceChild');
             stubs.appendChild = sandbox.stub(newListEl, 'appendChild');
+            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
+            stubs.cloneItems = sandbox.stub(virtualScroller, 'cloneItems');
+            stubs.createItems = sandbox.stub(virtualScroller, 'createItems');
         });
 
         afterEach(() => {
             virtualScroller.scrollingEl = null;
         });
 
-        it('should render maxRenderedItems', () => {
+        it('should render the whole range of items (no reuse)', () => {
             virtualScroller.maxRenderedItems = 10;
             virtualScroller.totalItems = 100;
+            stubs.getCurrentListInfo.returns({
+                startOffset: -1,
+                endOffset: -1
+            });
             virtualScroller.renderItems();
 
-            expect(newListEl.appendChild.callCount).to.be.equal(10);
+            expect(stubs.cloneItems).not.to.be.called;
+            expect(stubs.createItems).to.be.calledWith(newListEl, 0, 10);
             expect(virtualScroller.scrollingEl.replaceChild).to.be.called;
         });
 
         it('should render the remaining items up to totalItems', () => {
             virtualScroller.maxRenderedItems = 10;
             virtualScroller.totalItems = 100;
+            stubs.getCurrentListInfo.returns({
+                startOffset: -1,
+                endOffset: -1
+            });
             virtualScroller.renderItems(95);
 
-            expect(newListEl.appendChild.callCount).to.be.equal(5);
+            expect(stubs.cloneItems).not.to.be.called;
+            expect(stubs.createItems).to.be.calledWith(newListEl, 95, 99);
             expect(virtualScroller.scrollingEl.replaceChild).to.be.called;
         });
     });
