@@ -302,16 +302,7 @@ class VirtualScroller {
      * @return {void}
      */
     cloneItems(newListEl, oldListEl, start, end) {
-        if (
-            !newListEl ||
-            !oldListEl ||
-            start === null ||
-            start === undefined ||
-            end === null ||
-            end === undefined ||
-            start < 0 ||
-            end < 0
-        ) {
+        if (!newListEl || !oldListEl || start < 0 || end < 0) {
             return;
         }
 
@@ -335,15 +326,7 @@ class VirtualScroller {
      * @return {void}
      */
     createItems(newListEl, start, end) {
-        if (
-            !newListEl ||
-            start === null ||
-            start === undefined ||
-            end === null ||
-            end === undefined ||
-            start < 0 ||
-            end < 0
-        ) {
+        if (!newListEl || start < 0 || end < 0) {
             return;
         }
 
