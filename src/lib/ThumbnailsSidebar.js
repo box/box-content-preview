@@ -68,6 +68,7 @@ class ThumbnailsSidebar {
 
             // If the dimensions of the page are invalid then don't proceed further
             if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
+                // eslint-disable-next-line
                 console.error('Page dimensions invalid when initializing the thumbnails sidebar');
                 return;
             }
