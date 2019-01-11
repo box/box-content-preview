@@ -197,7 +197,7 @@ describe('ThumbnailsSidebar', () => {
     });
 
     describe('createThumbnailImage()', () => {
-        it('should resolve immediately if is in cache', () => {
+        it('should resolve immediately if the image is in cache', () => {
             const cachedImage = {};
             thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
 
