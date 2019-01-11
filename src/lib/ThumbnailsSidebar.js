@@ -1,6 +1,9 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 
+const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
+const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
+const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
 const THUMBNAIL_WIDTH_MAX = 210;
 const THUMBNAIL_MARGIN = 15;
@@ -11,6 +14,12 @@ class ThumbnailsSidebar {
 
     /** @property {number} - The width : height ratio of the pages of the document */
     pageRatio;
+
+    /** @property {number} - The currently viewed page */
+    currentPage;
+
+    /** @property {Array<HTMLElement>} - The list of currently rendered thumbnail elements */
+    currentThumbnails;
 
     /** @property {PDfViewer} - The PDFJS viewer instance */
     pdfViewer;
@@ -31,11 +40,41 @@ class ThumbnailsSidebar {
         this.anchorEl = element;
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = {};
+        this.currentThumbnails = [];
 
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
+        this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
+
+        this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
+    }
+
+    /**
+     * Method to handle the click events in the Thumbnails Sidebar
+     *
+     * @param {Event} evt - Mouse click event
+     * @return {void}
+     */
+    thumbnailClickHandler(evt) {
+        const { target } = evt;
+
+        // Only care about clicks on the thumbnail element itself.
+        // The image and page number have pointer-events: none so
+        // any click should be the thumbnail element itself.
+        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL)) {
+            // Get the page number
+            const { bpPageNum: pageNumStr } = target.dataset;
+            const pageNum = Number.parseInt(pageNumStr, 10);
+
+            if (this.onClickHandler) {
+                this.onClickHandler(pageNum);
+            }
+        }
+
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
     }
 
     /**
@@ -51,15 +90,28 @@ class ThumbnailsSidebar {
 
         this.thumbnailImageCache = null;
         this.pdfViewer = null;
+        this.currentThumbnails = [];
+        this.currentPage = null;
+
+        this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
     }
 
     /**
      * Initializes the Thumbnails Sidebar
      *
+     * @param {Object} options - options for the Thumbnails Sidebar
      * @return {void}
      */
-    init() {
+    init(options) {
         this.virtualScroller = new VirtualScroller(this.anchorEl);
+
+        if (options) {
+            // Click handler for when a thumbnail is clicked
+            this.onClickHandler = options.onClick;
+
+            // Specify the current page to be selected
+            this.currentPage = options.currentPage || 1;
+        }
 
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
@@ -102,8 +154,10 @@ class ThumbnailsSidebar {
             return;
         }
 
+        this.currentThumbnails = items;
+
         items.forEach((thumbnailEl, index) => {
-            if (thumbnailEl.classList.contains('bp-thumbnail-image-loaded')) {
+            if (thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)) {
                 return;
             }
 
@@ -120,9 +174,16 @@ class ThumbnailsSidebar {
      */
     createPlaceholderThumbnail(itemIndex) {
         const thumbnailEl = document.createElement('button');
-        thumbnailEl.className = 'bp-thumbnail';
+        const pageNum = itemIndex + 1;
+
+        thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.setAttribute('type', 'button');
-        thumbnailEl.appendChild(this.createPageNumber(itemIndex + 1));
+        thumbnailEl.dataset.bpPageNum = pageNum;
+        thumbnailEl.appendChild(this.createPageNumber(pageNum));
+
+        if (pageNum === this.currentPage) {
+            thumbnailEl.classList.add('bp-thumbnail-is-selected');
+        }
         return thumbnailEl;
     }
 
@@ -137,7 +198,7 @@ class ThumbnailsSidebar {
         requestAnimationFrame(() => {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
                 thumbnailEl.appendChild(imageEl);
-                thumbnailEl.classList.add('bp-thumbnail-image-loaded');
+                thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
             });
         });
     }
@@ -170,8 +231,8 @@ class ThumbnailsSidebar {
             })
             .then(() => {
                 const imageEl = document.createElement('img');
+                imageEl.classList.add('bp-thumbnail-image');
                 imageEl.src = canvas.toDataURL();
-                imageEl.style.maxWidth = '100%';
 
                 // Cache this image element for future use
                 this.thumbnailImageCache[itemIndex] = imageEl;
@@ -191,6 +252,40 @@ class ThumbnailsSidebar {
         pageNumberEl.className = 'bp-thumbnail-page-number';
         pageNumberEl.textContent = `${pageNumber}`;
         return pageNumberEl;
+    }
+
+    /**
+     * Sets the currently selected page
+     *
+     * @param {number} pageNumber - The page number to set to selected
+     * @return {void}
+     */
+    setCurrentPage(pageNumber) {
+        const parsedPageNumber = parseInt(pageNumber, 10);
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+            return;
+        }
+
+        this.currentPage = parsedPageNumber;
+
+        this.applyCurrentPageSelection();
+    }
+
+    /**
+     * Based on current page selection, checks the currently
+     * visible thumbnails to toggle the appropriate class
+     *
+     * @return {void}
+     */
+    applyCurrentPageSelection() {
+        this.currentThumbnails.forEach((thumbnailEl) => {
+            const parsedPageNum = Number.parseInt(thumbnailEl.dataset.bpPageNum, 10);
+            if (parsedPageNum === this.currentPage) {
+                thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
+            } else {
+                thumbnailEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
+            }
+        });
     }
 }
 
