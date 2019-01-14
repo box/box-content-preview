@@ -101,7 +101,7 @@ class ThumbnailsSidebar {
     /**
      * Initializes the Thumbnails Sidebar
      *
-     * @param {Object} options - options for the Thumbnails Sidebar
+     * @param {Object} [options] - options for the Thumbnails Sidebar
      * @return {void}
      */
     init(options) {
