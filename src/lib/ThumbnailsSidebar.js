@@ -2,8 +2,10 @@ import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
+const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
+const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
 const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
 const THUMBNAIL_WIDTH_MAX = 210;
 const THUMBNAIL_MARGIN = 15;
@@ -182,8 +184,9 @@ class ThumbnailsSidebar {
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
 
         if (pageNum === this.currentPage) {
-            thumbnailEl.classList.add('bp-thumbnail-is-selected');
+            thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
         }
+
         return thumbnailEl;
     }
 
@@ -231,7 +234,7 @@ class ThumbnailsSidebar {
             })
             .then(() => {
                 const imageEl = document.createElement('img');
-                imageEl.classList.add('bp-thumbnail-image');
+                imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
                 imageEl.src = canvas.toDataURL();
 
                 // Cache this image element for future use
@@ -249,7 +252,7 @@ class ThumbnailsSidebar {
      */
     createPageNumber(pageNumber) {
         const pageNumberEl = document.createElement('div');
-        pageNumberEl.className = 'bp-thumbnail-page-number';
+        pageNumberEl.className = CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER;
         pageNumberEl.textContent = `${pageNumber}`;
         return pageNumberEl;
     }

@@ -41,6 +41,9 @@ $thumbnail-border-radius: 4px;
         width: 100%;
     }
 
+    // Applies a border *outside* the thumbnail button itself rather than
+    // contributing to the width of the button and shrinking the thumbnail
+    // image
     .bp-thumbnail.bp-thumbnail-is-selected::after {
         border: 4px solid $box-blue;
         border-radius: $thumbnail-border-radius;
