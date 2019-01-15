@@ -12,9 +12,6 @@ major_release=false
 minor_release=false
 patch_release=false
 
-# LTS compatibility
-node_validation_script_path="./build/validateNodeVersion.js"
-
 reset_tags() {
     # Wipe tags
     echo "----------------------------------------------------------------------"
@@ -181,27 +178,8 @@ push_to_github() {
     fi
 }
 
-# Validates whether or not the supported version of NodeJS is being used
-validate_node_version() {
-    $(node $node_validation_script_path)
-
-    if [ "$?" -eq "1" ] ; then
-        echo "----------------------------------------------------------------------"
-        echo "Invalid version of Node. Must be LTS version >= v8.9.4"
-        echo "----------------------------------------------------------------------"
-        exit 1
-    else
-        echo "----------------------------------------------------------------------"
-        echo "Valid version of Node"
-        echo "----------------------------------------------------------------------"
-    fi
-}
-
 # Check out latest code from git, build assets, increment version, and push tags
 push_new_release() {
-    # Before running release, make sure using correct version of NodeJS
-    validate_node_version;
-
     # Get latest commited code and tags
     if $patch_release; then
         echo "----------------------------------------------------------------------"
