@@ -443,6 +443,10 @@ class DocBaseViewer extends BaseViewer {
 
         this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+        }
     }
 
     /**
@@ -1052,9 +1056,14 @@ class DocBaseViewer extends BaseViewer {
         }
     }
 
+    /**
+     * Initialize the Thumbnails Sidebar
+     *
+     * @return {void}
+     */
     initThumbnails() {
         this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
-        this.thumbnailsSidebar.init();
+        this.thumbnailsSidebar.init({ onClick: this.setPage, currentPage: this.pdfViewer.currentPageNumber });
     }
 
     /**
