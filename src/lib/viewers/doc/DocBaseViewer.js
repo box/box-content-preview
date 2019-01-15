@@ -71,9 +71,6 @@ const METRICS_WHITELIST = [
 ];
 
 class DocBaseViewer extends BaseViewer {
-    /** @property {Object} - Keeps track of which metrics have been emitted already */
-    emittedMetrics;
-
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -83,8 +80,6 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
-
-        this.emittedMetrics = {};
 
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
@@ -196,8 +191,6 @@ class DocBaseViewer extends BaseViewer {
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.destroy();
         }
-
-        this.emittedMetrics = null;
 
         super.destroy();
     }
@@ -587,15 +580,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     emitMetric({ name, data }) {
-        // If this metric has been emitted already and is on the whitelist of metrics
-        // to be emitted only once per session, then do nothing
-        if (this.emittedMetrics[name] && METRICS_WHITELIST.includes(name)) {
-            return;
-        }
-
-        // Mark that this metric has been emitted
-        this.emittedMetrics[name] = true;
-
         super.emitMetric(name, data);
     }
 
@@ -1319,6 +1303,16 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric({ name: metricName, data: pagesCount });
 
         this.resize();
+    }
+
+    /**
+     * Overrides the base method
+     *
+     * @override
+     * @return {Array} - the array of metric names to be emitted only once
+     */
+    getMetricsWhitelist() {
+        return METRICS_WHITELIST;
     }
 }
 

@@ -2108,6 +2108,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should toggle the bp-is-hidden class and resize the viewer', () => {
             const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
             docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+            docBase.pdfViewer = { pagesCount: 10 };
             expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
 
             docBase.toggleThumbnails();
