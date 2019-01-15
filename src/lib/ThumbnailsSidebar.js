@@ -265,13 +265,11 @@ class ThumbnailsSidebar {
      */
     setCurrentPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        if (!isFinite(parsedPageNumber) || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
-            return;
+
+        if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
+            this.currentPage = parsedPageNumber;
+            this.applyCurrentPageSelection();
         }
-
-        this.currentPage = parsedPageNumber;
-
-        this.applyCurrentPageSelection();
     }
 
     /**
