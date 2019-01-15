@@ -41,7 +41,7 @@ import {
     ICON_THUMBNAILS_TOGGLE
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -63,8 +63,17 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const PAGES_UNIT_NAME = 'pages';
+// List of metrics to be emitted only once per session
+const METRICS_WHITELIST = [
+    USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
+    USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
+    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+];
 
 class DocBaseViewer extends BaseViewer {
+    /** @property {Object} - Keeps track of which metrics have been emitted already */
+    emittedMetrics;
+
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -74,6 +83,8 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
+
+        this.emittedMetrics = {};
 
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
@@ -92,6 +103,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
+        this.onThumbnailClickHandler = this.onThumbnailClickHandler.bind(this);
     }
 
     /**
@@ -184,6 +196,8 @@ class DocBaseViewer extends BaseViewer {
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.destroy();
         }
+
+        this.emittedMetrics = null;
 
         super.destroy();
     }
@@ -572,8 +586,17 @@ class DocBaseViewer extends BaseViewer {
      * @param {Object} event - Event object
      * @return {void}
      */
-    emitMetric(event) {
-        super.emitMetric(event.name, event.data);
+    emitMetric({ name, data }) {
+        // If this metric has been emitted already and is on the whitelist of metrics
+        // to be emitted only once per session, then do nothing
+        if (this.emittedMetrics[name] && METRICS_WHITELIST.includes(name)) {
+            return;
+        }
+
+        // Mark that this metric has been emitted
+        this.emittedMetrics[name] = true;
+
+        super.emitMetric(name, data);
     }
 
     //--------------------------------------------------------------------------
@@ -1022,7 +1045,21 @@ class DocBaseViewer extends BaseViewer {
      */
     initThumbnails() {
         this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
-        this.thumbnailsSidebar.init({ onClick: this.setPage, currentPage: this.pdfViewer.currentPageNumber });
+        this.thumbnailsSidebar.init({
+            onClick: this.onThumbnailClickHandler,
+            currentPage: this.pdfViewer.currentPageNumber
+        });
+    }
+
+    /**
+     * Handles the click of a thumbnail for navigation
+     *
+     * @param {number} pageNum - the page number
+     * @return {void}
+     */
+    onThumbnailClickHandler(pageNum) {
+        this.emitMetric({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: pageNum });
+        this.setPage(pageNum);
     }
 
     /**
@@ -1274,6 +1311,12 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
+
+        const { pagesCount } = this.pdfViewer;
+        const metricName = this.thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)
+            ? USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE
+            : USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
+        this.emitMetric({ name: metricName, data: pagesCount });
 
         this.resize();
     }
