@@ -265,7 +265,7 @@ class ThumbnailsSidebar {
      */
     setCurrentPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+        if (!isFinite(parsedPageNumber) || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
