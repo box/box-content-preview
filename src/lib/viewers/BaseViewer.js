@@ -110,6 +110,9 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Has the viewer retried downloading the content */
     hasRetriedContentDownload = false;
 
+    /** @property {Object} - Keeps track of which metrics have been emitted already */
+    emittedMetrics;
+
     /**
      * [constructor]
      *
@@ -124,6 +127,8 @@ class BaseViewer extends EventEmitter {
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
+
+        this.emittedMetrics = {};
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
@@ -237,6 +242,7 @@ class BaseViewer extends EventEmitter {
         this.destroyed = true;
         this.annotatorPromise = null;
         this.annotatorPromiseResolver = null;
+        this.emittedMetrics = null;
         this.emit('destroy');
     }
 
@@ -588,10 +594,27 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     emitMetric(event, data) {
+        // If this metric has been emitted already and is on the whitelist of metrics
+        // to be emitted only once per session, then do nothing
+        if (this.emittedMetrics[event] && this.getMetricsWhitelist().includes(event)) {
+            return;
+        }
+
+        // Mark that this metric has been emitted
+        this.emittedMetrics[event] = true;
+
         super.emit(VIEWER_EVENT.metric, {
             event,
             data
         });
+    }
+
+    /**
+     * Method which returns the list of metrics to be emitted only once
+     * @return {Array} - the array of metric names to be emitted only once
+     */
+    getMetricsWhitelist() {
+        return [];
     }
 
     /**
