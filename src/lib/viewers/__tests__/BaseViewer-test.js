@@ -1421,4 +1421,41 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl.insertBefore).to.be.called;
         });
     });
+
+    describe('emitMetric()', () => {
+        beforeEach(() => {
+            stubs.emit = sandbox.stub(EventEmitter.prototype, 'emit');
+            stubs.getMetricsWhitelist = sandbox.stub(base, 'getMetricsWhitelist');
+        });
+
+        it('should update the emittedMetrics object when called the first time', () => {
+            base.emittedMetrics = {};
+            stubs.getMetricsWhitelist.returns([]);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).to.be.called;
+        });
+
+        it('should be emitted even if not the first time and not whitelisted', () => {
+            base.emittedMetrics = { foo: true };
+            stubs.getMetricsWhitelist.returns([]);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).to.be.called;
+        });
+
+        it('should not do anything if it has been emitted before and is whitelisted', () => {
+            base.emittedMetrics = { foo: true };
+            stubs.getMetricsWhitelist.returns(['foo']);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).not.to.be.called;
+        });
+    });
 });
