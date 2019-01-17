@@ -223,10 +223,32 @@ class ThumbnailsSidebar {
         return this.pdfViewer.pdfDocument
             .getPage(itemIndex + 1)
             .then((page) => {
-                const viewport = page.getViewport(1);
-                canvas.width = THUMBNAIL_WIDTH_MAX;
-                canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
-                const scale = THUMBNAIL_WIDTH_MAX / viewport.width;
+                const { width, height } = page.getViewport(1);
+                // Get the current page w:h ratio in case it differs from the first page
+                const curPageRatio = width / height;
+
+                let canvasWidth;
+                // Handle the case where the current page's w:h ratio is less than the
+                // `pageRatio` which means that this page is probably more portrait than
+                // landscape
+                if (curPageRatio < this.pageRatio) {
+                    // Set the canvas height to that of the thumbnail max height
+                    canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
+                    // Find the canvas width based on the curent page ratio
+                    canvasWidth = canvas.height * curPageRatio;
+                    canvas.width = canvasWidth;
+                } else {
+                    // In case the current page ratio is same as the first page
+                    // or in case it's larger (which means that it's wider), keep
+                    // the width at the max thumbnail width
+                    canvasWidth = THUMBNAIL_WIDTH_MAX;
+                    canvas.width = canvasWidth;
+                    // Find the height based on the current page ratio
+                    canvas.height = THUMBNAIL_WIDTH_MAX / curPageRatio;
+                }
+
+                // The amount for which to scale down the current page
+                const scale = canvasWidth / width;
                 return page.render({
                     canvasContext: canvas.getContext('2d'),
                     viewport: page.getViewport(scale)
@@ -236,6 +258,11 @@ class ThumbnailsSidebar {
                 const imageEl = document.createElement('img');
                 imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
                 imageEl.src = canvas.toDataURL();
+
+                // Add the height and width to the image to be the same as the thumbnail
+                // so that the css `object-fit` rule will work
+                imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
+                imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
 
                 // Cache this image element for future use
                 this.thumbnailImageCache[itemIndex] = imageEl;

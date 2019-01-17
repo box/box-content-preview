@@ -211,12 +211,31 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
             thumbnailsSidebar.pageRatio = 1;
 
-            stubs.getViewport.returns({ width: 10, height: 10 });
+            stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
             stubs.render.returns(Promise.resolve());
+
+            const expScale = 21; // Should be THUMBNAIL_WIDTH_MAX(210) / 10 = 21
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
                 expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport).to.be.called;
+                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+                expect(thumbnailsSidebar.thumbnailImageCache[0]).to.be.eql(imageEl);
+            });
+        });
+
+        it('should handle non-uniform page ratios', () => {
+            const cachedImage = {};
+            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            thumbnailsSidebar.pageRatio = 1;
+
+            stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
+            stubs.render.returns(Promise.resolve());
+
+            const expScale = 10.5; // Should be 10.5 instead of 21 because the viewport ratio above is 0.5 instead of 1
+
+            return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
+                expect(stubs.getPage).to.be.called;
+                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
                 expect(thumbnailsSidebar.thumbnailImageCache[0]).to.be.eql(imageEl);
             });
         });

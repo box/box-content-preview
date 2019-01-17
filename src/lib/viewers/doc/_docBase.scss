@@ -36,9 +36,8 @@ $thumbnail-border-radius: 4px;
     }
 
     .bp-thumbnail-image {
-        border-radius: $thumbnail-border-radius;
+        object-fit: contain;
         pointer-events: none;
-        width: 100%;
     }
 
     // Applies a border *outside* the thumbnail button itself rather than
