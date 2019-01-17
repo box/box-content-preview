@@ -31,7 +31,7 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../../../icons/icons';
-import { VIEWER_EVENT, LOAD_METRIC } from '../../../events';
+import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -2212,6 +2212,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('toggleThumbnails()', () => {
         beforeEach(() => {
             sandbox.stub(docBase, 'resize');
+            sandbox.stub(docBase, 'emitMetric');
         });
 
         it('should do nothing if thumbnails sidebar does not exit', () => {
@@ -2222,7 +2223,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.resize).not.to.be.called;
         });
 
-        it('should toggle the bp-is-hidden class and resize the viewer', () => {
+        it('should toggle open and resize the viewer', () => {
             const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
             docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
             docBase.pdfViewer = { pagesCount: 10 };
@@ -2232,6 +2233,33 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
             expect(docBase.resize).to.be.called;
+            expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
+        });
+
+        it('should toggle close and resize the viewer', () => {
+            const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
+            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+            thumbnailsSidebarEl.classList.remove(CLASS_HIDDEN);
+            docBase.pdfViewer = { pagesCount: 10 };
+            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+
+            docBase.toggleThumbnails();
+
+            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(docBase.resize).to.be.called;
+            expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
+        });
+    });
+
+    describe('getMetricsWhitelist()', () => {
+        it('should return the thumbnail sidebar events', () => {
+            const expWhitelist = [
+                USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
+                USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
+                USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+            ];
+
+            expect(docBase.getMetricsWhitelist()).to.be.eql(expWhitelist);
         });
     });
 });
