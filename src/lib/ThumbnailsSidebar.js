@@ -49,6 +49,8 @@ class ThumbnailsSidebar {
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
+        this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
+        this.createImageEl = this.createImageEl.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
     }
@@ -218,10 +220,26 @@ class ThumbnailsSidebar {
             return Promise.resolve(this.thumbnailImageCache[itemIndex]);
         }
 
+        return this.getThumbnailDataURL(itemIndex + 1)
+            .then(this.createImageEl)
+            .then((imageEl) => {
+                // Cache this image element for future use
+                this.thumbnailImageCache[itemIndex] = imageEl;
+
+                return imageEl;
+            });
+    }
+
+    /**
+     * Given a page number, generates the image data URL for the image of the page
+     * @param {number} pageNum  - The page number of the document
+     * @return {string} The data URL of the page image
+     */
+    getThumbnailDataURL(pageNum) {
         const canvas = document.createElement('canvas');
 
         return this.pdfViewer.pdfDocument
-            .getPage(itemIndex + 1)
+            .getPage(pageNum)
             .then((page) => {
                 const { width, height } = page.getViewport(1);
                 // Get the current page w:h ratio in case it differs from the first page
@@ -254,21 +272,25 @@ class ThumbnailsSidebar {
                     viewport: page.getViewport(scale)
                 });
             })
-            .then(() => {
-                const imageEl = document.createElement('img');
-                imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
-                imageEl.src = canvas.toDataURL();
+            .then(() => canvas.toDataURL());
+    }
 
-                // Add the height and width to the image to be the same as the thumbnail
-                // so that the css `object-fit` rule will work
-                imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
-                imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
+    /**
+     * Creates the image element
+     * @param {string} dataUrl - The image data URL for the thumbnail
+     * @return {HTMLElement} - The image element
+     */
+    createImageEl(dataUrl) {
+        const imageEl = document.createElement('img');
+        imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
+        imageEl.src = dataUrl;
 
-                // Cache this image element for future use
-                this.thumbnailImageCache[itemIndex] = imageEl;
+        // Add the height and width to the image to be the same as the thumbnail
+        // so that the css `object-fit` rule will work
+        imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
+        imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
 
-                return imageEl;
-            });
+        return imageEl;
     }
 
     /**
