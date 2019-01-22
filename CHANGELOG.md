@@ -1,3 +1,11 @@
+<a name="1.62.0"></a>
+## 1.62.0 (2019-01-22)
+
+* Chore: Upgrade deps and scripts to work with node 10 (#893) ([279fc2e](https://github.com/box/box-content-preview/commit/279fc2e)), closes [#893](https://github.com/box/box-content-preview/issues/893)
+* Chore: Upgrade to React 16.7 (#895) ([06c9a31](https://github.com/box/box-content-preview/commit/06c9a31)), closes [#895](https://github.com/box/box-content-preview/issues/895)
+
+
+
 <a name="1.61.0"></a>
 ## 1.61.0 (2019-01-15)
 
