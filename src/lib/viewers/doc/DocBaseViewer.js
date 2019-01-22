@@ -693,7 +693,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // Save page and return after resize
-        const { currentPageNumber } = this.pdfViewer.currentPageNumber;
+        const { currentPageNumber } = this.pdfViewer;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
@@ -1297,10 +1297,19 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
 
         const { pagesCount } = this.pdfViewer;
-        const metricName = this.thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)
-            ? USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE
-            : USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
+
+        let metricName;
+        let eventName;
+        if (this.thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)) {
+            metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
+            eventName = 'thumbnailsClose';
+        } else {
+            metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
+            eventName = 'thumbnailsOpen';
+        }
+
         this.emitMetric({ name: metricName, data: pagesCount });
+        this.emit(eventName);
 
         this.resize();
     }
