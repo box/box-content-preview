@@ -1533,10 +1533,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.7.0.tgz#876e1df25c7ac3cc533644813caf7f24154c9e8d"
+  integrity sha512-IU8JZpTdiYg4fvNCu8GAW8gzMFmh7rZJaMs6+IXCc8Jo7olHR/vFQ1rOJs68ly+Lo+S39VAkQaD8mqljKFxy+g==
 
 box-locales@^0.0.1:
   version "0.0.1"
