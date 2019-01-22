@@ -6,20 +6,21 @@ $thumbnail-border-radius: 4px;
     .bp-thumbnails-container {
         border-right: solid 1px $seesee;
         display: flex;
-        flex: 0 0 181px; // Accounts for the 1px border on the right so the remaining width is actually 180
+        flex: 0 0 201px; // Accounts for the 1px border on the right so the remaining width is actually 180
     }
 
     .bp-thumbnail {
         align-items: center;
-        background-color: #d8d8d8;
+        background-color: $d-eight;
         border: 0;
         border-radius: $thumbnail-border-radius;
         display: flex;
-        flex: 1 1 auto;
+        flex: 1 0 auto;
         justify-content: center;
-        margin: 0 15px;
+        margin: 0 25px;
         padding: 0;
         position: relative;
+        width: 150px;
     }
 
     .bp-thumbnail-page-number {
@@ -28,15 +29,20 @@ $thumbnail-border-radius: 4px;
         bottom: 10px;
         color: $white;
         font-size: 11px;
+        left: 50%;
         line-height: 16px;
         opacity: .7;
         padding: 0 5px;
         pointer-events: none;
         position: absolute;
+        transform: translateX(-50%);
     }
 
     .bp-thumbnail-image {
-        object-fit: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        border-radius: $thumbnail-border-radius;
         pointer-events: none;
     }
 

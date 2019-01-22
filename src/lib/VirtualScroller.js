@@ -207,8 +207,8 @@ class VirtualScroller {
         const { firstElementChild, lastElementChild, children } = this.listEl;
 
         // Parse the row index from the data-attribute
-        let curStartOffset = firstElementChild ? Number.parseInt(firstElementChild.dataset.bpVsRowIndex, 10) : -1;
-        let curEndOffset = lastElementChild ? Number.parseInt(lastElementChild.dataset.bpVsRowIndex, 10) : -1;
+        let curStartOffset = firstElementChild ? parseInt(firstElementChild.dataset.bpVsRowIndex, 10) : -1;
+        let curEndOffset = lastElementChild ? parseInt(lastElementChild.dataset.bpVsRowIndex, 10) : -1;
 
         // If the data-attribute value is not present default to invalid -1
         curStartOffset = isFinite(curStartOffset) ? curStartOffset : -1;

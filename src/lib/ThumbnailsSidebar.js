@@ -40,17 +40,17 @@ class ThumbnailsSidebar {
      */
     constructor(element, pdfViewer) {
         this.anchorEl = element;
+        this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = {};
-        this.currentThumbnails = [];
 
+        this.createImageEl = this.createImageEl.bind(this);
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
-        this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
-        this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
         this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
-        this.createImageEl = this.createImageEl.bind(this);
+        this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
+        this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
     }
@@ -70,7 +70,7 @@ class ThumbnailsSidebar {
         if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL)) {
             // Get the page number
             const { bpPageNum: pageNumStr } = target.dataset;
-            const pageNum = Number.parseInt(pageNumStr, 10);
+            const pageNum = parseInt(pageNumStr, 10);
 
             if (this.onClickHandler) {
                 this.onClickHandler(pageNum);
@@ -245,7 +245,6 @@ class ThumbnailsSidebar {
                 // Get the current page w:h ratio in case it differs from the first page
                 const curPageRatio = width / height;
 
-                let canvasWidth;
                 // Handle the case where the current page's w:h ratio is less than the
                 // `pageRatio` which means that this page is probably more portrait than
                 // landscape
@@ -253,19 +252,18 @@ class ThumbnailsSidebar {
                     // Set the canvas height to that of the thumbnail max height
                     canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
                     // Find the canvas width based on the curent page ratio
-                    canvasWidth = canvas.height * curPageRatio;
-                    canvas.width = canvasWidth;
+                    canvas.width = canvas.height * curPageRatio;
                 } else {
                     // In case the current page ratio is same as the first page
                     // or in case it's larger (which means that it's wider), keep
                     // the width at the max thumbnail width
-                    canvasWidth = THUMBNAIL_WIDTH_MAX;
-                    canvas.width = canvasWidth;
+                    canvas.width = THUMBNAIL_WIDTH_MAX;
                     // Find the height based on the current page ratio
                     canvas.height = THUMBNAIL_WIDTH_MAX / curPageRatio;
                 }
 
                 // The amount for which to scale down the current page
+                const { width: canvasWidth } = canvas;
                 const scale = canvasWidth / width;
                 return page.render({
                     canvasContext: canvas.getContext('2d'),
@@ -281,12 +279,12 @@ class ThumbnailsSidebar {
      * @return {HTMLElement} - The image element
      */
     createImageEl(dataUrl) {
-        const imageEl = document.createElement('img');
+        const imageEl = document.createElement('div');
         imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
-        imageEl.src = dataUrl;
+        imageEl.style.backgroundImage = `url('${dataUrl}')`;
 
         // Add the height and width to the image to be the same as the thumbnail
-        // so that the css `object-fit` rule will work
+        // so that the css `background-image` rules will work
         imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
         imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
 
@@ -329,7 +327,7 @@ class ThumbnailsSidebar {
      */
     applyCurrentPageSelection() {
         this.currentThumbnails.forEach((thumbnailEl) => {
-            const parsedPageNum = Number.parseInt(thumbnailEl.dataset.bpPageNum, 10);
+            const parsedPageNum = parseInt(thumbnailEl.dataset.bpPageNum, 10);
             if (parsedPageNum === this.currentPage) {
                 thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
             } else {
