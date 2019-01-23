@@ -196,28 +196,67 @@ describe('ThumbnailsSidebar', () => {
         });
     });
 
-    describe('createThumbnailImage()', () => {
+    describe('createThumbnailImage', () => {
+        beforeEach(() => {
+            stubs.getThumbnailDataURL = sandbox
+                .stub(thumbnailsSidebar, 'getThumbnailDataURL')
+                .returns(Promise.resolve());
+            stubs.createImageEl = sandbox.stub(thumbnailsSidebar, 'createImageEl');
+        });
+
         it('should resolve immediately if the image is in cache', () => {
             const cachedImage = {};
             thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
 
             return thumbnailsSidebar.createThumbnailImage(1).then(() => {
-                expect(stubs.getPage).not.to.be.called;
+                expect(stubs.createImageEl).not.to.be.called;
             });
         });
 
         it('should create an image element if not in cache', () => {
             const cachedImage = {};
             thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
-            thumbnailsSidebar.pageRatio = 1;
-
-            stubs.getViewport.returns({ width: 10, height: 10 });
-            stubs.render.returns(Promise.resolve());
+            stubs.createImageEl.returns(cachedImage);
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
-                expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport).to.be.called;
+                expect(stubs.createImageEl).to.be.called;
                 expect(thumbnailsSidebar.thumbnailImageCache[0]).to.be.eql(imageEl);
+            });
+        });
+    });
+
+    describe('getThumbnailDataURL()', () => {
+        it('should scale canvas the same as the first page if page ratio is the same', () => {
+            const cachedImage = {};
+            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            thumbnailsSidebar.pageRatio = 1;
+
+            // Current page has same ratio
+            stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
+            stubs.render.returns(Promise.resolve());
+
+            const expScale = 21; // Should be THUMBNAIL_WIDTH_MAX(210) / 10 = 21
+
+            return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
+                expect(stubs.getPage).to.be.called;
+                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+            });
+        });
+
+        it('should handle non-uniform page ratios', () => {
+            const cachedImage = {};
+            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            thumbnailsSidebar.pageRatio = 1;
+
+            // Current page has ratio of 0.5 instead of 1
+            stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
+            stubs.render.returns(Promise.resolve());
+
+            const expScale = 10.5; // Should be 10.5 instead of 21 because the viewport ratio above is 0.5 instead of 1
+
+            return thumbnailsSidebar.createThumbnailImage(0).then(() => {
+                expect(stubs.getPage).to.be.called;
+                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
             });
         });
     });
