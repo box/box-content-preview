@@ -40,14 +40,16 @@ class ThumbnailsSidebar {
      */
     constructor(element, pdfViewer) {
         this.anchorEl = element;
+        this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = {};
-        this.currentThumbnails = [];
 
+        this.createImageEl = this.createImageEl.bind(this);
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
-        this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
+        this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
+        this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
@@ -68,7 +70,7 @@ class ThumbnailsSidebar {
         if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL)) {
             // Get the page number
             const { bpPageNum: pageNumStr } = target.dataset;
-            const pageNum = Number.parseInt(pageNumStr, 10);
+            const pageNum = parseInt(pageNumStr, 10);
 
             if (this.onClickHandler) {
                 this.onClickHandler(pageNum);
@@ -218,30 +220,75 @@ class ThumbnailsSidebar {
             return Promise.resolve(this.thumbnailImageCache[itemIndex]);
         }
 
-        const canvas = document.createElement('canvas');
-
-        return this.pdfViewer.pdfDocument
-            .getPage(itemIndex + 1)
-            .then((page) => {
-                const viewport = page.getViewport(1);
-                canvas.width = THUMBNAIL_WIDTH_MAX;
-                canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
-                const scale = THUMBNAIL_WIDTH_MAX / viewport.width;
-                return page.render({
-                    canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport(scale)
-                });
-            })
-            .then(() => {
-                const imageEl = document.createElement('img');
-                imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
-                imageEl.src = canvas.toDataURL();
-
+        return this.getThumbnailDataURL(itemIndex + 1)
+            .then(this.createImageEl)
+            .then((imageEl) => {
                 // Cache this image element for future use
                 this.thumbnailImageCache[itemIndex] = imageEl;
 
                 return imageEl;
             });
+    }
+
+    /**
+     * Given a page number, generates the image data URL for the image of the page
+     * @param {number} pageNum  - The page number of the document
+     * @return {string} The data URL of the page image
+     */
+    getThumbnailDataURL(pageNum) {
+        const canvas = document.createElement('canvas');
+
+        return this.pdfViewer.pdfDocument
+            .getPage(pageNum)
+            .then((page) => {
+                const { width, height } = page.getViewport(1);
+                // Get the current page w:h ratio in case it differs from the first page
+                const curPageRatio = width / height;
+
+                // Handle the case where the current page's w:h ratio is less than the
+                // `pageRatio` which means that this page is probably more portrait than
+                // landscape
+                if (curPageRatio < this.pageRatio) {
+                    // Set the canvas height to that of the thumbnail max height
+                    canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
+                    // Find the canvas width based on the curent page ratio
+                    canvas.width = canvas.height * curPageRatio;
+                } else {
+                    // In case the current page ratio is same as the first page
+                    // or in case it's larger (which means that it's wider), keep
+                    // the width at the max thumbnail width
+                    canvas.width = THUMBNAIL_WIDTH_MAX;
+                    // Find the height based on the current page ratio
+                    canvas.height = THUMBNAIL_WIDTH_MAX / curPageRatio;
+                }
+
+                // The amount for which to scale down the current page
+                const { width: canvasWidth } = canvas;
+                const scale = canvasWidth / width;
+                return page.render({
+                    canvasContext: canvas.getContext('2d'),
+                    viewport: page.getViewport(scale)
+                });
+            })
+            .then(() => canvas.toDataURL());
+    }
+
+    /**
+     * Creates the image element
+     * @param {string} dataUrl - The image data URL for the thumbnail
+     * @return {HTMLElement} - The image element
+     */
+    createImageEl(dataUrl) {
+        const imageEl = document.createElement('div');
+        imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
+        imageEl.style.backgroundImage = `url('${dataUrl}')`;
+
+        // Add the height and width to the image to be the same as the thumbnail
+        // so that the css `background-image` rules will work
+        imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
+        imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
+
+        return imageEl;
     }
 
     /**
@@ -280,7 +327,7 @@ class ThumbnailsSidebar {
      */
     applyCurrentPageSelection() {
         this.currentThumbnails.forEach((thumbnailEl) => {
-            const parsedPageNum = Number.parseInt(thumbnailEl.dataset.bpPageNum, 10);
+            const parsedPageNum = parseInt(thumbnailEl.dataset.bpPageNum, 10);
             if (parsedPageNum === this.currentPage) {
                 thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
             } else {
