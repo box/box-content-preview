@@ -254,7 +254,7 @@ class VirtualScroller {
         }
 
         // Create a new list element to be swapped out for the existing one
-        const newListEl = document.createDocumentFragment();
+        const fragment = document.createDocumentFragment();
 
         if (curStartOffset <= offset && offset <= curEndOffset) {
             // Scenario #1: New start offset falls within the current range of items rendered
@@ -264,11 +264,11 @@ class VirtualScroller {
             //   newStartOffset          newEndOffset
             newStartOffset = curEndOffset + 1;
             // Create elements from curEnd + 1 to newEndOffset
-            this.createItems(newListEl, newStartOffset, newEndOffset);
+            this.createItems(fragment, newStartOffset, newEndOffset);
             // Delete the elements from curStartOffset to newStartOffset
             this.deleteItems(this.listEl, curStartOffset - curStartOffset, offset - curStartOffset);
             // Append the document fragment to the listEl
-            this.listEl.appendChild(newListEl);
+            this.listEl.appendChild(fragment);
         } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
             // Scenario #2: New end offset falls within the current range of items rendered
             //                |--------------------|
@@ -277,19 +277,19 @@ class VirtualScroller {
             //    newStartOffset        newEndOffset
 
             // Create elements from newStartOffset to curStart - 1
-            this.createItems(newListEl, offset, curStartOffset - 1);
+            this.createItems(fragment, offset, curStartOffset - 1);
             // Delete the elements from newEndOffset to the end
             this.deleteItems(this.listEl, newEndOffset - curStartOffset + 1);
             // Insert before the firstElementChild of the listEl
-            this.listEl.insertBefore(newListEl, this.listEl.firstElementChild);
+            this.listEl.insertBefore(fragment, this.listEl.firstElementChild);
         } else {
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
             //                    curStartOffset        curEndOffset
             //  |--------------------|
             // newStartOffset    newEndOffset
-            this.createItems(newListEl, newStartOffset, newEndOffset);
-            this.listEl.appendChild(newListEl);
+            this.createItems(fragment, newStartOffset, newEndOffset);
+            this.listEl.appendChild(fragment);
         }
     }
 
