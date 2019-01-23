@@ -2213,9 +2213,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         beforeEach(() => {
             sandbox.stub(docBase, 'resize');
             sandbox.stub(docBase, 'emitMetric');
+            sandbox.stub(docBase, 'emit');
         });
 
-        it('should do nothing if thumbnails sidebar does not exit', () => {
+        it('should do nothing if thumbnails sidebar does not exist', () => {
             docBase.thumbnailsSidebarEl = undefined;
 
             docBase.toggleThumbnails();
@@ -2234,6 +2235,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
+            expect(docBase.emit).to.be.calledWith('thumbnailsOpen');
         });
 
         it('should toggle close and resize the viewer', () => {
@@ -2248,6 +2250,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
+            expect(docBase.emit).to.be.calledWith('thumbnailsClose');
         });
     });
 
