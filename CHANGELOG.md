@@ -1,3 +1,10 @@
+<a name="1.62.1"></a>
+## <small>1.62.1 (2019-01-24)</small>
+
+* Chore: upgrade node-sass to 4.9.3, to match other projects (#899) ([d523e4b](https://github.com/box/box-content-preview/commit/d523e4b)), closes [#899](https://github.com/box/box-content-preview/issues/899)
+
+
+
 <a name="1.62.0"></a>
 ## 1.62.0 (2019-01-22)
 
