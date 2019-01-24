@@ -18,8 +18,6 @@ import {
     replacePlaceholders
 } from '../util';
 import {
-    CLASS_FULLSCREEN,
-    CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
@@ -133,11 +131,12 @@ class BaseViewer extends EventEmitter {
         this.debouncedResizeHandler = this.getResizeHandler().bind(this);
         this.handleAssetError = this.handleAssetError.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
-        this.onFullscreenToggled = this.onFullscreenToggled.bind(this);
         this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
+        this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
@@ -445,9 +444,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     addCommonListeners() {
-        // Attach common full screen event listeners
-        fullscreen.addListener('enter', this.onFullscreenToggled);
-        fullscreen.addListener('exit', this.onFullscreenToggled);
+        // Attach full screen event listeners
+        fullscreen.addListener('enter', this.handleFullscreenEnter);
+        fullscreen.addListener('exit', this.handleFullscreenExit);
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
@@ -514,16 +513,20 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Applies appropriate styles and resizes the document depending on fullscreen state
+     * Resize the document depending on fullscreen state
      *
      * @return {void}
      */
-    onFullscreenToggled() {
-        this.containerEl.classList.toggle(CLASS_FULLSCREEN);
-        if (!fullscreen.isSupported()) {
-            this.containerEl.classList.toggle(CLASS_FULLSCREEN_UNSUPPORTED);
-        }
+    handleFullscreenEnter() {
+        this.resize();
+    }
 
+    /**
+     * Resize the document depending on fullscreen state
+     *
+     * @return {void}
+     */
+    handleFullscreenExit() {
         this.resize();
     }
 
