@@ -162,23 +162,20 @@ describe('VirtualScroller', () => {
 
     describe('renderItems()', () => {
         let newListEl;
-        const curListEl = {};
+        let curListEl;
 
         beforeEach(() => {
-            virtualScroller.scrollingEl = { replaceChild: () => {} };
+            stubs.appendChild = sandbox.stub();
+            stubs.insertBefore = sandbox.stub();
+            curListEl = { appendChild: stubs.appendChild, insertBefore: stubs.insertBefore };
+            newListEl = {};
             virtualScroller.listEl = curListEl;
-            newListEl = { appendChild: () => {} };
-            stubs.createListElement = sandbox.stub(virtualScroller, 'createListElement').returns(newListEl);
-            stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
-            stubs.replaceChild = sandbox.stub(virtualScroller.scrollingEl, 'replaceChild');
-            stubs.appendChild = sandbox.stub(newListEl, 'appendChild');
-            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
-            stubs.cloneItems = sandbox.stub(virtualScroller, 'cloneItems');
-            stubs.createItems = sandbox.stub(virtualScroller, 'createItems');
-        });
 
-        afterEach(() => {
-            virtualScroller.scrollingEl = null;
+            stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
+            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
+            stubs.createItems = sandbox.stub(virtualScroller, 'createItems');
+            stubs.deleteItems = sandbox.stub(virtualScroller, 'deleteItems');
+            stubs.createDocumentFragment = sandbox.stub(document, 'createDocumentFragment').returns(newListEl);
         });
 
         it('should render the whole range of items (no reuse)', () => {
@@ -190,9 +187,10 @@ describe('VirtualScroller', () => {
             });
             virtualScroller.renderItems();
 
-            expect(stubs.cloneItems).not.to.be.called;
+            expect(stubs.deleteItems).not.to.be.called;
             expect(stubs.createItems).to.be.calledWith(newListEl, 0, 10);
-            expect(virtualScroller.scrollingEl.replaceChild).to.be.called;
+            expect(stubs.appendChild).to.be.called;
+            expect(stubs.insertBefore).not.to.be.called;
         });
 
         it('should render the remaining items up to totalItems', () => {
@@ -204,9 +202,25 @@ describe('VirtualScroller', () => {
             });
             virtualScroller.renderItems(95);
 
-            expect(stubs.cloneItems).not.to.be.called;
+            expect(stubs.deleteItems).not.to.be.called;
             expect(stubs.createItems).to.be.calledWith(newListEl, 95, 99);
-            expect(virtualScroller.scrollingEl.replaceChild).to.be.called;
+            expect(stubs.appendChild).to.be.called;
+            expect(stubs.insertBefore).not.to.be.called;
+        });
+
+        it('should render items above the current list', () => {
+            virtualScroller.maxRenderedItems = 10;
+            virtualScroller.totalItems = 100;
+            stubs.getCurrentListInfo.returns({
+                startOffset: 20,
+                endOffset: 30
+            });
+            virtualScroller.renderItems(15);
+
+            expect(stubs.deleteItems).to.be.called;
+            expect(stubs.createItems).to.be.calledWith(newListEl, 15, 19);
+            expect(stubs.appendChild).not.to.be.called;
+            expect(stubs.insertBefore).to.be.called;
         });
     });
 
@@ -333,60 +347,52 @@ describe('VirtualScroller', () => {
         });
     });
 
-    describe('cloneItems()', () => {
-        let newListEl;
+    describe('deleteItems()', () => {
+        let listEl;
 
         beforeEach(() => {
-            stubs.appendChild = sandbox.stub();
-            newListEl = { appendChild: stubs.appendChild };
+            stubs.removeChild = sandbox.stub();
+            listEl = { removeChild: stubs.removeChild };
         });
 
         const paramaterizedTests = [
-            { name: 'no newListEl provided', newListEl: undefined, start: 1, end: 2 },
-            { name: 'no start provided', newListEl, start: undefined, end: 2 },
-            { name: 'no end provided', newListEl, start: 1, end: undefined },
-            { name: 'start is < 0 provided', newListEl, start: -1, end: 2 },
-            { name: 'end is < 0 provided', newListEl, start: 1, end: -1 },
-            { name: 'no oldListEl.children', newListEl, start: 1, end: 2 },
-            {
-                name: 'start is greater than oldListEl.children length',
-                newListEl,
-                oldListEl: { children: { length: 1 } },
-                start: 1,
-                end: 3
-            },
-            {
-                name: 'end is greater than oldListEl.children length',
-                newListEl,
-                oldListEl: { children: { length: 1 } },
-                start: 0,
-                end: 1
-            }
+            { name: 'no listEl provided', listEl: undefined, start: 1, end: 2 },
+            { name: 'no start provided', listEl, start: undefined, end: 2 },
+            { name: 'no end provided', listEl, start: 1, end: undefined },
+            { name: 'start is < 0 provided', listEl, start: -1, end: 2 },
+            { name: 'end is < 0 provided', listEl, start: 1, end: -1 }
         ];
 
         paramaterizedTests.forEach((testData) => {
             it(`should do nothing if ${testData.name}`, () => {
-                const { newListEl: newList, oldListEl, start, end } = testData;
+                const { listEl: list, start, end } = testData;
 
-                virtualScroller.cloneItems(newList, oldListEl, start, end);
+                virtualScroller.deleteItems(list, start, end);
 
-                expect(stubs.appendChild).not.to.be.called;
+                expect(stubs.removeChild).not.to.be.called;
             });
         });
 
-        it('should clone over the items specified', () => {
-            const oldListEl = {
-                children: [
-                    { cloneNode: () => {} },
-                    { cloneNode: () => {} },
-                    { cloneNode: () => {} },
-                    { cloneNode: () => {} }
-                ]
+        it('should remove the items specified', () => {
+            const list = {
+                children: [{}, {}, {}, {}],
+                removeChild: stubs.removeChild
             };
 
-            virtualScroller.cloneItems(newListEl, oldListEl, 0, 1);
+            virtualScroller.deleteItems(list, 0, 1);
 
-            expect(stubs.appendChild).to.be.calledTwice;
+            expect(stubs.removeChild).to.be.calledOnce;
+        });
+
+        it('should remove the items specified from start to the end when end is not provided', () => {
+            const list = {
+                children: [{}, {}, {}, {}],
+                removeChild: stubs.removeChild
+            };
+
+            virtualScroller.deleteItems(list, 2);
+
+            expect(stubs.removeChild).to.be.calledTwice;
         });
     });
 

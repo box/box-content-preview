@@ -253,8 +253,8 @@ class VirtualScroller {
             newEndOffset = this.totalItems - 1;
         }
 
-        // Create a new list element to be swapped out for the existing one
-        const newListEl = this.createListElement();
+        // Creates a document fragment for the new list items to be appended into the list
+        const fragment = document.createDocumentFragment();
 
         if (curStartOffset <= offset && offset <= curEndOffset) {
             // Scenario #1: New start offset falls within the current range of items rendered
@@ -263,10 +263,12 @@ class VirtualScroller {
             //          |--------------------|
             //   newStartOffset          newEndOffset
             newStartOffset = curEndOffset + 1;
-            // clone elements from newStartOffset to curEndOffset
-            this.cloneItems(newListEl, this.listEl, offset - curStartOffset, curEndOffset - curStartOffset);
-            // then create elements from curEnd + 1 to newEndOffset
-            this.createItems(newListEl, newStartOffset, newEndOffset);
+            // Create elements from curEnd + 1 to newEndOffset
+            this.createItems(fragment, newStartOffset, newEndOffset);
+            // Delete the elements from curStartOffset to newStartOffset
+            this.deleteItems(this.listEl, curStartOffset - curStartOffset, offset - curStartOffset);
+            // Append the document fragment to the listEl
+            this.listEl.appendChild(fragment);
         } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {
             // Scenario #2: New end offset falls within the current range of items rendered
             //                |--------------------|
@@ -274,53 +276,27 @@ class VirtualScroller {
             //          |--------------------|
             //    newStartOffset        newEndOffset
 
-            // create elements from newStartOffset to curStart - 1
-            this.createItems(newListEl, offset, curStartOffset - 1);
-            // then clone elements from curStartOffset to newEndOffset
-            this.cloneItems(newListEl, this.listEl, 0, newEndOffset - curStartOffset);
+            // Create elements from newStartOffset to curStart - 1
+            this.createItems(fragment, offset, curStartOffset - 1);
+            // Delete the elements from newEndOffset to the end
+            this.deleteItems(this.listEl, newEndOffset - curStartOffset + 1);
+            // Insert before the firstElementChild of the listEl
+            this.listEl.insertBefore(fragment, this.listEl.firstElementChild);
         } else {
             // Scenario #3: New range has no overlap with current range of items
             //                          |--------------------|
             //                    curStartOffset        curEndOffset
             //  |--------------------|
             // newStartOffset    newEndOffset
-            this.createItems(newListEl, newStartOffset, newEndOffset);
-        }
-
-        this.scrollingEl.replaceChild(newListEl, this.listEl);
-        this.listEl = newListEl;
-    }
-
-    /**
-     * Clones a subset of the HTMLElements from the oldList to the newList.
-     * The newList element is modified.
-     *
-     * @param {HTMLElement} newListEl - the new `ol` element
-     * @param {HTMLElement} oldListEl - the old `ol` element
-     * @param {number} start - start index
-     * @param {number} end  - end index
-     * @return {void}
-     */
-    cloneItems(newListEl, oldListEl, start, end) {
-        if (!newListEl || !oldListEl || start < 0 || end < 0) {
-            return;
-        }
-
-        const { children } = oldListEl;
-
-        if (!children || start >= children.length || end >= children.length) {
-            return;
-        }
-
-        for (let i = start; i <= end; i++) {
-            newListEl.appendChild(children[i].cloneNode(true));
+            this.createItems(fragment, newStartOffset, newEndOffset);
+            this.listEl.appendChild(fragment);
         }
     }
 
     /**
      * Creates new HTMLElements appended to the newList
      *
-     * @param {HTMLElement} newListEl - the new `li` element
+     * @param {HTMLElement} newListEl - the new `ol` element
      * @param {number} start - start index
      * @param {number} end  - end index
      * @return {void}
@@ -334,6 +310,23 @@ class VirtualScroller {
             const newEl = this.renderItem(i);
             newListEl.appendChild(newEl);
         }
+    }
+
+    /**
+     * Deletes elements of the 'ol'
+     *
+     * @param {HTMLElement} listEl - the `ol` element
+     * @param {number} start - start index
+     * @param {number} [end] - end index
+     * @return {void}
+     */
+    deleteItems(listEl, start, end) {
+        if (!listEl || start < 0 || end < 0) {
+            return;
+        }
+
+        const listItems = Array.prototype.slice.call(listEl.children, start, end);
+        listItems.forEach((listItem) => listEl.removeChild(listItem));
     }
 
     /**
