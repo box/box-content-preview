@@ -253,7 +253,7 @@ class VirtualScroller {
             newEndOffset = this.totalItems - 1;
         }
 
-        // Create a new list element to be swapped out for the existing one
+        // Creates a document fragment for the new list items to be appended into the list
         const fragment = document.createDocumentFragment();
 
         if (curStartOffset <= offset && offset <= curEndOffset) {
