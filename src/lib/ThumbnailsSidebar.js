@@ -49,6 +49,7 @@ class ThumbnailsSidebar {
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
         this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
+        this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
 
@@ -153,20 +154,30 @@ class ThumbnailsSidebar {
      * @param {Object} currentListInfo - VirtualScroller info object which contains startOffset, endOffset, and the thumbnail elements
      * @return {void}
      */
-    generateThumbnailImages({ items, startOffset }) {
-        if (!isFinite(startOffset) || startOffset < 0) {
-            return;
-        }
-
+    generateThumbnailImages({ items }) {
         this.currentThumbnails = items;
 
-        items.forEach((thumbnailEl, index) => {
-            if (thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)) {
-                return;
-            }
+        // Serially renders the thumbnails one by one as needed
+        this.renderNextThumbnailImage();
+    }
 
-            this.requestThumbnailImage(index + startOffset, thumbnailEl);
-        });
+    /**
+     * Requests the next thumbnail image that needs rendering
+     *
+     * @return {void}
+     */
+    renderNextThumbnailImage() {
+        // Iterates over the current thumbnails and requests rendering of the first
+        // thumbnail it encounters that does not have an image loaded
+        for (let i = 0; i < this.currentThumbnails.length; i++) {
+            const thumbnailEl = this.currentThumbnails[i];
+            if (!thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)) {
+                const { bpPageNum } = thumbnailEl.dataset;
+                const parsedPageNum = parseInt(bpPageNum, 10);
+                this.requestThumbnailImage(parsedPageNum - 1, thumbnailEl);
+                break;
+            }
+        }
     }
 
     /**
@@ -202,8 +213,14 @@ class ThumbnailsSidebar {
     requestThumbnailImage(itemIndex, thumbnailEl) {
         requestAnimationFrame(() => {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
-                thumbnailEl.appendChild(imageEl);
-                thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
+                // Promise will resolve with null if create image request was already in progress
+                if (imageEl) {
+                    thumbnailEl.appendChild(imageEl);
+                    thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
+                }
+
+                // After generatingn the thumbnail image, render the next one
+                this.renderNextThumbnailImage();
             });
         });
     }
@@ -212,19 +229,29 @@ class ThumbnailsSidebar {
      * Make a thumbnail image element
      *
      * @param {number} itemIndex - the item index for the overall list (0 indexed)
-     * @return {Promise} - promise reolves with the image HTMLElement
+     * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
      */
     createThumbnailImage(itemIndex) {
-        // If this page has already been cached, use it
-        if (this.thumbnailImageCache[itemIndex]) {
-            return Promise.resolve(this.thumbnailImageCache[itemIndex]);
+        const cacheEntry = this.thumbnailImageCache[itemIndex];
+
+        // If this thumbnail has already been cached, use it
+        if (cacheEntry && cacheEntry.image) {
+            return Promise.resolve(cacheEntry.image);
         }
+
+        // If this thumbnail has already been requested, resolve with null
+        if (cacheEntry && cacheEntry.inprogress) {
+            return Promise.resolve(null);
+        }
+
+        // Update the cache entry to be in progress
+        this.thumbnailImageCache[itemIndex] = { ...cacheEntry, inprogress: true };
 
         return this.getThumbnailDataURL(itemIndex + 1)
             .then(this.createImageEl)
             .then((imageEl) => {
                 // Cache this image element for future use
-                this.thumbnailImageCache[itemIndex] = imageEl;
+                this.thumbnailImageCache[itemIndex] = { inprogress: false, image: imageEl };
 
                 return imageEl;
             });
