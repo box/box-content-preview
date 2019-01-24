@@ -40,6 +40,12 @@ function updateConfig(conf, language, index) {
         output: {
             path: path.resolve('dist', version, language),
             filename: '[Name].js'
+        },
+        devServer: {
+            contentBase: './src',
+            disableHostCheck: true,
+            host: '0.0.0.0',
+            inline: true
         }
     });
 
@@ -66,8 +72,7 @@ function updateConfig(conf, language, index) {
             config.plugins.push(new RsyncPlugin('dist/.', rsyncLocation));
         }
 
-        // Add inline source map
-        config.devtool = 'inline-source-map';
+        config.devtool = 'source-map';
     }
 
     if (isRelease) {
