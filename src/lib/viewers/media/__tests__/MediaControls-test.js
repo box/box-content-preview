@@ -440,7 +440,7 @@ describe('lib/viewers/media/MediaControls', () => {
         it('should set the label to exit fullscreen if in fullscreen', () => {
             stubs.isFullscreen.returns(true);
 
-            mediaControls.toggleFullscreenIcon();
+            mediaControls.handleFullscreenEnter();
             expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('exit_fullscreen'));
             expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.true;
         });
@@ -448,7 +448,7 @@ describe('lib/viewers/media/MediaControls', () => {
         it('should set the label to enter fullscreen if it\'s not fullscreen', () => {
             stubs.isFullscreen.returns(false);
 
-            mediaControls.toggleFullscreenIcon();
+            mediaControls.handleFullscreenExit();
             expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('enter_fullscreen'));
             expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.false;
         });

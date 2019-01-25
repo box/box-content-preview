@@ -1,6 +1,6 @@
 {
   "name": "box-content-preview",
-  "version": "1.61.0",
+  "version": "1.62.0",
   "description": "Box Content Preview UI Element",
   "author": "Box (https://www.box.com/)",
   "license": "SEE LICENSE IN LICENSE",
@@ -72,7 +72,7 @@
     "mock-local-storage": "^1.0.2",
     "mojito-rb-gen": "^0.0.1",
     "node-noop": "^1.0.0",
-    "node-sass": "^4.7.2",
+    "node-sass": "4.9.3",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "phantomjs-prebuilt": "^2.1.16",
     "postcss-loader": "^2.0.9",
@@ -98,6 +98,7 @@
     "webdriverio": "^4.12.0",
     "webpack": "^3.10.0",
     "webpack-bundle-analyzer": "^2.9.1",
+    "webpack-dev-server": "^2.11.3",
     "whatwg-fetch": "^2.0.3"
   },
   "engines": {
@@ -121,10 +122,11 @@
     "prettier": "prettier-eslint \"src/lib/**/*.js\" --print-width 120 --single-quote --tab-width 4 --write",
     "prod": "yarn run build-rb && BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
     "release": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run prod",
+    "start": "yarn install && BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
+    "start:dev": "yarn run build-rb && LANGUAGE=en-US BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack-dev-server --config build/webpack.config.js",
     "test": "yarn install && NODE_ENV=test node --max_old_space_size=4096 ./node_modules/.bin/karma start build/karma.conf.js",
     "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh",
     "upgrade-annotations": "./build/upgrade_annotations.sh",
-    "watch": "yarn install && BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
     "major": "./build/release.sh -m",
     "minor": "./build/release.sh -n",
     "patch": "./build/release.sh -p"
