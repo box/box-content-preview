@@ -354,7 +354,8 @@ Install the following plugins in your preferred editor
 ### Yarn commands
 
 * `yarn run build` to generate resource bundles and JS webpack bundles.
-* `yarn run watch` to only generate JS webpack bundles on file changes.
+* `yarn run start` to only generate JS webpack bundles on file changes.
+* `yarn run start:dev` to launch a webpack-dev-server instance for local development.
 * `yarn run test` launches karma tests with PhantomJS.
 * `yarn run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn run test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn run test -- --src=viewers/doc/`.
 * `yarn run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
