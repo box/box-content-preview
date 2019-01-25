@@ -2182,6 +2182,13 @@ describe('lib/Preview', () => {
             expect(stubs.emitPreviewError).to.be.called;
         });
 
+        it('should only log an error if the error was a silent error', () => {
+            preview.triggerError(new Error('fail'), true);
+            expect(stubs.uncacheFile).to.not.be.called;
+            expect(stubs.destroy).to.not.be.called;
+            expect(stubs.emitPreviewError).to.be.called;
+        });
+
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
             preview.triggerError();
             expect(preview.open).to.be.false;

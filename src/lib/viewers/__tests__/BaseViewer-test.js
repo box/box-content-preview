@@ -270,6 +270,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_load_viewer');
             expect(error.message).to.equal('blah');
+            expect(base.emit).to.be.calledWith('error', error, false);
         });
 
         it('should emit a load viewer error if no error provided', () => {
@@ -1037,6 +1038,8 @@ describe('lib/viewers/BaseViewer', () => {
             };
 
             sandbox.stub(base, 'initAnnotations');
+            sandbox.stub(base, 'emit');
+            sandbox.stub(base, 'triggerError');
         });
 
         it('should not create the annotator if annotations are not enabled', () => {
