@@ -72,7 +72,6 @@ class MediaControls extends EventEmitter {
         this.togglePlay = this.togglePlay.bind(this);
         this.toggleMute = this.toggleMute.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
-        this.toggleFullscreenIcon = this.toggleFullscreenIcon.bind(this);
         this.toggleSettings = this.toggleSettings.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
         this.setFilmstrip = this.setFilmstrip.bind(this);
@@ -84,6 +83,8 @@ class MediaControls extends EventEmitter {
         this.handleAutoplay = this.handleAutoplay.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
+        this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
+        this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.timeScrubberHandler = this.timeScrubberHandler.bind(this);
 
         this.setDuration(this.mediaEl.duration);
@@ -158,8 +159,7 @@ class MediaControls extends EventEmitter {
         }
 
         if (fullscreen) {
-            fullscreen.removeListener('exit', this.toggleFullscreenIcon);
-            fullscreen.removeListener('enter', this.toggleFullscreenIcon);
+            fullscreen.destroy();
         }
 
         this.wrapperEl = undefined;
@@ -225,6 +225,26 @@ class MediaControls extends EventEmitter {
      */
     handleAutoplay() {
         this.emit('autoplaychange');
+    }
+
+    /**
+     * Update the fullscreen icon and associated label when entering fullscreen mode.
+     *
+     * @return {void}
+     */
+    handleFullscreenEnter() {
+        this.setLabel(this.fullscreenButtonEl, __('exit_fullscreen'));
+        this.containerEl.classList.add('bp-is-fullscreen');
+    }
+
+    /**
+     * Update the fullscreen icon and associated label when exiting fullscreen mode.
+     *
+     * @return {void}
+     */
+    handleFullscreenExit() {
+        this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen'));
+        this.containerEl.classList.remove('bp-is-fullscreen');
     }
 
     /**
@@ -369,22 +389,6 @@ class MediaControls extends EventEmitter {
     toggleFullscreen() {
         this.show();
         this.emit('togglefullscreen');
-    }
-
-    /**
-     * sets the fullscreen icon and associated label when changing fullscreen mode.
-     *
-     * @private
-     * @return {void}
-     */
-    toggleFullscreenIcon() {
-        if (fullscreen.isFullscreen(this.containerEl)) {
-            this.setLabel(this.fullscreenButtonEl, __('exit_fullscreen'));
-            this.containerEl.classList.add('bp-is-fullscreen');
-        } else {
-            this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen'));
-            this.containerEl.classList.remove('bp-is-fullscreen');
-        }
     }
 
     /**
@@ -602,8 +606,8 @@ class MediaControls extends EventEmitter {
         addActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
         addActivationListener(this.subtitlesButtonEl, this.toggleSubtitlesHandler);
 
-        fullscreen.addListener('exit', this.toggleFullscreenIcon);
-        fullscreen.addListener('enter', this.toggleFullscreenIcon);
+        fullscreen.addListener('enter', this.handleFullscreenEnter);
+        fullscreen.addListener('exit', this.handleFullscreenExit);
     }
 
     /**

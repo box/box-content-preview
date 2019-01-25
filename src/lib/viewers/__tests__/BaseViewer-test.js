@@ -8,7 +8,6 @@ import DownloadReachability from '../../DownloadReachability';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
-import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
@@ -509,31 +508,22 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('onFullscreenToggled()', () => {
-        beforeEach(() => {
-            base.containerEl = document.createElement('div');
-            sandbox.stub(fullscreen, 'isSupported').returns(false);
-            sandbox.stub(base, 'resize');
-        });
-
-        it('should toggle the fullscreen class', () => {
-            base.onFullscreenToggled();
-            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.true;
-
-            base.onFullscreenToggled();
-            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.false;
-        });
-
-        it('should toggle the unsupported class if the browser does not support the fullscreen API', () => {
-            base.onFullscreenToggled();
-            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.true;
-
-            base.onFullscreenToggled();
-            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.false;
-        });
-
+    describe('handleFullscreenEnter()', () => {
         it('should resize the viewer', () => {
-            base.onFullscreenToggled();
+            sandbox.stub(base, 'resize');
+
+            base.handleFullscreenEnter();
+
+            expect(base.resize).to.be.called;
+        });
+    });
+
+    describe('handleFullscreenExit()', () => {
+        it('should resize the viewer', () => {
+            sandbox.stub(base, 'resize');
+
+            base.handleFullscreenExit();
+
             expect(base.resize).to.be.called;
         });
     });

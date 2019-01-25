@@ -1,5 +1,4 @@
 import BaseViewer from '../BaseViewer';
-import fullscreen from '../../Fullscreen';
 import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
@@ -224,13 +223,6 @@ class Box3DViewer extends BaseViewer {
             const template = representation.content.url_template;
             get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    toggleFullscreen() {
-        fullscreen.toggle(this.containerEl);
     }
 
     /**
