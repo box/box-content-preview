@@ -187,7 +187,7 @@ describe('VirtualScroller', () => {
             });
             virtualScroller.renderItems();
 
-            expect(stubs.deleteItems).to.be.calledWith(curListEl, 0);
+            expect(stubs.deleteItems).to.be.calledWith(curListEl);
             expect(stubs.createItems).to.be.calledWith(newListEl, 0, 10);
             expect(stubs.appendChild).to.be.called;
             expect(stubs.insertBefore).not.to.be.called;
@@ -202,7 +202,7 @@ describe('VirtualScroller', () => {
             });
             virtualScroller.renderItems(95);
 
-            expect(stubs.deleteItems).to.be.calledWith(curListEl, 0);
+            expect(stubs.deleteItems).to.be.calledWith(curListEl);
             expect(stubs.createItems).to.be.calledWith(newListEl, 95, 99);
             expect(stubs.appendChild).to.be.called;
             expect(stubs.insertBefore).not.to.be.called;

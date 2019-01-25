@@ -290,7 +290,7 @@ class VirtualScroller {
             // newStartOffset    newEndOffset
             this.createItems(fragment, newStartOffset, newEndOffset);
             // Delete all the current elements (if any)
-            this.deleteItems(this.listEl, 0);
+            this.deleteItems(this.listEl);
             this.listEl.appendChild(fragment);
         }
     }
@@ -318,11 +318,11 @@ class VirtualScroller {
      * Deletes elements of the 'ol'
      *
      * @param {HTMLElement} listEl - the `ol` element
-     * @param {number} start - start index
+     * @param {number} [start] - start index
      * @param {number} [end] - end index
      * @return {void}
      */
-    deleteItems(listEl, start, end) {
+    deleteItems(listEl, start = 0, end) {
         if (!listEl || start < 0 || end < 0) {
             return;
         }

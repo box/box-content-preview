@@ -169,14 +169,13 @@ class ThumbnailsSidebar {
     renderNextThumbnailImage() {
         // Iterates over the current thumbnails and requests rendering of the first
         // thumbnail it encounters that does not have an image loaded
-        for (let i = 0; i < this.currentThumbnails.length; i++) {
-            const thumbnailEl = this.currentThumbnails[i];
-            if (!thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)) {
-                const { bpPageNum } = thumbnailEl.dataset;
-                const parsedPageNum = parseInt(bpPageNum, 10);
-                this.requestThumbnailImage(parsedPageNum - 1, thumbnailEl);
-                break;
-            }
+        const nextThumbnailEl = this.currentThumbnails.find(
+            (thumbnailEl) => !thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)
+        );
+
+        if (nextThumbnailEl) {
+            const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
+            this.requestThumbnailImage(parsedPageNum - 1, nextThumbnailEl);
         }
     }
 
@@ -240,18 +239,18 @@ class ThumbnailsSidebar {
         }
 
         // If this thumbnail has already been requested, resolve with null
-        if (cacheEntry && cacheEntry.inprogress) {
+        if (cacheEntry && cacheEntry.inProgress) {
             return Promise.resolve(null);
         }
 
         // Update the cache entry to be in progress
-        this.thumbnailImageCache[itemIndex] = { ...cacheEntry, inprogress: true };
+        this.thumbnailImageCache[itemIndex] = { ...cacheEntry, inProgress: true };
 
         return this.getThumbnailDataURL(itemIndex + 1)
             .then(this.createImageEl)
             .then((imageEl) => {
                 // Cache this image element for future use
-                this.thumbnailImageCache[itemIndex] = { inprogress: false, image: imageEl };
+                this.thumbnailImageCache[itemIndex] = { inProgress: false, image: imageEl };
 
                 return imageEl;
             });

@@ -239,13 +239,13 @@ describe('ThumbnailsSidebar', () => {
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
                 expect(stubs.createImageEl).to.be.called;
                 expect(thumbnailsSidebar.thumbnailImageCache[0].image).to.be.eql(imageEl);
-                expect(thumbnailsSidebar.thumbnailImageCache[0].inprogress).to.be.false;
+                expect(thumbnailsSidebar.thumbnailImageCache[0].inProgress).to.be.false;
             });
         });
 
-        it('should resolve with null if cache entry inprogress is true', () => {
+        it('should resolve with null if cache entry inProgress is true', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 0: { inprogress: true } };
+            thumbnailsSidebar.thumbnailImageCache = { 0: { inProgress: true } };
             stubs.createImageEl.returns(cachedImage);
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
