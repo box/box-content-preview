@@ -289,6 +289,8 @@ class VirtualScroller {
             //  |--------------------|
             // newStartOffset    newEndOffset
             this.createItems(fragment, newStartOffset, newEndOffset);
+            // Delete all the current elements (if any)
+            this.deleteItems(this.listEl, 0);
             this.listEl.appendChild(fragment);
         }
     }

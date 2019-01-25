@@ -219,7 +219,7 @@ class ThumbnailsSidebar {
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }
 
-                // After generatingn the thumbnail image, render the next one
+                // After generating the thumbnail image, render the next one
                 this.renderNextThumbnailImage();
             });
         });
