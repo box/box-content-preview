@@ -61,6 +61,7 @@ class VirtualScroller {
         this.onScrollHandler = this.onScrollHandler.bind(this);
         this.getCurrentListInfo = this.getCurrentListInfo.bind(this);
         this.renderItems = this.renderItems.bind(this);
+        this.scrollIntoView = this.scrollIntoView.bind(this);
 
         this.debouncedOnScrollEndHandler = debounce(this.onScrollEndHandler, DEBOUNCE_SCROLL_THRESHOLD);
         this.throttledOnScrollHandler = throttle(this.onScrollHandler, THROTTLE_SCROLL_THRESHOLD);
