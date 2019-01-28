@@ -50,9 +50,13 @@ class ThumbnailsSidebar {
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
         this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
+        this.isOpen = this.isOpen.bind(this);
         this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.toggleClose = this.toggleClose.bind(this);
+        this.toggleOpen = this.toggleOpen.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
     }
