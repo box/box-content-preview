@@ -1,5 +1,6 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
+import { CLASS_HIDDEN } from './constants';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
@@ -137,6 +138,7 @@ class ThumbnailsSidebar {
             const scaledViewport = page.getViewport(this.scale);
 
             this.virtualScroller.init({
+                initialRowIndex: this.currentPage - 1,
                 totalItems: this.pdfViewer.pagesCount,
                 itemHeight: scaledViewport.height,
                 containerHeight: this.anchorEl.parentNode.clientHeight,
@@ -342,6 +344,7 @@ class ThumbnailsSidebar {
         if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
+            this.virtualScroller.scrollIntoView(parsedPageNumber - 1);
         }
     }
 
@@ -360,6 +363,56 @@ class ThumbnailsSidebar {
                 thumbnailEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
             }
         });
+    }
+
+    /**
+     * Toggles the thumbnails sidebar
+     * @return {void}
+     */
+    toggle() {
+        if (!this.anchorEl) {
+            return;
+        }
+
+        if (!this.isOpen()) {
+            this.toggleOpen();
+        } else {
+            this.toggleClose();
+        }
+    }
+
+    /**
+     * Returns whether the sidebar is open or not
+     * @return {boolean} true if the sidebar is open, false if not
+     */
+    isOpen() {
+        return this.anchorEl && !this.anchorEl.classList.contains(CLASS_HIDDEN);
+    }
+
+    /**
+     * Toggles the sidebar open. This will scroll the current page into view
+     * @return {void}
+     */
+    toggleOpen() {
+        if (!this.anchorEl) {
+            return;
+        }
+
+        this.anchorEl.classList.remove(CLASS_HIDDEN);
+
+        this.virtualScroller.scrollIntoView(this.currentPage - 1);
+    }
+
+    /**
+     * Toggles the sidebar closed
+     * @return {void}
+     */
+    toggleClose() {
+        if (!this.anchorEl) {
+            return;
+        }
+
+        this.anchorEl.classList.add(CLASS_HIDDEN);
     }
 }
 
