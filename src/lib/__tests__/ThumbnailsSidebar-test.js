@@ -140,35 +140,53 @@ describe('ThumbnailsSidebar', () => {
         });
     });
 
-    describe('generateThumbnailImage()', () => {
+    describe('renderNextThumbnailImage()', () => {
         beforeEach(() => {
             stubs.requestThumbnailImage = sandbox.stub(thumbnailsSidebar, 'requestThumbnailImage');
         });
 
-        it('should do nothing if startOffset is -1', () => {
-            thumbnailsSidebar.generateThumbnailImages({ items: [], startOffset: -1 });
+        // eslint-disable-next-line
+        const createThumbnailEl = (pageNum, contains) => {
+            return {
+                classList: {
+                    contains: () => contains
+                },
+                dataset: {
+                    bpPageNum: pageNum
+                }
+            };
+        };
+
+        it('should do nothing there are no current thumbnails', () => {
+            thumbnailsSidebar.currentThumbnails = [];
+            thumbnailsSidebar.renderNextThumbnailImage();
 
             expect(stubs.requestThumbnailImage).not.to.be.called;
         });
 
         it('should not request thumbnail images if thumbnail already contains image loaded class', () => {
-            stubs.contains = sandbox.stub().returns(true);
+            const items = [createThumbnailEl(1, true)];
+            thumbnailsSidebar.currentThumbnails = items;
 
-            const items = [{ classList: { contains: stubs.contains } }];
-
-            thumbnailsSidebar.generateThumbnailImages({ items, startOffset: 0 });
+            thumbnailsSidebar.renderNextThumbnailImage();
 
             expect(stubs.requestThumbnailImage).not.to.be.called;
         });
 
         it('should request thumbnail images if thumbnail does not already contains image loaded class', () => {
-            stubs.contains = sandbox.stub().returns(false);
+            const items = [createThumbnailEl(1, false)];
+            thumbnailsSidebar.currentThumbnails = items;
+            thumbnailsSidebar.renderNextThumbnailImage();
 
-            const items = [{ classList: { contains: stubs.contains } }];
+            expect(stubs.requestThumbnailImage).to.be.calledOnce;
+        });
 
-            thumbnailsSidebar.generateThumbnailImages({ items, startOffset: 0 });
+        it('should only request the first thumbnail that does not already contain an image loaded class', () => {
+            const items = [createThumbnailEl(1, true), createThumbnailEl(2, false), createThumbnailEl(3, false)];
+            thumbnailsSidebar.currentThumbnails = items;
+            thumbnailsSidebar.renderNextThumbnailImage();
 
-            expect(stubs.requestThumbnailImage).to.be.called;
+            expect(stubs.requestThumbnailImage).to.be.calledOnce;
         });
     });
 
@@ -206,7 +224,7 @@ describe('ThumbnailsSidebar', () => {
 
         it('should resolve immediately if the image is in cache', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            thumbnailsSidebar.thumbnailImageCache = { 1: { image: cachedImage } };
 
             return thumbnailsSidebar.createThumbnailImage(1).then(() => {
                 expect(stubs.createImageEl).not.to.be.called;
@@ -215,12 +233,24 @@ describe('ThumbnailsSidebar', () => {
 
         it('should create an image element if not in cache', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            thumbnailsSidebar.thumbnailImageCache = { 1: { image: cachedImage } };
             stubs.createImageEl.returns(cachedImage);
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
                 expect(stubs.createImageEl).to.be.called;
-                expect(thumbnailsSidebar.thumbnailImageCache[0]).to.be.eql(imageEl);
+                expect(thumbnailsSidebar.thumbnailImageCache[0].image).to.be.eql(imageEl);
+                expect(thumbnailsSidebar.thumbnailImageCache[0].inProgress).to.be.false;
+            });
+        });
+
+        it('should resolve with null if cache entry inProgress is true', () => {
+            const cachedImage = {};
+            thumbnailsSidebar.thumbnailImageCache = { 0: { inProgress: true } };
+            stubs.createImageEl.returns(cachedImage);
+
+            return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
+                expect(stubs.createImageEl).not.to.be.called;
+                expect(imageEl).to.be.null;
             });
         });
     });
