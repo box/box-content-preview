@@ -42,6 +42,13 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             }
         });
+        base.previewUI = {
+            replaceHeader: sandbox.stub(),
+            notification: {
+                show: sandbox.stub(),
+                hide: sandbox.stub()
+            }
+        };
     });
 
     afterEach(() => {
@@ -270,6 +277,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(error).to.be.instanceof(PreviewError);
             expect(error.code).to.equal('error_load_viewer');
             expect(error.message).to.equal('blah');
+            expect(base.emit).to.be.calledWith('error', error);
         });
 
         it('should emit a load viewer error if no error provided', () => {
@@ -466,12 +474,6 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
             stubs.getDownloadNotificationToShow.returns('dl3.boxcloud.com');
-            base.previewUI = {
-                notification: {
-                    show: sandbox.stub()
-                }
-            };
-
             sandbox.stub(DownloadReachability, 'setDownloadHostNotificationShown');
 
             base.viewerLoadHandler({ scale: 1.5 });
@@ -1037,6 +1039,8 @@ describe('lib/viewers/BaseViewer', () => {
             };
 
             sandbox.stub(base, 'initAnnotations');
+            sandbox.stub(base, 'emit');
+            sandbox.stub(base, 'triggerError');
         });
 
         it('should not create the annotator if annotations are not enabled', () => {
@@ -1244,9 +1248,6 @@ describe('lib/viewers/BaseViewer', () => {
             };
             sandbox.stub(base, 'disableViewerControls');
             sandbox.stub(base, 'enableViewerControls');
-            base.previewUI = {
-                replaceHeader: () => {}
-            };
         });
 
         it('should disable controls and show point mode notification on annotationmodeenter', () => {
@@ -1256,7 +1257,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith(VIEWER_EVENT.notificationShow, sinon.match.string);
+            expect(base.previewUI.notification.show).to.be.called;
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1271,7 +1272,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith(VIEWER_EVENT.notificationShow, sinon.match.string);
+            expect(base.previewUI.notification.show).to.be.called;
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1285,7 +1286,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith(VIEWER_EVENT.notificationHide);
+            expect(base.previewUI.notification.hide).to.be.called;
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1299,7 +1300,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith(VIEWER_EVENT.notificationHide);
+            expect(base.previewUI.notification.hide).to.be.called;
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1310,7 +1311,7 @@ describe('lib/viewers/BaseViewer', () => {
                 data: 'message'
             };
             base.handleAnnotatorEvents(data);
-            expect(base.emit).to.be.calledWith(VIEWER_EVENT.notificationShow, data.data);
+            expect(base.previewUI.notification.show).to.be.called;
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });

@@ -868,7 +868,8 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
+            this.previewUI.notification.show(error.displayMessage);
             this.triggerError(error);
             return;
         }
@@ -1009,22 +1010,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_point_mode'));
+                    this.previewUI.notification.show(__('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_draw_mode'));
+                    this.previewUI.notification.show(__('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.emit(VIEWER_EVENT.notificationHide);
+                this.previewUI.notification.hide();
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.emit(VIEWER_EVENT.notificationShow, data.data);
+                this.previewUI.notification.show(data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {
