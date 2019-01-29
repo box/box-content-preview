@@ -19,7 +19,6 @@ import {
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
-    SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     SELECTOR_BOX_PREVIEW_CONTENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../../constants';
@@ -2093,14 +2092,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('toggleThumbnails()', () => {
+        let thumbnailsSidebar;
+
         beforeEach(() => {
             sandbox.stub(docBase, 'resize');
             sandbox.stub(docBase, 'emitMetric');
             sandbox.stub(docBase, 'emit');
+
+            stubs.toggleSidebar = sandbox.stub();
+            stubs.isSidebarOpen = sandbox.stub();
+
+            thumbnailsSidebar = {
+                toggle: stubs.toggleSidebar,
+                isOpen: stubs.isSidebarOpen,
+                destroy: () => {}
+            };
         });
 
         it('should do nothing if thumbnails sidebar does not exist', () => {
-            docBase.thumbnailsSidebarEl = undefined;
+            docBase.thumbnailsSidebar = undefined;
 
             docBase.toggleThumbnails();
 
@@ -2108,29 +2118,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should toggle open and resize the viewer', () => {
-            const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
-            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+            docBase.thumbnailsSidebar = thumbnailsSidebar;
             docBase.pdfViewer = { pagesCount: 10 };
-            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            stubs.isSidebarOpen.returns(true);
 
             docBase.toggleThumbnails();
 
-            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(stubs.toggleSidebar).to.be.called;
+            expect(stubs.isSidebarOpen).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
             expect(docBase.emit).to.be.calledWith('thumbnailsOpen');
         });
 
         it('should toggle close and resize the viewer', () => {
-            const thumbnailsSidebarEl = document.querySelector(SELECTOR_BOX_PREVIEW_THUMBNAILS_CONTAINER);
-            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
-            thumbnailsSidebarEl.classList.remove(CLASS_HIDDEN);
+            docBase.thumbnailsSidebar = thumbnailsSidebar;
             docBase.pdfViewer = { pagesCount: 10 };
-            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            stubs.isSidebarOpen.returns(false);
 
             docBase.toggleThumbnails();
 
-            expect(thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(stubs.toggleSidebar).to.be.called;
+            expect(stubs.isSidebarOpen).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
             expect(docBase.emit).to.be.calledWith('thumbnailsClose');
