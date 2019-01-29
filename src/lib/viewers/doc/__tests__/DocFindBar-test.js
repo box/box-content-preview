@@ -15,9 +15,7 @@ const MATCH_OFFSET = 13;
 
 const sandbox = sinon.sandbox.create();
 let docFindBar;
-let docEl;
 let findBarEl;
-let pdfViewer;
 let findController;
 let stubs = {};
 
@@ -29,18 +27,12 @@ describe('lib/viewers/doc/DocFindBar', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocFindBar-test.html');
 
-        docEl = document.querySelector('.test-container');
         findBarEl = document.querySelector('.test-find-bar');
 
-        pdfViewer = new PDFJS.PDFViewer({
-            container: docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: false // improves text selection if true
-        });
-
-        findController = new PDFJS.PDFFindController({
-            pdfViewer
-        });
+        findController = {
+            executeCommand: sandbox.stub(),
+            linkService: {}
+        };
 
         docFindBar = new DocFindBar(findBarEl, findController, true);
     });
@@ -50,7 +42,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             docFindBar.destroy();
         }
 
-        pdfViewer = null;
         docFindBar = null;
         findController = null;
 
@@ -146,10 +137,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
     });
 
     describe('dispatchFindEvent()', () => {
-        beforeEach(() => {
-            stubs.executeCommand = sandbox.stub(docFindBar.findController, 'executeCommand');
-        });
-
         it('should execute the find controller command with the given params', () => {
             docFindBar.findFieldEl.value = 'value';
             const params = {
@@ -160,7 +147,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             };
 
             docFindBar.dispatchFindEvent('string', 'test');
-            expect(stubs.executeCommand).to.be.calledWith('string', params);
+            expect(findController.executeCommand).to.be.calledWith('string', params);
         });
     });
 

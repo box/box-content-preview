@@ -13,6 +13,8 @@ const CLIENT_NAME = __NAME__;
 export const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
+const promiseMap = {};
+
 /**
  * Retrieves JSON from response.
  *
@@ -482,6 +484,17 @@ export function loadStylesheets(urls) {
 }
 
 /**
+ * Delete all promises from the promise map
+ *
+ * @return {void}
+ */
+export function clearPromises() {
+    Object.keys(promiseMap).forEach((promiseKey) => {
+        delete promiseMap[promiseKey];
+    });
+}
+
+/**
  * Loads external scripts by appending a <script> element
  *
  * @public
@@ -508,16 +521,17 @@ export function loadScripts(urls, disableAMD = false) {
     }
 
     urls.forEach((url) => {
-        if (!head.querySelector(`script[src="${url}"]`)) {
+        if (!promiseMap[url]) {
             const script = createScript(url);
-            promises.push(
-                new Promise((resolve, reject) => {
-                    script.addEventListener('load', resolve);
-                    script.addEventListener('error', reject);
-                })
-            );
+            promiseMap[url] = new Promise((resolve, reject) => {
+                script.addEventListener('load', resolve);
+                script.addEventListener('error', reject);
+            });
+
             head.appendChild(script);
         }
+
+        promises.push(promiseMap[url]);
     });
 
     return Promise.all(promises)
@@ -525,11 +539,15 @@ export function loadScripts(urls, disableAMD = false) {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         })
         .catch(() => {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         });
 }
 

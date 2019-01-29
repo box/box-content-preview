@@ -23,10 +23,11 @@
         "assert": false,
         "fixture": false,
         "__": false,
-        "PDFJS": false,
         "Box": false,
+        "ActiveXObject": false,
         "DocumentTouch": false,
-        "ActiveXObject": false
+        "pdfjsLib": false,
+        "pdfjsViewer": false
     },
     "rules": {
         "quotes": [

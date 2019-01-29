@@ -135,13 +135,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should destroy the find bar', () => {
             docBase.findBar = {
-                destroy: sandbox.stub(),
-                removeListener: sandbox.stub()
+                destroy: sandbox.stub()
             };
 
             docBase.destroy();
             expect(docBase.findBar.destroy).to.be.called;
-            expect(docBase.findBar.removeListener).to.be.called;
         });
 
         it('should clean up the PDF network requests', () => {
@@ -468,8 +466,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('initFind()', () => {
         beforeEach(() => {
-            docBase.pdfViewer = {
-                setFindController: sandbox.stub()
+            docBase.pdfFindController = {
+                updateUIState: sandbox.stub(),
+                updateUIResultsCount: sandbox.stub()
             };
         });
 
@@ -477,11 +476,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.initFind();
             expect(docBase.findBarEl.classList.contains(CLASS_BOX_PREVIEW_FIND_BAR)).to.be.true;
             expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
-        });
-
-        it('should create and set a new findController', () => {
-            docBase.initFind();
-            expect(docBase.pdfViewer.setFindController).to.be.called;
         });
 
         it('should not set find bar if viewer option disableFindBar is true', () => {
@@ -833,44 +827,56 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('initViewer()', () => {
         beforeEach(() => {
-            stubs.pdfViewer = {
-                linkService: new PDFJS.PDFLinkService(),
-                setDocument: sandbox.stub()
-            };
-            stubs.pdfViewer.linkService.setDocument = sandbox.stub();
-            stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFViewer').returns(stubs.pdfViewer);
             stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
             stubs.emit = sandbox.stub(docBase, 'emit');
-        });
 
-        it('should turn on enhanced text selection if not on mobile', () => {
             docBase.options.location = {
                 locale: 'en-US'
             };
+
+            docBase.pdfJsCmapUrl = '/cMapUrl';
+
+            docBase.pdfjsLib = Object.assign({}, pdfjsLib, {
+                disableRange: false,
+                getDocument: sandbox.stub().returns(Promise.resolve())
+            });
+
+            docBase.pdfjsViewer = Object.assign({}, pdfjsViewer, {
+                PDFFindController: sandbox.stub().returns({
+                    setLinkService: sandbox.stub()
+                }),
+                PDFLinkService: sandbox.stub().returns({
+                    setDocument: sandbox.stub(),
+                    setViewer: sandbox.stub()
+                }),
+                PDFViewer: sandbox.stub().returns({
+                    setDocument: sandbox.stub()
+                })
+            });
+        });
+
+        it('should turn on enhanced text selection if not on mobile', () => {
             docBase.isMobile = false;
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer('').then(() => {
-                expect(stubs.pdfViewerStub).to.be.calledWith({
+                expect(docBase.pdfjsViewer.PDFViewer).to.be.calledWith({
                     container: sinon.match.any,
-                    linkService: sinon.match.any,
-                    enhanceTextSelection: true
+                    enhanceTextSelection: true,
+                    findController: sinon.match.any,
+                    linkService: sinon.match.any
                 });
             });
         });
 
         it('should turn off enhanced text selection if on mobile', () => {
-            docBase.options.location = {
-                locale: 'en-US'
-            };
             docBase.isMobile = true;
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer('').then(() => {
-                expect(stubs.pdfViewerStub).to.be.calledWith({
+                expect(docBase.pdfjsViewer.PDFViewer).to.be.calledWith({
                     container: sinon.match.any,
-                    linkService: sinon.match.any,
-                    enhanceTextSelection: false
+                    enhanceTextSelection: false,
+                    findController: sinon.match.any,
+                    linkService: sinon.match.any
                 });
             });
         });
@@ -880,12 +886,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const rangeChunkSize = 100;
 
             sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer(url).then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: sinon.match.string,
-                    rangeChunkSize
+                expect(docBase.pdfjsLib.getDocument).to.be.calledWith({
+                    cMapPacked: true,
+                    cMapUrl: sinon.match.string,
+                    httpHeaders: {},
+                    rangeChunkSize,
+                    url: sinon.match.string
                 });
             });
         });
@@ -898,12 +906,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 locale: 'not-en-US'
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer(url).then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: sinon.match.string,
-                    rangeChunkSize: defaultChunkSize
+                expect(docBase.pdfjsLib.getDocument).to.be.calledWith({
+                    cMapPacked: true,
+                    cMapUrl: sinon.match.string,
+                    httpHeaders: {},
+                    rangeChunkSize: defaultChunkSize,
+                    url: sinon.match.string
                 });
             });
         });
@@ -912,45 +922,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const url = 'url';
             const largeChunkSize = 1048576; // 1MB
 
-            docBase.options.location = {
-                locale: 'en-US'
-            };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer(url).then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: sinon.match.string,
-                    rangeChunkSize: largeChunkSize
+                expect(docBase.pdfjsLib.getDocument).to.be.calledWith({
+                    cMapPacked: true,
+                    cMapUrl: sinon.match.string,
+                    httpHeaders: {},
+                    rangeChunkSize: largeChunkSize,
+                    url: sinon.match.string
                 });
             });
         });
 
         it('should set a cache-busting header if on mobile', () => {
-            docBase.options.location = {
-                locale: 'en-US'
-            };
             sandbox.stub(Browser, 'isIOS').returns(true);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
             return docBase.initViewer('').then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: sinon.match.string,
-                    rangeChunkSize: 1048576,
+                expect(docBase.pdfjsLib.getDocument).to.be.calledWith({
+                    cMapPacked: true,
+                    cMapUrl: sinon.match.string,
                     httpHeaders: {
                         'If-None-Match': 'webkit-no-cache'
-                    }
+                    },
+                    rangeChunkSize: 1048576,
+                    url: sinon.match.string
                 });
             });
         });
 
         it('should avoid preflight requests by not adding non-standard headers', (done) => {
-            docBase.options.location = {
-                locale: 'en-US'
-            };
-            // Excluding IOS for If-None-Match cache busting
-            sandbox.stub(Browser, 'isIOS').returns(false);
-            sandbox.stub(PDFJS, 'getDocument').callsFake((docInitParams) => {
+            docBase.pdfjsLib.getDocument.callsFake((docInitParams) => {
                 return new Promise(() => {
                     const { httpHeaders = {} } = docInitParams;
                     const headerKeys = Object.keys(httpHeaders);
@@ -963,30 +965,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     done();
                 });
             });
+            // Excluding IOS for If-None-Match cache busting
+            sandbox.stub(Browser, 'isIOS').returns(false);
 
             return docBase.initViewer('');
         });
 
         it('should append encoding query parameter for gzip content when range requests are disabled', () => {
-            // en-US allows for disabled range requests
-            docBase.options.location = {
-                locale: 'en-US'
-            };
             const defaultChunkSize = 1048576; // Taken from RANGE_REQUEST_CHUNK_SIZE_US
             const url = 'www.myTestPDF.com/123456';
             const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
-            const isDisabled = PDFJS.disableRange;
+            const isDisabled = docBase.pdfjsLib.disableRange;
             sandbox.stub(Browser, 'isIOS').returns(false);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
-            PDFJS.disableRange = true;
+            sandbox.stub(docBase.pdfjsLib, 'disableRange').value(true);
             return docBase.initViewer(url).then(() => {
-                expect(PDFJS.getDocument).to.be.calledWith({
-                    url: `${url}?${paramsList}`,
-                    rangeChunkSize: defaultChunkSize
+                expect(docBase.pdfjsLib.getDocument).to.be.calledWith({
+                    cMapPacked: true,
+                    cMapUrl: sinon.match.string,
+                    httpHeaders: {},
+                    rangeChunkSize: defaultChunkSize,
+                    url: `${url}?${paramsList}`
                 });
 
                 // Reset to original value
-                PDFJS.disableRange = isDisabled;
+                docBase.pdfjsLib.disableRange = isDisabled;
             });
         });
 
@@ -994,15 +996,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
-            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            docBase.pdfjsLib.getDocument.returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
 
             return docBase.initViewer('url').then(() => {
-                expect(stubs.pdfViewerStub).to.be.called;
-                expect(getDocumentStub).to.be.called;
                 expect(stubs.bindDOMListeners).to.be.called;
-                expect(stubs.pdfViewer.setDocument).to.be.called;
-                expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
+                expect(docBase.pdfjsLib.getDocument).to.be.called;
+                expect(docBase.pdfViewer.setDocument).to.be.called;
+                expect(docBase.pdfLinkService.setDocument).to.be.called;
+                expect(docBase.pdfLinkService.setViewer).to.be.called;
             });
         });
 
@@ -1010,7 +1012,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            docBase.pdfjsLib.getDocument.returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
             sandbox.stub(docBase, 'startLoadTimer');
             docBase.initViewer('url');
@@ -1019,19 +1021,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should handle any download error', () => {
-            stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
             const doc = {
                 url: 'url'
             };
 
-            docBase.options.location = {
-                locale: 'en-US'
-            };
-
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
+            stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
+            docBase.pdfjsLib.getDocument.returns(Promise.reject(doc));
 
             return docBase.initViewer('url').catch(() => {
                 expect(stubs.handleDownloadError).to.be.called;
+            });
+        });
+
+        it('should set external link settings', () => {
+            docBase.initViewer('url').then(() => {
+                expect(docBase.pdfLinkService.externalLinkRel).to.equal('noopener noreferrer nofollow');
+                expect(docBase.pdfLinkService.externalLinkTarget).to.equal(docBase.pdfjsLib.LinkTarget.BLANK);
             });
         });
     });
@@ -1114,42 +1119,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }
             };
 
-            PDFJS.disableRange = false;
+            Object.defineProperties(pdfjsLib, {
+                disableRange: { value: false, writable: true },
+                disableFontFance: { value: false, writable: true }
+            });
         });
 
         it('should create the asset url', () => {
             docBase.setupPdfjs();
-            expect(PDFJS.workerSrc).to.equal('asset');
-        });
-
-        it('should set external link settings', () => {
-            docBase.setupPdfjs();
-            expect(PDFJS.externalLinkTarget).to.equal(PDFJS.LinkTarget.BLANK);
-            expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
+            expect(docBase.pdfjsLib.workerSrc).to.equal('asset');
         });
 
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove or modify this after next IOS release after 10.3.1 or
         // Safari version
         it('should test if browser has font rendering issue', () => {
-            PDFJS.disableFontFace = false;
-            sandbox
-                .mock(Browser)
-                .expects('hasFontIssue')
-                .returns(true);
+            sandbox.stub(Browser, 'hasFontIssue').returns(true);
 
             docBase.setupPdfjs();
 
-            expect(PDFJS.disableFontFace).to.be.true;
+            expect(docBase.pdfjsLib.disableFontFace).to.be.true;
         });
 
         it('should not disable streaming', () => {
             docBase.setupPdfjs();
-            expect(PDFJS.disableStream).to.be.true;
+            expect(docBase.pdfjsLib.disableStream).to.be.true;
         });
 
         it('should not disable range requests if the locale is en-US', () => {
             docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.false;
+            expect(docBase.pdfjsLib.disableRange).to.be.false;
         });
 
         it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
@@ -1157,7 +1155,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.options.extension = 'pdf';
             docBase.options.location.locale = 'ja-JP';
             docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.true;
+            expect(docBase.pdfjsLib.disableRange).to.be.true;
         });
 
         it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
@@ -1166,24 +1164,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.options.extension = 'pdf';
             docBase.options.file.watermark_info.is_watermarked = false;
             docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.false;
+            expect(docBase.pdfjsLib.disableRange).to.be.false;
         });
 
         it('should disable range requests if the file is watermarked', () => {
             docBase.options.location.locale = 'ja-JP';
             docBase.options.file.watermark_info.is_watermarked = true;
             docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.true;
+            expect(docBase.pdfjsLib.disableRange).to.be.true;
         });
 
         it('should disable or enable text layer based on download permissions', () => {
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             docBase.setupPdfjs();
-            expect(PDFJS.disableTextLayer).to.be.false;
+            expect(docBase.pdfjsLib.disableTextLayer).to.be.false;
 
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
             docBase.setupPdfjs();
-            expect(PDFJS.disableTextLayer).to.be.true;
+            expect(docBase.pdfjsLib.disableTextLayer).to.be.true;
         });
 
         it('should disable the text layer if disableTextLayer viewer option is set', () => {
@@ -1192,24 +1190,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.setupPdfjs();
 
-            expect(PDFJS.disableTextLayer).to.be.true;
+            expect(docBase.pdfjsLib.disableTextLayer).to.be.true;
         });
 
         it('should decrease max canvas size to 3MP if on mobile', () => {
             docBase.isMobile = true;
             docBase.setupPdfjs();
-            expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
+            expect(docBase.pdfjsLib.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
         });
 
         it('should set disableCreateObjectURL to false', () => {
             docBase.setupPdfjs();
-            expect(PDFJS.disableCreateObjectURL).to.equal(false);
+            expect(docBase.pdfjsLib.disableCreateObjectURL).to.equal(false);
         });
 
         it('should override pdf.js PDFPageView reset with custom loading indicator logic', () => {
-            const resetFunc = PDFJS.PDFPageView.prototype.reset;
+            const resetFunc = pdfjsViewer.PDFPageView.prototype.reset;
             docBase.setupPdfjs();
-            expect(resetFunc).to.not.equal(PDFJS.PDFPageView.prototype.reset);
+            expect(resetFunc).to.not.equal(docBase.pdfjsViewer.PDFPageView.prototype.reset);
         });
     });
 

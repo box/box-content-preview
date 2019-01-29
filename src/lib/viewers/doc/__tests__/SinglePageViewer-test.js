@@ -5,7 +5,6 @@ import BaseViewer from '../../BaseViewer';
 const sandbox = sinon.sandbox.create();
 let containerEl;
 let doc;
-let stubs = {};
 
 describe('lib/viewers/doc/SinglePageViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -41,28 +40,27 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         }
 
         doc = null;
-        stubs = {};
     });
 
     describe('initPdfViewer()', () => {
-        const pdfViewer = {
-            linkService: new PDFJS.PDFLinkService(),
-            setDocument: sandbox.stub(),
-            enhanceTextSelection: true
-        };
-
         beforeEach(() => {
-            stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFSinglePageViewer').returns(pdfViewer);
+            doc.pdfjsLib = {
+                getDocument: sandbox.stub().returns(Promise.resolve({}))
+            };
+
+            doc.pdfjsViewer = {
+                PDFFindController: sandbox.stub(),
+                PDFLinkService: sandbox.stub(),
+                PDFSinglePageViewer: sandbox.stub()
+            };
         });
 
-        it('should return the default pdfViewer', () => {
-            const result = doc.initPdfViewer();
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: true
-            });
-            expect(result).to.equal(pdfViewer);
+        it('should create a single page viewer', () => {
+            doc.initPdfViewer();
+
+            expect(doc.pdfjsViewer.PDFFindController).to.have.been.called;
+            expect(doc.pdfjsViewer.PDFLinkService).to.have.been.called;
+            expect(doc.pdfjsViewer.PDFSinglePageViewer).to.have.been.called;
         });
     });
 });

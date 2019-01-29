@@ -66,19 +66,19 @@ class DocBaseViewer extends BaseViewer {
         super(options);
 
         // Bind context for callbacks
+        this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
-        this.print = this.print.bind(this);
-        this.setPage = this.setPage.bind(this);
-        this.zoomIn = this.zoomIn.bind(this);
-        this.zoomOut = this.zoomOut.bind(this);
-        this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
         this.pagechangeHandler = this.pagechangeHandler.bind(this);
+        this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
-        this.throttledScrollHandler = this.getScrollHandler().bind(this);
-        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
-        this.emitMetric = this.emitMetric.bind(this);
+        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.print = this.print.bind(this);
+        this.setPage = this.setPage.bind(this);
+        this.throttledScrollHandler = this.getScrollHandler().bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
     }
 
     /**
@@ -137,7 +137,6 @@ class DocBaseViewer extends BaseViewer {
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
-            this.findBar.removeListener(VIEWER_EVENT.metric, this.emitMetric);
         }
 
         // Clean up PDF network requests
@@ -297,36 +296,10 @@ class DocBaseViewer extends BaseViewer {
     handleAssetAndRepLoad() {
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
-        this.initPrint();
         this.initFind();
+        this.initPrint();
 
         super.handleAssetAndRepLoad();
-    }
-
-    /**
-     * Initializes the Find Bar and Find Controller
-     *
-     * @return {void}
-     */
-    initFind() {
-        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
-        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
-
-        /* global PDFJS */
-        this.findController = new PDFJS.PDFFindController({
-            pdfViewer: this.pdfViewer
-        });
-        this.pdfViewer.setFindController(this.findController);
-
-        // Only initialize the find bar if the user has download permissions on
-        // the file. Users without download permissions shouldn't be able to
-        // interact with the text layer
-        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (this.getViewerOption('disableFindBar')) {
-            return;
-        }
-        this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
-        this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
     }
 
     /**
@@ -558,7 +531,7 @@ class DocBaseViewer extends BaseViewer {
      *
      * @protected
      * @param {string} pdfUrl - The URL of the PDF to load
-     * @return {Promise} Promise to initialize Viewer
+     * @return {Promise} Promise to initialize viewer (used for testing)
      */
     initViewer(pdfUrl) {
         this.bindDOMListeners();
@@ -579,52 +552,47 @@ class DocBaseViewer extends BaseViewer {
                     : RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
-        let url = pdfUrl;
-
-        // If range requests are disabled, request the gzip compressed version of the representation
-        if (PDFJS.disableRange) {
-            url = appendQueryParams(url, {
-                [QUERY_PARAM_ENCODING]: ENCODING_TYPES.GZIP
-            });
-        }
-
-        const docInitParams = {
-            url,
-            rangeChunkSize
-        };
+        const httpHeaders = {};
 
         // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
         // see: https://bugs.webkit.org/show_bug.cgi?id=82672
         if (Browser.isIOS()) {
-            docInitParams.httpHeaders = {
-                'If-None-Match': 'webkit-no-cache'
-            };
+            httpHeaders['If-None-Match'] = 'webkit-no-cache';
+        }
+
+        const queryParams = {};
+
+        // If range requests are disabled, request the gzip compressed version of the representation
+        if (this.pdfjsLib.disableRange) {
+            queryParams[QUERY_PARAM_ENCODING] = ENCODING_TYPES.GZIP;
         }
 
         // Start timing document load
         this.startLoadTimer();
 
-        // Load PDF from representation URL and set as document for pdf.js. Cache
-        // the loading task so we can cancel if needed
-        this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
-        return this.pdfLoadingTask
+        // Load PDF from representation URL and set as document for pdf.js. Cache promise for cancellation.
+        this.pdfLoadingTask = this.pdfjsLib
+            .getDocument({
+                cMapUrl: this.pdfJsCmapUrl,
+                cMapPacked: true,
+                httpHeaders,
+                url: appendQueryParams(pdfUrl, queryParams),
+                rangeChunkSize
+            })
             .then((doc) => {
                 this.pdfViewer.setDocument(doc);
-
-                const { linkService } = this.pdfViewer;
-                if (linkService instanceof PDFJS.PDFLinkService) {
-                    linkService.setDocument(doc, pdfUrl);
-                    linkService.setViewer(this.pdfViewer);
-                }
+                this.pdfLinkService.setDocument(doc, pdfUrl);
+                this.pdfLinkService.setViewer(this.pdfViewer);
             })
             .catch((err) => {
-                // eslint-disable-next-line
-                console.error(err);
+                console.error(err); // eslint-disable-line
 
                 // Display a generic error message but log the real one
                 const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), {}, err.message);
                 this.handleDownloadError(error, pdfUrl);
             });
+
+        return this.pdfLoadingTask;
     }
 
     /**
@@ -632,15 +600,44 @@ class DocBaseViewer extends BaseViewer {
      *
      * @protected
      * @override
-     * @return {PDFJS.PDFViewer} PDF viewer type
+     * @return {pdfjsViewer.PDFViewer} PDF viewer type
      */
     initPdfViewer() {
-        return new PDFJS.PDFViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+        this.pdfLinkService = new this.pdfjsViewer.PDFLinkService({
+            externalLinkRel: 'noopener noreferrer nofollow', // Prevent referrer hijacking
+            externalLinkTarget: this.pdfjsLib.LinkTarget.BLANK // Open links in new tab
         });
+        this.pdfFindController = new this.pdfjsViewer.PDFFindController({
+            linkService: this.pdfLinkService
+        });
+
+        return new this.pdfjsViewer.PDFViewer({
+            container: this.docEl,
+            enhanceTextSelection: !this.isMobile, // Uses more memory, so disable on mobile
+            findController: this.pdfFindController,
+            linkService: this.pdfLinkService
+        });
+    }
+
+    /**
+     * Initializes the Find Bar
+     *
+     * @protected
+     * @return {void}
+     */
+    initFind() {
+        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        // Only initialize the find bar if the user has download permissions on
+        // the file. Users without download permissions shouldn't be able to
+        // interact with the text layer
+        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        if (this.getViewerOption('disableFindBar')) {
+            return;
+        }
+        this.findBar = new DocFindBar(this.findBarEl, this.pdfFindController, canDownload);
+        this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
     }
 
     /**
@@ -680,53 +677,51 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
-        // Set PDFJS worker & character maps
+        this.pdfjsLib = window.pdfjsLib;
+        this.pdfjsViewer = window.pdfjsViewer;
+
+        // Set pdf.js worker & character maps
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // Set pdf.js worker, image, and character map locations
-        PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
-        PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
-        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
-        PDFJS.cMapPacked = true;
-
-        // Open links in new tab
-        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
+        this.pdfJsCmapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
+        this.pdfjsLib.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
+        this.pdfjsLib.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
 
         // Disable streaming via fetch until performance is improved
-        PDFJS.disableStream = true;
+        this.pdfjsLib.disableStream = true;
 
         // Disable font faces on IOS 10.3.X
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
+        this.pdfjsLib.disableFontFace = this.pdfjsLib.disableFontFace || Browser.hasFontIssue();
 
         // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
         // more than the additional time for a continuous request. This also overrides any range request
         // disabling that may be set by pdf.js's compatibility checking since the browsers we support
         // should all be able to properly handle range requests.
-        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
+        this.pdfjsLib.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
+        this.pdfjsLib.disableRange = this.pdfjsLib.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
-        PDFJS.disableTextLayer =
+        this.pdfjsLib.disableTextLayer =
             !checkPermission(file, PERMISSION_DOWNLOAD) || !!this.getViewerOption('disableTextLayer');
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
-        PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
+        this.pdfjsLib.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : this.pdfjsLib.maxCanvasPixels;
 
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
         // not applicable to Box's use case and disabling causes performance issues
-        PDFJS.disableCreateObjectURL = false;
+        this.pdfjsLib.disableCreateObjectURL = false;
 
-        // Customize pdf.js loading icon. We modify the prototype of PDFPageView to get around directly modifying
-        // pdf_viewer.js
-        const resetFunc = PDFJS.PDFPageView.prototype.reset;
-        PDFJS.PDFPageView.prototype.reset = function reset(...args) {
-            resetFunc.bind(this)(args);
+        // Customize pdf.js loading icon. We modify the prototype of PDFPageView to avoid modifying pdf_viewer.js
+        const resetFunc = this.pdfjsViewer.PDFPageView.prototype.reset;
+        this.pdfjsViewer.PDFPageView.prototype.reset = function reset(...args) {
+            resetFunc.apply(this, args);
             this.loadingIconDiv.classList.add(CLASS_SPINNER);
             this.loadingIconDiv.innerHTML = '<div></div>';
         };

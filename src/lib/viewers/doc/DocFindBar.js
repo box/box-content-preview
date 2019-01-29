@@ -109,6 +109,7 @@ class DocFindBar extends EventEmitter {
      */
     destroy() {
         this.currentMatch = 0;
+        this.removeAllListeners();
         this.unbindDOMListeners();
 
         if (this.bar && this.bar.parentNode) {
