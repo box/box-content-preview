@@ -2167,8 +2167,6 @@ describe('lib/Preview', () => {
         });
 
         it('should only log an error if the error is silent', () => {
-            preview.open = false;
-
             preview.triggerError(new PreviewError('fail', '', { silent: true }));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;

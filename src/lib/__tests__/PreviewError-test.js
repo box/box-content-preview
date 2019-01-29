@@ -15,14 +15,12 @@ describe('lib/PreviewError', () => {
             const displayMessage = 'Human read-able error message';
             const details = { foo: 'bar' };
             const message = 'Error: blah blah';
-            const silent = true;
 
-            const previewError = new PreviewError(code, displayMessage, details, silent, message);
+            const previewError = new PreviewError(code, displayMessage, details, message);
 
             expect(previewError.code).to.equal(code);
             expect(previewError.displayMessage).to.equal(displayMessage);
             expect(previewError.details).to.equal(details);
-            expect(previewError.silent).to.equal(silent);
             expect(previewError.message).to.equal(message);
         });
 
