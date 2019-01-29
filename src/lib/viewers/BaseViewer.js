@@ -869,7 +869,7 @@ class BaseViewer extends EventEmitter {
 
         if (!global.BoxAnnotations) {
             const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
-            this.previewUI.notification.show(error.displayMessage, __('notification_button_default_text'));
+            this.previewUI.notification.show(error.displayMessage);
             this.triggerError(error);
             return;
         }
@@ -1010,15 +1010,9 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.previewUI.notification.show(
-                        __('notification_annotation_point_mode'),
-                        __('notification_button_default_text')
-                    );
+                    this.previewUI.notification.show(__('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.previewUI.notification.show(
-                        __('notification_annotation_draw_mode'),
-                        __('notification_button_default_text')
-                    );
+                    this.previewUI.notification.show(__('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
@@ -1031,7 +1025,7 @@ class BaseViewer extends EventEmitter {
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.previewUI.notification.show(data.data, __('notification_button_default_text'));
+                this.previewUI.notification.show(data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {
