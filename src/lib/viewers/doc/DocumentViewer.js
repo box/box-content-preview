@@ -19,7 +19,7 @@ class DocumentViewer extends DocBaseViewer {
 
         // Set up preloader
         this.preloader = new DocPreloader(this.previewUI);
-        this.preloader.addListener('preload', super.onPreload.bind(this));
+        this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 
     /**
