@@ -1204,12 +1204,6 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.progressEnd:
                 this.ui.finishProgressBar();
                 break;
-            case VIEWER_EVENT.notificationShow:
-                this.ui.showNotification(data.data);
-                break;
-            case VIEWER_EVENT.notificationHide:
-                this.ui.hideNotification();
-                break;
             case VIEWER_EVENT.mediaEndAutoplay:
                 this.navigateRight();
                 break;
@@ -1443,15 +1437,15 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {Error} err - Error
-     * @param {boolean} [isSilentFailure] - Error
      * @return {void}
      */
-    triggerError(err, isSilentFailure = false) {
+    triggerError(err) {
         // Always log preview errors
         this.emitPreviewError(err);
 
         // If preview is closed don't do anything
-        if (!this.open || isSilentFailure) {
+        const isSilent = getProp(err, 'details.silent', false);
+        if (!this.open || isSilent) {
             return;
         }
 

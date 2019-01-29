@@ -342,17 +342,16 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @emits error
      * @param {Error|PreviewError} [err] - Error object related to the error that happened.
-     * @param {boolean} [isSilentFailure] - Whether or not the error should be a silent error or fail Preview
      * @return {void}
      */
-    triggerError(err, isSilentFailure = false) {
+    triggerError(err) {
         const message = err ? err.message : '';
         const error =
             err instanceof PreviewError
                 ? err
                 : new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'), {}, message);
 
-        this.emit('error', error, isSilentFailure);
+        this.emit('error', error);
     }
 
     /**
@@ -869,9 +868,9 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
-            this.emit(VIEWER_EVENT.notificationShow, error.displayMessage);
-            this.triggerError(error, true);
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
+            this.previewUI.notification.show(error.displayMessage, __('notification_button_default_text'));
+            this.triggerError(error);
             return;
         }
 
@@ -1011,22 +1010,28 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_point_mode'));
+                    this.previewUI.notification.show(
+                        __('notification_annotation_point_mode'),
+                        __('notification_button_default_text')
+                    );
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_draw_mode'));
+                    this.previewUI.notification.show(
+                        __('notification_annotation_draw_mode'),
+                        __('notification_button_default_text')
+                    );
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.emit(VIEWER_EVENT.notificationHide);
+                this.previewUI.notification.hide();
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.emit(VIEWER_EVENT.notificationShow, data.data);
+                this.previewUI.notification.show(data.data, __('notification_button_default_text'));
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {

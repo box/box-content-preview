@@ -1740,22 +1740,6 @@ describe('lib/Preview', () => {
             expect(preview.ui.finishProgressBar).to.be.called;
         });
 
-        it('should show notification with message on notificationshow event', () => {
-            const message = 'notification_message';
-            sandbox.stub(preview.ui, 'showNotification');
-            preview.handleViewerEvents({
-                event: VIEWER_EVENT.notificationShow,
-                data: message
-            });
-            expect(preview.ui.showNotification).to.be.calledWith(message);
-        });
-
-        it('should hide notification on notificationhide event', () => {
-            sandbox.stub(preview.ui, 'hideNotification');
-            preview.handleViewerEvents({ event: VIEWER_EVENT.notificationHide });
-            expect(preview.ui.hideNotification).to.be.called;
-        });
-
         it('should navigate right on mediaendautoplay event', () => {
             sandbox.stub(preview, 'navigateRight');
             const data = { event: VIEWER_EVENT.mediaEndAutoplay };
@@ -2176,14 +2160,16 @@ describe('lib/Preview', () => {
         it('should only log an error if the preview is closed', () => {
             preview.open = false;
 
-            preview.triggerError(new Error('fail'));
+            preview.triggerError(new PreviewError('fail'));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
             expect(stubs.emitPreviewError).to.be.called;
         });
 
-        it('should only log an error if the error was a silent error', () => {
-            preview.triggerError(new Error('fail'), true);
+        it('should only log an error if the error is silent', () => {
+            preview.open = false;
+
+            preview.triggerError(new PreviewError('fail', '', { silent: true }));
             expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
             expect(stubs.emitPreviewError).to.be.called;
@@ -2197,7 +2183,7 @@ describe('lib/Preview', () => {
         });
 
         it('should get the error viewer, attach viewer listeners, and load the error viewer', () => {
-            const err = new Error();
+            const err = new PreviewError();
             preview.triggerError(err);
 
             expect(stubs.getErrorViewer).to.be.called;
