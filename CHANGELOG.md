@@ -1,3 +1,16 @@
+<a name="1.63.0"></a>
+## 1.63.0 (2019-01-29)
+
+* Fix: Prevent Annotations errors from triggering a Preview failure (#904) ([0db8b4b](https://github.com/box/box-content-preview/commit/0db8b4b)), closes [#904](https://github.com/box/box-content-preview/issues/904)
+* Fixing self hosting instructions (#905) ([72bf820](https://github.com/box/box-content-preview/commit/72bf820)), closes [#905](https://github.com/box/box-content-preview/issues/905)
+* Updating README to latest release ([0c93444](https://github.com/box/box-content-preview/commit/0c93444))
+* Update: box-annotations to v3.7.1 (#897) ([8e2fb91](https://github.com/box/box-content-preview/commit/8e2fb91)), closes [#897](https://github.com/box/box-content-preview/issues/897)
+* Chore: Add webpack-dev-server to support local development (#902) ([568842c](https://github.com/box/box-content-preview/commit/568842c)), closes [#902](https://github.com/box/box-content-preview/issues/902)
+* Chore: Improve fullscreen logic to use fscreen for compatibility (#903) ([aa13d00](https://github.com/box/box-content-preview/commit/aa13d00)), closes [#903](https://github.com/box/box-content-preview/issues/903)
+* Chore: upgrade node-sass to 4.9.3, to match other projects (#899) ([3b7f40a](https://github.com/box/box-content-preview/commit/3b7f40a)), closes [#899](https://github.com/box/box-content-preview/issues/899)
+
+
+
 <a name="1.62.0"></a>
 ## 1.62.0 (2019-01-22)
 

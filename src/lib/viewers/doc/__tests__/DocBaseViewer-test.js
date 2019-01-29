@@ -1362,9 +1362,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.addEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
             expect(stubs.addEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
             expect(stubs.addEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
-
-            expect(stubs.addListener).to.be.calledWith('enter', docBase.enterfullscreenHandler);
-            expect(stubs.addListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
         });
 
         it('should add the pinch to zoom handler if touch is detected', () => {
@@ -1400,12 +1397,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.removeEventListener).to.not.be.called;
 
             docBase.docEl = docElTemp;
-        });
-
-        it('should remove the fullscreen listener', () => {
-            docBase.unbindDOMListeners();
-            expect(stubs.removeFullscreenListener).to.be.calledWith('enter', docBase.enterfullscreenHandler);
-            expect(stubs.removeFullscreenListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
         });
 
         it('should remove pinch to zoom listeners if the browser has touch', () => {
@@ -1547,7 +1538,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('enterfullscreenHandler()', () => {
+    describe('handleFullscreenEnter()', () => {
         it('should update the scale value, and resize the page', () => {
             docBase.pdfViewer = {
                 presentationModeState: 'normal',
@@ -1555,13 +1546,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             };
             const resizeStub = sandbox.stub(docBase, 'resize');
 
-            docBase.enterfullscreenHandler();
+            docBase.handleFullscreenEnter();
             expect(resizeStub).to.be.called;
             expect(docBase.pdfViewer.currentScaleValue).to.equal('page-fit');
         });
     });
 
-    describe('exitfullscreenHandler()', () => {
+    describe('handleFullscreenExit()', () => {
         it('should update the scale value, and resize the page', () => {
             docBase.pdfViewer = {
                 presentationModeState: 'fullscreen',
@@ -1569,7 +1560,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             };
             const resizeStub = sandbox.stub(docBase, 'resize');
 
-            docBase.exitfullscreenHandler();
+            docBase.handleFullscreenExit();
             expect(resizeStub).to.be.called;
             expect(docBase.pdfViewer.currentScaleValue).to.equal('auto');
         });

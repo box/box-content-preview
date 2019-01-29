@@ -18,8 +18,6 @@ import {
     replacePlaceholders
 } from '../util';
 import {
-    CLASS_FULLSCREEN,
-    CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
@@ -133,11 +131,12 @@ class BaseViewer extends EventEmitter {
         this.debouncedResizeHandler = this.getResizeHandler().bind(this);
         this.handleAssetError = this.handleAssetError.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
-        this.onFullscreenToggled = this.onFullscreenToggled.bind(this);
         this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
+        this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
@@ -446,9 +445,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     addCommonListeners() {
-        // Attach common full screen event listeners
-        fullscreen.addListener('enter', this.onFullscreenToggled);
-        fullscreen.addListener('exit', this.onFullscreenToggled);
+        // Attach full screen event listeners
+        fullscreen.addListener('enter', this.handleFullscreenEnter);
+        fullscreen.addListener('exit', this.handleFullscreenExit);
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
@@ -515,16 +514,20 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Applies appropriate styles and resizes the document depending on fullscreen state
+     * Resize the document depending on fullscreen state
      *
      * @return {void}
      */
-    onFullscreenToggled() {
-        this.containerEl.classList.toggle(CLASS_FULLSCREEN);
-        if (!fullscreen.isSupported()) {
-            this.containerEl.classList.toggle(CLASS_FULLSCREEN_UNSUPPORTED);
-        }
+    handleFullscreenEnter() {
+        this.resize();
+    }
 
+    /**
+     * Resize the document depending on fullscreen state
+     *
+     * @return {void}
+     */
+    handleFullscreenExit() {
         this.resize();
     }
 
@@ -866,7 +869,8 @@ class BaseViewer extends EventEmitter {
         viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
 
         if (!global.BoxAnnotations) {
-            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS);
+            const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
+            this.previewUI.notification.show(error.displayMessage);
             this.triggerError(error);
             return;
         }
@@ -1007,22 +1011,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_point_mode'));
+                    this.previewUI.notification.show(__('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_draw_mode'));
+                    this.previewUI.notification.show(__('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.emit(VIEWER_EVENT.notificationHide);
+                this.previewUI.notification.hide();
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.emit(VIEWER_EVENT.notificationShow, data.data);
+                this.previewUI.notification.show(data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {

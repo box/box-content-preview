@@ -4,7 +4,6 @@ import Browser from '../../Browser';
 import Controls from '../../Controls';
 import PageControls from '../../PageControls';
 import DocFindBar from './DocFindBar';
-import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
@@ -76,8 +75,6 @@ class DocBaseViewer extends BaseViewer {
         this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
         this.pagechangeHandler = this.pagechangeHandler.bind(this);
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
-        this.enterfullscreenHandler = this.enterfullscreenHandler.bind(this);
-        this.exitfullscreenHandler = this.exitfullscreenHandler.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
@@ -938,10 +935,6 @@ class DocBaseViewer extends BaseViewer {
         // Detects scroll so an event can be fired
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
-        // Fullscreen
-        fullscreen.addListener('enter', this.enterfullscreenHandler);
-        fullscreen.addListener('exit', this.exitfullscreenHandler);
-
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
             this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
@@ -968,9 +961,6 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
             }
         }
-
-        fullscreen.removeListener('enter', this.enterfullscreenHandler);
-        fullscreen.removeListener('exit', this.exitfullscreenHandler);
     }
 
     /**
@@ -1065,28 +1055,16 @@ class DocBaseViewer extends BaseViewer {
         this.emit('pagefocus', pageNumber);
     }
 
-    /**
-     * Fullscreen entered handler. Add presentation mode class, set
-     * presentation mode state, and set zoom to fullscreen zoom.
-     *
-     * @private
-     * @return {void}
-     */
-    enterfullscreenHandler() {
+    /** @inheritDoc */
+    handleFullscreenEnter() {
         this.pdfViewer.currentScaleValue = 'page-fit';
-        this.resize();
+        super.handleFullscreenEnter();
     }
 
-    /**
-     * Fullscreen exited handler. Remove presentation mode class, set
-     * presentation mode state, and reset zoom.
-     *
-     * @return {void}
-     * @private
-     */
-    exitfullscreenHandler() {
+    /** @inheritDoc */
+    handleFullscreenExit() {
         this.pdfViewer.currentScaleValue = 'auto';
-        this.resize();
+        super.handleFullscreenExit();
     }
 
     /**
