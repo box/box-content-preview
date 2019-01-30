@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <link rel="stylesheet" href='./preview.css' />
+        <link rel="stylesheet" href='./annotations.css' />
+        <script src='https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js'></script>
+        <script src='./preview.js'></script>
+        <script src='./annotations.js'></script>
+
+        <style>
+            * {
+                box-sizing: border-box;
+                font-family: sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+
+            .setters-container {
+                display: flex;
+                font-size: 75%;
+                height: 25vh;
+                justify-content: space-around;
+                padding: 20px;
+            }
+
+            .setters-container button,
+            .setters-container input {
+                padding: 5px;
+            }
+
+            .container {
+                text-align: center;
+            }
+
+            .container > input {
+                text-align: center;
+            }
+
+            #preview-container {
+                height: 75vh;
+                width: 100vw;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class='setters-container'>
+                <div class='container' id='token'>
+                        <div> Token: <span id='token-display'></span> </div>
+                        <input id='token-set' placeholder='Enter token' />
+                        <button onClick="setProperty('token')">Set new token</button>
+                </div>
+
+                <div class='container' id='file'>
+                        <div> File ID: <span id='fileid-display'></span></div>
+                        <input id='fileid-set' placeholder='Enter file ID' />
+                        <button onClick="setProperty('fileid')">Set new file ID</button>
+                </div>
+        </div>
+
+        <div class='preview-container'> </div>
+        <script>
+            function setProperty(selector) {
+                // Get new value, fallback to local storage
+                var inputValue = document.querySelector('#' + selector + '-set')
+                value = inputValue && inputValue.value || localStorage.getItem(selector);
+
+
+                if (!value) {
+                    return;
+                }
+
+                // Set it for display purposes
+                var displayElement = document.querySelector('#' + selector + '-display');
+                displayElement.textContent = value;
+
+                // Cache it in local storage
+                localStorage.setItem(selector, value)
+
+                // Attempt to load Preview
+                loadPreview();
+            }
+
+            function loadPreview() {
+                var token = localStorage.getItem('token');
+                var fileid = localStorage.getItem('fileid');
+
+                if ( !token || !fileid) {
+                    return;
+                }
+
+                /* global Box */
+                var preview = new Box.Preview();
+                preview.show(fileid, token, {
+                    container: ".preview-container",
+                });
+
+            }
+
+            // Try to load all properties from storage on page load
+            setProperty('token');
+            setProperty('fileid');
+        </script>
+    </body>
+</html>
