@@ -18,4 +18,6 @@ jobs:
           sudo: required
           addons:
               chrome: beta
-          script: travis_retry yarn run functional-tests-ci && yarn test:e2e
+          script: travis_retry yarn run functional-tests-ci
+        - name: "E2E Tests"
+          script: yarn test:e2e
