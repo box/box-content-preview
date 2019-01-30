@@ -10,6 +10,6 @@ describe('Preview Sanity', () => {
     it('Should load a document preview', () => {
         const fileId = Cypress.env('FILE_ID_DOC');
         cy.showPreview(token, fileId);
-        cy.contains('The Content Platform for Your Apps');
+        cy.contains('.preview-container', 'The Content Platform for Your Apps', { timeout: 10000 });
     });
 });
