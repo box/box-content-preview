@@ -12,10 +12,4 @@ describe('Preview Sanity', () => {
         cy.showPreview(token, fileId);
         cy.contains('The Content Platform for Your Apps');
     });
-
-    it('Should load a document preview', () => {
-        const fileId = Cypress.env('FILE_ID_MP3');
-        cy.showPreview(token, fileId);
-        cy.contains('The Content Platform for Your Apps');
-    });
 });
