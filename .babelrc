@@ -27,6 +27,11 @@
                 }],
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]
             ]
+        },
+        "production": {
+            "plugins": [
+                ["react-remove-properties", {"properties": ["data-testid"]}]
+            ]
         }
     }
 }

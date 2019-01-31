@@ -45,7 +45,8 @@ function updateConfig(conf, language, index) {
             contentBase: './src',
             disableHostCheck: true,
             host: '0.0.0.0',
-            inline: true
+            inline: true,
+            port: 8000
         }
     });
 

@@ -48,18 +48,18 @@
         <div class='setters-container'>
                 <div class='container' id='token'>
                         <div> Token: <span id='token-display'></span> </div>
-                        <input id='token-set' placeholder='Enter token' />
-                        <button onClick="setProperty('token')">Set new token</button>
+                        <input id='token-set' data-testid="token" placeholder='Enter token' />
+                        <button onClick="setProperty('token')" data-testid="token-set">Set new token</button>
                 </div>
 
                 <div class='container' id='file'>
                         <div> File ID: <span id='fileid-display'></span></div>
-                        <input id='fileid-set' placeholder='Enter file ID' />
-                        <button onClick="setProperty('fileid')">Set new file ID</button>
+                        <input id='fileid-set' placeholder='Enter file ID' data-testid="fileid"/>
+                        <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
                 </div>
         </div>
 
-        <div class='preview-container'> </div>
+        <div class='preview-container' data-testid="preview-container"> </div>
         <script>
             function setProperty(selector) {
                 // Get new value, fallback to local storage
