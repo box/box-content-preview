@@ -112,7 +112,8 @@ class VirtualScroller {
         this.scrollingEl.appendChild(this.listEl);
         this.anchorEl.appendChild(this.scrollingEl);
 
-        this.renderItems(config.initialRowIndex || 0);
+        // If initialRowIndex is < the first window into the list, then just render from the first item
+        this.renderItems(config.initialRowIndex < this.maxRenderedItems ? 0 : config.initialRowIndex);
 
         this.bindDOMListeners();
 
@@ -247,7 +248,10 @@ class VirtualScroller {
             return;
         }
 
-        let newStartOffset = offset;
+        // If specified offset is in the last window into the list then
+        // render that last window instead of starting at that offset
+        const lastWindowOffset = this.totalItems - this.maxRenderedItems;
+        let newStartOffset = offset > lastWindowOffset ? lastWindowOffset : offset;
         let newEndOffset = offset + this.maxRenderedItems;
         // If the default count of items to render exceeds the totalItems count
         // then just render up to the end

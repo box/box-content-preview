@@ -97,6 +97,36 @@ describe('VirtualScroller', () => {
 
             expect(stubs.onInitHandler).to.be.calledWith(mockListInfo);
         });
+
+        it('should call renderItems with the provided initialRowIndex', () => {
+            stubs.renderItemFn = sandbox.stub();
+            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+
+            virtualScroller.init({
+                totalItems: 10,
+                itemHeight: 100,
+                containerHeight: 500,
+                renderItemFn: stubs.renderItemFn,
+                initialRowIndex: 50
+            });
+
+            expect(stubs.renderItems).to.be.calledWith(50);
+        });
+
+        it('should call renderItems with 0 if initialRowIndex falls within first window', () => {
+            stubs.renderItemFn = sandbox.stub();
+            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+
+            virtualScroller.init({
+                totalItems: 10,
+                itemHeight: 100,
+                containerHeight: 500,
+                renderItemFn: stubs.renderItemFn,
+                initialRowIndex: 2
+            });
+
+            expect(stubs.renderItems).to.be.calledWith(0);
+        });
     });
 
     describe('validateRequiredConfig()', () => {
@@ -170,6 +200,8 @@ describe('VirtualScroller', () => {
             curListEl = { appendChild: stubs.appendChild, insertBefore: stubs.insertBefore };
             newListEl = {};
             virtualScroller.listEl = curListEl;
+            virtualScroller.maxRenderedItems = 10;
+            virtualScroller.totalItems = 100;
 
             stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
             stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
@@ -179,8 +211,6 @@ describe('VirtualScroller', () => {
         });
 
         it('should render the whole range of items (no reuse)', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
                 endOffset: -1
@@ -193,9 +223,7 @@ describe('VirtualScroller', () => {
             expect(stubs.insertBefore).not.to.be.called;
         });
 
-        it('should render the remaining items up to totalItems', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
+        it('should render the last window into the list', () => {
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
                 endOffset: -1
@@ -203,14 +231,12 @@ describe('VirtualScroller', () => {
             virtualScroller.renderItems(95);
 
             expect(stubs.deleteItems).to.be.calledWith(curListEl);
-            expect(stubs.createItems).to.be.calledWith(newListEl, 95, 99);
+            expect(stubs.createItems).to.be.calledWith(newListEl, 90, 99);
             expect(stubs.appendChild).to.be.called;
             expect(stubs.insertBefore).not.to.be.called;
         });
 
         it('should render items above the current list', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
             stubs.getCurrentListInfo.returns({
                 startOffset: 20,
                 endOffset: 30
