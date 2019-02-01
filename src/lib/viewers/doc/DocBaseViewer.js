@@ -1134,6 +1134,10 @@ class DocBaseViewer extends BaseViewer {
         const { pageNumber } = event;
         this.pageControls.updateCurrentPage(pageNumber);
 
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.setCurrentPage(pageNumber);
+        }
+
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by
         // the viewer's initialization
@@ -1326,17 +1330,17 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     toggleThumbnails() {
-        if (!this.thumbnailsSidebarEl) {
+        if (!this.thumbnailsSidebar) {
             return;
         }
 
-        this.thumbnailsSidebarEl.classList.toggle(CLASS_HIDDEN);
+        this.thumbnailsSidebar.toggle();
 
         const { pagesCount } = this.pdfViewer;
 
         let metricName;
         let eventName;
-        if (this.thumbnailsSidebarEl.classList.contains(CLASS_HIDDEN)) {
+        if (!this.thumbnailsSidebar.isOpen()) {
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
             eventName = 'thumbnailsClose';
         } else {
