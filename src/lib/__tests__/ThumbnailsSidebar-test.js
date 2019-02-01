@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
+import { CLASS_HIDDEN } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 
@@ -11,6 +12,7 @@ describe('ThumbnailsSidebar', () => {
     let page;
     let virtualScroller;
     let pagePromise;
+    let anchorEl;
 
     before(() => fixture.setBase('src/lib'));
 
@@ -31,9 +33,11 @@ describe('ThumbnailsSidebar', () => {
         stubs.getPage = sandbox.stub().returns(pagePromise);
         stubs.vsInit = sandbox.stub(VirtualScroller.prototype, 'init');
         stubs.vsDestroy = sandbox.stub(VirtualScroller.prototype, 'destroy');
+        stubs.vsScrollIntoView = sandbox.stub(VirtualScroller.prototype, 'scrollIntoView');
 
         virtualScroller = {
-            destroy: stubs.vsDestroy
+            destroy: stubs.vsDestroy,
+            scrollIntoView: stubs.vsScrollIntoView
         };
 
         pdfViewer = {
@@ -42,7 +46,9 @@ describe('ThumbnailsSidebar', () => {
             }
         };
 
-        thumbnailsSidebar = new ThumbnailsSidebar(document.getElementById('test-thumbnails-sidebar'), pdfViewer);
+        anchorEl = document.getElementById('test-thumbnails-sidebar');
+
+        thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer);
     });
 
     afterEach(() => {
@@ -335,6 +341,7 @@ describe('ThumbnailsSidebar', () => {
         beforeEach(() => {
             stubs.applyCurrentPageSelection = sandbox.stub(thumbnailsSidebar, 'applyCurrentPageSelection');
             thumbnailsSidebar.pdfViewer = { pagesCount: 10 };
+            thumbnailsSidebar.virtualScroller = virtualScroller;
         });
 
         const paramaterizedTests = [
@@ -357,6 +364,7 @@ describe('ThumbnailsSidebar', () => {
 
             expect(thumbnailsSidebar.currentPage).to.be.equal(3);
             expect(stubs.applyCurrentPageSelection).to.be.called;
+            expect(stubs.vsScrollIntoView).to.be.calledWith(2);
         });
     });
 
@@ -401,6 +409,95 @@ describe('ThumbnailsSidebar', () => {
 
             expect(stubs.removeClass).to.be.calledTwice;
             expect(stubs.addClass).to.be.calledOnce;
+        });
+    });
+
+    describe('toggle()', () => {
+        beforeEach(() => {
+            stubs.isOpen = sandbox.stub(thumbnailsSidebar, 'isOpen');
+            stubs.toggleOpen = sandbox.stub(thumbnailsSidebar, 'toggleOpen');
+            stubs.toggleClose = sandbox.stub(thumbnailsSidebar, 'toggleClose');
+        });
+
+        it('should do nothing if there is no anchorEl', () => {
+            thumbnailsSidebar.anchorEl = null;
+
+            thumbnailsSidebar.toggle();
+
+            expect(stubs.isOpen).not.to.be.called;
+            expect(stubs.toggleOpen).not.to.be.called;
+            expect(stubs.toggleClose).not.to.be.called;
+
+            thumbnailsSidebar.anchorEl = anchorEl;
+        });
+
+        it('should toggle open if it was closed', () => {
+            stubs.isOpen.returns(false);
+
+            thumbnailsSidebar.toggle();
+
+            expect(stubs.isOpen).to.be.called;
+            expect(stubs.toggleOpen).to.be.called;
+            expect(stubs.toggleClose).not.to.be.called;
+        });
+
+        it('should toggle closed if it was open', () => {
+            stubs.isOpen.returns(true);
+
+            thumbnailsSidebar.toggle();
+
+            expect(stubs.isOpen).to.be.called;
+            expect(stubs.toggleOpen).not.to.be.called;
+            expect(stubs.toggleClose).to.be.called;
+        });
+    });
+
+    describe('toggleOpen()', () => {
+        beforeEach(() => {
+            stubs.removeClass = sandbox.stub(thumbnailsSidebar.anchorEl.classList, 'remove');
+            thumbnailsSidebar.virtualScroller = virtualScroller;
+        });
+
+        it('should do nothing if there is no anchorEl', () => {
+            thumbnailsSidebar.anchorEl = null;
+
+            thumbnailsSidebar.toggleOpen();
+
+            expect(stubs.removeClass).not.to.be.called;
+            expect(stubs.vsScrollIntoView).not.to.be.called;
+
+            thumbnailsSidebar.anchorEl = anchorEl;
+        });
+
+        it('should remove the hidden class and scroll the page into view', () => {
+            thumbnailsSidebar.currentPage = 3;
+
+            thumbnailsSidebar.toggleOpen();
+
+            expect(stubs.removeClass).to.be.calledWith(CLASS_HIDDEN);
+            expect(stubs.vsScrollIntoView).to.be.calledWith(2);
+        });
+    });
+
+    describe('toggleClose()', () => {
+        beforeEach(() => {
+            stubs.addClass = sandbox.stub(thumbnailsSidebar.anchorEl.classList, 'add');
+        });
+
+        it('should do nothing if there is no anchorEl', () => {
+            thumbnailsSidebar.anchorEl = null;
+
+            thumbnailsSidebar.toggleClose();
+
+            expect(stubs.addClass).not.to.be.called;
+
+            thumbnailsSidebar.anchorEl = anchorEl;
+        });
+
+        it('should add the hidden class', () => {
+            thumbnailsSidebar.toggleClose();
+
+            expect(stubs.addClass).to.be.calledWith(CLASS_HIDDEN);
         });
     });
 });

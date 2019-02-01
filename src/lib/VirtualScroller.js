@@ -56,10 +56,12 @@ class VirtualScroller {
         this.previousScrollTop = 0;
 
         this.createListElement = this.createListElement.bind(this);
+        this.isVisible = this.isVisible.bind(this);
         this.onScrollEndHandler = this.onScrollEndHandler.bind(this);
         this.onScrollHandler = this.onScrollHandler.bind(this);
         this.getCurrentListInfo = this.getCurrentListInfo.bind(this);
         this.renderItems = this.renderItems.bind(this);
+        this.scrollIntoView = this.scrollIntoView.bind(this);
 
         this.debouncedOnScrollEndHandler = debounce(this.onScrollEndHandler, DEBOUNCE_SCROLL_THRESHOLD);
         this.throttledOnScrollHandler = throttle(this.onScrollHandler, THROTTLE_SCROLL_THRESHOLD);
@@ -110,7 +112,8 @@ class VirtualScroller {
         this.scrollingEl.appendChild(this.listEl);
         this.anchorEl.appendChild(this.scrollingEl);
 
-        this.renderItems();
+        // If initialRowIndex is < the first window into the list, then just render from the first item
+        this.renderItems(config.initialRowIndex < this.maxRenderedItems ? 0 : config.initialRowIndex);
 
         this.bindDOMListeners();
 
@@ -245,7 +248,10 @@ class VirtualScroller {
             return;
         }
 
-        let newStartOffset = offset;
+        // If specified offset is in the last window into the list then
+        // render that last window instead of starting at that offset
+        const lastWindowOffset = this.totalItems - this.maxRenderedItems;
+        let newStartOffset = offset > lastWindowOffset ? lastWindowOffset : offset;
         let newEndOffset = offset + this.maxRenderedItems;
         // If the default count of items to render exceeds the totalItems count
         // then just render up to the end
@@ -371,6 +377,53 @@ class VirtualScroller {
         newListEl.className = 'bp-vs-list';
         newListEl.style.height = `${this.totalItems * (this.itemHeight + this.margin) + this.margin}px`;
         return newListEl;
+    }
+
+    /**
+     * Scrolls the provided row index into view.
+     * @param {number} rowIndex - the index of the row in the overall list
+     * @return {void}
+     */
+    scrollIntoView(rowIndex) {
+        if (!this.scrollingEl || rowIndex < 0 || rowIndex >= this.totalItems) {
+            return;
+        }
+
+        // See if the list item indexed by `rowIndex` is already present
+        const foundItem = Array.prototype.slice.call(this.listEl.children).find((listItem) => {
+            const { bpVsRowIndex } = listItem.dataset;
+            const parsedRowIndex = parseInt(bpVsRowIndex, 10);
+            return parsedRowIndex === rowIndex;
+        });
+
+        if (foundItem) {
+            // If it is already present and visible, do nothing, but if not visible
+            // then scroll it into view
+            if (!this.isVisible(foundItem)) {
+                foundItem.scrollIntoView();
+            }
+        } else {
+            // If it is not present, then adjust the scrollTop so that the list item
+            // will get rendered.
+            const topPosition = (this.itemHeight + this.margin) * rowIndex;
+            this.scrollingEl.scrollTop = topPosition;
+        }
+    }
+
+    /**
+     * Checks to see whether the provided list item element is currently visible
+     * @param {HTMLElement} listItemEl - the list item elment
+     * @return {boolean} Returns true if the list item is visible, false otherwise
+     */
+    isVisible(listItemEl) {
+        if (!this.scrollingEl || !listItemEl) {
+            return false;
+        }
+
+        const { scrollTop } = this.scrollingEl;
+        const { offsetTop } = listItemEl;
+
+        return scrollTop <= offsetTop && offsetTop <= scrollTop + this.containerHeight;
     }
 }
 

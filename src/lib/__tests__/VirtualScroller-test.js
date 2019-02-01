@@ -97,6 +97,36 @@ describe('VirtualScroller', () => {
 
             expect(stubs.onInitHandler).to.be.calledWith(mockListInfo);
         });
+
+        it('should call renderItems with the provided initialRowIndex', () => {
+            stubs.renderItemFn = sandbox.stub();
+            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+
+            virtualScroller.init({
+                totalItems: 10,
+                itemHeight: 100,
+                containerHeight: 500,
+                renderItemFn: stubs.renderItemFn,
+                initialRowIndex: 50
+            });
+
+            expect(stubs.renderItems).to.be.calledWith(50);
+        });
+
+        it('should call renderItems with 0 if initialRowIndex falls within first window', () => {
+            stubs.renderItemFn = sandbox.stub();
+            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+
+            virtualScroller.init({
+                totalItems: 10,
+                itemHeight: 100,
+                containerHeight: 500,
+                renderItemFn: stubs.renderItemFn,
+                initialRowIndex: 2
+            });
+
+            expect(stubs.renderItems).to.be.calledWith(0);
+        });
     });
 
     describe('validateRequiredConfig()', () => {
@@ -170,6 +200,8 @@ describe('VirtualScroller', () => {
             curListEl = { appendChild: stubs.appendChild, insertBefore: stubs.insertBefore };
             newListEl = {};
             virtualScroller.listEl = curListEl;
+            virtualScroller.maxRenderedItems = 10;
+            virtualScroller.totalItems = 100;
 
             stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
             stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
@@ -179,8 +211,6 @@ describe('VirtualScroller', () => {
         });
 
         it('should render the whole range of items (no reuse)', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
                 endOffset: -1
@@ -193,9 +223,7 @@ describe('VirtualScroller', () => {
             expect(stubs.insertBefore).not.to.be.called;
         });
 
-        it('should render the remaining items up to totalItems', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
+        it('should render the last window into the list', () => {
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
                 endOffset: -1
@@ -203,14 +231,12 @@ describe('VirtualScroller', () => {
             virtualScroller.renderItems(95);
 
             expect(stubs.deleteItems).to.be.calledWith(curListEl);
-            expect(stubs.createItems).to.be.calledWith(newListEl, 95, 99);
+            expect(stubs.createItems).to.be.calledWith(newListEl, 90, 99);
             expect(stubs.appendChild).to.be.called;
             expect(stubs.insertBefore).not.to.be.called;
         });
 
         it('should render items above the current list', () => {
-            virtualScroller.maxRenderedItems = 10;
-            virtualScroller.totalItems = 100;
             stubs.getCurrentListInfo.returns({
                 startOffset: 20,
                 endOffset: 30
@@ -428,6 +454,125 @@ describe('VirtualScroller', () => {
 
             expect(stubs.renderItem).to.be.calledThrice;
             expect(stubs.appendChild).to.be.calledThrice;
+        });
+    });
+
+    describe('scrollIntoView()', () => {
+        let scrollingEl;
+        let listEl;
+
+        beforeEach(() => {
+            scrollingEl = { remove: () => {} };
+
+            virtualScroller.totalItems = 10;
+            virtualScroller.itemHeight = 10;
+            virtualScroller.margin = 0;
+            virtualScroller.scrollingEl = scrollingEl;
+
+            stubs.isVisible = sandbox.stub(virtualScroller, 'isVisible');
+            stubs.scrollIntoView = sandbox.stub();
+
+            listEl = {
+                children: [
+                    { dataset: { bpVsRowIndex: 0 }, scrollIntoView: stubs.scrollIntoView },
+                    { dataset: { bpVsRowIndex: 1 }, scrollIntoView: stubs.scrollIntoView },
+                    { dataset: { bpVsRowIndex: 2 }, scrollIntoView: stubs.scrollIntoView }
+                ]
+            };
+        });
+
+        it('should do nothing if scrollingEl is falsy', () => {
+            virtualScroller.scrollingEl = undefined;
+
+            virtualScroller.scrollIntoView(1);
+
+            expect(stubs.isVisible).not.to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+
+        it('should do nothing if rowIndex is < 0', () => {
+            virtualScroller.scrollIntoView(-1);
+
+            expect(stubs.isVisible).not.to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+
+        it('should do nothing if rowIndex is = totalItems', () => {
+            virtualScroller.scrollIntoView(10);
+
+            expect(stubs.isVisible).not.to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+
+        it('should do nothing if rowIndex is > totalItems', () => {
+            virtualScroller.scrollIntoView(11);
+
+            expect(stubs.isVisible).not.to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+
+        it('should set the scroll top if item is not found', () => {
+            virtualScroller.listEl = listEl;
+
+            virtualScroller.scrollIntoView(8);
+
+            expect(stubs.isVisible).not.to.be.called;
+            expect(stubs.scrollIntoView).not.to.be.called;
+            expect(scrollingEl.scrollTop).not.to.be.undefined;
+        });
+
+        it('should scroll item into view if found but not visible', () => {
+            virtualScroller.listEl = listEl;
+            stubs.isVisible.returns(false);
+
+            virtualScroller.scrollIntoView(1);
+
+            expect(stubs.isVisible).to.be.called;
+            expect(stubs.scrollIntoView).to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+
+        it('should not scroll if item is found and visible', () => {
+            virtualScroller.listEl = listEl;
+            stubs.isVisible.returns(true);
+
+            virtualScroller.scrollIntoView(1);
+
+            expect(stubs.isVisible).to.be.called;
+            expect(stubs.scrollIntoView).not.to.be.called;
+            expect(scrollingEl.scrollTop).to.be.undefined;
+        });
+    });
+
+    describe('isVisible()', () => {
+        let scrollingEl;
+
+        beforeEach(() => {
+            scrollingEl = { scrollTop: 100, remove: () => {} };
+            virtualScroller.scrollingEl = scrollingEl;
+            virtualScroller.containerHeight = 100;
+        });
+
+        it('should return false if scrollingEl is falsy', () => {
+            virtualScroller.scrollingEl = false;
+
+            expect(virtualScroller.isVisible({})).to.be.false;
+        });
+
+        it('should return false if listItemEl is falsy', () => {
+            expect(virtualScroller.isVisible()).to.be.false;
+        });
+
+        it('should return false if the offsetTop of listItemEl is < scrollTop', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 50 })).to.be.false;
+        });
+
+        it('should return false if the offsetTop of listItemEl is > scrollTop + containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 201 })).to.be.false;
+        });
+
+        it('should return true if the offsetTop of listItemEl is >= scrollTop && <= scrollTop + containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 101 })).to.be.true;
         });
     });
 });
