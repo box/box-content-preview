@@ -8,6 +8,7 @@ import DownloadReachability from '../../DownloadReachability';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
+import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
