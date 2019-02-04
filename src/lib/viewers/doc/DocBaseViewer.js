@@ -572,8 +572,8 @@ class DocBaseViewer extends BaseViewer {
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
 
-        // Reset tracked encoding type
-        this.encoding = undefined;
+        // If range requests are disabled, request the gzip compressed version of the representation
+        this.encoding = PDFJS.disableRange ? ENCODING_TYPES.GZIP : undefined;
 
         // Otherwise, use large chunk size if locale is en-US and the default,
         // smaller chunk size if not. This is using a rough assumption that
@@ -587,14 +587,11 @@ class DocBaseViewer extends BaseViewer {
 
         let url = pdfUrl;
 
-        // If range requests are disabled, request the gzip compressed version of the representation
-        if (PDFJS.disableRange) {
-            const encodingType = ENCODING_TYPES.GZIP;
+        // Apply encoding request to the content request
+        if (this.encoding) {
             url = appendQueryParams(url, {
-                [QUERY_PARAM_ENCODING]: encodingType
+                [QUERY_PARAM_ENCODING]: this.encoding
             });
-
-            this.encoding = encodingType;
         }
 
         const docInitParams = {
