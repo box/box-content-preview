@@ -1146,7 +1146,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             Timer.reset();
         });
 
-        it('should do nothing if not preload timer was started for that file', () => {
+        it('should do nothing if preload timer was not started for that file', () => {
             const stopStub = sandbox.stub(Timer, 'stop');
             docBase.stopPreloadTimer();
 
