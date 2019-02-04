@@ -15,8 +15,8 @@ const NEXT_PAGE = 'bp-next-page';
 
 const pageNumTemplate = `
     <div class='${CONTROLS_PAGE_NUM_WRAPPER_CLASS}'>
-        <span class=${CONTROLS_CURRENT_PAGE}>1</span>
-        <input type='number' pattern='[0-9]*' min='1'  value='' size='3' class='${CONTROLS_PAGE_NUM_INPUT_CLASS}' />
+        <span class=${CONTROLS_CURRENT_PAGE} data-testid='current-page'>1</span>
+        <input type='number' pattern='[0-9]*' min='1'  value='' size='3' class='${CONTROLS_PAGE_NUM_INPUT_CLASS}' data-testid='page-num-input'/>
         <span class='bp-page-num-divider'>&nbsp;/&nbsp;</span>
         <span class='${CONTROLS_TOTAL_PAGES}'>1</span>
     </div>`.replace(/>\s*</g, '><');

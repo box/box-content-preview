@@ -82,7 +82,7 @@
                 loadPreview();
             }
 
-            function loadPreview() {
+            function loadPreview(options) {
                 var token = localStorage.getItem('token');
                 var fileid = localStorage.getItem('fileid');
 
@@ -93,6 +93,7 @@
                 /* global Box */
                 var preview = new Box.Preview();
                 preview.show(fileid, token, {
+                    ...options,
                     container: ".preview-container",
                 });
 

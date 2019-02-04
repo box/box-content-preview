@@ -107,6 +107,7 @@ function createDownloadIframe() {
     if (!iframe) {
         iframe = document.createElement('iframe');
         iframe.setAttribute('id', 'downloadiframe');
+        iframe.setAttribute('data-testid', 'downloadiframe');
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }

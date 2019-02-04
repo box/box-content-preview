@@ -33,8 +33,10 @@ class Controls {
     constructor(container) {
         this.containerEl = container;
 
-        const controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        const controlsWrapperEl = document.createElement('div');
         controlsWrapperEl.className = 'bp-controls-wrapper';
+        controlsWrapperEl.setAttribute('data-testid', 'controls-wrapper');
+        this.containerEl.appendChild(controlsWrapperEl);
 
         this.controlsEl = controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'bp-controls';
@@ -198,6 +200,7 @@ class Controls {
         button.setAttribute('aria-label', text);
         button.setAttribute('title', text);
         button.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
+        button.setAttribute('data-testid', text);
         button.addEventListener('click', handler);
 
         if (buttonContent) {
