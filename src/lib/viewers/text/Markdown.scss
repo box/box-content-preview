@@ -3,4 +3,10 @@
 // Overrides pre-wrap from plain text
 .markdown-body {
     white-space: normal;
+
+    ul {
+        li {
+            list-style: disc;
+        }
+    }
 }
