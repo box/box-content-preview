@@ -73,17 +73,14 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(presentation.preloader).to.be.instanceof(PresentationPreloader);
         });
 
-        it('should set logger to be preloaded and reset load timeout when preload event is received', () => {
+        it('should invoke onPreload callback', () => {
             presentation.options.logger = {
                 setPreloaded: sandbox.stub()
             };
             stubs.setPreloaded = presentation.options.logger.setPreloaded;
-            stubs.resetLoadTimeout = sandbox.stub(presentation, 'resetLoadTimeout');
-
             presentation.preloader.emit('preload');
 
             expect(stubs.setPreloaded).to.be.called;
-            expect(stubs.resetLoadTimeout).to.be.called;
         });
     });
 

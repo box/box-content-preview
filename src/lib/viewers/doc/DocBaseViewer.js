@@ -31,7 +31,8 @@ import {
 } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -254,6 +255,7 @@ class DocBaseViewer extends BaseViewer {
 
         const { url_template: template } = preloadRep.content;
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        this.startPreloadTimer();
         this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
     }
 
@@ -667,6 +669,54 @@ class DocBaseViewer extends BaseViewer {
         this.setPage(currentPageNumber);
 
         super.resize();
+    }
+
+    /**
+     * Starts timer for preload event
+     *
+     * @protected
+     * @return {void}
+     */
+    startPreloadTimer() {
+        const { file } = this.options;
+        const tag = Timer.createTag(file.id, LOAD_METRIC.preloadTime);
+        Timer.start(tag);
+    }
+
+    /**
+     * Stop and report time to preload document
+     *
+     * @protected
+     * @return {void}
+     */
+    stopPreloadTimer() {
+        const { file } = this.options;
+        const tag = Timer.createTag(file.id, LOAD_METRIC.preloadTime);
+        const time = Timer.get(tag);
+
+        if (!time || !time.start) {
+            return;
+        }
+
+        Timer.stop(tag);
+        this.emitMetric({
+            name: LOAD_METRIC.previewPreloadEvent,
+            data: time.elapsed
+        });
+        Timer.reset(tag);
+    }
+
+    /**
+     * Callback for preload event, from preloader.
+     *
+     * @protected
+     * @return {void}
+     */
+    onPreload() {
+        const { logger } = this.options;
+        logger.setPreloaded();
+        this.stopPreloadTimer();
+        this.resetLoadTimeout(); // Some content is visible - reset load timeout
     }
 
     //--------------------------------------------------------------------------
