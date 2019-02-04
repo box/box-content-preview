@@ -20,9 +20,9 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES
 } from '../../../constants';
-
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
-import { VIEWER_EVENT } from '../../../events';
+import { VIEWER_EVENT, LOAD_METRIC } from '../../../events';
+import Timer from '../../../Timer';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -396,6 +396,31 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 .withArgs(preloadUrl, docBase.containerEl);
 
             docBase.showPreload();
+        });
+
+        it('should start preload timer for metrics', () => {
+            const preloadUrl = 'someUrl';
+            docBase.options.file = {};
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(file, 'getRepresentation').returns({
+                content: {
+                    url_template: ''
+                },
+                status: {
+                    state: STATUS_SUCCESS
+                }
+            });
+            sandbox
+                .stub(docBase, 'getViewerOption')
+                .withArgs('preload')
+                .returns(true);
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(preloadUrl);
+
+            const startPreloadTimerStub = sandbox.stub(docBase, 'startPreloadTimer');
+
+            docBase.showPreload();
+
+            expect(startPreloadTimerStub).to.be.called;
         });
     });
 
@@ -1086,6 +1111,105 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
+        });
+    });
+
+    describe('startPreloadTimer()', () => {
+        afterEach(() => {
+            Timer.reset();
+        });
+
+        it('should create a tag and start a timer related to preload for the file being loaded', () => {
+            const id = '12345';
+            const tag = Timer.createTag(id, LOAD_METRIC.preloadTime);
+            docBase.options.file = {
+                id
+            };
+
+            const startStub = sandbox.stub(Timer, 'start');
+            docBase.startPreloadTimer();
+
+            expect(startStub).to.be.calledWith(tag);
+        });
+    });
+
+    describe('stopPreloadTimer()', () => {
+        const id = '123456';
+        const tag = Timer.createTag(id, LOAD_METRIC.preloadTime);
+        beforeEach(() => {
+            docBase.options.file = {
+                id
+            };
+        });
+
+        afterEach(() => {
+            Timer.reset();
+        });
+
+        it('should do nothing if preload timer was not started for that file', () => {
+            const stopStub = sandbox.stub(Timer, 'stop');
+            docBase.stopPreloadTimer();
+
+            expect(stopStub).to.not.be.called;
+        });
+
+        it('should stop and reset the timer for the file preload event', () => {
+            const stopStub = sandbox.stub(Timer, 'stop');
+            const resetStub = sandbox.stub(Timer, 'reset');
+            Timer.start(tag);
+
+            docBase.stopPreloadTimer();
+
+            expect(stopStub).to.be.calledWith(tag);
+            expect(resetStub).to.be.calledWith(tag);
+        });
+
+        it('should emit a preload event for metrics logging', () => {
+            const elapsed = 100;
+            const preloadTime = {
+                start: 1,
+                end: 101,
+                elapsed
+            };
+            sandbox.stub(Timer, 'get').returns(preloadTime);
+            const metricStub = sandbox.stub(docBase, 'emitMetric');
+
+            docBase.stopPreloadTimer();
+
+            expect(metricStub).to.be.calledWith({
+                name: LOAD_METRIC.previewPreloadEvent,
+                data: elapsed
+            });
+        });
+    });
+
+    describe('onPreload()', () => {
+        let logger;
+        beforeEach(() => {
+            logger = {
+                setPreloaded: sandbox.stub()
+            };
+            docBase.options.logger = logger;
+        });
+
+        it('should invoke "setPreloaded" on logger for legacy metrics preload calculation', () => {
+            docBase.onPreload();
+
+            expect(logger.setPreloaded).to.be.called;
+        });
+
+        it('should stop preload timer for that file', () => {
+            const stopStub = sandbox.stub(docBase, 'stopPreloadTimer');
+            docBase.onPreload();
+
+            expect(stopStub).to.be.called;
+        });
+
+        it('should reset load timeout to prevent preview timeout', () => {
+            const resetStub = sandbox.stub(docBase, 'resetLoadTimeout');
+            docBase.onPreload();
+
+            expect(resetStub).to.be.called;
         });
     });
 
