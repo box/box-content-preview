@@ -28,7 +28,6 @@ describe('Preview File Options', () => {
     };
 
     /* eslint-disable */
-    const getPage = (pageNum) => cy.get(`.page[data-page-number=${pageNum}]`);
     const showMediaControls = () => {
         // Hover over the preview to trigger the controls
         cy.getByTestId('bp').trigger('mouseover');
@@ -44,7 +43,7 @@ describe('Preview File Options', () => {
     it('Should open document preview on the specified page', () => {
         cy.showPreview(token, fileIdDoc, { fileOptions });
 
-        getPage(2).should('be.visible');
+        cy.getPreviewPage(2).should('be.visible');
         cy.contains('Discover how your business can use Box Platform');
         cy.getByTestId('current-page').invoke('text').should('equal', '2');
     });

@@ -92,11 +92,11 @@
 
                 /* global Box */
                 var preview = new Box.Preview();
-                preview.show(fileid, token, {
-                    ...options,
-                    container: ".preview-container",
-                });
 
+                var previewOptions = options || {};
+                previewOptions.container = '.preview-container';
+
+                preview.show(fileid, token, previewOptions);
             }
 
             // Try to load all properties from storage on page load

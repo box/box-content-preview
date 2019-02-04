@@ -200,7 +200,6 @@ class Controls {
         button.setAttribute('aria-label', text);
         button.setAttribute('title', text);
         button.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
-        button.setAttribute('data-testid', text);
         button.addEventListener('click', handler);
 
         if (buttonContent) {

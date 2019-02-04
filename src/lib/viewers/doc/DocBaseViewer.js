@@ -728,6 +728,7 @@ class DocBaseViewer extends BaseViewer {
         PDFJS.PDFPageView.prototype.reset = function reset(...args) {
             resetFunc.bind(this)(args);
             this.loadingIconDiv.classList.add(CLASS_SPINNER);
+            this.loadingIconDiv.setAttribute('data-testid', 'page-loading-indicator');
             this.loadingIconDiv.innerHTML = '<div></div>';
         };
     }
