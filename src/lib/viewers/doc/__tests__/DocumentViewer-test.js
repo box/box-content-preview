@@ -63,17 +63,14 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             expect(doc.preloader).to.be.instanceof(DocPreloader);
         });
 
-        it('should set logger to be preloaded and reset load timeout when preload event is received', () => {
+        it('should invoke onPreload callback', () => {
             doc.options.logger = {
                 setPreloaded: sandbox.stub()
             };
             stubs.setPreloaded = doc.options.logger.setPreloaded;
-            stubs.resetLoadTimeout = sandbox.stub(doc, 'resetLoadTimeout');
-
             doc.preloader.emit('preload');
 
             expect(stubs.setPreloaded).to.be.called;
-            expect(stubs.resetLoadTimeout).to.be.called;
         });
     });
 
