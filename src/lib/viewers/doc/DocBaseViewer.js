@@ -59,6 +59,9 @@ class DocBaseViewer extends BaseViewer {
     // Public
     //--------------------------------------------------------------------------
 
+    /** @property {string} - Tracks the type of encoding, if applicable, that was requested for the viewable content */
+    encoding;
+
     /**
      * @inheritdoc
      */
@@ -569,6 +572,9 @@ class DocBaseViewer extends BaseViewer {
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
 
+        // Reset tracked encoding type
+        this.encoding = undefined;
+
         // Otherwise, use large chunk size if locale is en-US and the default,
         // smaller chunk size if not. This is using a rough assumption that
         // en-US users have higher bandwidth to Box.
@@ -583,9 +589,12 @@ class DocBaseViewer extends BaseViewer {
 
         // If range requests are disabled, request the gzip compressed version of the representation
         if (PDFJS.disableRange) {
+            const encodingType = ENCODING_TYPES.GZIP;
             url = appendQueryParams(url, {
-                [QUERY_PARAM_ENCODING]: ENCODING_TYPES.GZIP
+                [QUERY_PARAM_ENCODING]: encodingType
             });
+
+            this.encoding = encodingType;
         }
 
         const docInitParams = {
@@ -945,6 +954,7 @@ class DocBaseViewer extends BaseViewer {
         if (!this.loaded) {
             this.loaded = true;
             this.emit(VIEWER_EVENT.load, {
+                encoding: this.encoding,
                 numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
                 scale: currentScale
