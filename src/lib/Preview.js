@@ -190,7 +190,7 @@ class Preview extends EventEmitter {
      */
     destroy() {
         // Log all load metrics
-        this.emitLoadMetrics();
+        this.emitLoadMetrics({});
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
