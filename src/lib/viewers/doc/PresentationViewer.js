@@ -37,10 +37,7 @@ class PresentationViewer extends DocBaseViewer {
 
         // Set up preloader
         this.preloader = new PresentationPreloader(this.previewUI);
-        this.preloader.addListener('preload', () => {
-            this.options.logger.setPreloaded();
-            this.resetLoadTimeout(); // Some content is visible - reset load timeout
-        });
+        this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 
     /**

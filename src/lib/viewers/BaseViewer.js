@@ -291,7 +291,8 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     startLoadTimer() {
-        const tag = Timer.createTag(this.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        const { file } = this.options;
+        const tag = Timer.createTag(file.id, LOAD_METRIC.fullDocumentLoadTime);
         Timer.start(tag);
     }
 
