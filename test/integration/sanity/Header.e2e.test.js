@@ -5,8 +5,6 @@ describe('Preview Header', () => {
     // const urlRegex = /https:\/\/dl[0-9]*\.boxcloud\.com.+\/download/;
 
     beforeEach(() => {
-        cy.server();
-        cy.route('GET', '**/files/*?fields=download_url', { download_url: '' });
         cy.visit('/');
         cy.showPreview(token, fileIdDoc, { showDownload: true });
     });
