@@ -9,15 +9,5 @@ jobs:
     include:
         - name: "Build"
           script: yarn run ci
-        - name: "Tests"
-          before_script:
-              - python -m SimpleHTTPServer &
-              - 'export DISPLAY=:99.0'
-              - 'sh -e /etc/init.d/xvfb start'
-              - sleep 5
-          sudo: required
-          addons:
-              chrome: beta
-          script: travis_retry yarn run functional-tests-ci
         - name: "E2E Tests"
           script: yarn test:e2e
