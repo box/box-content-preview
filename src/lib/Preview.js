@@ -190,7 +190,7 @@ class Preview extends EventEmitter {
      */
     destroy() {
         // Log all load metrics
-        this.emitLoadMetrics({});
+        this.emitLoadMetrics();
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
@@ -1522,9 +1522,10 @@ class Preview extends EventEmitter {
      * A value of 0 means that the load milestone was never reached.
      *
      * @private
+     * @param {string} [encoding] - Type of encoding applied to the downloaded content. ie) GZIP
      * @return {void}
      */
-    emitLoadMetrics({ encoding }) {
+    emitLoadMetrics({ encoding } = {}) {
         if (!this.file || !this.file.id) {
             return;
         }

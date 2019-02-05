@@ -2320,7 +2320,7 @@ describe('lib/Preview', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
             preview.file = undefined;
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
             expect(Timer.reset).to.not.be.called;
             expect(preview.emit).to.not.be.called;
         });
@@ -2329,7 +2329,7 @@ describe('lib/Preview', () => {
             preview.once(PREVIEW_METRIC, () => {
                 done();
             });
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
         });
 
         it('should emit a preview_metric event with event_name "load"', (done) => {
@@ -2337,7 +2337,7 @@ describe('lib/Preview', () => {
                 expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
                 done();
             });
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
         });
 
         it('should emit a preview_metric event where the value property equals the sum of all load events', (done) => {
@@ -2354,7 +2354,7 @@ describe('lib/Preview', () => {
                 expect(metric.value).to.equal(expectedTime);
                 done();
             });
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
         });
 
         it('should emit a preview_metric event with an object, with all of the proper load properties', (done) => {
@@ -2365,13 +2365,13 @@ describe('lib/Preview', () => {
                 expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
                 done();
             });
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
         });
 
         it('should reset the Timer', () => {
             sandbox.stub(Timer, 'reset');
             sandbox.stub(preview, 'emit');
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.be.called;
         });
@@ -2385,7 +2385,7 @@ describe('lib/Preview', () => {
                 expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
                 done();
             });
-            preview.emitLoadMetrics({});
+            preview.emitLoadMetrics();
         });
 
         it('should append encoding field to load metric, when provided', (done) => {
