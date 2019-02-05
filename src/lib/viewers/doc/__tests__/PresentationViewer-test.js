@@ -496,12 +496,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             const page = {
                 pageNumber: 3
             };
-            Object.defineProperty(DocBaseViewer.prototype, 'initViewer', { value: sandbox.stub() });
 
             presentation.overwritePdfViewerBehavior();
             presentation.pdfViewer.scrollPageIntoView(page);
 
-            expect(setPageStub).to.be.calledWith(page.pageNumber);
+            expect(setPageStub).to.not.be.called;
         });
 
         it('should overwrite the _getVisiblePages method', () => {
