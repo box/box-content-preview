@@ -1250,7 +1250,7 @@ class Preview extends EventEmitter {
         }
 
         // Log now that loading is finished
-        this.emitLoadMetrics();
+        this.emitLoadMetrics(data);
 
         // Show download and print buttons if user can download
         if (canDownload(this.file, this.options)) {
@@ -1522,9 +1522,10 @@ class Preview extends EventEmitter {
      * A value of 0 means that the load milestone was never reached.
      *
      * @private
+     * @param {string} [encoding] - Type of encoding applied to the downloaded content. ie) GZIP
      * @return {void}
      */
-    emitLoadMetrics() {
+    emitLoadMetrics({ encoding } = {}) {
         if (!this.file || !this.file.id) {
             return;
         }
@@ -1544,6 +1545,7 @@ class Preview extends EventEmitter {
         const total = times.reduce((acc, current) => acc + current);
 
         const event = {
+            encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
             value: total, // Sum of all available load times.
             [LOAD_METRIC.fileInfoTime]: times[0],

@@ -8,7 +8,7 @@ import PreviewError from '../PreviewError';
 import DownloadReachability from '../DownloadReachability';
 import * as file from '../file';
 import * as util from '../util';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW } from '../constants';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
 
@@ -2386,6 +2386,14 @@ describe('lib/Preview', () => {
                 done();
             });
             preview.emitLoadMetrics();
+        });
+
+        it('should append encoding field to load metric, when provided', (done) => {
+            preview.once(PREVIEW_METRIC, (metric) => {
+                expect(metric.encoding).to.equal(ENCODING_TYPES.GZIP);
+                done();
+            });
+            preview.emitLoadMetrics({ encoding: ENCODING_TYPES.GZIP });
         });
     });
 

@@ -1569,9 +1569,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             };
             docBase.loaded = false;
             docBase.pdfViewer.pagesCount = 5;
+            docBase.encoding = 'gzip';
 
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.load, {
+                encoding: docBase.encoding,
                 endProgress: false,
                 numPages: 5,
                 scale: sinon.match.any
