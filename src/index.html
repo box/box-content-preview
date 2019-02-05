@@ -82,7 +82,7 @@
                 loadPreview();
             }
 
-            function loadPreview() {
+            function loadPreview(options) {
                 var token = localStorage.getItem('token');
                 var fileid = localStorage.getItem('fileid');
 
@@ -92,10 +92,11 @@
 
                 /* global Box */
                 var preview = new Box.Preview();
-                preview.show(fileid, token, {
-                    container: ".preview-container",
-                });
 
+                var previewOptions = options || {};
+                previewOptions.container = '.preview-container';
+
+                preview.show(fileid, token, previewOptions);
             }
 
             // Try to load all properties from storage on page load
