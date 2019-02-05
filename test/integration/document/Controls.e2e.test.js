@@ -3,17 +3,11 @@ describe('Preview Document Controls', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_DOC');
 
-    /* eslint-disable */
-    const showControls = () => {
-        cy.getByTestId('bp').trigger('mouseover');
-        cy.getByTestId('controls-wrapper').should('be.visible');
-    };
-    /* eslint-enable */
-
     beforeEach(() => {
         cy.visit('/');
         cy.showPreview(token, fileId);
         cy.getByTestId('current-page').as('currentPage');
+        cy.getPreviewPage(1);
     });
 
     it('Should zoom in and out', () => {
@@ -25,7 +19,7 @@ describe('Preview Document Controls', () => {
             cy.wrap($page[0].scrollHeight).as('originalHeight');
         });
 
-        showControls();
+        cy.showDocumentControls();
 
         cy.getByTitle('Zoom out').click();
 
@@ -40,7 +34,7 @@ describe('Preview Document Controls', () => {
             cy.wrap(zoomedOutHeight).as('zoomedOutHeight');
         });
 
-        showControls();
+        cy.showDocumentControls();
 
         cy.getByTitle('Zoom in').click();
 
@@ -58,14 +52,14 @@ describe('Preview Document Controls', () => {
         cy.contains('The Content Platform for Your Apps');
         cy.get('@currentPage').invoke('text').should('equal', '1');
 
-        showControls();
+        cy.showDocumentControls();
         cy.getByTitle('Next page').click();
 
         cy.getPreviewPage(2).should('be.visible');
         cy.contains('Discover how your business can use Box Platform');
         cy.get('@currentPage').invoke('text').should('equal', '2');
 
-        showControls();
+        cy.showDocumentControls();
         cy.getByTitle('Previous page').click();
 
         cy.getPreviewPage(1).should('be.visible');
@@ -78,7 +72,7 @@ describe('Preview Document Controls', () => {
         cy.contains('The Content Platform for Your Apps');
         cy.get('@currentPage').invoke('text').should('equal', '1');
 
-        showControls();
+        cy.showDocumentControls();
         cy.getByTitle('Click to enter page number').click();
         cy.getByTestId('page-num-input').should('be.visible').type('2').blur();
 
@@ -94,7 +88,7 @@ describe('Preview Document Controls', () => {
     // it('Should handle going fullscreen', () => {
     //     cy.getPreviewPage(1).should('be.visible');
     //     cy.contains('The Content Platform for Your Apps');
-    //     showControls();
+    //     cy.showDocumentControls();
     //     cy.getByTitle('Enter fullscreen').should('be.visible').click();
     //     cy.getByTitle('Exit fullscreen').should('be.visible');
     // });

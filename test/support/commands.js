@@ -4,10 +4,16 @@ Cypress.Commands.add('getPreviewPage', (pageNum) => {
     cy
         .get(`.page[data-page-number=${pageNum}]`)
         .as('previewPage')
-        .find('[data-testid="page-loading-indicator"]')
+        // Adding 10s timeout here because there's no reliable way to wait for
+        // the page to finish rendering
+        .find('[data-testid="page-loading-indicator"]', { timeout: 10000 })
         .should('not.exist');
 
     return cy.get('@previewPage');
+});
+Cypress.Commands.add('showDocumentControls', () => {
+    cy.getByTestId('bp').trigger('mousemove');
+    return cy.getByTestId('controls-wrapper').should('be.visible');
 });
 Cypress.Commands.add('showPreview', (token, fileId, options) => {
     cy.getByTestId('token').type(token);
@@ -19,6 +25,8 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
         cy.window().then((win) => {
             win.loadPreview(options);
         });
+    } else {
+        cy.getByTestId('load-preview').click();
     }
 
     // Wait for .bp to load viewer
