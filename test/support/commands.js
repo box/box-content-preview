@@ -4,9 +4,9 @@ Cypress.Commands.add('getPreviewPage', (pageNum) => {
     cy
         .get(`.page[data-page-number=${pageNum}]`)
         .as('previewPage')
-        // Adding 10s timeout here because there's no reliable way to wait for
-        // the page to finish rendering
-        .find('[data-testid="page-loading-indicator"]', { timeout: 10000 })
+        // Adding 10s timeout here because sometimes it takes more than the Cypress
+        // default 5s to render the preview
+        .find('[data-testid="page-loading-indicator"]', { timeout: 15000 })
         .should('not.exist');
 
     return cy.get('@previewPage');
@@ -21,13 +21,9 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     cy.getByTestId('fileid').type(fileId);
     cy.getByTestId('fileid-set').click();
 
-    if (options) {
-        cy.window().then((win) => {
-            win.loadPreview(options);
-        });
-    } else {
-        cy.getByTestId('load-preview').click();
-    }
+    cy.window().then((win) => {
+        win.loadPreview(options);
+    });
 
     // Wait for .bp to load viewer
     return cy.getByTestId('bp').should('have.class', 'bp-loaded');

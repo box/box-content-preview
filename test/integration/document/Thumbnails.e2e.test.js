@@ -6,7 +6,7 @@ describe('Preview Document Thumbnails', () => {
 
     /* eslint-disable */
     const getThumbnail = (pageNum) => cy.get(`.bp-thumbnail[data-bp-page-num=${pageNum}]`);
-    const showDocumentPreview = (enableThumbnailsSidebar) => {
+    const showDocumentPreview = ({ enableThumbnailsSidebar } = {}) => {
         cy.showPreview(token, fileId, { enableThumbnailsSidebar });
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
@@ -28,21 +28,21 @@ describe('Preview Document Thumbnails', () => {
     });
 
     it('Should not see the sidebar button if disabled', () => {
-        showDocumentPreview(false);
+        showDocumentPreview({ enableThumbnailsSidebar: false });
 
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
     });
 
     it('Should see the sidebar button if enabled', () => {
-        showDocumentPreview(true);
+        showDocumentPreview({ enableThumbnailsSidebar: true });
 
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('be.visible');
     });
 
     it('Should render thumbnails when toggled', () => {
-        showDocumentPreview(true);
+        showDocumentPreview({ enableThumbnailsSidebar: true });
 
         toggleThumbnails().should('be.visible');
 
@@ -50,7 +50,7 @@ describe('Preview Document Thumbnails', () => {
     });
 
     it('Should be able to change page by clicking on the thumbnail', () => {
-        showDocumentPreview(true);
+        showDocumentPreview({ enableThumbnailsSidebar: true });
 
         // Verify we're on page 1
         cy.getByTestId('current-page').as('currentPage')
@@ -74,7 +74,7 @@ describe('Preview Document Thumbnails', () => {
     });
 
     it('Should reflect the selected page when page is changed', () => {
-        showDocumentPreview(true);
+        showDocumentPreview({ enableThumbnailsSidebar: true });
         cy
             .getByTestId('current-page')
             .as('currentPage')
