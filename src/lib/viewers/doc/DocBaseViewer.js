@@ -131,6 +131,7 @@ class DocBaseViewer extends BaseViewer {
         if (this.options.enableThumbnailsSidebar) {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
+            this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
             this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
         }
     }
