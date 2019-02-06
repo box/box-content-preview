@@ -250,7 +250,7 @@ class VirtualScroller {
 
         // If specified offset is in the last window into the list then
         // render that last window instead of starting at that offset
-        const lastWindowOffset = this.totalItems - this.maxRenderedItems;
+        const lastWindowOffset = Math.max(0, this.totalItems - this.maxRenderedItems);
         let newStartOffset = offset > lastWindowOffset ? lastWindowOffset : offset;
         let newEndOffset = offset + this.maxRenderedItems;
         // If the default count of items to render exceeds the totalItems count

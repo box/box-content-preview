@@ -8,9 +8,8 @@ describe('Preview Sanity', () => {
     });
 
     it('Should load a document preview', () => {
-        // Show the preview
         cy.showPreview(token, fileId);
-        // Assert document content is present
+        cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
     });
 });
