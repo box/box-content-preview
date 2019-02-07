@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 import { CLASS_HIDDEN } from './constants';
+import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
@@ -43,7 +44,7 @@ class ThumbnailsSidebar {
         this.anchorEl = element;
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
-        this.thumbnailImageCache = {};
+        this.thumbnailImageCache = new BoundedCache();
 
         this.createImageEl = this.createImageEl.bind(this);
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
@@ -94,7 +95,11 @@ class ThumbnailsSidebar {
             this.virtualScroller = null;
         }
 
-        this.thumbnailImageCache = null;
+        if (this.thumbnailImageCache) {
+            this.thumbnailImageCache.destroy();
+            this.thumbnailImageCache = null;
+        }
+
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
@@ -201,6 +206,14 @@ class ThumbnailsSidebar {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
         }
 
+        // If image is already in cache, then use it instead of waiting for
+        // the second render image pass
+        const cachedImage = this.thumbnailImageCache.get(itemIndex);
+        if (cachedImage && !cachedImage.inProgress) {
+            thumbnailEl.appendChild(cachedImage.image);
+            thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
+        }
+
         return thumbnailEl;
     }
 
@@ -233,7 +246,7 @@ class ThumbnailsSidebar {
      * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
      */
     createThumbnailImage(itemIndex) {
-        const cacheEntry = this.thumbnailImageCache[itemIndex];
+        const cacheEntry = this.thumbnailImageCache.get(itemIndex);
 
         // If this thumbnail has already been cached, use it
         if (cacheEntry && cacheEntry.image) {
@@ -246,13 +259,13 @@ class ThumbnailsSidebar {
         }
 
         // Update the cache entry to be in progress
-        this.thumbnailImageCache[itemIndex] = { ...cacheEntry, inProgress: true };
+        this.thumbnailImageCache.set(itemIndex, { ...cacheEntry, inProgress: true });
 
         return this.getThumbnailDataURL(itemIndex + 1)
             .then(this.createImageEl)
             .then((imageEl) => {
                 // Cache this image element for future use
-                this.thumbnailImageCache[itemIndex] = { inProgress: false, image: imageEl };
+                this.thumbnailImageCache.set(itemIndex, { inProgress: false, image: imageEl });
 
                 return imageEl;
             });

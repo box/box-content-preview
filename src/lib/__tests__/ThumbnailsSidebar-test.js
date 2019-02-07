@@ -56,6 +56,7 @@ describe('ThumbnailsSidebar', () => {
         sandbox.verifyAndRestore();
 
         if (thumbnailsSidebar && typeof thumbnailsSidebar.destroy === 'function') {
+            thumbnailsSidebar.thumbnailImageCache = null;
             thumbnailsSidebar.destroy();
         }
 
@@ -67,7 +68,7 @@ describe('ThumbnailsSidebar', () => {
         it('should initialize properties', () => {
             expect(thumbnailsSidebar.anchorEl.id).to.be.equal('test-thumbnails-sidebar');
             expect(thumbnailsSidebar.pdfViewer).to.be.equal(pdfViewer);
-            expect(thumbnailsSidebar.thumbnailImageCache).to.be.empty;
+            expect(thumbnailsSidebar.thumbnailImageCache.cache).to.be.empty;
             expect(thumbnailsSidebar.scale).to.be.undefined;
             expect(thumbnailsSidebar.pageRatio).to.be.undefined;
         });
@@ -226,11 +227,13 @@ describe('ThumbnailsSidebar', () => {
                 .stub(thumbnailsSidebar, 'getThumbnailDataURL')
                 .returns(Promise.resolve());
             stubs.createImageEl = sandbox.stub(thumbnailsSidebar, 'createImageEl');
+            stubs.getCacheEntry = sandbox.stub(thumbnailsSidebar.thumbnailImageCache, 'get');
+            stubs.setCacheEntry = sandbox.stub(thumbnailsSidebar.thumbnailImageCache, 'set');
         });
 
         it('should resolve immediately if the image is in cache', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: { image: cachedImage } };
+            stubs.getCacheEntry.withArgs(1).returns({ image: cachedImage });
 
             return thumbnailsSidebar.createThumbnailImage(1).then(() => {
                 expect(stubs.createImageEl).not.to.be.called;
@@ -239,19 +242,17 @@ describe('ThumbnailsSidebar', () => {
 
         it('should create an image element if not in cache', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: { image: cachedImage } };
             stubs.createImageEl.returns(cachedImage);
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
                 expect(stubs.createImageEl).to.be.called;
-                expect(thumbnailsSidebar.thumbnailImageCache[0].image).to.be.eql(imageEl);
-                expect(thumbnailsSidebar.thumbnailImageCache[0].inProgress).to.be.false;
+                expect(stubs.setCacheEntry).to.be.calledWith(0, { inProgress: false, image: imageEl });
             });
         });
 
         it('should resolve with null if cache entry inProgress is true', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 0: { inProgress: true } };
+            stubs.getCacheEntry.withArgs(0).returns({ inProgress: true });
             stubs.createImageEl.returns(cachedImage);
 
             return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
@@ -262,9 +263,15 @@ describe('ThumbnailsSidebar', () => {
     });
 
     describe('getThumbnailDataURL()', () => {
+        beforeEach(() => {
+            stubs.getCacheEntry = sandbox.stub(thumbnailsSidebar.thumbnailImageCache, 'get');
+            stubs.setCacheEntry = sandbox.stub(thumbnailsSidebar.thumbnailImageCache, 'set');
+            thumbnailsSidebar.thumbnailImageCache = { get: stubs.getCacheEntry, set: stubs.setCacheEntry };
+        });
+
         it('should scale canvas the same as the first page if page ratio is the same', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            stubs.getCacheEntry.withArgs(1).returns(cachedImage);
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has same ratio
@@ -281,7 +288,7 @@ describe('ThumbnailsSidebar', () => {
 
         it('should handle non-uniform page ratios', () => {
             const cachedImage = {};
-            thumbnailsSidebar.thumbnailImageCache = { 1: cachedImage };
+            stubs.getCacheEntry.withArgs(1).returns(cachedImage);
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has ratio of 0.5 instead of 1
