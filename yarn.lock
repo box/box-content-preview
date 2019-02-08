@@ -1641,10 +1641,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.10.0.tgz#4171d1773bda3dd3b6a318ad6a1b421f85d65ede"
+  integrity sha512-GiB2VR/aDaw0VnQ/PV4GHPGevG9PUg+4mwezwTKEJKiDWsVZtcuH1pGVfaK50dDjIVyy/+vL2o6Ps+Xg+J8+fQ==
 
 box-locales@^0.0.1:
   version "0.0.1"
