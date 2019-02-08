@@ -1,5 +1,5 @@
 // <reference types="Cypress" />
-describe('Preview Document Controls', () => {
+describe('Presentation Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_PRESENTATION');
 
@@ -13,7 +13,6 @@ describe('Preview Document Controls', () => {
     beforeEach(() => {
         cy.visit('/');
         cy.showPreview(token, fileId);
-        cy.getByTestId('current-page').as('currentPage');
     });
 
     it('Should initialize preview on the same page it was closed on', () => {
