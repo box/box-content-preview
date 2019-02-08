@@ -1,3 +1,10 @@
+<a name="1.64.1"></a>
+## <small>1.64.1 (2019-02-08)</small>
+
+* Upgrade: Upgrade box-annotations to v3.10.0 (#918) ([d2a2937](https://github.com/box/box-content-preview/commit/d2a2937)), closes [#918](https://github.com/box/box-content-preview/issues/918)
+
+
+
 <a name="1.64.0"></a>
 ## 1.64.0 (2019-02-05)
 
