@@ -278,7 +278,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 21; // Should be THUMBNAIL_WIDTH_MAX(210) / 10 = 21
+            const expScale = 15; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH(150) / 10
 
             return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).to.be.called;
@@ -295,7 +295,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 10.5; // Should be 10.5 instead of 21 because the viewport ratio above is 0.5 instead of 1
+            const expScale = 7.5; // Should be 7.5 instead of 15 because the viewport ratio above is 0.5 instead of 1
 
             return thumbnailsSidebar.createThumbnailImage(0).then(() => {
                 expect(stubs.getPage).to.be.called;
