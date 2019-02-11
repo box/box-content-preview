@@ -64,7 +64,7 @@ import {
     PREVIEW_END_EVENT,
     PREVIEW_DOWNLOAD_ATTEMPT_EVENT
 } from './events';
-import { getClientLogDetails, getISOTime } from './logUtils';
+import { getClientLogDetails, getISOTime, getPreviewLoadValue } from './logUtils';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -1535,23 +1535,21 @@ class Preview extends EventEmitter {
         const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
         const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
 
-        const timerList = [
-            Timer.get(infoTag) || {},
-            Timer.get(convertTag) || {},
-            Timer.get(downloadTag) || {},
-            Timer.get(fullLoadTag) || {}
-        ];
-        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
-        const total = times.reduce((acc, current) => acc + current);
+        const infoTime = Timer.get(infoTag) || {};
+        const convertTime = Timer.get(convertTag) || {};
+        const downloadTime = Timer.get(downloadTag) || {};
+        const fullLoadTime = Timer.get(fullLoadTag) || {};
+
+        const previewLoadTime = getPreviewLoadValue(infoTime.start, fullLoadTime.end);
 
         const event = {
             encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
-            value: total, // Sum of all available load times.
-            [LOAD_METRIC.fileInfoTime]: times[0],
-            [LOAD_METRIC.convertTime]: times[1],
-            [LOAD_METRIC.downloadResponseTime]: times[2],
-            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            value: previewLoadTime,
+            [LOAD_METRIC.fileInfoTime]: infoTime.elapsed || 0,
+            [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
+            [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
+            [LOAD_METRIC.fullDocumentLoadTime]: fullLoadTime.elapsed || 0,
             ...this.createLogEvent()
         };
 
