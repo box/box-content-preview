@@ -50,7 +50,7 @@ $thumbnail-border-radius: 4px;
     // contributing to the width of the button and shrinking the thumbnail
     // image
     .bp-thumbnail.bp-thumbnail-is-selected::after {
-        border: 4px solid $box-blue;
+        border: 4px solid $fours;
         border-radius: $thumbnail-border-radius;
         bottom: -2px;
         content: '';
