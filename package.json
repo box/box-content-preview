@@ -35,7 +35,7 @@
     "create-react-class": "^15.6.2",
     "css-loader": "^0.28.7",
     "cssnano-cli": "^1.0.5",
-    "cypress": "^3.1.4",
+    "cypress": "^3.1.5",
     "eslint": "^4.12.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-config-prettier": "^2.9.0",

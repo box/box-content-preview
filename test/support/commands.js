@@ -24,3 +24,9 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     // Wait for .bp to load viewer
     return cy.getByTestId('bp').should('have.class', 'bp-loaded');
 });
+
+
+Cypress.Commands.add('showControls', () => {
+    cy.getByTestId('bp').trigger('mouseover');
+    cy.getByTestId('controls-wrapper').should('be.visible');
+})
