@@ -76,7 +76,6 @@ const LOG_RETRY_TIMEOUT_MS = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
-const PREVIEW_LOAD_TIME_TAG = 'preview_loading'; // Tag for timing how long it takes to load preview
 
 // All preview assets are relative to preview.js. Here we create a location
 // object that mimics the window location object and points to where
@@ -755,7 +754,7 @@ class Preview extends EventEmitter {
         }
 
         // Start the preview duration timer when the user starts to perceive preview's load
-        const tag = Timer.createTag(this.file.id, PREVIEW_LOAD_TIME_TAG);
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
         Timer.start(tag);
 
         // If file version ID is specified, increment retry count if it matches current file version ID
@@ -1252,7 +1251,7 @@ class Preview extends EventEmitter {
         if (this.file && this.file.id) {
             const contentLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.contentLoadTime);
             Timer.stop(contentLoadTag);
-            const previewLoadTag = Timer.createTag(this.file.id, PREVIEW_LOAD_TIME_TAG);
+            const previewLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
             Timer.stop(previewLoadTag);
         }
 
@@ -1543,7 +1542,7 @@ class Preview extends EventEmitter {
         const convertTag = Timer.createTag(id, LOAD_METRIC.convertTime);
         const downloadTag = Timer.createTag(id, LOAD_METRIC.downloadResponseTime);
         const contentLoadTag = Timer.createTag(id, LOAD_METRIC.contentLoadTime);
-        const previewLoadTag = Timer.createTag(id, PREVIEW_LOAD_TIME_TAG);
+        const previewLoadTag = Timer.createTag(id, LOAD_METRIC.previewLoadTime);
 
         const infoTime = Timer.get(infoTag) || {};
         const convertTime = Timer.get(convertTag) || {};
