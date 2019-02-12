@@ -1951,7 +1951,7 @@ describe('lib/Preview', () => {
 
         it('should stop the timer for full document load if a file exists', () => {
             preview.file.id = 1234;
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.contentLoadTime);
             sandbox.stub(Timer, 'stop');
             preview.finishLoading();
             expect(Timer.stop).to.be.calledWith(expectedTag);
@@ -2341,7 +2341,7 @@ describe('lib/Preview', () => {
         });
 
         it('should emit a preview_metric event where the value property equals the sum of all load events', (done) => {
-            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.contentLoadTime);
             Timer.start(tag);
             Timer.stop(tag);
 
@@ -2362,7 +2362,7 @@ describe('lib/Preview', () => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
                 expect(metric[LOAD_METRIC.convertTime]).to.exist;
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+                expect(metric[LOAD_METRIC.contentLoadTime]).to.exist;
                 done();
             });
             preview.emitLoadMetrics();
@@ -2382,7 +2382,7 @@ describe('lib/Preview', () => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
                 expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
+                expect(metric[LOAD_METRIC.contentLoadTime]).to.equal(0);
                 done();
             });
             preview.emitLoadMetrics();

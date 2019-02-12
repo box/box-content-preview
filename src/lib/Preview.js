@@ -1250,7 +1250,7 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         if (this.file && this.file.id) {
-            const contentLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const contentLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.contentLoadTime);
             Timer.stop(contentLoadTag);
             const previewLoadTag = Timer.createTag(this.file.id, PREVIEW_LOAD_TIME_TAG);
             Timer.stop(previewLoadTag);
@@ -1542,7 +1542,7 @@ class Preview extends EventEmitter {
         const infoTag = Timer.createTag(id, LOAD_METRIC.fileInfoTime);
         const convertTag = Timer.createTag(id, LOAD_METRIC.convertTime);
         const downloadTag = Timer.createTag(id, LOAD_METRIC.downloadResponseTime);
-        const contentLoadTag = Timer.createTag(id, LOAD_METRIC.fullDocumentLoadTime);
+        const contentLoadTag = Timer.createTag(id, LOAD_METRIC.contentLoadTime);
         const previewLoadTag = Timer.createTag(id, PREVIEW_LOAD_TIME_TAG);
 
         const infoTime = Timer.get(infoTag) || {};
@@ -1558,7 +1558,7 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.fileInfoTime]: infoTime.elapsed || 0,
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
-            [LOAD_METRIC.fullDocumentLoadTime]: contentLoadTime.elapsed || 0,
+            [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
             ...this.createLogEvent()
         };
 

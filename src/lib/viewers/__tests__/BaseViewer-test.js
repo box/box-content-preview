@@ -195,11 +195,11 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('startLoadTimer()', () => {
-        it('should start a timer for the fullDocumentLoadTime metric', () => {
+        it('should start a timer for the contentLoadTime metric', () => {
             base.options.file.id = '1234';
             base.startLoadTimer();
 
-            const tag = Timer.createTag(base.options.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const tag = Timer.createTag(base.options.file.id, LOAD_METRIC.contentLoadTime);
             expect(Timer.get(tag)).to.exist;
         });
     });
