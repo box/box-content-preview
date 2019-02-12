@@ -1641,10 +1641,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.10.0.tgz#4171d1773bda3dd3b6a318ad6a1b421f85d65ede"
+  integrity sha512-GiB2VR/aDaw0VnQ/PV4GHPGevG9PUg+4mwezwTKEJKiDWsVZtcuH1pGVfaK50dDjIVyy/+vL2o6Ps+Xg+J8+fQ==
 
 box-locales@^0.0.1:
   version "0.0.1"
@@ -2945,7 +2945,7 @@ custom-event@~1.0.0:
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
   integrity sha1-XQKkaFCt8bSjF5RqOSj8y1v9BCU=
 
-cypress@^3.1.4:
+cypress@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-3.1.5.tgz#5227b2ce9306c47236d29e703bad9055d7218042"
   integrity sha512-jzYGKJqU1CHoNocPndinf/vbG28SeU+hg+4qhousT/HDBMJxYgjecXOmSgBX/ga9/TakhqSrIrSP2r6gW/OLtg==
