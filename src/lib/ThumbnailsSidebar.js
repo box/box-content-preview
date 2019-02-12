@@ -9,7 +9,6 @@ const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
 const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
-const THUMBNAIL_WIDTH_MAX = 210;
 const THUMBNAIL_MARGIN = 15;
 
 class ThumbnailsSidebar {
@@ -141,11 +140,12 @@ class ThumbnailsSidebar {
             // Width : Height ratio of the page
             this.pageRatio = width / height;
             const scaledViewport = page.getViewport(this.scale);
+            this.thumbnailHeight = Math.ceil(scaledViewport.height);
 
             this.virtualScroller.init({
                 initialRowIndex: this.currentPage - 1,
                 totalItems: this.pdfViewer.pagesCount,
-                itemHeight: scaledViewport.height,
+                itemHeight: this.thumbnailHeight,
                 containerHeight: this.anchorEl.parentNode.clientHeight,
                 margin: THUMBNAIL_MARGIN,
                 renderItemFn: this.createPlaceholderThumbnail,
@@ -291,16 +291,16 @@ class ThumbnailsSidebar {
                 // landscape
                 if (curPageRatio < this.pageRatio) {
                     // Set the canvas height to that of the thumbnail max height
-                    canvas.height = THUMBNAIL_WIDTH_MAX / this.pageRatio;
+                    canvas.height = Math.ceil(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio);
                     // Find the canvas width based on the curent page ratio
                     canvas.width = canvas.height * curPageRatio;
                 } else {
                     // In case the current page ratio is same as the first page
                     // or in case it's larger (which means that it's wider), keep
                     // the width at the max thumbnail width
-                    canvas.width = THUMBNAIL_WIDTH_MAX;
+                    canvas.width = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH;
                     // Find the height based on the current page ratio
-                    canvas.height = THUMBNAIL_WIDTH_MAX / curPageRatio;
+                    canvas.height = Math.ceil(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / curPageRatio);
                 }
 
                 // The amount for which to scale down the current page
@@ -327,7 +327,7 @@ class ThumbnailsSidebar {
         // Add the height and width to the image to be the same as the thumbnail
         // so that the css `background-image` rules will work
         imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
-        imageEl.style.height = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio}px`;
+        imageEl.style.height = `${this.thumbnailHeight}px`;
 
         return imageEl;
     }
