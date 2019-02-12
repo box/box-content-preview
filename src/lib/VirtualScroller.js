@@ -425,6 +425,21 @@ class VirtualScroller {
 
         return scrollTop <= offsetTop && offsetTop <= scrollTop + this.containerHeight;
     }
+
+    /**
+     * Gets the currently visible list items
+     * @return {Array<HTMLElement>} - the list of current visible list items
+     */
+    getVisibleItems() {
+        if (!this.listEl) {
+            return [];
+        }
+
+        return Array.prototype.slice
+            .call(this.listEl.children)
+            .filter((itemEl) => this.isVisible(itemEl))
+            .map((itemEl) => itemEl && itemEl.children && itemEl.children[0]);
+    }
 }
 
 export default VirtualScroller;
