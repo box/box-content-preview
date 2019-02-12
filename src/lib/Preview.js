@@ -753,6 +753,10 @@ class Preview extends EventEmitter {
             );
         }
 
+        // Start the preview duration timer when the user starts to perceive preview's load
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
+        Timer.start(tag);
+
         // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {
             if (fileVersionId === currentFileVersionId) {
@@ -1245,8 +1249,10 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         if (this.file && this.file.id) {
-            const tag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
-            Timer.stop(tag);
+            const contentLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.contentLoadTime);
+            Timer.stop(contentLoadTag);
+            const previewLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
+            Timer.stop(previewLoadTag);
         }
 
         // Log now that loading is finished
@@ -1530,34 +1536,34 @@ class Preview extends EventEmitter {
             return;
         }
 
-        const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
-        const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
-        const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
-        const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        const { id } = this.file;
 
-        const timerList = [
-            Timer.get(infoTag) || {},
-            Timer.get(convertTag) || {},
-            Timer.get(downloadTag) || {},
-            Timer.get(fullLoadTag) || {}
-        ];
-        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
-        const total = times.reduce((acc, current) => acc + current);
+        const infoTag = Timer.createTag(id, LOAD_METRIC.fileInfoTime);
+        const convertTag = Timer.createTag(id, LOAD_METRIC.convertTime);
+        const downloadTag = Timer.createTag(id, LOAD_METRIC.downloadResponseTime);
+        const contentLoadTag = Timer.createTag(id, LOAD_METRIC.contentLoadTime);
+        const previewLoadTag = Timer.createTag(id, LOAD_METRIC.previewLoadTime);
+
+        const infoTime = Timer.get(infoTag) || {};
+        const convertTime = Timer.get(convertTag) || {};
+        const downloadTime = Timer.get(downloadTag) || {};
+        const contentLoadTime = Timer.get(contentLoadTag) || {};
+        const previewLoadTime = Timer.get(previewLoadTag) || {};
 
         const event = {
             encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
-            value: total, // Sum of all available load times.
-            [LOAD_METRIC.fileInfoTime]: times[0],
-            [LOAD_METRIC.convertTime]: times[1],
-            [LOAD_METRIC.downloadResponseTime]: times[2],
-            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            value: previewLoadTime.elapsed || 0,
+            [LOAD_METRIC.fileInfoTime]: infoTime.elapsed || 0,
+            [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
+            [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
+            [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
             ...this.createLogEvent()
         };
 
         this.emit(PREVIEW_METRIC, event);
 
-        Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
+        Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
     }
 
     /**

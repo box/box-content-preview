@@ -285,14 +285,14 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Start the load timer for fullDocumentLoad event.
+     * Start the load timer for contentLoadTime event.
      *
      * @protected
      * @return {void}
      */
     startLoadTimer() {
         const { file } = this.options;
-        const tag = Timer.createTag(file.id, LOAD_METRIC.fullDocumentLoadTime);
+        const tag = Timer.createTag(file.id, LOAD_METRIC.contentLoadTime);
         Timer.start(tag);
     }
 
