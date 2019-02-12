@@ -5,7 +5,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Browser from './Browser';
-import Logger from './Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
 import PreviewError from './PreviewError';
@@ -119,9 +118,6 @@ class Preview extends EventEmitter {
     /** @property {AssetLoader[]} - List of asset loaders */
     loaders = loaderList;
 
-    /** @property {Logger} - Logger instance */
-    logger;
-
     /** @property {number} - Number of times a particular preview has been retried */
     retryCount = 0;
 
@@ -166,7 +162,6 @@ class Preview extends EventEmitter {
 
         this.cache = new Cache();
         this.ui = new PreviewUI();
-        this.browserInfo = Browser.getBrowserInfo();
 
         // Bind context for callbacks
         this.download = this.download.bind(this);
@@ -698,9 +693,6 @@ class Preview extends EventEmitter {
         // Indicate preview is open
         this.open = true;
 
-        // Init performance logging
-        this.logger = new Logger(this.location.locale, this.browserInfo);
-
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
 
@@ -969,9 +961,6 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromCache() {
-        // Log cache hit
-        this.logger.setCached();
-
         // Finally load the viewer
         this.loadViewer();
 
@@ -1036,9 +1025,8 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Set current file to file data from server and update file in logger
+            // Set current file to file data from server
             this.file = file;
-            this.logger.setFile(file);
 
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
@@ -1061,7 +1049,6 @@ class Preview extends EventEmitter {
                 //   - Cached file is stale
                 //   - File is newly watermarked
             } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
-                this.logger.setCacheStale(); // Log that cache is stale
                 this.reload(true); // Reload viewer without fetching updated file info from server
             }
         } catch (err) {
@@ -1135,9 +1122,6 @@ class Preview extends EventEmitter {
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
-        // Log the type of file
-        this.logger.setType(viewer.NAME);
-
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
 
@@ -1148,7 +1132,6 @@ class Preview extends EventEmitter {
             container: this.container,
             file: this.file
         });
-        viewerOptions.logger = this.logger; // Don't clone the logger since it needs to track metrics
         this.viewer = new viewer.CONSTRUCTOR(viewerOptions);
 
         // Add listeners for viewer events
@@ -1269,7 +1252,6 @@ class Preview extends EventEmitter {
             // 'load' with { error } signifies a preview error
             this.emit(VIEWER_EVENT.load, {
                 error,
-                metrics: this.logger.done(this.count),
                 file: this.file
             });
 
@@ -1289,7 +1271,6 @@ class Preview extends EventEmitter {
             // Finally emit the viewer instance back with a load event
             this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,
-                metrics: this.logger.done(this.count),
                 file: this.file
             });
 
@@ -1328,8 +1309,7 @@ class Preview extends EventEmitter {
 
     /**
      * Logs 'preview' event via the Events API. This is used for logging that a
-     * preview happened for access stats, unlike the Logger, which logs preview
-     * errors and performance metrics.
+     * preview happened for access stats.
      *
      * @private
      * @param {string} fileId - File ID to log preview event for

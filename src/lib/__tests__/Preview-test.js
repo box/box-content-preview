@@ -2,7 +2,6 @@
 import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
 import loaders from '../loaders';
-import Logger from '../Logger';
 import Browser from '../Browser';
 import PreviewError from '../PreviewError';
 import DownloadReachability from '../DownloadReachability';
@@ -964,12 +963,9 @@ describe('lib/Preview', () => {
             expect(stubs.destroy).to.be.called;
         });
 
-        it('should set the preview to open, and initialize the performance logger', () => {
-            sandbox.stub(Browser, 'getBrowserInfo');
+        it('should set the preview to open', () => {
             preview.load('0');
             expect(preview.open).to.be.true;
-            expect(preview.logger instanceof Logger);
-            expect(Browser.getBrowserInfo).to.not.be.called; // cached from preview constructor
         });
 
         it('should fetch file from cache using file ID as key if file version ID is not in options', () => {
@@ -1314,17 +1310,8 @@ describe('lib/Preview', () => {
 
     describe('loadFromCache()', () => {
         beforeEach(() => {
-            preview.logger = {
-                setCached: sandbox.stub()
-            };
-
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
-        });
-
-        it('should set the file as cached in the logger', () => {
-            preview.loadFromCache();
-            expect(preview.logger.setCached).to.be.called;
         });
 
         it('should load the viewer', () => {
@@ -1376,10 +1363,6 @@ describe('lib/Preview', () => {
 
     describe('handleFileInfoResponse()', () => {
         beforeEach(() => {
-            preview.logger = {
-                setFile: sandbox.stub(),
-                setCacheStale: sandbox.stub()
-            };
             preview.open = true;
             preview.file = {
                 id: 0
@@ -1450,10 +1433,9 @@ describe('lib/Preview', () => {
             expect(stubs.set).to.not.be.called;
         });
 
-        it('should save a reference to the file and update the logger', () => {
+        it('should save a reference to the file', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
-            expect(preview.logger.setFile).to.be.called;
         });
 
         it('should get the latest cache, then update it with the new file', () => {
@@ -1499,7 +1481,7 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).to.be.called;
         });
 
-        it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
+        it('should re-load the viewer if the cached sha1 does not match the files sha1', () => {
             stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
@@ -1509,11 +1491,10 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.reload).to.be.called;
         });
 
-        it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
+        it('should re-load the viewer if the file is watermarked', () => {
             stubs.isWatermarked.returns(true);
             stubs.getCachedFile.returns({
                 file_version: {
@@ -1524,7 +1505,6 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.reload).to.be.called;
         });
 
@@ -1590,10 +1570,6 @@ describe('lib/Preview', () => {
 
             stubs.getLoader = sandbox.stub(preview, 'getLoader').returns(stubs.loader);
 
-            preview.logger = {
-                setType: sandbox.stub()
-            };
-
             preview.file = {
                 is_download_available: true
             };
@@ -1658,11 +1634,10 @@ describe('lib/Preview', () => {
             }
         });
 
-        it('should get the loader, viewer, and log the type of file', () => {
+        it('should get the loader and viewer viewer for the file', () => {
             preview.loadViewer();
             expect(stubs.getLoader).to.be.calledWith(sinon.match.object);
             expect(stubs.loader.determineViewer).to.be.called;
-            expect(preview.logger.setType).to.be.called;
         });
 
         it('should determine the representation to use', () => {
@@ -1670,7 +1645,7 @@ describe('lib/Preview', () => {
             expect(stubs.loader.determineRepresentation).to.be.called;
         });
 
-        it('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
+        it('should instantiate the viewer, attach viewer events, and load the viewer', () => {
             stubs.loader.determineViewer.returns({
                 CONSTRUCTOR: () => {
                     return stubs.viewer;
@@ -1680,7 +1655,6 @@ describe('lib/Preview', () => {
 
             preview.loadViewer();
 
-            expect(preview.logger.setType).to.be.calledWith('someViewerName');
             expect(stubs.viewer.load).to.be.called;
         });
 
@@ -1802,10 +1776,6 @@ describe('lib/Preview', () => {
             stubs.finishProgressBar = sandbox.stub(preview.ui, 'finishProgressBar');
             stubs.setupNotification = sandbox.stub(preview.ui, 'setupNotification');
 
-            stubs.logger = {
-                done: sandbox.stub()
-            };
-
             preview.file = {
                 id: 0
             };
@@ -1813,8 +1783,6 @@ describe('lib/Preview', () => {
             preview.viewer = {
                 getPointModeClickHandler: sandbox.stub()
             };
-
-            preview.logger = stubs.logger;
         });
 
         it('should show download button if file can be downloaded', () => {
@@ -1880,7 +1848,6 @@ describe('lib/Preview', () => {
         it('should emit the load event', () => {
             preview.finishLoading();
             expect(stubs.emit).to.be.called;
-            expect(preview.logger.done).to.be.called;
         });
 
         it('should log a preview event via the Events API if there was not an error', () => {

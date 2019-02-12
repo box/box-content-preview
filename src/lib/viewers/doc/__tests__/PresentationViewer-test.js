@@ -74,13 +74,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         });
 
         it('should invoke onPreload callback', () => {
-            presentation.options.logger = {
-                setPreloaded: sandbox.stub()
-            };
-            stubs.setPreloaded = presentation.options.logger.setPreloaded;
+            sandbox.stub(presentation, 'resetLoadTimeout');
             presentation.preloader.emit('preload');
 
-            expect(stubs.setPreloaded).to.be.called;
+            expect(presentation.resetLoadTimeout).to.be.called;
         });
     });
 

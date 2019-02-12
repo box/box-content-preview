@@ -1184,20 +1184,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('onPreload()', () => {
-        let logger;
-        beforeEach(() => {
-            logger = {
-                setPreloaded: sandbox.stub()
-            };
-            docBase.options.logger = logger;
-        });
-
-        it('should invoke "setPreloaded" on logger for legacy metrics preload calculation', () => {
-            docBase.onPreload();
-
-            expect(logger.setPreloaded).to.be.called;
-        });
-
         it('should stop preload timer for that file', () => {
             const stopStub = sandbox.stub(docBase, 'stopPreloadTimer');
             docBase.onPreload();

@@ -719,8 +719,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     onPreload() {
-        const { logger } = this.options;
-        logger.setPreloaded();
         this.stopPreloadTimer();
         this.resetLoadTimeout(); // Some content is visible - reset load timeout
     }

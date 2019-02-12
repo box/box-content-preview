@@ -419,7 +419,10 @@ describe('lib/Browser', () => {
         it('should return false if the browser doesn\'t support downloads, and mobile', () => {
             sandbox.stub(Browser, 'isMobile').returns(true);
             window.externalHost = undefined;
-            sandbox.stub(document, 'createElement').withArgs('a').returns({});
+            sandbox
+                .stub(document, 'createElement')
+                .withArgs('a')
+                .returns({});
             const canDownload = Browser.canDownload();
             expect(canDownload).to.be.false;
         });
@@ -427,7 +430,10 @@ describe('lib/Browser', () => {
         it('should return true if the browser does support downloads, and mobile', () => {
             sandbox.stub(Browser, 'isMobile').returns(true);
             window.externalHost = undefined;
-            sandbox.stub(document, 'createElement').withArgs('a').returns({ download: true });
+            sandbox
+                .stub(document, 'createElement')
+                .withArgs('a')
+                .returns({ download: true });
             const canDownload = Browser.canDownload();
             expect(canDownload).to.be.true;
         });
@@ -489,32 +495,19 @@ describe('lib/Browser', () => {
         });
 
         it('should return true if device is a Mac running Safari', () => {
-            Browser.overrideUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12');
+            Browser.overrideUserAgent(
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12'
+            );
             const hasIssue = Browser.hasFontIssue();
             expect(hasIssue).to.be.true;
         });
 
         it('should return false if device is a Mac and not on Safari', () => {
-            Browser.overrideUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36');
+            Browser.overrideUserAgent(
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'
+            );
             const hasIssue = Browser.hasFontIssue();
             expect(hasIssue).to.be.false;
-        });
-    });
-
-    describe('getBrowserInfo()', () => {
-        it('should return browser capabilities', () => {
-            const browserInfo = Browser.getBrowserInfo();
-            const expectedFields = [
-                'name',
-                'swf',
-                'svg',
-                'mse',
-                'mp3',
-                'dash',
-                'h264'
-            ];
-
-            expect(expectedFields.every((field) => typeof browserInfo[field] !== 'undefined')).to.be.true;
         });
     });
 });

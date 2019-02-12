@@ -23,13 +23,8 @@ describe('lib/RepStatus', () => {
             status: {}
         };
 
-        /* eslint-disable require-jsdoc */
-        const logger = () => {};
-        /* eslint-enable require-jsdoc */
-
         repStatus = new RepStatus({
             representation: rep,
-            logger,
             fileId
         });
     });
@@ -80,12 +75,10 @@ describe('lib/RepStatus', () => {
 
         it('should set the correct object properties', () => {
             repStatus = new RepStatus({
-                representation: rep,
-                logger: {}
+                representation: rep
             });
 
             expect(repStatus.representation).to.deep.equal(rep);
-            expect(repStatus.logger).to.be.a('object');
             expect(repStatus.infoUrl).to.equal(infoUrl);
             expect(repStatus.promise).to.be.a.promise;
         });
@@ -237,11 +230,7 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should log that file needs conversion if status is pending and logger exists', () => {
-            repStatus.logger = {
-                setUnConverted: () => {}
-            };
-            sandbox.mock(repStatus.logger).expects('setUnConverted');
+        it('should log that file needs conversion if status is pending', () => {
             sandbox.stub(repStatus, 'emit');
             repStatus.representation.status.state = 'pending';
 
@@ -252,7 +241,6 @@ describe('lib/RepStatus', () => {
 
         it('should update status after a timeout and update interval when pending', () => {
             const clock = sinon.useFakeTimers();
-            repStatus.logger = false;
             sandbox.mock(repStatus).expects('updateStatus');
             repStatus.representation.status.state = 'pending';
 
@@ -263,7 +251,6 @@ describe('lib/RepStatus', () => {
 
         it('should update status immediately after a timeout when none', () => {
             const clock = sinon.useFakeTimers();
-            repStatus.logger = false;
             sandbox.mock(repStatus).expects('updateStatus');
             repStatus.representation.status.state = 'none';
 

@@ -64,13 +64,10 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         });
 
         it('should invoke onPreload callback', () => {
-            doc.options.logger = {
-                setPreloaded: sandbox.stub()
-            };
-            stubs.setPreloaded = doc.options.logger.setPreloaded;
+            sandbox.stub(doc, 'resetLoadTimeout');
             doc.preloader.emit('preload');
 
-            expect(stubs.setPreloaded).to.be.called;
+            expect(doc.resetLoadTimeout).to.be.called;
         });
     });
 
