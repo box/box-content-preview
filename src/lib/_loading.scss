@@ -2,6 +2,10 @@
 
 $spinner-size: 30px;
 
+@mixin spinner() {
+    background: url('icons/loading.gif') center $spinner-size $spinner-size no-repeat;
+}
+
 @keyframes box-crawler {
     0%,
     80%,
@@ -107,16 +111,16 @@ $spinner-size: 30px;
 }
 
 .bp .bp-doc.bp-doc-document {
+    // Overrides PDF.js loading spinner
     .pdfViewer .page .loadingIcon {
-        background: url('icons/loading.gif') center no-repeat;
-        background-size: $spinner-size $spinner-size;
+        @include spinner;
     }
 }
 
 .bp-document-preload-wrapper {
     .bp-preload-spinner {
-        background: url('icons/loading.gif') center no-repeat;
-        background-size: $spinner-size $spinner-size;
+        @include spinner;
+
         bottom: 0;
         height: $spinner-size;
         left: 0;
