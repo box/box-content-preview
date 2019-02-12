@@ -12,7 +12,6 @@ import {
     CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
-    CLASS_SPINNER,
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
@@ -777,16 +776,6 @@ class DocBaseViewer extends BaseViewer {
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
         // not applicable to Box's use case and disabling causes performance issues
         PDFJS.disableCreateObjectURL = false;
-
-        // Customize pdf.js loading icon. We modify the prototype of PDFPageView to get around directly modifying
-        // pdf_viewer.js
-        const resetFunc = PDFJS.PDFPageView.prototype.reset;
-        PDFJS.PDFPageView.prototype.reset = function reset(...args) {
-            resetFunc.bind(this)(args);
-            this.loadingIconDiv.classList.add(CLASS_SPINNER);
-            this.loadingIconDiv.setAttribute('data-testid', 'page-loading-indicator');
-            this.loadingIconDiv.innerHTML = '<div></div>';
-        };
     }
 
     /**

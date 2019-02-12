@@ -6,8 +6,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
     CLASS_INVISIBLE,
-    CLASS_PREVIEW_LOADED,
-    CLASS_SPINNER
+    CLASS_PREVIEW_LOADED
 } from '../../../constants';
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
@@ -58,7 +57,6 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 expect(docPreloader.wrapperEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
                 expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
                 expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
-                expect(docPreloader.overlayEl).to.contain(`.${CLASS_SPINNER}`);
                 expect(docPreloader.imageEl.src).to.equal(imgSrc);
                 expect(containerEl).to.contain(docPreloader.wrapperEl);
                 expect(docPreloader.bindDOMListeners).to.be.called;
