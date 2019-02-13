@@ -132,7 +132,7 @@ class PageControls extends EventEmitter {
         const nextPageButtonEl = this.controlsEl.querySelector(`.${NEXT_PAGE}`);
 
         // Safari disables keyboard input in fullscreen before Safari 10.1
-        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.controlsEl);
+        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
 
         // Disable page number selector if there is only one page or less
         if (pageNumButtonEl) {
