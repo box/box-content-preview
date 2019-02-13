@@ -98,10 +98,6 @@ class VirtualScroller {
         this.onScrollEnd = config.onScrollEnd;
         this.onScrollStart = config.onScrollStart;
 
-        this.totalViewItems = Math.floor(this.containerHeight / (this.itemHeight + this.margin));
-        this.maxBufferHeight = this.totalViewItems * this.itemHeight;
-        this.maxRenderedItems = (this.totalViewItems + 1) * BUFFERED_ITEM_MULTIPLIER;
-
         // Create the scrolling container element
         this.scrollingEl = document.createElement('div');
         this.scrollingEl.className = 'bp-vs';
@@ -112,6 +108,7 @@ class VirtualScroller {
         this.scrollingEl.appendChild(this.listEl);
         this.anchorEl.appendChild(this.scrollingEl);
 
+        this.resize(this.containerHeight);
         // If initialRowIndex is < the first window into the list, then just render from the first item
         this.renderItems(config.initialRowIndex < this.maxRenderedItems ? 0 : config.initialRowIndex);
 
@@ -121,6 +118,23 @@ class VirtualScroller {
             const listInfo = this.getCurrentListInfo();
             config.onInit(listInfo);
         }
+    }
+
+    /**
+     * Given the container height, calculate the virtual window properties
+     * @param {number} containerHeight - the available container height of the virtual scroller
+     * @return {void}
+     */
+    resize(containerHeight) {
+        if (!containerHeight || !isFinite(containerHeight)) {
+            return;
+        }
+
+        this.containerHeight = containerHeight;
+
+        this.totalViewItems = Math.floor(this.containerHeight / (this.itemHeight + this.margin));
+        this.maxBufferHeight = this.totalViewItems * this.itemHeight;
+        this.maxRenderedItems = (this.totalViewItems + 1) * BUFFERED_ITEM_MULTIPLIER;
     }
 
     /**

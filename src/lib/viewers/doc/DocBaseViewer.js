@@ -706,6 +706,10 @@ class DocBaseViewer extends BaseViewer {
 
         this.setPage(currentPageNumber);
 
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.resize();
+        }
+
         super.resize();
     }
 

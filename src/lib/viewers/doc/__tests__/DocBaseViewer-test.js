@@ -1115,6 +1115,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
                 value: sandbox.stub()
             });
+            stubs.thumbnailsResize = sandbox.stub();
+            docBase.thumbnailsSidebar = { resize: stubs.thumbnailsResize, destroy: () => {} };
         });
 
         afterEach(() => {
@@ -1127,12 +1129,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer = null;
             docBase.resize();
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should do nothing if the page views are not ready', () => {
             docBase.pdfViewer.pageViewsReady = false;
             docBase.resize();
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should resize the preload', () => {
@@ -1143,6 +1147,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.resize();
             expect(docBase.preloader.resize).to.be.called;
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should update the pdfViewer and reset the page', () => {
@@ -1150,6 +1155,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
+            expect(stubs.thumbnailsResize).to.be.called;
         });
     });
 
