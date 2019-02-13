@@ -221,9 +221,9 @@ class VirtualScroller {
 
         if (children) {
             // Extract an array of the user's created HTMLElements
-            items = Array.prototype.slice
-                .call(children)
-                .map((listItemEl) => (listItemEl && listItemEl.children ? listItemEl.children[0] : null));
+            items = this.getListItems().map(
+                (listItemEl) => (listItemEl && listItemEl.children ? listItemEl.children[0] : null)
+            );
         }
 
         return {
@@ -390,7 +390,7 @@ class VirtualScroller {
         }
 
         // See if the list item indexed by `rowIndex` is already present
-        const foundItem = Array.prototype.slice.call(this.listEl.children).find((listItem) => {
+        const foundItem = this.getListItems().find((listItem) => {
             const { bpVsRowIndex } = listItem.dataset;
             const parsedRowIndex = parseInt(bpVsRowIndex, 10);
             return parsedRowIndex === rowIndex;
@@ -424,6 +424,32 @@ class VirtualScroller {
         const { offsetTop } = listItemEl;
 
         return scrollTop <= offsetTop && offsetTop <= scrollTop + this.containerHeight;
+    }
+
+    /**
+     * Gets the currently visible list items
+     * @return {Array<HTMLElement>} - the list of current visible list items
+     */
+    getVisibleItems() {
+        if (!this.listEl) {
+            return [];
+        }
+
+        return this.getListItems()
+            .filter((itemEl) => this.isVisible(itemEl))
+            .map((itemEl) => itemEl && itemEl.children && itemEl.children[0]);
+    }
+
+    /**
+     * Gets the list items of this.listEl as an array
+     * @return {Array<HTMLElement>} - the list items
+     */
+    getListItems() {
+        if (!this.listEl) {
+            return [];
+        }
+
+        return Array.prototype.slice.call(this.listEl.children);
     }
 }
 

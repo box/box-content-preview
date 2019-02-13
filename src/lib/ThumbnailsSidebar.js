@@ -175,10 +175,12 @@ class ThumbnailsSidebar {
      */
     renderNextThumbnailImage() {
         // Iterates over the current thumbnails and requests rendering of the first
-        // thumbnail it encounters that does not have an image loaded
-        const nextThumbnailEl = this.currentThumbnails.find(
-            (thumbnailEl) => !thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED)
-        );
+        // thumbnail it encounters that does not have an image loaded, starting with
+        // the visible thumbnails first.
+        const visibleThumbnails = this.virtualScroller.getVisibleItems();
+        const nextThumbnailEl = visibleThumbnails
+            .concat(this.currentThumbnails)
+            .find((thumbnailEl) => !thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED));
 
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
