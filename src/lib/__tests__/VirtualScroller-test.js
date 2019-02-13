@@ -545,10 +545,8 @@ describe('VirtualScroller', () => {
     });
 
     describe('isVisible()', () => {
-        let scrollingEl;
-
         beforeEach(() => {
-            scrollingEl = { scrollTop: 100, remove: () => {} };
+            const scrollingEl = { scrollTop: 100, remove: () => {} };
             virtualScroller.scrollingEl = scrollingEl;
             virtualScroller.containerHeight = 100;
         });
@@ -573,6 +571,32 @@ describe('VirtualScroller', () => {
 
         it('should return true if the offsetTop of listItemEl is >= scrollTop && <= scrollTop + containerHeight', () => {
             expect(virtualScroller.isVisible({ offsetTop: 101 })).to.be.true;
+        });
+    });
+
+    describe('getVisibleItems()', () => {
+        it('should return empty list if listEl is falsy', () => {
+            virtualScroller.listEl = false;
+
+            expect(virtualScroller.getVisibleItems()).to.be.empty;
+        });
+
+        it('should return only visible list items', () => {
+            const listEl = {
+                children: [{ children: [{ val: 1 }] }, { children: [{ val: 2 }] }, { children: [{ val: 3 }] }]
+            };
+
+            const expectedItems = [{ val: 1 }, { val: 3 }];
+
+            stubs.isVisible = sandbox.stub(virtualScroller, 'isVisible');
+            // Only the first and third children are visible
+            stubs.isVisible.onFirstCall().returns(true);
+            stubs.isVisible.onSecondCall().returns(false);
+            stubs.isVisible.onThirdCall().returns(true);
+
+            virtualScroller.listEl = listEl;
+
+            expect(virtualScroller.getVisibleItems()).to.be.eql(expectedItems);
         });
     });
 });

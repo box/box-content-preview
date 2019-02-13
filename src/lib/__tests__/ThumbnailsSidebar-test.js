@@ -34,9 +34,11 @@ describe('ThumbnailsSidebar', () => {
         stubs.vsInit = sandbox.stub(VirtualScroller.prototype, 'init');
         stubs.vsDestroy = sandbox.stub(VirtualScroller.prototype, 'destroy');
         stubs.vsScrollIntoView = sandbox.stub(VirtualScroller.prototype, 'scrollIntoView');
+        stubs.vsGetVisibleItems = sandbox.stub(VirtualScroller.prototype, 'getVisibleItems');
 
         virtualScroller = {
             destroy: stubs.vsDestroy,
+            getVisibleItems: stubs.vsGetVisibleItems,
             scrollIntoView: stubs.vsScrollIntoView
         };
 
@@ -150,6 +152,8 @@ describe('ThumbnailsSidebar', () => {
     describe('renderNextThumbnailImage()', () => {
         beforeEach(() => {
             stubs.requestThumbnailImage = sandbox.stub(thumbnailsSidebar, 'requestThumbnailImage');
+            thumbnailsSidebar.virtualScroller = virtualScroller;
+            stubs.vsGetVisibleItems.returns([]);
         });
 
         // eslint-disable-next-line
