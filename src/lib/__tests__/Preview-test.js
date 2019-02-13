@@ -1061,6 +1061,18 @@ describe('lib/Preview', () => {
             );
         });
 
+        it('should start a timer for the total preview load time, for the file', () => {
+            const id = 'my_file_id';
+            const tag = Timer.createTag(id, LOAD_METRIC.previewLoadTime);
+
+            preview.load({ id });
+
+            const timer = Timer.get(tag);
+
+            expect(timer).to.exist;
+            expect(timer.start).to.exist;
+        });
+
         it('should get the tokens when file id is available', () => {
             preview.previewOptions.token = 'token';
 
@@ -1951,7 +1963,15 @@ describe('lib/Preview', () => {
 
         it('should stop the timer for full document load if a file exists', () => {
             preview.file.id = 1234;
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.contentLoadTime);
+            sandbox.stub(Timer, 'stop');
+            preview.finishLoading();
+            expect(Timer.stop).to.be.calledWith(expectedTag);
+        });
+
+        it('should stop the timer for preview load if a file exists', () => {
+            preview.file.id = 1234;
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.previewLoadTime);
             sandbox.stub(Timer, 'stop');
             preview.finishLoading();
             expect(Timer.stop).to.be.calledWith(expectedTag);
@@ -2299,17 +2319,11 @@ describe('lib/Preview', () => {
 
     describe('emitLoadMetrics()', () => {
         const fileId = 123456;
-        const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
 
         beforeEach(() => {
             preview.file = {
                 id: fileId
             };
-
-            // Make sure the first milestone (fileInfoTime) has been met
-            Timer.start(fileInfoTag);
-            Timer.stop(fileInfoTag);
-            Timer.get(fileInfoTag).elapsed = 20;
         });
 
         afterEach(() => {
@@ -2340,29 +2354,13 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event where the value property equals the sum of all load events', (done) => {
-            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
-            Timer.start(tag);
-            Timer.stop(tag);
-
-            Timer.get(tag).elapsed = 10;
-            Timer.get(fileInfoTag).elapsed = 20;
-
-            const expectedTime = 30; // 10ms + 20ms
-
-            preview.once(PREVIEW_METRIC, (metric) => {
-                expect(metric.value).to.equal(expectedTime);
-                done();
-            });
-            preview.emitLoadMetrics();
-        });
-
         it('should emit a preview_metric event with an object, with all of the proper load properties', (done) => {
             preview.once(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
                 expect(metric[LOAD_METRIC.convertTime]).to.exist;
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+                expect(metric[LOAD_METRIC.contentLoadTime]).to.exist;
+                expect(metric.value).to.exist;
                 done();
             });
             preview.emitLoadMetrics();
@@ -2374,18 +2372,6 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.be.called;
-        });
-
-        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', (done) => {
-            Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
-            preview.once(PREVIEW_METRIC, (metric) => {
-                expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
-                expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
-                expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
-                done();
-            });
-            preview.emitLoadMetrics();
         });
 
         it('should append encoding field to load metric, when provided', (done) => {
