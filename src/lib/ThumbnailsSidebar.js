@@ -146,7 +146,7 @@ class ThumbnailsSidebar {
                 initialRowIndex: this.currentPage - 1,
                 totalItems: this.pdfViewer.pagesCount,
                 itemHeight: this.thumbnailHeight,
-                containerHeight: this.anchorEl.parentNode.clientHeight,
+                containerHeight: this.getContainerHeight(),
                 margin: THUMBNAIL_MARGIN,
                 renderItemFn: this.createPlaceholderThumbnail,
                 onScrollEnd: this.generateThumbnailImages,
@@ -428,6 +428,30 @@ class ThumbnailsSidebar {
         }
 
         this.anchorEl.classList.add(CLASS_HIDDEN);
+    }
+
+    /**
+     * Resizes the thumbnails sidebar
+     * @return {void}
+     */
+    resize() {
+        if (!this.virtualScroller) {
+            return;
+        }
+
+        this.virtualScroller.resize(this.getContainerHeight());
+    }
+
+    /**
+     * Gets the available container height
+     * @return {number|null} - The height in pixels of the container or null if the anchorEl does not exist
+     */
+    getContainerHeight() {
+        if (!this.anchorEl) {
+            return null;
+        }
+
+        return this.anchorEl.parentNode.clientHeight;
     }
 }
 

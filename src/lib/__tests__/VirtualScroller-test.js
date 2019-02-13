@@ -599,4 +599,50 @@ describe('VirtualScroller', () => {
             expect(virtualScroller.getVisibleItems()).to.be.eql(expectedItems);
         });
     });
+
+    describe('resize()', () => {
+        it('should do nothing if containerHeight is not provided', () => {
+            virtualScroller.containerHeight = 1;
+            virtualScroller.totalViewItems = 2;
+            virtualScroller.maxBufferHeight = 3;
+            virtualScroller.maxRenderedItems = 4;
+
+            virtualScroller.resize();
+
+            expect(virtualScroller.containerHeight).to.be.equal(1);
+            expect(virtualScroller.totalViewItems).to.be.equal(2);
+            expect(virtualScroller.maxBufferHeight).to.be.equal(3);
+            expect(virtualScroller.maxRenderedItems).to.be.equal(4);
+        });
+
+        it('should do nothing if containerHeight is not a number', () => {
+            virtualScroller.containerHeight = 1;
+            virtualScroller.totalViewItems = 2;
+            virtualScroller.maxBufferHeight = 3;
+            virtualScroller.maxRenderedItems = 4;
+
+            virtualScroller.resize('123');
+
+            expect(virtualScroller.containerHeight).to.be.equal(1);
+            expect(virtualScroller.totalViewItems).to.be.equal(2);
+            expect(virtualScroller.maxBufferHeight).to.be.equal(3);
+            expect(virtualScroller.maxRenderedItems).to.be.equal(4);
+        });
+
+        it('should update the virtual window properties', () => {
+            virtualScroller.itemHeight = 10;
+            virtualScroller.margin = 0;
+            virtualScroller.containerHeight = 1;
+            virtualScroller.totalViewItems = 2;
+            virtualScroller.maxBufferHeight = 3;
+            virtualScroller.maxRenderedItems = 4;
+
+            virtualScroller.resize(100);
+
+            expect(virtualScroller.containerHeight).to.be.equal(100);
+            expect(virtualScroller.totalViewItems).to.be.equal(10);
+            expect(virtualScroller.maxBufferHeight).to.be.equal(100);
+            expect(virtualScroller.maxRenderedItems).to.be.equal(33);
+        });
+    });
 });
