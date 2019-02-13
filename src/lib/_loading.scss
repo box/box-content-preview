@@ -3,7 +3,8 @@
 $spinner-size: 30px;
 
 @mixin spinner() {
-    background: url('icons/loading.gif') center $spinner-size $spinner-size no-repeat;
+    background: url('icons/loading.gif') center no-repeat;
+    background-size: $spinner-size $spinner-size;
 }
 
 @keyframes box-crawler {
