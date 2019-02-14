@@ -219,8 +219,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     lowerLights() {
-        if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_DARK);
+        if (this.rootEl) {
+            this.rootEl.classList.add(CLASS_DARK);
         }
     }
 
