@@ -149,8 +149,12 @@ $header-height: 48px;
         align-items: center;
         display: flex;
         flex: 1 1 auto;
-        min-width: 100%;
         position: relative;
+    }
+
+    .bp-content.bp-is-fullscreen {
+        background-color: $black;
+        width: 100%;
     }
 }
 
