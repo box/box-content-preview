@@ -153,7 +153,7 @@ $header-height: 48px;
     }
 
     .bp-content.bp-is-fullscreen {
-        background-color: $ffive;
+        background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
         width: 100%;
     }
 }
