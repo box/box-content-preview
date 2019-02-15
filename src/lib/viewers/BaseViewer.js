@@ -27,7 +27,8 @@ import {
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
-    STATUS_VIEWABLE
+    STATUS_VIEWABLE,
+    SELECTOR_BOX_PREVIEW
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -113,6 +114,12 @@ class BaseViewer extends EventEmitter {
     /** @property {Object} - Keeps track of which metrics have been emitted already */
     emittedMetrics;
 
+    /** @property {HTMLElement} - The root element (.bp) of the viewer (includes the loading wrapper as well as content) */
+    rootEl;
+
+    /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
+    containerEl;
+
     /**
      * [constructor]
      *
@@ -169,6 +176,8 @@ class BaseViewer extends EventEmitter {
             container = document.querySelector(container);
         }
 
+        this.rootEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+
         // From the perspective of viewers bp-content holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
@@ -180,7 +189,7 @@ class BaseViewer extends EventEmitter {
 
         // For mobile browsers add mobile class just in case viewers need it
         if (this.isMobile) {
-            this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
         // Creates a promise that the annotator will be constructed if annotations are

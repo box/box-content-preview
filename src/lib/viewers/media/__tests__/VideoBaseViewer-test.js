@@ -4,6 +4,7 @@ import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 
 let containerEl;
+let rootEl;
 let videoBase;
 const sandbox = sinon.sandbox.create();
 
@@ -17,6 +18,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/VideoBaseViewer-test.html');
         containerEl = document.querySelector('.container');
+        rootEl = document.querySelector('.bp');
         videoBase = new VideoBaseViewer({
             cache: {
                 set: () => {},
@@ -44,6 +46,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         videoBase.containerEl = containerEl;
+        videoBase.rootEl = rootEl;
         videoBase.setup();
     });
 
@@ -238,7 +241,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     describe('lowerLights', () => {
         it('should add dark class to container', () => {
             videoBase.lowerLights();
-            expect(videoBase.containerEl.classList.contains('bp-dark')).to.be.true;
+            expect(videoBase.rootEl.classList.contains('bp-dark')).to.be.true;
         });
     });
 });
