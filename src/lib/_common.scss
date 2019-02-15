@@ -149,8 +149,12 @@ $header-height: 48px;
         align-items: center;
         display: flex;
         flex: 1 1 auto;
-        min-width: 100%;
         position: relative;
+    }
+
+    .bp-content.bp-is-fullscreen {
+        background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
+        width: 100%;
     }
 }
 
