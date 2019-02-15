@@ -98,7 +98,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.setup();
 
-            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
             expect(container).to.have.class('bp-is-mobile');
         });
 
