@@ -1,3 +1,10 @@
+<a name="1.65.1"></a>
+## <small>1.65.1 (2019-02-15)</small>
+
+* Fix: Fullscreen classes are now removed when pressing escape (#927) ([66ed344](https://github.com/box/box-content-preview/commit/66ed344)), closes [#927](https://github.com/box/box-content-preview/issues/927)
+
+
+
 <a name="1.65.0"></a>
 ## 1.65.0 (2019-02-12)
 
