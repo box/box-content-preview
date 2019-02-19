@@ -233,7 +233,6 @@ class BaseViewer extends EventEmitter {
             });
         }
 
-        fullscreen.destroy();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 

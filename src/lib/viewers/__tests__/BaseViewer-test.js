@@ -569,13 +569,11 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
 
-            sandbox.mock(fullscreen).expects('removeAllListeners');
             sandbox.stub(base, 'removeAllListeners');
             sandbox.stub(base, 'emit');
 
             base.destroy();
 
-            expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');

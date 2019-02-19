@@ -158,10 +158,6 @@ class MediaControls extends EventEmitter {
             this.wrapperEl.removeEventListener('mouseleave', this.mouseleaveHandler);
         }
 
-        if (fullscreen) {
-            fullscreen.destroy();
-        }
-
         this.wrapperEl = undefined;
         this.timeScrubberEl = undefined;
         this.volScrubberEl = undefined;
