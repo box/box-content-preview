@@ -1,3 +1,12 @@
+<a name="2.0.1"></a>
+## <small>2.0.1 (2019-02-19)</small>
+
+* Fix: Do not destroy fullscreen on viewer destroy (#935) ([adca14f](https://github.com/box/box-content-preview/commit/adca14f)), closes [#935](https://github.com/box/box-content-preview/issues/935)
+* Fix: Remove .bp-content outline (#933) ([a523125](https://github.com/box/box-content-preview/commit/a523125)), closes [#933](https://github.com/box/box-content-preview/issues/933)
+* Update Translations (#934) ([3121a48](https://github.com/box/box-content-preview/commit/3121a48)), closes [#934](https://github.com/box/box-content-preview/issues/934)
+
+
+
 <a name="2.0.0"></a>
 ## 2.0.0 (2019-02-19)
 
