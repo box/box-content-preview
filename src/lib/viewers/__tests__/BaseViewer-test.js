@@ -8,6 +8,7 @@ import DownloadReachability from '../../DownloadReachability';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
+import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
 
@@ -81,7 +82,7 @@ describe('lib/viewers/BaseViewer', () => {
                 showAnnotations: true
             });
 
-            expect(base.containerEl).to.have.class('bp');
+            expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -97,7 +98,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.setup();
 
-            const container = document.querySelector('.bp');
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
             expect(container).to.have.class('bp-is-mobile');
         });
 
@@ -1383,6 +1384,70 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.loadBoxAnnotations).to.be.called;
             expect(base.createAnnotator).to.be.called;
+        });
+    });
+
+    describe('createViewer()', () => {
+        it('should return null if no element is provided', () => {
+            expect(base.createViewer()).to.be.null;
+        });
+
+        it('should append the element if containerEl has no first child', () => {
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            const newDiv = document.createElement('div');
+            sandbox.stub(base.containerEl, 'appendChild');
+            base.createViewer(newDiv);
+            expect(base.containerEl.appendChild).to.be.called;
+        });
+
+        it('should insert the provided element before the other children', () => {
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            const existingChild = document.createElement('div');
+            existingChild.className = 'existing-child';
+            base.containerEl.appendChild(existingChild);
+
+            sandbox.stub(base.containerEl, 'insertBefore');
+            const newDiv = document.createElement('div');
+            newDiv.className = 'new-div';
+            base.createViewer(newDiv);
+            expect(base.containerEl.insertBefore).to.be.called;
+        });
+    });
+
+    describe('emitMetric()', () => {
+        beforeEach(() => {
+            stubs.emit = sandbox.stub(EventEmitter.prototype, 'emit');
+            stubs.getMetricsWhitelist = sandbox.stub(base, 'getMetricsWhitelist');
+        });
+
+        it('should update the emittedMetrics object when called the first time', () => {
+            base.emittedMetrics = {};
+            stubs.getMetricsWhitelist.returns([]);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).to.be.called;
+        });
+
+        it('should be emitted even if not the first time and not whitelisted', () => {
+            base.emittedMetrics = { foo: true };
+            stubs.getMetricsWhitelist.returns([]);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).to.be.called;
+        });
+
+        it('should not do anything if it has been emitted before and is whitelisted', () => {
+            base.emittedMetrics = { foo: true };
+            stubs.getMetricsWhitelist.returns(['foo']);
+
+            base.emitMetric('foo', 'bar');
+
+            expect(base.emittedMetrics.foo).to.be.true;
+            expect(stubs.emit).not.to.be.called;
         });
     });
 });

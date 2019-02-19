@@ -18,16 +18,17 @@ import {
     replacePlaceholders
 } from '../util';
 import {
-    CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    CLASS_HIDDEN,
     FILE_OPTION_START,
-    SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
-    STATUS_VIEWABLE
+    STATUS_VIEWABLE,
+    SELECTOR_BOX_PREVIEW
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -110,6 +111,15 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Has the viewer retried downloading the content */
     hasRetriedContentDownload = false;
 
+    /** @property {Object} - Keeps track of which metrics have been emitted already */
+    emittedMetrics;
+
+    /** @property {HTMLElement} - The root element (.bp) of the viewer (includes the loading wrapper as well as content) */
+    rootEl;
+
+    /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
+    containerEl;
+
     /**
      * [constructor]
      *
@@ -124,6 +134,8 @@ class BaseViewer extends EventEmitter {
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
+
+        this.emittedMetrics = {};
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
@@ -141,6 +153,7 @@ class BaseViewer extends EventEmitter {
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
+        this.createViewer = this.createViewer.bind(this);
     }
 
     /**
@@ -163,8 +176,10 @@ class BaseViewer extends EventEmitter {
             container = document.querySelector(container);
         }
 
-        // From the perspective of viewers bp holds everything
-        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+        this.rootEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+
+        // From the perspective of viewers bp-content holds everything
+        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
         // Attach event listeners
         this.addCommonListeners();
@@ -174,7 +189,7 @@ class BaseViewer extends EventEmitter {
 
         // For mobile browsers add mobile class just in case viewers need it
         if (this.isMobile) {
-            this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
         // Creates a promise that the annotator will be constructed if annotations are
@@ -236,6 +251,7 @@ class BaseViewer extends EventEmitter {
         this.destroyed = true;
         this.annotatorPromise = null;
         this.annotatorPromiseResolver = null;
+        this.emittedMetrics = null;
         this.emit('destroy');
     }
 
@@ -587,10 +603,27 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     emitMetric(event, data) {
+        // If this metric has been emitted already and is on the whitelist of metrics
+        // to be emitted only once per session, then do nothing
+        if (this.emittedMetrics[event] && this.getMetricsWhitelist().includes(event)) {
+            return;
+        }
+
+        // Mark that this metric has been emitted
+        this.emittedMetrics[event] = true;
+
         super.emit(VIEWER_EVENT.metric, {
             event,
             data
         });
+    }
+
+    /**
+     * Method which returns the list of metrics to be emitted only once
+     * @return {Array} - the array of metric names to be emitted only once
+     */
+    getMetricsWhitelist() {
+        return [];
     }
 
     /**
@@ -1098,6 +1131,32 @@ class BaseViewer extends EventEmitter {
      */
     handleAssetAndRepLoad() {
         this.loadBoxAnnotations().then(this.createAnnotator);
+    }
+
+    /**
+     * Method to insert the viewer wrapper
+     *
+     * @param {HTMLElement} element Element to be inserted into the DOM
+     * @return {HTMLElement} inserted element
+     */
+    createViewer(element) {
+        if (!element) {
+            return null;
+        }
+
+        const firstChildEl = this.containerEl.firstChild;
+        let addedElement;
+
+        if (!firstChildEl) {
+            addedElement = this.containerEl.appendChild(element);
+        } else {
+            // Need to insert the viewer wrapper as the first element in the container
+            // so that we can perserve the natural stacking context to have the prev/next
+            // file buttons on top of the previewed content
+            addedElement = this.containerEl.insertBefore(element, firstChildEl);
+        }
+
+        return addedElement;
     }
 }
 

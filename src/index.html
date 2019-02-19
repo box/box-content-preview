@@ -57,6 +57,10 @@
                         <input id='fileid-set' placeholder='Enter file ID' data-testid="fileid"/>
                         <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
                 </div>
+
+                <div class='container' id='load'>
+                    <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
+                </div>
         </div>
 
         <div class='preview-container' data-testid="preview-container"> </div>
@@ -77,9 +81,6 @@
 
                 // Cache it in local storage
                 localStorage.setItem(selector, value)
-
-                // Attempt to load Preview
-                loadPreview();
             }
 
             function loadPreview(options) {
@@ -102,6 +103,7 @@
             // Try to load all properties from storage on page load
             setProperty('token');
             setProperty('fileid');
+            loadPreview();
         </script>
     </body>
 </html>
