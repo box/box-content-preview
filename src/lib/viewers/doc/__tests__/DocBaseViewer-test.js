@@ -1321,16 +1321,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.disableRange).to.be.false;
         });
 
+        it('should not disable range requests if the locale is ja-JP', () => {
+            docBase.options.location.locale = 'ja-JP';
+            docBase.setupPdfjs();
+            expect(PDFJS.disableRange).to.be.false;
+        });
+
         it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
             docBase.options.file.size = 26000000;
             docBase.options.extension = 'pdf';
-            docBase.options.location.locale = 'ja-JP';
+            docBase.options.location.locale = 'en-UK';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
         });
 
         it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
-            docBase.options.location.locale = 'ja-JP';
+            docBase.options.location.locale = 'en-UK';
             docBase.options.file.size = 26500000;
             docBase.options.extension = 'pdf';
             docBase.options.file.watermark_info.is_watermarked = false;
@@ -1339,7 +1345,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should disable range requests if the file is watermarked', () => {
-            docBase.options.location.locale = 'ja-JP';
+            docBase.options.location.locale = 'en-UK';
             docBase.options.file.watermark_info.is_watermarked = true;
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;

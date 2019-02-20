@@ -798,7 +798,9 @@ class DocBaseViewer extends BaseViewer {
         // more than the additional time for a continuous request. This also overrides any range request
         // disabling that may be set by pdf.js's compatibility checking since the browsers we support
         // should all be able to properly handle range requests.
-        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
+        // TEST - Also disabling for Japan to compare GZIP compression results
+        PDFJS.disableRange =
+            location.locale !== 'en-US' && location.locale !== 'ja-JP' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
         PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
