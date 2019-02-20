@@ -1,6 +1,6 @@
 @import 'boxuiVariables';
 
-$spinner-size: 30px;
+$spinner-size: 15px;
 
 @mixin spinner() {
     background: url('icons/loading.gif') center no-repeat;
