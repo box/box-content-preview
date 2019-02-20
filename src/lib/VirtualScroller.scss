@@ -1,6 +1,7 @@
 .bp-vs {
     flex: 1 0 auto;
     overflow-y: auto;
+    overflow-x: hidden;
 
     .bp-vs-list {
         margin: 0;

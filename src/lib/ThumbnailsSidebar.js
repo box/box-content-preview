@@ -1,10 +1,10 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
-import { CLASS_HIDDEN } from './constants';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
+const CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED = 'bp-thumbnails-closed';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
@@ -416,7 +416,7 @@ class ThumbnailsSidebar {
      * @return {boolean} true if the sidebar is open, false if not
      */
     isOpen() {
-        return this.anchorEl && !this.anchorEl.classList.contains(CLASS_HIDDEN);
+        return this.anchorEl && !this.anchorEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
     }
 
     /**
@@ -428,7 +428,7 @@ class ThumbnailsSidebar {
             return;
         }
 
-        this.anchorEl.classList.remove(CLASS_HIDDEN);
+        this.anchorEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
 
         this.virtualScroller.scrollIntoView(this.currentPage - 1);
     }
@@ -442,7 +442,7 @@ class ThumbnailsSidebar {
             return;
         }
 
-        this.anchorEl.classList.add(CLASS_HIDDEN);
+        this.anchorEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
     }
 
     /**

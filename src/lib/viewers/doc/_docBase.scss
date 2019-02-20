@@ -6,7 +6,14 @@ $thumbnail-border-radius: 4px;
     .bp-thumbnails-container {
         border-right: solid 1px $seesee;
         display: flex;
-        flex: 0 0 201px; // Accounts for the 1px border on the right so the remaining width is actually 180
+        flex: 0 0 auto; // Accounts for the 1px border on the right so the remaining width is actually 180
+        transition: width 300ms cubic-bezier(.4, 0, .2, 1);
+        width: 201px;
+    }
+
+    .bp-thumbnails-container.bp-thumbnails-closed {
+        width: 0;
+        overflow: hidden;
     }
 
     .bp-thumbnail {
