@@ -942,6 +942,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should set a chunk size based on viewer options if available', () => {
             const url = 'url';
             const rangeChunkSize = 100;
+            docBase.options.location = {
+                locale: 'en-US'
+            };
 
             sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
@@ -1054,10 +1057,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        it('should not append encoding query parameter for gzip content when range requests are disabled, but locale is Japanese', () => {
+            docBase.options.location = {
+                locale: 'ja-JP'
+            };
+            const defaultChunkSize = 524288; // Taken from RANGE_REQUEST_CHUNK_SIZE_NON_US
+            const url = 'www.myTestPDF.com/123456';
+            const isDisabled = PDFJS.disableRange;
+            sandbox.stub(Browser, 'isIOS').returns(false);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+            PDFJS.disableRange = true;
+            return docBase.initViewer(url).then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url,
+                    rangeChunkSize: defaultChunkSize
+                });
+
+                // Reset to original value
+                PDFJS.disableRange = isDisabled;
+            });
+        });
+
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
             };
+
+            docBase.options.location = {
+                locale: 'ja-JP'
+            };
+
             const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
 
@@ -1074,6 +1103,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
+
+            docBase.options.location = {
+                locale: 'ja-JP'
+            };
+
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
             sandbox.stub(docBase, 'startLoadTimer');
@@ -1317,12 +1351,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should not disable range requests if the locale is en-US', () => {
-            docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.false;
-        });
-
-        it('should not disable range requests if the locale is ja-JP', () => {
-            docBase.options.location.locale = 'ja-JP';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
         });

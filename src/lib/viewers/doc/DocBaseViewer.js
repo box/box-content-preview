@@ -607,7 +607,8 @@ class DocBaseViewer extends BaseViewer {
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
 
         // If range requests are disabled, request the gzip compressed version of the representation
-        this.encoding = PDFJS.disableRange ? ENCODING_TYPES.GZIP : undefined;
+        this.encoding =
+            PDFJS.disableRange && this.options.location.locale !== 'ja-JP' ? ENCODING_TYPES.GZIP : undefined;
 
         // Otherwise, use large chunk size if locale is en-US and the default,
         // smaller chunk size if not. This is using a rough assumption that
@@ -799,8 +800,7 @@ class DocBaseViewer extends BaseViewer {
         // disabling that may be set by pdf.js's compatibility checking since the browsers we support
         // should all be able to properly handle range requests.
         // TEST - Also disabling for Japan to compare GZIP compression results
-        PDFJS.disableRange =
-            location.locale !== 'en-US' && location.locale !== 'ja-JP' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
+        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
         PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
