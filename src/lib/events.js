@@ -76,3 +76,10 @@ export const USER_DOCUMENT_FIND_EVENTS = {
     OPEN: 'user_document_find_open', // The user opens the find bar
     PREVIOUS: 'user_document_find_previous' // The user navigates to the previous find entry
 };
+
+// Events fired when using thumbnail sidebar
+export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
+    CLOSE: 'user_document_thumbnails_close',
+    NAVIGATE: 'user_document_thumbnails_navigate',
+    OPEN: 'user_document_thumbnails_open'
+};

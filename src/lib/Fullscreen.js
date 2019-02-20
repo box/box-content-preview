@@ -3,6 +3,9 @@ import fscreen from 'fscreen';
 import { CLASS_FULLSCREEN, CLASS_FULLSCREEN_UNSUPPORTED } from './constants';
 
 class Fullscreen extends EventEmitter {
+    /** {HTMLElement} - The element used as the root for fullscreen mode */
+    fullscreenElement;
+
     /**
      * [constructor]
      *
@@ -17,31 +20,28 @@ class Fullscreen extends EventEmitter {
     /**
      * Binds DOM listeners for Fullscreen.
      *
-     * @protected
      * @return {void}
      */
     bindDOMListeners() {
-        // as of now (1/12/18) fullscreenchange is not universally adopted, fscreen will
-        // detect and add the appropriate vendor prefixed event
+        // The fullscreenchange event is not universally supported, but fscreen will
+        // detect and add the appropriate vendor-prefixed event
         fscreen.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
     }
 
     /**
      * Unbinds DOM listeners for Fullscreen.
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {
-        // as of now (1/12/18) fullscreenchange is not universally adopted, fscreen will
-        // detect and add the appropriate vendor prefixed event
+        // The fullscreenchange event is not universally supported, but fscreen will
+        // detect and add the appropriate vendor-prefixed event
         fscreen.removeEventListener('fullscreenchange', this.fullscreenchangeHandler);
     }
 
     /**
      * [destructor]
      *
-     * @protected
      * @return {void}
      */
     destroy() {
@@ -52,7 +52,6 @@ class Fullscreen extends EventEmitter {
     /**
      * Returns true if the browser supports fullscreen natively
      *
-     * @private
      * @return {boolean} Fullscreen supported or not
      */
     isSupported() {
@@ -62,45 +61,62 @@ class Fullscreen extends EventEmitter {
     /**
      * Return true if full screen is active
      *
-     * @public
-     * @param {HTMLElement} [element] - fullscreen element
+     * @param {HTMLElement} [el] - fullscreen element
      * @return {boolean} In fullscreen or not
      */
-    isFullscreen(element) {
+    isFullscreen(el) {
         if (this.isSupported()) {
             return !!fscreen.fullscreenElement;
         }
 
-        return element instanceof HTMLElement && element.classList.contains(CLASS_FULLSCREEN);
+        return el && el.classList.contains(CLASS_FULLSCREEN);
     }
 
     /**
-     * Fires events when the fullscreen state changes
+     * Handles fullscreen change events from fscreen
      *
-     * @private
      * @return {void}
      */
     fullscreenchangeHandler = () => {
-        if (this.isFullscreen()) {
-            this.focusFullscreenElement();
-            this.emit('enter');
+        const { fullscreenElement } = fscreen;
+
+        if (fullscreenElement) {
+            this.fullscreenEnterHandler(fullscreenElement);
         } else {
-            this.emit('exit');
+            this.fullscreenExitHandler();
         }
     };
 
     /**
-     * Focuses the element
+     * Handles fullscreen enter events
      *
-     * @private
      * @param {HTMLElement} el - fullscreen element
      * @return {void}
      */
-    focusFullscreenElement = () => {
-        // Focus on the fullscreen element so keyboard
-        // events are triggered without an extra click
-        fscreen.fullscreenElement.focus();
-    };
+    fullscreenEnterHandler(el) {
+        this.fullscreenElement = el;
+        this.fullscreenElement.classList.add(CLASS_FULLSCREEN);
+        this.fullscreenElement.focus();
+
+        if (!this.isSupported()) {
+            this.fullscreenElement.classList.add(CLASS_FULLSCREEN_UNSUPPORTED);
+        }
+
+        this.emit('enter');
+    }
+
+    /**
+     * Handles fullscreen exit events
+     *
+     * @return {void}
+     */
+    fullscreenExitHandler() {
+        this.fullscreenElement.classList.remove(CLASS_FULLSCREEN);
+        this.fullscreenElement.classList.remove(CLASS_FULLSCREEN_UNSUPPORTED);
+        this.fullscreenElement = null;
+
+        this.emit('exit');
+    }
 
     /**
      * Enter fullscreen mode
@@ -109,50 +125,35 @@ class Fullscreen extends EventEmitter {
      * @return {void}
      */
     enter(el = document.documentElement) {
-        if (el instanceof HTMLElement) {
-            el.classList.add(CLASS_FULLSCREEN);
-
-            if (!this.isSupported()) {
-                el.classList.add(CLASS_FULLSCREEN_UNSUPPORTED);
-            }
-        }
-
         if (this.isSupported()) {
             fscreen.requestFullscreenFunction(el).call(el, Element.ALLOW_KEYBOARD_INPUT);
         } else {
-            this.emit('enter');
+            this.fullscreenEnterHandler(el);
         }
     }
 
     /**
      * Exit fullscreen mode
      *
-     * @param {HTMLElement} el - fullscreen element
      * @return {void}
      */
-    exit(el = document.documentElement) {
-        if (el instanceof HTMLElement) {
-            el.classList.remove(CLASS_FULLSCREEN);
-            el.classList.remove(CLASS_FULLSCREEN_UNSUPPORTED);
-        }
-
+    exit() {
         if (this.isSupported()) {
             fscreen.exitFullscreen();
         } else {
-            this.emit('exit');
+            this.fullscreenExitHandler();
         }
     }
 
     /**
      * Toggle fullscreen mode
      *
-     * @public
      * @param {HTMLElement} el - fullscreen element
      * @return {void}
      */
     toggle(el = document.documentElement) {
         if (this.isFullscreen(el)) {
-            this.exit(el);
+            this.exit();
         } else {
             this.enter(el);
         }

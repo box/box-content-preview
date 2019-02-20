@@ -36,8 +36,14 @@ $spinner-size: 15px;
     animation-duration: 1s;
     animation-iteration-count: 1;
     animation-name: fadeIn;
+    bottom: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
     transition: .25s opacity, .25s transform;
 
     .bp-loaded & {
@@ -58,7 +64,6 @@ $spinner-size: 15px;
     color: $twos;
     position: relative;
     text-align: center;
-    z-index: 1;
 }
 
 .bp-loading-btn-container {

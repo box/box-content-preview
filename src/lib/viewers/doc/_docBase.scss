@@ -1,5 +1,75 @@
 @import '../../boxuiVariables';
 
+$thumbnail-border-radius: 4px;
+
+.bp {
+    .bp-thumbnails-container {
+        border-right: solid 1px $seesee;
+        display: flex;
+        flex: 0 0 201px; // Accounts for the 1px border on the right so the remaining width is actually 180
+    }
+
+    .bp-thumbnail {
+        align-items: center;
+        background-color: $d-eight;
+        border: 0;
+        border-radius: $thumbnail-border-radius;
+        cursor: pointer;
+        display: flex;
+        flex: 1 0 auto;
+        justify-content: center;
+        margin: 0 25px;
+        padding: 0;
+        position: relative;
+        width: 150px;
+    }
+
+    .bp-thumbnail-page-number {
+        background-color: $black;
+        border-radius: $thumbnail-border-radius;
+        bottom: 10px;
+        color: $white;
+        font-size: 11px;
+        left: 50%;
+        line-height: 16px;
+        opacity: .7;
+        padding: 0 5px;
+        pointer-events: none;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+
+    .bp-thumbnail-image {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        border-radius: $thumbnail-border-radius;
+        pointer-events: none;
+    }
+
+    // Applies a border *outside* the thumbnail button itself rather than
+    // contributing to the width of the button and shrinking the thumbnail
+    // image
+    .bp-thumbnail.bp-thumbnail-is-selected::after {
+        border: 4px solid $fours;
+        border-radius: $thumbnail-border-radius;
+        bottom: -2px;
+        content: '';
+        left: -2px;
+        position: absolute;
+        right: -2px;
+        top: -2px;
+    }
+}
+
+.bp-theme-dark {
+    .bp {
+        .bp-thumbnails-container {
+            border-right-color: $twos;
+        }
+    }
+}
+
 .bp-doc {
     bottom: 0;
     height: 100%;
@@ -108,4 +178,9 @@
     .bp-print-notification {
         display: block;
     }
+}
+
+// Hide the toggle thumbnails button when in fullscreen
+.bp-content.bp-is-fullscreen .bp-toggle-thumbnails-icon {
+    display: none;
 }

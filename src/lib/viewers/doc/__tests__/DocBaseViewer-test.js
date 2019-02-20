@@ -18,10 +18,19 @@ import {
     STATUS_PENDING,
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES
+    ENCODING_TYPES,
+    SELECTOR_BOX_PREVIEW_CONTENT,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
-import { VIEWER_EVENT, LOAD_METRIC } from '../../../events';
+import {
+    ICON_PRINT_CHECKMARK,
+    ICON_THUMBNAILS_TOGGLE,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IN,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../../../icons/icons';
+import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -61,7 +70,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
-        containerEl = document.querySelector('.container');
+        containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         docBase = new DocBaseViewer({
             cache: {
                 set: () => {},
@@ -78,7 +87,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             file: {
                 id: '0',
                 extension: 'ppt'
-            }
+            },
+            enableThumbnailsSidebar: true
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         docBase.containerEl = containerEl;
@@ -101,14 +111,43 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should correctly set a doc element, viewer element, and a timeout', () => {
+        it('should correctly set a doc element, viewer element, thumbnails sidebar element, and a timeout', () => {
             expect(docBase.docEl.classList.contains('bp-doc')).to.be.true;
             expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
 
             expect(docBase.viewerEl.classList.contains('pdfViewer')).to.be.true;
             expect(docBase.viewerEl.parentNode).to.equal(docBase.docEl);
 
+            expect(docBase.thumbnailsSidebarEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER)).to.be.true;
+            expect(docBase.thumbnailsSidebarEl.parentNode).to.equal(docBase.containerEl.parentNode);
+
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
+        });
+
+        it('should not set a thumbnails sidebar element if the option is not enabled', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+
+            expect(docBase.thumbnailsSidebarEl).to.be.undefined;
         });
     });
 
@@ -1076,6 +1115,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
                 value: sandbox.stub()
             });
+            stubs.thumbnailsResize = sandbox.stub();
+            docBase.thumbnailsSidebar = { resize: stubs.thumbnailsResize, destroy: () => {} };
         });
 
         afterEach(() => {
@@ -1088,12 +1129,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer = null;
             docBase.resize();
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should do nothing if the page views are not ready', () => {
             docBase.pdfViewer.pageViewsReady = false;
             docBase.resize();
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should resize the preload', () => {
@@ -1104,6 +1147,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.resize();
             expect(docBase.preloader.resize).to.be.called;
             expect(BaseViewer.prototype.resize).to.not.be.called;
+            expect(stubs.thumbnailsResize).not.to.be.called;
         });
 
         it('should update the pdfViewer and reset the page', () => {
@@ -1111,6 +1155,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
+            expect(stubs.thumbnailsResize).to.be.called;
         });
     });
 
@@ -1543,6 +1588,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
             stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+            stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1555,6 +1601,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
             expect(stubs.setupPages).to.be.called;
+            expect(stubs.initThumbnails).to.be.called;
+        });
+
+        it('should not init thumbnails if not enabled', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+            stubs.loadUI = sandbox.stub(docBase, 'loadUI');
+            stubs.setPage = sandbox.stub(docBase, 'setPage');
+            stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
+            stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+            stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
+
+            docBase.pdfViewer = {
+                currentScale: 'unknown'
+            };
+
+            docBase.pagesinitHandler();
+            expect(stubs.loadUI).to.be.called;
+            expect(stubs.setPage).to.be.called;
+            expect(docBase.docEl).to.have.class('bp-is-scrollable');
+            expect(stubs.setupPages).to.be.called;
+            expect(stubs.initThumbnails).not.to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -2005,6 +2094,184 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should return undefined if no unit and value is passed', () => {
             const startAt = {};
             expect(docBase.getStartPage(startAt)).to.be.undefined;
+        });
+    });
+
+    describe('bindControlListeners()', () => {
+        beforeEach(() => {
+            docBase.pdfViewer = {
+                pagesCount: 4,
+                currentPageNumber: 1,
+                cleanup: sandbox.stub()
+            };
+
+            docBase.controls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pageControls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+        });
+
+        it('should add the correct controls', () => {
+            docBase.bindControlListeners();
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('toggle_thumbnails'),
+                docBase.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
+            );
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                docBase.zoomOut,
+                'bp-doc-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
+            expect(docBase.controls.add).to.be.calledWith(
+                __('zoom_in'),
+                docBase.zoomIn,
+                'bp-doc-zoom-in-icon',
+                ICON_ZOOM_IN
+            );
+
+            expect(docBase.pageControls.add).to.be.calledWith(1, 4);
+
+            expect(docBase.controls.add).to.be.calledWith(
+                __('enter_fullscreen'),
+                docBase.toggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
+            expect(docBase.controls.add).to.be.calledWith(
+                __('exit_fullscreen'),
+                docBase.toggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
+        });
+
+        it('should not add the toggle thumbnails control if the option is not enabled', () => {
+            // Create a new instance that has enableThumbnailsSidebar as false
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt'
+                },
+                enableThumbnailsSidebar: false
+            });
+            docBase.containerEl = containerEl;
+            docBase.setup();
+
+            docBase.controls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pageControls = {
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
+            };
+
+            docBase.pdfViewer = {
+                pagesCount: 4,
+                currentPageNumber: 1,
+                cleanup: sandbox.stub()
+            };
+
+            // Invoke the method to test
+            docBase.bindControlListeners();
+
+            // Check expectations
+            expect(docBase.controls.add).to.not.be.calledWith(
+                __('toggle_thumbnails'),
+                docBase.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
+            );
+        });
+    });
+
+    describe('toggleThumbnails()', () => {
+        let thumbnailsSidebar;
+
+        beforeEach(() => {
+            sandbox.stub(docBase, 'resize');
+            sandbox.stub(docBase, 'emitMetric');
+            sandbox.stub(docBase, 'emit');
+
+            stubs.toggleSidebar = sandbox.stub();
+            stubs.isSidebarOpen = sandbox.stub();
+
+            thumbnailsSidebar = {
+                toggle: stubs.toggleSidebar,
+                isOpen: stubs.isSidebarOpen,
+                destroy: () => {}
+            };
+        });
+
+        it('should do nothing if thumbnails sidebar does not exist', () => {
+            docBase.thumbnailsSidebar = undefined;
+
+            docBase.toggleThumbnails();
+
+            expect(docBase.resize).not.to.be.called;
+        });
+
+        it('should toggle open and resize the viewer', () => {
+            docBase.thumbnailsSidebar = thumbnailsSidebar;
+            docBase.pdfViewer = { pagesCount: 10 };
+            stubs.isSidebarOpen.returns(true);
+
+            docBase.toggleThumbnails();
+
+            expect(stubs.toggleSidebar).to.be.called;
+            expect(stubs.isSidebarOpen).to.be.called;
+            expect(docBase.resize).to.be.called;
+            expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
+            expect(docBase.emit).to.be.calledWith('thumbnailsOpen');
+        });
+
+        it('should toggle close and resize the viewer', () => {
+            docBase.thumbnailsSidebar = thumbnailsSidebar;
+            docBase.pdfViewer = { pagesCount: 10 };
+            stubs.isSidebarOpen.returns(false);
+
+            docBase.toggleThumbnails();
+
+            expect(stubs.toggleSidebar).to.be.called;
+            expect(stubs.isSidebarOpen).to.be.called;
+            expect(docBase.resize).to.be.called;
+            expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
+            expect(docBase.emit).to.be.calledWith('thumbnailsClose');
+        });
+    });
+
+    describe('getMetricsWhitelist()', () => {
+        it('should return the thumbnail sidebar events', () => {
+            const expWhitelist = [
+                USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
+                USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
+                USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+            ];
+
+            expect(docBase.getMetricsWhitelist()).to.be.eql(expWhitelist);
         });
     });
 });

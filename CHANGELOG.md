@@ -1,3 +1,11 @@
+<a name="2.0.0"></a>
+## 2.0.0 (2019-02-19)
+
+* New: Thumbnails Sidebar (#932) ([4d3ecc3](https://github.com/box/box-content-preview/commit/4d3ecc3)), closes [#932](https://github.com/box/box-content-preview/issues/932)
+* Fix: Fullscreen classes are now removed when pressing escape (#927) ([66ed344](https://github.com/box/box-content-preview/commit/66ed344)), closes [#927](https://github.com/box/box-content-preview/issues/927)
+
+
+
 <a name="1.65.0"></a>
 ## 1.65.0 (2019-02-12)
 
