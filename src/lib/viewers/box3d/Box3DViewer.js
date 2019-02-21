@@ -221,7 +221,10 @@ class Box3DViewer extends BaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
+            api.get(this.createContentUrl(template, 'entities.json'), {
+                headers: this.appendAuthHeader(),
+                type: 'document'
+            });
         }
     }
 

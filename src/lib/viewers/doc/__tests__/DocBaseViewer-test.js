@@ -271,7 +271,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, 'any');
+                .withArgs(contentUrl, { type: 'document' });
 
             docBase.prefetch({ assets: false, preload: false, content: true });
         });
@@ -1487,7 +1487,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('fetchPrintBlob()', () => {
         beforeEach(() => {
-            stubs.get = sandbox.stub(api, 'get').returns(Promise.resolve('blob'));
+            stubs.get = sandbox.stub(api, 'get').resolves('blob');
         });
 
         it('should get and set the blob', () => {

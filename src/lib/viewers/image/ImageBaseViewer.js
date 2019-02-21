@@ -218,7 +218,7 @@ class ImageBaseViewer extends BaseViewer {
                 // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
                 // IE11 workaround. Dimensions only displayed if the image is attached to the document.
                 api
-                    .get(imageEl.src, {}, 'text')
+                    .get(imageEl.src, { type: 'text' })
                     .then((imageAsText) => {
                         const parser = new DOMParser();
                         const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');

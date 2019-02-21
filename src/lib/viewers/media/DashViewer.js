@@ -128,7 +128,7 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
+            api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
         }
     }
 

@@ -543,7 +543,7 @@ class Preview extends EventEmitter {
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            api.get(getDownloadUrl, this.getRequestHeaders()).then((data) => {
+            api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then((data) => {
                 const downloadUrl = appendQueryParams(data.download_url, queryParams);
                 DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
@@ -1009,7 +1009,7 @@ class Preview extends EventEmitter {
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
         api
-            .get(fileInfoUrl, this.getRequestHeaders())
+            .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
     }
@@ -1349,16 +1349,17 @@ class Preview extends EventEmitter {
         this.logRetryCount = this.logRetryCount || 0;
 
         const { apiHost, token, sharedLink, sharedLinkPassword } = options;
+        const data = {
+            event_type: 'preview',
+            source: {
+                type: 'file',
+                id: fileId
+            }
+        };
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
         api
-            .post(`${apiHost}/2.0/events`, headers, {
-                event_type: 'preview',
-                source: {
-                    type: 'file',
-                    id: fileId
-                }
-            })
+            .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
@@ -1639,7 +1640,7 @@ class Preview extends EventEmitter {
 
                     // Prefetch and cache file information and content
                     api
-                        .get(fileInfoUrl, this.getRequestHeaders(token))
+                        .get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
                         .then((file) => {
                             // Cache file info
                             cacheFile(this.cache, file);

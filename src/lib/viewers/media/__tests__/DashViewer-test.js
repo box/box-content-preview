@@ -201,7 +201,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, 'any');
+                .withArgs(contentUrl, { type: 'document' });
 
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).to.not.be.called;

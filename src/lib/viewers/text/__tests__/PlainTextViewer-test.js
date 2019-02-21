@@ -135,7 +135,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, 'any');
+                .withArgs(contentUrl, { type: 'document' });
 
             text.prefetch({ assets: false, content: true });
         });
@@ -190,7 +190,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
-                expect(api.get).to.be.calledWith(urlWithAccessToken, {}, 'text');
+                expect(api.get).to.be.calledWith(urlWithAccessToken, { headers: {}, type: 'text' });
             });
         });
 
@@ -207,7 +207,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.true;
-                expect(api.get).to.be.calledWith(url, headersWithRange, 'text');
+                expect(api.get).to.be.calledWith(url, { headers: headersWithRange, type: 'text' });
             });
         });
 

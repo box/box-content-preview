@@ -85,7 +85,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(workerUrl, 'blob')
+                .withArgs(workerUrl, { type: 'blob' })
                 .returns(Promise.resolve(blob));
 
             return csv.load().then(() => {
@@ -145,7 +145,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, 'any');
+                .withArgs(contentUrl, { type: 'document' });
 
             csv.prefetch({ assets: false, content: true });
         });

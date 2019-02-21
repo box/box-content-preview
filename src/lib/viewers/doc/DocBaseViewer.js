@@ -242,13 +242,13 @@ class DocBaseViewer extends BaseViewer {
                 const { url_template: template } = preloadRep.content;
 
                 // Prefetch as blob since preload needs to load image as a blob
-                api.get(this.createContentUrlWithAuthParams(template), 'blob');
+                api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
             }
         }
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            api.get(this.createContentUrlWithAuthParams(template), 'any');
+            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -862,7 +862,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, 'blob').then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
             this.printBlob = blob;
         });
     }

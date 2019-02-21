@@ -1,4 +1,5 @@
 import axios from 'axios';
+import pickBy from 'lodash/pickBy';
 
 const api = {
     /**
@@ -36,63 +37,26 @@ const api = {
      * Wrapper function for XHR post put and delete
      *
      * @private
-     * @param {string} url - URL for XHR
-     * @param {Object} options - Request options
-     * @return {Promise} XHR promise
+     * @param {string} url - The URL for XHR
+     * @param {Object} options - The equest options
+     * @return {Promise} - XHR promise
      */
-    xhr(url, { data, headers, method, responseType } = {}) {
-        const config = {};
-
-        if (data) {
-            config.data = data;
-        }
-
-        if (headers) {
-            config.headers = headers;
-        }
-
-        if (method) {
-            config.method = method;
-        }
-
-        if (responseType) {
-            config.responseType = responseType;
-        }
-
-        return axios(url, config)
+    xhr(url, options = {}) {
+        return axios(url, pickBy(options))
             .then(api.parseResponse)
             .catch(api.handleError);
     },
 
     /**
      * HTTP GETs a URL
-     * Usage:
-     *     get(url, headers, type)
-     *     get(url, headers)
-     *     get(url, type)
-     *     get(url)
      *
      * @public
      * @param {string} url - The URL to fetch
-     * @param {Object} [headers] - Key-value map of headers
-     * @param {string} [type] - response type json (default), text, blob or any
+     * @param {Object} options - The request options
      * @return {Promise} - HTTP response
      */
-    get(url, ...rest) {
-        let headers;
-        let responseType;
-
-        if (typeof rest[0] === 'string') {
-            responseType = rest[0];
-        } else {
-            headers = rest[0];
-            responseType = rest[1];
-        }
-
-        headers = headers || {};
-        responseType = responseType === 'any' ? 'document' : responseType || 'json';
-
-        return api.xhr(url, { method: 'get', headers, responseType });
+    get(url, { type: responseType = 'json', ...options } = {}) {
+        return api.xhr(url, { method: 'get', responseType, ...options });
     },
 
     /**
@@ -100,11 +64,11 @@ const api = {
      *
      * @public
      * @param {string} url - The URL to fetch
-     * @param {Object} headers - Key-value map of headers
+     * @param {Object} options - The request options
      * @return {Promise} HTTP response
      */
-    head(url, headers) {
-        return api.xhr(url, { method: 'head', headers });
+    head(url, options = {}) {
+        return api.xhr(url, { method: 'head', ...options });
     },
 
     /**
@@ -112,12 +76,12 @@ const api = {
      *
      * @public
      * @param {string} url - The URL to fetch
-     * @param {Object} headers - Key-value map of headers
      * @param {Object} data - JS Object representation of JSON data to send
+     * @param {Object} options - The request options
      * @return {Promise} HTTP response
      */
-    post(url, headers, data) {
-        return api.xhr(url, { method: 'post', headers, data });
+    post(url, data, options = {}) {
+        return api.xhr(url, { method: 'post', data, ...options });
     },
 
     /**
@@ -125,12 +89,12 @@ const api = {
      *
      * @public
      * @param {string} url - The URL to fetch
-     * @param {Object} headers - Key-value map of headers
      * @param {Object} data - JS Object representation of JSON data to send
+     * @param {Object} options - The request options
      * @return {Promise} HTTP response
      */
-    del(url, headers, data) {
-        return api.xhr(url, { method: 'delete', headers, data });
+    del(url, data, options = {}) {
+        return api.xhr(url, { method: 'delete', data, ...options });
     },
 
     /**
@@ -138,12 +102,12 @@ const api = {
      *
      * @public
      * @param {string} url - The url to fetch
-     * @param {Object} headers - Key-value map of headers
      * @param {Object} data - JS Object representation of JSON data to send
+     * @param {Object} options - The request options
      * @return {Promise} HTTP response
      */
-    put(url, headers, data) {
-        return api.xhr(url, { method: 'put', headers, data });
+    put(url, data, options = {}) {
+        return api.xhr(url, { method: 'put', data, ...options });
     }
 };
 

@@ -81,7 +81,7 @@ class DocPreloader extends EventEmitter {
         this.containerEl = containerEl;
 
         // Need to load image as a blob to read EXIF
-        return api.get(preloadUrlWithAuth, 'blob').then((imgBlob) => {
+        return api.get(preloadUrlWithAuth, { type: 'blob' }).then((imgBlob) => {
             if (this.checkDocumentLoaded()) {
                 return;
             }

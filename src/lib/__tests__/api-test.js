@@ -14,7 +14,7 @@ describe('API helper', () => {
             sandbox.stub(api, 'xhr').resolves({ status: 200 });
 
             return api.get(url).then(() => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: {}, method: 'get', responseType: 'json' });
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'json' });
             });
         });
 
@@ -22,7 +22,7 @@ describe('API helper', () => {
             sandbox.stub(api, 'xhr').resolves({ status: 404 });
 
             return api.get(url).catch((err) => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: {}, method: 'get', responseType: 'json' });
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'json' });
                 expect(err.response.status).to.equal(404);
                 expect(err.response.statusText).to.equal('Not Found');
             });
@@ -32,7 +32,7 @@ describe('API helper', () => {
             const headers = { darth: 'vader' };
             sandbox.stub(api, 'xhr').resolves({ status: 200 });
 
-            return api.get(url, headers).then(() => {
+            return api.get(url, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { headers, method: 'get', responseType: 'json' });
             });
         });
@@ -45,7 +45,7 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.get(url, headers, 'text').then((response) => {
+            return api.get(url, { headers, type: 'text' }).then((response) => {
                 expect(api.xhr).to.have.been.calledWith(url, { headers, method: 'get', responseType: 'text' });
                 expect(response.data).to.equal(responseText);
             });
@@ -58,8 +58,8 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.get(url, 'blob').then((response) => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: {}, method: 'get', responseType: 'blob' });
+            return api.get(url, { type: 'blob' }).then((response) => {
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'blob' });
                 expect(response.data).to.deep.equal(blob);
             });
         });
@@ -71,8 +71,8 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.get(url, 'text').then((response) => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: {}, method: 'get', responseType: 'text' });
+            return api.get(url, { type: 'text' }).then((response) => {
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'text' });
                 expect(response.data).to.equal(responseText);
             });
         });
@@ -83,8 +83,8 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.get(url, 'any').then((response) => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: {}, method: 'get', responseType: 'document' });
+            return api.get(url, { type: 'document' }).then((response) => {
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'document' });
                 expect(typeof response === 'object').to.be.true; // eslint-disable-line
             });
         });
@@ -97,7 +97,7 @@ describe('API helper', () => {
             sandbox.stub(api, 'xhr').resolves({ status: 200 });
 
             return api.head(url).then(() => {
-                expect(api.xhr).to.have.been.calledWith(url, { headers: undefined, method: 'head' });
+                expect(api.xhr).to.have.been.calledWith(url, { method: 'head' });
             });
         });
     });
@@ -115,7 +115,7 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.post(url, headers, data).then(() => {
+            return api.post(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'post' });
             });
         });
@@ -134,7 +134,7 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.del(url, headers, data).then(() => {
+            return api.del(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'delete' });
             });
         });
@@ -153,7 +153,7 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.put(url, headers, data).then(() => {
+            return api.put(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'put' });
             });
         });

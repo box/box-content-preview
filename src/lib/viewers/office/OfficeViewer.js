@@ -319,7 +319,7 @@ class OfficeViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, 'blob').then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
             this.printBlob = blob;
         });
     }

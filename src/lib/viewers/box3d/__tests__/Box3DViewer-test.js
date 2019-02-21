@@ -417,7 +417,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             sandbox
                 .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, headers, 'any');
+                .withArgs(contentUrl, { headers, type: 'document' });
 
             box3d.prefetch({ assets: false, content: true });
         });
