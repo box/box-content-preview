@@ -1,5 +1,12 @@
 @import 'boxuiVariables';
 
+$spinner-size: 15px;
+
+@mixin spinner() {
+    background: url('icons/loading.gif') center no-repeat;
+    background-size: $spinner-size $spinner-size;
+}
+
 @keyframes box-crawler {
     0%,
     80%,
@@ -109,45 +116,24 @@
     }
 }
 
-@keyframes bp-spinner {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
+.bp .bp-doc.bp-doc-document {
+    // Overrides PDF.js loading spinner
+    .pdfViewer .page .loadingIcon {
+        @include spinner;
     }
 }
 
-.bp-spinner div,
-.bp-spinner div::after {
-    border: 25px solid #0061d5;
-    border-radius: 50%;
-    border-top-color: transparent;
-    height: 170px;
-    position: absolute;
-    width: 170px;
-}
+.bp-document-preload-wrapper {
+    .bp-preload-spinner {
+        @include spinner;
 
-.bp-spinner div {
-    animation: bp-spinner 1s linear infinite;
-    left: 100px;
-    top: 100px;
-}
-
-.bp-spinner div::after {
-    transform: rotate(90deg);
-}
-
-// Center spinner horizontally and vertically within container
-.bp-spinner {
-    bottom: 0;
-    height: 30px;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translate(-15px, -15px) scale(.15) translate(15px, 15px);
-    width: 30px;
+        bottom: 0;
+        height: $spinner-size;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: $spinner-size;
+    }
 }

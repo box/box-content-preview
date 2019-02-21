@@ -26,6 +26,7 @@ export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
 export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
+export const CLASS_BOX_PREVIEW_PRELOAD_SPINNER = 'bp-preload-spinner';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PROGRESS_BAR = 'bp-progress-bar';
@@ -47,7 +48,6 @@ export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
 export const CLASS_CRAWLER = 'bp-crawler';
-export const CLASS_SPINNER = 'bp-spinner';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;

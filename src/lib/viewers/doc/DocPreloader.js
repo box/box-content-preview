@@ -3,11 +3,11 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
+    CLASS_BOX_PREVIEW_PRELOAD_SPINNER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
-    CLASS_SPINNER,
     PDFJS_CSS_UNITS,
     PDFJS_MAX_AUTO_SCALE,
     PDFJS_WIDTH_PADDING_PX,
@@ -23,7 +23,7 @@ const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
 
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
 
-const SPINNER_HTML = `<div class="${CLASS_SPINNER}"><div></div></div>`;
+const SPINNER_HTML = `<div class="${CLASS_BOX_PREVIEW_PRELOAD_SPINNER}"></div>`;
 
 class DocPreloader extends EventEmitter {
     /** @property {HTMLElement} - Viewer container */
