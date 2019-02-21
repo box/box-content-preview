@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import createReactClass from 'create-react-class';
+import api from '../../../api';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
 import BaseViewer from '../../BaseViewer';
@@ -82,7 +83,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.mock() });
 
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .withArgs(workerUrl, 'blob')
                 .returns(Promise.resolve(blob));
@@ -101,7 +102,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
 
-            sandbox.stub(util, 'get').returns(Promise.resolve());
+            sandbox.stub(api, 'get').returns(Promise.resolve());
 
             const csvUrlWithAuth = `csvUrl/?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`;
 
@@ -121,7 +122,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
-            sandbox.stub(util, 'get').returns(Promise.resolve());
+            sandbox.stub(api, 'get').returns(Promise.resolve());
             sandbox.stub(csv, 'startLoadTimer');
 
             return csv.load().then(() => {
@@ -142,7 +143,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             sandbox.stub(csv, 'createContentUrlWithAuthParams').returns(contentUrl);
             sandbox.stub(csv, 'isRepresentationReady').returns(true);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .withArgs(contentUrl, 'any');
 
@@ -152,7 +153,7 @@ describe('lib/viewers/text/CSVViewer', () => {
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(csv, 'isRepresentationReady').returns(false);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             csv.prefetch({ assets: false, content: true });

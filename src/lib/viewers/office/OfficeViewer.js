@@ -5,7 +5,7 @@ import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { get } from '../../util';
+import api from '../../api';
 import { VIEWER_EVENT } from '../../events';
 
 const LOAD_TIMEOUT_MS = 120000;
@@ -319,7 +319,7 @@ class OfficeViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, 'blob').then((blob) => {
+        return api.get(pdfUrl, 'blob').then((blob) => {
             this.printBlob = blob;
         });
     }

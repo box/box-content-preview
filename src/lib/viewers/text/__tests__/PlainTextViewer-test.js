@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import Browser from '../../../Browser';
 import PlainTextViewer from '../PlainTextViewer';
 import BaseViewer from '../../BaseViewer';
@@ -131,14 +132,20 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const contentUrl = 'someContentUrl';
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(contentUrl);
             sandbox.stub(text, 'isRepresentationReady').returns(true);
-            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+            sandbox
+                .mock(api)
+                .expects('get')
+                .withArgs(contentUrl, 'any');
 
             text.prefetch({ assets: false, content: true });
         });
 
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(text, 'isRepresentationReady').returns(false);
-            sandbox.mock(util).expects('get').never();
+            sandbox
+                .mock(api)
+                .expects('get')
+                .never();
             text.prefetch({ assets: false, content: true });
         });
     });
@@ -177,13 +184,13 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const getPromise = Promise.resolve('');
             text.options.file.size = 196608 - 1; // 192KB - 1
 
-            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(api, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(urlWithAccessToken);
             text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
-                expect(util.get).to.be.calledWith(urlWithAccessToken, {}, 'text');
+                expect(api.get).to.be.calledWith(urlWithAccessToken, {}, 'text');
             });
         });
 
@@ -193,21 +200,21 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const headersWithRange = { Range: 'bytes=0-196608' };
             text.options.file.size = 196608 + 1; // 192KB + 1
 
-            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(api, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(url);
 
             text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.true;
-                expect(util.get).to.be.calledWith(url, headersWithRange, 'text');
+                expect(api.get).to.be.calledWith(url, headersWithRange, 'text');
             });
         });
 
         it('should append dots to text if truncated', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(api, 'get').returns(getPromise);
             sandbox.stub(text, 'finishLoading');
             text.options.file.size = 196608 + 1; // 192KB + 1;
 
@@ -221,7 +228,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should call initHighlightJs if file has code extension', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(api, 'get').returns(getPromise);
             sandbox.stub(text, 'initHighlightJs');
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
@@ -235,7 +242,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         it('should invoke startLoadTimer()', () => {
             sandbox.stub(text, 'startLoadTimer');
-            sandbox.stub(util, 'get').returns(Promise.resolve(''));
+            sandbox.stub(api, 'get').returns(Promise.resolve(''));
 
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
@@ -249,7 +256,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         it('should handle a download error', () => {
             const getPromise = Promise.reject();
-            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(api, 'get').returns(getPromise);
             sandbox.stub(text, 'handleDownloadError');
 
             const promise = text.postLoad();

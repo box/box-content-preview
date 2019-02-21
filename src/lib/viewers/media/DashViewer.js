@@ -1,7 +1,8 @@
+import api from '../../api';
 import VideoBaseViewer from './VideoBaseViewer';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
-import { appendQueryParams, get, getProp } from '../../util';
+import { appendQueryParams, getProp } from '../../util';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import getLanguageName from '../../lang';
@@ -127,7 +128,7 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
+            api.get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
         }
     }
 

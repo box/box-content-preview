@@ -13,7 +13,8 @@ import {
     PDFJS_WIDTH_PADDING_PX,
     PDFJS_HEIGHT_PADDING_PX
 } from '../../constants';
-import { get, setDimensions } from '../../util';
+import api from '../../api';
+import { setDimensions } from '../../util';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
@@ -80,7 +81,7 @@ class DocPreloader extends EventEmitter {
         this.containerEl = containerEl;
 
         // Need to load image as a blob to read EXIF
-        return get(preloadUrlWithAuth, 'blob').then((imgBlob) => {
+        return api.get(preloadUrlWithAuth, 'blob').then((imgBlob) => {
             if (this.checkDocumentLoaded()) {
                 return;
             }

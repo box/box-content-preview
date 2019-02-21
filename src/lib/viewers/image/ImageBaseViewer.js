@@ -1,9 +1,9 @@
+import api from '../../api';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import PreviewError from '../../PreviewError';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
-import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
@@ -217,7 +217,8 @@ class ImageBaseViewer extends BaseViewer {
                 // Case when natural dimensions are not assigned
                 // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
                 // IE11 workaround. Dimensions only displayed if the image is attached to the document.
-                get(imageEl.src, {}, 'text')
+                api
+                    .get(imageEl.src, {}, 'text')
                     .then((imageAsText) => {
                         const parser = new DOMParser();
                         const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');

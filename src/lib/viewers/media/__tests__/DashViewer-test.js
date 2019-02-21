@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import PreviewError from '../../../PreviewError';
-import * as util from '../../../util';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -177,7 +177,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should not prefetch rep content if content is false', () => {
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             dash.prefetch({ assets: false, content: false });
@@ -187,7 +187,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.returns(false);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
 
@@ -199,7 +199,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const contentUrl = 'someUrl';
             stubs.createUrl.returns(contentUrl);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .withArgs(contentUrl, 'any');
 

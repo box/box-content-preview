@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
 import {
@@ -38,7 +39,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
     describe('showPreload()', () => {
         it('should not do anything if document is loaded', () => {
             sandbox.stub(docPreloader, 'checkDocumentLoaded').returns(true);
-            sandbox.stub(util, 'get').returns(Promise.resolve({}));
+            sandbox.stub(api, 'get').returns(Promise.resolve({}));
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
@@ -49,7 +50,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should set up preload DOM structure and bind image load handler', () => {
             const imgSrc = 'https://someblobimgsrc/';
-            sandbox.stub(util, 'get').returns(Promise.resolve({}));
+            sandbox.stub(api, 'get').returns(Promise.resolve({}));
             sandbox.stub(URL, 'createObjectURL').returns(imgSrc);
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
