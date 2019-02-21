@@ -116,14 +116,16 @@ $spinner-size: 15px;
     }
 }
 
-.bp .bp-doc.bp-doc-document {
+.bp .bp-doc.bp-doc-document,
+.bp .bp-doc.bp-doc-presentation {
     // Overrides PDF.js loading spinner
     .pdfViewer .page .loadingIcon {
         @include spinner;
     }
 }
 
-.bp-document-preload-wrapper {
+.bp-document-preload-wrapper,
+.bp-presentation-preload-wrapper {
     .bp-preload-spinner {
         @include spinner;
 
