@@ -1,5 +1,6 @@
+import api from '../../api';
 import TextBaseViewer from './TextBaseViewer';
-import { createAssetUrlCreator, get } from '../../util';
+import { createAssetUrlCreator } from '../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
@@ -47,7 +48,7 @@ class CSVViewer extends TextBaseViewer {
 
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(() => {
-                get(papaWorkerUrl, 'blob').then((papaWorkerBlob) => {
+                api.get(papaWorkerUrl, { type: 'blob' }).then((papaWorkerBlob) => {
                     /* global Papa */
                     const workerSrc = URL.createObjectURL(papaWorkerBlob);
                     Papa.SCRIPT_PATH = workerSrc;
@@ -89,7 +90,7 @@ class CSVViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            get(this.createContentUrlWithAuthParams(template), 'any');
+            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 

@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
+import api from './api';
 import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
@@ -15,9 +16,7 @@ import getTokens from './tokens';
 import Timer from './Timer';
 import DownloadReachability from './DownloadReachability';
 import {
-    get,
     getProp,
-    post,
     decodeKeydown,
     getHeaders,
     findScriptLocation,
@@ -544,7 +543,7 @@ class Preview extends EventEmitter {
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            get(getDownloadUrl, this.getRequestHeaders()).then((data) => {
+            api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then((data) => {
                 const downloadUrl = appendQueryParams(data.download_url, queryParams);
                 DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
@@ -1009,7 +1008,8 @@ class Preview extends EventEmitter {
         Timer.start(tag);
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
-        get(fileInfoUrl, this.getRequestHeaders())
+        api
+            .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
     }
@@ -1349,15 +1349,17 @@ class Preview extends EventEmitter {
         this.logRetryCount = this.logRetryCount || 0;
 
         const { apiHost, token, sharedLink, sharedLinkPassword } = options;
-        const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
-
-        post(`${apiHost}/2.0/events`, headers, {
+        const data = {
             event_type: 'preview',
             source: {
                 type: 'file',
                 id: fileId
             }
-        })
+        };
+        const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+
+        api
+            .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
@@ -1637,7 +1639,8 @@ class Preview extends EventEmitter {
                     const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
-                    get(fileInfoUrl, this.getRequestHeaders(token))
+                    api
+                        .get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
                         .then((file) => {
                             // Cache file info
                             cacheFile(this.cache, file);

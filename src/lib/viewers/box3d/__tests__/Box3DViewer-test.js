@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import Box3DViewer from '../Box3DViewer';
 import Box3DControls from '../Box3DControls';
 import Box3DRenderer from '../Box3DRenderer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
-import * as util from '../../../util';
 import {
     EVENT_ERROR,
     EVENT_LOAD,
@@ -415,9 +415,9 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             sandbox.stub(box3d, 'appendAuthHeader').returns(headers);
             sandbox.stub(box3d, 'isRepresentationReady').returns(true);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, headers, 'any');
+                .withArgs(contentUrl, { headers, type: 'document' });
 
             box3d.prefetch({ assets: false, content: true });
         });
@@ -425,7 +425,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(box3d, 'isRepresentationReady').returns(false);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             box3d.prefetch({ assets: false, content: true });

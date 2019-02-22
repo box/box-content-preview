@@ -344,7 +344,6 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(controls.destroy).to.be.called;
         });
 
-
         it('should bind mousemove listener to display video player UI', () => {
             viewer.destroyControls();
 
@@ -357,7 +356,6 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
 
             expect(canvas.removeEventListener).to.be.calledWith('touchstart');
         });
-
     });
 
     describe('resize()', () => {

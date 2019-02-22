@@ -1,9 +1,9 @@
+import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
 import Notification from '../../Notification';
-import { get } from '../../util';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -221,7 +221,10 @@ class Box3DViewer extends BaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
+            api.get(this.createContentUrl(template, 'entities.json'), {
+                headers: this.appendAuthHeader(),
+                type: 'document'
+            });
         }
     }
 
