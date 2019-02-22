@@ -1,3 +1,10 @@
+<a name="2.0.2"></a>
+## <small>2.0.2 (2019-02-22)</small>
+
+* Chore: Downgrade annotations to 2.3.0 (#941) ([cb04cc6](https://github.com/box/box-content-preview/commit/cb04cc6)), closes [#941](https://github.com/box/box-content-preview/issues/941)
+
+
+
 <a name="2.0.1"></a>
 ## <small>2.0.1 (2019-02-19)</small>
 
