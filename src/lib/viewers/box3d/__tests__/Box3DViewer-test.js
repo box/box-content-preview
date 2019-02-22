@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import Box3DViewer from '../Box3DViewer';
 import Box3DControls from '../Box3DControls';
 import Box3DRenderer from '../Box3DRenderer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
-import * as util from '../../../util';
 import {
     EVENT_ERROR,
     EVENT_LOAD,
@@ -17,6 +17,7 @@ import {
     EVENT_WEBGL_CONTEXT_RESTORED
 } from '../box3DConstants';
 import { VIEWER_EVENT } from '../../../events';
+import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
 const sandbox = sinon.sandbox.create();
 
@@ -54,7 +55,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
-        box3d.containerEl = containerEl;
+        box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         box3d.setup();
 
         sandbox.stub(box3d, 'createSubModules');
@@ -104,7 +105,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 }
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
-            box3d.containerEl = containerEl;
+            box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
             box3d.setup();
 
             box3d.createSubModules();
@@ -358,7 +359,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
         it('should call renderer.load()', () => {
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
-            box3d.containerEl = containerEl;
+            box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(box3d, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
@@ -383,7 +384,11 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         it('should call renderer.load() with the entities.json file and options', () => {
             const contentUrl = 'someEntitiesJsonUrl';
             sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
-            sandbox.mock(box3d.renderer).expects('load').withArgs(contentUrl, box3d.options).returns(Promise.resolve());
+            sandbox
+                .mock(box3d.renderer)
+                .expects('load')
+                .withArgs(contentUrl, box3d.options)
+                .returns(Promise.resolve());
 
             box3d.postLoad();
         });
@@ -409,14 +414,20 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
             sandbox.stub(box3d, 'appendAuthHeader').returns(headers);
             sandbox.stub(box3d, 'isRepresentationReady').returns(true);
-            sandbox.mock(util).expects('get').withArgs(contentUrl, headers, 'any');
+            sandbox
+                .mock(api)
+                .expects('get')
+                .withArgs(contentUrl, { headers, type: 'document' });
 
             box3d.prefetch({ assets: false, content: true });
         });
 
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(box3d, 'isRepresentationReady').returns(false);
-            sandbox.mock(util).expects('get').never();
+            sandbox
+                .mock(api)
+                .expects('get')
+                .never();
             box3d.prefetch({ assets: false, content: true });
         });
     });

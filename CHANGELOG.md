@@ -1,3 +1,20 @@
+<a name="2.0.0"></a>
+## 2.0.0 (2019-02-19)
+
+* New: Thumbnails Sidebar (#932) ([4d3ecc3](https://github.com/box/box-content-preview/commit/4d3ecc3)), closes [#932](https://github.com/box/box-content-preview/issues/932)
+* Fix: Fullscreen classes are now removed when pressing escape (#927) ([66ed344](https://github.com/box/box-content-preview/commit/66ed344)), closes [#927](https://github.com/box/box-content-preview/issues/927)
+
+
+
+<a name="1.65.0"></a>
+## 1.65.0 (2019-02-12)
+
+* Chore(metrics): add new timer for full preview load time tracking (#922) ([7da1899](https://github.com/box/box-content-preview/commit/7da1899)), closes [#922](https://github.com/box/box-content-preview/issues/922)
+* Fix: Prevent overwrite of cached page on presentation preview init (#916) ([9256dcc](https://github.com/box/box-content-preview/commit/9256dcc)), closes [#916](https://github.com/box/box-content-preview/issues/916)
+* Upgrade: Upgrade box-annotations to v3.10.0 (#918) ([214e366](https://github.com/box/box-content-preview/commit/214e366)), closes [#918](https://github.com/box/box-content-preview/issues/918)
+
+
+
 <a name="1.64.0"></a>
 ## 1.64.0 (2019-02-05)
 

@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
+import api from './api';
 import Browser from './Browser';
 import loaderList from './loaders';
 import Cache from './Cache';
@@ -14,9 +15,7 @@ import getTokens from './tokens';
 import Timer from './Timer';
 import DownloadReachability from './DownloadReachability';
 import {
-    get,
     getProp,
-    post,
     decodeKeydown,
     getHeaders,
     findScriptLocation,
@@ -539,7 +538,7 @@ class Preview extends EventEmitter {
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            get(getDownloadUrl, this.getRequestHeaders()).then((data) => {
+            api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then((data) => {
                 const downloadUrl = appendQueryParams(data.download_url, queryParams);
                 DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
             });
@@ -745,6 +744,10 @@ class Preview extends EventEmitter {
             );
         }
 
+        // Start the preview duration timer when the user starts to perceive preview's load
+        const tag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
+        Timer.start(tag);
+
         // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {
             if (fileVersionId === currentFileVersionId) {
@@ -925,6 +928,9 @@ class Preview extends EventEmitter {
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 
+        // Option to enable use of thumbnails sidebar for document types
+        this.options.enableThumbnailsSidebar = !!options.enableThumbnailsSidebar;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -991,7 +997,8 @@ class Preview extends EventEmitter {
         Timer.start(tag);
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
-        get(fileInfoUrl, this.getRequestHeaders())
+        api
+            .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
     }
@@ -1228,8 +1235,10 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         if (this.file && this.file.id) {
-            const tag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
-            Timer.stop(tag);
+            const contentLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.contentLoadTime);
+            Timer.stop(contentLoadTag);
+            const previewLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
+            Timer.stop(previewLoadTag);
         }
 
         // Log now that loading is finished
@@ -1320,15 +1329,17 @@ class Preview extends EventEmitter {
         this.logRetryCount = this.logRetryCount || 0;
 
         const { apiHost, token, sharedLink, sharedLinkPassword } = options;
-        const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
-
-        post(`${apiHost}/2.0/events`, headers, {
+        const data = {
             event_type: 'preview',
             source: {
                 type: 'file',
                 id: fileId
             }
-        })
+        };
+        const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+
+        api
+            .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
@@ -1510,34 +1521,34 @@ class Preview extends EventEmitter {
             return;
         }
 
-        const infoTag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
-        const convertTag = Timer.createTag(this.file.id, LOAD_METRIC.convertTime);
-        const downloadTag = Timer.createTag(this.file.id, LOAD_METRIC.downloadResponseTime);
-        const fullLoadTag = Timer.createTag(this.file.id, LOAD_METRIC.fullDocumentLoadTime);
+        const { id } = this.file;
 
-        const timerList = [
-            Timer.get(infoTag) || {},
-            Timer.get(convertTag) || {},
-            Timer.get(downloadTag) || {},
-            Timer.get(fullLoadTag) || {}
-        ];
-        const times = timerList.map((timer) => parseInt(timer.elapsed, 10) || 0);
-        const total = times.reduce((acc, current) => acc + current);
+        const infoTag = Timer.createTag(id, LOAD_METRIC.fileInfoTime);
+        const convertTag = Timer.createTag(id, LOAD_METRIC.convertTime);
+        const downloadTag = Timer.createTag(id, LOAD_METRIC.downloadResponseTime);
+        const contentLoadTag = Timer.createTag(id, LOAD_METRIC.contentLoadTime);
+        const previewLoadTag = Timer.createTag(id, LOAD_METRIC.previewLoadTime);
+
+        const infoTime = Timer.get(infoTag) || {};
+        const convertTime = Timer.get(convertTag) || {};
+        const downloadTime = Timer.get(downloadTag) || {};
+        const contentLoadTime = Timer.get(contentLoadTag) || {};
+        const previewLoadTime = Timer.get(previewLoadTag) || {};
 
         const event = {
             encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
-            value: total, // Sum of all available load times.
-            [LOAD_METRIC.fileInfoTime]: times[0],
-            [LOAD_METRIC.convertTime]: times[1],
-            [LOAD_METRIC.downloadResponseTime]: times[2],
-            [LOAD_METRIC.fullDocumentLoadTime]: times[3],
+            value: previewLoadTime.elapsed || 0,
+            [LOAD_METRIC.fileInfoTime]: infoTime.elapsed || 0,
+            [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
+            [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
+            [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
             ...this.createLogEvent()
         };
 
         this.emit(PREVIEW_METRIC, event);
 
-        Timer.reset([infoTag, convertTag, downloadTag, fullLoadTag]);
+        Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
     }
 
     /**
@@ -1608,7 +1619,8 @@ class Preview extends EventEmitter {
                     const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
-                    get(fileInfoUrl, this.getRequestHeaders(token))
+                    api
+                        .get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
                         .then((file) => {
                             // Cache file info
                             cacheFile(this.cache, file);

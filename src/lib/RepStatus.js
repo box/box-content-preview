@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import { get, appendAuthParams } from './util';
+import api from './api';
+import { appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
 import Timer from './Timer';
@@ -82,7 +83,7 @@ class RepStatus extends EventEmitter {
         const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
         Timer.start(tag);
 
-        return get(this.infoUrl).then((info) => {
+        return api.get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
             if (info.metadata) {

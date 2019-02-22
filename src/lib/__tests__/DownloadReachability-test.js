@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import 'whatwg-fetch';
-import fetchMock from 'fetch-mock';
-import DownloadReachability from '../DownloadReachability';
 import * as util from '../util';
+import api from '../api';
+import DownloadReachability from '../DownloadReachability';
 
 const sandbox = sinon.sandbox.create();
 
@@ -130,12 +129,9 @@ describe('lib/DownloadReachability', () => {
     });
 
     describe('setDownloadReachability()', () => {
-        afterEach(() => {
-            fetchMock.restore();
-        });
         it('should catch an errored response', () => {
             const setDownloadHostFallbackStub = sandbox.stub(DownloadReachability, 'setDownloadHostFallback');
-            fetchMock.head('https://dl3.boxcloud.com', { throws: new Error() });
+            sandbox.stub(api, 'head').rejects(new Error());
 
             return DownloadReachability.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
                 expect(setDownloadHostFallbackStub).to.be.called;

@@ -1,4 +1,5 @@
 import throttle from 'lodash/throttle';
+import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -7,31 +8,32 @@ import DocFindBar from './DocFindBar';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
+import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
-    CLASS_SPINNER,
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES
+    ENCODING_TYPES,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
+import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import {
-    appendQueryParams,
-    get,
-    createAssetUrlCreator,
-    getMidpoint,
-    getDistance,
-    getClosestPageToPinch
-} from '../../util';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+    ICON_PRINT_CHECKMARK,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IN,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_THUMBNAILS_TOGGLE
+} from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -54,6 +56,12 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const PAGES_UNIT_NAME = 'pages';
+// List of metrics to be emitted only once per session
+const METRICS_WHITELIST = [
+    USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
+    USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
+    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+];
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -83,6 +91,8 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
+        this.toggleThumbnails = this.toggleThumbnails.bind(this);
+        this.onThumbnailClickHandler = this.onThumbnailClickHandler.bind(this);
     }
 
     /**
@@ -92,7 +102,7 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.containerEl.appendChild(document.createElement('div'));
+        this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
         if (Browser.getName() === 'Safari') {
@@ -113,6 +123,13 @@ class DocBaseViewer extends BaseViewer {
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
+
+        if (this.options.enableThumbnailsSidebar) {
+            this.thumbnailsSidebarEl = document.createElement('div');
+            this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
+            this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
+            this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+        }
     }
 
     /**
@@ -164,6 +181,10 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.printPopup) {
             this.printPopup.destroy();
+        }
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.destroy();
         }
 
         super.destroy();
@@ -221,13 +242,13 @@ class DocBaseViewer extends BaseViewer {
                 const { url_template: template } = preloadRep.content;
 
                 // Prefetch as blob since preload needs to load image as a blob
-                get(this.createContentUrlWithAuthParams(template), 'blob');
+                api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
             }
         }
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            get(this.createContentUrlWithAuthParams(template), 'any');
+            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -426,6 +447,10 @@ class DocBaseViewer extends BaseViewer {
 
         this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+        }
     }
 
     /**
@@ -550,8 +575,8 @@ class DocBaseViewer extends BaseViewer {
      * @param {Object} event - Event object
      * @return {void}
      */
-    emitMetric(event) {
-        super.emitMetric(event.name, event.data);
+    emitMetric({ name, data }) {
+        super.emitMetric(name, data);
     }
 
     //--------------------------------------------------------------------------
@@ -667,12 +692,16 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // Save page and return after resize
-        const { currentPageNumber } = this.pdfViewer.currentPageNumber;
+        const { currentPageNumber } = this.pdfViewer;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.resize();
+        }
 
         super.resize();
     }
@@ -775,16 +804,6 @@ class DocBaseViewer extends BaseViewer {
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
         // not applicable to Box's use case and disabling causes performance issues
         PDFJS.disableCreateObjectURL = false;
-
-        // Customize pdf.js loading icon. We modify the prototype of PDFPageView to get around directly modifying
-        // pdf_viewer.js
-        const resetFunc = PDFJS.PDFPageView.prototype.reset;
-        PDFJS.PDFPageView.prototype.reset = function reset(...args) {
-            resetFunc.bind(this)(args);
-            this.loadingIconDiv.classList.add(CLASS_SPINNER);
-            this.loadingIconDiv.setAttribute('data-testid', 'page-loading-indicator');
-            this.loadingIconDiv.innerHTML = '<div></div>';
-        };
     }
 
     /**
@@ -841,7 +860,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, 'blob').then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
             this.printBlob = blob;
         });
     }
@@ -969,12 +988,34 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Binds listeners for document controls. Overridden.
+     * Binds listeners for document controls
      *
      * @protected
      * @return {void}
      */
-    bindControlListeners() {}
+    bindControlListeners() {
+        if (this.options.enableThumbnailsSidebar) {
+            this.controls.add(
+                __('toggle_thumbnails'),
+                this.toggleThumbnails,
+                'bp-toggle-thumbnails-icon',
+                ICON_THUMBNAILS_TOGGLE
+            );
+        }
+
+        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
+
+        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    }
 
     /**
      * Handler for 'pagesinit' event.
@@ -1009,6 +1050,34 @@ class DocBaseViewer extends BaseViewer {
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
         }
+
+        if (this.options.enableThumbnailsSidebar) {
+            this.initThumbnails();
+        }
+    }
+
+    /**
+     * Initialize the Thumbnails Sidebar
+     *
+     * @return {void}
+     */
+    initThumbnails() {
+        this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
+        this.thumbnailsSidebar.init({
+            onClick: this.onThumbnailClickHandler,
+            currentPage: this.pdfViewer.currentPageNumber
+        });
+    }
+
+    /**
+     * Handles the click of a thumbnail for navigation
+     *
+     * @param {number} pageNum - the page number
+     * @return {void}
+     */
+    onThumbnailClickHandler(pageNum) {
+        this.emitMetric({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: pageNum });
+        this.setPage(pageNum);
     }
 
     /**
@@ -1050,6 +1119,10 @@ class DocBaseViewer extends BaseViewer {
     pagechangeHandler(event) {
         const { pageNumber } = event;
         this.pageControls.updateCurrentPage(pageNumber);
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.setCurrentPage(pageNumber);
+        }
 
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by
@@ -1234,6 +1307,47 @@ class DocBaseViewer extends BaseViewer {
         this.originalDistance = 0;
         this.pinchScale = 1;
         this.pinchPage = null;
+    }
+
+    /**
+     * Callback when the toggle thumbnail sidebar button is clicked.
+     *
+     * @protected
+     * @return {void}
+     */
+    toggleThumbnails() {
+        if (!this.thumbnailsSidebar) {
+            return;
+        }
+
+        this.thumbnailsSidebar.toggle();
+
+        const { pagesCount } = this.pdfViewer;
+
+        let metricName;
+        let eventName;
+        if (!this.thumbnailsSidebar.isOpen()) {
+            metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
+            eventName = 'thumbnailsClose';
+        } else {
+            metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
+            eventName = 'thumbnailsOpen';
+        }
+
+        this.emitMetric({ name: metricName, data: pagesCount });
+        this.emit(eventName);
+
+        this.resize();
+    }
+
+    /**
+     * Overrides the base method
+     *
+     * @override
+     * @return {Array} - the array of metric names to be emitted only once
+     */
+    getMetricsWhitelist() {
+        return METRICS_WHITELIST;
     }
 }
 

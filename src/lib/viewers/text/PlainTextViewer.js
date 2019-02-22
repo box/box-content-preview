@@ -1,11 +1,12 @@
 import './Text.scss';
+import api from '../../api';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
-import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
+import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { VIEWER_EVENT } from '../../events';
 
 // Inline web worker JS
@@ -70,7 +71,7 @@ class PlainTextViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            get(this.createContentUrlWithAuthParams(template), 'any');
+            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -108,7 +109,7 @@ class PlainTextViewer extends TextBaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.textEl = this.containerEl.appendChild(document.createElement('pre'));
+        this.textEl = this.createViewer(document.createElement('pre'));
         this.textEl.className = 'bp-text bp-text-plain hljs';
         this.textEl.classList.add(CLASS_HIDDEN);
 
@@ -194,7 +195,8 @@ class PlainTextViewer extends TextBaseViewer {
 
         const contentUrl = this.createContentUrlWithAuthParams(template);
         this.startLoadTimer();
-        return get(contentUrl, headers, 'text')
+        return api
+            .get(contentUrl, { headers, type: 'text' })
             .catch((error) => {
                 this.handleDownloadError(error, contentUrl);
             })

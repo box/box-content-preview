@@ -55,8 +55,9 @@ export const LOAD_METRIC = {
     fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
-    fullDocumentLoadTime: 'full_document_load_time', // How long it took to load the document so it could be previewed.
-    preloadTime: 'preload_time' // How long it takes to preload the document.
+    contentLoadTime: 'full_document_load_time', // How long it took to load the document so it could be previewed.
+    preloadTime: 'preload_time', // How long it takes to preload the document.
+    previewLoadTime: 'preview_loading' // Total preview load time. Maps to "value" of load event
 };
 
 export const DURATION_METRIC = 'preview_duration_metric';
@@ -74,4 +75,11 @@ export const USER_DOCUMENT_FIND_EVENTS = {
     NEXT: 'user_document_find_next', // The user navigates to the next find entry
     OPEN: 'user_document_find_open', // The user opens the find bar
     PREVIOUS: 'user_document_find_previous' // The user navigates to the previous find entry
+};
+
+// Events fired when using thumbnail sidebar
+export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
+    CLOSE: 'user_document_thumbnails_close',
+    NAVIGATE: 'user_document_thumbnails_navigate',
+    OPEN: 'user_document_thumbnails_open'
 };

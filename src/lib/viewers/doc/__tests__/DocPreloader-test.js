@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
 import {
@@ -6,8 +7,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
     CLASS_INVISIBLE,
-    CLASS_PREVIEW_LOADED,
-    CLASS_SPINNER
+    CLASS_PREVIEW_LOADED
 } from '../../../constants';
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
@@ -39,7 +39,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
     describe('showPreload()', () => {
         it('should not do anything if document is loaded', () => {
             sandbox.stub(docPreloader, 'checkDocumentLoaded').returns(true);
-            sandbox.stub(util, 'get').returns(Promise.resolve({}));
+            sandbox.stub(api, 'get').returns(Promise.resolve({}));
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
@@ -50,7 +50,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should set up preload DOM structure and bind image load handler', () => {
             const imgSrc = 'https://someblobimgsrc/';
-            sandbox.stub(util, 'get').returns(Promise.resolve({}));
+            sandbox.stub(api, 'get').returns(Promise.resolve({}));
             sandbox.stub(URL, 'createObjectURL').returns(imgSrc);
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
@@ -58,7 +58,6 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 expect(docPreloader.wrapperEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
                 expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
                 expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
-                expect(docPreloader.overlayEl).to.contain(`.${CLASS_SPINNER}`);
                 expect(docPreloader.imageEl.src).to.equal(imgSrc);
                 expect(containerEl).to.contain(docPreloader.wrapperEl);
                 expect(docPreloader.bindDOMListeners).to.be.called;

@@ -1,5 +1,4 @@
 /* global BoxSDK */
-import fullscreen from '../../../Fullscreen';
 import DashViewer from '../../media/DashViewer';
 import Video360Controls from './Video360Controls';
 import Video360Renderer from './Video360Renderer';
@@ -219,13 +218,6 @@ class Video360Viewer extends DashViewer {
                 resolve();
             });
         });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    toggleFullscreen() {
-        fullscreen.toggle(this.wrapperEl);
     }
 
     /**

@@ -1,7 +1,7 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
-import 'whatwg-fetch';
 import EventEmitter from 'events';
+import api from '../../api';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
@@ -205,7 +205,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {Promise} - A promise that resolves on completion of the load.
      */
     getEntitiesFromUrl(url) {
-        return fetch(url).then((response) => response.json());
+        return api.get(url);
     }
 
     /**

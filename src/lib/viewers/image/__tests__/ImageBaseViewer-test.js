@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
 import PreviewError from '../../../PreviewError';
-import * as util from '../../../util';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -251,7 +251,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 getAttribute: (name) => imageEl[name]
             };
 
-            sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
+            sandbox.stub(api, 'get').resolves('not real a image');
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise
                 .then(() => {
@@ -266,7 +266,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         it('should resolve when the get call fails', (done) => {
             const imageEl = {};
-            sandbox.stub(util, 'get').returns(Promise.reject());
+            sandbox.stub(api, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise.then(() => Assert.fail()).catch(() => done());
         });

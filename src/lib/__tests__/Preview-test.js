@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import fetchMock from 'fetch-mock';
+import api from '../api';
 import Preview from '../Preview';
 import loaders from '../loaders';
 import Browser from '../Browser';
@@ -39,7 +39,6 @@ describe('lib/Preview', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        fetchMock.restore();
         preview.destroy();
         preview = null;
         stubs = null;
@@ -817,7 +816,7 @@ describe('lib/Preview', () => {
 
             sandbox.stub(file, 'getDownloadURL');
             sandbox.stub(preview, 'getRequestHeaders');
-            sandbox.stub(util, 'get');
+            sandbox.stub(api, 'get');
         });
 
         it('should show error notification and not download file if file cannot be downloaded', () => {
@@ -872,7 +871,7 @@ describe('lib/Preview', () => {
             const promise = Promise.resolve({
                 download_url: url
             });
-            util.get.returns(promise);
+            api.get.returns(promise);
 
             preview.download();
 
@@ -892,7 +891,7 @@ describe('lib/Preview', () => {
                 download_url: url
             });
 
-            util.get.returns(promise);
+            api.get.returns(promise);
             preview.download();
             expect(preview.emit).to.be.calledWith('preview_metric');
         });
@@ -1057,6 +1056,18 @@ describe('lib/Preview', () => {
             );
         });
 
+        it('should start a timer for the total preview load time, for the file', () => {
+            const id = 'my_file_id';
+            const tag = Timer.createTag(id, LOAD_METRIC.previewLoadTime);
+
+            preview.load({ id });
+
+            const timer = Timer.get(tag);
+
+            expect(timer).to.exist;
+            expect(timer.start).to.exist;
+        });
+
         it('should get the tokens when file id is available', () => {
             preview.previewOptions.token = 'token';
 
@@ -1181,7 +1192,8 @@ describe('lib/Preview', () => {
                 showAnnotations: true,
                 fixDependencies: true,
                 collection: stubs.collection,
-                loaders: stubs.loaders
+                loaders: stubs.loaders,
+                enableThumbnailsSidebar: true
             };
 
             stubs.assign = sandbox.spy(Object, 'assign');
@@ -1294,6 +1306,11 @@ describe('lib/Preview', () => {
             expect(stubs.disableViewers).to.be.calledWith('Office');
             expect(stubs.enableViewers).to.be.calledWith('text');
         });
+
+        it('should set whether to enable thumbnails sidebar', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.enableThumbnailsSidebar).to.be.true;
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -1334,7 +1351,7 @@ describe('lib/Preview', () => {
     describe('loadFromServer()', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve('file');
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.get = sandbox.stub(api, 'get').returns(stubs.promise);
             stubs.handleFileInfoResponse = sandbox.stub(preview, 'handleFileInfoResponse');
             stubs.handleFetchError = sandbox.stub(preview, 'handleFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
@@ -1918,7 +1935,15 @@ describe('lib/Preview', () => {
 
         it('should stop the timer for full document load if a file exists', () => {
             preview.file.id = 1234;
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.contentLoadTime);
+            sandbox.stub(Timer, 'stop');
+            preview.finishLoading();
+            expect(Timer.stop).to.be.calledWith(expectedTag);
+        });
+
+        it('should stop the timer for preview load if a file exists', () => {
+            preview.file.id = 1234;
+            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.previewLoadTime);
             sandbox.stub(Timer, 'stop');
             preview.finishLoading();
             expect(Timer.stop).to.be.calledWith(expectedTag);
@@ -1939,14 +1964,14 @@ describe('lib/Preview', () => {
         });
 
         it('should get the headers for the post request', () => {
-            sandbox.stub(util, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
 
             preview.logPreviewEvent(0, {});
             expect(stubs.getHeaders).to.be.called;
         });
 
         it('should reset the log retry count on a successful post', () => {
-            sandbox.stub(util, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
             preview.logRetryCount = 3;
 
             preview.logPreviewEvent(0, {});
@@ -1957,7 +1982,7 @@ describe('lib/Preview', () => {
 
         it('should reset the log retry count if the post fails and retry limit has been reached', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
-            sandbox.stub(util, 'post').returns(promiseReject);
+            sandbox.stub(api, 'post').returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
 
@@ -1971,7 +1996,7 @@ describe('lib/Preview', () => {
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox
-                .stub(util, 'post')
+                .stub(api, 'post')
                 .onCall(0)
                 .returns(promiseReject);
             preview.logRetryCount = 3;
@@ -2266,17 +2291,11 @@ describe('lib/Preview', () => {
 
     describe('emitLoadMetrics()', () => {
         const fileId = 123456;
-        const fileInfoTag = Timer.createTag(fileId, LOAD_METRIC.fileInfoTime);
 
         beforeEach(() => {
             preview.file = {
                 id: fileId
             };
-
-            // Make sure the first milestone (fileInfoTime) has been met
-            Timer.start(fileInfoTag);
-            Timer.stop(fileInfoTag);
-            Timer.get(fileInfoTag).elapsed = 20;
         });
 
         afterEach(() => {
@@ -2307,29 +2326,13 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event where the value property equals the sum of all load events', (done) => {
-            const tag = Timer.createTag(preview.file.id, LOAD_METRIC.fullDocumentLoadTime);
-            Timer.start(tag);
-            Timer.stop(tag);
-
-            Timer.get(tag).elapsed = 10;
-            Timer.get(fileInfoTag).elapsed = 20;
-
-            const expectedTime = 30; // 10ms + 20ms
-
-            preview.once(PREVIEW_METRIC, (metric) => {
-                expect(metric.value).to.equal(expectedTime);
-                done();
-            });
-            preview.emitLoadMetrics();
-        });
-
         it('should emit a preview_metric event with an object, with all of the proper load properties', (done) => {
             preview.once(PREVIEW_METRIC, (metric) => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
                 expect(metric[LOAD_METRIC.convertTime]).to.exist;
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.exist;
+                expect(metric[LOAD_METRIC.contentLoadTime]).to.exist;
+                expect(metric.value).to.exist;
                 done();
             });
             preview.emitLoadMetrics();
@@ -2341,18 +2344,6 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).to.be.called;
             expect(preview.emit).to.be.called;
-        });
-
-        it('should default all un-hit milestones, after the first, to 0, and cast float values to ints', (done) => {
-            Timer.get(fileInfoTag).elapsed = 1.00001236712394687;
-            preview.once(PREVIEW_METRIC, (metric) => {
-                expect(metric[LOAD_METRIC.fileInfoTime]).to.equal(1); // Converted to int
-                expect(metric[LOAD_METRIC.convertTime]).to.equal(0);
-                expect(metric[LOAD_METRIC.downloadResponseTime]).to.equal(0);
-                expect(metric[LOAD_METRIC.fullDocumentLoadTime]).to.equal(0);
-                done();
-            });
-            preview.emitLoadMetrics();
         });
 
         it('should append encoding field to load metric, when provided', (done) => {
@@ -2427,7 +2418,7 @@ describe('lib/Preview', () => {
                 id: 0
             });
 
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.getPromiseResolve);
+            stubs.get = sandbox.stub(api, 'get').returns(stubs.getPromiseResolve);
             stubs.getURL = sandbox.stub(file, 'getURL');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
             stubs.set = sandbox.stub(preview.cache, 'set');

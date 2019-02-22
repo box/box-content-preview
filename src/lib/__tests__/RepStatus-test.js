@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import RepStatus from '../RepStatus';
 import * as util from '../util';
+import api from '../api';
+import RepStatus from '../RepStatus';
 import { LOAD_METRIC } from '../events';
 import Timer from '../Timer';
 import { STATUS_SUCCESS } from '../constants';
@@ -99,7 +100,7 @@ describe('lib/RepStatus', () => {
 
         it('should fetch latest status', () => {
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .returns(
                     Promise.resolve({
@@ -117,7 +118,7 @@ describe('lib/RepStatus', () => {
 
         it('should update provided metadata', () => {
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .returns(
                     Promise.resolve({
@@ -139,7 +140,7 @@ describe('lib/RepStatus', () => {
 
         it('should return a resolved promise if there is no info url', () => {
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             repStatus.infoUrl = '';

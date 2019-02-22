@@ -159,7 +159,7 @@ class MediaControls extends EventEmitter {
         }
 
         if (fullscreen) {
-            fullscreen.destroy();
+            fullscreen.removeAllListeners();
         }
 
         this.wrapperEl = undefined;

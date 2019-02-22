@@ -24,7 +24,7 @@ class PreviewErrorViewer extends BaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.infoEl = this.containerEl.appendChild(document.createElement('div'));
+        this.infoEl = this.createViewer(document.createElement('div'));
         this.infoEl.className = 'bp-error';
 
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
