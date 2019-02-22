@@ -52,11 +52,11 @@ describe('VirtualScroller', () => {
     describe('init()', () => {
         beforeEach(() => {
             stubs.validateRequiredConfig = sandbox.stub(virtualScroller, 'validateRequiredConfig');
+            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
         });
 
         it('should parse the config object', () => {
             stubs.renderItemFn = sandbox.stub();
-            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
             stubs.bindDOMListeners = sandbox.stub(virtualScroller, 'bindDOMListeners');
 
             virtualScroller.init({
@@ -100,7 +100,6 @@ describe('VirtualScroller', () => {
 
         it('should call renderItems with the provided initialRowIndex', () => {
             stubs.renderItemFn = sandbox.stub();
-            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
 
             virtualScroller.init({
                 totalItems: 10,
@@ -115,7 +114,6 @@ describe('VirtualScroller', () => {
 
         it('should call renderItems with 0 if initialRowIndex falls within first window', () => {
             stubs.renderItemFn = sandbox.stub();
-            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
 
             virtualScroller.init({
                 totalItems: 10,
@@ -462,7 +460,8 @@ describe('VirtualScroller', () => {
         let listEl;
 
         beforeEach(() => {
-            scrollingEl = { remove: () => {} };
+            stubs.dispatchEvent = sandbox.stub();
+            scrollingEl = { remove: () => {}, dispatchEvent: stubs.dispatchEvent };
 
             virtualScroller.totalItems = 10;
             virtualScroller.itemHeight = 10;
@@ -488,6 +487,7 @@ describe('VirtualScroller', () => {
 
             expect(stubs.isVisible).not.to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
 
         it('should do nothing if rowIndex is < 0', () => {
@@ -495,6 +495,7 @@ describe('VirtualScroller', () => {
 
             expect(stubs.isVisible).not.to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
 
         it('should do nothing if rowIndex is = totalItems', () => {
@@ -502,6 +503,7 @@ describe('VirtualScroller', () => {
 
             expect(stubs.isVisible).not.to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
 
         it('should do nothing if rowIndex is > totalItems', () => {
@@ -509,6 +511,7 @@ describe('VirtualScroller', () => {
 
             expect(stubs.isVisible).not.to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
 
         it('should set the scroll top if item is not found', () => {
@@ -519,6 +522,7 @@ describe('VirtualScroller', () => {
             expect(stubs.isVisible).not.to.be.called;
             expect(stubs.scrollIntoView).not.to.be.called;
             expect(scrollingEl.scrollTop).not.to.be.undefined;
+            expect(stubs.dispatchEvent).to.be.called;
         });
 
         it('should scroll item into view if found but not visible', () => {
@@ -530,6 +534,7 @@ describe('VirtualScroller', () => {
             expect(stubs.isVisible).to.be.called;
             expect(stubs.scrollIntoView).to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
 
         it('should not scroll if item is found and visible', () => {
@@ -541,6 +546,7 @@ describe('VirtualScroller', () => {
             expect(stubs.isVisible).to.be.called;
             expect(stubs.scrollIntoView).not.to.be.called;
             expect(scrollingEl.scrollTop).to.be.undefined;
+            expect(stubs.dispatchEvent).not.to.be.called;
         });
     });
 
