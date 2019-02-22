@@ -121,7 +121,7 @@ describe('API helper', () => {
         });
     });
 
-    describe('del()', () => {
+    describe('delete()', () => {
         it('should call delete on URL', () => {
             const url = 'someurl';
             const data = { bar: 'bum' };
@@ -134,7 +134,7 @@ describe('API helper', () => {
                 status: 200
             });
 
-            return api.del(url, data, { headers }).then(() => {
+            return api.delete(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'delete' });
             });
         });

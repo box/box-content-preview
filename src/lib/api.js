@@ -1,7 +1,25 @@
 import axios from 'axios';
-import pickBy from 'lodash/pickBy';
 
 const api = {
+    /**
+     * Filter empty values from the Axios request options object
+     *
+     * @private
+     * @param {Object} options - The request options
+     * @return {Object} The cleaned request options
+     */
+    filterOptions(options = {}) {
+        const result = {};
+
+        Object.keys(options).forEach((key) => {
+            if (options[key] !== undefined && options[key] !== null && options[key] !== '') {
+                result[key] = options[key];
+            }
+        });
+
+        return result;
+    },
+
     /**
      * Helper function to convert an Axios error to the format Preview expects
      *
@@ -38,11 +56,11 @@ const api = {
      *
      * @private
      * @param {string} url - The URL for XHR
-     * @param {Object} options - The equest options
+     * @param {Object} options - The request options
      * @return {Promise} - XHR promise
      */
     xhr(url, options = {}) {
-        return axios(url, pickBy(options))
+        return axios(url, api.filterOptions(options))
             .then(api.parseResponse)
             .catch(api.handleError);
     },
@@ -85,7 +103,7 @@ const api = {
     },
 
     /**
-     * HTTP PUTs a URL with JSON data
+     * HTTP DELETEs a URL with JSON data
      *
      * @public
      * @param {string} url - The URL to fetch
@@ -93,7 +111,7 @@ const api = {
      * @param {Object} options - The request options
      * @return {Promise} HTTP response
      */
-    del(url, data, options = {}) {
+    delete(url, data, options = {}) {
         return api.xhr(url, { method: 'delete', data, ...options });
     },
 
