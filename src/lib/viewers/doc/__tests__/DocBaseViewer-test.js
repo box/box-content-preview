@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import DocBaseViewer from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
@@ -209,7 +210,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('prefetch()', () => {
         it('should prefetch assets if assets is true', () => {
             sandbox.stub(docBase, 'prefetchAssets');
-            sandbox.stub(util, 'get');
+            sandbox.stub(api, 'get');
             docBase.prefetch({ assets: true, preload: false, content: false });
             expect(docBase.prefetchAssets).to.be.called;
         });
@@ -224,7 +225,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     state: 'success'
                 }
             };
-            sandbox.stub(util, 'get');
+            sandbox.stub(api, 'get');
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
 
@@ -243,7 +244,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     state: 'pending'
                 }
             };
-            sandbox.stub(util, 'get');
+            sandbox.stub(api, 'get');
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
 
@@ -268,9 +269,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(contentUrl);
             sandbox.stub(docBase, 'isRepresentationReady').returns(true);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
-                .withArgs(contentUrl, 'any');
+                .withArgs(contentUrl, { type: 'document' });
 
             docBase.prefetch({ assets: false, preload: false, content: true });
         });
@@ -278,7 +279,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(docBase, 'isRepresentationReady').returns(false);
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             docBase.prefetch({ assets: false, preload: false, content: true });
@@ -289,7 +290,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 is_watermarked: true
             };
             sandbox
-                .mock(util)
+                .mock(api)
                 .expects('get')
                 .never();
             docBase.prefetch({ assets: false, preload: false, content: true });
@@ -482,6 +483,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should load a document', () => {
+            sandbox.stub(api, 'get');
             sandbox.stub(docBase, 'setup');
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
@@ -1485,7 +1487,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('fetchPrintBlob()', () => {
         beforeEach(() => {
-            stubs.get = sandbox.stub(util, 'get').returns(Promise.resolve('blob'));
+            stubs.get = sandbox.stub(api, 'get').resolves('blob');
         });
 
         it('should get and set the blob', () => {

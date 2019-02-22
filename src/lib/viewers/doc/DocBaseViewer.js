@@ -1,4 +1,5 @@
 import throttle from 'lodash/throttle';
+import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -22,14 +23,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import {
-    appendQueryParams,
-    get,
-    createAssetUrlCreator,
-    getMidpoint,
-    getDistance,
-    getClosestPageToPinch
-} from '../../util';
+import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import {
     ICON_PRINT_CHECKMARK,
     ICON_ZOOM_OUT,
@@ -248,13 +242,13 @@ class DocBaseViewer extends BaseViewer {
                 const { url_template: template } = preloadRep.content;
 
                 // Prefetch as blob since preload needs to load image as a blob
-                get(this.createContentUrlWithAuthParams(template), 'blob');
+                api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
             }
         }
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            get(this.createContentUrlWithAuthParams(template), 'any');
+            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -868,7 +862,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, 'blob').then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
             this.printBlob = blob;
         });
     }

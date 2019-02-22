@@ -1,3 +1,4 @@
+import api from './api';
 import { openUrlInsideIframe, isLocalStorageAvailable } from './util';
 
 const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
@@ -147,7 +148,8 @@ class DownloadReachability {
      * @return {void}
      */
     static setDownloadReachability(downloadUrl) {
-        return fetch(downloadUrl, { method: 'HEAD' })
+        return api
+            .head(downloadUrl)
             .then(() => {
                 return Promise.resolve(false);
             })

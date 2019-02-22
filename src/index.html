@@ -94,7 +94,11 @@
                 /* global Box */
                 var preview = new Box.Preview();
 
-                var previewOptions = options || {};
+                var previewOptions = options || {
+                    enableThumbnailsSidebar: true,
+                    showAnnotations: true,
+                    showDownload: true,
+                };
                 previewOptions.container = '.preview-container';
 
                 preview.show(fileid, token, previewOptions);

@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
+import api from '../../../api';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import Location from '../../../Location';
 import OfficeViewer from '../OfficeViewer';
-import * as util from '../../../util';
 import { CLASS_HIDDEN } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 
@@ -298,7 +298,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
         it('should correctly set the action URL', () => {
             expect(stubs.formEl.getAttribute('action')).to.equal(
-                `${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=${stubs.sessionContext}`
+                `${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${
+                    office.options.location.locale
+                }&WOPISrc=src&sc=${stubs.sessionContext}`
             );
             expect(stubs.formEl.getAttribute('method')).to.equal('POST');
             expect(stubs.formEl.getAttribute('target')).to.equal(OFFICE_ONLINE_IFRAME_NAME);
@@ -466,7 +468,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
     describe('fetchPrintBlob()', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve({ blob: 'blob' });
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.get = sandbox.stub(api, 'get').returns(stubs.promise);
             stubs.appendAuthHeader = sandbox.stub(office, 'appendAuthHeader');
             office.initPrint();
         });

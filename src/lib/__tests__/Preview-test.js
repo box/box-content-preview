@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import fetchMock from 'fetch-mock';
+import api from '../api';
 import Preview from '../Preview';
 import loaders from '../loaders';
 import Logger from '../Logger';
@@ -40,7 +40,6 @@ describe('lib/Preview', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        fetchMock.restore();
         preview.destroy();
         preview = null;
         stubs = null;
@@ -818,7 +817,7 @@ describe('lib/Preview', () => {
 
             sandbox.stub(file, 'getDownloadURL');
             sandbox.stub(preview, 'getRequestHeaders');
-            sandbox.stub(util, 'get');
+            sandbox.stub(api, 'get');
         });
 
         it('should show error notification and not download file if file cannot be downloaded', () => {
@@ -873,7 +872,7 @@ describe('lib/Preview', () => {
             const promise = Promise.resolve({
                 download_url: url
             });
-            util.get.returns(promise);
+            api.get.returns(promise);
 
             preview.download();
 
@@ -893,7 +892,7 @@ describe('lib/Preview', () => {
                 download_url: url
             });
 
-            util.get.returns(promise);
+            api.get.returns(promise);
             preview.download();
             expect(preview.emit).to.be.calledWith('preview_metric');
         });
@@ -1365,7 +1364,7 @@ describe('lib/Preview', () => {
     describe('loadFromServer()', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve('file');
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.get = sandbox.stub(api, 'get').returns(stubs.promise);
             stubs.handleFileInfoResponse = sandbox.stub(preview, 'handleFileInfoResponse');
             stubs.handleFetchError = sandbox.stub(preview, 'handleFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
@@ -1998,14 +1997,14 @@ describe('lib/Preview', () => {
         });
 
         it('should get the headers for the post request', () => {
-            sandbox.stub(util, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
 
             preview.logPreviewEvent(0, {});
             expect(stubs.getHeaders).to.be.called;
         });
 
         it('should reset the log retry count on a successful post', () => {
-            sandbox.stub(util, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
             preview.logRetryCount = 3;
 
             preview.logPreviewEvent(0, {});
@@ -2016,7 +2015,7 @@ describe('lib/Preview', () => {
 
         it('should reset the log retry count if the post fails and retry limit has been reached', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
-            sandbox.stub(util, 'post').returns(promiseReject);
+            sandbox.stub(api, 'post').returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
 
@@ -2030,7 +2029,7 @@ describe('lib/Preview', () => {
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox
-                .stub(util, 'post')
+                .stub(api, 'post')
                 .onCall(0)
                 .returns(promiseReject);
             preview.logRetryCount = 3;
@@ -2452,7 +2451,7 @@ describe('lib/Preview', () => {
                 id: 0
             });
 
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.getPromiseResolve);
+            stubs.get = sandbox.stub(api, 'get').returns(stubs.getPromiseResolve);
             stubs.getURL = sandbox.stub(file, 'getURL');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
             stubs.set = sandbox.stub(preview.cache, 'set');
