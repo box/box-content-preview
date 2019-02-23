@@ -28,13 +28,15 @@ $thumbnail-border-radius: 4px;
         width: 34px;
     }
 
-    .bp-thumbnail-button {
+    .bp-thumbnail-nav {
         background-color: $d-eight;
         border: $thumbnail-border-radius solid $ffive;
         border-radius: $thumbnail-border-radius;
         cursor: pointer;
         flex: 1 0 auto;
+        padding: 0;
         overflow: hidden;
+        width: 134px;
     }
 
     .bp-thumbnail-image {
@@ -44,7 +46,7 @@ $thumbnail-border-radius: 4px;
         pointer-events: none;
     }
 
-    .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-button {
+    .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-nav {
         border-color: $fours;
     }
 }

@@ -4,7 +4,7 @@ import { CLASS_HIDDEN } from './constants';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
-const CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON = 'bp-thumbnail-button';
+const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
@@ -71,7 +71,7 @@ class ThumbnailsSidebar {
         // Only care about clicks on the thumbnail element itself.
         // The image and page number have pointer-events: none so
         // any click should be the thumbnail element itself.
-        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON)) {
+        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_NAV)) {
             const thumbnailEl = target.parentNode;
             // Get the page number
             const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
@@ -205,8 +205,8 @@ class ThumbnailsSidebar {
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
-        const thumbnailButton = this.createThumbnailButton();
-        thumbnailEl.appendChild(thumbnailButton);
+        const thumbnailNav = this.createThumbnailNav();
+        thumbnailEl.appendChild(thumbnailNav);
 
         if (pageNum === this.currentPage) {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
@@ -216,7 +216,7 @@ class ThumbnailsSidebar {
         // the second render image pass
         const cachedImage = this.thumbnailImageCache.get(itemIndex);
         if (cachedImage && !cachedImage.inProgress) {
-            thumbnailButton.appendChild(cachedImage.image);
+            thumbnailNav.appendChild(cachedImage.image);
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
         }
 
@@ -224,14 +224,13 @@ class ThumbnailsSidebar {
     }
 
     /**
-     * Creates the thumbnail button element
-     * @return {HTMLElement} - thumbnail button element
+     * Creates the thumbnail navigation element
+     * @return {HTMLElement} - thumbnail anchor element
      */
-    createThumbnailButton() {
-        const thumbnailButton = document.createElement('button');
-        thumbnailButton.setAttribute('type', 'button');
-        thumbnailButton.className = CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON;
-        return thumbnailButton;
+    createThumbnailNav() {
+        const thumbnailNav = document.createElement('a');
+        thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
+        return thumbnailNav;
     }
 
     /**

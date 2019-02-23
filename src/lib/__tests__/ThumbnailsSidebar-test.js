@@ -323,7 +323,7 @@ describe('ThumbnailsSidebar', () => {
             parentEl.dataset.bpPageNum = '3';
 
             targetEl = document.createElement('div');
-            targetEl.classList.add('bp-thumbnail-button');
+            targetEl.classList.add('bp-thumbnail-nav');
 
             parentEl.appendChild(targetEl);
 
@@ -345,7 +345,7 @@ describe('ThumbnailsSidebar', () => {
         });
 
         it('should not call the onClickHandler if target is not thumbnail element', () => {
-            targetEl.classList.remove('bp-thumbnail-button');
+            targetEl.classList.remove('bp-thumbnail-nav');
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
             expect(stubs.onClickHandler).not.to.be.called;
