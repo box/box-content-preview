@@ -4,12 +4,14 @@ import { CLASS_HIDDEN } from './constants';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
+const CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON = 'bp-thumbnail-button';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
-const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 150;
+const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 127; // 200px sidebar width - 25px margin right, - 40px for page number - 8px for border
 const THUMBNAIL_MARGIN = 15;
+const BORDER_WIDTH = 8;
 
 class ThumbnailsSidebar {
     /** @property {HTMLElement} - The anchor element for this ThumbnailsSidebar */
@@ -69,9 +71,10 @@ class ThumbnailsSidebar {
         // Only care about clicks on the thumbnail element itself.
         // The image and page number have pointer-events: none so
         // any click should be the thumbnail element itself.
-        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL)) {
+        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON)) {
+            const thumbnailEl = target.parentNode;
             // Get the page number
-            const { bpPageNum: pageNumStr } = target.dataset;
+            const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
             const pageNum = parseInt(pageNumStr, 10);
 
             if (this.onClickHandler) {
@@ -145,7 +148,7 @@ class ThumbnailsSidebar {
             this.virtualScroller.init({
                 initialRowIndex: this.currentPage - 1,
                 totalItems: this.pdfViewer.pagesCount,
-                itemHeight: this.thumbnailHeight,
+                itemHeight: this.thumbnailHeight + BORDER_WIDTH,
                 containerHeight: this.getContainerHeight(),
                 margin: THUMBNAIL_MARGIN,
                 renderItemFn: this.createPlaceholderThumbnail,
@@ -193,16 +196,17 @@ class ThumbnailsSidebar {
      * not yet have the image of the page
      *
      * @param {number} itemIndex - The item index into the overall list (0 indexed)
-     * @return {HTMLElement} - thumbnail button element
+     * @return {HTMLElement} - thumbnail element
      */
     createPlaceholderThumbnail(itemIndex) {
-        const thumbnailEl = document.createElement('button');
+        const thumbnailEl = document.createElement('div');
         const pageNum = itemIndex + 1;
 
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
-        thumbnailEl.setAttribute('type', 'button');
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
+        const thumbnailButton = this.createThumbnailButton();
+        thumbnailEl.appendChild(thumbnailButton);
 
         if (pageNum === this.currentPage) {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
@@ -212,11 +216,22 @@ class ThumbnailsSidebar {
         // the second render image pass
         const cachedImage = this.thumbnailImageCache.get(itemIndex);
         if (cachedImage && !cachedImage.inProgress) {
-            thumbnailEl.appendChild(cachedImage.image);
+            thumbnailButton.appendChild(cachedImage.image);
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
         }
 
         return thumbnailEl;
+    }
+
+    /**
+     * Creates the thumbnail button element
+     * @return {HTMLElement} - thumbnail button element
+     */
+    createThumbnailButton() {
+        const thumbnailButton = document.createElement('button');
+        thumbnailButton.setAttribute('type', 'button');
+        thumbnailButton.className = CLASS_BOX_PREVIEW_THUMBNAIL_BUTTON;
+        return thumbnailButton;
     }
 
     /**
@@ -231,7 +246,8 @@ class ThumbnailsSidebar {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
-                    thumbnailEl.appendChild(imageEl);
+                    // Appends to the lastChild which should be the thumbnail button element
+                    thumbnailEl.lastChild.appendChild(imageEl);
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }
 

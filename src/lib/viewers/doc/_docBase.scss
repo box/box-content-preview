@@ -10,55 +10,42 @@ $thumbnail-border-radius: 4px;
     }
 
     .bp-thumbnail {
-        align-items: center;
-        background-color: $d-eight;
-        border: 0;
-        border-radius: $thumbnail-border-radius;
-        cursor: pointer;
         display: flex;
         flex: 1 0 auto;
-        justify-content: center;
-        margin: 0 25px;
+        margin-right: 25px;
         padding: 0;
         position: relative;
-        width: 150px;
     }
 
     .bp-thumbnail-page-number {
-        background-color: $black;
-        border-radius: $thumbnail-border-radius;
-        bottom: 10px;
-        color: $white;
+        color: $twos;
+        flex: 0 0 34px;
         font-size: 11px;
-        left: 50%;
         line-height: 16px;
-        opacity: .7;
-        padding: 0 5px;
+        margin: 4px 6px 0 0;
         pointer-events: none;
-        position: absolute;
-        transform: translateX(-50%);
+        text-align: right;
+        width: 34px;
+    }
+
+    .bp-thumbnail-button {
+        background-color: $d-eight;
+        border: $thumbnail-border-radius solid $ffive;
+        border-radius: $thumbnail-border-radius;
+        cursor: pointer;
+        flex: 1 0 auto;
+        overflow: hidden;
     }
 
     .bp-thumbnail-image {
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
-        border-radius: $thumbnail-border-radius;
         pointer-events: none;
     }
 
-    // Applies a border *outside* the thumbnail button itself rather than
-    // contributing to the width of the button and shrinking the thumbnail
-    // image
-    .bp-thumbnail.bp-thumbnail-is-selected::after {
-        border: 4px solid $fours;
-        border-radius: $thumbnail-border-radius;
-        bottom: -2px;
-        content: '';
-        left: -2px;
-        position: absolute;
-        right: -2px;
-        top: -2px;
+    .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-button {
+        border-color: $fours;
     }
 }
 

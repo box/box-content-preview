@@ -103,7 +103,7 @@ describe('ThumbnailsSidebar', () => {
 
             return pagePromise.then(() => {
                 expect(stubs.getViewport).to.be.called;
-                expect(thumbnailsSidebar.scale).to.be.equal(15); // DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width
+                expect(thumbnailsSidebar.scale).to.be.equal(12.7); // DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width
                 expect(thumbnailsSidebar.pageRatio).to.be.equal(1);
                 expect(stubs.vsInit).to.be.called;
             });
@@ -212,7 +212,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.addClass = sandbox.stub();
 
             const thumbnailEl = {
-                appendChild: stubs.appendChild,
+                lastChild: { appendChild: stubs.appendChild },
                 classList: { add: stubs.addClass }
             };
 
@@ -282,7 +282,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 15; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH(150) / 10
+            const expScale = 12.7; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
 
             return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).to.be.called;
@@ -299,9 +299,10 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 7.5; // Should be 7.5 instead of 15 because the viewport ratio above is 0.5 instead of 1
+            const expScale = 6.3; // Should be 6.3 instead of 12.7 because the viewport ratio above is 0.5 instead of 1
+            // and because canvas width is integer, so 63.5 becomes 63
 
-            return thumbnailsSidebar.createThumbnailImage(0).then(() => {
+            return thumbnailsSidebar.getThumbnailDataURL(0).then(() => {
                 expect(stubs.getPage).to.be.called;
                 expect(stubs.getViewport.withArgs(expScale)).to.be.called;
             });
@@ -310,6 +311,7 @@ describe('ThumbnailsSidebar', () => {
 
     describe('thumbnailClickHandler()', () => {
         let targetEl;
+        let parentEl;
         let evt;
 
         beforeEach(() => {
@@ -317,9 +319,13 @@ describe('ThumbnailsSidebar', () => {
             stubs.preventDefault = sandbox.stub();
             stubs.stopImmediatePropagation = sandbox.stub();
 
+            parentEl = document.createElement('div');
+            parentEl.dataset.bpPageNum = '3';
+
             targetEl = document.createElement('div');
-            targetEl.classList.add('bp-thumbnail');
-            targetEl.dataset.bpPageNum = '3';
+            targetEl.classList.add('bp-thumbnail-button');
+
+            parentEl.appendChild(targetEl);
 
             evt = {
                 target: targetEl,
@@ -339,7 +345,7 @@ describe('ThumbnailsSidebar', () => {
         });
 
         it('should not call the onClickHandler if target is not thumbnail element', () => {
-            targetEl.classList.remove('bp-thumbnail');
+            targetEl.classList.remove('bp-thumbnail-button');
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
             expect(stubs.onClickHandler).not.to.be.called;
