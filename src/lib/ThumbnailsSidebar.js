@@ -245,7 +245,7 @@ class ThumbnailsSidebar {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
-                    // Appends to the lastChild which should be the thumbnail button element
+                    // Appends to the lastChild which should be the thumbnail nav element
                     thumbnailEl.lastChild.appendChild(imageEl);
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }
