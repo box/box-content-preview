@@ -421,6 +421,10 @@ class VirtualScroller {
             // will get rendered.
             const topPosition = (this.itemHeight + this.margin) * rowIndex;
             this.scrollingEl.scrollTop = topPosition;
+            // Some browsers don't fire the scroll event when setting scrollTop
+            // (IE11 & Firefox) so we need to manually dispatch the event
+            // in order to trigger `onScrollHandler` to render the items
+            this.scrollingEl.dispatchEvent(new Event('scroll'));
         }
     }
 
