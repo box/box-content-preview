@@ -1,3 +1,21 @@
+<a name="2.1.0"></a>
+## 2.1.0 (2019-02-26)
+
+* Update: Moving thumbnail page numbers (#943) ([3a48a14](https://github.com/box/box-content-preview/commit/3a48a14)), closes [#943](https://github.com/box/box-content-preview/issues/943)
+* Chore: Address Security updates (#945) ([98c585a](https://github.com/box/box-content-preview/commit/98c585a)), closes [#945](https://github.com/box/box-content-preview/issues/945)
+* Chore: Downgrade annotations to 2.3.0 (#941) ([1af4c75](https://github.com/box/box-content-preview/commit/1af4c75)), closes [#941](https://github.com/box/box-content-preview/issues/941)
+* Chore: Replace loading doc loading animation with a GIF (#923) ([35fb9f7](https://github.com/box/box-content-preview/commit/35fb9f7)), closes [#923](https://github.com/box/box-content-preview/issues/923)
+* Fix: Apply new loading GIF to presentations (#938) ([f0507bb](https://github.com/box/box-content-preview/commit/f0507bb)), closes [#938](https://github.com/box/box-content-preview/issues/938)
+* Fix: Do not destroy fullscreen on viewer destroy (#935) ([adca14f](https://github.com/box/box-content-preview/commit/adca14f)), closes [#935](https://github.com/box/box-content-preview/issues/935)
+* Fix: Manually dispatch scroll event (#940) ([8954639](https://github.com/box/box-content-preview/commit/8954639)), closes [#940](https://github.com/box/box-content-preview/issues/940)
+* Fix: Remove .bp-content outline (#933) ([a523125](https://github.com/box/box-content-preview/commit/a523125)), closes [#933](https://github.com/box/box-content-preview/issues/933)
+* Fix: Use pointer for Thumbnails cursor (#936) ([a53d450](https://github.com/box/box-content-preview/commit/a53d450)), closes [#936](https://github.com/box/box-content-preview/issues/936)
+* Update Translations (#934) ([3121a48](https://github.com/box/box-content-preview/commit/3121a48)), closes [#934](https://github.com/box/box-content-preview/issues/934)
+* Update Translations (#942) ([bf9c94f](https://github.com/box/box-content-preview/commit/bf9c94f)), closes [#942](https://github.com/box/box-content-preview/issues/942)
+* Upgrade: Migrate from whatwg-fetch to axios for all requests (#939) ([fb76b13](https://github.com/box/box-content-preview/commit/fb76b13)), closes [#939](https://github.com/box/box-content-preview/issues/939)
+
+
+
 <a name="2.0.0"></a>
 ## 2.0.0 (2019-02-19)
 
