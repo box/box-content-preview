@@ -443,16 +443,32 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     describe('overwritePdfViewerBehavior()', () => {
-        it('should overwrite the scrollPageIntoView method', () => {
-            const setPageStub = sandbox.stub(presentation, 'setPage');
-            const page = {
-                pageNumber: 3
-            };
+        describe('should overwrite the scrollPageIntoView method', () => {
+            it('should do nothing if the viewer is not loaded', () => {
+                const setPageStub = sandbox.stub(presentation, 'setPage');
+                const page = {
+                    pageNumber: 3
+                };
 
-            presentation.overwritePdfViewerBehavior();
-            presentation.pdfViewer.scrollPageIntoView(page);
+                presentation.loaded = false;
+                presentation.overwritePdfViewerBehavior();
+                presentation.pdfViewer.scrollPageIntoView(page);
 
-            expect(setPageStub).to.not.be.called;
+                expect(setPageStub).to.not.be.called;
+            });
+
+            it('should change the page if the viewer is loaded', () => {
+                const setPageStub = sandbox.stub(presentation, 'setPage');
+                const page = {
+                    pageNumber: 3
+                };
+
+                presentation.loaded = true;
+                presentation.overwritePdfViewerBehavior();
+                presentation.pdfViewer.scrollPageIntoView(page);
+
+                expect(setPageStub).to.be.calledWith(3);
+            });
         });
 
         it('should overwrite the _getVisiblePages method', () => {

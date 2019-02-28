@@ -276,8 +276,20 @@ class PresentationViewer extends DocBaseViewer {
      */
     overwritePdfViewerBehavior() {
         // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
-        this.pdfViewer.scrollPageIntoView = () => {};
+        // This override is needed to allow PDF.js to change pages when clicking on links in a presentation that
+        // navigate to other pages
+        this.pdfViewer.scrollPageIntoView = (pageObj) => {
+            if (!this.loaded) {
+                return;
+            }
 
+            let pageNum = pageObj;
+            if (typeof pageNum !== 'number') {
+                pageNum = pageObj.pageNumber || 1;
+            }
+
+            this.setPage(pageNum);
+        };
         // Overwrite _getVisiblePages for presentations to always calculate instead of fetching visible
         // elements since we lay out presentations differently
         this.pdfViewer._getVisiblePages = () => {
