@@ -1,3 +1,10 @@
+<a name="2.1.1"></a>
+## <small>2.1.1 (2019-03-01)</small>
+
+* Fix: Fix internal presentation links (#946) ([e575a89](https://github.com/box/box-content-preview/commit/e575a89)), closes [#946](https://github.com/box/box-content-preview/issues/946)
+
+
+
 <a name="2.1.0"></a>
 ## 2.1.0 (2019-02-26)
 
