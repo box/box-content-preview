@@ -1344,6 +1344,7 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric({ name: metricName, data: pagesCount });
         this.emit(eventName);
 
+        // Resize after the CSS animation to toggle the sidebar is complete
         setTimeout(() => this.resize(), THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
