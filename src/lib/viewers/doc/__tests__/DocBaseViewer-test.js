@@ -22,7 +22,7 @@ import {
     ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_CONTENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
 } from '../../../constants';
 import {
     ICON_PRINT_CHECKMARK,
@@ -2262,9 +2262,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             thumbnailsSidebar.isOpen = true;
 
             docBase.toggleThumbnails();
-            clock.tick(300);
+            clock.tick(301);
 
-            expect(stubs.classListRemove).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
+            expect(stubs.classListAdd).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             expect(stubs.toggleSidebar).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
@@ -2276,9 +2276,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer = { pagesCount: 10 };
 
             docBase.toggleThumbnails();
-            clock.tick(300);
+            clock.tick(301);
 
-            expect(stubs.classListAdd).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
+            expect(stubs.classListRemove).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             expect(stubs.toggleSidebar).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });

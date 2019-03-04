@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
-import { CLASS_HIDDEN } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 

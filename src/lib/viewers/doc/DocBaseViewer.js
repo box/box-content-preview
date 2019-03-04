@@ -22,7 +22,7 @@ import {
     ENCODING_TYPES,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -58,7 +58,7 @@ const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
-const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 300; // 300ms
+const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 // List of metrics to be emitted only once per session
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
@@ -128,7 +128,6 @@ class DocBaseViewer extends BaseViewer {
         this.startPageNum = this.getStartPage(this.startAt);
 
         if (this.options.enableThumbnailsSidebar) {
-            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
@@ -1333,11 +1332,11 @@ class DocBaseViewer extends BaseViewer {
         let metricName;
         let eventName;
         if (!this.thumbnailsSidebar.isOpen) {
-            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
             eventName = 'thumbnailsClose';
         } else {
-            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
             eventName = 'thumbnailsOpen';
         }
