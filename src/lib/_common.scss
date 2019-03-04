@@ -147,22 +147,24 @@ $header-height: 48px;
 
     .bp-content {
         align-items: center;
+        bottom: 0;
         display: flex;
         flex: 1 1 auto;
+        left: 0;
         outline: none;
-        position: relative;
-        // transition: left 300ms cubic-bezier(0.4, 0, 0.2, 1);
-        // position: absolute;
-        // bottom: 0;
-        // left: 0;
-        // right: 0;
-        // top: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
     }
 
     .bp-content.bp-is-fullscreen {
         background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
         width: 100%;
     }
+}
+
+.bp.bp-loaded .bp-content {
+    transition: left 300ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .accessibility-hidden {

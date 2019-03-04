@@ -35,6 +35,7 @@ export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
+export const CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED = 'bp-thumbnails-closed';
 export const CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER = 'bp-thumbnails-container';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';

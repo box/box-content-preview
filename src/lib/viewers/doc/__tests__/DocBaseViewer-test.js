@@ -21,7 +21,8 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_CONTENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED
 } from '../../../constants';
 import {
     ICON_PRINT_CHECKMARK,
@@ -72,6 +73,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
         containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
+        stubs = {};
         docBase = new DocBaseViewer({
             cache: {
                 set: () => {},
@@ -92,9 +94,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             enableThumbnailsSidebar: true
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        stubs.classListAdd = sandbox.stub();
+        stubs.classListRemove = sandbox.stub();
+        const rootEl = {
+            classList: {
+                add: stubs.classListAdd,
+                remove: stubs.classListRemove
+            }
+        };
+
         docBase.containerEl = containerEl;
+        docBase.rootEl = rootEl;
+
         docBase.setup();
-        stubs = {};
     });
 
     afterEach(() => {
@@ -2212,26 +2224,34 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('toggleThumbnails()', () => {
         let thumbnailsSidebar;
+        let clock;
 
         beforeEach(() => {
             sandbox.stub(docBase, 'resize');
             sandbox.stub(docBase, 'emitMetric');
             sandbox.stub(docBase, 'emit');
 
+            clock = sinon.useFakeTimers();
+
             stubs.toggleSidebar = sandbox.stub();
             stubs.isSidebarOpen = sandbox.stub();
 
             thumbnailsSidebar = {
                 toggle: stubs.toggleSidebar,
-                isOpen: stubs.isSidebarOpen,
+                isOpen: false,
                 destroy: () => {}
             };
+        });
+
+        afterEach(() => {
+            clock.restore();
         });
 
         it('should do nothing if thumbnails sidebar does not exist', () => {
             docBase.thumbnailsSidebar = undefined;
 
             docBase.toggleThumbnails();
+            clock.tick(300);
 
             expect(docBase.resize).not.to.be.called;
         });
@@ -2239,12 +2259,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should toggle open and resize the viewer', () => {
             docBase.thumbnailsSidebar = thumbnailsSidebar;
             docBase.pdfViewer = { pagesCount: 10 };
-            stubs.isSidebarOpen.returns(true);
+            thumbnailsSidebar.isOpen = true;
 
             docBase.toggleThumbnails();
+            clock.tick(300);
 
+            expect(stubs.classListRemove).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
             expect(stubs.toggleSidebar).to.be.called;
-            expect(stubs.isSidebarOpen).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
             expect(docBase.emit).to.be.calledWith('thumbnailsOpen');
@@ -2253,12 +2274,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should toggle close and resize the viewer', () => {
             docBase.thumbnailsSidebar = thumbnailsSidebar;
             docBase.pdfViewer = { pagesCount: 10 };
-            stubs.isSidebarOpen.returns(false);
 
             docBase.toggleThumbnails();
+            clock.tick(300);
 
+            expect(stubs.classListAdd).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSED);
             expect(stubs.toggleSidebar).to.be.called;
-            expect(stubs.isSidebarOpen).to.be.called;
             expect(docBase.resize).to.be.called;
             expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
             expect(docBase.emit).to.be.calledWith('thumbnailsClose');
