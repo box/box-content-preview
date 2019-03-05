@@ -5,7 +5,6 @@ const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
 const PROD_CUSTOM_HOST_SUFFIX = 'boxcloud.com';
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
-const VALID_CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/dl\d+|^https:\/\/dl-las\./;
 const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/.+?\./;
 
 let IS_STORAGE_AVAILABLE;
@@ -50,12 +49,11 @@ class DownloadReachability {
      * @return {boolean} - HTTP response
      */
     static isCustomDownloadHost(downloadUrl) {
-        // A custom download host either
-        // 1. begins with a numbered dl hostname
-        // 2. or starts with a custom prefix and ends with boxcloud.com
+        // A custom download host:
+        // 1. does not begin with the default "dl." and
+        // 2. ends with boxcloud.com
         return (
-            !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) &&
-            (!!downloadUrl.match(VALID_CUSTOM_HOST_PREFIX_REGEX) || downloadUrl.indexOf(PROD_CUSTOM_HOST_SUFFIX) !== -1)
+            !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && downloadUrl.indexOf(PROD_CUSTOM_HOST_SUFFIX) !== -1
         );
     }
 

@@ -27,10 +27,14 @@ describe('lib/DownloadReachability', () => {
             { title: 'default prefix', url: 'https://dl.boxcloud.com/foo', expectedValue: false },
             { title: 'google', url: 'https://www.google.com', expectedValue: false },
             { title: 'has boxcloud domain', url: 'https://kld3lk.boxcloud.com', expectedValue: true },
-            { title: 'number host prefix for inside-box', url: 'https://dl3.user.inside-box.net', expectedValue: true },
+            {
+                title: 'number host prefix for inside-box',
+                url: 'https://dl3.user.inside-box.net',
+                expectedValue: false
+            },
             { title: 'default prefix for inside-box', url: 'https://dl.user.inside-box.net', expectedValue: false },
             { title: 'dl-hnl for inside-box', url: 'https://dl-hnl.user.inside-box.net', expectedValue: false },
-            { title: 'dl-las for inside-box', url: 'https://dl-las.user.inside-box.net', expectedValue: true }
+            { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true }
         ];
 
         tests.forEach((testData) => {
