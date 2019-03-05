@@ -22,28 +22,22 @@ describe('lib/DownloadReachability', () => {
     });
 
     describe('isCustomDownloadHost()', () => {
-        it('should be true if the url does not start with the default host prefix but is a dl host', () => {
-            let url = 'https://dl3.boxcloud.com/foo';
-            const result = DownloadReachability.isCustomDownloadHost(url);
-            expect(result).to.be.true;
+        const tests = [
+            { title: 'number host prefix', url: 'https://dl3.boxcloud.com/foo', expectedValue: true },
+            { title: 'default prefix', url: 'https://dl.boxcloud.com/foo', expectedValue: false },
+            { title: 'google', url: 'https://www.google.com', expectedValue: false },
+            { title: 'has boxcloud domain', url: 'https://kld3lk.boxcloud.com', expectedValue: true },
+            { title: 'number host prefix for inside-box', url: 'https://dl3.user.inside-box.net', expectedValue: true },
+            { title: 'default prefix for inside-box', url: 'https://dl.user.inside-box.net', expectedValue: false },
+            { title: 'dl-hnl for inside-box', url: 'https://dl-hnl.user.inside-box.net', expectedValue: false },
+            { title: 'dl-las for inside-box', url: 'https://dl-las.user.inside-box.net', expectedValue: true }
+        ];
 
-            url = 'https://dl.boxcloud.com/foo';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
-
-            url = 'https://www.google.com';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
-
-            url = 'https://kld3lk.boxcloud.com';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.true;
-
-            url = 'https://dl3.user.inside-box.net';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.true;
-
-            url = 'https://dl.user.inside-box.net';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
-
-            url = 'https://dl-hnl.user.inside-box.net';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
+        tests.forEach((testData) => {
+            it(`should be ${testData.expectedValue} if the url is ${testData.title}`, () => {
+                const result = DownloadReachability.isCustomDownloadHost(testData.url);
+                expect(result).to.be[testData.expectedValue];
+            });
         });
     });
 

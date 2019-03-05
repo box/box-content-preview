@@ -5,7 +5,7 @@ const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
 const PROD_CUSTOM_HOST_SUFFIX = 'boxcloud.com';
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
-const NUMBERED_HOST_PREFIX_REGEX = /^https:\/\/dl\d+\./;
+const VALID_CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/dl\d+|^https:\/\/dl-las\./;
 const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/.+?\./;
 
 let IS_STORAGE_AVAILABLE;
@@ -55,7 +55,7 @@ class DownloadReachability {
         // 2. or starts with a custom prefix and ends with boxcloud.com
         return (
             !downloadUrl.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) &&
-            (!!downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX) || downloadUrl.indexOf(PROD_CUSTOM_HOST_SUFFIX) !== -1)
+            (!!downloadUrl.match(VALID_CUSTOM_HOST_PREFIX_REGEX) || downloadUrl.indexOf(PROD_CUSTOM_HOST_SUFFIX) !== -1)
         );
     }
 
@@ -67,12 +67,6 @@ class DownloadReachability {
      * @return {string} - The updated download URL
      */
     static replaceDownloadHostWithDefault(downloadUrl) {
-        if (downloadUrl.match(NUMBERED_HOST_PREFIX_REGEX)) {
-            // First check to see if we can swap a numbered dl prefix for the default
-            return downloadUrl.replace(NUMBERED_HOST_PREFIX_REGEX, DEFAULT_DOWNLOAD_HOST_PREFIX);
-        }
-
-        // Otherwise replace the custom prefix with the default
         return downloadUrl.replace(CUSTOM_HOST_PREFIX_REGEX, DEFAULT_DOWNLOAD_HOST_PREFIX);
     }
 
