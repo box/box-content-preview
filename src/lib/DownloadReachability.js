@@ -6,7 +6,7 @@ const PROD_CUSTOM_HOST_SUFFIX = 'boxcloud.com';
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
 const NUMBERED_HOST_PREFIX_REGEX = /^https:\/\/dl\d+\./;
-const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/[A-Za-z0-9]+./;
+const CUSTOM_HOST_PREFIX_REGEX = /^https:\/\/.+?\./;
 
 let IS_STORAGE_AVAILABLE;
 
