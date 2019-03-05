@@ -31,7 +31,7 @@ describe('Presentation Viewer', () => {
         cy.showPreview(token, fileWithLinksId);
 
         // Assert document content is present and clickable
-        cy.contains('LINK TO PAGE 1')
+        cy.contains('LINK TO PAGE 3');
         
         // Internal links should be rendered with <a> tags by PDF.js
         cy.getByTestId('bp-content').find('a').click();
