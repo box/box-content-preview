@@ -22,29 +22,30 @@ describe('lib/DownloadReachability', () => {
     });
 
     describe('isCustomDownloadHost()', () => {
-        it('should be true if the url does not start with the default host prefix but is a dl host', () => {
-            let url = 'https://dl3.boxcloud.com/foo';
-            const result = DownloadReachability.isCustomDownloadHost(url);
-            expect(result).to.be.true;
+        const tests = [
+            { title: 'number host prefix', url: 'https://dl3.boxcloud.com/foo', expectedValue: true },
+            { title: 'default prefix', url: 'https://dl.boxcloud.com/foo', expectedValue: false },
+            { title: 'google', url: 'https://www.google.com', expectedValue: false },
+            { title: 'has boxcloud domain', url: 'https://kld3lk.boxcloud.com', expectedValue: true },
+            {
+                title: 'number host prefix for inside-box',
+                url: 'https://dl3.user.inside-box.net',
+                expectedValue: false
+            },
+            { title: 'default prefix for inside-box', url: 'https://dl.user.inside-box.net', expectedValue: false },
+            { title: 'dl-hnl for inside-box', url: 'https://dl-hnl.user.inside-box.net', expectedValue: false },
+            { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true }
+        ];
 
-            url = 'https://dl.boxcloud.com/foo';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
-
-            url = 'https://www.google.com';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
-
-            url = 'https://kld3lk.boxcloud.com';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.true;
-
-            url = 'https://dl3.user.inside-box.net';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.true;
-
-            url = 'https://dl.user.inside-box.net';
-            expect(DownloadReachability.isCustomDownloadHost(url)).to.be.false;
+        tests.forEach((testData) => {
+            it(`should be ${testData.expectedValue} if the url is ${testData.title}`, () => {
+                const result = DownloadReachability.isCustomDownloadHost(testData.url);
+                expect(result).to.be[testData.expectedValue];
+            });
         });
     });
 
-    describe('replaceDownloadHostWithDefault()', () => {
+    describe('setDownloadHostNotificationShown()', () => {
         it('should add the given host to the array of shown hosts', () => {
             const blockedHost = 'https://dl3.boxcloud.com';
 
@@ -207,6 +208,38 @@ describe('lib/DownloadReachability', () => {
 
             expect(util.openUrlInsideIframe.getCall(0).args[0]).to.equal(downloadUrl);
             expect(util.openUrlInsideIframe.getCall(0).args[1]).to.equal(defaultDownloadUrl);
+        });
+    });
+
+    describe('replaceDownloadHostWithDefault()', () => {
+        const tests = [
+            {
+                title: 'numbered host',
+                downloadUrl: 'https://dl3.boxcloud.com',
+                expectedResult: 'https://dl.boxcloud.com'
+            },
+            {
+                title: 'two digit numbered host',
+                downloadUrl: 'https://dl34.boxcloud.com',
+                expectedResult: 'https://dl.boxcloud.com'
+            },
+            { title: 'google', downloadUrl: 'https://www.google.com', expectedResult: 'https://dl.google.com' },
+            { title: 'aws', downloadUrl: 'https://kld3lk.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
+            {
+                title: 'inside-box',
+                downloadUrl: 'https://dl3.user.inside-box.net',
+                expectedResult: 'https://dl.user.inside-box.net'
+            },
+            { title: 'dl-las', downloadUrl: 'https://dl-las.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' }
+        ];
+
+        tests.forEach((testData) => {
+            it(`should replace host with default: ${testData.title}`, () => {
+                expect(
+                    DownloadReachability.replaceDownloadHostWithDefault(testData.downloadUrl),
+                    testData.expectedResult
+                );
+            });
         });
     });
 });
