@@ -1,3 +1,13 @@
+<a name="2.2.0"></a>
+## 2.2.0 (2019-03-05)
+
+* Fix: DownloadReachability regex (#950) ([9cb9f7c](https://github.com/box/box-content-preview/commit/9cb9f7c)), closes [#950](https://github.com/box/box-content-preview/issues/950)
+* Fix: Fix internal presentation links (#946) ([e575a89](https://github.com/box/box-content-preview/commit/e575a89)), closes [#946](https://github.com/box/box-content-preview/issues/946)
+* Chore: Update test file location (#949) ([904d452](https://github.com/box/box-content-preview/commit/904d452)), closes [#949](https://github.com/box/box-content-preview/issues/949)
+* Update Translations (#947) ([7e3b86c](https://github.com/box/box-content-preview/commit/7e3b86c)), closes [#947](https://github.com/box/box-content-preview/issues/947)
+
+
+
 <a name="2.1.0"></a>
 ## 2.1.0 (2019-02-26)
 
