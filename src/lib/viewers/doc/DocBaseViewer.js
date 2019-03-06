@@ -1367,10 +1367,10 @@ class DocBaseViewer extends BaseViewer {
 
         switch (data.event) {
             case ANNOTATOR_EVENT.modeEnter:
-                this.thumbnailsSidebarEl.classList.add('bp-thumbnails-dark');
+                this.thumbnailsSidebarEl.classList.add('bp-thumbnails-container--dark');
                 break;
             case ANNOTATOR_EVENT.modeExit:
-                this.thumbnailsSidebarEl.classList.remove('bp-thumbnails-dark');
+                this.thumbnailsSidebarEl.classList.remove('bp-thumbnails-container--dark');
                 break;
             default:
         }
