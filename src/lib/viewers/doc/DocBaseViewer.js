@@ -20,7 +20,8 @@ import {
     STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    ANNOTATOR_EVENT
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -1350,6 +1351,29 @@ class DocBaseViewer extends BaseViewer {
      */
     getMetricsWhitelist() {
         return METRICS_WHITELIST;
+    }
+
+    /**
+     * Extra handling of the annotation mode enter and exit events in order to apply
+     * the dark styling to the thumbnails sidebar
+     * @override
+     */
+    handleAnnotatorEvents(data) {
+        super.handleAnnotatorEvents(data);
+
+        if (!this.thumbnailsSidebarEl) {
+            return;
+        }
+
+        switch (data.event) {
+            case ANNOTATOR_EVENT.modeEnter:
+                this.thumbnailsSidebarEl.classList.add('bp-thumbnails-container--dark');
+                break;
+            case ANNOTATOR_EVENT.modeExit:
+                this.thumbnailsSidebarEl.classList.remove('bp-thumbnails-container--dark');
+                break;
+            default:
+        }
     }
 }
 

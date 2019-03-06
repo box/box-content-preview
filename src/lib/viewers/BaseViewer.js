@@ -28,7 +28,8 @@ import {
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
     STATUS_VIEWABLE,
-    SELECTOR_BOX_PREVIEW
+    SELECTOR_BOX_PREVIEW,
+    ANNOTATOR_EVENT
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -57,13 +58,6 @@ const ANNOTATION_BUTTONS = {
         title: __('annotation_draw_toggle'),
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
     }
-};
-const ANNOTATOR_EVENT = {
-    modeEnter: 'annotationmodeenter',
-    modeExit: 'annotationmodeexit',
-    fetch: 'annotationsfetched',
-    error: 'annotationerror',
-    scale: 'scaleannotations'
 };
 
 const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';

@@ -2276,4 +2276,56 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.getMetricsWhitelist()).to.be.eql(expWhitelist);
         });
     });
+
+    describe('handleAnnotatorEvents()', () => {
+        let thumbnailsSidebarEl;
+
+        beforeEach(() => {
+            stubs.classListAdd = sandbox.stub();
+            stubs.classListRemove = sandbox.stub();
+
+            thumbnailsSidebarEl = {
+                classList: {
+                    add: stubs.classListAdd,
+                    remove: stubs.classListRemove
+                }
+            };
+
+            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+
+            stubs.handleAnnotatorEvents = sandbox.stub(BaseViewer.prototype, 'handleAnnotatorEvents');
+        });
+
+        it('should do nothing if thumbnails sidebar element does not exist', () => {
+            docBase.thumbnailsSidebarEl = null;
+
+            docBase.handleAnnotatorEvents();
+
+            expect(stubs.classListAdd).not.to.be.called;
+            expect(stubs.classListRemove).not.to.be.called;
+
+            docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+        });
+
+        it('should add a class if annotator mode enter', () => {
+            docBase.handleAnnotatorEvents({ event: 'annotationmodeenter' });
+
+            expect(stubs.classListAdd).to.be.called;
+            expect(stubs.classListRemove).not.to.be.called;
+        });
+
+        it('should remove a class if annotator mode exit', () => {
+            docBase.handleAnnotatorEvents({ event: 'annotationmodeexit' });
+
+            expect(stubs.classListAdd).not.to.be.called;
+            expect(stubs.classListRemove).to.be.called;
+        });
+
+        it('should do nothing if another annotator mode event', () => {
+            docBase.handleAnnotatorEvents({ event: 'annotationeventfoo' });
+
+            expect(stubs.classListAdd).not.to.be.called;
+            expect(stubs.classListRemove).not.to.be.called;
+        });
+    });
 });

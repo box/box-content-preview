@@ -49,6 +49,23 @@ $thumbnail-border-radius: 4px;
     .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-nav {
         border-color: $fours;
     }
+
+    .bp-thumbnails-container--dark {
+        background-color: $fours;
+        border-right-color: $black;
+
+        .bp-thumbnail-page-number {
+            color: $white;
+        }
+
+        .bp-thumbnail-nav {
+            border-color: $fours;
+        }
+
+        .bp-thumbnail-is-selected .bp-thumbnail-nav {
+            border-color: $black;
+        }
+    }
 }
 
 .bp-theme-dark {

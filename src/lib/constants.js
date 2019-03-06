@@ -117,3 +117,11 @@ export const QUERY_PARAM_ENCODING = 'encoding';
 export const ENCODING_TYPES = {
     GZIP: 'gzip'
 };
+
+export const ANNOTATOR_EVENT = {
+    modeEnter: 'annotationmodeenter',
+    modeExit: 'annotationmodeexit',
+    fetch: 'annotationsfetched',
+    error: 'annotationerror',
+    scale: 'scaleannotations'
+};
