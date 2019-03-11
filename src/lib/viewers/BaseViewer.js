@@ -29,7 +29,8 @@ import {
     STATUS_SUCCESS,
     STATUS_VIEWABLE,
     SELECTOR_BOX_PREVIEW,
-    ANNOTATOR_EVENT
+    ANNOTATOR_EVENT,
+    CLASS_BOX_PREVIEW_HAS_VIEWER
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -156,6 +157,10 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     setup() {
+        if (this.isSetup()) {
+            return;
+        }
+
         if (this.options.file) {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
@@ -193,6 +198,14 @@ class BaseViewer extends EventEmitter {
                 this.annotatorPromiseResolver = resolve;
             });
         }
+    }
+
+    /**
+     * Checks to see whether the viewer has been setup already
+     * @return {boolean} - Boolean whether the viewer has been set up yet
+     */
+    isSetup() {
+        return this.containerEl && this.containerEl.classList.contains(CLASS_BOX_PREVIEW_HAS_VIEWER);
     }
 
     /**
@@ -234,6 +247,7 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
+            this.containerEl.classList.remove(CLASS_BOX_PREVIEW_HAS_VIEWER);
         }
 
         // Destroy the annotator
@@ -1149,6 +1163,8 @@ class BaseViewer extends EventEmitter {
             // file buttons on top of the previewed content
             addedElement = this.containerEl.insertBefore(element, firstChildEl);
         }
+
+        this.containerEl.classList.add(CLASS_BOX_PREVIEW_HAS_VIEWER);
 
         return addedElement;
     }

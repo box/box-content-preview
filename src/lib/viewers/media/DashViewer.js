@@ -44,6 +44,10 @@ class DashViewer extends VideoBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup()) {
+            return;
+        }
+
         // Call super() first to set up common layout
         super.setup();
 

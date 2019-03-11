@@ -12,6 +12,10 @@ class DocumentViewer extends DocBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup()) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-document');

@@ -8,6 +8,10 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup()) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
 
