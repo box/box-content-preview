@@ -12,4 +12,29 @@ describe('Preview Sanity', () => {
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
     });
+
+    it('Should reload without server update', () => {
+        cy.showPreview(token, fileId);
+        cy.getPreviewPage(1);
+        cy.contains('The Content Platform for Your Apps');
+
+        cy.window().then((win) => {
+            win.preview.reload(true);
+            cy.getByTestId('bp-content').find('.bp-loading-wrapper').should('be.visible');
+            cy.getPreviewPage(1);
+            cy.contains('The Content Platform for Your Apps');
+        });
+    });
+
+    it('Should reload with server update', () => {
+        cy.showPreview(token, fileId);
+        cy.getPreviewPage(1);
+        cy.contains('The Content Platform for Your Apps');
+
+        cy.window().then((win) => {
+            win.preview.reload();
+            cy.getPreviewPage(1);
+            cy.contains('The Content Platform for Your Apps');
+        });
+    });
 });

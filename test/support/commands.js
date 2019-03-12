@@ -6,7 +6,7 @@ Cypress.Commands.add('getPreviewPage', (pageNum) => {
         .as('previewPage')
         // Adding timeout here because sometimes it takes more than the Cypress
         // default timeout to render the preview
-        .find('[data-testid="page-loading-indicator"]', { timeout: 15000 })
+        .find('.loadingIcon', { timeout: 15000 })
         .should('not.exist');
 
     return cy.get('@previewPage');
