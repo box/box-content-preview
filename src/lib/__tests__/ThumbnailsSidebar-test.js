@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
-import { CLASS_HIDDEN } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 
@@ -431,7 +430,6 @@ describe('ThumbnailsSidebar', () => {
 
     describe('toggle()', () => {
         beforeEach(() => {
-            stubs.isOpen = sandbox.stub(thumbnailsSidebar, 'isOpen');
             stubs.toggleOpen = sandbox.stub(thumbnailsSidebar, 'toggleOpen');
             stubs.toggleClose = sandbox.stub(thumbnailsSidebar, 'toggleClose');
         });
@@ -441,7 +439,6 @@ describe('ThumbnailsSidebar', () => {
 
             thumbnailsSidebar.toggle();
 
-            expect(stubs.isOpen).not.to.be.called;
             expect(stubs.toggleOpen).not.to.be.called;
             expect(stubs.toggleClose).not.to.be.called;
 
@@ -449,21 +446,19 @@ describe('ThumbnailsSidebar', () => {
         });
 
         it('should toggle open if it was closed', () => {
-            stubs.isOpen.returns(false);
+            thumbnailsSidebar.isOpen = false;
 
             thumbnailsSidebar.toggle();
 
-            expect(stubs.isOpen).to.be.called;
             expect(stubs.toggleOpen).to.be.called;
             expect(stubs.toggleClose).not.to.be.called;
         });
 
         it('should toggle closed if it was open', () => {
-            stubs.isOpen.returns(true);
+            thumbnailsSidebar.isOpen = true;
 
             thumbnailsSidebar.toggle();
 
-            expect(stubs.isOpen).to.be.called;
             expect(stubs.toggleOpen).not.to.be.called;
             expect(stubs.toggleClose).to.be.called;
         });
@@ -475,15 +470,14 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.virtualScroller = virtualScroller;
         });
 
-        it('should do nothing if there is no anchorEl', () => {
-            thumbnailsSidebar.anchorEl = null;
+        it('should do nothing if there is no virtualScroller', () => {
+            thumbnailsSidebar.virtualScroller = null;
+            thumbnailsSidebar.isOpen = false;
 
             thumbnailsSidebar.toggleOpen();
 
-            expect(stubs.removeClass).not.to.be.called;
+            expect(thumbnailsSidebar.isOpen).to.be.false;
             expect(stubs.vsScrollIntoView).not.to.be.called;
-
-            thumbnailsSidebar.anchorEl = anchorEl;
         });
 
         it('should remove the hidden class and scroll the page into view', () => {
@@ -491,30 +485,18 @@ describe('ThumbnailsSidebar', () => {
 
             thumbnailsSidebar.toggleOpen();
 
-            expect(stubs.removeClass).to.be.calledWith(CLASS_HIDDEN);
+            expect(thumbnailsSidebar.isOpen).to.be.true;
             expect(stubs.vsScrollIntoView).to.be.calledWith(2);
         });
     });
 
     describe('toggleClose()', () => {
-        beforeEach(() => {
-            stubs.addClass = sandbox.stub(thumbnailsSidebar.anchorEl.classList, 'add');
-        });
-
-        it('should do nothing if there is no anchorEl', () => {
-            thumbnailsSidebar.anchorEl = null;
+        it('should set isOpen to false', () => {
+            thumbnailsSidebar.isOpen = true;
 
             thumbnailsSidebar.toggleClose();
 
-            expect(stubs.addClass).not.to.be.called;
-
-            thumbnailsSidebar.anchorEl = anchorEl;
-        });
-
-        it('should add the hidden class', () => {
-            thumbnailsSidebar.toggleClose();
-
-            expect(stubs.addClass).to.be.calledWith(CLASS_HIDDEN);
+            expect(thumbnailsSidebar.isOpen).to.be.false;
         });
     });
 });

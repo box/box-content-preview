@@ -44,9 +44,9 @@ describe('Preview Document Thumbnails', () => {
     it('Should render thumbnails when toggled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        toggleThumbnails().should('be.visible');
+        toggleThumbnails().should('have.css', 'transform', 'matrix(1, 0, 0, 1, 0, 0)'); // translateX(0)
 
-        toggleThumbnails().should('not.be.visible');
+        toggleThumbnails().should('have.css', 'transform', 'matrix(1, 0, 0, 1, -201, 0)'); // translateX(-201px)
     });
 
     it('Should be able to change page by clicking on the thumbnail', () => {
