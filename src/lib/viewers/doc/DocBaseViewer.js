@@ -190,6 +190,8 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.destroy();
+            this.thumbnailsSidebarEl.remove();
+            this.thumbnailsSidebarEl = null;
         }
 
         super.destroy();
