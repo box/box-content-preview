@@ -63,7 +63,7 @@ describe('lib/viewers/SWFViewer', () => {
             sandbox.stub(swf, 'setup');
 
             return swf.load().then(() => {
-                expect(swf.setup).to.be.called;
+                expect(swf.setup).not.to.be.called;
                 expect(swf.postLoad).to.be.called;
             });
         });
@@ -85,26 +85,29 @@ describe('lib/viewers/SWFViewer', () => {
     describe('postLoad()', () => {
         it('should call embedSWF', () => {
             const contentUrl = 'someurl';
-            sandbox.mock(swfobject).expects('embedSWF').withArgs(
-                contentUrl,
-                'flash-player',
-                '100%',
-                '100%',
-                '9',
-                null,
-                null,
-                {
-                    allowfullscreen: 'true',
-                    allowFullScreen: 'true',
-                    allownetworking: 'none',
-                    allowNetworking: 'none',
-                    allowscriptaccess: 'never',
-                    allowScriptAccess: 'never',
-                    wmode: 'transparent'
-                },
-                null,
-                sinon.match.func
-            );
+            sandbox
+                .mock(swfobject)
+                .expects('embedSWF')
+                .withArgs(
+                    contentUrl,
+                    'flash-player',
+                    '100%',
+                    '100%',
+                    '9',
+                    null,
+                    null,
+                    {
+                        allowfullscreen: 'true',
+                        allowFullScreen: 'true',
+                        allownetworking: 'none',
+                        allowNetworking: 'none',
+                        allowscriptaccess: 'never',
+                        allowScriptAccess: 'never',
+                        wmode: 'transparent'
+                    },
+                    null,
+                    sinon.match.func
+                );
             sandbox.stub(swf, 'createContentUrlWithAuthParams').returns(contentUrl);
 
             swf.postLoad();

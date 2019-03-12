@@ -11,6 +11,10 @@ class Image360Viewer extends Box3DViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
 

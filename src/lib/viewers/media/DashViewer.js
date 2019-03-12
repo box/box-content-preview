@@ -44,6 +44,10 @@ class DashViewer extends VideoBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() first to set up common layout
         super.setup();
 
@@ -100,7 +104,6 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);

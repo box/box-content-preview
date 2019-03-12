@@ -29,6 +29,10 @@ class MultiImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
 
@@ -72,7 +76,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {Promise} Promise to load bunch of images
      */
     load() {
-        this.setup();
         super.load();
 
         // Hides images until content is loaded

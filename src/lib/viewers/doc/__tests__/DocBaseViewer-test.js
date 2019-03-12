@@ -506,7 +506,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             return docBase.load().then(() => {
                 expect(docBase.loadAssets).to.be.called;
-                expect(docBase.setup).to.be.called;
+                expect(docBase.setup).not.to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
                 expect(docBase.handleAssetAndRepLoad).to.be.called;
             });

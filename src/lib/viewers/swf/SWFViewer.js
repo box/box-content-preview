@@ -19,6 +19,10 @@ class SWFViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
         this.playerEl = this.createViewer(document.createElement('div'));
@@ -32,7 +36,6 @@ class SWFViewer extends BaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
         return this.loadAssets(JS)
             .then(this.postLoad)

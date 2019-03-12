@@ -18,6 +18,7 @@ import {
     replacePlaceholders
 } from '../util';
 import {
+    ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -26,10 +27,9 @@ import {
     SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
-    STATUS_SUCCESS,
-    STATUS_VIEWABLE,
     SELECTOR_BOX_PREVIEW,
-    ANNOTATOR_EVENT
+    STATUS_SUCCESS,
+    STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -114,6 +114,9 @@ class BaseViewer extends EventEmitter {
     /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
     containerEl;
 
+    /** @property {boolean} - Stores whether the Viewer has been setup yet. */
+    isSetup = false;
+
     /**
      * [constructor]
      *
@@ -156,6 +159,10 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         if (this.options.file) {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
@@ -193,6 +200,8 @@ class BaseViewer extends EventEmitter {
                 this.annotatorPromiseResolver = resolve;
             });
         }
+
+        this.isSetup = true;
     }
 
     /**

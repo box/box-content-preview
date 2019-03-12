@@ -47,7 +47,6 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {Promise} to load text representation and assets
      */
     load() {
-        this.setup();
         super.load();
 
         const loadAssetsPromise = this.loadAssets(this.getJS(), this.getCSS());
@@ -106,6 +105,10 @@ class PlainTextViewer extends TextBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() first to set up common layout
         super.setup();
 

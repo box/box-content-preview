@@ -21,6 +21,10 @@ class PreviewErrorViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() first to set up common layout
         super.setup();
 
@@ -65,8 +69,6 @@ class PreviewErrorViewer extends BaseViewer {
      * @return {void}
      */
     load(err) {
-        this.setup();
-
         const error =
             err instanceof PreviewError
                 ? err

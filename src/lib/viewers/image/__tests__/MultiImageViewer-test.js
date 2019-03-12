@@ -67,6 +67,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             value: sandbox.stub().returns(Promise.resolve())
         });
         multiImage.containerEl = containerEl;
+        multiImage.setup();
     });
 
     afterEach(() => {

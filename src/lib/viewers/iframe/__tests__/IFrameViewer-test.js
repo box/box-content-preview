@@ -25,6 +25,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         iframe.containerEl = containerEl;
+        iframe.setup();
     });
 
     afterEach(() => {
@@ -41,7 +42,6 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
     describe('setup()', () => {
         it('should setup iframe element and load timeout', () => {
-            iframe.setup();
             expect(iframe.iframeEl).to.be.instanceof(HTMLElement);
             expect(iframe.iframeEl).to.have.attribute('width', '100%');
             expect(iframe.iframeEl).to.have.attribute('height', '100%');

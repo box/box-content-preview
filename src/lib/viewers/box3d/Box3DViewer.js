@@ -62,6 +62,10 @@ class Box3DViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() to set up common layout
         super.setup();
 
@@ -179,7 +183,6 @@ class Box3DViewer extends BaseViewer {
      * @return {Promise} to load assets and representation
      */
     load() {
-        this.setup();
         super.load();
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(this.postLoad)

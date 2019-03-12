@@ -13,6 +13,10 @@ class CSVViewer extends TextBaseViewer {
      * @inheritdoc
      */
     setup() {
+        if (this.isSetup) {
+            return;
+        }
+
         // Call super() first to set up common layout
         super.setup();
 
@@ -38,7 +42,6 @@ class CSVViewer extends TextBaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
 
         const { representation, location } = this.options;
