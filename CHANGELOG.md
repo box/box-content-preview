@@ -1,3 +1,10 @@
+<a name="2.2.1"></a>
+## <small>2.2.1 (2019-03-12)</small>
+
+* Fix: Get response as text from axios (#957) ([8a2c4d3](https://github.com/box/box-content-preview/commit/8a2c4d3)), closes [#957](https://github.com/box/box-content-preview/issues/957)
+
+
+
 <a name="2.2.0"></a>
 ## 2.2.0 (2019-03-05)
 
