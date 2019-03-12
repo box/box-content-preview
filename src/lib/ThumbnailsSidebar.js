@@ -1,6 +1,5 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
-import { CLASS_HIDDEN } from './constants';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
@@ -26,6 +25,9 @@ class ThumbnailsSidebar {
     /** @property {Array<HTMLElement>} - The list of currently rendered thumbnail elements */
     currentThumbnails;
 
+    /** @property {Boolean} - Whether the sidebar is open or not */
+    isOpen;
+
     /** @property {PDfViewer} - The PDFJS viewer instance */
     pdfViewer;
 
@@ -46,6 +48,7 @@ class ThumbnailsSidebar {
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = new BoundedCache();
+        this.isOpen = false;
 
         this.createImageEl = this.createImageEl.bind(this);
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
@@ -404,7 +407,7 @@ class ThumbnailsSidebar {
             return;
         }
 
-        if (!this.isOpen()) {
+        if (!this.isOpen) {
             this.toggleOpen();
         } else {
             this.toggleClose();
@@ -412,23 +415,15 @@ class ThumbnailsSidebar {
     }
 
     /**
-     * Returns whether the sidebar is open or not
-     * @return {boolean} true if the sidebar is open, false if not
-     */
-    isOpen() {
-        return this.anchorEl && !this.anchorEl.classList.contains(CLASS_HIDDEN);
-    }
-
-    /**
      * Toggles the sidebar open. This will scroll the current page into view
      * @return {void}
      */
     toggleOpen() {
-        if (!this.anchorEl) {
+        if (!this.virtualScroller) {
             return;
         }
 
-        this.anchorEl.classList.remove(CLASS_HIDDEN);
+        this.isOpen = true;
 
         this.virtualScroller.scrollIntoView(this.currentPage - 1);
     }
@@ -438,11 +433,7 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     toggleClose() {
-        if (!this.anchorEl) {
-            return;
-        }
-
-        this.anchorEl.classList.add(CLASS_HIDDEN);
+        this.isOpen = false;
     }
 
     /**

@@ -21,7 +21,8 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    ANNOTATOR_EVENT
+    ANNOTATOR_EVENT,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -39,24 +40,25 @@ import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
-const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
-const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const PRINT_DIALOG_TIMEOUT_MS = 500;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
-const MAX_PINCH_SCALE_VALUE = 3;
-const MIN_PINCH_SCALE_VALUE = 0.25;
-const MIN_PINCH_SCALE_DELTA = 0.01;
 const IS_SAFARI_CLASS = 'is-safari';
-const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
-const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
-const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
-const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
+const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
+const MAX_PINCH_SCALE_VALUE = 3;
+const MAX_SCALE = 10.0;
+const MIN_PINCH_SCALE_DELTA = 0.01;
+const MIN_PINCH_SCALE_VALUE = 0.25;
+const MIN_SCALE = 0.1;
 const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PAGES_UNIT_NAME = 'pages';
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
-const PAGES_UNIT_NAME = 'pages';
+const PRINT_DIALOG_TIMEOUT_MS = 500;
+const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
+const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
+const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
+const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
+const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 // List of metrics to be emitted only once per session
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
@@ -131,7 +133,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.options.enableThumbnailsSidebar) {
             this.thumbnailsSidebarEl = document.createElement('div');
-            this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER} ${CLASS_HIDDEN}`;
+            this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
             this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
         }
@@ -1334,10 +1336,12 @@ class DocBaseViewer extends BaseViewer {
 
         let metricName;
         let eventName;
-        if (!this.thumbnailsSidebar.isOpen()) {
+        if (!this.thumbnailsSidebar.isOpen) {
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
             eventName = 'thumbnailsClose';
         } else {
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
             eventName = 'thumbnailsOpen';
         }
@@ -1345,7 +1349,8 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric({ name: metricName, data: pagesCount });
         this.emit(eventName);
 
-        this.resize();
+        // Resize after the CSS animation to toggle the sidebar is complete
+        setTimeout(() => this.resize(), THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
     /**
