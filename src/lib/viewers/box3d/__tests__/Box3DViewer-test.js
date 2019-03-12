@@ -358,7 +358,6 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         });
 
         it('should call renderer.load()', () => {
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
             box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());

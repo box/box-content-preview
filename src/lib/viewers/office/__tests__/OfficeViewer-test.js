@@ -109,13 +109,13 @@ describe('lib/viewers/office/OfficeViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should call setup and load the Office viewer', () => {
+        it('should not call setup and load the Office viewer', () => {
             const setupStub = sandbox.stub(office, 'setup');
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.stub() });
 
             office.load();
 
-            expect(setupStub).to.be.called;
+            expect(setupStub).not.to.be.called;
             expect(BaseViewer.prototype.load).to.be.called;
         });
 

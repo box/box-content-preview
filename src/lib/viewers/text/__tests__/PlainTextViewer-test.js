@@ -115,7 +115,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(text, 'setup');
 
             return text.load().then(() => {
-                expect(text.setup).to.be.called;
+                expect(text.setup).not.to.be.called;
                 expect(text.postLoad).to.be.called;
             });
         });

@@ -29,6 +29,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         error.containerEl = containerEl;
+        error.setup();
     });
 
     afterEach(() => {
@@ -45,7 +46,6 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
     describe('setup()', () => {
         it('should set appropriate properties', () => {
-            error.setup();
             expect(error.infoEl.classList.contains('bp-error')).to.be.true;
             expect(error.iconEl instanceof HTMLElement).to.be.true;
             expect(error.iconEl.parentNode).to.equal(error.infoEl);
@@ -55,12 +55,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
     });
 
     describe('load()', () => {
-        [
-            ['zip', true],
-            ['tgz', true],
-            ['flv', true],
-            ['blah', false]
-        ].forEach((testCase) => {
+        [['zip', true], ['tgz', true], ['flv', true], ['blah', false]].forEach((testCase) => {
             it('should set appropriate icon', () => {
                 const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
                 const getIconFromNameStub = sandbox.stub(icons, 'getIconFromName');
@@ -132,11 +127,9 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             error.load(err);
 
-            expect(error.emit).to.be.calledWith(
-                VIEWER_EVENT.load, {
-                    error: 'this is bad'
-                }
-            );
+            expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
+                error: 'this is bad'
+            });
         });
 
         it('should broadcast the display message if there is no error message', () => {
@@ -145,32 +138,31 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             error.load(err);
 
-            expect(error.emit).to.be.calledWith(
-                VIEWER_EVENT.load, {
-                    error: 'display message!'
-                }
-            );
+            expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
+                error: 'display message!'
+            });
         });
 
         it('should filter out access tokens before broadcasting', () => {
             sandbox.stub(error, 'emit');
-            const err = new PreviewError('some_code', 'display', {},
+            const err = new PreviewError(
+                'some_code',
+                'display',
+                {},
                 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"'
             );
 
             error.load(err);
 
-            expect(error.emit).to.be.calledWith(
-                VIEWER_EVENT.load, {
-                    error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"'
-                }
-            );
+            expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
+                error:
+                    'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"'
+            });
         });
     });
 
     describe('addLinkButton()', () => {
         it('should add a link button with the appropriate message and URL', () => {
-            error.setup();
             error.addLinkButton('test', 'someUrl');
             const linkBtnEl = error.infoEl.querySelector('a');
 
@@ -183,7 +175,6 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
     describe('addDownloadButton()', () => {
         it('should add a download button and attach a download click handler', () => {
-            error.setup();
             sandbox.stub(error, 'download');
 
             error.addDownloadButton();
@@ -201,7 +192,6 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
     describe('download()', () => {
         it('should emit download', () => {
-            error.setup();
             sandbox.stub(error, 'emit');
             error.download();
             expect(error.emit).to.be.calledWith(VIEWER_EVENT.download);
@@ -210,7 +200,6 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
     describe('destroy()', () => {
         it('should remove download button click handler', () => {
-            error.setup();
             sandbox.stub(error, 'download');
 
             error.addDownloadButton();

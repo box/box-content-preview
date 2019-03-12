@@ -1577,7 +1577,8 @@ describe('lib/Preview', () => {
             stubs.viewer = {
                 load: sandbox.stub(),
                 addListener: sandbox.stub(),
-                getName: sandbox.stub()
+                getName: sandbox.stub(),
+                setup: sandbox.stub()
             };
 
             /* eslint-disable require-jsdoc */
@@ -2163,7 +2164,8 @@ describe('lib/Preview', () => {
     describe('triggerError()', () => {
         const ErrorViewer = {
             load: sandbox.stub(),
-            addListener: sandbox.stub()
+            addListener: sandbox.stub(),
+            setup: sandbox.stub()
         };
 
         beforeEach(() => {

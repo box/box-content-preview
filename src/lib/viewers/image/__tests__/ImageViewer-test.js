@@ -236,6 +236,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.wrapperEl.style.height = '50px';
 
             sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            image.setup();
             image.load(imageUrl).catch(() => {});
         });
 
