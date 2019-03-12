@@ -51,6 +51,8 @@ const api = {
         return response.data;
     },
 
+    transformTextResponse: (data) => data,
+
     /**
      * Wrapper function for XHR post put and delete
      *
@@ -60,7 +62,13 @@ const api = {
      * @return {Promise} - XHR promise
      */
     xhr(url, options = {}) {
-        return axios(url, api.filterOptions(options))
+        let transformResponse;
+
+        if (options.responseType === 'text') {
+            transformResponse = api.transformTextResponse;
+        }
+
+        return axios(url, api.filterOptions({ transformResponse, ...options }))
             .then(api.parseResponse)
             .catch(api.handleError);
     },
