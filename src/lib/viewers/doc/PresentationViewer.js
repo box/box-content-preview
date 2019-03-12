@@ -30,7 +30,7 @@ class PresentationViewer extends DocBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

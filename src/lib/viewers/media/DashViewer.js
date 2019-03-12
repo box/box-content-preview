@@ -44,7 +44,7 @@ class DashViewer extends VideoBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -104,7 +104,6 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);

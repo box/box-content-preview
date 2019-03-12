@@ -8,7 +8,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

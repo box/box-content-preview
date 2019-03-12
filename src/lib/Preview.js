@@ -1161,6 +1161,9 @@ class Preview extends EventEmitter {
         // Add listeners for viewer events
         this.attachViewerListeners();
 
+        // Setup the viewer DOM
+        this.viewer.setup();
+
         // Load the representation into the viewer
         this.viewer.load();
 
@@ -1471,6 +1474,9 @@ class Preview extends EventEmitter {
 
         // Instantiate the error viewer
         this.viewer = this.getErrorViewer();
+
+        // Setup error viewer
+        this.viewer.setup();
 
         // Add listeners for viewer events
         this.attachViewerListeners();

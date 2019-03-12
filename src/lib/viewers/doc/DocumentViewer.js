@@ -12,7 +12,7 @@ class DocumentViewer extends DocBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

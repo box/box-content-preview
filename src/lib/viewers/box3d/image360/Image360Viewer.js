@@ -11,7 +11,7 @@ class Image360Viewer extends Box3DViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

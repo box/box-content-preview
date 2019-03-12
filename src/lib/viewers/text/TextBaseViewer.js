@@ -20,7 +20,7 @@ class TextBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

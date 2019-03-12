@@ -9,7 +9,6 @@ export const CLASS_BOX_PREVIEW_CONTENT = 'bp-content';
 export const CLASS_BOX_PREVIEW_FIND_BAR = 'bp-find-bar';
 export const CLASS_BOX_PREVIEW_HAS_HEADER = 'bp-has-header';
 export const CLASS_BOX_PREVIEW_HAS_NAVIGATION = 'bp-has-navigation';
-export const CLASS_BOX_PREVIEW_HAS_VIEWER = 'bp-has-viewer';
 export const CLASS_BOX_PREVIEW_HEADER = 'bp-header';
 export const CLASS_BOX_PREVIEW_HEADER_CONTAINER = 'bp-header-container';
 export const CLASS_BOX_PREVIEW_BASE_HEADER = 'bp-base-header';

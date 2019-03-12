@@ -13,7 +13,7 @@ class CSVViewer extends TextBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -42,7 +42,6 @@ class CSVViewer extends TextBaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
 
         const { representation, location } = this.options;

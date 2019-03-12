@@ -62,7 +62,7 @@ class Box3DViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -183,7 +183,6 @@ class Box3DViewer extends BaseViewer {
      * @return {Promise} to load assets and representation
      */
     load() {
-        this.setup();
         super.load();
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(this.postLoad)

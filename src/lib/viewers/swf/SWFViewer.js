@@ -19,7 +19,7 @@ class SWFViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -36,7 +36,6 @@ class SWFViewer extends BaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
         return this.loadAssets(JS)
             .then(this.postLoad)

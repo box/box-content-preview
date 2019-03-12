@@ -26,7 +26,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

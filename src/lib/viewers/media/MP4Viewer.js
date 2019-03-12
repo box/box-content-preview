@@ -8,7 +8,7 @@ class MP4Viewer extends VideoBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

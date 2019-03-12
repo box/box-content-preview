@@ -12,7 +12,7 @@ class MarkdownViewer extends PlainTextViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

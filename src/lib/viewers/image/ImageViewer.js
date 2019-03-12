@@ -28,7 +28,7 @@ class ImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -53,7 +53,6 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
 
         const { representation, viewer } = this.options;

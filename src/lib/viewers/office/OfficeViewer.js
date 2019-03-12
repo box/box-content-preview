@@ -35,7 +35,7 @@ class OfficeViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -76,7 +76,6 @@ class OfficeViewer extends BaseViewer {
      * @return {void}
      */
     load() {
-        this.setup();
         super.load();
         // Negligible load timer
         this.startLoadTimer();

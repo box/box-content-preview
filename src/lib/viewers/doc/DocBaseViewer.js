@@ -100,7 +100,7 @@ class DocBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -307,7 +307,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise to resolve assets
      */
     load() {
-        this.setup();
         super.load();
         this.showPreload();
 

@@ -18,6 +18,7 @@ import {
     replacePlaceholders
 } from '../util';
 import {
+    ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -26,11 +27,9 @@ import {
     SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
-    STATUS_SUCCESS,
-    STATUS_VIEWABLE,
     SELECTOR_BOX_PREVIEW,
-    ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_HAS_VIEWER
+    STATUS_SUCCESS,
+    STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -115,6 +114,9 @@ class BaseViewer extends EventEmitter {
     /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
     containerEl;
 
+    /** @property {boolean} - Stores whether the Viewer has been setup yet. */
+    isSetup = false;
+
     /**
      * [constructor]
      *
@@ -157,7 +159,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -198,14 +200,8 @@ class BaseViewer extends EventEmitter {
                 this.annotatorPromiseResolver = resolve;
             });
         }
-    }
 
-    /**
-     * Checks to see whether the viewer has been setup already
-     * @return {boolean} - Boolean whether the viewer has been set up yet
-     */
-    isSetup() {
-        return this.containerEl && this.containerEl.classList.contains(CLASS_BOX_PREVIEW_HAS_VIEWER);
+        this.isSetup = true;
     }
 
     /**
@@ -247,7 +243,6 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
-            this.containerEl.classList.remove(CLASS_BOX_PREVIEW_HAS_VIEWER);
         }
 
         // Destroy the annotator
@@ -1163,8 +1158,6 @@ class BaseViewer extends EventEmitter {
             // file buttons on top of the previewed content
             addedElement = this.containerEl.insertBefore(element, firstChildEl);
         }
-
-        this.containerEl.classList.add(CLASS_BOX_PREVIEW_HAS_VIEWER);
 
         return addedElement;
     }

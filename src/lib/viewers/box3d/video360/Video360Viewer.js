@@ -46,7 +46,7 @@ class Video360Viewer extends DashViewer {
 
     /** @inheritdoc */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 

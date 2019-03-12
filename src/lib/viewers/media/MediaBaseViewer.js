@@ -50,7 +50,7 @@ class MediaBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -154,7 +154,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {Promise} Promise to load representations
      */
     load() {
-        this.setup();
         super.load();
 
         const template = this.options.representation.content.url_template;

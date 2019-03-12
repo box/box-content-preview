@@ -21,7 +21,7 @@ class PreviewErrorViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
@@ -69,8 +69,6 @@ class PreviewErrorViewer extends BaseViewer {
      * @return {void}
      */
     load(err) {
-        this.setup();
-
         const error =
             err instanceof PreviewError
                 ? err

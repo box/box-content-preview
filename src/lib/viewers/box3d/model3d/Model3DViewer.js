@@ -59,7 +59,7 @@ class Model3DViewer extends Box3DViewer {
      * @inheritdoc
      */
     setup() {
-        if (this.isSetup()) {
+        if (this.isSetup) {
             return;
         }
 
