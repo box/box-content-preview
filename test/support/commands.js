@@ -1,5 +1,5 @@
-Cypress.Commands.add('getByTestId', (testId, { timeout } = {}) => cy.get(`[data-testid="${testId}"]`, { timeout }));
-Cypress.Commands.add('getByTitle', (title, { timeout } = {}) => cy.get(`[title="${title}"]`, { timeout }));
+Cypress.Commands.add('getByTestId', (testId, options = {}) => cy.get(`[data-testid="${testId}"]`, options));
+Cypress.Commands.add('getByTitle', (title, options = {}) => cy.get(`[title="${title}"]`, options));
 Cypress.Commands.add('getPreviewPage', (pageNum) => {
     cy
         .get(`.page[data-page-number=${pageNum}]`)
