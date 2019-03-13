@@ -1,5 +1,5 @@
-Cypress.Commands.add('getByTestId', (testId) => cy.get(`[data-testid="${testId}"]`));
-Cypress.Commands.add('getByTitle', (title) => cy.get(`[title="${title}"]`));
+Cypress.Commands.add('getByTestId', (testId, { timeout } = {}) => cy.get(`[data-testid="${testId}"]`, { timeout }));
+Cypress.Commands.add('getByTitle', (title, { timeout } = {}) => cy.get(`[title="${title}"]`, { timeout }));
 Cypress.Commands.add('getPreviewPage', (pageNum) => {
     cy
         .get(`.page[data-page-number=${pageNum}]`)
@@ -26,7 +26,7 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     });
 
     // Wait for .bp to load viewer
-    return cy.getByTestId('bp').should('have.class', 'bp-loaded');
+    return cy.getByTestId('bp', { timeout: 15000 }).should('have.class', 'bp-loaded');
 });
 
 
