@@ -16,6 +16,9 @@ Cypress.Commands.add('showDocumentControls', () => {
     return cy.getByTestId('controls-wrapper').should('be.visible');
 });
 Cypress.Commands.add('showPreview', (token, fileId, options) => {
+    cy.server();
+    cy.route('**/files/*').as('getFileInfo');
+
     cy.getByTestId('token').type(token);
     cy.getByTestId('token-set').click();
     cy.getByTestId('fileid').type(fileId);
@@ -24,6 +27,8 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     cy.window().then((win) => {
         win.loadPreview(options);
     });
+
+    cy.wait('@getFileInfo');
 
     // Wait for .bp to load viewer
     return cy.getByTestId('bp', { timeout: 15000 }).should('have.class', 'bp-loaded');
