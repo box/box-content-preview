@@ -23,6 +23,7 @@ describe('Preview Sanity', () => {
             cy.getByTestId('bp-content').find('.bp-loading-wrapper').should('be.visible');
             cy.getPreviewPage(1);
             cy.contains('The Content Platform for Your Apps');
+            cy.get('@getFileInfo.all').should('have.length', 1);
         });
     });
 
@@ -35,6 +36,7 @@ describe('Preview Sanity', () => {
             win.preview.reload();
             cy.getPreviewPage(1);
             cy.contains('The Content Platform for Your Apps');
+            cy.get('@getFileInfo.all').should('have.length', 2);
         });
     });
 });

@@ -19,6 +19,8 @@ describe('Preview Document Thumbnails', () => {
             .should('be.visible')
             .click();
 
+        cy.wait(301); // Wait for toggle animation to complete
+
         return cy.getByTestId('thumbnails-sidebar');
     };
     /* eslint-enable */

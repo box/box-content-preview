@@ -132,7 +132,7 @@
     "patch": "./build/release.sh -p"
   },
   "lint-staged": {
-    "functional-tests/*.js": [
+    "tests/**/*.js": [
       "prettier-eslint --print-width 120 --single-quote --tab-width 4 --write",
       "git add"
     ],

@@ -1,5 +1,5 @@
-Cypress.Commands.add('getByTestId', (testId) => cy.get(`[data-testid="${testId}"]`));
-Cypress.Commands.add('getByTitle', (title) => cy.get(`[title="${title}"]`));
+Cypress.Commands.add('getByTestId', (testId, options = {}) => cy.get(`[data-testid="${testId}"]`, options));
+Cypress.Commands.add('getByTitle', (title, options = {}) => cy.get(`[title="${title}"]`, options));
 Cypress.Commands.add('getPreviewPage', (pageNum) => {
     cy
         .get(`.page[data-page-number=${pageNum}]`)
@@ -16,6 +16,9 @@ Cypress.Commands.add('showDocumentControls', () => {
     return cy.getByTestId('controls-wrapper').should('be.visible');
 });
 Cypress.Commands.add('showPreview', (token, fileId, options) => {
+    cy.server();
+    cy.route('**/files/*').as('getFileInfo');
+
     cy.getByTestId('token').type(token);
     cy.getByTestId('token-set').click();
     cy.getByTestId('fileid').type(fileId);
@@ -25,8 +28,10 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
         win.loadPreview(options);
     });
 
+    cy.wait('@getFileInfo');
+
     // Wait for .bp to load viewer
-    return cy.getByTestId('bp').should('have.class', 'bp-loaded');
+    return cy.getByTestId('bp', { timeout: 15000 }).should('have.class', 'bp-loaded');
 });
 
 
