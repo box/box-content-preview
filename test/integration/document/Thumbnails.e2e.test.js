@@ -4,24 +4,38 @@ describe('Preview Document Thumbnails', () => {
     const fileId = Cypress.env('FILE_ID_DOC_LARGE');
     const THUMBNAIL_SELECTED_CLASS = 'bp-thumbnail-is-selected';
 
-    /* eslint-disable */
-    const getThumbnail = (pageNum) => {
-        return cy.get(`.bp-thumbnail[data-bp-page-num=${pageNum}]`);
-    };
+    /**
+     * Gets the thumbnail with the specified page number
+     * @param {number} pageNum - Page number
+     * @return {Element} Thumbnail subject
+     */
+    const getThumbnail = (pageNum) => cy.get(`.bp-thumbnail[data-bp-page-num=${pageNum}]`);
 
-    const getThumbnailWithRenderedImage = (pageNum) => {
-        return getThumbnail(pageNum).should(($thumbnail) => {
-            expect($thumbnail.find('.bp-thumbnail-image')).to.exist;
-            return $thumbnail;
-        });
-    };
+    /**
+     * Gets the thumbnail and ensures the thumbnail image has rendered
+     * @param {number} pageNum - Page number
+     * @return {Element} Thumbnail subject
+     */
+    const getThumbnailWithRenderedImage = (pageNum) => getThumbnail(pageNum).should(($thumbnail) => {
+        expect($thumbnail.find('.bp-thumbnail-image')).to.exist;
+        return $thumbnail;
+    });
 
+    /**
+     * Shows the document preview
+     * @param {Object} options - Preview options
+     * @return {void}
+     */
     const showDocumentPreview = ({ enableThumbnailsSidebar } = {}) => {
         cy.showPreview(token, fileId, { enableThumbnailsSidebar });
         cy.getPreviewPage(1);
         cy.contains('IN  THE  HOUSE  OF  REPRESENTATIVES');
     };
 
+    /**
+     * Toggles the thumbnails sidebar
+     * @return {Element} The thumbnails sidebar subject
+     */
     const toggleThumbnails = () => {
         cy.showDocumentControls();
 
@@ -30,17 +44,27 @@ describe('Preview Document Thumbnails', () => {
             .should('be.visible')
             .click();
 
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(301); // Wait for toggle animation to complete
 
         return cy.getByTestId('thumbnails-sidebar');
     };
 
+    /**
+     * Asserts that the thumbnails sidebar object is visible
+     * @param {Element} $thumbnailsSidebar - The thumbnails sidebar subject
+     * @return {Assertion} Chai Assertion
+     */
     const beVisible = ($thumbnailsSidebar) =>
         expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, 0, 0)'); // translateX(0)
 
+    /**
+     * Asserts that the thumbnails sidebar object is not visible
+     * @param {Element} $thumbnailsSidebar - The thumbnails sidebar subject
+     * @return {Assertion} Chai Assertion
+     */
     const notBeVisible = ($thumbnailsSidebar) =>
         expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, -201, 0)'); // translateX(-201px)
-    /* eslint-enable */
 
     beforeEach(() => {
         cy.visit('/');
