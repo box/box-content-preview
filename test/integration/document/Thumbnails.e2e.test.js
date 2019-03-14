@@ -6,15 +6,14 @@ describe('Preview Document Thumbnails', () => {
 
     /* eslint-disable */
     const getThumbnail = (pageNum) => {
-        return cy
-            .get(`.bp-thumbnail[data-bp-page-num=${pageNum}]`, { timeout: 5000 })
-            .as('foundThumbnail')
+        return cy.get(`.bp-thumbnail[data-bp-page-num=${pageNum}]`);
     };
 
     const getThumbnailWithRenderedImage = (pageNum) => {
-        getThumbnail(pageNum).find('.bp-thumbnail-image').should('exist');
-
-        return cy.get('@foundThumbnail');
+        return getThumbnail(pageNum).should(($thumbnail) => {
+            expect($thumbnail.find('.bp-thumbnail-image')).to.exist;
+            return $thumbnail;
+        });
     };
 
     const showDocumentPreview = ({ enableThumbnailsSidebar } = {}) => {
@@ -33,14 +32,14 @@ describe('Preview Document Thumbnails', () => {
 
         cy.wait(301); // Wait for toggle animation to complete
 
-        const thumbnailSubject = cy.getByTestId('thumbnails-sidebar');
-
-        return {
-            ...thumbnailSubject,
-            shouldBeVisible: () => thumbnailSubject.should('have.css', 'transform', 'matrix(1, 0, 0, 1, 0, 0)'), // translateX(0)
-            shouldNotBeVisible: () => thumbnailSubject.should('have.css', 'transform', 'matrix(1, 0, 0, 1, -201, 0)') // translateX(-201px)
-        };
+        return cy.getByTestId('thumbnails-sidebar');
     };
+
+    const beVisible = ($thumbnailsSidebar) =>
+        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, 0, 0)'); // translateX(0)
+
+    const notBeVisible = ($thumbnailsSidebar) =>
+        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, -201, 0)'); // translateX(-201px)
     /* eslint-enable */
 
     beforeEach(() => {
@@ -64,9 +63,9 @@ describe('Preview Document Thumbnails', () => {
     it('Should render thumbnails when toggled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
-        toggleThumbnails().shouldNotBeVisible();
+        toggleThumbnails().should(notBeVisible);
     });
 
     it('Should be able to change page by clicking on the thumbnail', () => {
@@ -79,11 +78,10 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
         // Verify which thumbnail is selected
-        getThumbnailWithRenderedImage(1)
-            .should('have.class', THUMBNAIL_SELECTED_CLASS)
+        getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
         getThumbnailWithRenderedImage(2)
             .click()
             .should('have.class', THUMBNAIL_SELECTED_CLASS);
@@ -102,10 +100,9 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
-        getThumbnailWithRenderedImage(1)
-            .should('have.class', THUMBNAIL_SELECTED_CLASS);
+        getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
         cy.getByTitle('Next page').click();
 
@@ -125,10 +122,9 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
-        getThumbnailWithRenderedImage(1)
-            .should('have.class', THUMBNAIL_SELECTED_CLASS);
+        getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
         cy.showDocumentControls();
         cy.getByTitle('Click to enter page number').click();
@@ -155,10 +151,9 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
-        getThumbnailWithRenderedImage(1)
-            .should('have.class', THUMBNAIL_SELECTED_CLASS);
+        getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
         cy.showDocumentControls();
         cy.getByTitle('Click to enter page number').click();
@@ -171,7 +166,7 @@ describe('Preview Document Thumbnails', () => {
         cy.getPreviewPage(200).should('be.visible');
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
-        toggleThumbnails().shouldNotBeVisible();
+        toggleThumbnails().should(notBeVisible);
 
         cy.getByTitle('Click to enter page number').click();
         cy
@@ -182,7 +177,7 @@ describe('Preview Document Thumbnails', () => {
 
         cy.getPreviewPage(1).should('be.visible');
 
-        toggleThumbnails().shouldBeVisible();
+        toggleThumbnails().should(beVisible);
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
     });
