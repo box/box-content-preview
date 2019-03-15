@@ -1,3 +1,17 @@
+<a name="2.3.0"></a>
+## 2.3.0 (2019-03-15)
+
+* Chore: Add e2e Thumbnail tests for large doc (#959) ([6557229](https://github.com/box/box-content-preview/commit/6557229)), closes [#959](https://github.com/box/box-content-preview/issues/959)
+* Chore: Add test for internal presentation links (#951) ([ebb6e75](https://github.com/box/box-content-preview/commit/ebb6e75)), closes [#951](https://github.com/box/box-content-preview/issues/951)
+* Chore: Text Viewer e2e tests (#958) ([eadedf1](https://github.com/box/box-content-preview/commit/eadedf1)), closes [#958](https://github.com/box/box-content-preview/issues/958)
+* Fix: Get response as text from axios (#957) ([68fa4d1](https://github.com/box/box-content-preview/commit/68fa4d1)), closes [#957](https://github.com/box/box-content-preview/issues/957)
+* Fix: Only execute viewer setup if not already setup (#955) ([8c2b193](https://github.com/box/box-content-preview/commit/8c2b193)), closes [#955](https://github.com/box/box-content-preview/issues/955)
+* Update: Animate Thumbnails Sidebar transition (#948) ([5616b74](https://github.com/box/box-content-preview/commit/5616b74)), closes [#948](https://github.com/box/box-content-preview/issues/948)
+* Update: Thumbnails Sidebar dark mode (#952) ([f2da5da](https://github.com/box/box-content-preview/commit/f2da5da)), closes [#952](https://github.com/box/box-content-preview/issues/952)
+* Update Translations (#956) ([eb3dbfd](https://github.com/box/box-content-preview/commit/eb3dbfd)), closes [#956](https://github.com/box/box-content-preview/issues/956)
+
+
+
 <a name="2.2.0"></a>
 ## 2.2.0 (2019-03-05)
 
