@@ -68,7 +68,7 @@ class CSVViewer extends TextBaseViewer {
                             this.data = getProp(results, 'data', []);
                             if (this.isDestroyed() || this.data.length === 0) {
                                 // If the viewer is destroyed or if we are not able to extract any csv data, error
-                                const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'));
+                                const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_generic'));
                                 this.triggerError(error);
                                 return;
                             }
