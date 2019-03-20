@@ -1,6 +1,6 @@
 import api from '../../api';
 import TextBaseViewer from './TextBaseViewer';
-import { createAssetUrlCreator } from '../../util';
+import { createAssetUrlCreator, getProp } from '../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
@@ -65,10 +65,14 @@ class CSVViewer extends TextBaseViewer {
                             this.handleDownloadError(error, urlWithAuth);
                         },
                         complete: (results) => {
-                            if (this.isDestroyed() || !results) {
+                            this.data = getProp(results, 'data', []);
+                            if (this.isDestroyed() || this.data.length === 0) {
+                                // If the viewer is destroyed or if we are not able to extract any csv data, error
+                                const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'));
+                                this.triggerError(error);
                                 return;
                             }
-                            this.data = results.data;
+
                             this.finishLoading();
                             URL.revokeObjectURL(workerSrc);
                         }
