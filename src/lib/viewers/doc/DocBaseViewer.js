@@ -663,7 +663,7 @@ class DocBaseViewer extends BaseViewer {
                 console.error(err);
 
                 // pdf.js gives us the status code in their error message
-                const { status } = err;
+                const { status, message } = err;
 
                 // Display a generic error message but log the real one
                 const error =
@@ -672,9 +672,9 @@ class DocBaseViewer extends BaseViewer {
                             ERROR_CODE.DELETED_REPS,
                             __('error_refresh'),
                             { isRepDeleted: true },
-                            err.message
+                            message
                         )
-                        : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), err.message);
+                        : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
                 this.handleDownloadError(error, pdfUrl);
             });
     }
