@@ -19,6 +19,7 @@ export const ERROR_CODE = {
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
     PERMISSIONS_PREVIEW: 'error_permissions_preview',
     BAD_INPUT: 'error_bad_input',
+    DELETED_REPS: 'error_deleted_reps',
     LOAD_ANNOTATIONS: 'error_load_annotations',
     LOAD_ASSET: 'error_load_asset',
     LOAD_CSV: 'error_load_csv',

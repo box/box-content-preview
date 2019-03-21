@@ -662,8 +662,19 @@ class DocBaseViewer extends BaseViewer {
                 // eslint-disable-next-line
                 console.error(err);
 
+                // pdf.js gives us the status code in their error message
+                const { status } = err;
+
                 // Display a generic error message but log the real one
-                const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), {}, err.message);
+                const error =
+                    status === 202
+                        ? new PreviewError(
+                            ERROR_CODE.DELETED_REPS,
+                            __('error_refresh'),
+                            { isRepDeleted: true },
+                            err.message
+                        )
+                        : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), err.message);
                 this.handleDownloadError(error, pdfUrl);
             });
     }
