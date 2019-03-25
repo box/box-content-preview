@@ -57,12 +57,12 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
-        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+        this.downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
-            .then(() => this.handleAssetAndRepLoad(downloadUrl))
+            .then(() => this.handleAssetAndRepLoad())
             .catch(this.handleAssetError);
     }
 
@@ -72,11 +72,18 @@ class ImageViewer extends ImageBaseViewer {
      * @override
      * @return {void}
      */
-    handleAssetAndRepLoad(downloadUrl) {
+    handleAssetAndRepLoad() {
         this.startLoadTimer();
-        this.imageEl.src = downloadUrl;
 
-        super.handleAssetAndRepLoad();
+        util
+            .fetchRepresentationAsBlob(this.downloadUrl)
+            .then((blob) => {
+                const srcUrl = URL.createObjectURL(blob);
+                this.imageEl.src = srcUrl;
+
+                super.handleAssetAndRepLoad();
+            })
+            .catch(this.handleImageDownloadError);
     }
 
     /**
@@ -374,7 +381,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     handleImageDownloadError(err) {
-        this.handleDownloadError(err, this.imageEl.src);
+        this.handleDownloadError(err, this.downloadUrl);
     }
 
     /**

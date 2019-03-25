@@ -3,7 +3,7 @@ import PageControls from '../../PageControls';
 import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE } from '../../constants';
-import { pageNumberFromScroll } from '../../util';
+import { pageNumberFromScroll, fetchRepresentationAsBlob } from '../../util';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -148,7 +148,14 @@ class MultiImageViewer extends ImageBaseViewer {
         this.singleImageEls[index].setAttribute('data-page-number', index + 1);
         this.singleImageEls[index].classList.add(CLASS_MULTI_IMAGE_PAGE);
 
-        this.singleImageEls[index].src = imageUrl;
+        this.downloadUrl = imageUrl;
+
+        fetchRepresentationAsBlob(imageUrl)
+            .then((blob) => {
+                const srcUrl = URL.createObjectURL(blob);
+                this.singleImageEls[index].src = srcUrl;
+            })
+            .catch(this.handleMultiImageDownloadError);
     }
 
     /** @inheritdoc */
@@ -271,12 +278,10 @@ class MultiImageViewer extends ImageBaseViewer {
             this.unbindImageListeners(index);
         });
 
-        // Since we're using the src to get the hostname, we can always use the src of the first page
-        const { src } = this.singleImageEls[0];
         // Clear any images we may have started to load.
         this.singleImageEls = [];
 
-        this.handleDownloadError(err, src);
+        this.handleDownloadError(err, this.downloadUrl);
     }
 
     /**

@@ -1,7 +1,10 @@
 import Uri from 'jsuri';
 import { decode } from 'box-react-ui/lib/utils/keys';
+import api from './api';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
+import PreviewError from './PreviewError';
+import { ERROR_CODE } from './events';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
@@ -291,6 +294,24 @@ export function prefetchAssets(urls, preload = false) {
         if (!head.querySelector(`link[rel="${rel}"][href="${url}"]`)) {
             head.appendChild(createPrefetch(url, preload));
         }
+    });
+}
+
+/**
+ * Method to fetch a given representation as a blob via an authenticated content URL.
+ * Useful for determining the true state of a "successful" representation
+ *
+ * @param {string} contentUrl - a representation's authenticated content URL
+ * @return {Promise} - Resolves with the representation data, rejects with a deleted rep error
+ */
+export function fetchRepresentationAsBlob(contentUrl) {
+    return api.get(contentUrl, { type: 'blob' }).then((response) => {
+        if (response.status && response.status === 202) {
+            const error = new PreviewError(ERROR_CODE.DELETED_REPS, __('error_refresh'), { isRepDeleted: true });
+            return Promise.reject(error);
+        }
+
+        return Promise.resolve(response);
     });
 }
 
