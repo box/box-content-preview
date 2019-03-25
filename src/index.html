@@ -65,6 +65,10 @@
 
         <div class='preview-container' data-testid="preview-container"> </div>
         <script>
+            // Create preview first so events can be bound before 'show'
+            /* global Box */
+            preview = new Box.Preview();
+
             function setProperty(selector) {
                 // Get new value, fallback to local storage
                 var inputValue = document.querySelector('#' + selector + '-set')
@@ -91,10 +95,8 @@
                     return;
                 }
 
-                /* global Box */
-                preview = new Box.Preview();
-
                 var previewOptions = options || {
+                    apiHost: 'https://api.jpress.inside-box.net/',
                     enableThumbnailsSidebar: true,
                     showAnnotations: true,
                     showDownload: true,
