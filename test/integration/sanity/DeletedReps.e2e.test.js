@@ -1,5 +1,5 @@
 // <reference types="Cypress" />
-describe('Previewing a file with Deleted Representations', () => {
+describe('Previewing a file with deleted representations', () => {
     const token = Cypress.env('ACCESS_TOKEN');
 
     const fileIdDoc = Cypress.env('FILE_ID_DOC');
@@ -27,7 +27,7 @@ describe('Previewing a file with Deleted Representations', () => {
             url: '**/internal_files/**',
             status: 202,
             response: {}
-        }).as('bar');
+        });
 
         // Mocking requests for original reps
         cy.route({
@@ -35,7 +35,7 @@ describe('Previewing a file with Deleted Representations', () => {
             url: '**/content?**',
             status: 202,
             response: {}
-        }).as('bas');
+        });
 
         cy.visit('/', {
             onBeforeLoad (win) {
