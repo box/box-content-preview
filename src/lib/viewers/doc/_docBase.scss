@@ -1,6 +1,6 @@
 @import '../../boxuiVariables';
 
-$thumbnail-border-radius: 4px;
+$thumbnail-border-radius: 3px;
 // Accounts for the 1px border on the right so the remaining width is actually 225
 $thumbnail-sidebar-width: 226px;
 
@@ -49,7 +49,7 @@ $thumbnail-sidebar-width: 226px;
 
     .bp-thumbnail-nav {
         background-color: $d-eight;
-        border: 3px solid $ffive;
+        border: $thumbnail-border-radius solid $ffive;
         border-radius: $thumbnail-border-radius;
         cursor: pointer;
         flex: 1 0 auto;
