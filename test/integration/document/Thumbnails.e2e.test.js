@@ -64,7 +64,7 @@ describe('Preview Document Thumbnails', () => {
      * @return {Assertion} Chai Assertion
      */
     const notBeVisible = ($thumbnailsSidebar) =>
-        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, -201, 0)'); // translateX(-201px)
+        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, -226, 0)'); // translateX(-226px)
 
     beforeEach(() => {
         cy.visit('/');
