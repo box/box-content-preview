@@ -3,7 +3,7 @@ describe('Previewing a file with deleted representations', () => {
     const token = Cypress.env('ACCESS_TOKEN');
 
     const fileIdDoc = Cypress.env('FILE_ID_DOC');
-    const presentationIdDoc = Cypress.env('FILE_ID_PRESENTATION');
+    const fileIdPresentation = Cypress.env('FILE_ID_PRESENTATION');
 
     const REPS_ERROR = 'error_deleted_reps';
 
@@ -40,23 +40,26 @@ describe('Previewing a file with deleted representations', () => {
         cy.visit('/', {
             onBeforeLoad (win) {
                 // Workaround for fetch detection in cypress mocking. https://github.com/cypress-io/cypress/issues/95
-                delete win.fetch //eslint-disable-line
+                delete win.fetch; // eslint-disable-line no-param-reassign
             }
         })
     });
 
-    describe('Document Viewers', () => {
-        it('Should correctly handle a document with deleted reps', () => {
+    [
+        {
+            viewer: 'Document',
+            fileId: fileIdDoc
+        },
+        {
+            viewer: 'Presentation',
+            fileId: fileIdPresentation
+        }
+    ].forEach((test) => { 
+        it(test.viewer, () => {
             helpers.checkDeletedRepError();
             
-            cy.showPreview(token, fileIdDoc, { showAnnotations: false });
-
-        });
-
-        it('Should correctly handle a presentation with deleted reps', () => {
-            helpers.checkDeletedRepError();
-
-            cy.showPreview(token, presentationIdDoc, { showAnnotations: false });
-        });
-    });
+            // Temporarily disabling annotations due to a bug in 2.3
+            cy.showPreview(token, test.fileId, { showAnnotations: false });
+        })
+    })
 });
