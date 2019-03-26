@@ -1,5 +1,6 @@
 @import '../../boxuiVariables';
 
+$thumbnail-border-radius: 3px;
 // Accounts for the 1px border on the right so the remaining width is actually 225
 $thumbnail-sidebar-width: 226px;
 
@@ -46,17 +47,10 @@ $thumbnail-sidebar-width: 226px;
         width: 34px;
     }
 
-    .bp-thumbnail-border {
-        border: 2px solid transparent;
-        border-radius: 3px;
-        display: flex;
-        flex: 1 0 auto;
-        padding: 0;
-    }
-
     .bp-thumbnail-nav {
         background-color: $d-eight;
-        border: 1px solid $ffive;
+        border: $thumbnail-border-radius solid $ffive;
+        border-radius: $thumbnail-border-radius;
         cursor: pointer;
         flex: 1 0 154px;
         outline: none;
@@ -67,7 +61,8 @@ $thumbnail-sidebar-width: 226px;
     .bp-thumbnail:not(.bp-thumbnail-is-selected) {
         .bp-thumbnail-nav:focus,
         .bp-thumbnail-nav:hover {
-            border-color: $seesee;
+            border: 1px solid $seesee;
+            margin: 2px;
         }
     }
 
@@ -78,11 +73,8 @@ $thumbnail-sidebar-width: 226px;
         pointer-events: none;
     }
 
-    .bp-thumbnail.bp-thumbnail-is-selected {
-        .bp-thumbnail-nav,
-        .bp-thumbnail-border {
-            border-color: $fours;
-        }
+    .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-nav {
+        border-color: $fours;
     }
 
     .bp-thumbnails-container--dark {

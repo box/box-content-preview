@@ -3,7 +3,6 @@ import VirtualScroller from './VirtualScroller';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
-const CLASS_BOX_PREVIEW_THUMBNAIL_BORDER = 'bp-thumbnail-border';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
@@ -76,7 +75,7 @@ class ThumbnailsSidebar {
         // The image and page number have pointer-events: none so
         // any click should be the thumbnail element itself.
         if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_NAV)) {
-            const thumbnailEl = target.parentNode.parentNode;
+            const thumbnailEl = target.parentNode;
             // Get the page number
             const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
             const pageNum = parseInt(pageNumStr, 10);
@@ -210,13 +209,8 @@ class ThumbnailsSidebar {
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
 
-        const thumbnailBorderEl = document.createElement('div');
-        thumbnailBorderEl.className = CLASS_BOX_PREVIEW_THUMBNAIL_BORDER;
-
         const thumbnailNav = this.createThumbnailNav();
-
-        thumbnailBorderEl.appendChild(thumbnailNav);
-        thumbnailEl.appendChild(thumbnailBorderEl);
+        thumbnailEl.appendChild(thumbnailNav);
 
         if (pageNum === this.currentPage) {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
@@ -257,7 +251,7 @@ class ThumbnailsSidebar {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
                     // Appends to the thumbnail nav element
-                    thumbnailEl.lastChild.firstChild.appendChild(imageEl);
+                    thumbnailEl.lastChild.appendChild(imageEl);
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }
 
