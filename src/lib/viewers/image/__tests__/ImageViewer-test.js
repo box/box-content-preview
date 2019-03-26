@@ -598,11 +598,13 @@ describe('lib/viewers/image/ImageViewer', () => {
                     done();
                 })
             );
+            sandbox.stub(URL, 'URL.createObjectURL(blob)').returns(url);
 
-            image.handleAssetAndRepLoad(url);
+            image.handleAssetAndRepLoad(url).then(() => {
+                expect(imageEl.src).to.be.equal(url);
+            });
 
             expect(startLoadTimer).to.be.called;
-            expect(imageEl.url).to.be.equal(url);
             expect(loadBoxAnnotations).to.be.called;
             expect(createAnnotator).to.be.called;
         });

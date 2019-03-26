@@ -410,6 +410,15 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             sandbox.stub(multiImage, 'unbindImageListeners');
         });
 
+        it('should do nothing if the viewer is already destroyed', () => {
+            sandbox.stub(multiImage, 'isDestroyed').returns(true);
+            multiImage.downloadUrl = multiImage.singleImageEls[0];
+            multiImage.handleMultiImageDownloadError('err');
+
+            expect(multiImage.handleDownloadError).to.not.be.called;
+            expect(multiImage.unbindImageListeners).to.not.be.called;
+        });
+
         it('unbind the image listeners, clear the image Els array, and handle the download error', () => {
             multiImage.downloadUrl = multiImage.singleImageEls[0];
 

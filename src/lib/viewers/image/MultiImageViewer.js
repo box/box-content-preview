@@ -274,6 +274,10 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     handleMultiImageDownloadError(err) {
+        if (this.isDestroyed()) {
+            return;
+        }
+
         this.singleImageEls.forEach((el, index) => {
             this.unbindImageListeners(index);
         });

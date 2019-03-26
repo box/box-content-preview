@@ -75,7 +75,7 @@ class ImageViewer extends ImageBaseViewer {
     handleAssetAndRepLoad() {
         this.startLoadTimer();
 
-        util
+        return util
             .fetchRepresentationAsBlob(this.downloadUrl)
             .then((blob) => {
                 const srcUrl = URL.createObjectURL(blob);
