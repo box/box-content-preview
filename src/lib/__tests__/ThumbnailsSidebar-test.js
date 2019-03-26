@@ -213,7 +213,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.renderNextThumbnailImage = sandbox.stub(thumbnailsSidebar, 'renderNextThumbnailImage');
 
             const thumbnailEl = {
-                lastChild: { appendChild: stubs.appendChild },
+                lastChild: { firstChild: { appendChild: stubs.appendChild } },
                 classList: { add: stubs.addClass }
             };
 
@@ -311,6 +311,7 @@ describe('ThumbnailsSidebar', () => {
 
     describe('thumbnailClickHandler()', () => {
         let targetEl;
+        let borderEl;
         let parentEl;
         let evt;
 
@@ -325,7 +326,12 @@ describe('ThumbnailsSidebar', () => {
             targetEl = document.createElement('div');
             targetEl.classList.add('bp-thumbnail-nav');
 
-            parentEl.appendChild(targetEl);
+            borderEl = document.createElement('div');
+            borderEl.classList.add('bp-thumbnail-border');
+
+            borderEl.appendChild(targetEl);
+
+            parentEl.appendChild(borderEl);
 
             evt = {
                 target: targetEl,

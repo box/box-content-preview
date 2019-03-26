@@ -3,6 +3,7 @@ import VirtualScroller from './VirtualScroller';
 import BoundedCache from './BoundedCache';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
+const CLASS_BOX_PREVIEW_THUMBNAIL_BORDER = 'bp-thumbnail-border';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
@@ -75,7 +76,7 @@ class ThumbnailsSidebar {
         // The image and page number have pointer-events: none so
         // any click should be the thumbnail element itself.
         if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_NAV)) {
-            const thumbnailEl = target.parentNode;
+            const thumbnailEl = target.parentNode.parentNode;
             // Get the page number
             const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
             const pageNum = parseInt(pageNumStr, 10);
@@ -208,8 +209,14 @@ class ThumbnailsSidebar {
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
+
+        const thumbnailBorderEl = document.createElement('div');
+        thumbnailBorderEl.className = CLASS_BOX_PREVIEW_THUMBNAIL_BORDER;
+
         const thumbnailNav = this.createThumbnailNav();
-        thumbnailEl.appendChild(thumbnailNav);
+
+        thumbnailBorderEl.appendChild(thumbnailNav);
+        thumbnailEl.appendChild(thumbnailBorderEl);
 
         if (pageNum === this.currentPage) {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
@@ -233,6 +240,7 @@ class ThumbnailsSidebar {
     createThumbnailNav() {
         const thumbnailNav = document.createElement('a');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
+        thumbnailNav.tabIndex = '0';
         return thumbnailNav;
     }
 
@@ -240,7 +248,7 @@ class ThumbnailsSidebar {
      * Request the thumbnail image to be made
      *
      * @param {number} itemIndex - the item index in the overall list (0 indexed)
-     * @param {HTMLElement} thumbnailEl - the thumbnail button element
+     * @param {HTMLElement} thumbnailEl - the thumbnail element
      * @return {void}
      */
     requestThumbnailImage(itemIndex, thumbnailEl) {
@@ -248,8 +256,8 @@ class ThumbnailsSidebar {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
-                    // Appends to the lastChild which should be the thumbnail nav element
-                    thumbnailEl.lastChild.appendChild(imageEl);
+                    // Appends to the thumbnail nav element
+                    thumbnailEl.lastChild.firstChild.appendChild(imageEl);
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }
 
