@@ -323,7 +323,7 @@ class ImageBaseViewer extends BaseViewer {
         // eslint-disable-next-line
         console.error(err);
 
-        const genericDownloadError = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'));
+        const genericDownloadError = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), err.message);
         super.handleDownloadError(err instanceof PreviewError ? err : genericDownloadError, imgUrl);
     }
 

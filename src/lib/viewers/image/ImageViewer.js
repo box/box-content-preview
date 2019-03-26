@@ -62,7 +62,7 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
-            .then(() => this.handleAssetAndRepLoad())
+            .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
 
@@ -80,7 +80,6 @@ class ImageViewer extends ImageBaseViewer {
             .then((blob) => {
                 const srcUrl = URL.createObjectURL(blob);
                 this.imageEl.src = srcUrl;
-
                 super.handleAssetAndRepLoad();
             })
             .catch(this.handleImageDownloadError);

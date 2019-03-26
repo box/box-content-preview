@@ -298,24 +298,6 @@ export function prefetchAssets(urls, preload = false) {
 }
 
 /**
- * Method to fetch a given representation as a blob via an authenticated content URL.
- * Useful for determining the true state of a "successful" representation
- *
- * @param {string} contentUrl - a representation's authenticated content URL
- * @return {Promise} - Resolves with the representation data, rejects with a deleted rep error
- */
-export function fetchRepresentationAsBlob(contentUrl) {
-    return api.get(contentUrl, { type: 'blob' }).then((response) => {
-        if (response.status && response.status === 202) {
-            const error = new PreviewError(ERROR_CODE.DELETED_REPS, __('error_refresh'), { isRepDeleted: true });
-            return Promise.reject(error);
-        }
-
-        return Promise.resolve(response);
-    });
-}
-
-/**
  * Loads external stylsheets by appending a <link> element
  *
  * @public
@@ -736,4 +718,32 @@ export function isLocalStorageAvailable() {
     } catch (e) {
         return false;
     }
+}
+
+/**
+ * Handles a blob response from axios.
+ * Generates a deleted reps error on a 202 response, which has no body and is unusable.
+ *
+ * @param {Object} response - A response from axios
+ * @return {Promise} - Resolves with the representation data, rejects with a deleted rep error
+ */
+export function handleRepresentationBlobFetch(response) {
+    const status = getProp(response, 'status');
+    if (status === 202) {
+        const error = new PreviewError(ERROR_CODE.DELETED_REPS, __('error_refresh'), { isRepDeleted: true });
+        return Promise.reject(error);
+    }
+
+    return Promise.resolve(response);
+}
+
+/**
+ * Method to fetch a given representation as a blob via an authenticated content URL.
+ * Useful for determining the true state of a "successful" representation
+ *
+ * @param {string} contentUrl - a representation's authenticated content URL
+ * @return {Promise} - Response from axios
+ */
+export function fetchRepresentationAsBlob(contentUrl) {
+    return api.get(contentUrl, { type: 'blob' }).then(handleRepresentationBlobFetch);
 }
