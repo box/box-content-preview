@@ -336,7 +336,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleDownloadError(err, downloadURL) {
-        if (this.hasRetriedContentDownload) {
+        const isRepDeleted = getProp(err, 'details.isRepDeleted', false);
+
+        if (this.hasRetriedContentDownload || isRepDeleted) {
             this.triggerError(err);
             return;
         }

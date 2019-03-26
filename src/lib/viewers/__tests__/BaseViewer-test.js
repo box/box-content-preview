@@ -241,9 +241,24 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'emitMetric');
         });
 
-        it('should trigger an error  if we have already retried', () => {
+        it('should trigger an error if we have already retried', () => {
             base.hasRetriedContentDownload = true;
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
+            expect(base.triggerError).to.be.called;
+            expect(base.load).to.not.be.called;
+        });
+
+        it('should trigger an error if the rep was deleted', () => {
+            base.hasRetriedContentDownload = false;
+            base.handleDownloadError(
+                {
+                    details: {
+                        isRepDeleted: true
+                    }
+                },
+                'https://dl.boxcloud.com'
+            );
+
             expect(base.triggerError).to.be.called;
             expect(base.load).to.not.be.called;
         });
