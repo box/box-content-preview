@@ -1,3 +1,12 @@
+<a name="2.4.0"></a>
+## 2.4.0 (2019-03-26)
+
+* Update: Add hover state to thumbnails (#965) ([096b183](https://github.com/box/box-content-preview/commit/096b183)), closes [#965](https://github.com/box/box-content-preview/issues/965)
+* Update: Wider thumbnails (#963) ([6f2200a](https://github.com/box/box-content-preview/commit/6f2200a)), closes [#963](https://github.com/box/box-content-preview/issues/963)
+* Fix: Fail gracefully when previewing a doc with deleted reps (#962) ([d8cd848](https://github.com/box/box-content-preview/commit/d8cd848)), closes [#962](https://github.com/box/box-content-preview/issues/962)
+
+
+
 <a name="2.3.0"></a>
 ## 2.3.0 (2019-03-15)
 
