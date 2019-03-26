@@ -208,6 +208,7 @@ class ThumbnailsSidebar {
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
+
         const thumbnailNav = this.createThumbnailNav();
         thumbnailEl.appendChild(thumbnailNav);
 
@@ -233,6 +234,7 @@ class ThumbnailsSidebar {
     createThumbnailNav() {
         const thumbnailNav = document.createElement('a');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
+        thumbnailNav.tabIndex = '0';
         return thumbnailNav;
     }
 
@@ -240,7 +242,7 @@ class ThumbnailsSidebar {
      * Request the thumbnail image to be made
      *
      * @param {number} itemIndex - the item index in the overall list (0 indexed)
-     * @param {HTMLElement} thumbnailEl - the thumbnail button element
+     * @param {HTMLElement} thumbnailEl - the thumbnail element
      * @return {void}
      */
     requestThumbnailImage(itemIndex, thumbnailEl) {
@@ -248,7 +250,7 @@ class ThumbnailsSidebar {
             this.createThumbnailImage(itemIndex).then((imageEl) => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
-                    // Appends to the lastChild which should be the thumbnail nav element
+                    // Appends to the thumbnail nav element
                     thumbnailEl.lastChild.appendChild(imageEl);
                     thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
                 }

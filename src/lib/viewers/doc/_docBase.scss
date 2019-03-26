@@ -53,8 +53,17 @@ $thumbnail-sidebar-width: 226px;
         border-radius: $thumbnail-border-radius;
         cursor: pointer;
         flex: 1 0 154px;
+        outline: none;
         overflow: hidden;
         padding: 0;
+    }
+
+    .bp-thumbnail:not(.bp-thumbnail-is-selected) {
+        .bp-thumbnail-nav:focus,
+        .bp-thumbnail-nav:hover {
+            border: 1px solid $seesee;
+            margin: 2px;
+        }
     }
 
     .bp-thumbnail-image {
