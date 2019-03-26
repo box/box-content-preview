@@ -8,9 +8,9 @@ const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
-const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 127; // 200px sidebar width - 25px margin right, - 40px for page number - 8px for border
+export const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 154; // 225px sidebar width - 25px margin right, - 40px for page number - 6px for border
 const THUMBNAIL_MARGIN = 15;
-const BORDER_WIDTH = 8;
+const BORDER_WIDTH = 6;
 
 class ThumbnailsSidebar {
     /** @property {HTMLElement} - The anchor element for this ThumbnailsSidebar */

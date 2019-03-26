@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import ThumbnailsSidebar from '../ThumbnailsSidebar';
+import ThumbnailsSidebar, { DEFAULT_THUMBNAILS_SIDEBAR_WIDTH } from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
 
 const sandbox = sinon.sandbox.create();
+const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10;
 
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
@@ -102,7 +103,7 @@ describe('ThumbnailsSidebar', () => {
 
             return pagePromise.then(() => {
                 expect(stubs.getViewport).to.be.called;
-                expect(thumbnailsSidebar.scale).to.be.equal(12.7); // DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width
+                expect(thumbnailsSidebar.scale).to.be.equal(TEST_SCALE); // DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width
                 expect(thumbnailsSidebar.pageRatio).to.be.equal(1);
                 expect(stubs.vsInit).to.be.called;
             });
@@ -209,6 +210,7 @@ describe('ThumbnailsSidebar', () => {
                 .returns(createImagePromise);
             stubs.appendChild = sandbox.stub();
             stubs.addClass = sandbox.stub();
+            stubs.renderNextThumbnailImage = sandbox.stub(thumbnailsSidebar, 'renderNextThumbnailImage');
 
             const thumbnailEl = {
                 lastChild: { appendChild: stubs.appendChild },
@@ -281,7 +283,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 12.7; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
+            const expScale = TEST_SCALE; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
 
             return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).to.be.called;
@@ -298,8 +300,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
             stubs.render.returns(Promise.resolve());
 
-            const expScale = 6.3; // Should be 6.3 instead of 12.7 because the viewport ratio above is 0.5 instead of 1
-            // and because canvas width is integer, so 63.5 becomes 63
+            const expScale = TEST_SCALE / 2; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10 / 2
 
             return thumbnailsSidebar.getThumbnailDataURL(0).then(() => {
                 expect(stubs.getPage).to.be.called;

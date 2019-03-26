@@ -3,6 +3,7 @@ describe('Preview Document Thumbnails', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_DOC_LARGE');
     const THUMBNAIL_SELECTED_CLASS = 'bp-thumbnail-is-selected';
+    const THUMBNAILS_OPEN = 'bp-thumbnails-open';
 
     /**
      * Gets the thumbnail with the specified page number
@@ -52,19 +53,15 @@ describe('Preview Document Thumbnails', () => {
 
     /**
      * Asserts that the thumbnails sidebar object is visible
-     * @param {Element} $thumbnailsSidebar - The thumbnails sidebar subject
-     * @return {Assertion} Chai Assertion
+     * @return {Element} Preview element
      */
-    const beVisible = ($thumbnailsSidebar) =>
-        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, 0, 0)'); // translateX(0)
+    const verifyThumbnailsVisible = () => cy.getByTestId('bp').should('have.class', THUMBNAILS_OPEN);
 
     /**
      * Asserts that the thumbnails sidebar object is not visible
-     * @param {Element} $thumbnailsSidebar - The thumbnails sidebar subject
-     * @return {Assertion} Chai Assertion
+     * @return {Element} Preview element
      */
-    const notBeVisible = ($thumbnailsSidebar) =>
-        expect($thumbnailsSidebar).to.have.css('transform', 'matrix(1, 0, 0, 1, -201, 0)'); // translateX(-201px)
+    const verifyThumbnailsNotVisible = () => cy.getByTestId('bp').should('not.have.class', THUMBNAILS_OPEN);
 
     beforeEach(() => {
         cy.visit('/');
@@ -87,9 +84,11 @@ describe('Preview Document Thumbnails', () => {
     it('Should render thumbnails when toggled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
-        toggleThumbnails().should(notBeVisible);
+        toggleThumbnails();
+        verifyThumbnailsNotVisible();
     });
 
     it('Should be able to change page by clicking on the thumbnail', () => {
@@ -102,7 +101,8 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
         // Verify which thumbnail is selected
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
@@ -124,7 +124,8 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -146,7 +147,8 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -175,7 +177,8 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -190,7 +193,8 @@ describe('Preview Document Thumbnails', () => {
         cy.getPreviewPage(200).should('be.visible');
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
-        toggleThumbnails().should(notBeVisible);
+        toggleThumbnails();
+        verifyThumbnailsNotVisible();
 
         cy.getByTitle('Click to enter page number').click();
         cy
@@ -201,7 +205,8 @@ describe('Preview Document Thumbnails', () => {
 
         cy.getPreviewPage(1).should('be.visible');
 
-        toggleThumbnails().should(beVisible);
+        toggleThumbnails();
+        verifyThumbnailsVisible();
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
     });
