@@ -210,4 +210,31 @@ describe('Preview Document Thumbnails', () => {
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
     });
+
+    it('Should not show the toggle thumbnails button on a small viewport', () => {
+        cy.viewport(375, 667);
+
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+
+        cy.showDocumentControls();
+        cy.getByTitle('Toggle thumbnails').should('not.be.visible');
+    });
+
+    it('Should hide the thumbnails when changing to small viewport', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+
+        cy.showDocumentControls();
+        cy.getByTitle('Toggle thumbnails').should('be.visible');
+
+        toggleThumbnails();
+        verifyThumbnailsVisible();
+
+        // Change to small viewport while thumbnails sidebar is open
+        cy.viewport(375, 667);
+
+        cy.showDocumentControls();
+        cy.getByTitle('Toggle thumbnails').should('not.be.visible');
+        // Not using `verifyThumbnailsNotVisible because that checks for the presence of the CSS class
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+    });
 });
