@@ -212,7 +212,7 @@ describe('Preview Document Thumbnails', () => {
     });
 
     it('Should not show the toggle thumbnails button on a small viewport', () => {
-        cy.viewport(375, 667);
+        cy.viewport('iphone-6');
 
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
@@ -230,7 +230,7 @@ describe('Preview Document Thumbnails', () => {
         verifyThumbnailsVisible();
 
         // Change to small viewport while thumbnails sidebar is open
-        cy.viewport(375, 667);
+        cy.viewport('iphone-6');
 
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
