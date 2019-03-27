@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Location from '../Location';
 import * as util from '../util';
+import { ERROR_CODE } from '../events';
 import DownloadReachability from '../DownloadReachability';
 
 const sandbox = sinon.sandbox.create();
@@ -705,5 +706,26 @@ describe('lib/util', () => {
                 });
             }
         );
+    });
+
+    describe('handleRepresentationBlobFetch()', () => {
+        it('should reject if the response is a 202', () => {
+            const response = {
+                status: 202
+            };
+
+            util.handleRepresentationBlobFetch(response).catch((e) => expect(e.code).to.equal(ERROR_CODE.DELETED_REPS));
+        });
+
+        it('should pass the response through', () => {
+            const response = {
+                status: 200,
+                body: 'body'
+            };
+
+            util
+                .handleRepresentationBlobFetch(response)
+                .then((passedResponse) => expect(passedResponse).to.equal(response));
+        });
     });
 });

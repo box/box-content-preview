@@ -41,10 +41,10 @@ const api = {
      *
      * @private
      * @param {Response} response - Response to parse
-     * @return {Promise|Response} Response if 204, otherwise promise that resolves with JSON
+     * @return {Promise|Response} Response if 204 or 202, otherwise promise that resolves with JSON
      */
     parseResponse: (response) => {
-        if (response.status === 204) {
+        if (response.status === 204 || response.status === 202) {
             return response;
         }
 

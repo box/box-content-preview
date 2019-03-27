@@ -7,6 +7,30 @@ describe('API helper', () => {
         sandbox.verifyAndRestore();
     });
 
+    describe('parseResponse()', () => {
+        it('should return the full response when the status is 202 or 204', () => {
+            const response = {
+                status: 202,
+                data: 'foo'
+            };
+
+            expect(api.parseResponse(response)).to.equal(response);
+
+            response.status = 204;
+            expect(api.parseResponse(response)).to.equal(response);
+        });
+
+        it('should only return the data', () => {
+            const data = 'foo';
+            const response = {
+                status: 200,
+                data
+            };
+
+            expect(api.parseResponse(response)).to.equal(data);
+        });
+    });
+
     describe('get()', () => {
         const url = '/foo/bar';
 
