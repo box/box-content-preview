@@ -20,10 +20,6 @@ $thumbnail-sidebar-width: 226px;
         transform: translateX(-$thumbnail-sidebar-width);
         transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
         width: $thumbnail-sidebar-width;
-
-        @include for-phone-only {
-            display: none;
-        }
     }
 
     &.bp-thumbnails-open {
@@ -33,10 +29,6 @@ $thumbnail-sidebar-width: 226px;
 
         .bp-content {
             left: $thumbnail-sidebar-width;
-
-            @include for-phone-only {
-                left: 0;
-            }
         }
     }
 
@@ -103,6 +95,26 @@ $thumbnail-sidebar-width: 226px;
 
         .bp-thumbnail-is-selected .bp-thumbnail-nav {
             border-color: $black;
+        }
+    }
+
+    @include for-phone-only {
+        .bp-thumbnails-container {
+            display: none;
+        }
+
+        &.bp-thumbnails-open {
+            .bp-content {
+                left: 0;
+            }
+
+            .bp-thumbnails-container {
+                transform: none;
+            }
+        }
+
+        .bp-controls-btn.bp-toggle-thumbnails-icon {
+            display: none;
         }
     }
 }
@@ -228,10 +240,4 @@ $thumbnail-sidebar-width: 226px;
 // Hide the toggle thumbnails button when in fullscreen
 .bp-content.bp-is-fullscreen .bp-toggle-thumbnails-icon {
     display: none;
-}
-
-.bp-controls-btn.bp-toggle-thumbnails-icon {
-    @include for-phone-only {
-        display: none;
-    }
 }
