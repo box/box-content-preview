@@ -50,7 +50,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should set up preload DOM structure and bind image load handler', () => {
             const imgSrc = 'https://someblobimgsrc/';
-            sandbox.stub(api, 'get').returns(Promise.resolve({}));
+            sandbox.stub(util, 'fetchRepresentationAsBlob').returns(Promise.resolve({}));
             sandbox.stub(URL, 'createObjectURL').returns(imgSrc);
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
