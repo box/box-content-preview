@@ -13,6 +13,9 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
 class ImageBaseViewer extends BaseViewer {
+    /** @property {string} - Url used to download an image representation */
+    downloadUrl;
+
     /** @inheritdoc */
     constructor(options) {
         super(options);
@@ -320,9 +323,8 @@ class ImageBaseViewer extends BaseViewer {
         // eslint-disable-next-line
         console.error(err);
 
-        // Display a generic error message but log the real one
-        const error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), {}, err.message);
-        super.handleDownloadError(error, imgUrl);
+        const genericDownloadError = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_refresh'), err.message);
+        super.handleDownloadError(err instanceof PreviewError ? err : genericDownloadError, imgUrl);
     }
 
     /**
