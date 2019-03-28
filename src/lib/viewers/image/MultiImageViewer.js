@@ -38,6 +38,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.wrapperEl = this.createViewer(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
+        this.wrapperEl.tabIndex = '0';
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.imageEl.classList.add(CSS_CLASS_IMAGE);

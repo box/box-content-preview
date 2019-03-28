@@ -33,7 +33,8 @@
 .bp-images {
     border: 0 none;
     margin: 0 auto;
-    padding: 0;
+    padding: 7px;
+    pointer-events: none;
 }
 
 .bp-images img {
