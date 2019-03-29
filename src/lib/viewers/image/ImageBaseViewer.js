@@ -365,7 +365,6 @@ class ImageBaseViewer extends BaseViewer {
         // If this is a CTRL or CMD click, then ignore
         if ((typeof button !== 'number' || button < 2) && !ctrlKey && !metaKey) {
             this.startPanning(clientX, clientY);
-            event.preventDefault();
         }
     }
 
@@ -389,7 +388,6 @@ class ImageBaseViewer extends BaseViewer {
                 // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
                 this.zoom('reset');
             }
-            event.preventDefault();
         }
     }
 

@@ -35,8 +35,6 @@
     margin: 0 auto;
     // Since we use a box-shadow to denote focus, we need to add padding as images appear on top of box-shadow
     padding: 7px;
-    // Allows focus to apply to the scrollable content on click
-    pointer-events: none;
 }
 
 .bp-images img {

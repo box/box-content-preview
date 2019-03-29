@@ -23,7 +23,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
-    CLASS_BOX_PREVIEW_CUSTOM_FOCUS
+    CLASS_BOX_PREVIEW_CONTENT_BODY
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -111,7 +111,7 @@ class DocBaseViewer extends BaseViewer {
         super.setup();
 
         this.docEl = this.createViewer(document.createElement('div'));
-        this.docEl.classList.add('bp-doc', CLASS_BOX_PREVIEW_CUSTOM_FOCUS);
+        this.docEl.className = `bp-doc ${CLASS_BOX_PREVIEW_CONTENT_BODY}`;
         this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {

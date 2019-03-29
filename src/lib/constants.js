@@ -37,6 +37,7 @@ export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_BOX_PREVIEW_THUMBNAILS_OPEN = 'bp-thumbnails-open';
 export const CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER = 'bp-thumbnails-container';
+export const CLASS_BOX_PREVIEW_CONTENT_BODY = 'bp-content-body';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
@@ -49,7 +50,6 @@ export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
 export const CLASS_CRAWLER = 'bp-crawler';
-export const CLASS_BOX_PREVIEW_CUSTOM_FOCUS = 'bp-custom-focus';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;

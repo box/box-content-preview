@@ -69,7 +69,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             text.setup();
 
-            expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-is-hidden');
+            expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-content-body bp-is-hidden');
             expect(text.codeEl.parentNode === text.textEl).to.be.true;
             expect(text.truncated).to.be.false;
             expect(text.initPrint).to.be.called;
