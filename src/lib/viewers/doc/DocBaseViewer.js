@@ -1347,21 +1347,27 @@ class DocBaseViewer extends BaseViewer {
 
         let metricName;
         let eventName;
+        let style;
         if (!this.thumbnailsSidebar.isOpen) {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
             eventName = 'thumbnailsClose';
+            style = 'display: none';
         } else {
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
             eventName = 'thumbnailsOpen';
+            style = '';
         }
 
         this.emitMetric({ name: metricName, data: pagesCount });
         this.emit(eventName);
 
         // Resize after the CSS animation to toggle the sidebar is complete
-        setTimeout(() => this.resize(), THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+        setTimeout(() => {
+            this.resize();
+            this.thumbnailsSidebarEl.style = style;
+        }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
     /**
