@@ -117,21 +117,26 @@ $thumbnail-sidebar-width: 226px;
 
         .bp-thumbnails-container {
             display: none;
-            transform: translateX(-$thumbnail-sidebar-width);
             transition: transform $bp-thumbnails-animation;
+        }
+
+        &,
+        &.bp-thumbnails-close,
+        &.bp-thumbnails-close-active {
+            .bp-thumbnails-container {
+                transform: translateX(-$thumbnail-sidebar-width);
+            }
         }
 
         &.bp-thumbnails-close {
             .bp-thumbnails-container {
                 display: none;
-                transform: translateX(-$thumbnail-sidebar-width);
             }
         }
 
         &.bp-thumbnails-close-active {
             .bp-thumbnails-container {
                 display: flex;
-                transform: translateX(-$thumbnail-sidebar-width);
             }
         }
 
