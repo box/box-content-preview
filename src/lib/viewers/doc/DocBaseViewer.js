@@ -141,7 +141,7 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
             this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
 
-            if (this.getCachedThumbnailsToggledState()) {
+            if (this.shouldThumbnailsBeToggled()) {
                 this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             }
         }
@@ -1094,7 +1094,7 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
         this.thumbnailsSidebar.init({
             currentPage: this.pdfViewer.currentPageNumber,
-            isOpen: this.getCachedThumbnailsToggledState(),
+            isOpen: this.shouldThumbnailsBeToggled(),
             onClick: this.onThumbnailClickHandler
         });
     }
@@ -1420,22 +1420,11 @@ class DocBaseViewer extends BaseViewer {
 
     /**
      * Gets the cached thumbnails toggled state based on file id. Will retrieve from
-     * localStorage if not cached. Defaults to true if not found.
-     * @return {boolean} Whether thumbnails is toggled open or not
+     * localStorage if not cached.
+     * @return {boolean} Whether thumbnails is toggled open or not from the cache
      */
     getCachedThumbnailsToggledState() {
-        let toggledOpen = true;
-
-        if (this.cache.has(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY)) {
-            const thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY);
-            toggledOpen = thumbnailsToggledMap[this.options.file.id];
-
-            // If cached toggled state is anything other than false, set it to true
-            if (toggledOpen !== false) {
-                toggledOpen = true;
-            }
-        }
-
+        const { [this.options.file.id]: toggledOpen } = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY) || {};
         return toggledOpen;
     }
 
@@ -1445,13 +1434,28 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     cacheThumbnailsToggledState(isOpen) {
-        let thumbnailsToggledMap = {};
-        if (this.cache.has(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY)) {
-            thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY);
+        const thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY) || {};
+        const newThumbnailsToggledMap = { ...thumbnailsToggledMap, [this.options.file.id]: !!isOpen };
+
+        this.cache.set(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, newThumbnailsToggledMap, true /* useLocalStorage */);
+    }
+
+    /**
+     * Determines if the thumbnails sidebar is toggled based on the value from the cache
+     * as well as defaulting to true if there is no cache entry for this file id.
+     * @return {boolean} Whether thumbnails is toggled open or not
+     */
+    shouldThumbnailsBeToggled() {
+        const cachedToggledState = this.getCachedThumbnailsToggledState();
+        let toggledState = cachedToggledState;
+
+        // If cached toggled state is anything other than false, set it to true
+        // because we want the default state to be true
+        if (toggledState !== false) {
+            toggledState = true;
         }
 
-        thumbnailsToggledMap[this.options.file.id] = !!isOpen;
-        this.cache.set(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, thumbnailsToggledMap, true /* useLocalStorage */);
+        return toggledState;
     }
 }
 
