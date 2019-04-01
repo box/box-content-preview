@@ -127,6 +127,9 @@ class ThumbnailsSidebar {
 
             // Specify the current page to be selected
             this.currentPage = options.currentPage || 1;
+
+            // Specify whether the sidebar is open to start
+            this.isOpen = !!options.isOpen;
         }
 
         // Get the first page of the document, and use its dimensions

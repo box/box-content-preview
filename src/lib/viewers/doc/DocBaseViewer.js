@@ -62,6 +62,7 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
+const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 // List of metrics to be emitted only once per session
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
@@ -138,7 +139,11 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
-            this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+            this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+
+            if (this.getCachedThumbnailsToggledState()) {
+                this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            }
         }
     }
 
@@ -1088,8 +1093,9 @@ class DocBaseViewer extends BaseViewer {
     initThumbnails() {
         this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
         this.thumbnailsSidebar.init({
-            onClick: this.onThumbnailClickHandler,
-            currentPage: this.pdfViewer.currentPageNumber
+            currentPage: this.pdfViewer.currentPageNumber,
+            isOpen: this.getCachedThumbnailsToggledState(),
+            onClick: this.onThumbnailClickHandler
         });
     }
 
@@ -1348,6 +1354,8 @@ class DocBaseViewer extends BaseViewer {
 
         const { pagesCount } = this.pdfViewer;
 
+        this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
+
         let metricName;
         let eventName;
         if (!this.thumbnailsSidebar.isOpen) {
@@ -1408,6 +1416,42 @@ class DocBaseViewer extends BaseViewer {
                 break;
             default:
         }
+    }
+
+    /**
+     * Gets the cached thumbnails toggled state based on file id. Will retrieve from
+     * localStorage if not cached. Defaults to true if not found.
+     * @return {boolean} Whether thumbnails is toggled open or not
+     */
+    getCachedThumbnailsToggledState() {
+        let toggledOpen = true;
+
+        if (this.cache.has(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY)) {
+            const thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY);
+            toggledOpen = thumbnailsToggledMap[this.options.file.id];
+
+            // If cached toggled state is anything other than false, set it to true
+            if (toggledOpen !== false) {
+                toggledOpen = true;
+            }
+        }
+
+        return toggledOpen;
+    }
+
+    /**
+     * Caches the toggled state of the thumbnails sidebar, also saving to localStorage
+     * @param {boolean} isOpen Toggled state of the sidebar
+     * @return {void}
+     */
+    cacheThumbnailsToggledState(isOpen) {
+        let thumbnailsToggledMap = {};
+        if (this.cache.has(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY)) {
+            thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY);
+        }
+
+        thumbnailsToggledMap[this.options.file.id] = !!isOpen;
+        this.cache.set(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, thumbnailsToggledMap, true /* useLocalStorage */);
     }
 }
 
