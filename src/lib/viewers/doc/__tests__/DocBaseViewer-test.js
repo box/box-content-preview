@@ -246,10 +246,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
 
-            // rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
-            // stubs.classListAdd = sandbox.stub(rootEl.classList, 'add');
-            // stubs.classListRemove = sandbox.stub(rootEl.classList, 'remove');
-
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
 
@@ -2441,6 +2437,94 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(stubs.classListAdd).not.to.be.called;
                 expect(stubs.classListRemove).not.to.be.called;
+            });
+        });
+
+        describe('getCachedThumbnailsToggleState()', () => {
+            beforeEach(() => {
+                stubs.get = sandbox.stub(docBase.cache, 'get');
+            });
+
+            it('should return undefined if there is no existing cache entry', () => {
+                stubs.get.returns(undefined);
+
+                expect(docBase.getCachedThumbnailsToggledState()).to.be.undefined;
+            });
+
+            it('should return undefined if there is no existing cache entry for the file', () => {
+                stubs.get.returns({ '123': true });
+
+                expect(docBase.getCachedThumbnailsToggledState()).to.be.undefined;
+            });
+
+            it('should return the cached value if there is an existing cache entry for the file', () => {
+                stubs.get.returns({ '0': true });
+
+                expect(docBase.getCachedThumbnailsToggledState()).to.be.true;
+            });
+        });
+
+        describe('cacheThumbnailsToggleState()', () => {
+            const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
+
+            beforeEach(() => {
+                stubs.set = sandbox.stub(docBase.cache, 'set');
+                stubs.get = sandbox.stub(docBase.cache, 'get');
+            });
+
+            it('should set toggled state to new object', () => {
+                stubs.get.returns(undefined);
+
+                docBase.cacheThumbnailsToggledState(true);
+
+                expect(stubs.set).to.be.calledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+            });
+
+            it('should set toggled state to existing object', () => {
+                stubs.get.returns({ '123': false });
+
+                docBase.cacheThumbnailsToggledState(true);
+
+                expect(stubs.set).to.be.calledWith(
+                    THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY,
+                    { '0': true, '123': false },
+                    true
+                );
+            });
+
+            it('should update toggled state to existing object', () => {
+                stubs.get.returns({ '0': false });
+
+                docBase.cacheThumbnailsToggledState(true);
+
+                expect(stubs.set).to.be.calledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+            });
+        });
+
+        describe('shouldThumbnailsBeToggled()', () => {
+            beforeEach(() => {
+                stubs.getCachedThumbnailsToggledState = sandbox.stub(docBase, 'getCachedThumbnailsToggledState');
+            });
+
+            it('should return true if cached value is true', () => {
+                stubs.getCachedThumbnailsToggledState.returns(true);
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+            });
+
+            it('should return false if cached value is false', () => {
+                stubs.getCachedThumbnailsToggledState.returns(false);
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+            });
+
+            it('should return true if cached value is anything other than false', () => {
+                stubs.getCachedThumbnailsToggledState.returns(undefined);
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+
+                stubs.getCachedThumbnailsToggledState.returns(null);
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+
+                stubs.getCachedThumbnailsToggledState.returns('123');
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
             });
         });
     });
