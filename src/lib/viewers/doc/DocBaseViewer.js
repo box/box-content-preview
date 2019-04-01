@@ -22,7 +22,10 @@ import {
     ENCODING_TYPES,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -1349,10 +1352,14 @@ class DocBaseViewer extends BaseViewer {
         let eventName;
         if (!this.thumbnailsSidebar.isOpen) {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
             eventName = 'thumbnailsClose';
         } else {
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
             eventName = 'thumbnailsOpen';
         }
@@ -1361,7 +1368,13 @@ class DocBaseViewer extends BaseViewer {
         this.emit(eventName);
 
         // Resize after the CSS animation to toggle the sidebar is complete
-        setTimeout(() => this.resize(), THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+        setTimeout(() => {
+            this.resize();
+
+            // Remove the active classes to allow the container to be transitioned properly
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
+        }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
     /**
