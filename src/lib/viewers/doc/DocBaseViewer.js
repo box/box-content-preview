@@ -110,8 +110,7 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.createViewer(document.createElement('div'));
-        this.docEl.className = `bp-doc ${CLASS_BOX_PREVIEW_CONTENT_BODY}`;
+        this.docEl = this.createViewer(document.createElement('div'), `bp-doc ${CLASS_BOX_PREVIEW_CONTENT_BODY}`);
         this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {

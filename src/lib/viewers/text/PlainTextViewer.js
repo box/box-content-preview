@@ -112,8 +112,10 @@ class PlainTextViewer extends TextBaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.textEl = this.createViewer(document.createElement('pre'));
-        this.textEl.className = `bp-text bp-text-plain hljs ${CLASS_BOX_PREVIEW_CONTENT_BODY} ${CLASS_HIDDEN}`;
+        this.textEl = this.createViewer(
+            document.createElement('pre'),
+            `bp-text bp-text-plain hljs ${CLASS_BOX_PREVIEW_CONTENT_BODY} ${CLASS_HIDDEN}`
+        );
         this.textEl.tabIndex = '0';
 
         this.codeEl = this.textEl.appendChild(document.createElement('code'));
