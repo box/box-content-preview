@@ -90,24 +90,24 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
+    @keyframes bp-thumbnails-open {
+        0% {
+            display: none;
+            transform: translateX(-$thumbnail-sidebar-width);
+        }
+
+        1% {
+            display: flex;
+            transform: translateX(-$thumbnail-sidebar-width);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
+
     @include bp-breakpoint-medium {
         $bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
-
-        @keyframes bp-thumbnails-open {
-            0% {
-                display: none;
-                transform: translateX(-$thumbnail-sidebar-width);
-            }
-
-            1% {
-                display: flex;
-                transform: translateX(-$thumbnail-sidebar-width);
-            }
-
-            100% {
-                transform: translateX(0);
-            }
-        }
 
         &.bp-loaded {
             .bp-content {
