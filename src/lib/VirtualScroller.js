@@ -109,8 +109,12 @@ class VirtualScroller {
         this.anchorEl.appendChild(this.scrollingEl);
 
         this.resize(this.containerHeight);
+
+        const initialRowIndex = config.initialRowIndex || 0;
         // If initialRowIndex is < the first window into the list, then just render from the first item
-        this.renderItems(config.initialRowIndex < this.maxRenderedItems ? 0 : config.initialRowIndex);
+        this.renderItems(initialRowIndex < this.maxRenderedItems ? 0 : initialRowIndex);
+
+        this.scrollIntoView(initialRowIndex);
 
         this.bindDOMListeners();
 
@@ -441,7 +445,8 @@ class VirtualScroller {
         const { scrollTop } = this.scrollingEl;
         const { offsetTop } = listItemEl;
 
-        return scrollTop <= offsetTop && offsetTop <= scrollTop + this.containerHeight;
+        // Ensure that the offsetTop and entire height of the listItemEl are inside the visible window
+        return scrollTop <= offsetTop && offsetTop + this.itemHeight <= scrollTop + this.containerHeight;
     }
 
     /**

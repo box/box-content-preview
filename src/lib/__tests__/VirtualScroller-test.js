@@ -555,6 +555,7 @@ describe('VirtualScroller', () => {
             const scrollingEl = { scrollTop: 100, remove: () => {} };
             virtualScroller.scrollingEl = scrollingEl;
             virtualScroller.containerHeight = 100;
+            virtualScroller.itemHeight = 20;
         });
 
         it('should return false if scrollingEl is falsy', () => {
@@ -575,8 +576,12 @@ describe('VirtualScroller', () => {
             expect(virtualScroller.isVisible({ offsetTop: 201 })).to.be.false;
         });
 
-        it('should return true if the offsetTop of listItemEl is >= scrollTop && <= scrollTop + containerHeight', () => {
-            expect(virtualScroller.isVisible({ offsetTop: 101 })).to.be.true;
+        it('should return true if the offsetTop + itemHeight of listItemEl is fully within the containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 120 })).to.be.true;
+        });
+
+        it('should return false if the offsetTop + itemHeight of listItemEl is not fully within the containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 190 })).to.be.false;
         });
     });
 
