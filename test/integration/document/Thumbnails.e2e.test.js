@@ -242,4 +242,26 @@ describe('Preview Document Thumbnails', () => {
 
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
     });
+
+    it('Should scroll previewed page into view', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+
+        cy.getByTitle('Click to enter page number').click();
+        cy
+            .getByTestId('page-num-input')
+            .should('be.visible')
+            .type('50')
+            .blur();
+
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+
+        cy.reload();
+
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy.getByTestId('thumbnails-sidebar').find('.bp-vs').then(($virtualScrollerEl) => {
+            expect($virtualScrollerEl[0].scrollTop).to.not.equal(0);
+        });
+    });
 });
