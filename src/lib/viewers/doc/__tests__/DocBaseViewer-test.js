@@ -305,6 +305,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfViewer.cleanup).to.be.called;
                 expect(docBase.pdfViewer.pdfDocument.destroy).to.be.called;
             });
+
+            it('should clean up the thumbnails sidebar instance and DOM element', () => {
+                docBase.thumbnailsSidebar = {
+                    destroy: sandbox.stub()
+                };
+                const thumbnailsSidebarEl = {
+                    remove: sandbox.stub()
+                };
+                docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+
+                docBase.destroy();
+                expect(docBase.thumbnailsSidebar.destroy).to.be.called;
+                expect(thumbnailsSidebarEl.remove).to.be.called;
+                expect(stubs.classListRemove).to.be.called;
+            });
         });
 
         describe('prefetch()', () => {
@@ -2399,7 +2414,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     classList: {
                         add: stubs.classListAdd,
                         remove: stubs.classListRemove
-                    }
+                    },
+                    remove: sandbox.stub()
                 };
 
                 docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
