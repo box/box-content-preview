@@ -143,6 +143,7 @@ class DocBaseViewer extends BaseViewer {
 
             if (this.shouldThumbnailsBeToggled()) {
                 this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                this.emit(VIEWER_EVENT.thumbnailsOpen);
             }
         }
     }
@@ -1369,13 +1370,13 @@ class DocBaseViewer extends BaseViewer {
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
-            eventName = 'thumbnailsClose';
+            eventName = VIEWER_EVENT.thumbnailsClose;
         } else {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
-            eventName = 'thumbnailsOpen';
+            eventName = VIEWER_EVENT.thumbnailsOpen;
         }
 
         this.emitMetric({ name: metricName, data: pagesCount });

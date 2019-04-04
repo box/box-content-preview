@@ -10,7 +10,9 @@ export const VIEWER_EVENT = {
     mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
     error: 'error', // When an error occurs.
     default: 'viewerevent', // The default viewer event.
-    metric: 'viewermetric' // A viewer metric.
+    metric: 'viewermetric', // A viewer metric.
+    thumbnailsClose: 'thumbnailsClose', // When thumbnails sidebar closes
+    thumbnailsOpen: 'thumbnailsOpen' // When thumbnails sidebar opens
 };
 
 // Error codes logged by preview with "preview_error" events
