@@ -29,6 +29,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
             hideLoadingIndicator: () => {}
         });
         stubs = {};
+
+        docPreloader.previewUI = {
+            contentContainer: document.createElement('div'),
+            hideLoadingIndicator: sandbox.stub()
+        };
     });
 
     afterEach(() => {
@@ -70,7 +75,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             stubs.checkDocumentLoaded = sandbox.stub(docPreloader, 'checkDocumentLoaded');
             stubs.emit = sandbox.stub(docPreloader, 'emit');
             stubs.setDimensions = sandbox.stub(util, 'setDimensions');
-            stubs.hideLoadingIndicator = sandbox.stub(docPreloader.previewUI, 'hideLoadingIndicator');
+            stubs.hideLoadingIndicator = docPreloader.previewUI.hideLoadingIndicator;
             docPreloader.imageEl = {};
             docPreloader.preloadEl = document.createElement('div');
         });
@@ -544,11 +549,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
     describe('checkDocumentLoaded()', () => {
         beforeEach(() => {
-            docPreloader.containerEl = document.createElement('div');
+            docPreloader.previewUI.contentContainer = document.createElement('div');
         });
 
         it('should hide preload and return true if container element does have loaded class', () => {
-            docPreloader.containerEl.classList.add(CLASS_PREVIEW_LOADED);
+            docPreloader.previewUI.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             sandbox.mock(docPreloader).expects('hidePreload');
             expect(docPreloader.checkDocumentLoaded()).to.be.true;
         });
