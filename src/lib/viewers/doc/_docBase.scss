@@ -143,6 +143,10 @@ $thumbnail-sidebar-width: 226px;
         &.bp-thumbnails-open {
             .bp-content {
                 left: $thumbnail-sidebar-width;
+
+                &.bp-is-fullscreen {
+                    left: 0;
+                }
             }
 
             .bp-thumbnails-container {
