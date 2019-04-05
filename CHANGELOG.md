@@ -1,3 +1,14 @@
+<a name="2.5.1"></a>
+## <small>2.5.1 (2019-04-05)</small>
+
+* Fix: Adding file nav button transition (#974) ([3b09559](https://github.com/box/box-content-preview/commit/3b09559)), closes [#974](https://github.com/box/box-content-preview/issues/974)
+* Fix: Check correct DOM element in 'checkDocumentLoaded()' ([5e33773](https://github.com/box/box-content-preview/commit/5e33773))
+* Fix: Cleanup the thumbnail sidebar when preview errors (#976) ([05fa0a2](https://github.com/box/box-content-preview/commit/05fa0a2)), closes [#976](https://github.com/box/box-content-preview/issues/976)
+* Fix: On Thumbnails initial render, scroll item into view (#975) ([55ad49d](https://github.com/box/box-content-preview/commit/55ad49d)), closes [#975](https://github.com/box/box-content-preview/issues/975)
+* Update: emit thumbnailsOpen in DocBaseViewer (#977) ([979a912](https://github.com/box/box-content-preview/commit/979a912)), closes [#977](https://github.com/box/box-content-preview/issues/977)
+
+
+
 <a name="2.5.0"></a>
 ## 2.5.0 (2019-04-02)
 
