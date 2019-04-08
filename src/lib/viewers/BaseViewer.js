@@ -1142,10 +1142,9 @@ class BaseViewer extends EventEmitter {
      * Method to insert the viewer wrapper
      *
      * @param {HTMLElement} element Element to be inserted into the DOM
-     * @param {string} classes - string of classes to be applied to the element
      * @return {HTMLElement} inserted element
      */
-    createViewer(element, classes) {
+    createViewer(element) {
         if (!element) {
             return null;
         }
@@ -1162,7 +1161,6 @@ class BaseViewer extends EventEmitter {
             addedElement = this.containerEl.insertBefore(element, firstChildEl);
         }
 
-        addedElement.className = classes;
         return addedElement;
     }
 }

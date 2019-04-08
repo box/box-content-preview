@@ -73,7 +73,7 @@ describe('lib/viewers/text/BoxCSV', () => {
             csvComponent.renderCSV();
 
             const gridComponent = renderStub.firstCall.args[0];
-            expect(gridComponent.props.className).to.equal('bp-text-csv-grid bp-content-body');
+            expect(gridComponent.props.className).to.equal('bp-text-csv-grid');
             expect(gridComponent.props.cellRenderer).to.equal(csvComponent.cellRenderer);
             expect(gridComponent.props.columnCount).to.equal(2);
             expect(gridComponent.props.rowCount).to.equal(3);

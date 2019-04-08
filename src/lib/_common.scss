@@ -212,16 +212,6 @@ $header-height: 48px;
     }
 }
 
-.bp-content-body {
-    border: 2px solid transparent;
-}
-
-.bp-content-body:focus {
-    border-color: #999;
-    outline: 0;
-    transition: border 50ms ease-in;
-}
-
 //---------- Override popup related CSS from _boxui.scss ----------//
 .bp-modal-dialog {
     padding: 20px;

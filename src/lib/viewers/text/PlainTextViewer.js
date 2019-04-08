@@ -3,7 +3,7 @@ import api from '../../api';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
-import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION, CLASS_BOX_PREVIEW_CONTENT_BODY } from '../../constants';
+import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
@@ -112,10 +112,9 @@ class PlainTextViewer extends TextBaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.textEl = this.createViewer(
-            document.createElement('pre'),
-            `bp-text bp-text-plain hljs ${CLASS_BOX_PREVIEW_CONTENT_BODY} ${CLASS_HIDDEN}`
-        );
+        this.textEl = this.createViewer(document.createElement('pre'));
+        this.textEl.className = 'bp-text bp-text-plain hljs';
+        this.textEl.classList.add(CLASS_HIDDEN);
         this.textEl.tabIndex = '0';
 
         this.codeEl = this.textEl.appendChild(document.createElement('code'));

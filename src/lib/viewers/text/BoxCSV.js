@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import Grid from 'react-virtualized/dist/es/Grid/Grid';
-import { CLASS_BOX_PREVIEW_CONTENT_BODY } from '../../constants';
 
 const HEIGHT_ROW = 30;
 const WIDTH_SCROLLER = 5;
@@ -90,7 +89,7 @@ class BoxCSV {
 
         this.gridComponent = render(
             <Grid
-                className={`bp-text-csv-grid ${CLASS_BOX_PREVIEW_CONTENT_BODY}`}
+                className='bp-text-csv-grid'
                 cellRenderer={this.cellRenderer}
                 width={maxWidth}
                 height={Math.min(maxHeight, calculatedHeight)}

@@ -22,8 +22,7 @@ import {
     ENCODING_TYPES,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
-    CLASS_BOX_PREVIEW_CONTENT_BODY
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -110,7 +109,8 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-        this.docEl = this.createViewer(document.createElement('div'), `bp-doc ${CLASS_BOX_PREVIEW_CONTENT_BODY}`);
+        this.docEl = this.createViewer(document.createElement('div'));
+        this.docEl.classList.add('bp-doc');
         this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {
