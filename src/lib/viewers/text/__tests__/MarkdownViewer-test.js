@@ -2,12 +2,13 @@
 import MarkdownViewer from '../MarkdownViewer';
 import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
-import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
+import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
 let markdown;
 const sandbox = sinon.sandbox.create();
+let rootEl;
 
 describe('lib/viewers/text/MarkdownViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -19,6 +20,7 @@ describe('lib/viewers/text/MarkdownViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/MarkdownViewer-test.html');
         containerEl = document.querySelector('.container');
+        rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
         markdown = new MarkdownViewer({
             file: {
                 id: 0
@@ -28,6 +30,7 @@ describe('lib/viewers/text/MarkdownViewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         markdown.containerEl = containerEl;
+        markdown.rootEl = rootEl;
         markdown.setup();
     });
 

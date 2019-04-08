@@ -6,12 +6,13 @@ import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import TextBaseViewer from '../TextBaseViewer';
 import * as util from '../../../util';
-import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
+import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
 let text;
 const sandbox = sinon.sandbox.create();
+let rootEl;
 
 describe('lib/viewers/text/PlainTextViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -23,6 +24,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/PlainTextViewer-test.html');
         containerEl = document.querySelector('.container');
+        rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
         text = new PlainTextViewer({
             file: {
                 id: 0,
@@ -40,6 +42,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         text.containerEl = containerEl;
+        text.rootEl = rootEl;
         text.setup();
     });
 
@@ -304,6 +307,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
             text.containerEl = containerEl;
+            text.rootEl = rootEl;
             text.setup();
         });
 
