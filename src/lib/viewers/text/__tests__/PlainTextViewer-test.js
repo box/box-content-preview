@@ -9,9 +9,9 @@ import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
+const sandbox = sinon.sandbox.create();
 let containerEl;
 let text;
-const sandbox = sinon.sandbox.create();
 let rootEl;
 
 describe('lib/viewers/text/PlainTextViewer', () => {
