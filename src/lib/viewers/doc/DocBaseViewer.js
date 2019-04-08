@@ -850,7 +850,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initPrint() {
-        this.printPopup = new Popup(this.containerEl);
+        this.printPopup = new Popup(this.rootEl);
 
         const printCheckmark = document.createElement('div');
         printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
