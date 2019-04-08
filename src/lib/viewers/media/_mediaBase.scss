@@ -76,23 +76,25 @@
 }
 
 // When media is buffering, show only the crawler
-.bp-is-buffering .bp-loading-wrapper,
-.bp-is-buffering.bp-loaded .bp-loading-wrapper {
-    // Show loading indicator immediately
-    animation-name: none;
-    display: block;
+.bp {
+    &.bp-loaded .bp-is-buffering .bp-loading-wrapper,
+    .bp-is-buffering .bp-loading-wrapper {
+        // Show loading indicator immediately
+        animation-name: none;
+        display: flex;
 
-    .bp-icon,
-    .bp-loading-text,
-    .bp-loading-btn-container {
-        display: none;
-    }
+        .bp-icon,
+        .bp-loading-text,
+        .bp-loading-btn-container {
+            display: none;
+        }
 
-    .bp-crawler-wrapper {
-        position: static;
+        .bp-crawler-wrapper {
+            position: static;
 
-        .bp-crawler div {
-            background-color: $box-blue;
+            .bp-crawler div {
+                background-color: $box-blue;
+            }
         }
     }
 }
