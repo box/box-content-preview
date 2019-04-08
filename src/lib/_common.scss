@@ -163,10 +163,6 @@ $header-height: 48px;
     }
 }
 
-.bp.bp-loaded .bp-content {
-    transition: left 300ms cubic-bezier(.4, 0, .2, 1);
-}
-
 .accessibility-hidden {
     left: -9999px;
     position: absolute;

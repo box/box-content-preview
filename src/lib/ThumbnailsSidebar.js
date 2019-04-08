@@ -127,6 +127,9 @@ class ThumbnailsSidebar {
 
             // Specify the current page to be selected
             this.currentPage = options.currentPage || 1;
+
+            // Specify whether the sidebar is open to start
+            this.isOpen = !!options.isOpen;
         }
 
         // Get the first page of the document, and use its dimensions
@@ -232,9 +235,9 @@ class ThumbnailsSidebar {
      * @return {HTMLElement} - thumbnail anchor element
      */
     createThumbnailNav() {
-        const thumbnailNav = document.createElement('a');
+        const thumbnailNav = document.createElement('button');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
-        thumbnailNav.tabIndex = '0';
+        thumbnailNav.type = 'button';
         return thumbnailNav;
     }
 

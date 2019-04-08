@@ -22,7 +22,10 @@ import {
     ENCODING_TYPES,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -59,6 +62,7 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
+const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 // List of metrics to be emitted only once per session
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
@@ -136,7 +140,12 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
-            this.containerEl.parentNode.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+            this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
+
+            if (this.shouldThumbnailsBeToggled()) {
+                this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                this.emit(VIEWER_EVENT.thumbnailsOpen);
+            }
         }
     }
 
@@ -193,6 +202,12 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.destroy();
+        }
+
+        if (this.thumbnailsSidebarEl) {
+            // Since we are cleaning up make sure the thumbnails open class is
+            // removed so that the content div shifts back left
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             this.thumbnailsSidebarEl.remove();
             this.thumbnailsSidebarEl = null;
         }
@@ -1086,8 +1101,9 @@ class DocBaseViewer extends BaseViewer {
     initThumbnails() {
         this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
         this.thumbnailsSidebar.init({
-            onClick: this.onThumbnailClickHandler,
-            currentPage: this.pdfViewer.currentPageNumber
+            currentPage: this.pdfViewer.currentPageNumber,
+            isOpen: this.shouldThumbnailsBeToggled(),
+            onClick: this.onThumbnailClickHandler
         });
     }
 
@@ -1346,23 +1362,35 @@ class DocBaseViewer extends BaseViewer {
 
         const { pagesCount } = this.pdfViewer;
 
+        this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
+
         let metricName;
         let eventName;
         if (!this.thumbnailsSidebar.isOpen) {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
-            eventName = 'thumbnailsClose';
+            eventName = VIEWER_EVENT.thumbnailsClose;
         } else {
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
-            eventName = 'thumbnailsOpen';
+            eventName = VIEWER_EVENT.thumbnailsOpen;
         }
 
         this.emitMetric({ name: metricName, data: pagesCount });
         this.emit(eventName);
 
         // Resize after the CSS animation to toggle the sidebar is complete
-        setTimeout(() => this.resize(), THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+        setTimeout(() => {
+            this.resize();
+
+            // Remove the active classes to allow the container to be transitioned properly
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
+        }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
     /**
@@ -1396,6 +1424,46 @@ class DocBaseViewer extends BaseViewer {
                 break;
             default:
         }
+    }
+
+    /**
+     * Gets the cached thumbnails toggled state based on file id. Will retrieve from
+     * localStorage if not cached.
+     * @return {boolean} Whether thumbnails is toggled open or not from the cache
+     */
+    getCachedThumbnailsToggledState() {
+        const { [this.options.file.id]: toggledOpen } = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY) || {};
+        return toggledOpen;
+    }
+
+    /**
+     * Caches the toggled state of the thumbnails sidebar, also saving to localStorage
+     * @param {boolean} isOpen Toggled state of the sidebar
+     * @return {void}
+     */
+    cacheThumbnailsToggledState(isOpen) {
+        const thumbnailsToggledMap = this.cache.get(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY) || {};
+        const newThumbnailsToggledMap = { ...thumbnailsToggledMap, [this.options.file.id]: !!isOpen };
+
+        this.cache.set(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, newThumbnailsToggledMap, true /* useLocalStorage */);
+    }
+
+    /**
+     * Determines if the thumbnails sidebar is toggled based on the value from the cache
+     * as well as defaulting to true if there is no cache entry for this file id.
+     * @return {boolean} Whether thumbnails is toggled open or not
+     */
+    shouldThumbnailsBeToggled() {
+        const cachedToggledState = this.getCachedThumbnailsToggledState();
+        let toggledState = cachedToggledState;
+
+        // If cached toggled state is anything other than false, set it to true
+        // because we want the default state to be true
+        if (toggledState !== false) {
+            toggledState = true;
+        }
+
+        return toggledState;
     }
 }
 

@@ -2,8 +2,8 @@
 describe('Preview Document Thumbnails', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_DOC_LARGE');
+    const badFileId = Cypress.env('FILE_ID_BAD');
     const THUMBNAIL_SELECTED_CLASS = 'bp-thumbnail-is-selected';
-    const THUMBNAILS_OPEN = 'bp-thumbnails-open';
 
     /**
      * Gets the thumbnail with the specified page number
@@ -51,18 +51,6 @@ describe('Preview Document Thumbnails', () => {
         return cy.getByTestId('thumbnails-sidebar');
     };
 
-    /**
-     * Asserts that the thumbnails sidebar object is visible
-     * @return {Element} Preview element
-     */
-    const verifyThumbnailsVisible = () => cy.getByTestId('bp').should('have.class', THUMBNAILS_OPEN);
-
-    /**
-     * Asserts that the thumbnails sidebar object is not visible
-     * @return {Element} Preview element
-     */
-    const verifyThumbnailsNotVisible = () => cy.getByTestId('bp').should('not.have.class', THUMBNAILS_OPEN);
-
     beforeEach(() => {
         cy.visit('/');
     });
@@ -79,16 +67,19 @@ describe('Preview Document Thumbnails', () => {
 
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('be.visible');
+
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
     });
 
     it('Should render thumbnails when toggled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
 
         toggleThumbnails();
-        verifyThumbnailsNotVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
     });
 
     it('Should be able to change page by clicking on the thumbnail', () => {
@@ -101,8 +92,7 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         // Verify which thumbnail is selected
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
@@ -124,8 +114,7 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -147,8 +136,7 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -177,8 +165,7 @@ describe('Preview Document Thumbnails', () => {
             .invoke('text')
             .should('equal', '1');
 
-        toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -194,7 +181,7 @@ describe('Preview Document Thumbnails', () => {
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
         toggleThumbnails();
-        verifyThumbnailsNotVisible();
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
 
         cy.getByTitle('Click to enter page number').click();
         cy
@@ -206,7 +193,7 @@ describe('Preview Document Thumbnails', () => {
         cy.getPreviewPage(1).should('be.visible');
 
         toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
     });
@@ -226,15 +213,63 @@ describe('Preview Document Thumbnails', () => {
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('be.visible');
 
-        toggleThumbnails();
-        verifyThumbnailsVisible();
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         // Change to small viewport while thumbnails sidebar is open
         cy.viewport('iphone-6');
 
         cy.showDocumentControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
-        // Not using `verifyThumbnailsNotVisible because that checks for the presence of the CSS class
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+    });
+
+    it('Should keep the thumbnails sidebar toggled open even after refresh', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+
+        cy.reload();
+
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+        getThumbnailWithRenderedImage(1);
+    });
+
+    it('Should keep the thumbnails sidebar toggled closed even after refresh', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+
+        toggleThumbnails();
+
+        cy.reload();
+
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+    });
+
+    it('Should scroll previewed page into view', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+
+        cy.getByTitle('Click to enter page number').click();
+        cy
+            .getByTestId('page-num-input')
+            .should('be.visible')
+            .type('50')
+            .blur();
+
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+
+        cy.reload();
+
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy.getByTestId('thumbnails-sidebar').find('.bp-vs').then(($virtualScrollerEl) => {
+            expect($virtualScrollerEl[0].scrollTop).to.not.equal(0);
+        });
+    });
+
+    it('Should not show the thumbnails sidebar when a document preview errors', () => {
+        cy.showPreview(token, badFileId, { enableThumbnailsSidebar: true });
+
+        cy.contains('We\'re sorry the preview didn\'t load. This file could not be converted.');
+        cy.getByTestId('thumbnails-sidebar').should('not.exist');
     });
 });
