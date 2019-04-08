@@ -115,6 +115,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
+        this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
