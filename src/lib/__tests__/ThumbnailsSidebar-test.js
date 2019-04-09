@@ -3,7 +3,7 @@ import ThumbnailsSidebar, { DEFAULT_THUMBNAILS_SIDEBAR_WIDTH } from '../Thumbnai
 import VirtualScroller from '../VirtualScroller';
 
 const sandbox = sinon.sandbox.create();
-const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 4 / 10;
+const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2 / 10;
 
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
