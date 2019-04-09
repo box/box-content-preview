@@ -3,7 +3,7 @@ import ThumbnailsSidebar, { DEFAULT_THUMBNAILS_SIDEBAR_WIDTH } from '../Thumbnai
 import VirtualScroller from '../VirtualScroller';
 
 const sandbox = sinon.sandbox.create();
-const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10;
+const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 4 / 10;
 
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
@@ -103,7 +103,7 @@ describe('ThumbnailsSidebar', () => {
 
             return pagePromise.then(() => {
                 expect(stubs.getViewport).to.be.called;
-                expect(thumbnailsSidebar.scale).to.be.equal(TEST_SCALE); // DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width
+                expect(thumbnailsSidebar.scale).to.be.equal(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10);
                 expect(thumbnailsSidebar.pageRatio).to.be.equal(1);
                 expect(stubs.vsInit).to.be.called;
             });

@@ -65,7 +65,7 @@ $thumbnail-sidebar-width: 226px;
     .bp-thumbnail-image {
         background-position: center;
         background-repeat: no-repeat;
-        background-size: contain;
+        background-size: cover;
         pointer-events: none;
     }
 
