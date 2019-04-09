@@ -71,7 +71,7 @@ To self-host the Box Content Preview library, follow these steps:
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
   * Check out a specific version with `git checkout v2.5.0`
   * Download a specific version as a zip from https://github.com/box/box-content-preview/releases
-2. Install dependencies and build the library with `yarn install && yarn run prod`
+2. Install dependencies and build the library with `yarn install && yarn prod`
 3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `2.4.0`. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
   * https://cdn.YOUR_SITE.com/box-assets/2.4.0/en-US/preview.js
   * https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
@@ -334,7 +334,7 @@ Development Setup
 6. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-content-preview.git`.
 7. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
 8. Install dependencies `yarn install`
-9. Test your first build! `yarn run build`
+9. Test your first build! `yarn build`
 10. To automatically rsync files after a Webpack build, add a build/rsync.json file with a `location` field. This file should look like:
 ```
 {
@@ -353,13 +353,13 @@ Install the following plugins in your preferred editor
 
 ### Yarn commands
 
-* `yarn run build` to generate resource bundles and JS webpack bundles.
-* `yarn run start` to only generate JS webpack bundles on file changes.
-* `yarn run start:dev` to launch a webpack-dev-server instance for local development.
-* `yarn run test` launches karma tests with PhantomJS.
-* `yarn run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn run test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn run test -- --src=viewers/doc/`.
-* `yarn run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-* `yarn run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
+* `yarn build` to generate resource bundles and JS webpack bundles.
+* `yarn start` to only generate JS webpack bundles on file changes.
+* `yarn start:dev` to launch a webpack-dev-server instance for local development.
+* `yarn test` launches karma tests with PhantomJS.
+* `yarn test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn test -- --src=viewers/doc/`.
+* `yarn test:watch` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
+* `yarn test:watch -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 
 For more script commands see `package.json`. Test coverage reports are available under reports/coverage.
 
