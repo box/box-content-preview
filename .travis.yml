@@ -7,7 +7,11 @@ before_install:
     - export PATH=$HOME/.yarn/bin:$PATH
 jobs:
     include:
-        - name: "Build"
-          script: yarn run ci
+        - name: "Code Lint"
+          script: yarn lint
+        - name: "Unit Tests"
+          script: yarn test
         - name: "E2E Tests"
           script: yarn test:e2e
+        - name: "Build"
+          script: npm-run-all clean build:i18n build:ci
