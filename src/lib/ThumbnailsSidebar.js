@@ -9,6 +9,7 @@ const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
 export const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 154; // 225px sidebar width - 25px margin right, - 40px for page number - 6px for border
+const THUMBNAIL_IMAGE_WIDTH = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2; // Multiplied by a scaling factor so that we render the image at a higher resolution
 const THUMBNAIL_MARGIN = 15;
 const BORDER_WIDTH = 6;
 
@@ -316,16 +317,16 @@ class ThumbnailsSidebar {
                 // landscape
                 if (curPageRatio < this.pageRatio) {
                     // Set the canvas height to that of the thumbnail max height
-                    canvas.height = Math.ceil(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / this.pageRatio);
+                    canvas.height = Math.ceil(THUMBNAIL_IMAGE_WIDTH / this.pageRatio);
                     // Find the canvas width based on the curent page ratio
                     canvas.width = canvas.height * curPageRatio;
                 } else {
                     // In case the current page ratio is same as the first page
                     // or in case it's larger (which means that it's wider), keep
                     // the width at the max thumbnail width
-                    canvas.width = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH;
+                    canvas.width = THUMBNAIL_IMAGE_WIDTH;
                     // Find the height based on the current page ratio
-                    canvas.height = Math.ceil(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / curPageRatio);
+                    canvas.height = Math.ceil(THUMBNAIL_IMAGE_WIDTH / curPageRatio);
                 }
 
                 // The amount for which to scale down the current page
