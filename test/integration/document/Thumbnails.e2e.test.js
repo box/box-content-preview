@@ -272,4 +272,12 @@ describe('Preview Document Thumbnails', () => {
         cy.contains('We\'re sorry the preview didn\'t load. This file could not be converted.');
         cy.getByTestId('thumbnails-sidebar').should('not.exist');
     });
+
+    it('Should not show the thumbnails sidebar for single page documents', () => {
+        const singlePageFileId = Cypress.env('FILE_ID_SINGLE_PAGE');
+        cy.showPreview(token, singlePageFileId, { enableThumbnailsSidebar: true });
+
+        cy.contains('Single Page Document');
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+    });
 });
