@@ -190,8 +190,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
             docBase.setup();
-
-            expect(stubs.classListAdd).to.have.been.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
         });
 
         it('should default the thumbnails closed if thumbnails toggle state is closed', () => {
@@ -1022,6 +1020,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFViewer').returns(stubs.pdfViewer);
                 stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
                 stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.shouldThumbnailsBeToggled = sandbox.stub(docBase, 'shouldThumbnailsBeToggled');
             });
 
             it('should turn on enhanced text selection if not on mobile', () => {
@@ -1184,6 +1183,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.bindDOMListeners).to.be.called;
                     expect(stubs.pdfViewer.setDocument).to.be.called;
                     expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
+                    expect(stubs.classListAdd).not.to.be.called;
                 });
             });
 
@@ -1213,6 +1213,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('url').catch(() => {
                     expect(stubs.handleDownloadError).to.be.called;
+                });
+            });
+
+            it('should adjust the layout if thumbnails should be toggled', () => {
+                const doc = {
+                    url: 'url'
+                };
+                const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+                sandbox.stub(docBase, 'getViewerOption').returns(100);
+                stubs.shouldThumbnailsBeToggled.returns(true);
+
+                return docBase.initViewer('url').then(() => {
+                    expect(stubs.pdfViewerStub).to.be.called;
+                    expect(getDocumentStub).to.be.called;
+                    expect(stubs.bindDOMListeners).to.be.called;
+                    expect(stubs.pdfViewer.setDocument).to.be.called;
+                    expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
+                    expect(stubs.classListAdd).calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                 });
             });
         });
@@ -2518,8 +2536,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('shouldThumbnailsBeToggled()', () => {
+            let mockPdfViewer;
+
             beforeEach(() => {
                 stubs.getCachedThumbnailsToggledState = sandbox.stub(docBase, 'getCachedThumbnailsToggledState');
+                mockPdfViewer = {
+                    pdfDocument: { numPages: 5 }
+                };
+                docBase.pdfViewer = mockPdfViewer;
             });
 
             it('should return true if cached value is true', () => {
@@ -2541,6 +2565,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 stubs.getCachedThumbnailsToggledState.returns('123');
                 expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+            });
+
+            it('should return false if document only has 1 page, even if cached state is true', () => {
+                stubs.getCachedThumbnailsToggledState.returns(true);
+                mockPdfViewer = {
+                    pdfDocument: { numPages: 1 }
+                };
+                docBase.pdfViewer = mockPdfViewer;
+
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+            });
+
+            it('should return false if pdfDocument is not found', () => {
+                stubs.getCachedThumbnailsToggledState.returns(true);
+                mockPdfViewer = {
+                    pdfDocument: {}
+                };
+                docBase.pdfViewer = mockPdfViewer;
+
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
             });
         });
     });

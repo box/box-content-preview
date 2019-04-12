@@ -1455,8 +1455,8 @@ class DocBaseViewer extends BaseViewer {
     shouldThumbnailsBeToggled() {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
-        // is called, but the numPages is available on the underlying pdfViewr.pdfDocument
-        const { numPages } = this.pdfViewer && this.pdfViewer.pdfDocument;
+        // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
+        const { numPages = 0 } = this.pdfViewer && this.pdfViewer.pdfDocument;
         let toggledState = cachedToggledState;
 
         // If cached toggled state is anything other than false, set it to true
