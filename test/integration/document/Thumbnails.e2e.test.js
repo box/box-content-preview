@@ -2,6 +2,7 @@
 describe('Preview Document Thumbnails', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_DOC_LARGE');
+    const badFileId = Cypress.env('FILE_ID_BAD');
     const THUMBNAIL_SELECTED_CLASS = 'bp-thumbnail-is-selected';
 
     /**
@@ -240,6 +241,43 @@ describe('Preview Document Thumbnails', () => {
 
         cy.reload();
 
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+    });
+
+    it('Should scroll previewed page into view', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+
+        cy.getByTitle('Click to enter page number').click();
+        cy
+            .getByTestId('page-num-input')
+            .should('be.visible')
+            .type('50')
+            .blur();
+
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+
+        cy.reload();
+
+        cy.getByTestId('thumbnails-sidebar').should('be.visible');
+        getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy.getByTestId('thumbnails-sidebar').find('.bp-vs').then(($virtualScrollerEl) => {
+            expect($virtualScrollerEl[0].scrollTop).to.not.equal(0);
+        });
+    });
+
+    it('Should not show the thumbnails sidebar when a document preview errors', () => {
+        cy.showPreview(token, badFileId, { enableThumbnailsSidebar: true });
+
+        cy.contains('We\'re sorry the preview didn\'t load. This file could not be converted.');
+        cy.getByTestId('thumbnails-sidebar').should('not.exist');
+    });
+
+    it('Should not show the thumbnails sidebar for single page documents', () => {
+        const singlePageFileId = Cypress.env('FILE_ID_SINGLE_PAGE');
+        cy.showPreview(token, singlePageFileId, { enableThumbnailsSidebar: true });
+
+        cy.contains('Single Page Document');
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
     });
 });

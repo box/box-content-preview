@@ -65,7 +65,7 @@ $thumbnail-sidebar-width: 226px;
     .bp-thumbnail-image {
         background-position: center;
         background-repeat: no-repeat;
-        background-size: contain;
+        background-size: contain; // Needed for the case of document with portrait and landscape orientations
         pointer-events: none;
     }
 
@@ -143,6 +143,10 @@ $thumbnail-sidebar-width: 226px;
         &.bp-thumbnails-open {
             .bp-content {
                 left: $thumbnail-sidebar-width;
+
+                &.bp-is-fullscreen {
+                    left: 0;
+                }
             }
 
             .bp-thumbnails-container {

@@ -20,7 +20,7 @@ $navigationBtnWidth: 50px;
     transform: translateY(-50%);
 
     // Override default animations to only animate opacity since width animation to auto doesn't work
-    transition-property: opacity;
+    transition: opacity .5s ease;
     white-space: nowrap;
     width: $navigationBtnWidth;
 

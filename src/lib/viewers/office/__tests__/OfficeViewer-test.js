@@ -4,7 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import Location from '../../../Location';
 import OfficeViewer from '../OfficeViewer';
-import { CLASS_HIDDEN } from '../../../constants';
+import { CLASS_HIDDEN, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -16,6 +16,7 @@ const sandbox = sinon.sandbox.create();
 let office;
 let stubs = {};
 let containerEl;
+let rootEl;
 
 describe('lib/viewers/office/OfficeViewer', () => {
     let clock;
@@ -28,6 +29,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/office/__tests__/OfficeViewer-test.html');
         containerEl = document.querySelector('.container');
+        rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
         office = new OfficeViewer({
             container: containerEl,
             file: {
@@ -51,6 +53,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
         clock = sinon.useFakeTimers();
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         office.containerEl = containerEl;
+        office.rootEl = rootEl;
     });
 
     afterEach(() => {

@@ -115,6 +115,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
+        this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
@@ -140,10 +141,6 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
             this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
-
-            if (this.shouldThumbnailsBeToggled()) {
-                this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-            }
         }
     }
 
@@ -200,6 +197,12 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.destroy();
+        }
+
+        if (this.thumbnailsSidebarEl) {
+            // Since we are cleaning up make sure the thumbnails open class is
+            // removed so that the content div shifts back left
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             this.thumbnailsSidebarEl.remove();
             this.thumbnailsSidebarEl = null;
         }
@@ -660,6 +663,11 @@ class DocBaseViewer extends BaseViewer {
             .then((doc) => {
                 this.pdfViewer.setDocument(doc);
 
+                if (this.shouldThumbnailsBeToggled()) {
+                    this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    this.emit(VIEWER_EVENT.thumbnailsOpen);
+                }
+
                 const { linkService } = this.pdfViewer;
                 if (linkService instanceof PDFJS.PDFLinkService) {
                     linkService.setDocument(doc, pdfUrl);
@@ -842,7 +850,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initPrint() {
-        this.printPopup = new Popup(this.containerEl);
+        this.printPopup = new Popup(this.rootEl);
 
         const printCheckmark = document.createElement('div');
         printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
@@ -1363,13 +1371,13 @@ class DocBaseViewer extends BaseViewer {
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE;
-            eventName = 'thumbnailsClose';
+            eventName = VIEWER_EVENT.thumbnailsClose;
         } else {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
             metricName = USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN;
-            eventName = 'thumbnailsOpen';
+            eventName = VIEWER_EVENT.thumbnailsOpen;
         }
 
         this.emitMetric({ name: metricName, data: pagesCount });
@@ -1441,12 +1449,14 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Determines if the thumbnails sidebar is toggled based on the value from the cache
-     * as well as defaulting to true if there is no cache entry for this file id.
-     * @return {boolean} Whether thumbnails is toggled open or not
+     * Determines if the thumbnails sidebar should be toggled
+     * @return {boolean} Whether thumbnails should be toggled open or not
      */
     shouldThumbnailsBeToggled() {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
+        // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
+        // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
+        const { numPages = 0 } = this.pdfViewer && this.pdfViewer.pdfDocument;
         let toggledState = cachedToggledState;
 
         // If cached toggled state is anything other than false, set it to true
@@ -1455,7 +1465,8 @@ class DocBaseViewer extends BaseViewer {
             toggledState = true;
         }
 
-        return toggledState;
+        // For documents of only 1 page, default thumbnails as closed
+        return toggledState && numPages > 1;
     }
 }
 
