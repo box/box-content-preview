@@ -2,7 +2,7 @@ import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
 import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE } from '../../constants';
+import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
 import { pageNumberFromScroll, fetchRepresentationAsBlob } from '../../util';
 
 const PADDING_BUFFER = 100;
@@ -37,7 +37,7 @@ class MultiImageViewer extends ImageBaseViewer {
         super.setup();
 
         this.wrapperEl = this.createViewer(document.createElement('div'));
-        this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
+        this.wrapperEl.className = `${CSS_CLASS_IMAGE_WRAPPER} ${CLASS_IS_SCROLLABLE}`;
         this.wrapperEl.tabIndex = '0';
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
