@@ -161,6 +161,10 @@ $header-height: 48px;
         background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
         width: 100%;
     }
+
+    .bp-is-scrollable:focus {
+        outline: none; // temporarily remove focus ring until we know how we want to indicate focus
+    }
 }
 
 .accessibility-hidden {
