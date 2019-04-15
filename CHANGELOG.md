@@ -1,3 +1,10 @@
+<a name="2.6.1"></a>
+## <small>2.6.1 (2019-04-15)</small>
+
+* Fix: Temporarily remove focus outline from scrollable content ([796f0c1](https://github.com/box/box-content-preview/commit/796f0c1))
+
+
+
 <a name="2.6.0"></a>
 ## 2.6.0 (2019-04-10)
 
