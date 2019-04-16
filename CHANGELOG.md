@@ -1,3 +1,12 @@
+<a name="2.7.0"></a>
+## 2.7.0 (2019-04-16)
+
+* Fix: Temporarily remove focus outline from scrollable content ([a8e574b](https://github.com/box/box-content-preview/commit/a8e574b))
+* Docs: Add comment around cypress auth (#985) ([bd51d09](https://github.com/box/box-content-preview/commit/bd51d09)), closes [#985](https://github.com/box/box-content-preview/issues/985)
+* Update: Thumbnails default closed for single page docs (#984) ([207140b](https://github.com/box/box-content-preview/commit/207140b)), closes [#984](https://github.com/box/box-content-preview/issues/984)
+
+
+
 <a name="2.6.0"></a>
 ## 2.6.0 (2019-04-10)
 
