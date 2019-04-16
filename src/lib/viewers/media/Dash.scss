@@ -1,12 +1,17 @@
 @import 'mediaBase';
 
+.bp-media-container {
+    display: flex;
+    justify-content: center;
+    min-width: 320px; // Prevent media controls from overflowing on small screens
+}
+
 .bp-media-dash {
     video {
         cursor: none;
         display: block;
         max-height: 100%;
         max-width: 100%;
-        min-width: 460px;
         width: 100%;
     }
 
