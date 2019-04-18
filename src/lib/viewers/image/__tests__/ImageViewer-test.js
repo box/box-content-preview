@@ -236,8 +236,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.wrapperEl.style.height = '50px';
 
             sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(util, 'fetchRepresentationAsBlob').returns(Promise.resolve(imageUrl));
-            sandbox.stub(URL, 'createObjectURL').returns(imageUrl);
             image.setup();
             image.load(imageUrl).catch(() => {});
         });
@@ -275,18 +273,21 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
 
-        it('should increase scale when the image is rotated', () => {
+        it('should zoom the width & height when the image rotated', () => {
             sandbox.stub(image, 'isRotated').returns(true);
-            sandbox.stub(image, 'getTransformWidthAndHeight').returns({
-                width: 100,
-                height: 100
-            });
-            stubs.setScale = sandbox.stub(image, 'setScale');
 
+            image.imageEl.style.transform = 'rotate(90deg)';
+            image.imageEl.style.width = '200px';
+            image.imageEl.setAttribute('originalWidth', '150');
+            image.imageEl.setAttribute('originalHeight', '100');
+            image.imageEl.src = imageUrl;
+            const origImageSize = image.imageEl.getBoundingClientRect();
             image.zoomIn();
-
-            expect(stubs.setScale).to.be.calledWith(undefined, 120);
+            const newImageSize = image.imageEl.getBoundingClientRect();
+            expect(newImageSize.width).gt(origImageSize.width);
+            expect(newImageSize.height).gt(origImageSize.height);
             expect(stubs.adjustZoom).to.be.called;
+            image.imageEl.style.transform = '';
         });
 
         it('should reset dimensions and adjust padding when called with reset', () => {
@@ -598,13 +599,11 @@ describe('lib/viewers/image/ImageViewer', () => {
                     done();
                 })
             );
-            sandbox.stub(URL, 'URL.createObjectURL(blob)').returns(url);
 
-            image.handleAssetAndRepLoad(url).then(() => {
-                expect(imageEl.src).to.be.equal(url);
-            });
+            image.handleAssetAndRepLoad(url);
 
             expect(startLoadTimer).to.be.called;
+            expect(imageEl.url).to.be.equal(url);
             expect(loadBoxAnnotations).to.be.called;
             expect(createAnnotator).to.be.called;
         });

@@ -210,17 +210,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(stubs.bindImageListeners).to.be.called;
         });
 
-        it('should set the download URL and fetch the page as a blob', () => {
-            stubs.fetchRepresentationAsBlob = sandbox
-                .stub(util, 'fetchRepresentationAsBlob')
-                .returns(Promise.resolve('foo'));
+        it('should set the image source', () => {
             multiImage.singleImageEls = [stubs.singleImageEl];
-            const repUrl = 'file/100/content/{page}.png';
 
-            multiImage.setupImageEls(repUrl, 0);
-
-            expect(multiImage.downloadUrl).to.be.equal(repUrl);
-            expect(stubs.fetchRepresentationAsBlob).to.be.called;
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(multiImage.singleImageEls[0].src).to.be.equal('file/100/content/{page}.png');
         });
 
         it('should set the page number for each image el', () => {
@@ -410,22 +404,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             sandbox.stub(multiImage, 'unbindImageListeners');
         });
 
-        it('should do nothing if the viewer is already destroyed', () => {
-            sandbox.stub(multiImage, 'isDestroyed').returns(true);
-            multiImage.downloadUrl = multiImage.singleImageEls[0];
-            multiImage.handleMultiImageDownloadError('err');
-
-            expect(multiImage.handleDownloadError).to.not.be.called;
-            expect(multiImage.unbindImageListeners).to.not.be.called;
-        });
-
         it('unbind the image listeners, clear the image Els array, and handle the download error', () => {
-            multiImage.downloadUrl = multiImage.singleImageEls[0];
+            const { src } = multiImage.singleImageEls[0];
 
             multiImage.handleMultiImageDownloadError('err');
 
             expect(multiImage.singleImageEls).to.deep.equal([]);
-            expect(multiImage.handleDownloadError).to.be.calledWith('err', multiImage.downloadUrl);
+            expect(multiImage.handleDownloadError).to.be.calledWith('err', src);
             expect(multiImage.unbindImageListeners).to.be.calledTwice;
         });
     });
