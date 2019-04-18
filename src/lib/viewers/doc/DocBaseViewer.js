@@ -1453,6 +1453,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {boolean} Whether thumbnails should be toggled open or not
      */
     shouldThumbnailsBeToggled() {
+        if (!this.options.enableThumbnailsSidebar) {
+            return false;
+        }
+
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
         // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
