@@ -3,7 +3,7 @@ import PageControls from '../../PageControls';
 import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
-import { pageNumberFromScroll, fetchRepresentationAsBlob } from '../../util';
+import { pageNumberFromScroll } from '../../util';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -148,15 +148,7 @@ class MultiImageViewer extends ImageBaseViewer {
         // Set page number. Page is index + 1.
         this.singleImageEls[index].setAttribute('data-page-number', index + 1);
         this.singleImageEls[index].classList.add(CLASS_MULTI_IMAGE_PAGE);
-
-        this.downloadUrl = imageUrl;
-
-        fetchRepresentationAsBlob(imageUrl)
-            .then((blob) => {
-                const srcUrl = URL.createObjectURL(blob);
-                this.singleImageEls[index].src = srcUrl;
-            })
-            .catch(this.handleMultiImageDownloadError);
+        this.singleImageEls[index].src = imageUrl;
     }
 
     /** @inheritdoc */
@@ -275,18 +267,17 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     handleMultiImageDownloadError(err) {
-        if (this.isDestroyed()) {
-            return;
-        }
-
         this.singleImageEls.forEach((el, index) => {
             this.unbindImageListeners(index);
         });
 
+        // Since we're using the src to get the hostname, we can always use the src of the first page
+        const { src } = this.singleImageEls[0];
+
         // Clear any images we may have started to load.
         this.singleImageEls = [];
 
-        this.handleDownloadError(err, this.downloadUrl);
+        this.handleDownloadError(err, src);
     }
 
     /**
