@@ -3,9 +3,7 @@ describe('Previewing a file with deleted representations', () => {
     const token = Cypress.env('ACCESS_TOKEN');
 
     const fileIdDoc = Cypress.env('FILE_ID_DOC');
-    const fileIdImage = Cypress.env('FILE_ID_IMAGE');
     const fileIdPresentation = Cypress.env('FILE_ID_PRESENTATION');
-    const fileIdTiff = Cypress.env('FILE_ID_TIFF');
 
     const REPS_ERROR = 'error_deleted_reps';
 
@@ -55,16 +53,8 @@ describe('Previewing a file with deleted representations', () => {
         {
             viewer: 'Presentation',
             fileId: fileIdPresentation
-        },
-        {
-            viewer: 'Image',
-            fileId: fileIdImage
-        },
-        {
-            viewer: 'MultiImage',
-            fileId: fileIdTiff
         }
-    ].forEach((test) => { 
+    ].forEach((test) => {
         it(test.viewer, () => {
             helpers.checkDeletedRepError();
             
