@@ -2180,6 +2180,7 @@ describe('lib/Preview', () => {
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.emitPreviewError = sandbox.stub(preview, 'emitPreviewError');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
+            stubs.setupUI = sandbox.stub(preview, 'setupUI');
 
             preview.open = true;
         });
@@ -2205,6 +2206,7 @@ describe('lib/Preview', () => {
             expect(preview.open).to.be.false;
             expect(stubs.uncacheFile).to.be.called;
             expect(stubs.destroy).to.be.called;
+            expect(stubs.setupUI).to.be.called;
         });
 
         it('should get the error viewer, attach viewer listeners, and load the error viewer', () => {

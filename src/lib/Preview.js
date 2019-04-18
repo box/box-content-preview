@@ -1472,6 +1472,9 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
+        // Setup the preview ui for next/previous buttons
+        this.setupUI();
+
         // Instantiate the error viewer
         this.viewer = this.getErrorViewer();
 
