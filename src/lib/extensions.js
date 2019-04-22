@@ -15,6 +15,7 @@ export const CODE_EXTENSIONS = [
     'css',
     'cxx',
     'diff',
+    'dwg',
     'erb',
     'groovy',
     'h',
