@@ -1,11 +1,5 @@
 @import 'mediaBase';
 
-.bp-media-container {
-    display: flex;
-    justify-content: center;
-    min-width: 320px; // Prevent media controls from overflowing on small screens
-}
-
 .bp-media-dash {
     video {
         cursor: none;
