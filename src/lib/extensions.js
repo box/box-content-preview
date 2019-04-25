@@ -15,7 +15,6 @@ export const CODE_EXTENSIONS = [
     'css',
     'cxx',
     'diff',
-    'dwg',
     'erb',
     'groovy',
     'h',
@@ -54,6 +53,7 @@ export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
     .concat([
         'doc',
         'docx',
+        'dwg',
         'gdoc',
         'gsheet',
         'gslide',
