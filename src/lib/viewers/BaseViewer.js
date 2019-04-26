@@ -29,7 +29,8 @@ import {
     SELECTOR_BOX_PREVIEW_ICON,
     SELECTOR_BOX_PREVIEW,
     STATUS_SUCCESS,
-    STATUS_VIEWABLE
+    STATUS_VIEWABLE,
+    CLASS_BOX_PREVIEW_IS_SMALL
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
@@ -61,6 +62,7 @@ const ANNOTATION_BUTTONS = {
 };
 
 const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';
+const BREAKPOINT_MEDIUM = 600; // pixels
 
 class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
@@ -134,6 +136,8 @@ class BaseViewer extends EventEmitter {
 
         this.emittedMetrics = {};
 
+        this.isSmall = this.isSmallContainer();
+
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
         this.preventDefault = this.preventDefault.bind(this);
@@ -178,6 +182,10 @@ class BaseViewer extends EventEmitter {
         }
 
         this.rootEl = container.querySelector(SELECTOR_BOX_PREVIEW);
+
+        if (this.isSmall) {
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_IS_SMALL);
+        }
 
         // From the perspective of viewers bp-content holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
@@ -560,10 +568,26 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     resize() {
+        this.isSmall = this.isSmallContainer();
+
+        if (this.isSmall) {
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_IS_SMALL);
+        } else {
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_IS_SMALL);
+        }
+
         this.emit('resize', {
             width: document.documentElement.clientWidth,
             height: document.documentElement.clientHeight
         });
+    }
+
+    /**
+     * Determines if the preview container is a small viewport
+     * @return {boolean} Whether the container is small
+     */
+    isSmallContainer() {
+        return this.options.container.clientWidth < BREAKPOINT_MEDIUM;
     }
 
     /**

@@ -165,6 +165,19 @@ $thumbnail-sidebar-width: 226px;
             display: block;
         }
     }
+
+    &.bp-is-small {
+        &.bp-thumbnails-open {
+            .bp-content {
+                left: 0;
+            }
+        }
+
+        .bp-toggle-thumbnails-icon,
+        .bp-thumbnails-container {
+            display: none;
+        }
+    }
 }
 
 .bp-theme-dark {
