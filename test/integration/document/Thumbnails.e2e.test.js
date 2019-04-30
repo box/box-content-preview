@@ -280,4 +280,18 @@ describe('Preview Document Thumbnails', () => {
         cy.contains('Single Page Document');
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
     });
+
+    it('Should not show the thumbnails sidebar in a small container', () => {
+        // Manually resize the container to be smaller than the medium breakpoint
+        cy.getByTestId('preview-container').then(($previewContainer) => {
+            $previewContainer.css({ height: '300px', width: '500px' });
+        });
+
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+
+        cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
+
+        cy.showDocumentControls();
+        cy.getByTitle('Toggle thumbnails').should('not.be.visible');
+    });
 });
