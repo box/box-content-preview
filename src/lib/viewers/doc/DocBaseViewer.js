@@ -99,7 +99,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
-        this.onThumbnailClickHandler = this.onThumbnailClickHandler.bind(this);
+        this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
     }
 
     /**
@@ -140,6 +140,7 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl = document.createElement('div');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
+            this.thumbnailsSidebarEl.tabIndex = 0;
             this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
         }
     }
@@ -1103,7 +1104,7 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebar.init({
             currentPage: this.pdfViewer.currentPageNumber,
             isOpen: this.shouldThumbnailsBeToggled(),
-            onClick: this.onThumbnailClickHandler
+            onSelect: this.onThumbnailSelectHandler
         });
     }
 
@@ -1113,7 +1114,7 @@ class DocBaseViewer extends BaseViewer {
      * @param {number} pageNum - the page number
      * @return {void}
      */
-    onThumbnailClickHandler(pageNum) {
+    onThumbnailSelectHandler(pageNum) {
         this.emitMetric({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: pageNum });
         this.setPage(pageNum);
     }

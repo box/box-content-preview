@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 import BoundedCache from './BoundedCache';
+import { decodeKeydown } from './util';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
@@ -59,8 +60,10 @@ class ThumbnailsSidebar {
         this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
+        this.onKeydown = this.onKeydown.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
+        this.anchorEl.addEventListener('keydown', this.onKeydown);
     }
 
     /**
@@ -81,13 +84,36 @@ class ThumbnailsSidebar {
             const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
             const pageNum = parseInt(pageNumStr, 10);
 
-            if (this.onClickHandler) {
-                this.onClickHandler(pageNum);
+            if (this.onThumbnailSelect) {
+                this.onThumbnailSelect(pageNum);
             }
         }
 
+        this.anchorEl.focus();
         evt.preventDefault();
         evt.stopImmediatePropagation();
+    }
+
+    /**
+     * Method to handle keyboard events in the Thumbnails Sidebar
+     *
+     * @param {Object} evt - Key event
+     * @return {void}
+     */
+    onKeydown(evt) {
+        const key = decodeKeydown(evt);
+        let nextSelectedPage = this.currentPage;
+        if (key === 'ArrowUp') {
+            nextSelectedPage -= 1;
+        } else if (key === 'ArrowDown') {
+            nextSelectedPage += 1;
+        }
+
+        if (this.onThumbnailSelect && nextSelectedPage !== this.currentPage) {
+            this.onThumbnailSelect(nextSelectedPage);
+            evt.preventDefault();
+            evt.stopImmediatePropagation();
+        }
     }
 
     /**
@@ -124,7 +150,7 @@ class ThumbnailsSidebar {
 
         if (options) {
             // Click handler for when a thumbnail is clicked
-            this.onClickHandler = options.onClick;
+            this.onThumbnailSelect = options.onSelect;
 
             // Specify the current page to be selected
             this.currentPage = options.currentPage || 1;
@@ -214,6 +240,7 @@ class ThumbnailsSidebar {
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
 
         const thumbnailNav = this.createThumbnailNav();
+        thumbnailNav.tabIndex = -1;
         thumbnailEl.appendChild(thumbnailNav);
 
         if (pageNum === this.currentPage) {
