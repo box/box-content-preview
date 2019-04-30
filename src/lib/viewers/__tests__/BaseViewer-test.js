@@ -50,6 +50,7 @@ describe('lib/viewers/BaseViewer', () => {
                 hide: sandbox.stub()
             }
         };
+        base.rootEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
     });
 
     afterEach(() => {

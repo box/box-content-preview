@@ -26,6 +26,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
+        sandbox.stub(BaseViewer.prototype, 'isSmallContainer');
         containerEl = document.querySelector('.container');
         imageBase = new ImageBaseViewer({
             file: {

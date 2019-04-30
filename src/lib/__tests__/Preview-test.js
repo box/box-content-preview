@@ -11,6 +11,7 @@ import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
+import BaseViewer from '../viewers/BaseViewer';
 
 const tokens = require('../tokens');
 
@@ -629,6 +630,10 @@ describe('lib/Preview', () => {
     });
 
     describe('prefetchViewers()', () => {
+        beforeEach(() => {
+            sandbox.stub(BaseViewer.prototype, 'isSmallContainer');
+        });
+
         describe('prefetch stubbed', () => {
             let prefetchStub;
 
