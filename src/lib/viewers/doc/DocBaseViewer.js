@@ -1470,7 +1470,8 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // For documents of only 1 page, default thumbnails as closed
-        return toggledState && numPages > 1;
+        // Also if the preview container is not small
+        return !this.isSmall && toggledState && numPages > 1;
     }
 }
 

@@ -2544,6 +2544,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pdfDocument: { numPages: 5 }
                 };
                 docBase.pdfViewer = mockPdfViewer;
+                docBase.isSmall = false;
             });
 
             it('should return true if cached value is true', () => {
@@ -2584,6 +2585,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.pdfViewer = mockPdfViewer;
 
+                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+            });
+
+            it('should return false if isSmall is true and even if cached value is true', () => {
+                stubs.getCachedThumbnailsToggledState.returns(true);
+                docBase.isSmall = true;
                 expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
             });
         });

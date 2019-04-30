@@ -4,9 +4,7 @@ $thumbnail-border-radius: 3px;
 // Accounts for the 1px border on the right so the remaining width is actually 225
 $thumbnail-sidebar-width: 226px;
 
-@mixin bp-breakpoint-medium {
-    @media (min-width: 600px) { @content; }
-}
+$bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
 
 .bp {
     .bp-toggle-thumbnails-icon {
@@ -21,6 +19,7 @@ $thumbnail-sidebar-width: 226px;
         left: 0;
         position: absolute;
         top: 0;
+        transition: transform $bp-thumbnails-animation;
         width: $thumbnail-sidebar-width;
     }
 
@@ -106,64 +105,55 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
-    @include bp-breakpoint-medium {
-        $bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
+    &.bp-loaded {
+        .bp-content {
+            transition: left $bp-thumbnails-animation;
+        }
+    }
 
-        &.bp-loaded {
-            .bp-content {
-                transition: left $bp-thumbnails-animation;
+    &,
+    &.bp-thumbnails-close,
+    &.bp-thumbnails-close-active {
+        .bp-thumbnails-container {
+            transform: translateX(-$thumbnail-sidebar-width);
+        }
+    }
+
+    &.bp-thumbnails-close {
+        .bp-thumbnails-container {
+            display: none;
+        }
+    }
+
+    &.bp-thumbnails-close-active {
+        .bp-thumbnails-container {
+            display: flex;
+        }
+    }
+
+    &.bp-thumbnails-open {
+        .bp-content {
+            left: $thumbnail-sidebar-width;
+
+            &.bp-is-fullscreen {
+                left: 0;
             }
         }
 
         .bp-thumbnails-container {
-            display: none;
-            transition: transform $bp-thumbnails-animation;
+            display: flex;
+            transform: translateX(0);
         }
+    }
 
-        &,
-        &.bp-thumbnails-close,
-        &.bp-thumbnails-close-active {
-            .bp-thumbnails-container {
-                transform: translateX(-$thumbnail-sidebar-width);
-            }
+    &.bp-thumbnails-open-active {
+        .bp-thumbnails-container {
+            animation: bp-thumbnails-open $bp-thumbnails-animation;
         }
+    }
 
-        &.bp-thumbnails-close {
-            .bp-thumbnails-container {
-                display: none;
-            }
-        }
-
-        &.bp-thumbnails-close-active {
-            .bp-thumbnails-container {
-                display: flex;
-            }
-        }
-
-        &.bp-thumbnails-open {
-            .bp-content {
-                left: $thumbnail-sidebar-width;
-
-                &.bp-is-fullscreen {
-                    left: 0;
-                }
-            }
-
-            .bp-thumbnails-container {
-                display: flex;
-                transform: translateX(0);
-            }
-        }
-
-        &.bp-thumbnails-open-active {
-            .bp-thumbnails-container {
-                animation: bp-thumbnails-open $bp-thumbnails-animation;
-            }
-        }
-
-        .bp-controls-btn.bp-toggle-thumbnails-icon {
-            display: block;
-        }
+    .bp-controls-btn.bp-toggle-thumbnails-icon {
+        display: block;
     }
 
     &.bp-is-small {

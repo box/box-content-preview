@@ -119,6 +119,9 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Stores whether the Viewer has been setup yet. */
     isSetup = false;
 
+    /** @property {boolean} - Whether the viewer container is small */
+    isSmall = false;
+
     /**
      * [constructor]
      *
