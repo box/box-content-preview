@@ -1,3 +1,11 @@
+<a name="2.8.1"></a>
+## <small>2.8.1 (2019-05-02)</small>
+
+* Fix: Center video element and maintain its size and ratio (#995) ([dd7a6ec](https://github.com/box/box-content-preview/commit/dd7a6ec)), closes [#995](https://github.com/box/box-content-preview/issues/995)
+* Docs: Update self host instructions with new commands (#993) ([adc2064](https://github.com/box/box-content-preview/commit/adc2064)), closes [#993](https://github.com/box/box-content-preview/issues/993)
+
+
+
 <a name="2.8.0"></a>
 ## 2.8.0 (2019-04-23)
 
