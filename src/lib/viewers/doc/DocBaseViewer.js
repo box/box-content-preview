@@ -1109,7 +1109,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles the click of a thumbnail for navigation
+     * Handles the selection of a thumbnail for navigation
      *
      * @param {number} pageNum - the page number
      * @return {void}

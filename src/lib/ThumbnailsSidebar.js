@@ -69,11 +69,11 @@ class ThumbnailsSidebar {
     /**
      * Method to handle the click events in the Thumbnails Sidebar
      *
-     * @param {Event} evt - Mouse click event
+     * @param {Event} event - Mouse click event
      * @return {void}
      */
-    thumbnailClickHandler(evt) {
-        const { target } = evt;
+    thumbnailClickHandler(event) {
+        const { target } = event;
 
         // Only care about clicks on the thumbnail element itself.
         // The image and page number have pointer-events: none so
@@ -90,18 +90,18 @@ class ThumbnailsSidebar {
         }
 
         this.anchorEl.focus();
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
+        event.preventDefault();
+        event.stopImmediatePropagation();
     }
 
     /**
      * Method to handle keyboard events in the Thumbnails Sidebar
      *
-     * @param {Object} evt - Key event
+     * @param {Object} event - Key event
      * @return {void}
      */
-    onKeydown(evt) {
-        const key = decodeKeydown(evt);
+    onKeydown(event) {
+        const key = decodeKeydown(event);
         let nextSelectedPage = this.currentPage;
         if (key === 'ArrowUp') {
             nextSelectedPage -= 1;
@@ -111,8 +111,8 @@ class ThumbnailsSidebar {
 
         if (this.onThumbnailSelect && nextSelectedPage !== this.currentPage) {
             this.onThumbnailSelect(nextSelectedPage);
-            evt.preventDefault();
-            evt.stopImmediatePropagation();
+            event.preventDefault();
+            event.stopImmediatePropagation();
         }
     }
 
@@ -240,7 +240,6 @@ class ThumbnailsSidebar {
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
 
         const thumbnailNav = this.createThumbnailNav();
-        thumbnailNav.tabIndex = -1;
         thumbnailEl.appendChild(thumbnailNav);
 
         if (pageNum === this.currentPage) {
@@ -266,6 +265,7 @@ class ThumbnailsSidebar {
         const thumbnailNav = document.createElement('button');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
         thumbnailNav.type = 'button';
+        thumbnailNav.tabIndex = -1;
         return thumbnailNav;
     }
 
