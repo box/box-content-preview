@@ -663,11 +663,6 @@ class DocBaseViewer extends BaseViewer {
             .then((doc) => {
                 this.pdfViewer.setDocument(doc);
 
-                if (this.shouldThumbnailsBeToggled()) {
-                    this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                    this.emit(VIEWER_EVENT.thumbnailsOpen);
-                }
-
                 const { linkService } = this.pdfViewer;
                 if (linkService instanceof PDFJS.PDFLinkService) {
                     linkService.setDocument(doc, pdfUrl);
@@ -719,7 +714,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     resize() {
-        if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
+        if (!this.pdfViewer || !this.somePageRendered) {
             if (this.preloader) {
                 this.preloader.resize();
             }
@@ -1087,10 +1082,6 @@ class DocBaseViewer extends BaseViewer {
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
         }
-
-        if (this.options.enableThumbnailsSidebar) {
-            this.initThumbnails();
-        }
     }
 
     /**
@@ -1105,6 +1096,22 @@ class DocBaseViewer extends BaseViewer {
             isOpen: this.shouldThumbnailsBeToggled(),
             onClick: this.onThumbnailClickHandler
         });
+    }
+
+    /**
+     * Handles toggling of the thumbnails sidebar
+     *
+     * @protected
+     * @return {void}
+     */
+    onThumbnailsSidebarToggle() {
+        setTimeout(() => {
+            this.resize();
+
+            // Remove the active classes to allow the container to be transitioned properly
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
+            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
+        }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
     }
 
     /**
@@ -1143,6 +1150,17 @@ class DocBaseViewer extends BaseViewer {
                 this.hidePreload();
                 this.emit(VIEWER_EVENT.progressEnd);
                 this.somePageRendered = true;
+
+                if (this.options.enableThumbnailsSidebar) {
+                    this.initThumbnails();
+                }
+
+                if (this.shouldThumbnailsBeToggled()) {
+                    this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
+                    this.emit(VIEWER_EVENT.thumbnailsOpen);
+                    this.onThumbnailsSidebarToggle();
+                }
             }
         }
     }
@@ -1382,15 +1400,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.emitMetric({ name: metricName, data: pagesCount });
         this.emit(eventName);
-
-        // Resize after the CSS animation to toggle the sidebar is complete
-        setTimeout(() => {
-            this.resize();
-
-            // Remove the active classes to allow the container to be transitioned properly
-            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
-            this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
-        }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+        this.onThumbnailsSidebarToggle();
     }
 
     /**
