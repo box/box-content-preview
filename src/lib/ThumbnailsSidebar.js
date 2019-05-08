@@ -254,6 +254,9 @@ class ThumbnailsSidebar {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
         }
 
+        // Add placeholder items to our list of current thumbnails so they can be selected
+        this.currentThumbnails.push(thumbnailEl);
+
         return thumbnailEl;
     }
 
