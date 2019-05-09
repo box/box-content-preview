@@ -109,7 +109,7 @@ class ThumbnailsSidebar {
             nextSelectedPage += 1;
         }
 
-        if (this.onThumbnailSelect && nextSelectedPage !== this.currentPage) {
+        if (this.onThumbnailSelect) {
             this.onThumbnailSelect(nextSelectedPage);
             event.preventDefault();
             event.stopImmediatePropagation();
