@@ -393,6 +393,15 @@ describe('ThumbnailsSidebar', () => {
             expect(stubs.event.stopImmediatePropagation).to.be.called;
         });
 
+        it('should not stop the event if any other key is pressed', () => {
+            utils.decodeKeydown.returns('Tab');
+
+            thumbnailsSidebar.onKeydown(stubs.event);
+
+            expect(stubs.event.preventDefault).not.to.be.called;
+            expect(stubs.event.stopImmediatePropagation).not.to.be.called;
+        });
+
         it('should do nothing if there is no passed in onThumbnailSelect method', () => {
             thumbnailsSidebar.onThumbnailSelect = null;
 

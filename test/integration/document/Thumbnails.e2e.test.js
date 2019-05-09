@@ -287,10 +287,19 @@ describe('Preview Document Thumbnails', () => {
         getThumbnailWithRenderedImage(2).click();
         cy.focused().type('{downarrow}');
         getThumbnailWithRenderedImage(3).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy
+            .getByTestId('current-page')
+            .as('currentPage')
+            .invoke('text')
+            .should('equal', '3');
 
         getThumbnailWithRenderedImage(3).click();
         cy.focused().type('{uparrow}');
 
         getThumbnailWithRenderedImage(2).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy
+            .get('@currentPage')
+            .invoke('text')
+            .should('equal', '2');
     });
 });

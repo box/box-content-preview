@@ -90,6 +90,7 @@ class ThumbnailsSidebar {
         }
 
         this.anchorEl.focus();
+
         event.preventDefault();
         event.stopImmediatePropagation();
     }
@@ -102,17 +103,24 @@ class ThumbnailsSidebar {
      */
     onKeydown(event) {
         const key = decodeKeydown(event);
+        let consumed = false;
         let nextSelectedPage = this.currentPage;
+
         if (key === 'ArrowUp') {
             nextSelectedPage -= 1;
+            consumed = true;
         } else if (key === 'ArrowDown') {
             nextSelectedPage += 1;
+            consumed = true;
+        }
+
+        if (consumed) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
         }
 
         if (this.onThumbnailSelect) {
             this.onThumbnailSelect(nextSelectedPage);
-            event.preventDefault();
-            event.stopImmediatePropagation();
         }
     }
 
