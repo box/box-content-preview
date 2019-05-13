@@ -89,8 +89,6 @@ class ThumbnailsSidebar {
             }
         }
 
-        this.anchorEl.focus();
-
         event.preventDefault();
         event.stopImmediatePropagation();
     }
@@ -273,10 +271,9 @@ class ThumbnailsSidebar {
      * @return {HTMLElement} - thumbnail anchor element
      */
     createThumbnailNav() {
-        const thumbnailNav = document.createElement('button');
+        const thumbnailNav = document.createElement('div');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
-        thumbnailNav.type = 'button';
-        thumbnailNav.tabIndex = -1;
+        thumbnailNav.setAttribute('role', 'button');
         return thumbnailNav;
     }
 

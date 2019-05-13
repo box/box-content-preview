@@ -319,7 +319,6 @@ describe('ThumbnailsSidebar', () => {
             stubs.onThumbnailSelect = sandbox.stub();
             stubs.preventDefault = sandbox.stub();
             stubs.stopImmediatePropagation = sandbox.stub();
-            stubs.focus = sandbox.stub();
 
             parentEl = document.createElement('div');
             parentEl.dataset.bpPageNum = '3';
@@ -335,7 +334,6 @@ describe('ThumbnailsSidebar', () => {
                 stopImmediatePropagation: stubs.stopImmediatePropagation
             };
 
-            thumbnailsSidebar.anchorEl.focus = stubs.focus;
             thumbnailsSidebar.onThumbnailSelect = stubs.onThumbnailSelect;
         });
 
@@ -345,7 +343,6 @@ describe('ThumbnailsSidebar', () => {
             expect(stubs.onThumbnailSelect).to.be.calledWith(3);
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
-            expect(stubs.focus).to.be.called;
         });
 
         it('should not call the onThumbnailSelect if target is not thumbnail element', () => {
@@ -355,7 +352,6 @@ describe('ThumbnailsSidebar', () => {
             expect(stubs.onThumbnailSelect).not.to.be.called;
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
-            expect(stubs.focus).to.be.called;
         });
     });
 
