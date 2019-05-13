@@ -22,6 +22,10 @@ $thumbnail-sidebar-width: 226px;
         position: absolute;
         top: 0;
         width: $thumbnail-sidebar-width;
+
+        &:focus {
+            outline: none;
+        }
     }
 
     .bp-thumbnail {
