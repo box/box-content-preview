@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
 import BoundedCache from './BoundedCache';
+import { decodeKeydown } from './util';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
@@ -59,18 +60,20 @@ class ThumbnailsSidebar {
         this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
+        this.onKeydown = this.onKeydown.bind(this);
 
         this.anchorEl.addEventListener('click', this.thumbnailClickHandler);
+        this.anchorEl.addEventListener('keydown', this.onKeydown);
     }
 
     /**
      * Method to handle the click events in the Thumbnails Sidebar
      *
-     * @param {Event} evt - Mouse click event
+     * @param {Event} event - Mouse click event
      * @return {void}
      */
-    thumbnailClickHandler(evt) {
-        const { target } = evt;
+    thumbnailClickHandler(event) {
+        const { target } = event;
 
         // Only care about clicks on the thumbnail element itself.
         // The image and page number have pointer-events: none so
@@ -81,13 +84,42 @@ class ThumbnailsSidebar {
             const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
             const pageNum = parseInt(pageNumStr, 10);
 
-            if (this.onClickHandler) {
-                this.onClickHandler(pageNum);
+            if (this.onThumbnailSelect) {
+                this.onThumbnailSelect(pageNum);
             }
         }
 
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+
+    /**
+     * Method to handle keyboard events in the Thumbnails Sidebar
+     *
+     * @param {Object} event - Key event
+     * @return {void}
+     */
+    onKeydown(event) {
+        const key = decodeKeydown(event);
+        let consumed = false;
+        let nextSelectedPage = this.currentPage;
+
+        if (key === 'ArrowUp') {
+            nextSelectedPage -= 1;
+            consumed = true;
+        } else if (key === 'ArrowDown') {
+            nextSelectedPage += 1;
+            consumed = true;
+        }
+
+        if (consumed) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        if (this.onThumbnailSelect) {
+            this.onThumbnailSelect(nextSelectedPage);
+        }
     }
 
     /**
@@ -124,7 +156,7 @@ class ThumbnailsSidebar {
 
         if (options) {
             // Click handler for when a thumbnail is clicked
-            this.onClickHandler = options.onClick;
+            this.onThumbnailSelect = options.onSelect;
 
             // Specify the current page to be selected
             this.currentPage = options.currentPage || 1;
@@ -228,6 +260,9 @@ class ThumbnailsSidebar {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
         }
 
+        // Add placeholder items to our list of current thumbnails so they can be selected
+        this.currentThumbnails.push(thumbnailEl);
+
         return thumbnailEl;
     }
 
@@ -236,9 +271,9 @@ class ThumbnailsSidebar {
      * @return {HTMLElement} - thumbnail anchor element
      */
     createThumbnailNav() {
-        const thumbnailNav = document.createElement('button');
+        const thumbnailNav = document.createElement('div');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
-        thumbnailNav.type = 'button';
+        thumbnailNav.setAttribute('role', 'button');
         return thumbnailNav;
     }
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import ThumbnailsSidebar, { DEFAULT_THUMBNAILS_SIDEBAR_WIDTH } from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
+import * as utils from '../util';
 
 const sandbox = sinon.sandbox.create();
 const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2 / 10;
@@ -315,7 +316,7 @@ describe('ThumbnailsSidebar', () => {
         let evt;
 
         beforeEach(() => {
-            stubs.onClickHandler = sandbox.stub();
+            stubs.onThumbnailSelect = sandbox.stub();
             stubs.preventDefault = sandbox.stub();
             stubs.stopImmediatePropagation = sandbox.stub();
 
@@ -333,24 +334,76 @@ describe('ThumbnailsSidebar', () => {
                 stopImmediatePropagation: stubs.stopImmediatePropagation
             };
 
-            thumbnailsSidebar.onClickHandler = stubs.onClickHandler;
+            thumbnailsSidebar.onThumbnailSelect = stubs.onThumbnailSelect;
         });
 
-        it('should call the onClickHandler if target is a thumbnail element', () => {
+        it('should call the onThumbnailSelect if target is a thumbnail element', () => {
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
-            expect(stubs.onClickHandler).to.be.calledWith(3);
+            expect(stubs.onThumbnailSelect).to.be.calledWith(3);
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
         });
 
-        it('should not call the onClickHandler if target is not thumbnail element', () => {
+        it('should not call the onThumbnailSelect if target is not thumbnail element', () => {
             targetEl.classList.remove('bp-thumbnail-nav');
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
-            expect(stubs.onClickHandler).not.to.be.called;
+            expect(stubs.onThumbnailSelect).not.to.be.called;
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
+        });
+    });
+
+    describe('onKeyDown()', () => {
+        beforeEach(() => {
+            stubs.onThumbnailSelect = sandbox.stub();
+            stubs.event = {
+                stopImmediatePropagation: sandbox.stub(),
+                preventDefault: sandbox.stub()
+            };
+            utils.decodeKeydown = sandbox.stub();
+
+            thumbnailsSidebar.onThumbnailSelect = stubs.onThumbnailSelect;
+        });
+
+        it('should select the next page on ArrowDown', () => {
+            thumbnailsSidebar.currentPage = 1;
+            utils.decodeKeydown.returns('ArrowDown');
+
+            thumbnailsSidebar.onKeydown(stubs.event);
+
+            expect(stubs.onThumbnailSelect).to.be.calledWith(2);
+            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.event.stopImmediatePropagation).to.be.called;
+        });
+
+        it('should select the previous page on ArrowUp', () => {
+            thumbnailsSidebar.currentPage = 2;
+            utils.decodeKeydown.returns('ArrowUp');
+
+            thumbnailsSidebar.onKeydown(stubs.event);
+
+            expect(stubs.onThumbnailSelect).to.be.calledWith(1);
+            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.event.stopImmediatePropagation).to.be.called;
+        });
+
+        it('should not stop the event if any other key is pressed', () => {
+            utils.decodeKeydown.returns('Tab');
+
+            thumbnailsSidebar.onKeydown(stubs.event);
+
+            expect(stubs.event.preventDefault).not.to.be.called;
+            expect(stubs.event.stopImmediatePropagation).not.to.be.called;
+        });
+
+        it('should do nothing if there is no passed in onThumbnailSelect method', () => {
+            thumbnailsSidebar.onThumbnailSelect = null;
+
+            thumbnailsSidebar.onKeydown(stubs.event);
+
+            expect(stubs.onThumbnailSelect).not.to.be.called;
         });
     });
 

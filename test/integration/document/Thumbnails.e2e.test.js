@@ -280,4 +280,26 @@ describe('Preview Document Thumbnails', () => {
         cy.contains('Single Page Document');
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
     });
+
+    it('Should change page on up and down arrow keyboard shortcuts', () => {
+        showDocumentPreview({ enableThumbnailsSidebar: true });
+
+        getThumbnailWithRenderedImage(2).click();
+        cy.focused().type('{downarrow}');
+        getThumbnailWithRenderedImage(3).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy
+            .getByTestId('current-page')
+            .as('currentPage')
+            .invoke('text')
+            .should('equal', '3');
+
+        getThumbnailWithRenderedImage(3).click();
+        cy.focused().type('{uparrow}');
+
+        getThumbnailWithRenderedImage(2).should('have.class', THUMBNAIL_SELECTED_CLASS);
+        cy
+            .get('@currentPage')
+            .invoke('text')
+            .should('equal', '2');
+    });
 });
