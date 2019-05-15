@@ -89,6 +89,10 @@ class ThumbnailsSidebar {
             }
         }
 
+        // IE 11 will focus a div when it's parent has a tabindex, so we focus the anchorEl to avoid
+        // a loss of focus when elements are deleted by the Virtual Scroller.
+        this.anchorEl.focus();
+
         event.preventDefault();
         event.stopImmediatePropagation();
     }
