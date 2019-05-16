@@ -1242,9 +1242,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     update: sandbox.stub(),
                     currentScaleValue: 0,
-                    currentPageNumber: 0,
-                    pageViewsReady: true
+                    currentPageNumber: 0
                 };
+
+                docBase.somePageRendered = true;
 
                 stubs.setPage = sandbox.stub(docBase, 'setPage');
                 Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
@@ -1267,8 +1268,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.thumbnailsResize).not.to.be.called;
             });
 
-            it('should do nothing if the page views are not ready', () => {
-                docBase.pdfViewer.pageViewsReady = false;
+            it('should attempt to resize the preload if no PDF pages are ready ', () => {
+                docBase.somePageRendered = false;
                 docBase.resize();
                 expect(BaseViewer.prototype.resize).to.not.be.called;
                 expect(stubs.thumbnailsResize).not.to.be.called;
