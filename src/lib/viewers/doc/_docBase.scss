@@ -113,7 +113,8 @@ $thumbnail-sidebar-width: 226px;
     @include bp-breakpoint-medium {
         $bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
 
-        &.bp-loaded {
+        &.bp-loaded.bp-thumbnails-open-active,
+        &.bp-loaded.bp-thumbnails-close-active {
             .bp-content {
                 transition: left $bp-thumbnails-animation;
             }
