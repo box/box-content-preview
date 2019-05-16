@@ -1089,10 +1089,6 @@ class DocBaseViewer extends BaseViewer {
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
         }
-
-        if (this.options.enableThumbnailsSidebar) {
-            this.initThumbnails();
-        }
     }
 
     /**
@@ -1145,6 +1141,10 @@ class DocBaseViewer extends BaseViewer {
                 this.hidePreload();
                 this.emit(VIEWER_EVENT.progressEnd);
                 this.somePageRendered = true;
+
+                if (this.options.enableThumbnailsSidebar) {
+                    this.initThumbnails();
+                }
             }
         }
     }
