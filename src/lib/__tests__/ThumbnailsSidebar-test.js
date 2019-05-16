@@ -319,6 +319,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.onThumbnailSelect = sandbox.stub();
             stubs.preventDefault = sandbox.stub();
             stubs.stopImmediatePropagation = sandbox.stub();
+            stubs.focus = sandbox.stub();
 
             parentEl = document.createElement('div');
             parentEl.dataset.bpPageNum = '3';
@@ -335,12 +336,14 @@ describe('ThumbnailsSidebar', () => {
             };
 
             thumbnailsSidebar.onThumbnailSelect = stubs.onThumbnailSelect;
+            thumbnailsSidebar.anchorEl.focus = stubs.focus;
         });
 
         it('should call the onThumbnailSelect if target is a thumbnail element', () => {
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
             expect(stubs.onThumbnailSelect).to.be.calledWith(3);
+            expect(stubs.focus).to.be.called;
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
         });
@@ -350,6 +353,7 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
             expect(stubs.onThumbnailSelect).not.to.be.called;
+            expect(stubs.focus).to.be.called;
             expect(stubs.preventDefault).to.be.called;
             expect(stubs.stopImmediatePropagation).to.be.called;
         });
