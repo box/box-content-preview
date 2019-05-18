@@ -1021,6 +1021,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
                 stubs.emit = sandbox.stub(docBase, 'emit');
                 stubs.shouldThumbnailsBeToggled = sandbox.stub(docBase, 'shouldThumbnailsBeToggled');
+                stubs.resize = sandbox.stub(docBase, 'resize');
             });
 
             it('should turn on enhanced text selection if not on mobile', () => {
@@ -1231,6 +1232,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.pdfViewer.setDocument).to.be.called;
                     expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
                     expect(stubs.classListAdd).calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    expect(stubs.resize).to.be.called;
                 });
             });
         });
@@ -1726,7 +1728,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
                 stubs.emit = sandbox.stub(docBase, 'emit');
                 stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
-                stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
             });
 
             it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1739,49 +1740,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.setPage).to.be.called;
                 expect(docBase.docEl).to.have.class('bp-is-scrollable');
                 expect(stubs.setupPages).to.be.called;
-                expect(stubs.initThumbnails).to.be.called;
-            });
-
-            it('should not init thumbnails if not enabled', () => {
-                docBase = new DocBaseViewer({
-                    cache: {
-                        set: () => {},
-                        has: () => {},
-                        get: () => {},
-                        unset: () => {}
-                    },
-                    container: containerEl,
-                    representation: {
-                        content: {
-                            url_template: 'foo'
-                        }
-                    },
-                    file: {
-                        id: '0',
-                        extension: 'ppt'
-                    },
-                    enableThumbnailsSidebar: false
-                });
-                Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
-                docBase.containerEl = containerEl;
-                docBase.setup();
-                stubs.loadUI = sandbox.stub(docBase, 'loadUI');
-                stubs.setPage = sandbox.stub(docBase, 'setPage');
-                stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
-                stubs.emit = sandbox.stub(docBase, 'emit');
-                stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
-                stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
-
-                docBase.pdfViewer = {
-                    currentScale: 'unknown'
-                };
-
-                docBase.pagesinitHandler();
-                expect(stubs.loadUI).to.be.called;
-                expect(stubs.setPage).to.be.called;
-                expect(docBase.docEl).to.have.class('bp-is-scrollable');
-                expect(stubs.setupPages).to.be.called;
-                expect(stubs.initThumbnails).not.to.be.called;
             });
 
             it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -1826,7 +1784,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         pageNumber: 1
                     }
                 };
+
+                docBase.somePageRendered = false;
                 stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
+                stubs.hidePreload = sandbox.stub(docBase, 'hidePreload');
             });
 
             it('should emit the pagerender event', () => {
@@ -1838,6 +1800,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should emit handleAssetAndRepLoad event if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
+            });
+
+            it('should hide the preload and init thumbnails if no pages were previously rendered', () => {
+                docBase.options.enableThumbnailsSidebar = true;
+                docBase.pagerenderedHandler(docBase.event);
+                expect(stubs.initThumbnails).to.be.called;
+                expect(stubs.hidePreload).to.be.called;
+                expect(docBase.somePageRendered).to.be.true;
+            });
+
+            it('should not init thumbnails if not enabled', () => {
+                docBase.options.enableThumbnailsSidebar = false;
+                docBase.pagerenderedHandler(docBase.event);
+                expect(stubs.initThumbnails).not.to.be.called;
             });
         });
 

@@ -569,14 +569,49 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 scaledWidth: 1000,
                 scaledHeight: 800
             });
+            sandbox.stub(docPreloader, 'getScaledDimensions').returns({
+                scaledWidth: 1000,
+                scaledHeight: 800
+            });
             sandbox.stub(util, 'setDimensions');
             docPreloader.preloadEl = document.createElement('div');
             docPreloader.preloadEl.innerHTML = `<img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" /><div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" />`;
         });
 
-        it('should short circuit if there is no pdf data', () => {
+        it('should short circuit if there is no preload element to resize', () => {
+            docPreloader.preloadEl = null;
             docPreloader.resize();
             expect(docPreloader.getScaledWidthAndHeight).to.not.be.called;
+        });
+
+        it('should short circuit if there is no pdf data or image element', () => {
+            docPreloader.pdfData = null;
+            docPreloader.imageEl = null;
+            docPreloader.resize();
+            expect(docPreloader.getScaledWidthAndHeight).to.not.be.called;
+        });
+
+        it('should prefer to resize using the pdfData', () => {
+            docPreloader.pdfData = {
+                pdfWidth: 800,
+                pdfHeight: 600
+            };
+
+            docPreloader.resize();
+            expect(docPreloader.getScaledWidthAndHeight).to.be.called;
+            expect(docPreloader.getScaledDimensions).not.to.be.called;
+        });
+
+        it('should resize using image element dimensions if available', () => {
+            docPreloader.pdfData = null;
+            docPreloader.imageEl = {
+                naturalWidth: 800,
+                naturalHeight: 600
+            };
+
+            docPreloader.resize();
+            expect(docPreloader.getScaledDimensions).to.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).not.to.be.called;
         });
 
         it('should resize all the elements', () => {
