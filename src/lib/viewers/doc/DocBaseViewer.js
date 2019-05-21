@@ -667,6 +667,7 @@ class DocBaseViewer extends BaseViewer {
                 if (this.shouldThumbnailsBeToggled()) {
                     this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                     this.emit(VIEWER_EVENT.thumbnailsOpen);
+                    this.resize();
                 }
 
                 const { linkService } = this.pdfViewer;
@@ -720,7 +721,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     resize() {
-        if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
+        if (!this.pdfViewer || !this.somePageRendered) {
             if (this.preloader) {
                 this.preloader.resize();
             }
@@ -1088,10 +1089,6 @@ class DocBaseViewer extends BaseViewer {
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
         }
-
-        if (this.options.enableThumbnailsSidebar) {
-            this.initThumbnails();
-        }
     }
 
     /**
@@ -1144,6 +1141,10 @@ class DocBaseViewer extends BaseViewer {
                 this.hidePreload();
                 this.emit(VIEWER_EVENT.progressEnd);
                 this.somePageRendered = true;
+
+                if (this.options.enableThumbnailsSidebar) {
+                    this.initThumbnails();
+                }
             }
         }
     }

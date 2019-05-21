@@ -268,11 +268,19 @@ class DocPreloader extends EventEmitter {
      * @return {void}
      */
     resize() {
-        if (!this.pdfData || !this.preloadEl) {
+        if (!this.preloadEl || (!this.pdfData && !this.imageEl)) {
             return;
         }
 
-        const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(this.pdfData);
+        let dimensionData;
+        if (this.pdfData) {
+            dimensionData = this.getScaledWidthAndHeight(this.pdfData);
+        } else {
+            const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
+            dimensionData = this.getScaledDimensions(pdfWidth, pdfHeight);
+        }
+
+        const { scaledWidth, scaledHeight } = dimensionData;
         // Scale preload and placeholder elements
         const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_CONTENT);
         for (let i = 0; i < preloadEls.length; i++) {
