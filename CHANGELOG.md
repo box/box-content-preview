@@ -1,3 +1,11 @@
+<a name="2.10.0"></a>
+## 2.10.0 (2019-05-21)
+
+* Fix: Fix resize logic during preload and opening of thumbnails ([2b72679](https://github.com/box/box-content-preview/commit/2b72679))
+* Fix: Prevent focus loss in IE when navigating thumbnails ([685b4b5](https://github.com/box/box-content-preview/commit/685b4b5))
+
+
+
 <a name="2.9.0"></a>
 ## 2.9.0 (2019-05-14)
 
