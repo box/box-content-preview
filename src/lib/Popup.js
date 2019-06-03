@@ -21,18 +21,18 @@ class Popup {
         this.popupEl.setAttribute('aria-labeledby', uniqueLabel);
 
         this.popupEl.innerHTML = `
-            <div class='bp-modal-header'>
-                <button class='bp-modal-close-button'>
+            <div class="bp-modal-header">
+                <button class="bp-modal-close-button" type="button">
                     ${ICON_CLOSE}
                 </button>
             </div>
-            <div class='bp-modal-content'>
-                <p class='bp-modal-message' id=${uniqueLabel}></p>
-                <div class='bp-modal-actions'>
-                    <button class='bp-btn bp-btn-primary bp-popup-btn'> </button>
+            <div class="bp-modal-content">
+                <p class="bp-modal-message" id=${uniqueLabel}></p>
+                <div class="bp-modal-actions">
+                    <button class="bp-btn bp-btn-primary bp-popup-btn" type="button"> </button>
                 </div>
             </div>
-            <div class='bp-modal-backdrop'> </div>
+            <div class="bp-modal-backdrop"> </div>
         `.trim();
 
         // Save references to message, buttons, content, and backdrop
