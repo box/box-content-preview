@@ -1144,6 +1144,7 @@ class DocBaseViewer extends BaseViewer {
 
                 if (this.options.enableThumbnailsSidebar) {
                     this.initThumbnails();
+                    this.resize();
                 }
             }
         }
