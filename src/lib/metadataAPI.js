@@ -6,7 +6,7 @@ const metadataAPI = {
      * Gets the global metadata xrefs template for the specified file
      * @param {string} id - The file id
      * @param {string} template - The global metadata template
-     * @param {Object} options - options object
+     * @param {Object} [options] - options object
      * @return {Promise} Promise is resolved or rejected based on response
      */
     getXrefsMetadata(id, template, options = {}) {
@@ -32,10 +32,10 @@ const metadataAPI = {
      * @param {string} id - File id
      * @param {string} scope - Metadata template scope
      * @param {string} template - Metadata template
-     * @param {Object} options - options object
+     * @param {Object} [options] - options object
      * @return {Promise} XHR promise
      */
-    getMetadata(id, scope, template, options) {
+    getMetadata(id, scope, template, options = {}) {
         const { apiHost, token } = options;
 
         return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), { headers: getHeaders({}, token) });
