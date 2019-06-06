@@ -198,6 +198,7 @@ class Controls {
 
         const button = document.createElement('button');
         button.setAttribute('aria-label', text);
+        button.setAttribute('type', 'button');
         button.setAttribute('title', text);
         button.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
         button.addEventListener('click', handler);

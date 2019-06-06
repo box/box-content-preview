@@ -23,7 +23,7 @@ class Notification {
 
         this.notificationEl.innerHTML = `
             <span id="${uniqueLabel}"></span>
-            <button class="close-btn">${__('notification_button_default_text')}</button>
+            <button class="close-btn" type="button">${__('notification_button_default_text')}</button>
         `.trim();
 
         // Save references to message and button
