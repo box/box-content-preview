@@ -8,6 +8,7 @@ let stubs = {};
 describe('metadataAPI', () => {
     beforeEach(() => {
         stubs = {};
+        stubs.get = sandbox.stub(api, 'get');
     });
 
     afterEach(() => {
@@ -16,8 +17,6 @@ describe('metadataAPI', () => {
 
     describe('getXrefsMetadata', () => {
         it('Should reject the promise if id is not provided on the file', () => {
-            stubs.get = sandbox.stub(api, 'get');
-
             return metadataAPI.getXrefsMetadata(null, 'autocad').catch((err) => {
                 expect(stubs.get).not.to.have.been.called;
                 expect(err instanceof Error).to.be.true;
@@ -25,8 +24,6 @@ describe('metadataAPI', () => {
         });
 
         it('Should reject the promise if template is not provided on the file', () => {
-            stubs.get = sandbox.stub(api, 'get');
-
             return metadataAPI.getXrefsMetadata('123').catch((err) => {
                 expect(stubs.get).not.to.have.been.called;
                 expect(err instanceof Error).to.be.true;
@@ -35,7 +32,6 @@ describe('metadataAPI', () => {
 
         it('Should return global template on api success', () => {
             const expResponse = { hasxrefs: 'true' };
-            stubs.get = sandbox.stub(api, 'get');
             stubs.get.resolves(expResponse);
 
             return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
@@ -46,7 +42,6 @@ describe('metadataAPI', () => {
 
         it('Should return manufactured global template on api 404', () => {
             const expResponse = { hasxrefs: 'false' };
-            stubs.get = sandbox.stub(api, 'get');
             stubs.get.rejects({ response: { status: 404 } });
 
             return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
@@ -57,7 +52,6 @@ describe('metadataAPI', () => {
 
         it('Should return an error for any other http 4xx', () => {
             const expResponse = { response: { status: 400 } };
-            stubs.get = sandbox.stub(api, 'get');
             stubs.get.rejects(expResponse);
 
             return metadataAPI.getXrefsMetadata('123', 'autocad').catch((err) => {
