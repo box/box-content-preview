@@ -10,22 +10,23 @@ import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
+    ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
     DOC_STATIC_ASSETS_VERSION,
+    ENCODING_TYPES,
+    METADATA,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE
+    STATUS_SUCCESS
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -40,6 +41,7 @@ import {
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
 import Timer from '../../Timer';
+import metadataAPI from '../../metadataAPI';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -69,6 +71,7 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
 ];
+const { FIELD_HASXREFS, TEMPLATE_AUTOCAD } = METADATA;
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -326,12 +329,31 @@ class DocBaseViewer extends BaseViewer {
         super.load();
         this.showPreload();
 
+        this.checkForXrefs();
+
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Checks for xrefs, depending on file extension
+     * @return {void}
+     */
+    checkForXrefs() {
+        const { extension, id } = this.options.file;
+
+        if (extension === 'dwg') {
+            metadataAPI.getXrefsMetadata(id, TEMPLATE_AUTOCAD, this.options).then((response) => {
+                const { [FIELD_HASXREFS]: hasxrefsValue } = response;
+                if (hasxrefsValue) {
+                    this.options.ui.showNotification(__('hasxrefs'), null, true);
+                }
+            });
+        }
     }
 
     /**

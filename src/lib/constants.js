@@ -129,3 +129,9 @@ export const ANNOTATOR_EVENT = {
     error: 'annotationerror',
     scale: 'scaleannotations'
 };
+
+export const METADATA = {
+    FIELD_HASXREFS: 'hasxrefs',
+    SCOPE_GLOBAL: 'global',
+    TEMPLATE_AUTOCAD: 'autocad'
+};
