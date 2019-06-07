@@ -142,6 +142,21 @@ preview.show(fileId, accessToken, {
 | fileVersionId | File version ID to preview. This must be a valid non-current file version ID. Use [Get Versions](https://developer.box.com/reference#view-versions-of-a-file) to fetch a list of file versions |
 | startAt | Object with unit and value properties indicating where to start the preview at. Current supported units are 'seconds' for media and 'pages' for documents. |
 
+**Example**
+
+This configuration sets version `54321` as the preview version for a file with the ID `12345`:
+```
+const FILE_ID = '12345';
+const TOKEN = 'abcdefg';
+preview.show(FILE_ID, TOKEN, {
+    fileOptions: {
+        [FILE_ID]: {
+            fileVersionId: '54321'
+        }
+    }
+});
+```
+
 Access Token
 ------------
 Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://developer.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
