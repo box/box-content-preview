@@ -22,8 +22,8 @@ const metadataAPI = {
             .then((response) => {
                 // The hasxrefs value is returned as a string 'false' or 'true' so we want
                 // to convert this to a boolean
-                const { [FIELD_HASXREFS]: hasxrefsValue } = response;
-                return { ...response, [FIELD_HASXREFS]: hasxrefsValue === 'true' };
+                const { [FIELD_HASXREFS]: hasXrefsValue } = response;
+                return { ...response, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
             })
             .catch((err) => {
                 const { response } = err;
