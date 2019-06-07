@@ -146,9 +146,11 @@ preview.show(fileId, accessToken, {
 
 This configuration sets version `54321` as the preview version for a file with the ID `12345`:
 ```
+const FILE_ID = '12345';
+const TOKEN = 'abcdefg';
 preview.show(FILE_ID, TOKEN, {
     fileOptions: {
-        12345: {
+        [FILE_ID]: {
             fileVersionId: '54321'
         }
     }
