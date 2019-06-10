@@ -86,3 +86,5 @@ export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
     NAVIGATE: 'user_document_thumbnails_navigate',
     OPEN: 'user_document_thumbnails_open'
 };
+
+export const MISSING_EXTERNAL_REFS = 'missing_x_refs';
