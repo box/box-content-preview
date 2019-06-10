@@ -40,15 +40,6 @@ describe('metadataAPI', () => {
             });
         });
 
-        it('Should return manufactured global template on api 404', () => {
-            stubs.get.rejects({ response: { status: 404 } });
-
-            return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
-                expect(stubs.get).to.have.been.called;
-                expect(response).to.eql({ hasxrefs: false });
-            });
-        });
-
         it('Should return an error for any other http 4xx', () => {
             const expResponse = { response: { status: 400 } };
             stubs.get.rejects(expResponse);

@@ -17,25 +17,12 @@ const metadataAPI = {
             return Promise.reject(new Error('id and template are required parameters'));
         }
 
-        return metadataAPI
-            .getMetadata(id, SCOPE_GLOBAL, template, options)
-            .then((response) => {
-                // The hasxrefs value is returned as a string 'false' or 'true' so we want
-                // to convert this to a boolean
-                const { [FIELD_HASXREFS]: hasXrefsValue } = response;
-                return { ...response, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
-            })
-            .catch((err) => {
-                const { response } = err;
-                // If the http response is 404, this is a valid case because the metadata template
-                // may not be initialized on the requested file. Resolve the promise with
-                // a constructed hasxrefs value
-                if (response && response.status === 404) {
-                    return Promise.resolve({ [FIELD_HASXREFS]: false });
-                }
-
-                throw err;
-            });
+        return metadataAPI.getMetadata(id, SCOPE_GLOBAL, template, options).then((response) => {
+            // The hasxrefs value is returned as a string 'false' or 'true' so we want
+            // to convert this to a boolean
+            const { [FIELD_HASXREFS]: hasXrefsValue } = response;
+            return { ...response, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
+        });
     },
 
     /**
