@@ -36,17 +36,7 @@ describe('metadataAPI', () => {
 
             return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
                 expect(stubs.get).to.have.been.called;
-                expect(response).to.eql(expResponse);
-            });
-        });
-
-        it('Should return manufactured global template on api 404', () => {
-            const expResponse = { hasxrefs: 'false' };
-            stubs.get.rejects({ response: { status: 404 } });
-
-            return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
-                expect(stubs.get).to.have.been.called;
-                expect(response).to.eql(expResponse);
+                expect(response).to.eql({ hasxrefs: true });
             });
         });
 

@@ -1,5 +1,8 @@
 import api from './api';
 import { getHeaders } from './util';
+import { METADATA } from './constants';
+
+const { FIELD_HASXREFS, SCOPE_GLOBAL } = METADATA;
 
 const metadataAPI = {
     /**
@@ -14,16 +17,11 @@ const metadataAPI = {
             return Promise.reject(new Error('id and template are required parameters'));
         }
 
-        return metadataAPI.getMetadata(id, 'global', template, options).catch((err) => {
-            const { response } = err;
-            // If the http response is 404, this is a valid case because the metadata template
-            // may not be initialized on the requested file. Resolve the promise with
-            // a constructed hasxrefs value
-            if (response && response.status === 404) {
-                return Promise.resolve({ hasxrefs: 'false' });
-            }
-
-            throw err;
+        return metadataAPI.getMetadata(id, SCOPE_GLOBAL, template, options).then((response) => {
+            // The hasxrefs value is returned as a string 'false' or 'true' so we want
+            // to convert this to a boolean
+            const { [FIELD_HASXREFS]: hasXrefsValue } = response;
+            return { ...response, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
         });
     },
 
@@ -49,7 +47,7 @@ const metadataAPI = {
      * @param {string} apiHost - API host
      * @return {string} The metadata url
      */
-    getMetadataURL(fileId, scope = 'global', template, apiHost) {
+    getMetadataURL(fileId, scope = SCOPE_GLOBAL, template, apiHost) {
         return `${apiHost}/2.0/files/${fileId}/metadata/${scope}/${template}`;
     }
 };
