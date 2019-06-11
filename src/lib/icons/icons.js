@@ -11,6 +11,7 @@ import ARROW_RIGHT from './arrow_right_24px.svg';
 import CHECK_MARK from './checkmark_24px.svg';
 import GEAR from './gear_24px.svg';
 import FILE_AUDIO from './file_audio.svg';
+import FILE_AUTOCAD from './file_autocad.svg';
 import FILE_BOX_NOTE from './file_box_note.svg';
 import FILE_CODE from './file_code.svg';
 import FILE_DICOM from './file_dicom.svg';
@@ -73,6 +74,7 @@ export const ICON_THUMBNAILS_TOGGLE = THUMBNAILS_TOGGLE;
 
 const FILE_LOADING_ICONS = {
     FILE_AUDIO,
+    FILE_AUTOCAD,
     FILE_BOX_NOTE,
     FILE_CODE,
     FILE_DEFAULT,
@@ -99,191 +101,178 @@ const FILE_LOADING_ICONS = {
 
 export const ICON_FILE_MAP = {};
 
+/**
+ * Utility to map extensions to an icon name
+ * @param {Array} extensions - Array of extensions
+ * @param {string} iconName - Icon name
+ * @return {void}
+ */
+function mapExtensionsToIcon(extensions, iconName) {
+    extensions.forEach((extension) => {
+        ICON_FILE_MAP[extension] = iconName;
+    });
+}
+
 // AUDIO ICON EXTENSIONS
-['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_AUDIO';
-});
+mapExtensionsToIcon(
+    ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
+    'FILE_AUDIO'
+);
 
 // BOXNOTE ICON EXTENSIONS
-['boxnote'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_BOX_NOTE';
-});
+mapExtensionsToIcon(['boxnote'], 'FILE_BOX_NOTE');
 
 // CODE ICON EXTENSIONS
-[
-    'as',
-    'as3',
-    'asm',
-    'bat',
-    'c',
-    'cc',
-    'cmake',
-    'cpp',
-    'cs',
-    'css',
-    'cxx',
-    'diff',
-    'erb',
-    'groovy',
-    'h',
-    'haml',
-    'hh',
-    'htm',
-    'html',
-    'java',
-    'js',
-    'json',
-    'less',
-    'm',
-    'make',
-    'md',
-    'ml',
-    'mm',
-    'php',
-    'pl',
-    'plist',
-    'properties',
-    'py',
-    'rb',
-    'rst',
-    'sass',
-    'scala',
-    'script',
-    'scm',
-    'sml',
-    'sql',
-    'sh',
-    'vi',
-    'vim',
-    'webdoc',
-    'xml',
-    'xsd',
-    'xsl',
-    'yaml'
-].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_CODE';
-});
+mapExtensionsToIcon(
+    [
+        'as',
+        'as3',
+        'asm',
+        'bat',
+        'c',
+        'cc',
+        'cmake',
+        'cpp',
+        'cs',
+        'css',
+        'cxx',
+        'diff',
+        'erb',
+        'groovy',
+        'h',
+        'haml',
+        'hh',
+        'htm',
+        'html',
+        'java',
+        'js',
+        'json',
+        'less',
+        'm',
+        'make',
+        'md',
+        'ml',
+        'mm',
+        'php',
+        'pl',
+        'plist',
+        'properties',
+        'py',
+        'rb',
+        'rst',
+        'sass',
+        'scala',
+        'script',
+        'scm',
+        'sml',
+        'sql',
+        'sh',
+        'vi',
+        'vim',
+        'webdoc',
+        'xml',
+        'xsd',
+        'xsl',
+        'yaml'
+    ],
+    'FILE_CODE'
+);
 
 // EXCEL ICON EXTENSIONS
-['xls', 'xlsm', 'xlsx'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_EXCEL';
-});
+mapExtensionsToIcon(['xls', 'xlsm', 'xlsx'], 'FILE_EXCEL');
 
 // DOCUMENT ICON EXTENSIONS
-['log', 'msg', 'ods', 'rtf', 'txt', 'wpd'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_DOCUMENT';
-});
+mapExtensionsToIcon(['log', 'msg', 'ods', 'rtf', 'txt', 'wpd'], 'FILE_DOCUMENT');
 
 // GOOGLE DOC ICON EXTENSIONS
-['gdoc'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_DOC';
-});
+mapExtensionsToIcon(['gdoc'], 'FILE_GOOGLE_DOC');
 
 // GOOGLE SHEET ICON EXTENSIONS
-['gsheet'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SHEET';
-});
+mapExtensionsToIcon(['gsheet'], 'FILE_GOOGLE_SHEET');
 
 // GOOGLE SLIDE ICON EXTENSIONS
-['gslide'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SLIDE';
-});
+mapExtensionsToIcon(['gslide'], 'FILE_GOOGLE_SLIDE');
 
 // IMAGE ICON EXTENSIONS
-[
-    'ai',
-    'bmp',
-    'dcm',
-    'eps',
-    'gif',
-    'heic',
-    'jpg',
-    'jpeg',
-    'png',
-    'ps',
-    'psd',
-    'svg',
-    'svs',
-    'swf',
-    'tga',
-    'tif',
-    'tiff'
-].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_IMAGE';
-});
+mapExtensionsToIcon(
+    [
+        'ai',
+        'bmp',
+        'dcm',
+        'eps',
+        'gif',
+        'heic',
+        'jpg',
+        'jpeg',
+        'png',
+        'ps',
+        'psd',
+        'svg',
+        'svs',
+        'swf',
+        'tga',
+        'tif',
+        'tiff'
+    ],
+    'FILE_IMAGE'
+);
 
 // KEYNOTE ICON EXTENSIONS
-['key'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_KEYNOTE';
-});
+mapExtensionsToIcon(['key'], 'FILE_KEYNOTE');
 
 // MEDIA ICON EXTENSIONS
-[
-    '3g2',
-    '3gp',
-    'avi',
-    'flv',
-    'm2v',
-    'm2ts',
-    'm4v',
-    'mkv',
-    'mov',
-    'mp4',
-    'mpeg',
-    'mpg',
-    'mts',
-    'ogg',
-    'qt',
-    'ts',
-    'wmv'
-].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_MEDIA';
-});
+mapExtensionsToIcon(
+    [
+        '3g2',
+        '3gp',
+        'avi',
+        'flv',
+        'm2v',
+        'm2ts',
+        'm4v',
+        'mkv',
+        'mov',
+        'mp4',
+        'mpeg',
+        'mpg',
+        'mts',
+        'ogg',
+        'qt',
+        'ts',
+        'wmv'
+    ],
+    'FILE_MEDIA'
+);
 
 // NUMBERS ICON EXTENSIONS
-['numbers'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_NUMBERS';
-});
+mapExtensionsToIcon(['numbers'], 'FILE_NUMBERS');
 
 // OBJ ICON EXTENSIONS
-['3ds', 'box3d', 'dae', 'fbx', 'obj', 'ply', 'stl'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_OBJ';
-});
+mapExtensionsToIcon(['3ds', 'box3d', 'dae', 'fbx', 'obj', 'ply', 'stl'], 'FILE_OBJ');
 
 // PAGES ICON EXTENSIONS
-['pages'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_PAGES';
-});
+mapExtensionsToIcon(['pages'], 'FILE_PAGES');
 
 // PDF ICON EXTENSIONS
-['pdf'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_PDF';
-});
+mapExtensionsToIcon(['pdf'], 'FILE_PDF');
 
 // POWERPOINT ICON EXTENSIONS
-['ppt', 'pptx'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_POWERPOINT';
-});
+mapExtensionsToIcon(['ppt', 'pptx'], 'FILE_POWERPOINT');
 
 // PRESENTATION ICON EXTENSIONS
-['odp'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_PRESENTATION';
-});
+mapExtensionsToIcon(['odp'], 'FILE_PRESENTATION');
 
 // SPREADSHEET ICON EXTENSIONS
-['csv', 'tsv'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_SPREADSHEET';
-});
+mapExtensionsToIcon(['csv', 'tsv'], 'FILE_SPREADSHEET');
 
 // WORD ICON EXTENSIONS
-['doc', 'docx'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_WORD';
-});
+mapExtensionsToIcon(['doc', 'docx'], 'FILE_WORD');
 
 // ZIP ICON EXTENSIONS
-['tgz', 'zip'].forEach((extension) => {
-    ICON_FILE_MAP[extension] = 'FILE_ZIP';
-});
+mapExtensionsToIcon(['tgz', 'zip'], 'FILE_ZIP');
+
+// AUTOCAD ICON EXTENSIONS
+mapExtensionsToIcon(['dwg'], 'FILE_AUTOCAD');
 
 /**
  * Map from file extension to svg.
