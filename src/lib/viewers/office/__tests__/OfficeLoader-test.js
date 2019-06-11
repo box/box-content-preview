@@ -6,54 +6,29 @@ import { PERMISSION_DOWNLOAD } from '../../../constants';
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/office/OfficeLoader', () => {
+    const fakeFileTemplate = {
+        size: 1000,
+        permissions: {
+            can_download: true
+        },
+        representations: {
+            entries: [
+                {
+                    representation: 'ORIGINAL'
+                }
+            ]
+        }
+    };
+
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
 
     describe('determineViewer()', () => {
         const fakeFiles = [
-            {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [
-                        {
-                            representation: 'ORIGINAL'
-                        }
-                    ]
-                }
-            },
-            {
-                extension: 'xlsm',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [
-                        {
-                            representation: 'ORIGINAL'
-                        }
-                    ]
-                }
-            },
-            {
-                extension: 'xlsb',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [
-                        {
-                            representation: 'ORIGINAL'
-                        }
-                    ]
-                }
-            }
+            Object.assign({}, fakeFileTemplate, { extension: 'xlsx' }),
+            Object.assign({}, fakeFileTemplate, { extension: 'xlsm' }),
+            Object.assign({}, fakeFileTemplate, { extension: 'xlsb' })
         ];
 
         fakeFiles.forEach((fakeFile) => {
