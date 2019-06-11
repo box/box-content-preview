@@ -1,5 +1,6 @@
 import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
+import AutoCADViewer from './AutoCADViewer';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
@@ -16,6 +17,12 @@ const VIEWERS = [
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
         EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx', 'key']
+    },
+    {
+        NAME: 'AutoCAD',
+        CONSTRUCTOR: AutoCADViewer,
+        REP: 'pdf',
+        EXT: ['dwg']
     },
     {
         NAME: 'Document',

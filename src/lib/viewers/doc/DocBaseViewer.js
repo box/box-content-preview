@@ -10,22 +10,22 @@ import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
+    ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
     DOC_STATIC_ASSETS_VERSION,
+    ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS,
     QUERY_PARAM_ENCODING,
-    ENCODING_TYPES,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE
+    STATUS_SUCCESS
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -1144,6 +1144,7 @@ class DocBaseViewer extends BaseViewer {
 
                 if (this.options.enableThumbnailsSidebar) {
                     this.initThumbnails();
+                    this.resize();
                 }
             }
         }

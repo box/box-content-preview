@@ -1789,6 +1789,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.emit = sandbox.stub(docBase, 'emit');
                 stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
                 stubs.hidePreload = sandbox.stub(docBase, 'hidePreload');
+                stubs.resize = sandbox.stub(docBase, 'resize');
             });
 
             it('should emit the pagerender event', () => {
@@ -1808,6 +1809,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.initThumbnails).to.be.called;
                 expect(stubs.hidePreload).to.be.called;
                 expect(docBase.somePageRendered).to.be.true;
+                expect(docBase.resize).to.be.called;
             });
 
             it('should not init thumbnails if not enabled', () => {

@@ -90,9 +90,9 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     createFindButtons() {
-        const findPreviousButton = `<button class="bp-doc-find-prev">${ICON_FIND_DROP_UP}</button>`.trim();
-        const findNextButton = `<button class="bp-doc-find-next">${ICON_FIND_DROP_DOWN}</button>`.trim();
-        const findCloseButton = `<button class="bp-doc-find-close">${ICON_CLOSE}</button>`.trim();
+        const findPreviousButton = `<button class="bp-doc-find-prev" type="button">${ICON_FIND_DROP_UP}</button>`.trim();
+        const findNextButton = `<button class="bp-doc-find-next" type="button">${ICON_FIND_DROP_DOWN}</button>`.trim();
+        const findCloseButton = `<button class="bp-doc-find-close" type="button">${ICON_CLOSE}</button>`.trim();
 
         this.findButtonContainerEl = document.createElement('span');
         this.findButtonContainerEl.classList.add('bp-doc-find-controls');

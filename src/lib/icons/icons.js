@@ -11,6 +11,7 @@ import ARROW_RIGHT from './arrow_right_24px.svg';
 import CHECK_MARK from './checkmark_24px.svg';
 import GEAR from './gear_24px.svg';
 import FILE_AUDIO from './file_audio.svg';
+import FILE_AUTOCAD from './file_autocad.svg';
 import FILE_BOX_NOTE from './file_box_note.svg';
 import FILE_CODE from './file_code.svg';
 import FILE_DICOM from './file_dicom.svg';
@@ -73,6 +74,7 @@ export const ICON_THUMBNAILS_TOGGLE = THUMBNAILS_TOGGLE;
 
 const FILE_LOADING_ICONS = {
     FILE_AUDIO,
+    FILE_AUTOCAD,
     FILE_BOX_NOTE,
     FILE_CODE,
     FILE_DEFAULT,
@@ -283,6 +285,11 @@ export const ICON_FILE_MAP = {};
 // ZIP ICON EXTENSIONS
 ['tgz', 'zip'].forEach((extension) => {
     ICON_FILE_MAP[extension] = 'FILE_ZIP';
+});
+
+// AUTOCAD ICON EXTENSIONS
+['dwg'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_AUTOCAD';
 });
 
 /**
