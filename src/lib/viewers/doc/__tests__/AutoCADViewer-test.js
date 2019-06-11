@@ -3,8 +3,10 @@ import DocumentViewer from '../DocumentViewer';
 import AutoCADViewer from '../AutoCADViewer';
 import metadataAPI from '../../../metadataAPI';
 import { METADATA } from '../../../constants';
+import { MISSING_EXTERNAL_REFS } from '../../../events';
 
 const { FIELD_HASXREFS, TEMPLATE_AUTOCAD } = METADATA;
+const EXTENSION = 'dwg';
 const sandbox = sinon.sandbox.create();
 
 let containerEl;
@@ -23,10 +25,12 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
 
         stubs.getXrefsMetadata = sandbox.stub(metadataAPI, 'getXrefsMetadata');
         stubs.showNotification = sandbox.stub();
+        stubs.emitMetric = sandbox.stub(autocad, 'emitMetric');
 
         autocad.options = {
             file: {
-                id: '123'
+                id: '123',
+                extension: EXTENSION
             },
             ui: {
                 showNotification: stubs.showNotification
@@ -63,6 +67,7 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
 
             return xrefsPromise.then(() => {
                 expect(stubs.showNotification).to.have.been.called;
+                expect(stubs.emitMetric).to.have.been.calledWith({ name: MISSING_EXTERNAL_REFS, data: EXTENSION });
             });
         });
 
@@ -76,6 +81,7 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
 
             return xrefsPromise.then(() => {
                 expect(stubs.showNotification).not.to.have.been.called;
+                expect(stubs.emitMetric).not.to.have.been.called;
             });
         });
     });

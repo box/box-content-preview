@@ -17,12 +17,13 @@ const metadataAPI = {
             return Promise.reject(new Error('id and template are required parameters'));
         }
 
-        return metadataAPI.getMetadata(id, SCOPE_GLOBAL, template, options).then((response) => {
-            // The hasxrefs value is returned as a string 'false' or 'true' so we want
-            // to convert this to a boolean
-            const { [FIELD_HASXREFS]: hasXrefsValue } = response;
-            return { ...response, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
-        });
+        return metadataAPI
+            .getMetadata(id, SCOPE_GLOBAL, template, options)
+            .then(({ [FIELD_HASXREFS]: hasXrefsValue, ...rest }) => {
+                // The hasxrefs value is returned as a string 'false' or 'true' so we want
+                // to convert this to a boolean
+                return { ...rest, [FIELD_HASXREFS]: hasXrefsValue === 'true' };
+            });
     },
 
     /**

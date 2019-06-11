@@ -1,12 +1,12 @@
 import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
+import AutoCADViewer from './AutoCADViewer';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
-import AutoCADViewer from './AutoCADViewer';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
 // or the original as a fallback. Additionally, we include multiple entries for the presentation viewer so that it can be
