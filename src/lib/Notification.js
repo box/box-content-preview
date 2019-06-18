@@ -23,7 +23,7 @@ class Notification {
 
         this.notificationEl.innerHTML = `
             <span id="${uniqueLabel}"></span>
-            <button class="close-btn" type="button">${__('notification_button_default_text')}</button>
+            <button class="close-btn" type="button">✕</button>
         `.trim();
 
         // Save references to message and button
@@ -52,7 +52,7 @@ class Notification {
         if (buttonText) {
             this.buttonEl.textContent = buttonText;
         } else {
-            this.buttonEl.textContent = __('notification_button_default_text');
+            this.buttonEl.textContent = '✕';
         }
 
         this.notificationEl.classList.remove(CLASS_HIDDEN);
