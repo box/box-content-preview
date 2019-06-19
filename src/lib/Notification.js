@@ -1,4 +1,5 @@
 import { CLASS_HIDDEN, CLASS_BOX_PREVIEW_NOTIFICATION, CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER } from './constants';
+import { ICON_CLOSE } from './icons/icons';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
@@ -23,7 +24,7 @@ class Notification {
 
         this.notificationEl.innerHTML = `
             <span id="${uniqueLabel}"></span>
-            <button class="close-btn" type="button">✕</button>
+            <button class="close-btn" type="button">${ICON_CLOSE}</button>
         `.trim();
 
         // Save references to message and button
@@ -51,8 +52,12 @@ class Notification {
 
         if (buttonText) {
             this.buttonEl.textContent = buttonText;
+            this.buttonEl.classList.remove('default-close-btn');
+            this.buttonEl.removeAttribute('aria-label');
         } else {
-            this.buttonEl.textContent = '✕';
+            this.buttonEl.innerHTML = ICON_CLOSE;
+            this.buttonEl.classList.add('default-close-btn');
+            this.buttonEl.setAttribute('aria-label', __('notification_button_default_label'));
         }
 
         this.notificationEl.classList.remove(CLASS_HIDDEN);

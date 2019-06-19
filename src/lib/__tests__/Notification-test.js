@@ -68,7 +68,7 @@ describe('lib/Notification', () => {
             notif.hide();
             notif.show('test');
             assert.equal(notif.messageEl.textContent, 'test');
-            assert.equal(notif.buttonEl.textContent, '✕');
+            assert.equal(notif.buttonEl.children[0].nodeName, 'svg');
         });
 
         it('should hide after the timeout', () => {
