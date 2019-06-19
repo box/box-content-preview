@@ -1,4 +1,5 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
 [![version](https://img.shields.io/badge/version-v2.12.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
@@ -22,7 +23,7 @@ Current Version
 * Version: v2.12.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.js  
+https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.js
 https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.css
 
 Supported Locales
