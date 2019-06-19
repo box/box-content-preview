@@ -165,17 +165,17 @@ describe('lib/PreviewUI', () => {
             });
 
             it('should add a class if navigation is present', () => {
-                const { contentContainer } = ui;
+                const { previewContainer } = ui;
                 ui.showNavigation('1', ['1']);
-                let isShowingNavigation = contentContainer.classList.contains(
+                let isShowingNavigation = previewContainer.classList.contains(
                     constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION
                 );
                 expect(isShowingNavigation).to.be.false;
                 ui.showNavigation('1', ['1', '2']);
-                isShowingNavigation = contentContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
+                isShowingNavigation = previewContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
                 expect(isShowingNavigation).to.be.true;
                 ui.showNavigation('1', ['1']);
-                isShowingNavigation = contentContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
+                isShowingNavigation = previewContainer.classList.contains(constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION);
                 expect(isShowingNavigation).to.be.false;
             });
         });
