@@ -390,7 +390,7 @@ class DocPreloader extends EventEmitter {
      */
     checkDocumentLoaded() {
         // If document is already loaded, hide the preload and short circuit
-        if (this.previewUI.contentContainer.classList.contains(CLASS_PREVIEW_LOADED)) {
+        if (this.previewUI.previewContainer.classList.contains(CLASS_PREVIEW_LOADED)) {
             this.hidePreload();
             return true;
         }
