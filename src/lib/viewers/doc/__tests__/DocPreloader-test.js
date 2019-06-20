@@ -31,8 +31,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
         stubs = {};
 
         docPreloader.previewUI = {
-            contentContainer: document.createElement('div'),
-            hideLoadingIndicator: sandbox.stub()
+            hideLoadingIndicator: sandbox.stub(),
+            previewContainer: document.createElement('div')
         };
     });
 
@@ -549,11 +549,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
     describe('checkDocumentLoaded()', () => {
         beforeEach(() => {
-            docPreloader.previewUI.contentContainer = document.createElement('div');
+            docPreloader.previewUI.previewContainer = document.createElement('div');
         });
 
         it('should hide preload and return true if container element does have loaded class', () => {
-            docPreloader.previewUI.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+            docPreloader.previewUI.previewContainer.classList.add(CLASS_PREVIEW_LOADED);
             sandbox.mock(docPreloader).expects('hidePreload');
             expect(docPreloader.checkDocumentLoaded()).to.be.true;
         });
