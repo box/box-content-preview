@@ -175,11 +175,6 @@
     padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
     width: 24px;
 
-    &:hover {
-        background-color: $box-blue;
-        color: $white;
-    }
-
     .bp-media-settings-subtitles-on & {
         background-color: $box-blue;
         color: $white;
