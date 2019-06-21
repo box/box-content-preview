@@ -17,7 +17,7 @@ There are several limitations at the moment:
 
 ## Supported File Extensions
 
-`xlsx`
+`xlsx`, `xlsm`, `xlsb`
 
 ## Events
 
