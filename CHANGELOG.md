@@ -1,3 +1,10 @@
+<a name="2.12.1"></a>
+## <small>2.12.1 (2019-06-21)</small>
+
+* New(preview): Adding preview with excel online for xlsb & xlsm files (#1001) ([3933add](https://github.com/box/box-content-preview/commit/3933add)), closes [#1001](https://github.com/box/box-content-preview/issues/1001)
+
+
+
 <a name="2.12.0"></a>
 ## 2.12.0 (2019-06-11)
 
