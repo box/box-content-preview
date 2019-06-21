@@ -494,7 +494,7 @@ class BaseViewer extends EventEmitter {
         if (downloadHostToNotify) {
             this.previewUI.notification.show(
                 replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
-                __('notification_button_default_text'),
+                null,
                 true
             );
 
