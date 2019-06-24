@@ -162,6 +162,7 @@ class OfficeViewer extends BaseViewer {
         const { file } = this.options;
         const pdfRep = getRepresentation(file, 'pdf');
 
+        // This occurs in the case of .xlb files where no pdf rep exists
         if (pdfRep) {
             const { url_template: template } = pdfRep.content;
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
