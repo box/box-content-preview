@@ -503,6 +503,17 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(stubs.createContentUrl).not.to.have.been.called;
         });
 
+        it('should not attempt to set pdfUrl if no content exists', () => {
+            office.options.file.representations = {
+                entries: [{ representation: 'pdf' }]
+            };
+
+            office.setupPDFUrl();
+
+            expect(office.pdfUrl).to.be.undefined;
+            expect(stubs.createContentUrl).not.to.have.been.called;
+        });
+
         it('should set pdfUrl if pdf rep exists', () => {
             stubs.createContentUrl.returns('url');
             office.options.file.representations = {
