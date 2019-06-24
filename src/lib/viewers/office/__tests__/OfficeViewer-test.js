@@ -485,4 +485,34 @@ describe('lib/viewers/office/OfficeViewer', () => {
             });
         });
     });
+
+    describe('setupPDFUrl', () => {
+        beforeEach(() => {
+            sandbox.restore();
+            stubs.createContentUrl = sandbox.stub(office, 'createContentUrlWithAuthParams');
+        });
+
+        it('should not attempt to set pdfUrl if no pdf rep exist', () => {
+            office.options.file.representations = {
+                entries: []
+            };
+
+            office.setupPDFUrl();
+
+            expect(office.pdfUrl).to.be.undefined;
+            expect(stubs.createContentUrl).not.to.have.been.called;
+        });
+
+        it('should set pdfUrl if pdf rep exists', () => {
+            stubs.createContentUrl.returns('url');
+            office.options.file.representations = {
+                entries: [{ representation: 'pdf', content: { url_template: 'template' } }]
+            };
+
+            office.setupPDFUrl();
+
+            expect(office.pdfUrl).to.equal('url');
+            expect(stubs.createContentUrl).to.have.been.called;
+        });
+    });
 });

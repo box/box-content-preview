@@ -161,8 +161,11 @@ class OfficeViewer extends BaseViewer {
     setupPDFUrl() {
         const { file } = this.options;
         const pdfRep = getRepresentation(file, 'pdf');
-        const { url_template: template } = pdfRep.content;
-        this.pdfUrl = this.createContentUrlWithAuthParams(template);
+
+        if (pdfRep) {
+            const { url_template: template } = pdfRep.content;
+            this.pdfUrl = this.createContentUrlWithAuthParams(template);
+        }
     }
 
     /**
