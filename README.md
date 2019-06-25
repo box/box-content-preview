@@ -2,7 +2,7 @@
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v2.12.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v2.13.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -20,11 +20,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v2.12.0
+* Version: v2.13.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/2.13.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/2.13.0/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -52,8 +52,8 @@ You can self-host the Box Content Preview library or reference the versions avai
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/2.12.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/2.13.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/2.13.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -70,7 +70,7 @@ You can self-host the Box Content Preview library or reference the versions avai
 ### Self-hosting
 To self-host the Box Content Preview library, follow these steps:
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
-  * Check out a specific version with `git checkout v2.12.0`
+  * Check out a specific version with `git checkout v2.13.0`
   * Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn:build:prod`
 3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `2.4.0`. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
