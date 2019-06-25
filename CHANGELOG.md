@@ -1,3 +1,10 @@
+<a name="2.12.2"></a>
+## <small>2.12.2 (2019-06-25)</small>
+
+* Fix: OfficeViewer no pdfUrl for .xlsb files ([dc13da7](https://github.com/box/box-content-preview/commit/dc13da7))
+
+
+
 <a name="2.12.1"></a>
 ## <small>2.12.1 (2019-06-21)</small>
 
