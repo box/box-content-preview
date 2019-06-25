@@ -7,6 +7,7 @@ import { getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import api from '../../api';
 import { VIEWER_EVENT } from '../../events';
+import { getProp } from '../../util';
 
 const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -161,8 +162,12 @@ class OfficeViewer extends BaseViewer {
     setupPDFUrl() {
         const { file } = this.options;
         const pdfRep = getRepresentation(file, 'pdf');
-        const { url_template: template } = pdfRep.content;
-        this.pdfUrl = this.createContentUrlWithAuthParams(template);
+        const template = getProp(pdfRep, 'content.url_template');
+
+        // This occurs in the case of .xlsb files where no pdf rep exists
+        if (template) {
+            this.pdfUrl = this.createContentUrlWithAuthParams(template);
+        }
     }
 
     /**
