@@ -291,6 +291,22 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     print() {
+        const browserName = Browser.getName();
+        const printEvent = 'printsuccess';
+
+        /**
+         * Called async to ensure resource is loaded for print preview. Then removes listener to prevent
+         * multiple handlers.
+         *
+         * @return {void}
+         */
+        const defaultPrintHandler = () => {
+            this.printframe.contentWindow.print();
+            this.printframe.removeEventListener('load', defaultPrintHandler);
+
+            this.emit(printEvent);
+        };
+
         this.printframe = util.openContentInsideIframe(this.imageEl.outerHTML);
         this.printframe.contentWindow.focus();
 
@@ -298,13 +314,13 @@ class ImageViewer extends ImageBaseViewer {
         this.printImage.style.display = 'block';
         this.printImage.style.margin = '0 auto';
 
-        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
+        if (browserName === 'Explorer' || browserName === 'Edge') {
             this.printframe.contentWindow.document.execCommand('print', false, null);
+            this.emit(printEvent);
         } else {
-            this.printframe.contentWindow.print();
+            // Chrome will show preview from iframe before the content is loaded.
+            this.printframe.addEventListener('load', defaultPrintHandler);
         }
-
-        this.emit('printsuccess');
     }
 
     /**
