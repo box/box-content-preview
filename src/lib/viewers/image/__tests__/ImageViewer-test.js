@@ -353,6 +353,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             stubs.focus = sandbox.stub();
             stubs.print = sandbox.stub();
             stubs.mockIframe = {
+                addEventListener() {},
                 contentWindow: {
                     document: {
                         execCommand: stubs.execCommand
@@ -362,7 +363,8 @@ describe('lib/viewers/image/ImageViewer', () => {
                 },
                 contentDocument: {
                     querySelector: sandbox.stub().returns(containerEl.querySelector('img'))
-                }
+                },
+                removeEventListener() {}
             };
 
             stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
@@ -377,25 +379,40 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(stubs.focus).to.be.called;
         });
 
-        it('should execute the print command if the browser is Explorer', () => {
+        it('should execute the print command if the browser is Explorer', (done) => {
             stubs.getName.returns('Explorer');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
 
             image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
-        it('should execute the print command if the browser is Edge', () => {
+        it('should execute the print command if the browser is Edge', (done) => {
             stubs.getName.returns('Edge');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
 
             image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
-        it('should call the contentWindow print for other browsers', () => {
+        it('should call the contentWindow print for other browsers', (done) => {
             stubs.getName.returns('Chrome');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.print).to.be.called;
+
+                done();
+            };
 
             image.print();
-            expect(stubs.print).to.be.called;
         });
     });
 
