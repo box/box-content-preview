@@ -379,18 +379,28 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(stubs.focus).to.be.called;
         });
 
-        it('should execute the print command if the browser is Explorer', () => {
+        it('should execute the print command if the browser is Explorer', (done) => {
             stubs.getName.returns('Explorer');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
 
             image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
-        it('should execute the print command if the browser is Edge', () => {
+        it('should execute the print command if the browser is Edge', (done) => {
             stubs.getName.returns('Edge');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
 
             image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
         it('should call the contentWindow print for other browsers', (done) => {

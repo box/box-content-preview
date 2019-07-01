@@ -292,7 +292,6 @@ class ImageViewer extends ImageBaseViewer {
      */
     print() {
         const browserName = Browser.getName();
-        const printEvent = 'printsuccess';
 
         /**
          * Called async to ensure resource is loaded for print preview. Then removes listener to prevent
@@ -301,26 +300,23 @@ class ImageViewer extends ImageBaseViewer {
          * @return {void}
          */
         const defaultPrintHandler = () => {
-            this.printframe.contentWindow.print();
-            this.printframe.removeEventListener('load', defaultPrintHandler);
+            if (browserName === 'Explorer' || browserName === 'Edge') {
+                this.printframe.contentWindow.document.execCommand('print', false, null);
+            } else {
+                this.printframe.contentWindow.print();
+            }
 
-            this.emit(printEvent);
+            this.printframe.removeEventListener('load', defaultPrintHandler);
+            this.emit('printsuccess');
         };
 
         this.printframe = util.openContentInsideIframe(this.imageEl.outerHTML);
+        this.printframe.addEventListener('load', defaultPrintHandler);
         this.printframe.contentWindow.focus();
 
         this.printImage = this.printframe.contentDocument.querySelector('img');
         this.printImage.style.display = 'block';
         this.printImage.style.margin = '0 auto';
-
-        if (browserName === 'Explorer' || browserName === 'Edge') {
-            this.printframe.contentWindow.document.execCommand('print', false, null);
-            this.emit(printEvent);
-        } else {
-            // Chrome will show preview from iframe before the content is loaded.
-            this.printframe.addEventListener('load', defaultPrintHandler);
-        }
     }
 
     /**
