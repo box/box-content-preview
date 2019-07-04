@@ -376,11 +376,15 @@
             opacity: 0.6;
             outline: none;
 
-            &.close-btn.default-close-btn {
-                width: 24px;
+            &.default-close-btn {
+                svg {
+                    height: 24px;
+                    pointer-events: none;
+                    width: 24px;
 
-                path.icon {
-                    fill: $white;
+                    path.icon {
+                        fill: $white;
+                    }
                 }
             }
         }
