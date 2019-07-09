@@ -1,3 +1,10 @@
+<a name="2.14.1"></a>
+## <small>2.14.1 (2019-07-09)</small>
+
+* Fix: Add sharedLink header for autocad metadata (#1035) ([1a2e4db](https://github.com/box/box-content-preview/commit/1a2e4db)), closes [#1035](https://github.com/box/box-content-preview/issues/1035)
+
+
+
 <a name="2.14.0"></a>
 ## 2.14.0 (2019-07-08)
 
