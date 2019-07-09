@@ -31,13 +31,16 @@ const metadataAPI = {
      * @param {string} id - File id
      * @param {string} scope - Metadata template scope
      * @param {string} template - Metadata template
-     * @param {Object} [options] - options object
+     * @param {Object} [options.apiHost] - api host
+     * @param {Object} [options.token] - authentication token
+     * @param {Object} [options.sharedLink] - shared link
+     * @param {Object} [options.sharedLinkPassword] - shared link password if any
      * @return {Promise} XHR promise
      */
-    getMetadata(id, scope, template, options = {}) {
-        const { apiHost, token } = options;
-
-        return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), { headers: getHeaders({}, token) });
+    getMetadata(id, scope, template, { apiHost, token, sharedLink, sharedLinkPassword }) {
+        return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), {
+            headers: getHeaders({}, token, sharedLink, sharedLinkPassword)
+        });
     },
 
     /**

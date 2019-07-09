@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import metadataAPI from '../metadataAPI';
 import api from '../api';
+import * as utils from '../util';
 
 const sandbox = sinon.sandbox.create();
 let stubs = {};
@@ -15,7 +16,7 @@ describe('metadataAPI', () => {
         sandbox.verifyAndRestore();
     });
 
-    describe('getXrefsMetadata', () => {
+    describe('getXrefsMetadata()', () => {
         it('Should reject the promise if id is not provided on the file', () => {
             return metadataAPI.getXrefsMetadata(null, 'autocad').catch((err) => {
                 expect(stubs.get).not.to.have.been.called;
@@ -48,6 +49,21 @@ describe('metadataAPI', () => {
                 expect(stubs.get).to.have.been.called;
                 expect(err).to.eql(expResponse);
             });
+        });
+    });
+
+    describe('getMetadata()', () => {
+        it('Should get the metadata with the provided headers', () => {
+            stubs.getHeaders = sandbox.stub(utils, 'getHeaders');
+
+            metadataAPI.getMetadata('123', 'global', 'autocad', {
+                apiHost: 'foo.com',
+                token: '456',
+                sharedLink: 'shared-link',
+                sharedLinkPassword: 'shared-link-password'
+            });
+
+            expect(stubs.getHeaders).to.have.been.calledWith({}, '456', 'shared-link', 'shared-link-password');
         });
     });
 });
