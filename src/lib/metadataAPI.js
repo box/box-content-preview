@@ -35,9 +35,11 @@ const metadataAPI = {
      * @return {Promise} XHR promise
      */
     getMetadata(id, scope, template, options = {}) {
-        const { apiHost, token } = options;
+        const { apiHost, token, sharedLink, sharedLinkPassword } = options;
 
-        return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), { headers: getHeaders({}, token) });
+        return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), {
+            headers: getHeaders({}, token, sharedLink, sharedLinkPassword)
+        });
     },
 
     /**
