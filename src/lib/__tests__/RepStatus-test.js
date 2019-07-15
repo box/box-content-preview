@@ -224,6 +224,20 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
+        it('should reject with the re upload message if the rep status is error due to conversion failure', (done) => {
+            sandbox
+                .mock(repStatus)
+                .expects('reject')
+                .callsFake((err) => {
+                    expect(err.displayMessage).to.equal(__('error_reupload'));
+                    done();
+                });
+            repStatus.representation.status.state = 'error';
+            repStatus.representation.status.code = 'error_conversion_failed';
+
+            repStatus.handleResponse();
+        });
+
         it('should resolve if the rep status is success', () => {
             sandbox.mock(repStatus).expects('resolve');
             repStatus.representation.status.state = 'success';
