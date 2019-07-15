@@ -1,6 +1,47 @@
 import axios from 'axios';
 
 const api = {
+    responseInterceptorId: null,
+    requestInterceptorId: null,
+    /**
+     * Adds a function to Axios that intercepts a response
+
+     * @public
+     * @param {Function} responseInterceptor - Function that gets called on each response
+     * @return {void}
+     */
+    addResponseInterceptor(responseInterceptor) {
+        if (responseInterceptor && typeof responseInterceptor === 'function') {
+            this.responseInterceptorId = axios.interceptors.response.use(responseInterceptor);
+        }
+    },
+
+    /**
+     * Adds a function to Axios that intercepts a request
+     * @public
+     * @param {Function} requestInterceptor - function that gets called on each request
+     * @return {void}
+
+     */
+    addRequestInterceptor(requestInterceptor) {
+        if (requestInterceptor && typeof requestInterceptor === 'function') {
+            this.requestInterceptorId = axios.interceptors.request.use(requestInterceptor);
+        }
+    },
+
+    /**
+     * Ejects all interceptor
+     * @public
+     *
+     * @return {void}
+     */
+    ejectInterceptors() {
+        axios.interceptors.response.eject(this.responseInterceptorId);
+        axios.interceptors.request.eject(this.requestInterceptorId);
+
+        this.requestInterceptorId = null;
+        this.responseInterceptorId = null;
+    },
     /**
      * Filter empty values from the Axios request options object
      *

@@ -1095,12 +1095,14 @@ describe('lib/Preview', () => {
 
     describe('handleTokenResponse()', () => {
         beforeEach(() => {
+            stubs.apiAddReqInterceptor = sandbox.stub(api, 'addRequestInterceptor');
+            stubs.apiAddRespInterceptor = sandbox.stub(api, 'addResponseInterceptor');
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
+            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.setupUI = sandbox.stub(preview, 'setupUI');
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
-            stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
-            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.ui = sandbox.stub(preview.ui, 'isSetup');
         });
 
@@ -1130,6 +1132,20 @@ describe('lib/Preview', () => {
             expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
+        });
+
+        it('should load response interceptor if an option', () => {
+            preview.options.responseInterceptor = sandbox.stub();
+
+            preview.handleTokenResponse({});
+            expect(stubs.apiAddRespInterceptor).to.be.called;
+        });
+
+        it('should load request interceptor if an option', () => {
+            preview.options.requestInterceptor = sandbox.stub();
+
+            preview.handleTokenResponse({});
+            expect(stubs.apiAddReqInterceptor).to.be.called;
         });
 
         it('should load from the server on a cache miss', () => {
@@ -1314,6 +1330,22 @@ describe('lib/Preview', () => {
         it('should set whether to enable thumbnails sidebar', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.enableThumbnailsSidebar).to.be.true;
+        });
+
+        it('should set the request interceptor if provided', () => {
+            const reqInterceptor = sandbox.stub();
+            preview.previewOptions.requestInterceptor = reqInterceptor;
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.requestInterceptor).to.equal(reqInterceptor);
+        });
+
+        it('should set the response interceptor if provided', () => {
+            const respInterceptor = sandbox.stub();
+            preview.previewOptions.responseInterceptor = respInterceptor;
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.responseInterceptor).to.equal(respInterceptor);
         });
     });
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import api from '../api';
 
 const sandbox = sinon.sandbox.create();
@@ -180,6 +181,40 @@ describe('API helper', () => {
             return api.put(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'put' });
             });
+        });
+    });
+
+    describe('addResponseInterceptor', () => {
+        it('should add an http response interceptor', () => {
+            const respInterceptor = sinon.stub();
+            api.addResponseInterceptor(respInterceptor);
+
+            expect(axios.interceptors.response.handlers[0].fulfilled).to.equal(respInterceptor);
+            api.ejectInterceptors();
+        });
+    });
+
+    describe('addRequestInterceptor', () => {
+        it('should add an http request interceptor', () => {
+            const reqInterceptor = sinon.stub();
+            api.addRequestInterceptor(reqInterceptor);
+
+            expect(axios.interceptors.request.handlers[0].fulfilled).to.equal(reqInterceptor);
+            api.ejectInterceptors();
+        });
+    });
+
+    describe('ejectInterceptors', () => {
+        it('should remove all interceptors', () => {
+            const reqInterceptor = sinon.stub();
+            const respInterceptor = sinon.stub();
+
+            api.addRequestInterceptor(reqInterceptor);
+            console.log(axios.interceptors.response);
+            api.ejectInterceptors();
+
+            expect(axios.interceptors.request.handlers[0]).to.be.null;
+            expect(axios.interceptors.response.handlers[0]).to.be.null;
         });
     });
 });

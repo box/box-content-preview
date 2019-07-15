@@ -265,6 +265,9 @@ class Preview extends EventEmitter {
         // Clean the UI
         this.ui.cleanup();
 
+        // Eject http interceptors
+        api.ejectInterceptors();
+
         // Nuke the file
         this.file = undefined;
     }
@@ -803,6 +806,15 @@ class Preview extends EventEmitter {
             this.setupUI();
         }
 
+        // Check to see if there are http interceptors and load them
+        if (this.options.responseInterceptor) {
+            api.addResponseInterceptor(this.options.responseInterceptor);
+        }
+
+        if (this.options.requestInterceptor) {
+            api.addRequestInterceptor(this.options.requestInterceptor);
+        }
+
         // Load from cache if the current file is valid, otherwise load file info from server
         if (checkFileValid(this.file)) {
             // Save file in cache. This also adds the 'ORIGINAL' representation. It is required to preview files offline
@@ -941,6 +953,12 @@ class Preview extends EventEmitter {
 
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
+
+        // Add the request interceptor to the preview instance
+        this.options.requestInterceptor = options.requestInterceptor;
+
+        // Add the response interceptor to the preview instance
+        this.options.responseInterceptor = options.responseInterceptor;
 
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach((viewerName) => {
