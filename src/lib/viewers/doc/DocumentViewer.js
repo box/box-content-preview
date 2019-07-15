@@ -21,7 +21,7 @@ class DocumentViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.preloader = new DocPreloader(this.previewUI);
+        this.preloader = new DocPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 

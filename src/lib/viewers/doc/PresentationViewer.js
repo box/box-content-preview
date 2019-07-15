@@ -39,7 +39,7 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
-        this.preloader = new PresentationPreloader(this.previewUI);
+        this.preloader = new PresentationPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 

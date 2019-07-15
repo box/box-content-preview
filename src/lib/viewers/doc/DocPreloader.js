@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
@@ -13,7 +14,7 @@ import {
     PDFJS_WIDTH_PADDING_PX,
     PDFJS_HEIGHT_PADDING_PX,
 } from '../../constants';
-import { setDimensions, fetchRepresentationAsBlob } from '../../util';
+import { setDimensions, handleRepresentationBlobFetch } from '../../util';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
@@ -26,6 +27,9 @@ const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of 
 const SPINNER_HTML = `<div class="${CLASS_BOX_PREVIEW_PRELOAD_SPINNER}"></div>`;
 
 class DocPreloader extends EventEmitter {
+    /** @property {Api} - Api layer used for XHR calls */
+    api = new Api();
+
     /** @property {HTMLElement} - Viewer container */
     containerEl;
 
@@ -60,10 +64,13 @@ class DocPreloader extends EventEmitter {
      * [constructor]
      *
      * @param {PreviewUI} previewUI - UI instance
+     * @param {Object} options - Preloader options
+     * @param {Api} options.api - API Instance
      * @return {DocPreloader} DocPreloader instance
      */
-    constructor(previewUI) {
+    constructor(previewUI, { api } = {}) {
         super();
+        this.api = api;
         this.previewUI = previewUI;
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
     }
@@ -73,23 +80,26 @@ class DocPreloader extends EventEmitter {
      * while the full document loads to give the user visual feedback on the file as soon as possible.
      *
      * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
-     * @param {HTMLElement} containerEl - Viewer container to render preload in
      * @return {Promise} Promise to show preload
      */
     showPreload(preloadUrlWithAuth, containerEl) {
         this.containerEl = containerEl;
 
         // Need to load image as a blob to read EXIF
-        return fetchRepresentationAsBlob(preloadUrlWithAuth).then(imgBlob => {
-            if (this.checkDocumentLoaded()) {
-                return;
-            }
 
-            this.srcUrl = URL.createObjectURL(imgBlob);
+        return this.api
+            .get(preloadUrlWithAuth, { type: 'blob' })
+            .then(handleRepresentationBlobFetch)
+            .then(imgBlob => {
+                if (this.checkDocumentLoaded()) {
+                    return;
+                }
 
-            this.wrapperEl = document.createElement('div');
-            this.wrapperEl.className = this.wrapperClassName;
-            this.wrapperEl.innerHTML = `
+                this.srcUrl = URL.createObjectURL(imgBlob);
+
+                this.wrapperEl = document.createElement('div');
+                this.wrapperEl.className = this.wrapperClassName;
+                this.wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
                     <div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT} ${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}">
@@ -98,12 +108,12 @@ class DocPreloader extends EventEmitter {
                 </div>
             `.trim();
 
-            this.containerEl.appendChild(this.wrapperEl);
-            this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-            this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-            this.overlayEl = this.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
-            this.bindDOMListeners();
-        });
+                this.containerEl.appendChild(this.wrapperEl);
+                this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
+                this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+                this.overlayEl = this.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
+                this.bindDOMListeners();
+            });
     }
 
     /**

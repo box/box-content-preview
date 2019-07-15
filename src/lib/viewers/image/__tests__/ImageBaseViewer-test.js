@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -27,7 +27,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         containerEl = document.querySelector('.container');
+        stubs.api = new Api();
         imageBase = new ImageBaseViewer({
+            api: stubs.api,
             file: {
                 id: '1234',
             },
@@ -251,7 +253,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 getAttribute: name => imageEl[name],
             };
 
-            sandbox.stub(api, 'get').resolves('not real a image');
+            sandbox.stub(stubs.api, 'get').resolves('not real a image');
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise
                 .then(() => {
@@ -266,7 +268,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         it('should resolve when the get call fails', done => {
             const imageEl = {};
-            sandbox.stub(api, 'get').returns(Promise.reject());
+            sandbox.stub(stubs.api, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise.then(() => Assert.fail()).catch(() => done());
         });

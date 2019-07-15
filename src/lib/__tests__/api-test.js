@@ -1,37 +1,60 @@
-import api from '../api';
+import Api from '../api';
 
 const sandbox = sinon.sandbox.create();
+let api;
 
 describe('API helper', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
+        api = undefined;
     });
 
     describe('parseResponse()', () => {
+        beforeEach(() => {
+            api = new Api();
+        });
+
+        const url = '/foo/bar';
+
         it('should return the full response when the status is 202 or 204', () => {
             const response = {
                 status: 202,
                 data: 'foo',
             };
 
-            expect(api.parseResponse(response)).to.equal(response);
+            sandbox.stub(api, 'client').resolves(response);
+
+            api.get(url).then(data => {
+                expect(data).to.equal(response);
+            });
 
             response.status = 204;
-            expect(api.parseResponse(response)).to.equal(response);
+
+            api.get(url).then(data => {
+                expect(data).to.equal(response);
+            });
         });
 
         it('should only return the data', () => {
             const data = 'foo';
-            const response = {
+            const result = {
                 status: 200,
                 data,
             };
 
-            expect(api.parseResponse(response)).to.equal(data);
+            sandbox.stub(api, 'client').resolves(result);
+
+            return api.get(url).then(response => {
+                expect(response).to.equal(data);
+            });
         });
     });
 
     describe('get()', () => {
+        beforeEach(() => {
+            api = new Api();
+        });
+
         const url = '/foo/bar';
 
         it('should call fetch on the URL', () => {
@@ -116,6 +139,8 @@ describe('API helper', () => {
 
     describe('head()', () => {
         it('should call head on URL', () => {
+            api = new Api();
+
             const url = 'someurl';
 
             sandbox.stub(api, 'xhr').resolves({ status: 200 });
@@ -128,6 +153,8 @@ describe('API helper', () => {
 
     describe('post()', () => {
         it('should call post on URL', () => {
+            api = new Api();
+
             const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
@@ -147,6 +174,8 @@ describe('API helper', () => {
 
     describe('delete()', () => {
         it('should call delete on URL', () => {
+            api = new Api();
+
             const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
@@ -166,6 +195,8 @@ describe('API helper', () => {
 
     describe('put()', () => {
         it('should call put on URL', () => {
+            api = new Api();
+
             const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
@@ -180,6 +211,47 @@ describe('API helper', () => {
             return api.put(url, data, { headers }).then(() => {
                 expect(api.xhr).to.have.been.calledWith(url, { data, headers, method: 'put' });
             });
+        });
+    });
+
+    describe('addResponseInterceptor', () => {
+        it('should add an http response interceptor', () => {
+            api = new Api();
+
+            const responseInterceptor = sinon.stub();
+            api.addResponseInterceptor(responseInterceptor);
+
+            expect(api.client.interceptors.response.handlers[0].fulfilled).to.equal(responseInterceptor);
+        });
+    });
+
+    describe('addRequestInterceptor', () => {
+        it('should add an http request interceptor', () => {
+            api = new Api();
+
+            const requestInterceptor = sinon.stub();
+            api.addRequestInterceptor(requestInterceptor);
+
+            expect(api.client.interceptors.request.handlers[0].fulfilled).to.equal(requestInterceptor);
+        });
+    });
+
+    describe('ejectInterceptors', () => {
+        it('should remove all interceptors', () => {
+            api = new Api();
+
+            const requestInterceptor = sinon.stub();
+            const responseInterceptor = sinon.stub();
+
+            api.addRequestInterceptor(requestInterceptor);
+            api.addRequestInterceptor(requestInterceptor);
+            api.addResponseInterceptor(responseInterceptor);
+            api.addResponseInterceptor(responseInterceptor);
+
+            api.ejectInterceptors();
+
+            expect(api.client.interceptors.request.handlers[0]).to.equal(null);
+            expect(api.client.interceptors.response.handlers[0]).to.equal(null);
         });
     });
 });

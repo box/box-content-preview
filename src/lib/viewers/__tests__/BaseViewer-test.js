@@ -4,13 +4,13 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
-import DownloadReachability from '../../DownloadReachability';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
 import Timer from '../../Timer';
+import Api from '../../api';
 
 let base;
 let containerEl;
@@ -34,7 +34,9 @@ describe('lib/viewers/BaseViewer', () => {
 
         containerEl = document.querySelector('.bp-container');
         stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
+        stubs.api = new Api();
         base = new BaseViewer({
+            api: stubs.api,
             container: containerEl,
             file: {
                 id: '0',
@@ -72,6 +74,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.setup();
 
             expect(base.options).to.deep.equal({
+                api: stubs.api,
                 container: containerEl,
                 file: {
                     id: '0',
@@ -235,8 +238,8 @@ describe('lib/viewers/BaseViewer', () => {
     describe('handleDownloadError()', () => {
         beforeEach(() => {
             sandbox.stub(base, 'triggerError');
-            sandbox.stub(DownloadReachability, 'isCustomDownloadHost');
-            sandbox.stub(DownloadReachability, 'setDownloadReachability');
+            sandbox.stub(stubs.api.reachability.constructor, 'isCustomDownloadHost');
+            sandbox.stub(stubs.api.reachability, 'setDownloadReachability');
             sandbox.stub(base, 'load');
             sandbox.stub(base, 'emitMetric');
         });
@@ -265,18 +268,18 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should retry load, and check download reachability if we are on a custom host', () => {
             base.hasRetriedContentDownload = false;
-            DownloadReachability.isCustomDownloadHost.returns(false);
-
+            stubs.api.reachability.constructor.isCustomDownloadHost.returns(false);
+            base.api = stubs.api;
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
             expect(base.load).to.be.called;
-            expect(DownloadReachability.setDownloadReachability).to.be.not.called;
+            expect(stubs.api.reachability.setDownloadReachability).to.be.not.called;
 
             base.hasRetriedContentDownload = false;
             // Now try on a custom host
-            DownloadReachability.isCustomDownloadHost.returns(true);
-            DownloadReachability.setDownloadReachability.returns(Promise.resolve(true));
+            stubs.api.reachability.constructor.isCustomDownloadHost.returns(true);
+            stubs.api.reachability.setDownloadReachability.returns(Promise.resolve(true));
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
-            expect(DownloadReachability.setDownloadReachability).to.be.called;
+            expect(stubs.api.reachability.setDownloadReachability).to.be.called;
         });
     });
 
@@ -394,11 +397,11 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should fallback to the default host if we have retried', () => {
             base.hasRetriedContentDownload = true;
-            sandbox.stub(DownloadReachability, 'replaceDownloadHostWithDefault');
+            sandbox.stub(stubs.api.reachability.constructor, 'replaceDownloadHostWithDefault');
             sandbox.stub(util, 'createContentUrl');
-
+            base.api = stubs.api;
             base.createContentUrl('https://dl3.boxcloud.com', '');
-            expect(DownloadReachability.replaceDownloadHostWithDefault).to.be.called;
+            expect(stubs.api.reachability.constructor.replaceDownloadHostWithDefault).to.be.called;
         });
     });
 
@@ -482,19 +485,19 @@ describe('lib/viewers/BaseViewer', () => {
                     url_template: 'dl.boxcloud.com',
                 },
             };
+            base.api = stubs.api;
             stubs.getDownloadNotificationToShow = sandbox
-                .stub(DownloadReachability, 'getDownloadNotificationToShow')
+                .stub(stubs.api.reachability.constructor, 'getDownloadNotificationToShow')
                 .returns(undefined);
             sandbox.stub(base, 'initAnnotations');
         });
 
         it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
             stubs.getDownloadNotificationToShow.returns('dl3.boxcloud.com');
-            sandbox.stub(DownloadReachability, 'setDownloadHostNotificationShown');
-
+            sandbox.stub(stubs.api.reachability.constructor, 'setDownloadHostNotificationShown');
             base.viewerLoadHandler({ scale: 1.5 });
             expect(base.previewUI.notification.show).to.be.called;
-            expect(DownloadReachability.setDownloadHostNotificationShown).to.be.called;
+            expect(stubs.api.reachability.constructor.setDownloadHostNotificationShown).to.be.called;
         });
 
         it('should set the scale if it exists', () => {

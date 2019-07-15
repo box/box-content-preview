@@ -56,8 +56,8 @@ class Model3DRenderer extends Box3DRenderer {
      * @param {BoxSDK} [boxSdk] - Box SDK instance, used for requests to Box
      * @return {Model3DRenderer} Model3DRenderer instance
      */
-    constructor(containerEl, boxSdk) {
-        super(containerEl, boxSdk);
+    constructor(containerEl, boxSdk, options) {
+        super(containerEl, boxSdk, options);
 
         this.renderModeValues = {
             [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,

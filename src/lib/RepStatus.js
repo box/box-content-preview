@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import api from './api';
 import { appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
@@ -9,6 +8,9 @@ import { ERROR_CODE, LOAD_METRIC } from './events';
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
 class RepStatus extends EventEmitter {
+    /** @property {Api} - Api used for XHR calls */
+    api;
+
     /**
      * Gets the status out of represenation
      *
@@ -38,6 +40,8 @@ class RepStatus extends EventEmitter {
     /**
      * [constructor]
      *
+     * @param {Object} options - Options object for representation status
+     * @param {Api} [options.api] - Optional Api layer for http calls
      * @param {Object} options.representation - Representation object
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
@@ -46,8 +50,10 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
+    constructor({ api, representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
         super();
+
+        this.api = api;
         this.representation = representation;
         this.logger = logger;
         this.fileId = fileId;
@@ -85,7 +91,7 @@ class RepStatus extends EventEmitter {
         const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
         Timer.start(tag);
 
-        return api.get(this.infoUrl).then(info => {
+        return this.api.get(this.infoUrl).then(info => {
             clearTimeout(this.statusTimeout);
 
             if (info.metadata) {

@@ -76,7 +76,7 @@ class Model3DViewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = new Model3DControls(this.wrapperEl);
-        this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk);
+        this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }
 
     /**

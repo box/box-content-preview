@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as util from '../util';
-import api from '../api';
+import Api from '../api';
 import DownloadReachability from '../DownloadReachability';
 
 const sandbox = sinon.sandbox.create();
@@ -132,15 +132,25 @@ describe('lib/DownloadReachability', () => {
     describe('setDownloadReachability()', () => {
         it('should catch an errored response', () => {
             const setDownloadHostFallbackStub = sandbox.stub(DownloadReachability, 'setDownloadHostFallback');
-            sandbox.stub(api, 'head').rejects(new Error());
-
-            return DownloadReachability.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
+            sandbox.stub(Api.prototype, 'head').rejects(new Error());
+            const api = new Api();
+            return api.reachability.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
                 expect(setDownloadHostFallbackStub).to.be.called;
             });
         });
     });
 
     describe('downloadWithReachabilityCheck()', () => {
+        let downloadReachability;
+
+        beforeEach(() => {
+            downloadReachability = new DownloadReachability(new Api());
+        });
+
+        afterEach(() => {
+            downloadReachability = undefined;
+        });
+
         it('should download with default host if download host is blocked', () => {
             sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(true);
             sandbox.stub(util, 'openUrlInsideIframe');
@@ -148,7 +158,7 @@ describe('lib/DownloadReachability', () => {
             const downloadUrl = 'https://custom.boxcloud.com/blah';
             const expected = 'https://dl.boxcloud.com/blah';
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
             expect(util.openUrlInsideIframe).to.be.calledWith(expected);
         });
@@ -160,7 +170,7 @@ describe('lib/DownloadReachability', () => {
 
             const downloadUrl = 'https://dl.boxcloud.com/blah';
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
             expect(util.openUrlInsideIframe).to.be.calledWith(downloadUrl);
         });
@@ -172,7 +182,7 @@ describe('lib/DownloadReachability', () => {
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
             expect(util.openUrlInsideIframe).to.be.calledWith(downloadUrl);
         });
@@ -180,20 +190,20 @@ describe('lib/DownloadReachability', () => {
         it('should check download reachability for custom host', () => {
             sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
             sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(DownloadReachability, 'setDownloadReachability').returns(Promise.resolve(false));
+            sandbox.stub(DownloadReachability.prototype, 'setDownloadReachability').returns(Promise.resolve(false));
             sandbox.stub(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
-            expect(DownloadReachability.setDownloadReachability).to.be.calledWith(downloadUrl);
+            expect(downloadReachability.setDownloadReachability).to.be.calledWith(downloadUrl);
         });
 
         it('should retry download with default host if custom host is blocked', done => {
             sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
             sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(DownloadReachability, 'setDownloadReachability').returns(
+            sandbox.stub(DownloadReachability.prototype, 'setDownloadReachability').returns(
                 new Promise(resolve => {
                     resolve(true);
                     done();
@@ -204,7 +214,7 @@ describe('lib/DownloadReachability', () => {
             const downloadUrl = 'https://custom.boxcloud.com/blah';
             const defaultDownloadUrl = 'https://dl.boxcloud.com/blah';
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
             expect(util.openUrlInsideIframe.getCall(0).args[0]).to.equal(downloadUrl);
             expect(util.openUrlInsideIframe.getCall(0).args[1]).to.equal(defaultDownloadUrl);

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import Box3DViewer from '../Box3DViewer';
 import Box3DControls from '../Box3DControls';
 import Box3DRenderer from '../Box3DRenderer';
@@ -36,7 +36,9 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         fixture.load('viewers/box3d/__tests__/Box3DViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
+        stubs.api = new Api();
         box3d = new Box3DViewer({
+            api: stubs.api,
             file: {
                 id: 0,
                 file_version: {
@@ -414,17 +416,17 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             sandbox.stub(box3d, 'appendAuthHeader').returns(headers);
             sandbox.stub(box3d, 'isRepresentationReady').returns(true);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .withArgs(contentUrl, { headers, type: 'document' });
-
+            box3d.api = stubs.api;
             box3d.prefetch({ assets: false, content: true });
         });
 
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(box3d, 'isRepresentationReady').returns(false);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
             box3d.prefetch({ assets: false, content: true });

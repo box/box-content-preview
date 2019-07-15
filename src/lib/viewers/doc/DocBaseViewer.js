@@ -1,5 +1,4 @@
 import throttle from 'lodash/throttle';
-import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -82,7 +81,6 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
-
         // Bind context for callbacks
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.print = this.print.bind(this);
@@ -262,13 +260,13 @@ class DocBaseViewer extends BaseViewer {
                 const { url_template: template } = preloadRep.content;
 
                 // Prefetch as blob since preload needs to load image as a blob
-                api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
             }
         }
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -898,7 +896,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, { type: 'blob' }).then(blob => {
+        return this.api.get(pdfUrl, { type: 'blob' }).then(blob => {
             this.printBlob = blob;
         });
     }

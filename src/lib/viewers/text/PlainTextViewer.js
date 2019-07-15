@@ -1,5 +1,4 @@
 import './Text.scss';
-import api from '../../api';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
@@ -70,7 +69,7 @@ class PlainTextViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -198,7 +197,7 @@ class PlainTextViewer extends TextBaseViewer {
 
         const contentUrl = this.createContentUrlWithAuthParams(template);
         this.startLoadTimer();
-        return api
+        return this.api
             .get(contentUrl, { headers, type: 'text' })
             .catch(error => {
                 this.handleDownloadError(error, contentUrl);

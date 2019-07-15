@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as util from '../util';
-import api from '../api';
+import Api from '../api';
 import RepStatus from '../RepStatus';
 import { LOAD_METRIC } from '../events';
 import Timer from '../Timer';
@@ -29,6 +29,7 @@ describe('lib/RepStatus', () => {
         /* eslint-enable require-jsdoc */
 
         repStatus = new RepStatus({
+            api: new Api(),
             representation: rep,
             logger,
             fileId,
@@ -81,6 +82,7 @@ describe('lib/RepStatus', () => {
 
         it('should set the correct object properties', () => {
             repStatus = new RepStatus({
+                api: {},
                 representation: rep,
                 logger: {},
             });
@@ -107,7 +109,7 @@ describe('lib/RepStatus', () => {
 
         it('should fetch latest status', () => {
             sandbox
-                .mock(api)
+                .mock(repStatus.api)
                 .expects('get')
                 .returns(
                     Promise.resolve({
@@ -125,7 +127,7 @@ describe('lib/RepStatus', () => {
 
         it('should update provided metadata', () => {
             sandbox
-                .mock(api)
+                .mock(repStatus.api)
                 .expects('get')
                 .returns(
                     Promise.resolve({
@@ -147,7 +149,7 @@ describe('lib/RepStatus', () => {
 
         it('should return a resolved promise if there is no info url', () => {
             sandbox
-                .mock(api)
+                .mock(Api.prototype)
                 .expects('get')
                 .never();
             repStatus.infoUrl = '';
