@@ -190,6 +190,7 @@ describe('API helper', () => {
             api.addResponseInterceptor(respInterceptor);
 
             expect(axios.interceptors.response.handlers[0].fulfilled).to.equal(respInterceptor);
+
             api.ejectInterceptors();
         });
     });
@@ -210,11 +211,12 @@ describe('API helper', () => {
             const respInterceptor = sinon.stub();
 
             api.addRequestInterceptor(reqInterceptor);
-            console.log(axios.interceptors.response);
+            api.addResponseInterceptor(respInterceptor);
+
             api.ejectInterceptors();
 
-            expect(axios.interceptors.request.handlers[0]).to.be.null;
-            expect(axios.interceptors.response.handlers[0]).to.be.null;
+            expect(axios.interceptors.request.handlers[0]).to.equal(null);
+            expect(axios.interceptors.response.handlers[0]).to.equal(null);
         });
     });
 });
