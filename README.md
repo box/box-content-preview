@@ -5,46 +5,47 @@
 [![version](https://img.shields.io/badge/version-v2.14.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
-[Box Content Preview](https://developer.box.com/docs/box-content-preview)
-====================================================================
-The Box Content Preview library allows developers to easily embed high quality and interactive previews of Box files in  desktop and mobile web applications. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+# [Box Content Preview](https://developer.box.com/docs/box-content-preview)
+
+The Box Content Preview library allows developers to easily embed high quality and interactive previews of Box files in desktop and mobile web applications. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
 This library powers Preview in the main Box web application as well as the 'Get Embed Link' Box API endpoint.
 
-Browser Support
----------------
-* Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
-* Limited support for mobile web - previews will render but some controls may not work
+## Browser Support
+
+- Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
+- Limited support for mobile web - previews will render but some controls may not work
 
 If you are using Internet Explorer 11, which doesn't natively support promises, include a polyfill.io script (see sample code below) or a Promise library like Bluebird.
 
-Current Version
----------------
-* Version: v2.14.0
-* Locale: en-US
+## Current Version
+
+- Version: v2.14.0
+- Locale: en-US
 
 https://cdn01.boxcdn.net/platform/preview/2.14.0/en-US/preview.js
 https://cdn01.boxcdn.net/platform/preview/2.14.0/en-US/preview.css
 
-Supported Locales
------------------
+## Supported Locales
+
 To use a different locale, replace `en-US` in the URLs above with any of the following supported locales.
 
 `en-AU`, `en-CA`, `en-GB`, `en-US`, `bn-IN`, `da-DK`, `de-DE`, `es-419`, `es-ES`, `fi-FI`, `fr-CA`, `fr-FR`, `hi-IN`,`it-IT`, `ja-JP`, `ko-KR`, `nb-NO`, `nl-NL`, `pl-PL`, `pt-BR`, `ru-RU`, `sv-SE`, `tr-TR`, `zh-CN`, `zh-TW`
 
-Supported File Types
---------------------
+## Supported File Types
+
 Box Content Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
 
-Usage
------
+## Usage
+
 ### Including Preview as a library
+
 You can self-host the Box Content Preview library or reference the versions available on Box's CDN.
 
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Box Content Preview Demo</title>
 
@@ -53,55 +54,64 @@ You can self-host the Box Content Preview library or reference the versions avai
 
     <!-- Latest version of Preview SDK for your locale -->
     <script src="https://cdn01.boxcdn.net/platform/preview/2.14.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/2.14.0/en-US/preview.css" />
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdn01.boxcdn.net/platform/preview/2.14.0/en-US/preview.css"
+    />
+  </head>
+  <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
     <script>
-        var preview = new Box.Preview();
-        preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
-    	    container: '.preview-container'
-        });
+      var preview = new Box.Preview();
+      preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
+        container: '.preview-container',
+      });
     </script>
-</body>
+  </body>
 </html>
 ```
 
 ### Self-hosting
+
 To self-host the Box Content Preview library, follow these steps:
+
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
-  * Check out a specific version with `git checkout v2.14.0`
-  * Download a specific version as a zip from https://github.com/box/box-content-preview/releases
+
+- Check out a specific version with `git checkout v2.14.0`
+- Download a specific version as a zip from https://github.com/box/box-content-preview/releases
+
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn:build:prod`
 3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `2.4.0`. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
-  * https://cdn.YOUR_SITE.com/box-assets/2.4.0/en-US/preview.js
-  * https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
-  * https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
+
+- https://cdn.YOUR_SITE.com/box-assets/2.4.0/en-US/preview.js
+- https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
+- https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
 
 ### Importing Preview as a React Component
+
 Preview can also be used as a React Component with the Box Element framework. The source code for the Content Preview Element wrapper is located at https://github.com/box/box-ui-elements/tree/master/src/components/ContentPreview. Please reference https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.
 
-CORS (Cross-Origin Resource Sharing)
-------------------------------------
+## CORS (Cross-Origin Resource Sharing)
+
 For security purposes, you must whitelist your application's HTTP origin, omitting any trailing slash, in the configuration section of the Developer Console. For example, CodePen's domain is whitelisted for the demo application below.
 
 ![Screenshot of CORS whitelist](images/cors.png)
 
-Demo
-----
+## Demo
+
 View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/rmZdjm.
 
-Initialization
---------------
+## Initialization
+
 ```javascript
 var preview = new Box.Preview();
 preview.show(fileId, accessToken, { options });
 ```
+
 Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token.
 
+## Parameters & Options
 
-Parameters & Options
--------
 ```javascript
 var preview = new Box.Preview();
 preview.show(fileId, accessToken, {
@@ -115,37 +125,39 @@ preview.show(fileId, accessToken, {
     showDownload: true
 });
 ```
-| Parameter | Description |
-| --- | --- |
-| fileId | Box file ID |
+
+| Parameter   | Description                                                                     |
+| ----------- | ------------------------------------------------------------------------------- |
+| fileId      | Box file ID                                                                     |
 | accessToken | Either a string auth token or a token generator function, see below for details |
 
-| Option | Default | Description |
-| --- | --- | --- |
-| container | document.body | DOM node or selector where Preview should be placed |
-| sharedLink |  | Shared link URL |
-| sharedLinkPassword |  | Shared link password |
-| collection |  | List of file IDs to iterate over for previewing |
-| header | `light` | String value of `none` or `dark` or `light` that controls header visibility and theme |
-| logoUrl |  | URL of logo to show in header |
-| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details |
-| showDownload | false | Whether download button is shown |
-| autoFocus | true | Whether preview should focus itself when a file loads |
-| useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
-| fixDependencies | false | Temporarily patches AMD to properly load Preview's dependencies. You may need to enable this if your project uses RequireJS |
-| disableEventLog | false | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side) |
-| fileOptions | {} | Mapping of file ID to file-level options. See the file option table below for details |
-| previewWMPref | `any` | String value of `all`, `any`, or `none` that sets how previews of watermarked files behave. See https://community.box.com/t5/Sharing-Content-with-Box/Watermarking-Files/ta-p/30766 for more information about watermarking and https://community.box.com/t5/Collaborate-By-Inviting-Others/Understanding-Collaborator-Permission-Levels/ta-p/144 for more information about permissions and collaboration roles.<br><br>`all` forces watermarked previews. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, no preview is shown.<br><br>`any` is the default watermarking behavior in the Box Web Application. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise.<br><br>`none` forces non-watermarked previews. Users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise. |
-| downloadWM | false | Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked files. If true, users will be able to download watermarked versions of supported file types as long as they have `can_preview` permissions (any collaboration role except for `Uploader`). |
+| Option             | Default       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| container          | document.body | DOM node or selector where Preview should be placed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| sharedLink         |               | Shared link URL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| sharedLinkPassword |               | Shared link password                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| collection         |               | List of file IDs to iterate over for previewing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| header             | `light`       | String value of `none` or `dark` or `light` that controls header visibility and theme                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| logoUrl            |               | URL of logo to show in header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| showAnnotations    | false         | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| showDownload       | false         | Whether download button is shown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| autoFocus          | true          | Whether preview should focus itself when a file loads                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| useHotkeys         | true          | Whether hotkeys (keyboard shortcuts) are enabled                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| fixDependencies    | false         | Temporarily patches AMD to properly load Preview's dependencies. You may need to enable this if your project uses RequireJS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| disableEventLog    | false         | Disables client-side `preview` event log. Previewing with this option enabled will not increment access stats (content access is still logged server-side)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| fileOptions        | {}            | Mapping of file ID to file-level options. See the file option table below for details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| previewWMPref      | `any`         | String value of `all`, `any`, or `none` that sets how previews of watermarked files behave. See https://community.box.com/t5/Sharing-Content-with-Box/Watermarking-Files/ta-p/30766 for more information about watermarking and https://community.box.com/t5/Collaborate-By-Inviting-Others/Understanding-Collaborator-Permission-Levels/ta-p/144 for more information about permissions and collaboration roles.<br><br>`all` forces watermarked previews. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, no preview is shown.<br><br>`any` is the default watermarking behavior in the Box Web Application. If the file type supports watermarking, users with `can_preview` permissions will see a watermarked preview. If the file type cannot be watermarked, users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise.<br><br>`none` forces non-watermarked previews. Users that have both `can_preview` and `can_upload` permissions will see a non-watermarked preview and no preview otherwise. |
+| downloadWM         | false         | Whether the download of a watermarked file should be watermarked. This option does not affect non-watermarked files. If true, users will be able to download watermarked versions of supported file types as long as they have `can_preview` permissions (any collaboration role except for `Uploader`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
-| File Option | Description |
-| --- | --- |
+| File Option   | Description                                                                                                                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | fileVersionId | File version ID to preview. This must be a valid non-current file version ID. Use [Get Versions](https://developer.box.com/reference#view-versions-of-a-file) to fetch a list of file versions |
-| startAt | Object with unit and value properties indicating where to start the preview at. Current supported units are 'seconds' for media and 'pages' for documents. |
+| startAt       | Object with unit and value properties indicating where to start the preview at. Current supported units are 'seconds' for media and 'pages' for documents.                                     |
 
 **Example**
 
 This configuration sets version `54321` as the preview version for a file with the ID `12345`:
+
 ```
 const FILE_ID = '12345';
 const TOKEN = 'abcdefg';
@@ -158,8 +170,8 @@ preview.show(FILE_ID, TOKEN, {
 });
 ```
 
-Access Token
-------------
+## Access Token
+
 Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://developer.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
 
 If your application requires the end user to only be able to access a subset of the Content Preview functionality, you can use [Token Exchange](https://developer.box.com/reference#token-exchange) to appropriately downscope your App/Managed or Service Account token to a resulting token that has the desired set of permissions, and can thus, be securely passed to the end user client initializing the Content Preview.
@@ -170,53 +182,54 @@ Wish to learn more about when, why and how you can use Token Exchange with the C
 
 ### Base Scope
 
-| Scope Name | What permissions does it grant? |
-| --- | --- |
+| Scope Name   | What permissions does it grant?                                                           |
+| ------------ | ----------------------------------------------------------------------------------------- |
 | base_preview | Allows preview access to a file or files in a folder based on user/file/token permissions |
 
 ### Feature Scopes
-| Scope Name | What permissions does it grant? |
-| --- | --- |
-| item_download | Allows files/folders contents to be downloaded |
-| annotation_view_self | Allows user to view their own annotations |
-| annotation_view_all | Allows user to view all annotations on the file |
-| annotation_edit | Allows user to edit their own annotations (includes annotation_view_self) |
+
+| Scope Name           | What permissions does it grant?                                           |
+| -------------------- | ------------------------------------------------------------------------- |
+| item_download        | Allows files/folders contents to be downloaded                            |
+| annotation_view_self | Allows user to view their own annotations                                 |
+| annotation_view_all  | Allows user to view all annotations on the file                           |
+| annotation_edit      | Allows user to edit their own annotations (includes annotation_view_self) |
 
 ### Sample Scenarios
 
-| Scenario| Scope Combinations |
-| --- | --- |
-| User wants basic preview functionality + download | base_preview + item_download |
-| User wants basic preview functionality + ability to edit own annotations| base_preview + annotation_edit |
-| User wants basic preview functionality + ability to view all annotations + ability to edit own annotations| base_preview + annotation_view_all + annotation_edit|
+| Scenario                                                                                                   | Scope Combinations                                   |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| User wants basic preview functionality + download                                                          | base_preview + item_download                         |
+| User wants basic preview functionality + ability to edit own annotations                                   | base_preview + annotation_edit                       |
+| User wants basic preview functionality + ability to view all annotations + ability to edit own annotations | base_preview + annotation_view_all + annotation_edit |
 
-Token Generator Function
-------------------------
+## Token Generator Function
+
 The Preview library optionally takes a token generator function instead of a string token. Using a token generator function allows you to dynamically determine what tokens Preview should use. For example, you can pass in different access tokens for each file or make sure your token is refreshed and valid before showing a preview. The token generator function should return a promise that resolves in either a single string token that applies to all of the files being previewed or a map of typed file IDs to access token for those files.
 
 ```javascript
 // Example token generator function that resolves to a single access token
 var singleTokenGenerator = function() {
-    return someApi.getToken().then(function(data) {
-        return data.token;
-    });
+  return someApi.getToken().then(function(data) {
+    return data.token;
+  });
 };
 
 // Example token generator function that resolves to a map of tokens
 var mapTokenGenerator = function() {
-    return Promise.resolve({
-        file_1234: 'some_token_abcd',
-        file_2345: 'some_token_bcde'
-    });
+  return Promise.resolve({
+    file_1234: 'some_token_abcd',
+    file_2345: 'some_token_bcde',
+  });
 };
 ```
 
-Viewers
--------
+## Viewers
+
 The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. Call `preview.getViewers()` to get the list of possible viewers.
 
-Additional Methods
-------------------
+## Additional Methods
+
 `preview.hide()` hides the preview.
 
 `preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
@@ -251,8 +264,8 @@ Additional Methods
 
 `preview.prefetchViewers(/* Array[String] */)` prefetches static assets for the specified viewers that the browser can cache for performance benefits.
 
-Events
-------
+## Events
+
 The preview object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `show()` is called, otherwise events can be missed.
 
 ```javascript
@@ -273,9 +286,10 @@ preview.removeListener(EVENTNAME, listener);
 
 EVENTNAME can be one of the following
 
-* `viewer` event will be fired when we have the viewer instance first available. This will be the same object that is also a property included in the `load` event. Preview fires this event before `load` so that clients can attach their listeners before the `load` event is fired.
+- `viewer` event will be fired when we have the viewer instance first available. This will be the same object that is also a property included in the `load` event. Preview fires this event before `load` so that clients can attach their listeners before the `load` event is fired.
 
-* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation occurs. The event data will contain:
+- `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation occurs. The event data will contain:
+
 ```javascript
   {
       error: 'message', // Error message if any error occurred while loading
@@ -284,9 +298,11 @@ EVENTNAME can be one of the following
       file: {...}       // Box file object with properties defined in file.js
   }
 ```
-* `navigate` event will be fired when navigation happens. The event includes the file ID of the file being navigated to, and this event will fire before `load`.
 
-* `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error. The event data will contain:
+- `navigate` event will be fired when navigation happens. The event includes the file ID of the file being navigated to, and this event will fire before `load`.
+
+- `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error. The event data will contain:
+
 ```javascript
   {
       message: 'message', // Message to show
@@ -294,7 +310,8 @@ EVENTNAME can be one of the following
   }
 ```
 
-* `viewerevent` Each viewer will fire its own sets of events. For example, the Image viewer will fire `rotate` or `resize`, etc. while other viewers may fire another set of events. The preview wrapper will also re-emit events at the preview level, with event data containing:
+- `viewerevent` Each viewer will fire its own sets of events. For example, the Image viewer will fire `rotate` or `resize`, etc. while other viewers may fire another set of events. The preview wrapper will also re-emit events at the preview level, with event data containing:
+
 ```javascript
   {
       event: EVENTNAME,         // Event name
@@ -305,43 +322,46 @@ EVENTNAME can be one of the following
 ```
 
 ### Example event usage
+
 ```javascript
-preview.addListener('viewer', (viewer) => {
-    viewer.addListener('rotate', () => {
-        // Do something when a viewer rotates a preview
-    });
+preview.addListener('viewer', viewer => {
+  viewer.addListener('rotate', () => {
+    // Do something when a viewer rotates a preview
+  });
 });
 
-preview.addListener('load', (data) => {
-    var viewer = data.viewer;
-    viewer.addListener('rotate', () => {
-        // Do something when a viewer rotates a preview
-    });
+preview.addListener('load', data => {
+  var viewer = data.viewer;
+  viewer.addListener('rotate', () => {
+    // Do something when a viewer rotates a preview
+  });
 });
 
-preview.addListener('viewerevent', (data) => {
-    if (data.viewerName === 'Image') {
-        if (data.event === 'rotate') {
-            // Do something when an image preview is rotated
-        }
-    } else if (data.viewerName === 'Image360') {
-        if (data.event === 'rotate') {
-            // Do something different when a 360-degree image is rotated
-        }
-    } else {}
+preview.addListener('viewerevent', data => {
+  if (data.viewerName === 'Image') {
+    if (data.event === 'rotate') {
+      // Do something when an image preview is rotated
+    }
+  } else if (data.viewerName === 'Image360') {
+    if (data.event === 'rotate') {
+      // Do something different when a 360-degree image is rotated
+    }
+  } else {
+  }
 });
 
-preview.addListener('rotate', (data) => {
-    if (data.viewerName === 'Image') {
-        // Do something when an image preview is rotated
-    } else if (data.viewerName === 'Image360') {
-        // Do something different when a 360-degree image is rotated
-    } else {}
+preview.addListener('rotate', data => {
+  if (data.viewerName === 'Image') {
+    // Do something when an image preview is rotated
+  } else if (data.viewerName === 'Image360') {
+    // Do something different when a 360-degree image is rotated
+  } else {
+  }
 });
 ```
 
-Development Setup
------------------
+## Development Setup
+
 1. Install latest LTS version of Node v8.9.4 or higher.
 2. Install yarn package manager `https://yarnpkg.com/en/docs/install`. Alternatively, you can replace any `yarn` command with `npm`.
 3. Fork the upstream repo `https://github.com/box/box-content-preview`.
@@ -352,61 +372,49 @@ Development Setup
 8. Install dependencies `yarn install`
 9. Test your first build! `yarn build`
 10. To automatically rsync files after a Webpack build, add a build/rsync.json file with a `location` field. This file should look like:
+
 ```
 {
     "location": "YOUR_DESIRED_RSYNC_LOCATION_HERE"
 }
 ```
 
-While Developing
-----------------
+## While Developing
+
 Install the following plugins in your preferred editor
 
-* Editor Config (standardizes basic editor configuration)
-* ESLint (Javascript linting)
-* Prettier & Prettier - ESLint (Automatic Javascript formatting following ESLint config)
-* Stylelint (CSS linting)
+- Editor Config (standardizes basic editor configuration)
+- ESLint (Javascript linting)
+- Prettier & Prettier - ESLint (Automatic Javascript formatting following ESLint config)
+- Stylelint (CSS linting)
 
 ### Yarn commands
 
-* `yarn build` to generate resource bundles and JS webpack bundles.
-* `yarn start` to only generate JS webpack bundles on file changes.
-* `yarn start:dev` to launch a webpack-dev-server instance for local development.
-* `yarn test` launches karma tests with PhantomJS.
-* `yarn test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn test -- --src=viewers/doc/`.
-* `yarn test:watch` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-* `yarn test:watch -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
+- `yarn build` to generate resource bundles and JS webpack bundles.
+- `yarn start` to only generate JS webpack bundles on file changes.
+- `yarn start:dev` to launch a webpack-dev-server instance for local development.
+- `yarn test` launches karma tests with PhantomJS.
+- `yarn test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn test -- --src=viewers/doc/`.
+- `yarn test:watch` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
+- `yarn test:watch -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 
 For more script commands see `package.json`. Test coverage reports are available under reports/coverage.
 
-### Config files
+## Support
 
-* .babelrc - https://babeljs.io/docs/usage/babelrc/
-* .editorconfig - http://editorconfig.org/
-* .eslintignore - http://eslint.org/docs/user-guide/configuring#ignoring-files-and-directories
-* .eslintrc - http://eslint.org/docs/user-guide/configuring
-* .gitignore - https://git-scm.com/docs/gitignore
-* .stylelintrc - https://stylelint.io/user-guide/configuration/
-* .travis.yml - https://docs.travis-ci.com/user/customizing-the-build
-* browserslist - https://github.com/ai/browserslist
-* commitlint.config.js - https://github.com/marionebl/commitlint
-* postcss.config.js - https://github.com/postcss/postcss-loader
-
-Support
--------
 If you have any questions, please search our [issues list](https://github.com/box/box-content-preview/issues) to see if they have been previously answered. Report new issues [here](https://github.com/box/box-content-preview/issues/new).
 
 For general Box Platform, API, and Box Element questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
 
-Copyright and License
----------------------
+## Copyright and License
+
 Copyright 2016-present Box, Inc. All Rights Reserved.
 
 Licensed under the Box Software License Agreement v.20170516.
 You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-   https://developer.box.com/docs/box-sdk-license
+https://developer.box.com/docs/box-sdk-license
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

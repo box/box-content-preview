@@ -1,6 +1,7 @@
 # Historical Change Log
 
 ## [v0.117.0](https://github.com/box/box-content-preview/tree/v0.117.0) (2017-04-06)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.116.0...v0.117.0)
 
 **Merged pull requests:**
@@ -8,6 +9,7 @@
 - Chore: Fixing changelog generator again [\#56](https://github.com/box/box-content-preview/pull/56) ([tonyjin](https://github.com/tonyjin))
 
 ## [v0.116.0](https://github.com/box/box-content-preview/tree/v0.116.0) (2017-04-06)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.115.0...v0.116.0)
 
 **Merged pull requests:**
@@ -22,6 +24,7 @@
 - Chore: Rename viewers [\#29](https://github.com/box/box-content-preview/pull/29) ([JustinHoldstock](https://github.com/JustinHoldstock))
 
 ## [v0.115.0](https://github.com/box/box-content-preview/tree/v0.115.0) (2017-04-05)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.114.0...v0.115.0)
 
 **Merged pull requests:**
@@ -30,7 +33,7 @@
 - Update: Don't time out during conversion [\#46](https://github.com/box/box-content-preview/pull/46) ([tonyjin](https://github.com/tonyjin))
 - Chore: Minify third party CSS with cssnano [\#45](https://github.com/box/box-content-preview/pull/45) ([tonyjin](https://github.com/tonyjin))
 - Chore: Upgrading PDF.js to 1.7.401 [\#44](https://github.com/box/box-content-preview/pull/44) ([jeremypress](https://github.com/jeremypress))
-- Build: Updating upgrade\_pdfjs script [\#43](https://github.com/box/box-content-preview/pull/43) ([jeremypress](https://github.com/jeremypress))
+- Build: Updating upgrade_pdfjs script [\#43](https://github.com/box/box-content-preview/pull/43) ([jeremypress](https://github.com/jeremypress))
 - Update Translations [\#40](https://github.com/box/box-content-preview/pull/40) ([boxmoji](https://github.com/boxmoji))
 - Chore: Fixing link in README [\#38](https://github.com/box/box-content-preview/pull/38) ([pramodsum](https://github.com/pramodsum))
 - Build: Adding commit linting [\#37](https://github.com/box/box-content-preview/pull/37) ([jeremypress](https://github.com/jeremypress))
@@ -43,6 +46,7 @@
 - Update: Updating box ui colors [\#14](https://github.com/box/box-content-preview/pull/14) ([priyajeet](https://github.com/priyajeet))
 
 ## [v0.114.0](https://github.com/box/box-content-preview/tree/v0.114.0) (2017-03-29)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...v0.114.0)
 
 **Merged pull requests:**
@@ -50,6 +54,7 @@
 - Chore: Update release script [\#31](https://github.com/box/box-content-preview/pull/31) ([tonyjin](https://github.com/tonyjin))
 
 ## [v0.113.0](https://github.com/box/box-content-preview/tree/v0.113.0) (2017-03-28)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.112.0...v0.113.0)
 
 **Merged pull requests:**
@@ -60,8 +65,8 @@
 - Fix: Don't show error download btn if option is not set [\#25](https://github.com/box/box-content-preview/pull/25) ([tonyjin](https://github.com/tonyjin))
 - Chore: Preview.js cleanup and slight refactor [\#24](https://github.com/box/box-content-preview/pull/24) ([tonyjin](https://github.com/tonyjin))
 - Filmstrip interval should be determined from rep metadata field [\#23](https://github.com/box/box-content-preview/pull/23) ([bhh1988](https://github.com/bhh1988))
-- Breaking: Support {+asset\_path} to follow RFC6570 [\#22](https://github.com/box/box-content-preview/pull/22) ([tonyjin](https://github.com/tonyjin))
-- Fix: Guard against unsupported lose\_context extension on IE11 and Edge [\#21](https://github.com/box/box-content-preview/pull/21) ([MiiBond](https://github.com/MiiBond))
+- Breaking: Support {+asset_path} to follow RFC6570 [\#22](https://github.com/box/box-content-preview/pull/22) ([tonyjin](https://github.com/tonyjin))
+- Fix: Guard against unsupported lose_context extension on IE11 and Edge [\#21](https://github.com/box/box-content-preview/pull/21) ([MiiBond](https://github.com/MiiBond))
 - New: centering image prints [\#18](https://github.com/box/box-content-preview/pull/18) ([jeremypress](https://github.com/jeremypress))
 - Chore: Remove dist folder from repo [\#16](https://github.com/box/box-content-preview/pull/16) ([tonyjin](https://github.com/tonyjin))
 - Chore: Separately version third-party assets [\#15](https://github.com/box/box-content-preview/pull/15) ([tonyjin](https://github.com/tonyjin))
@@ -72,6 +77,7 @@
 - Breaking: Switching to Preview class instead of Preview singleton [\#7](https://github.com/box/box-content-preview/pull/7) ([priyajeet](https://github.com/priyajeet))
 
 ## [v0.112.0](https://github.com/box/box-content-preview/tree/v0.112.0) (2017-03-22)
+
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.111.0...v0.112.0)
 
 **Merged pull requests:**
