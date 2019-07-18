@@ -143,7 +143,7 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -am "Release: $VERSION"
+    git commit -am "chore(release): $VERSION"
 
     # Force update tag after updating files
     git tag -a v$VERSION -m $VERSION

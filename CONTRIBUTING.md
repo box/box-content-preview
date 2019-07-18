@@ -16,8 +16,8 @@ This project adheres to the [Box Open Code of Conduct](http://opensource.box.com
 
 ## How to contribute
 
-* **File an issue** - if you found a bug, want to request an enhancement, or want to implement something (bug fix or feature).
-* **Send a pull request** - if you want to contribute code. Please be sure to file an issue first.
+- **File an issue** - if you found a bug, want to request an enhancement, or want to implement something (bug fix or feature).
+- **Send a pull request** - if you want to contribute code. Please be sure to file an issue first.
 
 ## Pull request best practices
 
@@ -39,35 +39,21 @@ The upstream source is the project under the Box organization on GitHub. To add 
 git remote add upstream git@github.com:box/box-content-preview.git
 ```
 
-### Step 4: Create a feature branch
+### Step 4: Push your feature branch to your fork
 
-Create a branch with a descriptive name, such as `add-search`.
-
-### Step 5: Push your feature branch to your fork
-
-As you develop code, continue to push code to your remote feature branch. Please make sure to include the issue number you're addressing in your commit message, such as:
+Keep a separate feature branch for each issue you want to address. As you develop code, continue to push code to your remote feature branch. If applicable, please make sure to include the issue number you're addressing in your commit message, such as:
 
 ```
-Tag: Short description (fixes #1234)
+tag(scope): short description
 
-Longer description here if necessary
+fixes #1234
+longer description here if necessary.
+include BREAKING CHANGE keyword for breaking changes.
 ```
-The Tag is one of the following:
 
-* `Fix` - for a bug fix.
-* `Update` - for a backwards-compatible enhancement or a change to a rule that increases the number of reported problems.
-* `New` - implemented a new feature.
-* `Breaking` - for a backwards-incompatible enhancement or feature.
-* `Docs` - changes to documentation only.
-* `Build` - changes to build process only.
-* `Upgrade` - for a dependency upgrade.
-* `Chore` - for refactoring, adding tests, etc. (anything that isn’t user-facing).
+The message summary should be a one-sentence description of the change, and it must be 72 characters in length or shorter. For a list of tags, please see the conventional changelog [documentation](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum). 
 
-The message summary should be a one-sentence description of the change, and it must be 72 characters in length or shorter. If the pull request addresses an issue, then the issue number should be mentioned at the end.
-
-Keep a separate feature branch for each issue you want to address.
-
-### Step 6: Rebase
+### Step 5: Rebase
 
 Before sending a pull request, rebase against upstream, such as:
 
@@ -78,11 +64,11 @@ git rebase upstream/master
 
 This will add your changes on top of what's already in upstream, minimizing merge issues.
 
-### Step 7: Run the tests
+### Step 6: Run the tests
 
 Make sure that all tests are passing before submitting a pull request.
 
-### Step 8: Send the pull request
+### Step 7: Send the pull request
 
 Send the pull request from your feature branch to us. Be sure to include a description (as mentioned above in step 5) that lets us know what work you did.
 
