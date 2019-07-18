@@ -45,7 +45,7 @@ export const CODE_EXTENSIONS = [
     'vi',
     'vim',
     'webdoc',
-    'yaml'
+    'yaml',
 ];
 
 export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
@@ -72,7 +72,7 @@ export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
         'wpd',
         'xls',
         'xlsm',
-        'xlsx'
+        'xlsx',
     ]);
 
 export const TXT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS);

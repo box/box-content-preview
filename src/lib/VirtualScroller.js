@@ -239,15 +239,15 @@ class VirtualScroller {
 
         if (children) {
             // Extract an array of the user's created HTMLElements
-            items = this.getListItems().map(
-                (listItemEl) => (listItemEl && listItemEl.children ? listItemEl.children[0] : null)
+            items = this.getListItems().map(listItemEl =>
+                listItemEl && listItemEl.children ? listItemEl.children[0] : null,
             );
         }
 
         return {
             startOffset: curStartOffset,
             endOffset: curEndOffset,
-            items
+            items,
         };
     }
 
@@ -332,7 +332,7 @@ class VirtualScroller {
             return;
         }
 
-        for (let i = start; i <= end; i++) {
+        for (let i = start; i <= end; i += 1) {
             const newEl = this.renderItem(i);
             newListEl.appendChild(newEl);
         }
@@ -352,7 +352,7 @@ class VirtualScroller {
         }
 
         const listItems = Array.prototype.slice.call(listEl.children, start, end);
-        listItems.forEach((listItem) => listEl.removeChild(listItem));
+        listItems.forEach(listItem => listEl.removeChild(listItem));
     }
 
     /**
@@ -408,7 +408,7 @@ class VirtualScroller {
         }
 
         // See if the list item indexed by `rowIndex` is already present
-        const foundItem = this.getListItems().find((listItem) => {
+        const foundItem = this.getListItems().find(listItem => {
             const { bpVsRowIndex } = listItem.dataset;
             const parsedRowIndex = parseInt(bpVsRowIndex, 10);
             return parsedRowIndex === rowIndex;
@@ -459,8 +459,8 @@ class VirtualScroller {
         }
 
         return this.getListItems()
-            .filter((itemEl) => this.isVisible(itemEl))
-            .map((itemEl) => itemEl && itemEl.children && itemEl.children[0]);
+            .filter(itemEl => this.isVisible(itemEl))
+            .map(itemEl => itemEl && itemEl.children && itemEl.children[0]);
     }
 
     /**

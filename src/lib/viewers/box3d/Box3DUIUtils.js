@@ -3,7 +3,7 @@ import {
     CSS_CLASS_PULLUP,
     CSS_CLASS_SETTINGS_PANEL_LABEL,
     CSS_CLASS_SETTINGS_PANEL_ROW,
-    CSS_CLASS_HIDDEN
+    CSS_CLASS_HIDDEN,
 } from './model3d/model3DConstants';
 
 import {
@@ -13,7 +13,7 @@ import {
     CLASS_BOX_PREVIEW_OVERLAY,
     CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
     CLASS_BOX_PREVIEW_TOGGLE_OVERLAY,
-    CLASS_IS_VISIBLE
+    CLASS_IS_VISIBLE,
 } from '../../constants';
 
 /**
@@ -119,7 +119,7 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
 
     const listEl = overlayWrapperEl.querySelector('ul');
     // Create list items
-    listContent.forEach((entry) => {
+    listContent.forEach(entry => {
         const li = document.createElement('li');
         const labelEl = document.createElement('a');
         labelEl.classList.add(CLASS_BOX_PREVIEW_LINK);
@@ -172,7 +172,7 @@ class UIRegistry {
             this.registry[uniqueId] = {
                 el: element,
                 uuid: uniqueId,
-                events: {}
+                events: {},
             };
         }
 
@@ -206,8 +206,8 @@ class UIRegistry {
             uiItem.el.parentElement.removeChild(uiItem.el);
         }
 
-        Object.keys(uiItem.events).forEach((eventName) => {
-            uiItem.events[eventName].forEach((callback) => {
+        Object.keys(uiItem.events).forEach(eventName => {
+            uiItem.events[eventName].forEach(callback => {
                 uiItem.el.removeEventListener(eventName, callback);
             });
             delete uiItem.events[eventName];
@@ -223,7 +223,7 @@ class UIRegistry {
      * @return {void}
      */
     unregisterAll() {
-        Object.keys(this.registry).forEach((uiItem) => {
+        Object.keys(this.registry).forEach(uiItem => {
             this.unregisterItem(this.registry[uiItem]);
         });
     }

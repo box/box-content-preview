@@ -19,18 +19,18 @@ class Logger {
             browser,
             client: {
                 name: CLIENT_NAME,
-                version: CLIENT_VERSION
+                version: CLIENT_VERSION,
             },
             converted: true,
             cache: {
                 hit: false,
-                stale: false
+                stale: false,
             },
             time: {
                 conversion: 0,
                 rendering: 0,
-                total: 0
-            }
+                total: 0,
+            },
         };
     }
 

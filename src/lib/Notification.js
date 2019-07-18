@@ -90,7 +90,7 @@ class Notification {
      * @param {Event} event - DOM event
      * @return {void}
      */
-    clickHandler = (event) => {
+    clickHandler = event => {
         event.stopPropagation();
 
         if (event.target === this.buttonEl) {

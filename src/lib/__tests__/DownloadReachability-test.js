@@ -30,14 +30,14 @@ describe('lib/DownloadReachability', () => {
             {
                 title: 'number host prefix for inside-box',
                 url: 'https://dl3.user.inside-box.net',
-                expectedValue: false
+                expectedValue: false,
             },
             { title: 'default prefix for inside-box', url: 'https://dl.user.inside-box.net', expectedValue: false },
             { title: 'dl-hnl for inside-box', url: 'https://dl-hnl.user.inside-box.net', expectedValue: false },
-            { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true }
+            { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true },
         ];
 
-        tests.forEach((testData) => {
+        tests.forEach(testData => {
             it(`should be ${testData.expectedValue} if the url is ${testData.title}`, () => {
                 const result = DownloadReachability.isCustomDownloadHost(testData.url);
                 expect(result).to.be[testData.expectedValue];
@@ -190,14 +190,14 @@ describe('lib/DownloadReachability', () => {
             expect(DownloadReachability.setDownloadReachability).to.be.calledWith(downloadUrl);
         });
 
-        it('should retry download with default host if custom host is blocked', (done) => {
+        it('should retry download with default host if custom host is blocked', done => {
             sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
             sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
             sandbox.stub(DownloadReachability, 'setDownloadReachability').returns(
-                new Promise((resolve) => {
+                new Promise(resolve => {
                     resolve(true);
                     done();
-                })
+                }),
             );
             sandbox.stub(util, 'openUrlInsideIframe');
 
@@ -216,28 +216,28 @@ describe('lib/DownloadReachability', () => {
             {
                 title: 'numbered host',
                 downloadUrl: 'https://dl3.boxcloud.com',
-                expectedResult: 'https://dl.boxcloud.com'
+                expectedResult: 'https://dl.boxcloud.com',
             },
             {
                 title: 'two digit numbered host',
                 downloadUrl: 'https://dl34.boxcloud.com',
-                expectedResult: 'https://dl.boxcloud.com'
+                expectedResult: 'https://dl.boxcloud.com',
             },
             { title: 'google', downloadUrl: 'https://www.google.com', expectedResult: 'https://dl.google.com' },
             { title: 'aws', downloadUrl: 'https://kld3lk.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
             {
                 title: 'inside-box',
                 downloadUrl: 'https://dl3.user.inside-box.net',
-                expectedResult: 'https://dl.user.inside-box.net'
+                expectedResult: 'https://dl.user.inside-box.net',
             },
-            { title: 'dl-las', downloadUrl: 'https://dl-las.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' }
+            { title: 'dl-las', downloadUrl: 'https://dl-las.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
         ];
 
-        tests.forEach((testData) => {
+        tests.forEach(testData => {
             it(`should replace host with default: ${testData.title}`, () => {
                 expect(
                     DownloadReachability.replaceDownloadHostWithDefault(testData.downloadUrl),
-                    testData.expectedResult
+                    testData.expectedResult,
                 );
             });
         });

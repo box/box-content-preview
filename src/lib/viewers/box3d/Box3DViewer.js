@@ -14,7 +14,7 @@ import {
     EVENT_TOGGLE_FULLSCREEN,
     EVENT_TOGGLE_VR,
     EVENT_WEBGL_CONTEXT_RESTORED,
-    EVENT_WEBGL_CONTEXT_LOST
+    EVENT_WEBGL_CONTEXT_LOST,
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
@@ -201,7 +201,7 @@ class Box3DViewer extends BaseViewer {
         this.boxSdk = new BoxSDK({
             token,
             sharedLink,
-            apiBase: apiHost
+            apiBase: apiHost,
         });
         this.createSubModules();
         this.attachEventHandlers();
@@ -226,7 +226,7 @@ class Box3DViewer extends BaseViewer {
             const template = representation.content.url_template;
             api.get(this.createContentUrl(template, 'entities.json'), {
                 headers: this.appendAuthHeader(),
-                type: 'document'
+                type: 'document',
             });
         }
     }

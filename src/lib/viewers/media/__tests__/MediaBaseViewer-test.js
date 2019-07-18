@@ -26,17 +26,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 set: () => {},
                 has: () => {},
                 get: () => {},
-                unset: () => {}
+                unset: () => {},
             },
             file: {
-                id: 1
+                id: 1,
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'www.netflix.com'
-                }
-            }
+                    url_template: 'www.netflix.com',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -57,7 +57,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             increaseSpeed: sandbox.stub(),
             decreaseSpeed: sandbox.stub(),
             isVolumeScrubberFocused: sandbox.stub(),
-            isTimeScrubberFocused: sandbox.stub()
+            isTimeScrubberFocused: sandbox.stub(),
         };
     });
 
@@ -276,7 +276,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('autoplay()', () => {
         beforeEach(() => {
             media.mediaEl = {
-                play: sandbox.stub().returns(Promise.resolve())
+                play: sandbox.stub().returns(Promise.resolve()),
             };
 
             sandbox.stub(media, 'isAutoplayEnabled').returns(true);
@@ -584,7 +584,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
-                pause: sandbox.stub()
+                pause: sandbox.stub(),
             };
             media.pauseListener = pauseListener;
             sandbox.stub(media, 'removePauseEventListener');
@@ -593,20 +593,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.mediaEl.pause.callCount).to.equal(1);
             expect(media.emit).to.be.calledWith('pause', {
-                userInitiated: false
+                userInitiated: false,
             });
         });
 
         it('should update userInitiated flag IF the pause has been triggered by user interaction', () => {
             media.mediaEl = {
                 duration: 100,
-                pause: sandbox.stub()
+                pause: sandbox.stub(),
             };
             sandbox.stub(media, 'removePauseEventListener');
             sandbox.stub(media, 'emit');
             media.pause(undefined, true);
             expect(media.emit).to.be.calledWith('pause', {
-                userInitiated: true
+                userInitiated: true,
             });
         });
 
@@ -614,7 +614,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
-                addEventListener: sandbox.stub()
+                addEventListener: sandbox.stub(),
             };
             media.pauseListener = pauseListener;
             sandbox.stub(media, 'removePauseEventListener');
@@ -649,7 +649,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media.cache, 'set');
 
             media.mediaEl = {
-                volume: 0.3
+                volume: 0.3,
             };
 
             media.toggleMute();
@@ -662,7 +662,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             const oldVol = 0.3;
             media.mediaEl = {
-                volume: 0
+                volume: 0,
             };
             media.oldVolume = oldVol;
 
@@ -676,7 +676,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             const vol = 0.3;
             media.mediaEl = {
-                volume: vol
+                volume: vol,
             };
 
             media.toggleMute();
@@ -697,7 +697,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should remove the loaded class and hide the play button if media is not paused nor ended', () => {
             media.mediaEl = {
                 paused: false,
-                ended: false
+                ended: false,
             };
             sandbox.stub(media, 'hidePlayButton');
 
@@ -711,7 +711,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('addEventListenersForMediaElement()', () => {
         it('should add event listeners to media element', () => {
             media.mediaEl = {
-                addEventListener: sandbox.stub()
+                addEventListener: sandbox.stub(),
             };
 
             media.addEventListenersForMediaElement();
@@ -724,7 +724,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should seek with positive increments', () => {
             media.mediaEl = {
                 currentTime: 30,
-                duration: 60
+                duration: 60,
             };
             sandbox.stub(media, 'setMediaTime');
             sandbox.stub(media, 'removePauseEventListener');
@@ -738,7 +738,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should seek with negative increments', () => {
             media.mediaEl = {
                 currentTime: 30,
-                duration: 60
+                duration: 60,
             };
             sandbox.stub(media, 'setMediaTime');
             sandbox.stub(media, 'removePauseEventListener');
@@ -752,7 +752,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should not go beyond beginning of video', () => {
             media.mediaEl = {
                 currentTime: 3,
-                duration: 60
+                duration: 60,
             };
             sandbox.stub(media, 'setMediaTime');
             sandbox.stub(media, 'removePauseEventListener');
@@ -766,7 +766,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should not go beyond end of video', () => {
             media.mediaEl = {
                 currentTime: 57,
-                duration: 60
+                duration: 60,
             };
             sandbox.stub(media, 'setMediaTime');
             sandbox.stub(media, 'removePauseEventListener');
@@ -781,7 +781,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('increaseVolume', () => {
         it('should not exceed maximum volume', () => {
             media.mediaEl = {
-                volume: 0.99
+                volume: 0.99,
             };
             sandbox.stub(media, 'setVolume');
 
@@ -794,7 +794,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('decreaseVolume', () => {
         it('should not fall below minimum volume', () => {
             media.mediaEl = {
-                volume: 0.01
+                volume: 0.01,
             };
             sandbox.stub(media, 'setVolume');
 
@@ -1000,7 +1000,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should parse seconds', () => {
             const startAt = {
                 unit: 'seconds',
-                value: 55
+                value: 55,
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(55);
@@ -1009,7 +1009,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should parse timestamp', () => {
             const startAt = {
                 unit: 'timestamp',
-                value: '1m2s'
+                value: '1m2s',
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(62);
@@ -1018,7 +1018,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should return the default value if invalid unit', () => {
             const startAt = {
                 unit: 'foo',
-                value: 55
+                value: 55,
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
@@ -1027,7 +1027,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should return the default value if invalid value', () => {
             const startAt = {
                 unit: 'seconds',
-                value: 'foo'
+                value: 'foo',
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
@@ -1035,13 +1035,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         it('should return the default value if invalid startAt', () => {
             let startAt = {
-                value: 'foo'
+                value: 'foo',
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
 
             startAt = {
-                unit: 'seconds'
+                unit: 'seconds',
             };
 
             expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
@@ -1080,7 +1080,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should parse the timestamp with hours and minutes', () => {
             const timestamp = '6h7m';
             expect(media.convertTimestampToSeconds(timestamp)).to.equal(
-                6 * ONE_HOUR_IN_SECONDS + 7 * ONE_MINUTE_IN_SECONDS
+                6 * ONE_HOUR_IN_SECONDS + 7 * ONE_MINUTE_IN_SECONDS,
             );
         });
 
@@ -1092,21 +1092,21 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should parse the timestamp with hours, minutes and seconds', () => {
             const timestamp = '5h30m15s';
             expect(media.convertTimestampToSeconds(timestamp)).to.equal(
-                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15
+                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15,
             );
         });
 
         it('should parse the timestamp with hours, minutes, and seconds', () => {
             const timestamp = '5h30m15s';
             expect(media.convertTimestampToSeconds(timestamp)).to.equal(
-                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15
+                5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15,
             );
         });
 
         it('should parse the timestamp with hours, minutes, seconds (large values and decimal)', () => {
             const timestamp = '5h75m653.546s';
             expect(media.convertTimestampToSeconds(timestamp)).to.equal(
-                5 * ONE_HOUR_IN_SECONDS + 75 * ONE_MINUTE_IN_SECONDS + 653.546
+                5 * ONE_HOUR_IN_SECONDS + 75 * ONE_MINUTE_IN_SECONDS + 653.546,
             );
         });
 

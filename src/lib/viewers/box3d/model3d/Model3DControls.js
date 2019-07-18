@@ -12,7 +12,7 @@ import {
     EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
-    RENDER_MODE_LIT
+    RENDER_MODE_LIT,
 } from './model3DConstants';
 
 import { CSS_CLASS_HIDDEN } from '../box3DConstants';
@@ -83,13 +83,13 @@ class Model3DControls extends Box3DControls {
             __('box3d_toggle_animation'),
             this.handleToggleAnimation,
             '',
-            ICON_PLAY
+            ICON_PLAY,
         );
         this.animationClipButtonEl = this.controls.add(
             __('box3d_animation_clips'),
             this.handleToggleAnimationClips,
             '',
-            ICON_ANIMATION
+            ICON_ANIMATION,
         );
         this.animationClipButtonEl.parentNode.appendChild(this.animationClipsPullup.pullupEl);
         this.hideAnimationControls();

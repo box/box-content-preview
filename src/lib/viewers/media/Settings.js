@@ -262,7 +262,7 @@ class Settings extends EventEmitter {
      */
     increaseSpeed() {
         const current = parseFloat(this.cache.get('media-speed') || '1.0');
-        const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
+        const higherSpeeds = MEDIA_SPEEDS.filter(speed => parseFloat(speed) > current);
         if (higherSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, higherSpeeds[0]);
         }
@@ -275,7 +275,7 @@ class Settings extends EventEmitter {
      */
     decreaseSpeed() {
         const current = parseFloat(this.cache.get('media-speed') || '1.0');
-        const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
+        const lowerSpeeds = MEDIA_SPEEDS.filter(speed => parseFloat(speed) < current);
         if (lowerSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, lowerSpeeds[lowerSpeeds.length - 1]);
         }
@@ -339,7 +339,7 @@ class Settings extends EventEmitter {
         this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
         const curSelectedOption = this.settingsEl.querySelector(
-            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`,
         );
         curSelectedOption.focus();
     }
@@ -389,8 +389,8 @@ class Settings extends EventEmitter {
         } else if (event.type === 'keydown') {
             const key = decodeKeydown(event).toLowerCase();
             const menuEl = menuItem.parentElement;
-            const visibleOptions = [].filter.call(menuEl.children, (option) => option.offsetParent !== null);
-            const itemIdx = [].findIndex.call(visibleOptions, (e) => {
+            const visibleOptions = [].filter.call(menuEl.children, option => option.offsetParent !== null);
+            const itemIdx = [].findIndex.call(visibleOptions, e => {
                 return e.contains(menuItem);
             });
 
@@ -473,7 +473,7 @@ class Settings extends EventEmitter {
      */
     getSelectedOption(type) {
         return this.settingsEl.querySelector(
-            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`,
         );
     }
 
@@ -650,10 +650,10 @@ class Settings extends EventEmitter {
         } else {
             // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
             // Use the previewer's locale to determine preferred language
-            let idx = this.subtitles.findIndex((subtitle) => subtitle === this.language);
+            let idx = this.subtitles.findIndex(subtitle => subtitle === this.language);
             if (idx === -1) {
                 // Fall back to English if user's language doesn't exist
-                idx = this.subtitles.findIndex((subtitle) => subtitle === 'English');
+                idx = this.subtitles.findIndex(subtitle => subtitle === 'English');
                 if (idx === -1) {
                     idx = 0; // Fall back to first subtitle in list
                 }
@@ -676,7 +676,7 @@ class Settings extends EventEmitter {
         this.subtitles.forEach((subtitle, idx) => {
             insertTemplate(
                 subtitlesSubMenu,
-                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'subtitles').replace(/{{dataValue}}/g, idx)
+                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'subtitles').replace(/{{dataValue}}/g, idx),
             );
             const languageNode = subtitlesSubMenu.lastChild.querySelector('.bp-media-settings-value');
             languageNode.textContent = subtitle;
@@ -703,7 +703,7 @@ class Settings extends EventEmitter {
         audioLanguages.forEach((language, idx) => {
             insertTemplate(
                 audioTracksSubMenu,
-                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'audiotracks').replace(/{{dataValue}}/g, idx)
+                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'audiotracks').replace(/{{dataValue}}/g, idx),
             );
             const trackNode = audioTracksSubMenu.lastChild.querySelector('.bp-media-settings-value');
             // It's common for the language to be unknown and show up as "und" language code. Just omit

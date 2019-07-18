@@ -70,12 +70,12 @@ describe('lib/Preview', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             stubs.repStatus = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
 
             stubs.viewer = {
                 destroy: sandbox.stub(),
-                getLoadStatus: sandbox.stub()
+                getLoadStatus: sandbox.stub(),
             };
         });
 
@@ -88,7 +88,7 @@ describe('lib/Preview', () => {
         it('should destroy the viewer if it exists', () => {
             preview.viewer = {
                 destroy: undefined,
-                getLoadStatus: sandbox.stub()
+                getLoadStatus: sandbox.stub(),
             };
 
             preview.destroy();
@@ -102,20 +102,20 @@ describe('lib/Preview', () => {
 
         it('should stop the duration timer, reset it, and log a preview end event', () => {
             preview.file = {
-                id: 1
+                id: 1,
             };
             stubs.viewer.getLoadStatus.returns('loaded');
             sandbox.stub(preview, 'createLogEvent');
             const durationTimer = {
-                elapsed: 7
+                elapsed: 7,
             };
 
             const mockEventObject = {
                 event_name: 'preview_end',
                 value: {
                     duration: durationTimer.elapsed,
-                    viewer_status: 'loaded'
-                }
+                    viewer_status: 'loaded',
+                },
             };
 
             sandbox.stub(Timer, 'createTag').returns('duration_tag');
@@ -149,7 +149,7 @@ describe('lib/Preview', () => {
             preview.show('123', 'token', { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
                 token: 'token',
-                viewer: 'viewer'
+                viewer: 'viewer',
             });
         });
 
@@ -159,21 +159,21 @@ describe('lib/Preview', () => {
             preview.show('123', foo, { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
                 token: foo,
-                viewer: 'viewer'
+                viewer: 'viewer',
             });
         });
 
         it('should set the preview options with null token', () => {
             preview.show('123', null);
             expect(preview.previewOptions).to.deep.equal({
-                token: null
+                token: null,
             });
         });
 
         it('should set the preview options with no token', () => {
             preview.show('123');
             expect(preview.previewOptions).to.deep.equal({
-                token: undefined
+                token: undefined,
             });
         });
 
@@ -205,7 +205,7 @@ describe('lib/Preview', () => {
                 representations: {},
                 watermark_info: {},
                 authenticated_download_url: 'url',
-                is_download_available: true
+                is_download_available: true,
             };
 
             preview.show(file123, 'foken');
@@ -229,7 +229,7 @@ describe('lib/Preview', () => {
 
             const token = 'token';
             const options = {
-                foo: 'bar'
+                foo: 'bar',
             };
 
             preview.show(file, token, options);
@@ -288,7 +288,7 @@ describe('lib/Preview', () => {
                 representations: {},
                 watermark_info: {},
                 authenticated_download_url: 'url',
-                is_download_available: true
+                is_download_available: true,
             };
         });
 
@@ -382,7 +382,7 @@ describe('lib/Preview', () => {
             expect(stubs.showNavigation).to.not.be.called;
 
             preview.file = {
-                id: 0
+                id: 0,
             };
 
             preview.updateCollection();
@@ -402,8 +402,8 @@ describe('lib/Preview', () => {
             const files = {
                 id: 0,
                 watermark_info: {
-                    is_watermarked: false
-                }
+                    is_watermarked: false,
+                },
             };
 
             stubs.checkFileValid.onCall(0).returns(true);
@@ -417,15 +417,15 @@ describe('lib/Preview', () => {
                 {
                     id: 0,
                     watermark_info: {
-                        is_watermarked: false
-                    }
+                        is_watermarked: false,
+                    },
                 },
                 {
                     id: 1,
                     watermark_info: {
-                        is_watermarked: false
-                    }
-                }
+                        is_watermarked: false,
+                    },
+                },
             ];
 
             stubs.checkFileValid
@@ -444,8 +444,8 @@ describe('lib/Preview', () => {
             const files = {
                 id: 0,
                 watermark_info: {
-                    is_watermarked: true
-                }
+                    is_watermarked: true,
+                },
             };
 
             stubs.checkFileValid.returns(true);
@@ -505,10 +505,10 @@ describe('lib/Preview', () => {
             someFile = {};
             loader = {
                 determineViewer: () => {},
-                determineRepresentation: () => {}
+                determineRepresentation: () => {},
             };
             viewer = {
-                CONSTRUCTOR: () => {}
+                CONSTRUCTOR: () => {},
             };
 
             sandbox
@@ -564,7 +564,7 @@ describe('lib/Preview', () => {
                 token,
                 representation: sinon.match.any,
                 sharedLink,
-                sharedLinkPassword
+                sharedLinkPassword,
             });
         });
 
@@ -575,14 +575,14 @@ describe('lib/Preview', () => {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
                             preload: true,
-                            content: true
+                            content: true,
                         }),
                         getViewerOption: sandbox
                             .stub()
                             .withArgs('preload')
-                            .returns(true)
+                            .returns(true),
                     };
-                }
+                },
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
@@ -596,14 +596,14 @@ describe('lib/Preview', () => {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
                             preload: false,
-                            content: true
+                            content: true,
                         }),
                         getViewerOption: sandbox
                             .stub()
                             .withArgs('preload')
-                            .returns(false)
+                            .returns(false),
                     };
-                }
+                },
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
@@ -617,10 +617,10 @@ describe('lib/Preview', () => {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
                             preload: true,
-                            content: false
-                        })
+                            content: false,
+                        }),
                     };
-                }
+                },
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
@@ -644,16 +644,16 @@ describe('lib/Preview', () => {
                 const mockViewers = [
                     {
                         NAME: 'viewer1',
-                        CONSTRUCTOR: stubViewer
+                        CONSTRUCTOR: stubViewer,
                     },
                     {
                         NAME: 'viewer2',
-                        CONSTRUCTOR: stubViewer
+                        CONSTRUCTOR: stubViewer,
                     },
                     {
                         NAME: 'viewer3',
-                        CONSTRUCTOR: stubViewer
-                    }
+                        CONSTRUCTOR: stubViewer,
+                    },
                 ];
 
                 stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
@@ -673,14 +673,14 @@ describe('lib/Preview', () => {
                 expect(prefetchStub).to.be.calledWith({
                     assets: true,
                     preload: false,
-                    content: false
+                    content: false,
                 });
             });
         });
 
         it('should not throw when prefetching the viewers', () => {
             // Get the list of all possible viewers and extract the names
-            const PREVIEW_SDK_VIEWERS_TO_PREFETCH = preview.getViewers().map((viewer) => viewer.NAME);
+            const PREVIEW_SDK_VIEWERS_TO_PREFETCH = preview.getViewers().map(viewer => viewer.NAME);
 
             expect(() => preview.prefetchViewers(PREVIEW_SDK_VIEWERS_TO_PREFETCH)).to.not.throw();
         });
@@ -695,7 +695,7 @@ describe('lib/Preview', () => {
             const viewersToDisable = { text: 'viewer', csv: 'viewer', excel: 'viewer' };
 
             preview.disableViewers(Object.keys(viewersToDisable));
-            Object.keys(viewersToDisable).forEach((viewer) => {
+            Object.keys(viewersToDisable).forEach(viewer => {
                 expect(preview.disabledViewers[viewer]).to.equal(1);
             });
         });
@@ -744,7 +744,7 @@ describe('lib/Preview', () => {
     describe('resize()', () => {
         it('should resize if the viewer exists', () => {
             preview.viewer = {
-                resize: sandbox.stub()
+                resize: sandbox.stub(),
             };
 
             preview.resize();
@@ -757,7 +757,7 @@ describe('lib/Preview', () => {
             stubs.canDownload = sandbox.stub(file, 'canDownload');
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             preview.viewer = {
-                print: sandbox.stub()
+                print: sandbox.stub(),
             };
         });
 
@@ -790,12 +790,12 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve({
                 data: {
-                    download_url: 'dl.boxcloud.com'
-                }
+                    download_url: 'dl.boxcloud.com',
+                },
             });
 
             preview.ui = {
-                showNotification: sandbox.stub()
+                showNotification: sandbox.stub(),
             };
             preview.viewer = {
                 getRepresentation: sandbox.stub(),
@@ -804,9 +804,9 @@ describe('lib/Preview', () => {
                 createContentUrlWithAuthParams: sandbox.stub(),
                 options: {
                     viewer: {
-                        ASSET: ''
-                    }
-                }
+                        ASSET: '',
+                    },
+                },
             };
             sandbox.stub(preview, 'emit');
             sandbox.stub(file, 'canDownload');
@@ -845,8 +845,8 @@ describe('lib/Preview', () => {
             const template = 'someTemplate';
             const representation = {
                 content: {
-                    url_template: template
-                }
+                    url_template: template,
+                },
             };
             const url = 'someurl';
 
@@ -870,7 +870,7 @@ describe('lib/Preview', () => {
             util.appendQueryParams.returns(url);
 
             const promise = Promise.resolve({
-                download_url: url
+                download_url: url,
             });
             api.get.returns(promise);
 
@@ -889,7 +889,7 @@ describe('lib/Preview', () => {
             util.appendQueryParams.returns(url);
 
             const promise = Promise.resolve({
-                download_url: url
+                download_url: url,
             });
 
             api.get.returns(promise);
@@ -927,7 +927,7 @@ describe('lib/Preview', () => {
     describe('load()', () => {
         beforeEach(() => {
             stubs.tokens = {
-                0: 'file0'
+                0: 'file0',
             };
             stubs.file = {
                 id: '123',
@@ -941,11 +941,11 @@ describe('lib/Preview', () => {
                 representations: {},
                 watermark_info: {},
                 authenticated_download_url: 'url',
-                is_download_available: true
+                is_download_available: true,
             };
 
             stubs.promise = Promise.resolve({
-                token: 'token'
+                token: 'token',
             });
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
@@ -1027,7 +1027,7 @@ describe('lib/Preview', () => {
 
             // The current file we are attempting to preview has file version '1234'
             preview.file.file_version = {
-                id: '1234'
+                id: '1234',
             };
 
             // Calling load() with file version ID '1234'
@@ -1051,12 +1051,12 @@ describe('lib/Preview', () => {
         it('should throw an error if incompatible file object is passed in', () => {
             const invalidFile = {
                 not: 'the',
-                right: 'fields'
+                right: 'fields',
             };
 
             expect(preview.load.bind(preview, invalidFile)).to.throw(
                 PreviewError,
-                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
+                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.',
             );
         });
 
@@ -1109,10 +1109,10 @@ describe('lib/Preview', () => {
             const TOKEN = 'bar';
             const FILE_ID = '123';
             preview.file = {
-                id: FILE_ID
+                id: FILE_ID,
             };
             preview.handleTokenResponse({
-                [FILE_ID]: TOKEN
+                [FILE_ID]: TOKEN,
             });
 
             expect(preview.options.token).to.equal(TOKEN);
@@ -1197,7 +1197,7 @@ describe('lib/Preview', () => {
                 fixDependencies: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders,
-                enableThumbnailsSidebar: true
+                enableThumbnailsSidebar: true,
             };
 
             stubs.assign = sandbox.spy(Object, 'assign');
@@ -1205,7 +1205,7 @@ describe('lib/Preview', () => {
             stubs.enableViewers = sandbox.stub(preview, 'enableViewers');
 
             preview.file = {
-                id: 0
+                id: 0,
             };
         });
 
@@ -1299,11 +1299,11 @@ describe('lib/Preview', () => {
         it('should disable any specified viewers, otherwise enable', () => {
             preview.previewOptions.viewers = {
                 Office: {
-                    disabled: true
+                    disabled: true,
                 },
                 text: {
-                    disabled: false
-                }
+                    disabled: false,
+                },
             };
 
             preview.parseOptions(preview.previewOptions);
@@ -1332,7 +1332,7 @@ describe('lib/Preview', () => {
     describe('loadFromCache()', () => {
         beforeEach(() => {
             preview.logger = {
-                setCached: sandbox.stub()
+                setCached: sandbox.stub(),
             };
 
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
@@ -1369,7 +1369,7 @@ describe('lib/Preview', () => {
             stubs.handleFetchError = sandbox.stub(preview, 'handleFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
             preview.file = {
-                id: 0
+                id: 0,
             };
         });
 
@@ -1395,11 +1395,11 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             preview.logger = {
                 setFile: sandbox.stub(),
-                setCacheStale: sandbox.stub()
+                setCacheStale: sandbox.stub(),
             };
             preview.open = true;
             preview.file = {
-                id: 0
+                id: 0,
             };
 
             stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
@@ -1416,11 +1416,11 @@ describe('lib/Preview', () => {
                 name: 'file',
                 file_version: {
                     id: '1234',
-                    sha1: 2
+                    sha1: 2,
                 },
                 representations: {
-                    entries: []
-                }
+                    entries: [],
+                },
             };
             preview.fileVersions = {};
         });
@@ -1431,11 +1431,11 @@ describe('lib/Preview', () => {
                 id: preview.file.id,
                 shared_link: {},
                 file_version: {
-                    id: '1234'
-                }
+                    id: '1234',
+                },
             });
             const fileVersion = {
-                id: '1234'
+                id: '1234',
             };
             sandbox
                 .stub(preview, 'getFileOption')
@@ -1458,8 +1458,8 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: '123',
                 file_version: {
-                    id: '1234'
-                }
+                    id: '1234',
+                },
             };
             stubs.file.file_version.id = '1233';
 
@@ -1476,8 +1476,8 @@ describe('lib/Preview', () => {
         it('should get the latest cache, then update it with the new file', () => {
             stubs.getCachedFile.returns({
                 file_version: {
-                    sha1: 0
-                }
+                    sha1: 0,
+                },
             });
 
             stubs.file.file_version.sha1 = 0;
@@ -1492,8 +1492,8 @@ describe('lib/Preview', () => {
             stubs.isWatermarked.returns(true);
             stubs.getCachedFile.returns({
                 file_version: {
-                    sha1: 0
-                }
+                    sha1: 0,
+                },
             });
 
             stubs.file.file_version.sha1 = 0;
@@ -1519,8 +1519,8 @@ describe('lib/Preview', () => {
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
             stubs.getCachedFile.returns({
                 file_version: {
-                    sha1: 0
-                }
+                    sha1: 0,
+                },
             });
 
             stubs.file.file_version.sha1 = 2;
@@ -1534,8 +1534,8 @@ describe('lib/Preview', () => {
             stubs.isWatermarked.returns(true);
             stubs.getCachedFile.returns({
                 file_version: {
-                    sha1: 0
-                }
+                    sha1: 0,
+                },
             });
 
             stubs.file.file_version.sha1 = 2;
@@ -1564,7 +1564,7 @@ describe('lib/Preview', () => {
         it('should stop the Timer for file info time', () => {
             const stopStub = sandbox.stub(Timer, 'stop');
             preview.file = {
-                id: 12345
+                id: 12345,
             };
             Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
             preview.handleFileInfoResponse(stubs.file);
@@ -1578,7 +1578,7 @@ describe('lib/Preview', () => {
                 load: sandbox.stub(),
                 addListener: sandbox.stub(),
                 getName: sandbox.stub(),
-                setup: sandbox.stub()
+                setup: sandbox.stub(),
             };
 
             /* eslint-disable require-jsdoc */
@@ -1598,22 +1598,22 @@ describe('lib/Preview', () => {
                 determineRepresentation: sandbox.stub().returns({
                     links: {
                         content: {
-                            url: 'url'
-                        }
-                    }
+                            url: 'url',
+                        },
+                    },
                 }),
                 determineRepresentationStatus: sandbox.stub().returns(stubs.determineRepresentationStatusPromise),
-                load: sandbox.stub().returns(stubs.loadPromiseResolve)
+                load: sandbox.stub().returns(stubs.loadPromiseResolve),
             };
 
             stubs.getLoader = sandbox.stub(preview, 'getLoader').returns(stubs.loader);
 
             preview.logger = {
-                setType: sandbox.stub()
+                setType: sandbox.stub(),
             };
 
             preview.file = {
-                is_download_available: true
+                is_download_available: true,
             };
 
             stubs.emit = sandbox.stub(preview, 'emit');
@@ -1631,7 +1631,7 @@ describe('lib/Preview', () => {
             preview.file.is_download_available = false;
             expect(() => preview.loadViewer()).to.throw(
                 PreviewError,
-                /Oops! It looks like something is wrong with this file./
+                /Oops! It looks like something is wrong with this file./,
             );
         });
 
@@ -1639,7 +1639,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission.withArgs(sinon.match.any, PERMISSION_PREVIEW).returns(false);
             expect(() => preview.loadViewer()).to.throw(
                 PreviewError,
-                /We're sorry, you don't have permission to preview this file./
+                /We're sorry, you don't have permission to preview this file./,
             );
         });
 
@@ -1649,7 +1649,7 @@ describe('lib/Preview', () => {
             expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
-        it('should not show the loading download button if file can\'t be downloaded', () => {
+        it("should not show the loading download button if file can't be downloaded", () => {
             stubs.canDownload.returns(false);
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.not.be.called;
@@ -1693,7 +1693,7 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: () => {
                     return stubs.viewer;
                 },
-                NAME: 'someViewerName'
+                NAME: 'someViewerName',
             });
 
             preview.loadViewer();
@@ -1717,7 +1717,7 @@ describe('lib/Preview', () => {
         it('should add listeners for error and viewer events', () => {
             stubs.download = sandbox.stub(preview, 'download');
             preview.viewer = {
-                addListener: sandbox.stub()
+                addListener: sandbox.stub(),
             };
 
             preview.attachViewerListeners();
@@ -1770,7 +1770,7 @@ describe('lib/Preview', () => {
             sandbox.stub(preview, 'emit');
             const data = {
                 event: 'no match',
-                data: 'message'
+                data: 'message',
             };
             preview.handleViewerEvents(data);
             expect(preview.emit).to.be.calledWith(data.event, data.data);
@@ -1781,7 +1781,7 @@ describe('lib/Preview', () => {
             sandbox.stub(preview, 'emit');
             const data = {
                 event: 'error',
-                data: ':('
+                data: ':(',
             };
             preview.handleViewerEvents(data);
             expect(preview.emit).to.not.be.called;
@@ -1794,12 +1794,12 @@ describe('lib/Preview', () => {
             sandbox.stub(preview, 'emit');
             const fakeEvent = {
                 event: 'test',
-                data: 7
+                data: 7,
             };
 
             const fakeLog = {
                 event_name: fakeEvent.event,
-                value: fakeEvent.data
+                value: fakeEvent.data,
             };
             preview.handleViewerMetrics(fakeEvent);
             expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
@@ -1821,15 +1821,15 @@ describe('lib/Preview', () => {
             stubs.setupNotification = sandbox.stub(preview.ui, 'setupNotification');
 
             stubs.logger = {
-                done: sandbox.stub()
+                done: sandbox.stub(),
             };
 
             preview.file = {
-                id: 0
+                id: 0,
             };
 
             preview.viewer = {
-                getPointModeClickHandler: sandbox.stub()
+                getPointModeClickHandler: sandbox.stub(),
             };
 
             preview.logger = stubs.logger;
@@ -1841,7 +1841,7 @@ describe('lib/Preview', () => {
             expect(stubs.showDownloadButton).to.be.called;
         });
 
-        it('should not show download button if file can\'t be downloaded', () => {
+        it("should not show download button if file can't be downloaded", () => {
             stubs.canDownload.returns(false);
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
@@ -1861,7 +1861,7 @@ describe('lib/Preview', () => {
             expect(stubs.showPrintButton).to.not.be.called;
         });
 
-        it('should not show print button if file can\'t be downloaded', () => {
+        it("should not show print button if file can't be downloaded", () => {
             stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
             stubs.canDownload.returns(false);
             preview.finishLoading();
@@ -1931,7 +1931,7 @@ describe('lib/Preview', () => {
 
         it('should skip postload if skipPostload is true', () => {
             preview.finishLoading({
-                endProgress: false
+                endProgress: false,
             });
             expect(stubs.finishProgressBar).to.not.be.called;
         });
@@ -1939,7 +1939,7 @@ describe('lib/Preview', () => {
         it('should focus the viewer container', () => {
             preview.options.autoFocus = true;
             preview.viewer.containerEl = {
-                focus: () => {}
+                focus: () => {},
             };
             sandbox.mock(preview.viewer.containerEl).expects('focus');
             preview.finishLoading();
@@ -1948,7 +1948,7 @@ describe('lib/Preview', () => {
         it('should not focus the viewer container with autoFocus is false', () => {
             preview.options.autoFocus = false;
             preview.viewer.containerEl = {
-                focus: () => {}
+                focus: () => {},
             };
             sandbox
                 .mock(preview.viewer.containerEl)
@@ -2054,8 +2054,8 @@ describe('lib/Preview', () => {
             stubs.load = sandbox.stub(preview, 'load');
             stubs.error = {
                 response: {
-                    status: 400
-                }
+                    status: 400,
+                },
             };
         });
 
@@ -2065,7 +2065,7 @@ describe('lib/Preview', () => {
 
         it('should do nothing if the preview is closed', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = false;
 
@@ -2075,7 +2075,7 @@ describe('lib/Preview', () => {
 
         it('should clear the current file from the cache', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = true;
 
@@ -2085,7 +2085,7 @@ describe('lib/Preview', () => {
 
         it('should trigger an error if we have hit our retry count limit', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = true;
             preview.retryCount = 6;
@@ -2096,7 +2096,7 @@ describe('lib/Preview', () => {
 
         it('should trigger a rate limit error if the status code is 429', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = true;
             preview.retryCount = 6;
@@ -2112,7 +2112,7 @@ describe('lib/Preview', () => {
 
         it('should reset a timeout that tries to load the file again', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = true;
             preview.retryCount = 1;
@@ -2127,7 +2127,7 @@ describe('lib/Preview', () => {
 
         it('should retry using full jitter', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             preview.open = true;
             preview.retryCount = 3;
@@ -2140,13 +2140,13 @@ describe('lib/Preview', () => {
 
         it('should retry after length specified in Retry-After header if set', () => {
             preview.file = {
-                id: '0'
+                id: '0',
             };
             stubs.error.headers = {
                 get: sandbox
                     .stub()
                     .withArgs('Retry-After')
-                    .returns(5)
+                    .returns(5),
             };
             preview.open = true;
             preview.retryCount = 1;
@@ -2165,7 +2165,7 @@ describe('lib/Preview', () => {
         const ErrorViewer = {
             load: sandbox.stub(),
             addListener: sandbox.stub(),
-            setup: sandbox.stub()
+            setup: sandbox.stub(),
         };
 
         beforeEach(() => {
@@ -2223,7 +2223,7 @@ describe('lib/Preview', () => {
         it('should create a log object containing correct file info properties', () => {
             const id = '12345';
             preview.file = {
-                id
+                id,
             };
 
             const log = preview.createLogEvent();
@@ -2246,7 +2246,7 @@ describe('lib/Preview', () => {
         it('should use empty string for file_version_id, if no file version', () => {
             preview.file = {
                 id: '12345',
-                file_version: undefined
+                file_version: undefined,
             };
             const log = preview.createLogEvent();
 
@@ -2255,7 +2255,7 @@ describe('lib/Preview', () => {
 
         it('should use empty string for rep_type, if no representation type available in viewer options', () => {
             preview.file = {
-                id: '12345'
+                id: '12345',
             };
 
             preview.viewer = {};
@@ -2267,12 +2267,12 @@ describe('lib/Preview', () => {
     });
 
     describe('emitPreviewError()', () => {
-        it('should emit a "preview_error" message with an object describing the error', (done) => {
+        it('should emit a "preview_error" message with an object describing the error', done => {
             const code = 'an_error';
             const displayMessage = 'Oh no!';
             const error = new PreviewError(code, displayMessage);
 
-            preview.on('preview_error', (data) => {
+            preview.on('preview_error', data => {
                 expect(data.error.code).to.equal('an_error');
                 expect(data.error.displayMessage).to.equal('Oh no!');
                 done();
@@ -2281,18 +2281,18 @@ describe('lib/Preview', () => {
             preview.emitPreviewError(error);
         });
 
-        it('should emit a "preview_error" message with info about the preview session', (done) => {
+        it('should emit a "preview_error" message with info about the preview session', done => {
             const fileId = '1234';
             const fileVersionId = '999';
 
             preview.file = {
                 id: fileId,
                 file_version: {
-                    id: fileVersionId
-                }
+                    id: fileVersionId,
+                },
             };
 
-            preview.on('preview_error', (data) => {
+            preview.on('preview_error', data => {
                 expect(data.file_id).to.equal(fileId);
                 expect(data.file_version_id).to.equal(fileVersionId);
                 done();
@@ -2301,8 +2301,8 @@ describe('lib/Preview', () => {
             preview.emitPreviewError({});
         });
 
-        it('should use a default browser error code if none is present', (done) => {
-            preview.on('preview_error', (data) => {
+        it('should use a default browser error code if none is present', done => {
+            preview.on('preview_error', data => {
                 expect(data.error.code).to.equal(ERROR_CODE.BROWSER_GENERIC);
                 done();
             });
@@ -2310,12 +2310,12 @@ describe('lib/Preview', () => {
             preview.emitPreviewError({});
         });
 
-        it('should strip any auth from the message and displayMessage if it is present', (done) => {
+        it('should strip any auth from the message and displayMessage if it is present', done => {
             const message = 'A message';
             const displayMessage = 'A display message';
             const auth = 'access_token="1234abcd"';
             const filtered = 'access_token=[FILTERED]';
-            preview.on('preview_error', (data) => {
+            preview.on('preview_error', data => {
                 expect(data.error.message).to.equal(`${message}?${filtered}`);
                 expect(data.error.displayMessage).to.equal(`${displayMessage}?${filtered}`);
                 done();
@@ -2331,7 +2331,7 @@ describe('lib/Preview', () => {
 
         beforeEach(() => {
             preview.file = {
-                id: fileId
+                id: fileId,
             };
         });
 
@@ -2348,23 +2348,23 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.not.be.called;
         });
 
-        it('should emit a preview_metric event', (done) => {
+        it('should emit a preview_metric event', done => {
             preview.once(PREVIEW_METRIC, () => {
                 done();
             });
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event with event_name "load"', (done) => {
-            preview.once(PREVIEW_METRIC, (metric) => {
+        it('should emit a preview_metric event with event_name "load"', done => {
+            preview.once(PREVIEW_METRIC, metric => {
                 expect(metric.event_name).to.equal(LOAD_METRIC.previewLoadEvent);
                 done();
             });
             preview.emitLoadMetrics();
         });
 
-        it('should emit a preview_metric event with an object, with all of the proper load properties', (done) => {
-            preview.once(PREVIEW_METRIC, (metric) => {
+        it('should emit a preview_metric event with an object, with all of the proper load properties', done => {
+            preview.once(PREVIEW_METRIC, metric => {
                 expect(metric[LOAD_METRIC.fileInfoTime]).to.exist;
                 expect(metric[LOAD_METRIC.convertTime]).to.exist;
                 expect(metric[LOAD_METRIC.downloadResponseTime]).to.exist;
@@ -2383,8 +2383,8 @@ describe('lib/Preview', () => {
             expect(preview.emit).to.be.called;
         });
 
-        it('should append encoding field to load metric, when provided', (done) => {
-            preview.once(PREVIEW_METRIC, (metric) => {
+        it('should append encoding field to load metric, when provided', done => {
+            preview.once(PREVIEW_METRIC, metric => {
                 expect(metric.encoding).to.equal(ENCODING_TYPES.GZIP);
                 done();
             });
@@ -2398,7 +2398,7 @@ describe('lib/Preview', () => {
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
                 'X-Rep-Hints':
-                    '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
+                    '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]',
             };
 
             preview.options.sharedLink = 'link';
@@ -2446,13 +2446,13 @@ describe('lib/Preview', () => {
                 2: 'token2',
                 3: 'token3',
                 4: 'token4',
-                5: 'token5'
+                5: 'token5',
             });
 
             stubs.getTokens = sandbox.stub(tokens, 'default');
 
             stubs.getPromiseResolve = Promise.resolve({
-                id: 0
+                id: 0,
             });
 
             stubs.get = sandbox.stub(api, 'get').returns(stubs.getPromiseResolve);
@@ -2479,7 +2479,7 @@ describe('lib/Preview', () => {
 
         it('should do nothing if there are no new files to prefetch', () => {
             preview.file = {
-                id: 3
+                id: 3,
             };
 
             preview.collection = [1, 2, 3];
@@ -2491,7 +2491,7 @@ describe('lib/Preview', () => {
         it('should get tokens for the next PREFETCH_COUNT files in the collection', () => {
             stubs.getTokens.returns(stubs.getTokensPromiseResolve);
             preview.file = {
-                id: 0
+                id: 0,
             };
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
@@ -2505,7 +2505,7 @@ describe('lib/Preview', () => {
         it('should get info for the next PREFETCH_COUNT files', () => {
             stubs.getTokens.returns(stubs.getTokensPromiseResolve);
             preview.file = {
-                id: 0
+                id: 0,
             };
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
@@ -2520,7 +2520,7 @@ describe('lib/Preview', () => {
         it('should set the cache, add to the prefetched collection, and prefetch the actual content', () => {
             stubs.getTokens.returns(stubs.getTokensPromiseResolve);
             preview.file = {
-                id: 0
+                id: 0,
             };
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
@@ -2537,7 +2537,7 @@ describe('lib/Preview', () => {
     });
 
     describe('getGlobalMousemoveHandler()', () => {
-        it('should clear the timeout handler and do nothing if the container doesn\'t exist', () => {
+        it("should clear the timeout handler and do nothing if the container doesn't exist", () => {
             preview.container = false;
 
             const handler = preview.getGlobalMousemoveHandler();
@@ -2547,7 +2547,7 @@ describe('lib/Preview', () => {
 
         it('should remove the navigation arrows', () => {
             preview.viewer = {
-                allowNavigationArrows: sandbox.stub().returns(false)
+                allowNavigationArrows: sandbox.stub().returns(false),
             };
 
             const handler = preview.getGlobalMousemoveHandler();
@@ -2555,7 +2555,7 @@ describe('lib/Preview', () => {
             expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.false;
         });
 
-        it('should add the navigation arrows back if the viewer allows them or we aren\'t previewing', () => {
+        it("should add the navigation arrows back if the viewer allows them or we aren't previewing", () => {
             preview.viewer = false;
 
             let handler = preview.getGlobalMousemoveHandler();
@@ -2563,7 +2563,7 @@ describe('lib/Preview', () => {
             expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.true;
 
             preview.viewer = {
-                allowNavigationArrows: sandbox.stub().returns(true)
+                allowNavigationArrows: sandbox.stub().returns(true),
             };
 
             handler = preview.getGlobalMousemoveHandler();
@@ -2575,7 +2575,7 @@ describe('lib/Preview', () => {
             const clock = sinon.useFakeTimers();
             const handler = preview.getGlobalMousemoveHandler();
             preview.viewer = {
-                allowNavigationArrows: sandbox.stub()
+                allowNavigationArrows: sandbox.stub(),
             };
 
             handler();
@@ -2591,7 +2591,7 @@ describe('lib/Preview', () => {
             stubs.load = sandbox.stub(preview, 'load');
 
             preview.count = {
-                navigation: 0
+                navigation: 0,
             };
 
             preview.collection = ['file', 'file2', 'file3'];
@@ -2627,7 +2627,7 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.navigateToIndex = sandbox.stub(preview, 'navigateToIndex');
             preview.file = {
-                id: 1
+                id: 1,
             };
             preview.collection = [3, 2, 1];
         });
@@ -2670,16 +2670,16 @@ describe('lib/Preview', () => {
             preview.loaders = [
                 {
                     name: 'error',
-                    canLoad: sandbox.stub().returns(false)
+                    canLoad: sandbox.stub().returns(false),
                 },
                 {
                     name: 'text',
-                    canLoad: sandbox.stub().returns(false)
+                    canLoad: sandbox.stub().returns(false),
                 },
                 {
                     name: 'csv',
-                    canLoad: sandbox.stub().returns(true)
-                }
+                    canLoad: sandbox.stub().returns(true),
+                },
             ];
 
             const loader = preview.getLoader('file');
@@ -2695,8 +2695,8 @@ describe('lib/Preview', () => {
             stubs.navigateRight = sandbox.stub(preview, 'navigateRight');
             stubs.event = {
                 target: {
-                    nodeName: KEYDOWN_EXCEPTIONS[0]
-                }
+                    nodeName: KEYDOWN_EXCEPTIONS[0],
+                },
             };
 
             preview.viewer = {};
@@ -2776,9 +2776,9 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        fileVersionId: '1234'
-                    }
-                }
+                        fileVersionId: '1234',
+                    },
+                },
             };
 
             expect(preview.getFileOption('123', 'fileVersionId')).to.equal('1234');
@@ -2788,9 +2788,9 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        fileVersionId: '1234'
-                    }
-                }
+                        fileVersionId: '1234',
+                    },
+                },
             };
 
             expect(preview.getFileOption({ id: '123' }, 'fileVersionId')).to.equal('1234');
@@ -2800,9 +2800,9 @@ describe('lib/Preview', () => {
             preview.previewOptions = {
                 fileOptions: {
                     123: {
-                        fileVersionId: '1234'
-                    }
-                }
+                        fileVersionId: '1234',
+                    },
+                },
             };
 
             expect(preview.getFileOption({ id: '1234' }, 'fileVersionId')).to.equal(undefined);

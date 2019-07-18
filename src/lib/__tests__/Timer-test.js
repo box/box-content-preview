@@ -12,7 +12,7 @@ describe('lib/Timer', () => {
     });
 
     describe('start()', () => {
-        it('should create a new entry if one doesn\'t exist', () => {
+        it("should create a new entry if one doesn't exist", () => {
             expect(Timer.get(tag)).to.not.exist;
             Timer.start(tag);
             expect(Timer.get(tag)).to.exist;

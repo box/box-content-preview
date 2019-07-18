@@ -24,15 +24,15 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 set: () => {},
                 has: () => {},
                 get: () => {},
-                unset: () => {}
+                unset: () => {},
             },
             file: {
-                id: 1
+                id: 1,
             },
             container: containerEl,
             content: {
-                url_template: 'www.netflix.com'
-            }
+                url_template: 'www.netflix.com',
+            },
         });
         videoBase.mediaControls = {
             on: sandbox.stub(),
@@ -41,7 +41,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             destroy: sandbox.stub(),
             show: sandbox.stub(),
             toggle: sandbox.stub(),
-            resizeTimeScrubber: sandbox.stub()
+            resizeTimeScrubber: sandbox.stub(),
         };
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -66,14 +66,14 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             const { lowerLights } = VideoBaseViewer.prototype;
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
-                value: sandbox.stub()
+                value: sandbox.stub(),
             });
 
             videoBase = new VideoBaseViewer({
                 file: {
-                    id: 1
+                    id: 1,
                 },
-                container: containerEl
+                container: containerEl,
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
             videoBase.containerEl = containerEl;
@@ -86,7 +86,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(VideoBaseViewer.prototype.lowerLights).to.be.called;
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
-                value: lowerLights
+                value: lowerLights,
             });
         });
     });
@@ -126,7 +126,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             const event = {
                 type: 'touchstart',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             videoBase.pointerHandler(event);
@@ -137,7 +137,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
         it('should toggle play on click', () => {
             const event = {
-                type: 'click'
+                type: 'click',
             };
             const togglePlayStub = sandbox.stub(videoBase, 'togglePlay');
 
@@ -229,7 +229,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.mediaControls = {
                 isSettingsVisible: sandbox.stub().returns(false),
                 removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
             expect(videoBase.allowNavigationArrows()).to.be.true;
 

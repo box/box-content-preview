@@ -20,5 +20,5 @@ export default [
     Image360Loader,
     ImageLoader,
     Model3DLoader,
-    IFrameLoader
+    IFrameLoader,
 ];

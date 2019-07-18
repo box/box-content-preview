@@ -9,7 +9,7 @@ const SWF_PARAMS = {
     allowNetworking: 'none',
     allowscriptaccess: 'never',
     allowScriptAccess: 'never',
-    wmode: 'transparent'
+    wmode: 'transparent',
 };
 
 const JS = [`third-party/swf/${SWF_STATIC_ASSETS_VERSION}/swfobject.js`];
@@ -71,7 +71,7 @@ class SWFViewer extends BaseViewer {
                 }
                 this.loaded = true;
                 this.emit(VIEWER_EVENT.load);
-            }
+            },
         );
     };
 

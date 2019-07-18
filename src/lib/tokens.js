@@ -25,7 +25,7 @@ function getTypedId(id) {
  */
 function createIdTokenMap(ids, tokenOrTokens) {
     const tokenMap = {};
-    ids.forEach((id) => {
+    ids.forEach(id => {
         const typedId = getTypedId(id);
         if (!tokenOrTokens || typeof tokenOrTokens === 'string') {
             // All files use the same string or null or undefined token
@@ -85,8 +85,8 @@ export default function getTokens(id, token) {
     // possible item types. Preview only deals with files
     // so all ids should be prefixed with file_.
     return new Promise((resolve, reject) => {
-        const typedIds = ids.map((fileId) => getTypedId(fileId));
-        token(typedIds).then((tokens) => {
+        const typedIds = ids.map(fileId => getTypedId(fileId));
+        token(typedIds).then(tokens => {
             // Resolved tokens can either be a map of { typedId: token }
             // or it can just be a single string token that applies
             // to all the files irrespective of their id.

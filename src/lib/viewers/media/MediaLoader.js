@@ -24,7 +24,7 @@ const VIDEO_FORMATS = [
     'ogg',
     'qt',
     'ts',
-    'wmv'
+    'wmv',
 ];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -35,26 +35,26 @@ const VIEWERS = [
         NAME: 'MP3',
         CONSTRUCTOR: MP3Viewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['mp3']
+        EXT: ['mp3'],
     },
     {
         NAME: 'Dash',
         CONSTRUCTOR: DashViewer,
         REP: 'dash',
-        EXT: VIDEO_FORMATS
+        EXT: VIDEO_FORMATS,
     },
     {
         NAME: 'MP4',
         CONSTRUCTOR: MP4Viewer,
         REP: 'mp4',
-        EXT: VIDEO_FORMATS
+        EXT: VIDEO_FORMATS,
     },
     {
         NAME: 'MP3',
         CONSTRUCTOR: MP3Viewer,
         REP: 'mp3',
-        EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma']
-    }
+        EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
+    },
 ];
 
 class MediaLoader extends AssetLoader {

@@ -8,8 +8,8 @@ const VIEWERS = [
         NAME: 'IFrame',
         CONSTRUCTOR: IFrameViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['boxnote', 'boxdicom']
-    }
+        EXT: ['boxnote', 'boxdicom'],
+    },
 ];
 
 class IFrameLoader extends AssetLoader {

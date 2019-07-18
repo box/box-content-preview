@@ -11,29 +11,29 @@ const VIEWERS = [
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['svg', 'gif']
+        EXT: ['svg', 'gif'],
     },
     {
         NAME: 'MultiImage',
         CONSTRUCTOR: MultiImageViewer,
         REP: 'png',
         EXT: ['tif', 'tiff'],
-        ASSET: '{page}.png'
+        ASSET: '{page}.png',
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'jpg',
         EXT: ['jpeg', 'jpg'],
-        ASSET: '1.jpg'
+        ASSET: '1.jpg',
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'png',
         EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'heic', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
-        ASSET: '1.png'
-    }
+        ASSET: '1.png',
+    },
 ];
 
 class ImageLoader extends AssetLoader {
@@ -56,7 +56,7 @@ class ImageLoader extends AssetLoader {
      * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
-        return file.representations.entries.find((entry) => {
+        return file.representations.entries.find(entry => {
             // Do not use the dimensions=1024x1024&paged=false rep that is for document preloading
             if (entry.properties && entry.properties.paged === 'false') {
                 return false;

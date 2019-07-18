@@ -25,8 +25,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         doc = new DocumentViewer({
             container: containerEl,
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -35,10 +35,10 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
         doc.pdfViewer = {
             currentPageNumber: 0,
-            cleanup: sandbox.stub()
+            cleanup: sandbox.stub(),
         };
         doc.controls = {
-            add: sandbox.stub()
+            add: sandbox.stub(),
         };
     });
 
@@ -64,7 +64,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
         it('should invoke onPreload callback', () => {
             doc.options.logger = {
-                setPreloaded: sandbox.stub()
+                setPreloaded: sandbox.stub(),
             };
             stubs.setPreloaded = doc.options.logger.setPreloaded;
             doc.preloader.emit('preload');
@@ -83,7 +83,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         it('should remove listeners from preloader', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'destroy', { value: sandbox.stub() });
             doc.preloader = {
-                removeAllListeners: sandbox.mock().withArgs('preload')
+                removeAllListeners: sandbox.mock().withArgs('preload'),
             };
             doc.destroy();
             doc = null; // Don't call destroy again during cleanup
@@ -127,7 +127,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             expect(stubs.nextPage).to.be.called;
         });
 
-        it('should fallback to doc base\'s onKeydown if no entry matches', () => {
+        it("should fallback to doc base's onKeydown if no entry matches", () => {
             const docbaseStub = sandbox.spy(DocBaseViewer.prototype, 'onKeydown');
             const eventStub = sandbox.stub();
             stubs.fullscreen.returns(false);

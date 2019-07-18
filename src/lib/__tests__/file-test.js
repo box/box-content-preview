@@ -15,7 +15,7 @@ import {
     getCachedFile,
     isVeraProtectedFile,
     canDownload,
-    shouldDownloadWM
+    shouldDownloadWM,
 } from '../file';
 
 const sandbox = sinon.sandbox.create();
@@ -29,14 +29,14 @@ describe('lib/file', () => {
         it('should return the correct api url', () => {
             assert.equal(
                 getURL('id', '', 'api'),
-                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available'
+                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
             );
         });
 
         it('should return the correct API url for file version', () => {
             assert.equal(
                 getURL('id', 'versionId', 'api'),
-                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available'
+                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
             );
         });
     });
@@ -126,7 +126,7 @@ describe('lib/file', () => {
                 representations: {},
                 watermark_info: {},
                 authenticated_download_url: 'blah',
-                is_download_available: true
+                is_download_available: true,
             };
             assert.ok(checkFileValid(file));
         });
@@ -145,7 +145,7 @@ describe('lib/file', () => {
                 representations: {},
                 watermark_info: {},
                 authenticated_download_url: 'blah?version=file_version_123',
-                is_download_available: true
+                is_download_available: true,
             };
 
             const file = normalizeFileVersion(fileVersion, fileId);
@@ -161,15 +161,15 @@ describe('lib/file', () => {
 
         beforeEach(() => {
             cache = {
-                set: sandbox.stub()
+                set: sandbox.stub(),
             };
         });
 
         it('should not cache file if it is watermarked', () => {
             const file = {
                 watermark_info: {
-                    is_watermarked: true
-                }
+                    is_watermarked: true,
+                },
             };
 
             cacheFile(cache, file);
@@ -179,7 +179,7 @@ describe('lib/file', () => {
 
         it('should not add original representation if file object doesnt have any to start with', () => {
             const file = {
-                id: '0'
+                id: '0',
             };
 
             cacheFile(cache, file);
@@ -191,8 +191,8 @@ describe('lib/file', () => {
             const file = {
                 id: '0',
                 representations: {
-                    entries: []
-                }
+                    entries: [],
+                },
             };
 
             cacheFile(cache, file);
@@ -207,10 +207,10 @@ describe('lib/file', () => {
                 representations: {
                     entries: [
                         {
-                            representation: 'ORIGINAL'
-                        }
-                    ]
-                }
+                            representation: 'ORIGINAL',
+                        },
+                    ],
+                },
             };
 
             cacheFile(cache, file);
@@ -219,17 +219,17 @@ describe('lib/file', () => {
 
         it('should append file version to original rep content URL', () => {
             cache = {
-                set: sandbox.stub()
+                set: sandbox.stub(),
             };
 
             const file = {
                 id: '0',
                 file_version: {
-                    id: '123'
+                    id: '123',
                 },
                 representations: {
-                    entries: []
-                }
+                    entries: [],
+                },
             };
 
             cacheFile(cache, file);
@@ -240,8 +240,8 @@ describe('lib/file', () => {
             const file = {
                 id: '123',
                 file_version: {
-                    id: '1234'
-                }
+                    id: '1234',
+                },
             };
 
             cacheFile(cache, file);
@@ -256,8 +256,8 @@ describe('lib/file', () => {
             const file = {
                 id: '0',
                 file_version: {
-                    id: '123'
-                }
+                    id: '123',
+                },
             };
             cache.set(file.id, file);
 
@@ -273,8 +273,8 @@ describe('lib/file', () => {
             const file = {
                 id: '0',
                 representations: {
-                    entries: []
-                }
+                    entries: [],
+                },
             };
 
             expect(getRepresentation(file, 'ORIGINAL')).to.be.null;
@@ -282,13 +282,13 @@ describe('lib/file', () => {
 
         it('should return matching representation if found', () => {
             const originalRep = {
-                representation: 'ORIGINAL'
+                representation: 'ORIGINAL',
             };
             const file = {
                 id: '0',
                 representations: {
-                    entries: [originalRep]
-                }
+                    entries: [originalRep],
+                },
             };
 
             expect(getRepresentation(file, 'ORIGINAL')).to.be.equal(originalRep);
@@ -300,7 +300,7 @@ describe('lib/file', () => {
 
         beforeEach(() => {
             cache = {
-                get: sandbox.stub()
+                get: sandbox.stub(),
             };
         });
 
@@ -331,14 +331,14 @@ describe('lib/file', () => {
 
     describe('isVeraProtectedFile()', () => {
         ['some.vera.pdf.html', '.vera.test.html', 'blah.vera..html', 'another.vera.3.html', 'test.vera.html'].forEach(
-            (fileName) => {
+            fileName => {
                 it('should return true if file is named like a Vera-protected file', () => {
                     expect(isVeraProtectedFile({ name: fileName })).to.be.true;
                 });
-            }
+            },
         );
 
-        ['vera.pdf.html', 'test.vera1.pdf.html', 'blah.vera..htm', 'another.verahtml'].forEach((fileName) => {
+        ['vera.pdf.html', 'test.vera1.pdf.html', 'blah.vera..htm', 'another.verahtml'].forEach(fileName => {
             it('should return false if file is not named like a Vera-protected file', () => {
                 expect(isVeraProtectedFile({ name: fileName })).to.be.false;
             });
@@ -352,13 +352,13 @@ describe('lib/file', () => {
                     const previewOptions = { downloadWM };
                     const file = {
                         watermark_info: {
-                            is_watermarked: isFileWatermarked
-                        }
+                            is_watermarked: isFileWatermarked,
+                        },
                     };
 
                     expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
                 });
-            }
+            },
         );
     });
 
@@ -371,14 +371,14 @@ describe('lib/file', () => {
                 is_download_available: false,
                 permissions: {
                     can_download: false,
-                    can_preview: false
+                    can_preview: false,
                 },
                 watermark_info: {
-                    is_watermarked: false
-                }
+                    is_watermarked: false,
+                },
             };
             options = {
-                showDownload: false
+                showDownload: false,
             };
         });
 
@@ -394,7 +394,7 @@ describe('lib/file', () => {
             // Can download watermarked (don't need download permission)
             [true, true, false, true, true, false, false, false],
             [true, true, false, true, true, true, false, false],
-            [true, true, false, true, true, true, true, true]
+            [true, true, false, true, true, true, true, true],
         ].forEach(
             ([
                 isDownloadable,
@@ -404,7 +404,7 @@ describe('lib/file', () => {
                 hasPreviewPermission,
                 isFileWatermarked,
                 downloadWM,
-                expectedResult
+                expectedResult,
             ]) => {
                 it('should return true if original or watermarked file can be downloaded', () => {
                     file.permissions.can_download = hasDownloadPermission;
@@ -417,7 +417,7 @@ describe('lib/file', () => {
 
                     expect(canDownload(file, options)).to.equal(expectedResult);
                 });
-            }
+            },
         );
     });
 });

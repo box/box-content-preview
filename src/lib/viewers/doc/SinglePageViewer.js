@@ -17,7 +17,7 @@ class SinglePageViewer extends DocumentViewer {
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            enhanceTextSelection: !this.isMobile,
         });
     }
 }

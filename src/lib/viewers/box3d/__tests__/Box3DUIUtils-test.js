@@ -6,7 +6,7 @@ import {
     createLabel,
     createPullup,
     createRow,
-    UIRegistry
+    UIRegistry,
 } from '../Box3DUIUtils';
 
 import {
@@ -14,7 +14,7 @@ import {
     CSS_CLASS_PULLUP,
     CSS_CLASS_SETTINGS_PANEL_LABEL,
     CSS_CLASS_SETTINGS_PANEL_ROW,
-    CSS_CLASS_HIDDEN
+    CSS_CLASS_HIDDEN,
 } from '../model3d/model3DConstants';
 
 import {
@@ -23,7 +23,7 @@ import {
     CLASS_BOX_PREVIEW_MENU,
     CLASS_BOX_PREVIEW_OVERLAY,
     CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
-    CLASS_BOX_PREVIEW_TOGGLE_OVERLAY
+    CLASS_BOX_PREVIEW_TOGGLE_OVERLAY,
 } from '../../../constants';
 
 const sandbox = sinon.sandbox.create();
@@ -184,7 +184,7 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 expect(dd).to.contain(`div.${CLASS_BOX_PREVIEW_OVERLAY} menu.${CLASS_BOX_PREVIEW_MENU}`);
             });
 
-            it('should append div with class \'link-group\' to CLASS_BOX_PREVIEW_MENU', () => {
+            it("should append div with class 'link-group' to CLASS_BOX_PREVIEW_MENU", () => {
                 expect(dd).to.contain(`menu.${CLASS_BOX_PREVIEW_MENU} div.link-group`);
             });
 
@@ -198,18 +198,18 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
             expect(dropdown).to.contain(`button.${CLASS_BOX_PREVIEW_BUTTON}`);
         });
 
-        it('should set the button element\'s text to the provided listText', () => {
+        it("should set the button element's text to the provided listText", () => {
             const buttonText = 'Gasp! Button!';
             const dropdown = createDropdown('', buttonText);
             expect(dropdown.querySelector(`button.${CLASS_BOX_PREVIEW_BUTTON}`)).to.have.text(buttonText);
         });
 
         describe('dropdown list population', () => {
-            const text = 'I\'m and entry!';
+            const text = "I'm and entry!";
             const listEntries = [
                 {
-                    text
-                }
+                    text,
+                },
             ];
             let ddList; // The ul is from the link-group that comes from the overlay wrapper
             beforeEach(() => {
@@ -382,13 +382,13 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
 
             it('should do nothing if the item provided does not exist in the registry', () => {
                 const parentEl = {
-                    removeChild: sandbox.stub()
+                    removeChild: sandbox.stub(),
                 };
 
                 const item = {
                     el: {
-                        parentElement: parentEl
-                    }
+                        parentElement: parentEl,
+                    },
                 };
 
                 registry.unregisterItem(item);

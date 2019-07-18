@@ -11,7 +11,7 @@ describe('API helper', () => {
         it('should return the full response when the status is 202 or 204', () => {
             const response = {
                 status: 202,
-                data: 'foo'
+                data: 'foo',
             };
 
             expect(api.parseResponse(response)).to.equal(response);
@@ -24,7 +24,7 @@ describe('API helper', () => {
             const data = 'foo';
             const response = {
                 status: 200,
-                data
+                data,
             };
 
             expect(api.parseResponse(response)).to.equal(data);
@@ -45,7 +45,7 @@ describe('API helper', () => {
         it('should call fetch on URL but fail when status is 404', () => {
             sandbox.stub(api, 'xhr').resolves({ status: 404 });
 
-            return api.get(url).catch((err) => {
+            return api.get(url).catch(err => {
                 expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'json' });
                 expect(err.response.status).to.equal(404);
                 expect(err.response.statusText).to.equal('Not Found');
@@ -66,10 +66,10 @@ describe('API helper', () => {
             const headers = { baz: 'but' };
             sandbox.stub(api, 'xhr').resolves({
                 data: responseText,
-                status: 200
+                status: 200,
             });
 
-            return api.get(url, { headers, type: 'text' }).then((response) => {
+            return api.get(url, { headers, type: 'text' }).then(response => {
                 expect(api.xhr).to.have.been.calledWith(url, { headers, method: 'get', responseType: 'text' });
                 expect(response.data).to.equal(responseText);
             });
@@ -79,10 +79,10 @@ describe('API helper', () => {
             const blob = new Blob(['text'], { type: 'text/plain' });
             sandbox.stub(api, 'xhr').resolves({
                 data: blob,
-                status: 200
+                status: 200,
             });
 
-            return api.get(url, { type: 'blob' }).then((response) => {
+            return api.get(url, { type: 'blob' }).then(response => {
                 expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'blob' });
                 expect(response.data).to.deep.equal(blob);
             });
@@ -92,10 +92,10 @@ describe('API helper', () => {
             const responseText = 'darthsidious';
             sandbox.stub(api, 'xhr').resolves({
                 data: responseText,
-                status: 200
+                status: 200,
             });
 
-            return api.get(url, { type: 'text' }).then((response) => {
+            return api.get(url, { type: 'text' }).then(response => {
                 expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'text' });
                 expect(response.data).to.equal(responseText);
             });
@@ -104,10 +104,10 @@ describe('API helper', () => {
         it('should call get on URL with type any', () => {
             sandbox.stub(api, 'xhr').resolves({
                 data: 'greedo',
-                status: 200
+                status: 200,
             });
 
-            return api.get(url, { type: 'document' }).then((response) => {
+            return api.get(url, { type: 'document' }).then(response => {
                 expect(api.xhr).to.have.been.calledWith(url, { method: 'get', responseType: 'document' });
                 expect(typeof response === 'object').to.be.true; // eslint-disable-line
             });
@@ -134,9 +134,9 @@ describe('API helper', () => {
 
             sandbox.stub(api, 'xhr').resolves({
                 body: {
-                    foo: 'bar'
+                    foo: 'bar',
                 },
-                status: 200
+                status: 200,
             });
 
             return api.post(url, data, { headers }).then(() => {
@@ -153,9 +153,9 @@ describe('API helper', () => {
 
             sandbox.stub(api, 'xhr').resolves({
                 body: {
-                    foo: 'bar'
+                    foo: 'bar',
                 },
-                status: 200
+                status: 200,
             });
 
             return api.delete(url, data, { headers }).then(() => {
@@ -172,9 +172,9 @@ describe('API helper', () => {
 
             sandbox.stub(api, 'xhr').resolves({
                 body: {
-                    foo: 'bar'
+                    foo: 'bar',
                 },
-                status: 200
+                status: 200,
             });
 
             return api.put(url, data, { headers }).then(() => {

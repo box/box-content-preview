@@ -27,7 +27,7 @@ describe('lib/viewers/AssetLoader', () => {
             expect(loader.determineViewer).to.be.called;
         });
 
-        it('should return false if loader can\'t find a viewer to match the file', () => {
+        it("should return false if loader can't find a viewer to match the file", () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
 
             expect(loader.canLoad({})).to.be.false;
@@ -36,13 +36,13 @@ describe('lib/viewers/AssetLoader', () => {
     });
 
     describe('getViewers()', () => {
-        it('should return the loader\'s viewers', () => {
+        it("should return the loader's viewers", () => {
             loader.viewers = [{}, {}];
 
             expect(loader.getViewers()).to.deep.equal(loader.viewers);
         });
 
-        it('should return an empty array if the loader doesn\'t have viewers', () => {
+        it("should return an empty array if the loader doesn't have viewers", () => {
             expect(loader.getViewers()).to.deep.equal([]);
         });
     });
@@ -53,18 +53,18 @@ describe('lib/viewers/AssetLoader', () => {
                 {
                     NAME: 'Adobe',
                     REP: 'pdf',
-                    EXT: ['pdf']
+                    EXT: ['pdf'],
                 },
                 {
                     NAME: 'Document',
                     REP: 'ORIGINAL',
-                    EXT: ['pdf']
+                    EXT: ['pdf'],
                 },
                 {
                     NAME: 'SomeOtherPDFViewer',
                     REP: 'pdf',
-                    EXT: ['pdf']
-                }
+                    EXT: ['pdf'],
+                },
             ];
         });
 
@@ -74,10 +74,10 @@ describe('lib/viewers/AssetLoader', () => {
                 representations: {
                     entries: [
                         {
-                            representation: 'pdf'
-                        }
-                    ]
-                }
+                            representation: 'pdf',
+                        },
+                    ],
+                },
             };
 
             const viewer = loader.determineViewer(file);
@@ -90,13 +90,13 @@ describe('lib/viewers/AssetLoader', () => {
                 representations: {
                     entries: [
                         {
-                            representation: 'ORIGINAL'
+                            representation: 'ORIGINAL',
                         },
                         {
-                            representation: 'pdf'
-                        }
-                    ]
-                }
+                            representation: 'pdf',
+                        },
+                    ],
+                },
             };
 
             const viewer = loader.determineViewer(file, ['Adobe']);
@@ -109,13 +109,13 @@ describe('lib/viewers/AssetLoader', () => {
                 representations: {
                     entries: [
                         {
-                            representation: 'ORIGINAL'
+                            representation: 'ORIGINAL',
                         },
                         {
-                            representation: 'mp3'
-                        }
-                    ]
-                }
+                            representation: 'mp3',
+                        },
+                    ],
+                },
             };
 
             const viewer = loader.determineViewer(file, ['Adobe']);
@@ -128,18 +128,18 @@ describe('lib/viewers/AssetLoader', () => {
             representations: {
                 entries: [
                     {
-                        representation: 'ORIGINAL'
+                        representation: 'ORIGINAL',
                     },
                     {
-                        representation: 'pdf'
-                    }
-                ]
-            }
+                        representation: 'pdf',
+                    },
+                ],
+            },
         };
 
         it('should return a representation based on the file and viewer', () => {
             const viewer = {
-                REP: 'pdf'
+                REP: 'pdf',
             };
 
             const representation = loader.determineRepresentation(file, viewer);
@@ -148,7 +148,7 @@ describe('lib/viewers/AssetLoader', () => {
 
         it('should not return a representation if there is no match', () => {
             const viewer = {
-                REP: 'xlsx'
+                REP: 'xlsx',
             };
 
             const representation = loader.determineRepresentation(file, viewer);

@@ -14,7 +14,7 @@ const VIDEO_TEXTURE_PROPS = {
     minFilter: 'linear',
     magFilter: 'linear',
     wrapModeV: 'clampToEdge',
-    wrapModeU: 'clampToEdge'
+    wrapModeU: 'clampToEdge',
 };
 
 class Video360Viewer extends DashViewer {
@@ -206,15 +206,15 @@ class Video360Viewer extends DashViewer {
                 generateMipmaps: false,
                 querySelector: `.${this.mediaContainerEl.className} video`,
                 autoPlay: false,
-                muted: false
+                muted: false,
             },
-            VIDEO_ID
+            VIDEO_ID,
         );
 
         // Texture props references the ID of the video texture created above, "VIDEO_ID"
         this.textureAsset = this.renderer.getBox3D().createTexture2d(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.textureAsset.load(() => {
                 this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                 this.skybox.enable();

@@ -39,7 +39,7 @@ const metadataAPI = {
      */
     getMetadata(id, scope, template, { apiHost, token, sharedLink, sharedLinkPassword }) {
         return api.get(metadataAPI.getMetadataURL(id, scope, template, apiHost), {
-            headers: getHeaders({}, token, sharedLink, sharedLinkPassword)
+            headers: getHeaders({}, token, sharedLink, sharedLinkPassword),
         });
     },
 
@@ -53,7 +53,7 @@ const metadataAPI = {
      */
     getMetadataURL(fileId, scope = SCOPE_GLOBAL, template, apiHost) {
         return `${apiHost}/2.0/files/${fileId}/metadata/${scope}/${template}`;
-    }
+    },
 };
 
 export default metadataAPI;

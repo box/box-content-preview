@@ -9,8 +9,8 @@ describe('lib/viewers/box3d/video360/Video360Renderer', () => {
     const OPTIONS = {
         token: '12345572asdfliuohhr34812348960',
         file: {
-            id: 'f_098765'
-        }
+            id: 'f_098765',
+        },
     };
 
     before(() => {
@@ -37,7 +37,7 @@ describe('lib/viewers/box3d/video360/Video360Renderer', () => {
     describe('getInputController()', () => {
         beforeEach(() => {
             renderer.box3d = {
-                getApplication: () => {}
+                getApplication: () => {},
             };
         });
 
@@ -63,7 +63,7 @@ describe('lib/viewers/box3d/video360/Video360Renderer', () => {
 
         it('should invoke .getComponentByScriptName() with "Input Controller" to get Input Controller component on runtime', () => {
             const app = {
-                getComponentByScriptName: sandbox.stub().returns({})
+                getComponentByScriptName: sandbox.stub().returns({}),
             };
             sandbox.stub(renderer.box3d, 'getApplication').returns(app);
             const inputController = renderer.getInputController();
@@ -82,7 +82,7 @@ describe('lib/viewers/box3d/video360/Video360Renderer', () => {
         it('should call super.destroy()', () => {
             const destroyStub = sandbox.stub();
             Object.defineProperty(Object.getPrototypeOf(Video360Renderer.prototype), 'destroy', {
-                value: destroyStub
+                value: destroyStub,
             });
             renderer.destroy();
 

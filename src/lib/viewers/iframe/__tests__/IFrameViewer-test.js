@@ -19,8 +19,8 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             container: containerEl,
             file: {
                 id: '123',
-                extension: 'boxnote'
-            }
+                extension: 'boxnote',
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -55,7 +55,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.options.appHost = 'https://app.box.com';
         });
 
-        it('should load a boxnote and fire load event', (done) => {
+        it('should load a boxnote and fire load event', done => {
             iframe.on('load', () => {
                 assert.equal(iframe.iframeEl.src, 'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1');
                 done();
@@ -64,13 +64,13 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.load();
         });
 
-        it('should load a boxnote with a shared name if a shared link exists and fire load event', (done) => {
+        it('should load a boxnote with a shared name if a shared link exists and fire load event', done => {
             iframe.options.sharedLink = 'https://app.box.com/s/foobar';
 
             iframe.on('load', () => {
                 assert.equal(
                     iframe.iframeEl.src,
-                    'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1&s=foobar'
+                    'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1&s=foobar',
                 );
                 done();
             });
@@ -78,7 +78,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.load();
         });
 
-        it('should load a boxdicom and fire load event', (done) => {
+        it('should load a boxdicom and fire load event', done => {
             iframe.options.file.extension = 'boxdicom';
 
             iframe.on('load', () => {

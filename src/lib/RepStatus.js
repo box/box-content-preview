@@ -85,7 +85,7 @@ class RepStatus extends EventEmitter {
         const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
         Timer.start(tag);
 
-        return api.get(this.infoUrl).then((info) => {
+        return api.get(this.infoUrl).then(info => {
             clearTimeout(this.statusTimeout);
 
             if (info.metadata) {
@@ -155,9 +155,12 @@ class RepStatus extends EventEmitter {
                 // Check status again after delay or
                 // If status is none, request immediately since conversion
                 // won't kick off until representation is requested
-                this.statusTimeout = setTimeout(() => {
-                    this.updateStatus();
-                }, status === STATUS_NONE ? 0 : STATUS_UPDATE_INTERVAL_MS);
+                this.statusTimeout = setTimeout(
+                    () => {
+                        this.updateStatus();
+                    },
+                    status === STATUS_NONE ? 0 : STATUS_UPDATE_INTERVAL_MS,
+                );
                 break;
 
             default:

@@ -6,7 +6,7 @@ import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
     EVENT_WEBGL_CONTEXT_RESTORED,
-    EVENT_WEBGL_CONTEXT_LOST
+    EVENT_WEBGL_CONTEXT_LOST,
 } from './box3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
@@ -142,7 +142,7 @@ class Box3DRenderer extends EventEmitter {
                 this.savedCameraQuaternion.x,
                 this.savedCameraQuaternion.y,
                 this.savedCameraQuaternion.z,
-                this.savedCameraQuaternion.w
+                this.savedCameraQuaternion.w,
             );
         }
     }
@@ -238,8 +238,8 @@ class Box3DRenderer extends EventEmitter {
             getApplication = this.getEntitiesFromUrl(json);
         }
 
-        return getApplication.then((applicationEntities) =>
-            this.createBox3d(resourceLoader, options.sceneEntities, applicationEntities.entities, `${options.apiHost}`)
+        return getApplication.then(applicationEntities =>
+            this.createBox3d(resourceLoader, options.sceneEntities, applicationEntities.entities, `${options.apiHost}`),
         );
     }
 
@@ -257,14 +257,14 @@ class Box3DRenderer extends EventEmitter {
             container: this.containerEl,
             engineName: 'Default',
             resourceLoader,
-            apiBase
+            apiBase,
         });
         if (box3d.canvas) {
             box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost);
             box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored);
         }
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (applicationEntities) {
                 box3d.addEntities(applicationEntities);
             }
@@ -447,7 +447,7 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        vrPresenter.whenDisplaysAvailable((displays) => {
+        vrPresenter.whenDisplaysAvailable(displays => {
             if (displays.length) {
                 this.emit(EVENT_SHOW_VR_BUTTON);
                 this.box3d.listenTo(this.box3d, 'vrRenderingDisabled', this.onDisableVr.bind(this));
@@ -468,8 +468,8 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.vrGamepads = [Box3D.Handedness.Left, Box3D.Handedness.Right].map((handedness) =>
-            this.createVrGamepad(handedness)
+        this.vrGamepads = [Box3D.Handedness.Left, Box3D.Handedness.Right].map(handedness =>
+            this.createVrGamepad(handedness),
         );
     }
 
@@ -487,8 +487,8 @@ class Box3DRenderer extends EventEmitter {
          * @param {Object} entities - Loaded entities
          * @return {void}
          */
-        const onGamepadModelLoad = (entities) => {
-            const prefab = entities.find((e) => {
+        const onGamepadModelLoad = entities => {
+            const prefab = entities.find(e => {
                 return e.type === 'prefab';
             });
             const prefabAsset = this.box3d.getAssetById(prefab.id);
@@ -506,7 +506,7 @@ class Box3DRenderer extends EventEmitter {
          * @param {Object} gamepad - Gamepad object
          * @return {void}
          */
-        const onGamepadFound = (gamepad) => {
+        const onGamepadFound = gamepad => {
             let controllerName = null;
             let commonEntities = null;
             if (gamepad.id.indexOf('Oculus') > -1) {
@@ -527,10 +527,8 @@ class Box3DRenderer extends EventEmitter {
             if (!this.vrCommonLoadPromise) {
                 if (commonEntities) {
                     this.vrCommonLoadPromise = this.box3d.importEntitiesFromUrl(
-                        `${
-                            this.staticBaseURI
-                        }third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`,
-                        { isExternal: true }
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`,
+                        { isExternal: true },
                     );
                 } else {
                     this.vrCommonLoadPromise = Promise.resolve();
@@ -539,10 +537,8 @@ class Box3DRenderer extends EventEmitter {
             if (!this.vrGamepadLoadPromises[controllerName]) {
                 this.vrGamepadLoadPromises[controllerName] = this.vrCommonLoadPromise.then(() => {
                     return this.box3d.importEntitiesFromUrl(
-                        `${
-                            this.staticBaseURI
-                        }third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`,
-                        { isExternal: true }
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`,
+                        { isExternal: true },
                     );
                 });
             }
@@ -562,7 +558,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     showVrGamepads() {
-        this.vrGamepads.forEach((pad) => pad.setProperty('visible', true));
+        this.vrGamepads.forEach(pad => pad.setProperty('visible', true));
     }
 
     /**
@@ -570,7 +566,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     hideVrGamepads() {
-        this.vrGamepads.forEach((pad) => pad.setProperty('visible', false));
+        this.vrGamepads.forEach(pad => pad.setProperty('visible', false));
     }
 }
 

@@ -150,12 +150,12 @@ class ImageViewer extends ImageBaseViewer {
         if (isRotated) {
             return {
                 width: height,
-                height: width
+                height: width,
             };
         }
         return {
             width,
-            height
+            height,
         };
     }
 
@@ -180,7 +180,7 @@ class ImageViewer extends ImageBaseViewer {
             ({ width, height } = this.getTransformWidthAndHeight(
                 this.imageEl.offsetWidth,
                 this.imageEl.offsetHeight,
-                isRotated
+                isRotated,
             ));
 
             // Since we are taking offsetWidth, we only need to apply the zoom to the width
@@ -196,7 +196,7 @@ class ImageViewer extends ImageBaseViewer {
 
             const viewport = {
                 width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING
+                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
             };
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
@@ -242,7 +242,7 @@ class ImageViewer extends ImageBaseViewer {
         this.emit('zoom', {
             newScale: [newWidth || width, newHeight || height],
             canZoomIn: true,
-            canZoomOut: true
+            canZoomOut: true,
         });
     }
 
@@ -262,7 +262,7 @@ class ImageViewer extends ImageBaseViewer {
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
         this.emit('scale', {
             scale: this.scale,
-            rotationAngle: this.rotationAngle
+            rotationAngle: this.rotationAngle,
         });
     }
 
@@ -280,7 +280,7 @@ class ImageViewer extends ImageBaseViewer {
             __('enter_fullscreen'),
             this.toggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
@@ -343,7 +343,7 @@ class ImageViewer extends ImageBaseViewer {
         const wrapperDimensions = this.wrapperEl.getBoundingClientRect();
         const viewport = {
             width: this.wrapperEl.clientWidth - IMAGE_PADDING,
-            height: this.wrapperEl.clientHeight - IMAGE_PADDING
+            height: this.wrapperEl.clientHeight - IMAGE_PADDING,
         };
 
         if (this.isRotated()) {
@@ -440,7 +440,7 @@ class ImageViewer extends ImageBaseViewer {
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
         this.emit('scale', {
             scale: this.scale,
-            rotationAngle: this.rotationAngle
+            rotationAngle: this.rotationAngle,
         });
     }
 }

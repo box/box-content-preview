@@ -166,7 +166,7 @@ class DownloadReachability {
         } else {
             // Try the custom host, then check reachability
             openUrlInsideIframe(downloadUrl);
-            DownloadReachability.setDownloadReachability(downloadUrl).then((isBlocked) => {
+            DownloadReachability.setDownloadReachability(downloadUrl).then(isBlocked => {
                 if (isBlocked) {
                     // If download is unreachable, try again with default
                     openUrlInsideIframe(defaultDownloadUrl);

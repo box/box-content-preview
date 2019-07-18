@@ -56,7 +56,7 @@ describe('lib/viewers/text/BoxCSV', () => {
                 columnIndex: 1,
                 key: 'key',
                 rowIndex: 2,
-                style: 'style'
+                style: 'style',
             });
 
             expect(cell.props.className).to.equal('rowClass bp-text-csv-cell');

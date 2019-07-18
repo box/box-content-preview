@@ -149,7 +149,7 @@ const languageMap = {
     uz: __('uzbek'),
     uzb: __('uzbek'),
     vi: __('vietnamese'),
-    vie: __('vietnamese')
+    vie: __('vietnamese'),
 };
 
 /**

@@ -13,7 +13,7 @@ const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-mute',
     'bp-media-volume-icon-is-low',
     'bp-media-volume-icon-is-medium',
-    'bp-media-volume-icon-is-high'
+    'bp-media-volume-icon-is-high',
 ];
 const CRAWLER =
     '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
@@ -284,7 +284,7 @@ class MediaControls extends EventEmitter {
             Math.floor(this.mediaEl.duration),
             0,
             0,
-            1
+            1,
         );
         this.setTimeCode(this.mediaEl.currentTime || 0); // This also sets the aria values
         this.timeScrubber.on('valuechange', () => {
@@ -341,7 +341,7 @@ class MediaControls extends EventEmitter {
         this.timecodeEl.textContent = this.formatTime(time || 0);
         this.timeScrubber.setAriaValues(
             Math.floor(time),
-            `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`
+            `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`,
         );
     }
 
@@ -466,7 +466,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     updateVolumeIcon(volume) {
-        VOLUME_LEVEL_CLASS_NAMES.forEach((className) => {
+        VOLUME_LEVEL_CLASS_NAMES.forEach(className => {
             this.volButtonEl.classList.remove(className);
         });
         this.volButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
@@ -780,7 +780,7 @@ class MediaControls extends EventEmitter {
      * @return {Function} - the handler function
      */
     timeScrubberHandler(cb) {
-        return (event) => {
+        return event => {
             const { target } = event;
             const { playedEl, convertedEl } = this.timeScrubber;
             if (target === convertedEl || target === playedEl) {
@@ -877,7 +877,7 @@ class MediaControls extends EventEmitter {
             time,
             left,
             top,
-            containerLeft
+            containerLeft,
         };
     }
 
@@ -900,7 +900,7 @@ class MediaControls extends EventEmitter {
             pageX,
             rect.left,
             rect.width,
-            this.filmstripEl.naturalWidth
+            this.filmstripEl.naturalWidth,
         );
 
         this.filmstripEl.style.left = `${filmstripPositions.left}px`;

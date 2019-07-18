@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Controls from '../Controls';
-import { CLASS_HIDDEN } from './../constants';
+import { CLASS_HIDDEN } from '../constants';
 
 let controls;
 let clock;
@@ -63,11 +63,11 @@ describe('lib/Controls', () => {
         it('should remove click listeners for any button references', () => {
             const button1 = {
                 button: { removeEventListener: sandbox.stub() },
-                handler: 'handler'
+                handler: 'handler',
             };
             const button2 = {
                 button: { removeEventListener: sandbox.stub() },
-                handler: 'handler'
+                handler: 'handler',
             };
             controls.buttonRefs = [button1, button2];
 

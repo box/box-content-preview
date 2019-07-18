@@ -21,7 +21,7 @@ const ANNOTATOR_EVENT = {
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
     error: 'annotationerror',
-    scale: 'scaleannotations'
+    scale: 'scaleannotations',
 };
 
 describe('lib/viewers/BaseViewer', () => {
@@ -39,16 +39,16 @@ describe('lib/viewers/BaseViewer', () => {
             file: {
                 id: '0',
                 permissions: {
-                    can_annotate: false
-                }
-            }
+                    can_annotate: false,
+                },
+            },
         });
         base.previewUI = {
             replaceHeader: sandbox.stub(),
             notification: {
                 show: sandbox.stub(),
-                hide: sandbox.stub()
-            }
+                hide: sandbox.stub(),
+            },
         };
     });
 
@@ -76,10 +76,10 @@ describe('lib/viewers/BaseViewer', () => {
                 file: {
                     id: '0',
                     permissions: {
-                        can_annotate: false
-                    }
+                        can_annotate: false,
+                    },
                 },
-                showAnnotations: true
+                showAnnotations: true,
             });
 
             expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
@@ -131,10 +131,10 @@ describe('lib/viewers/BaseViewer', () => {
         it('should hide the crawler and set the file icon into the icon element', () => {
             const container = {
                 classList: {
-                    add: sandbox.stub()
+                    add: sandbox.stub(),
                 },
                 innerHTML: '',
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
             base.fileLoadingIcon = 'icon';
 
@@ -180,7 +180,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should trigger an error if the viewer times out', () => {
             const triggerStub = sandbox.stub(base, 'triggerError');
-            sandbox.stub(window, 'setTimeout').callsFake((func) => func());
+            sandbox.stub(window, 'setTimeout').callsFake(func => func());
 
             base.loaded = false;
             base.destroyed = false;
@@ -253,10 +253,10 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleDownloadError(
                 {
                     details: {
-                        isRepDeleted: true
-                    }
+                        isRepDeleted: true,
+                    },
                 },
-                'https://dl.boxcloud.com'
+                'https://dl.boxcloud.com',
             );
 
             expect(base.triggerError).to.be.called;
@@ -312,7 +312,7 @@ describe('lib/viewers/BaseViewer', () => {
             const displayMessage = 'Such a special error!';
             const message = 'Bad things have happened';
             const details = {
-                what: 'what?!'
+                what: 'what?!',
             };
             const err = new PreviewError(code, displayMessage, details, message);
             const stub = sandbox.stub(base, 'emit');
@@ -354,8 +354,8 @@ describe('lib/viewers/BaseViewer', () => {
                 sharedLinkPassword,
                 container: containerEl,
                 file: {
-                    id: '0'
-                }
+                    id: '0',
+                },
             });
             sandbox.stub(util, 'appendAuthParams').returns(url);
 
@@ -382,8 +382,8 @@ describe('lib/viewers/BaseViewer', () => {
                 viewer: { ASSET: 'foo' },
                 container: containerEl,
                 file: {
-                    id: '0'
-                }
+                    id: '0',
+                },
             });
 
             sandbox.spy(util, 'createContentUrl');
@@ -426,8 +426,8 @@ describe('lib/viewers/BaseViewer', () => {
                 sharedLinkPassword,
                 container: containerEl,
                 file: {
-                    id: '0'
-                }
+                    id: '0',
+                },
             });
             sandbox.stub(util, 'getHeaders').returns(headers);
 
@@ -456,12 +456,12 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should prevent the context menu if preview only permissions', () => {
             base.options.file.permissions = {
-                can_download: false
+                can_download: false,
             };
 
             base.containerEl = {
                 addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             base.addCommonListeners();
@@ -479,8 +479,8 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.options.representation = {
                 content: {
-                    url_template: 'dl.boxcloud.com'
-                }
+                    url_template: 'dl.boxcloud.com',
+                },
             };
             stubs.getDownloadNotificationToShow = sandbox
                 .stub(DownloadReachability, 'getDownloadNotificationToShow')
@@ -502,8 +502,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.scale).to.equal(1.5);
         });
 
-        it('should show annotations if annotatorPromise exists', (done) => {
-            base.annotatorPromise = new Promise((resolve) => {
+        it('should show annotations if annotatorPromise exists', done => {
+            base.annotatorPromise = new Promise(resolve => {
                 resolve();
                 done();
             });
@@ -567,12 +567,12 @@ describe('lib/viewers/BaseViewer', () => {
             base.repStatuses = [
                 {
                     removeListener: removeListenerMock,
-                    destroy: destroyMock
+                    destroy: destroyMock,
                 },
                 {
                     removeListener: removeListenerMock,
-                    destroy: destroyMock
-                }
+                    destroy: destroyMock,
+                },
             ];
 
             base.destroy();
@@ -599,7 +599,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should clean up annotator', () => {
             base.annotator = {
                 removeAllListeners: sandbox.mock(),
-                destroy: sandbox.mock()
+                destroy: sandbox.mock(),
             };
             base.destroy();
             expect(base.annotator.removeAllListeners).to.be.called;
@@ -610,7 +610,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.preventDefault = sandbox.stub();
             base.containerEl = {
                 addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             base.destroy();
@@ -635,9 +635,9 @@ describe('lib/viewers/BaseViewer', () => {
             base = new BaseViewer({
                 viewer: { NAME: viewerName },
                 file: {
-                    id: fileId
+                    id: fileId,
                 },
-                container: containerEl
+                container: containerEl,
             });
 
             const emitStub = sandbox.stub();
@@ -650,7 +650,7 @@ describe('lib/viewers/BaseViewer', () => {
                 event,
                 data,
                 viewerName,
-                fileId
+                fileId,
             });
         });
     });
@@ -662,8 +662,8 @@ describe('lib/viewers/BaseViewer', () => {
             base = new BaseViewer({
                 container: containerEl,
                 file: {
-                    id: '123'
-                }
+                    id: '123',
+                },
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
@@ -673,7 +673,7 @@ describe('lib/viewers/BaseViewer', () => {
             event = {
                 preventDefault: sandbox.stub(),
                 stopPropagation: sandbox.stub(),
-                touches: [0, 0]
+                touches: [0, 0],
             };
             stubs.isIOS = sandbox.stub(Browser, 'isIOS');
             stubs.sqrt = sandbox.stub(Math, 'sqrt');
@@ -779,12 +779,12 @@ describe('lib/viewers/BaseViewer', () => {
                 event.touches = [
                     {
                         clientX: 0,
-                        clientY: 0
+                        clientY: 0,
                     },
                     {
                         clientX: 0,
-                        clientY: 0
-                    }
+                        clientY: 0,
+                    },
                 ];
                 base.mobileZoomChangeHandler(event);
 
@@ -806,12 +806,12 @@ describe('lib/viewers/BaseViewer', () => {
                 event.touches = [
                     {
                         clientX: 0,
-                        clientY: 0
+                        clientY: 0,
                     },
                     {
                         clientX: 0,
-                        clientY: 0
-                    }
+                        clientY: 0,
+                    },
                 ];
                 base.mobileZoomChangeHandler(event);
 
@@ -829,8 +829,8 @@ describe('lib/viewers/BaseViewer', () => {
             const baz = 'captain-america';
             base.options.viewers = {
                 Base: {
-                    fooBar: baz
-                }
+                    fooBar: baz,
+                },
             };
             base.options.viewer = { NAME: 'Base' };
 
@@ -850,7 +850,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'emit');
             base.options.location = {};
             base.options.viewer = {
-                pauseRequireJS: true
+                pauseRequireJS: true,
             };
         });
 
@@ -902,22 +902,22 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.options.representation = {
                 info: {
-                    url: 'someurl'
-                }
+                    url: 'someurl',
+                },
             };
         });
 
         it('should create a new rep status, save, and return it', () => {
             const repStatus = base.getRepStatus();
-            expect(base.repStatuses.find((status) => status === repStatus)).to.not.be.undefined;
+            expect(base.repStatuses.find(status => status === repStatus)).to.not.be.undefined;
             expect(repStatus).to.be.instanceof(RepStatus);
         });
 
         it('should use the passed in representation', () => {
             const representation = {
                 info: {
-                    url: 'someOtherUrl'
-                }
+                    url: 'someOtherUrl',
+                },
             };
             const repStatus = base.getRepStatus(representation);
             expect(repStatus.representation).to.equal(representation);
@@ -931,7 +931,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.loaded = true;
             base.options.viewer = {
-                NAME: 'Error'
+                NAME: 'Error',
             };
 
             expect(base.getLoadStatus()).to.equal('error');
@@ -945,8 +945,8 @@ describe('lib/viewers/BaseViewer', () => {
         it('should return whether the representation has a successful status', () => {
             const representation = {
                 status: {
-                    state: 'success'
-                }
+                    state: 'success',
+                },
             };
             expect(base.isRepresentationReady(representation)).to.be.true;
 
@@ -961,7 +961,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('disableViewerControls()', () => {
         it('should disable viewer controls', () => {
             base.controls = {
-                disable: sandbox.stub()
+                disable: sandbox.stub(),
             };
             base.disableViewerControls();
             expect(base.controls.disable).to.be.called;
@@ -971,7 +971,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('enableViewerControls()', () => {
         it('should enable viewer controls', () => {
             base.controls = {
-                enable: sandbox.stub()
+                enable: sandbox.stub(),
             };
             base.enableViewerControls();
             expect(base.controls.enable).to.be.called;
@@ -988,7 +988,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('getAssetPath()', () => {
         it('should return the asset path the viewer is/will use for preview representation content', () => {
             base.options.viewer = {
-                ASSET: '1.jpg'
+                ASSET: '1.jpg',
             };
             expect(base.getAssetPath()).to.equal(base.options.viewer.ASSET);
         });
@@ -1004,8 +1004,8 @@ describe('lib/viewers/BaseViewer', () => {
             annotationsEnabled: true,
             types: {
                 point: true,
-                highlight: false
-            }
+                highlight: false,
+            },
         };
 
         beforeEach(() => {
@@ -1041,9 +1041,9 @@ describe('lib/viewers/BaseViewer', () => {
             annotationsEnabled: true,
             types: {
                 point: true,
-                highlight: false
+                highlight: false,
             },
-            CONSTRUCTOR: sandbox.stub().returns(annotatorMock)
+            CONSTRUCTOR: sandbox.stub().returns(annotatorMock),
         };
 
         beforeEach(() => {
@@ -1076,7 +1076,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf)
+                determineAnnotator: sandbox.stub().returns(conf),
             };
             base.createAnnotator();
             expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
@@ -1089,20 +1089,20 @@ describe('lib/viewers/BaseViewer', () => {
                 container: document,
                 file: {
                     file_version: {
-                        id: 123
-                    }
+                        id: 123,
+                    },
                 },
                 location: {
-                    locale: 'en-US'
-                }
+                    locale: 'en-US',
+                },
             };
             base.scale = 1.5;
             base.annotator = {
                 init: sandbox.stub(),
-                addListener: sandbox.stub()
+                addListener: sandbox.stub(),
             };
             base.annotatorConf = {
-                CONSTRUCTOR: sandbox.stub().returns(base.annotator)
+                CONSTRUCTOR: sandbox.stub().returns(base.annotator),
             };
         });
 
@@ -1132,7 +1132,7 @@ describe('lib/viewers/BaseViewer', () => {
         const permissions = {
             can_annotate: false,
             can_view_annotations_all: false,
-            can_view_annotations_self: false
+            can_view_annotations_self: false,
         };
 
         it('does nothing if file permissions are undefined', () => {
@@ -1164,8 +1164,8 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.hasPermissions = sandbox.stub(base, 'hasAnnotationPermissions').returns(true);
             base.options.file = {
                 permissions: {
-                    can_annotate: true
-                }
+                    can_annotate: true,
+                },
             };
         });
 
@@ -1207,19 +1207,19 @@ describe('lib/viewers/BaseViewer', () => {
 
             // All default types enabled
             boxAnnotations.viewerOptions = {
-                viewerName: { enabled: true }
+                viewerName: { enabled: true },
             };
             expect(base.areAnnotationsEnabled()).to.be.true;
 
             // No specified enabled types
             boxAnnotations.viewerOptions = {
-                viewerName: { enabledTypes: [] }
+                viewerName: { enabledTypes: [] },
             };
             expect(base.areAnnotationsEnabled()).to.be.false;
 
             // Specified types enabled
             boxAnnotations.viewerOptions = {
-                viewerName: { enabledTypes: ['point'] }
+                viewerName: { enabledTypes: ['point'] },
             };
             expect(base.areAnnotationsEnabled()).to.be.true;
 
@@ -1245,7 +1245,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should pass through the annotations object if an object', () => {
             const annConfig = {
                 enabled: true,
-                disabledTypes: ['drawing']
+                disabledTypes: ['drawing'],
             };
             sandbox.stub(base, 'getViewerOption').returns(annConfig);
             const config = base.getViewerAnnotationsConfig();
@@ -1260,7 +1260,7 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             sandbox.stub(base, 'emit');
             base.annotator = {
-                isInAnnotationMode: sandbox.stub()
+                isInAnnotationMode: sandbox.stub(),
             };
             sandbox.stub(base, 'disableViewerControls');
             sandbox.stub(base, 'enableViewerControls');
@@ -1269,7 +1269,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should disable controls and show point mode notification on annotationmodeenter', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeEnter,
-                data: { mode: ANNOTATION_TYPE_POINT }
+                data: { mode: ANNOTATION_TYPE_POINT },
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
@@ -1283,8 +1283,8 @@ describe('lib/viewers/BaseViewer', () => {
                 event: ANNOTATOR_EVENT.modeEnter,
                 data: {
                     mode: ANNOTATION_TYPE_DRAW,
-                    headerSelector: '.bp-header'
-                }
+                    headerSelector: '.bp-header',
+                },
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
@@ -1297,8 +1297,8 @@ describe('lib/viewers/BaseViewer', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {
-                    mode: ANNOTATION_TYPE_DRAW
-                }
+                    mode: ANNOTATION_TYPE_DRAW,
+                },
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
@@ -1311,8 +1311,8 @@ describe('lib/viewers/BaseViewer', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {
-                    mode: ANNOTATION_TYPE_DRAW
-                }
+                    mode: ANNOTATION_TYPE_DRAW,
+                },
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
@@ -1324,7 +1324,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should show a notification on annotationerror', () => {
             const data = {
                 event: ANNOTATOR_EVENT.error,
-                data: 'message'
+                data: 'message',
             };
             base.handleAnnotatorEvents(data);
             expect(base.previewUI.notification.show).to.be.called;
@@ -1336,12 +1336,12 @@ describe('lib/viewers/BaseViewer', () => {
             base.scale = 1;
             base.rotationAngle = 90;
             const data = {
-                event: ANNOTATOR_EVENT.fetch
+                event: ANNOTATOR_EVENT.fetch,
             };
             base.handleAnnotatorEvents(data);
             expect(base.emit).to.be.calledWith('scale', {
                 scale: base.scale,
-                rotationAngle: base.rotationAngle
+                rotationAngle: base.rotationAngle,
             });
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
@@ -1350,7 +1350,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should only emit annotatorevent when event does not match', () => {
             const data = {
                 event: 'no match',
-                data: 'message'
+                data: 'message',
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.not.be.called;
@@ -1358,7 +1358,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.not.be.calledWith(VIEWER_EVENT.notificationShow, data.data);
             expect(base.emit).to.not.be.calledWith('scale', {
                 scale: base.scale,
-                rotationAngle: base.rotationAngle
+                rotationAngle: base.rotationAngle,
             });
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
@@ -1369,7 +1369,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should return combined options to give to the annotator', () => {
             base.options = {
                 file: { id: 1 },
-                location: { locale: 'en-US' }
+                location: { locale: 'en-US' },
             };
             base.isMobile = true;
             base.hasTouch = false;
@@ -1386,13 +1386,13 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleAssetAndRepLoad()', () => {
-        it('should load annotations and create the annotator', (done) => {
+        it('should load annotations and create the annotator', done => {
             sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             sandbox.stub(base, 'createAnnotator').returns(
-                new Promise((resolve) => {
+                new Promise(resolve => {
                     resolve();
                     done();
-                })
+                }),
             );
 
             base.handleAssetAndRepLoad();

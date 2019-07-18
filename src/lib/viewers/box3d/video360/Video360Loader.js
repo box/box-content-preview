@@ -19,7 +19,7 @@ const VIDEO_FORMATS = [
     'mpg',
     'mts',
     'qt',
-    'wmv'
+    'wmv',
 ];
 const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera', 'Safari'];
 
@@ -28,8 +28,8 @@ const VIEWERS = [
         NAME: 'Video360',
         CONSTRUCTOR: Video360Viewer,
         REP: 'dash',
-        EXT: VIDEO_FORMATS
-    }
+        EXT: VIDEO_FORMATS,
+    },
 ];
 
 class Video360Loader extends Base360Loader {
@@ -52,7 +52,7 @@ class Video360Loader extends Base360Loader {
 
             // Check to see if we support playback in this browser
             // https://bugs.webkit.org/show_bug.cgi?id=135379
-            const isSupportedBrowser = BROWSERS_SUPPORTED.some((browserName) => browserName === name);
+            const isSupportedBrowser = BROWSERS_SUPPORTED.some(browserName => browserName === name);
 
             // If a 360 viewer but isn't a valid browser OR
             // If a 360 viewer but it is on IOS OR

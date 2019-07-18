@@ -125,7 +125,7 @@ describe('lib/viewers/media/Scrubber', () => {
             stubs.scrubberPosition = sandbox.stub(scrubber, 'computeScrubberPosition').returns(0.5);
             stubs.event = {
                 pageX: 50,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
         });
         it('should adjust the scrubber value to the current scrubber handle position value in the video', () => {
@@ -140,8 +140,8 @@ describe('lib/viewers/media/Scrubber', () => {
         it('should use the touch list if the event contains touches', () => {
             stubs.event.touches = [
                 {
-                    pageX: 55
-                }
+                    pageX: 55,
+                },
             ];
 
             scrubber.scrubbingHandler(stubs.event);
@@ -154,7 +154,7 @@ describe('lib/viewers/media/Scrubber', () => {
         it('should compute correct scrubber position', () => {
             sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
                 left: 20,
-                width: 100
+                width: 100,
             });
 
             const position = scrubber.computeScrubberPosition(30);
@@ -165,7 +165,7 @@ describe('lib/viewers/media/Scrubber', () => {
         it('should cap the scrubber position to 1', () => {
             sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
                 left: 20,
-                width: 100
+                width: 100,
             });
 
             const position = scrubber.computeScrubberPosition(130);
@@ -176,7 +176,7 @@ describe('lib/viewers/media/Scrubber', () => {
         it('should floor the scrubber position to 0', () => {
             sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
                 left: 20,
-                width: 100
+                width: 100,
             });
 
             const position = scrubber.computeScrubberPosition(10);
@@ -192,7 +192,7 @@ describe('lib/viewers/media/Scrubber', () => {
                 button: 5,
                 ctrlKey: undefined,
                 metaKey: undefined,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
         });
 

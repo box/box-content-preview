@@ -18,10 +18,10 @@ describe('lib/RepStatus', () => {
     beforeEach(() => {
         rep = {
             info: {
-                url: 'https://info'
+                url: 'https://info',
             },
             links: {},
-            status: {}
+            status: {},
         };
 
         /* eslint-disable require-jsdoc */
@@ -31,7 +31,7 @@ describe('lib/RepStatus', () => {
         repStatus = new RepStatus({
             representation: rep,
             logger,
-            fileId
+            fileId,
         });
     });
 
@@ -53,9 +53,9 @@ describe('lib/RepStatus', () => {
             expect(
                 RepStatus.getStatus({
                     status: {
-                        state: status
-                    }
-                })
+                        state: status,
+                    },
+                }),
             ).to.equal(status);
         });
     });
@@ -65,9 +65,9 @@ describe('lib/RepStatus', () => {
             expect(
                 RepStatus.getErrorCode({
                     status: {
-                        code: 'conversion_failed'
-                    }
-                })
+                        code: 'conversion_failed',
+                    },
+                }),
             ).to.equal('conversion_failed');
         });
     });
@@ -82,7 +82,7 @@ describe('lib/RepStatus', () => {
         it('should set the correct object properties', () => {
             repStatus = new RepStatus({
                 representation: rep,
-                logger: {}
+                logger: {},
             });
 
             expect(repStatus.representation).to.deep.equal(rep);
@@ -112,9 +112,9 @@ describe('lib/RepStatus', () => {
                 .returns(
                     Promise.resolve({
                         status: {
-                            state
-                        }
-                    })
+                            state,
+                        },
+                    }),
                 );
 
             return repStatus.updateStatus().then(() => {
@@ -130,12 +130,12 @@ describe('lib/RepStatus', () => {
                 .returns(
                     Promise.resolve({
                         status: {
-                            state
+                            state,
                         },
                         metadata: {
-                            pages: 10
-                        }
-                    })
+                            pages: 10,
+                        },
+                    }),
                 );
 
             return repStatus.updateStatus().then(() => {
@@ -169,11 +169,11 @@ describe('lib/RepStatus', () => {
             repStatus.updateStatus = () => {};
         });
 
-        it('should reject with the refresh message if the rep status is error', (done) => {
+        it('should reject with the refresh message if the rep status is error', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
-                .callsFake((err) => {
+                .callsFake(err => {
                     expect(err.displayMessage).to.equal(__('error_refresh'));
                     done();
                 });
@@ -182,11 +182,11 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the protected message if the rep status is error due to a password protected PDF', (done) => {
+        it('should reject with the protected message if the rep status is error due to a password protected PDF', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
-                .callsFake((err) => {
+                .callsFake(err => {
                     expect(err.displayMessage).to.equal(__('error_password_protected'));
                     done();
                 });
@@ -196,11 +196,11 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the try again message if the rep status is error due to unavailability', (done) => {
+        it('should reject with the try again message if the rep status is error due to unavailability', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
-                .callsFake((err) => {
+                .callsFake(err => {
                     expect(err.displayMessage).to.equal(__('error_try_again_later'));
                     done();
                 });
@@ -210,11 +210,11 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the unsupported format message if the rep status is error due a bad file', (done) => {
+        it('should reject with the unsupported format message if the rep status is error due a bad file', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
-                .callsFake((err) => {
+                .callsFake(err => {
                     expect(err.displayMessage).to.equal(__('error_bad_file'));
                     done();
                 });
@@ -240,7 +240,7 @@ describe('lib/RepStatus', () => {
 
         it('should log that file needs conversion if status is pending and logger exists', () => {
             repStatus.logger = {
-                setUnConverted: () => {}
+                setUnConverted: () => {},
             };
             sandbox.mock(repStatus.logger).expects('setUnConverted');
             sandbox.stub(repStatus, 'emit');

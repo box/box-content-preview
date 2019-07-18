@@ -123,8 +123,8 @@ describe('lib/util', () => {
             expect(
                 util.appendQueryParams(url, {
                     foo: 'bar',
-                    baz: 'boo'
-                })
+                    baz: 'boo',
+                }),
             ).to.equal(`${url}/?foo=bar&baz=boo`);
         });
 
@@ -133,8 +133,8 @@ describe('lib/util', () => {
             expect(
                 util.appendQueryParams(url, {
                     foo: 'bar',
-                    baz: 'boo'
-                })
+                    baz: 'boo',
+                }),
             ).to.equal('foo/?test=hah&foo=bar&baz=boo');
         });
 
@@ -143,8 +143,8 @@ describe('lib/util', () => {
             expect(
                 util.appendQueryParams(url, {
                     foo: 'bar',
-                    baz: 'boo'
-                })
+                    baz: 'boo',
+                }),
             ).to.equal('test.com/?foo=bar&baz=boo');
         });
     });
@@ -160,7 +160,7 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             expect(util.appendAuthParams(url, token, sharedLink)).to.equal(
-                `${url}/?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
             );
         });
 
@@ -170,7 +170,7 @@ describe('lib/util', () => {
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
             expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(
-                `${url}/?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
             );
         });
     });
@@ -202,7 +202,7 @@ describe('lib/util', () => {
         it('should return a function to create asset urls', () => {
             const location = {
                 baseURI: 'base/',
-                staticBaseURI: 'static/'
+                staticBaseURI: 'static/',
             };
             const assetUrlCreator = util.createAssetUrlCreator(location);
             assert.equal(typeof assetUrlCreator, 'function');
@@ -316,14 +316,14 @@ describe('lib/util', () => {
             it('should throw an error when foobar.js is not found', () => {
                 expect(() => util.findScriptLocation('fobar.js')).to.throw(
                     Error,
-                    /Missing or malformed fobar.js library/
+                    /Missing or malformed fobar.js library/,
                 );
             });
             it('should throw an error when foobar.js is not found via script tag', () => {
                 const script = document.querySelector('script[src*="/file.js"]');
                 expect(() => util.findScriptLocation('fobar.js', script)).to.throw(
                     Error,
-                    /Missing or malformed fobar.js library/
+                    /Missing or malformed fobar.js library/,
                 );
             });
         });
@@ -333,101 +333,101 @@ describe('lib/util', () => {
         it('should return empty when no key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: ''
+                    key: '',
                 }),
-                ''
+                '',
             );
         });
         it('should return empty when modifier and key are same', () => {
             assert.equal(
                 util.decodeKeydown({
                     key: 'Control',
-                    ctrlKey: true
+                    ctrlKey: true,
                 }),
-                ''
+                '',
             );
         });
         it('should return correct with ctrl modifier', () => {
             assert.equal(
                 util.decodeKeydown({
                     key: '1',
-                    ctrlKey: true
+                    ctrlKey: true,
                 }),
-                'Control+1'
+                'Control+1',
             );
         });
         it('should return correct with shift modifier', () => {
             assert.equal(
                 util.decodeKeydown({
                     key: '1',
-                    shiftKey: true
+                    shiftKey: true,
                 }),
-                'Shift+1'
+                'Shift+1',
             );
         });
         it('should return correct with meta modifier', () => {
             assert.equal(
                 util.decodeKeydown({
                     key: '1',
-                    metaKey: true
+                    metaKey: true,
                 }),
-                'Meta+1'
+                'Meta+1',
             );
         });
         it('should return space key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: ' '
+                    key: ' ',
                 }),
-                'Space'
+                'Space',
             );
         });
         it('should return right arrow key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'Right'
+                    key: 'Right',
                 }),
-                'ArrowRight'
+                'ArrowRight',
             );
         });
         it('should return left arrow key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'Left'
+                    key: 'Left',
                 }),
-                'ArrowLeft'
+                'ArrowLeft',
             );
         });
         it('should return up arrow key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'Up'
+                    key: 'Up',
                 }),
-                'ArrowUp'
+                'ArrowUp',
             );
         });
         it('should return down arrow key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'Down'
+                    key: 'Down',
                 }),
-                'ArrowDown'
+                'ArrowDown',
             );
         });
         it('should return esc key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'U+001B'
+                    key: 'U+001B',
                 }),
-                'Escape'
+                'Escape',
             );
         });
         it('should decode correct UTF8 key', () => {
             assert.equal(
                 util.decodeKeydown({
-                    key: 'U+0041'
+                    key: 'U+0041',
                 }),
-                'A'
+                'A',
             );
         });
     });
@@ -487,11 +487,11 @@ describe('lib/util', () => {
             const previousScrollTop = 0;
             const currentPageEl = {
                 offsetTop: 0,
-                clientHeight: 200
+                clientHeight: 200,
             };
             const wrapperEl = {
                 scrollTop: 101,
-                offsetHeight: 500
+                offsetHeight: 500,
             };
 
             const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
@@ -503,11 +503,11 @@ describe('lib/util', () => {
             const previousScrollTop = 0;
             const currentPageEl = {
                 offsetTop: 0,
-                clientHeight: 200
+                clientHeight: 200,
             };
             const wrapperEl = {
                 scrollTop: 99,
-                offsetHeight: 500
+                offsetHeight: 500,
             };
 
             const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
@@ -519,11 +519,11 @@ describe('lib/util', () => {
             const previousScrollTop = 500;
             const currentPageEl = {
                 offsetTop: 100,
-                clientHeight: 200
+                clientHeight: 200,
             };
             const wrapperEl = {
                 scrollTop: 0,
-                offsetHeight: 100
+                offsetHeight: 100,
             };
 
             const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
@@ -535,11 +535,11 @@ describe('lib/util', () => {
             const previousScrollTop = 500;
             const currentPageEl = {
                 offsetTop: 0,
-                clientHeight: 200
+                clientHeight: 200,
             };
             const wrapperEl = {
                 scrollTop: 10,
-                offsetHeight: 100
+                offsetHeight: 100,
             };
 
             const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
@@ -568,22 +568,22 @@ describe('lib/util', () => {
                 offsetLeft: 0,
                 offsetTop: 0,
                 scrollWidth: 0,
-                scrollHeight: 0
+                scrollHeight: 0,
             };
             const page2 = {
                 id: 2,
                 offsetLeft: 100,
                 offsetTop: 0,
                 scrollWidth: 100,
-                scrollHeight: 0
+                scrollHeight: 0,
             };
             const visiblePages = {
                 first: {
-                    id: 1
+                    id: 1,
                 },
                 last: {
-                    id: 2
-                }
+                    id: 2,
+                },
             };
 
             const midpointStub = sandbox.stub(document, 'querySelector');
@@ -603,7 +603,7 @@ describe('lib/util', () => {
 
             result = util.getClosestPageToPinch(0, 0, {
                 first: null,
-                last: null
+                last: null,
             });
 
             expect(result).to.equal(null);
@@ -635,11 +635,11 @@ describe('lib/util', () => {
             const a = {
                 b: {
                     c: 'value',
-                    b: ''
+                    b: '',
                 },
                 [someProp]: {
-                    value: 'test'
-                }
+                    value: 'test',
+                },
             };
 
             expect(util.getProp(a, 'b.c')).to.equal('value');
@@ -651,7 +651,7 @@ describe('lib/util', () => {
             const a = {
                 b: {},
                 test: undefined,
-                foo: null
+                foo: null,
             };
 
             expect(util.getProp(a, 'b.c', 'default')).to.equal('default');
@@ -689,7 +689,7 @@ describe('lib/util', () => {
             ['https://bar.app.boxcn.net', true],
             ['https://baz.ent.boxenterprise.net', true],
             ['https://haha.box.net', false],
-            ['https://some.other.domain', false]
+            ['https://some.other.domain', false],
         ].forEach(([hostname, expectedResult]) => {
             it('should return true when window location is a Box domain', () => {
                 sandbox.stub(Location, 'getHostname').returns(hostname);
@@ -704,28 +704,28 @@ describe('lib/util', () => {
                 it('should convert previewWMPref to value expected by the API', () => {
                     expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
                 });
-            }
+            },
         );
     });
 
     describe('handleRepresentationBlobFetch()', () => {
         it('should reject if the response is a 202', () => {
             const response = {
-                status: 202
+                status: 202,
             };
 
-            util.handleRepresentationBlobFetch(response).catch((e) => expect(e.code).to.equal(ERROR_CODE.DELETED_REPS));
+            util.handleRepresentationBlobFetch(response).catch(e => expect(e.code).to.equal(ERROR_CODE.DELETED_REPS));
         });
 
         it('should pass the response through', () => {
             const response = {
                 status: 200,
-                body: 'body'
+                body: 'body',
             };
 
-            util
-                .handleRepresentationBlobFetch(response)
-                .then((passedResponse) => expect(passedResponse).to.equal(response));
+            util.handleRepresentationBlobFetch(response).then(passedResponse =>
+                expect(passedResponse).to.equal(response),
+            );
         });
     });
 });

@@ -27,12 +27,12 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 set: () => {},
                 has: () => {},
                 get: () => {},
-                unset: () => {}
+                unset: () => {},
             },
             container: containerEl,
             file: {
-                extension: 'ppt'
-            }
+                extension: 'ppt',
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -42,11 +42,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         presentation.pdfViewer = {
             currentPageNumber: 1,
             update: sandbox.stub(),
-            cleanup: sandbox.stub()
+            cleanup: sandbox.stub(),
         };
 
         presentation.controls = {
-            add: sandbox.stub()
+            add: sandbox.stub(),
         };
     });
 
@@ -73,7 +73,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         it('should invoke onPreload callback', () => {
             presentation.options.logger = {
-                setPreloaded: sandbox.stub()
+                setPreloaded: sandbox.stub(),
             };
             stubs.setPreloaded = presentation.options.logger.setPreloaded;
             presentation.preloader.emit('preload');
@@ -92,7 +92,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         it('should remove listeners from preloader', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'destroy', { value: sandbox.stub() });
             presentation.preloader = {
-                removeAllListeners: sandbox.mock().withArgs('preload')
+                removeAllListeners: sandbox.mock().withArgs('preload'),
             };
             presentation.destroy();
             presentation = null; // Don't call destroy again during cleanup
@@ -171,7 +171,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(stubs.nextPage).to.be.called;
         });
 
-        it('should fallback to doc base\'s onKeydown if no entry matches', () => {
+        it("should fallback to doc base's onKeydown if no entry matches", () => {
             const docBaseSpy = sandbox.spy(DocBaseViewer.prototype, 'onKeydown');
             const eventStub = sandbox.stub();
 
@@ -299,11 +299,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 changedTouches: [
                     {
                         clientX: 0,
-                        clientY: 0
-                    }
+                        clientY: 0,
+                    },
                 ],
                 touches: [1],
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
@@ -411,7 +411,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
             presentation.event = {
                 deltaY: 5,
-                deltaX: -0
+                deltaX: -0,
             };
             wheelHandler = presentation.getWheelHandler();
         });
@@ -447,7 +447,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             it('should do nothing if the viewer is not loaded', () => {
                 const setPageStub = sandbox.stub(presentation, 'setPage');
                 const page = {
-                    pageNumber: 3
+                    pageNumber: 3,
                 };
 
                 presentation.loaded = false;
@@ -460,7 +460,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             it('should change the page if the viewer is loaded', () => {
                 const setPageStub = sandbox.stub(presentation, 'setPage');
                 const page = {
-                    pageNumber: 3
+                    pageNumber: 3,
                 };
 
                 presentation.loaded = true;
@@ -476,10 +476,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 _pages: {
                     0: {
                         id: 1,
-                        view: 'pageObj'
-                    }
+                        view: 'pageObj',
+                    },
                 },
-                _currentPageNumber: 1
+                _currentPageNumber: 1,
             };
 
             presentation.overwritePdfViewerBehavior();

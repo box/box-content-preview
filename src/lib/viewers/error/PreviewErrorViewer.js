@@ -108,7 +108,7 @@ class PreviewErrorViewer extends BaseViewer {
 
         // Log error message - this will be the original error message if available, display message if not
         this.emit(VIEWER_EVENT.load, {
-            error: stripAuthFromString(message)
+            error: stripAuthFromString(message),
         });
     }
 

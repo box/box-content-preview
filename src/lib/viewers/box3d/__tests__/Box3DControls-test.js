@@ -81,7 +81,7 @@ describe('lib/viewers/box3d/Box3DControls', () => {
                 'Enter fullscreen',
                 controls.handleToggleFullscreen,
                 'bp-enter-fullscreen-icon',
-                ICON_FULLSCREEN_IN
+                ICON_FULLSCREEN_IN,
             );
         });
 
@@ -90,7 +90,7 @@ describe('lib/viewers/box3d/Box3DControls', () => {
                 'Exit fullscreen',
                 controls.handleToggleFullscreen,
                 'bp-exit-fullscreen-icon',
-                ICON_FULLSCREEN_OUT
+                ICON_FULLSCREEN_OUT,
             );
         });
     });
@@ -145,8 +145,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             const removeStub = sandbox.stub();
             controls.vrButtonEl = {
                 classList: {
-                    remove: removeStub
-                }
+                    remove: removeStub,
+                },
             };
 
             controls.showVrButton();
@@ -160,8 +160,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             const addStub = sandbox.stub();
             controls.vrButtonEl = {
                 classList: {
-                    add: addStub
-                }
+                    add: addStub,
+                },
             };
 
             controls.hideVrButton();
@@ -176,8 +176,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             el = {
                 classList: {
                     add: sandbox.stub(),
-                    remove: sandbox.stub()
-                }
+                    remove: sandbox.stub(),
+                },
             };
         });
 
@@ -205,8 +205,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
         it('should invoke element.classList.toggle() with CLASS_HIDDEN', () => {
             const el = {
                 classList: {
-                    toggle: sandbox.stub()
-                }
+                    toggle: sandbox.stub(),
+                },
             };
 
             controls.toggleElementVisibility(el);
@@ -223,7 +223,7 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             expect(destroyStub).to.be.called;
         });
 
-        it('should not call controls.destroy() if .controls doesn\'t exist', () => {
+        it("should not call controls.destroy() if .controls doesn't exist", () => {
             const destroyStub = sandbox.stub(controls.controls, 'destroy');
             controls.controls = null;
             controls.destroy();
@@ -243,7 +243,7 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             expect(unregisterStub).to.be.called;
         });
 
-        it('should not call uiRegistry.unregisterAll() if .uiRegistry doesn\'t exist', () => {
+        it("should not call uiRegistry.unregisterAll() if .uiRegistry doesn't exist", () => {
             const unregisterStub = sandbox.stub(controls.uiRegistry, 'unregisterAll');
             controls.uiRegistry = null;
             controls.destroy();
