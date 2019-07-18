@@ -96,9 +96,9 @@ class Image360Renderer extends Box3DRenderer {
                 this.textureAsset.setProperties({
                     imageId: this.imageAsset.id,
                     wrapModeV: 'clampToEdge',
-                    wrapModeU: 'clampToEdge'
+                    wrapModeU: 'clampToEdge',
                 });
-                return new Promise((resolve) => {
+                return new Promise(resolve => {
                     this.textureAsset.load(() => {
                         this.skybox = this.getSkyboxComponent();
                         this.skybox.enable();
@@ -107,7 +107,7 @@ class Image360Renderer extends Box3DRenderer {
                     });
                 });
             },
-            () => this.onUnsupportedRepresentation()
+            () => this.onUnsupportedRepresentation(),
         );
     }
 

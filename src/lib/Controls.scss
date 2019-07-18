@@ -43,13 +43,13 @@
     }
 
     // Removes the spinner for number type inputs in Firefox
-    input[type=number] {
+    input[type='number'] {
         -moz-appearance: textfield;
     }
 
     /* stylelint-enable property-no-vendor-prefix */
 
-    input[type="number"].bp-page-num-input {
+    input[type='number'].bp-page-num-input {
         font-size: 14px;
         margin: 0 auto;
         position: absolute;
@@ -75,7 +75,7 @@
             display: none;
         }
 
-        input[type="number"].bp-page-num-input {
+        input[type='number'].bp-page-num-input {
             display: inline-block;
             position: static;
             visibility: visible;

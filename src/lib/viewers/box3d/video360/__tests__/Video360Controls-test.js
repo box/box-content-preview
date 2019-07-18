@@ -79,12 +79,12 @@ describe('lib/viewers/box3d/video360/Video360Controls', () => {
                 setAttribute: sandbox.stub(),
                 appendChild: sandbox.stub().returns(iconSpanEl),
                 classList: {
-                    add: sandbox.stub()
-                }
+                    add: sandbox.stub(),
+                },
             };
 
             mediaControlsEl = {
-                appendChild: sandbox.stub().returns(vrButtonEl)
+                appendChild: sandbox.stub().returns(vrButtonEl),
             };
 
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
@@ -142,7 +142,7 @@ describe('lib/viewers/box3d/video360/Video360Controls', () => {
         it('should invoke .vrButtonEl.addEventListener() with args ["click", .handleToggleVr()]', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             const vrButton = {
-                addEventListener: sandbox.stub()
+                addEventListener: sandbox.stub(),
             };
             controls.vrButtonEl = vrButton;
 
@@ -157,7 +157,7 @@ describe('lib/viewers/box3d/video360/Video360Controls', () => {
         it('should invoke .vrButtonEl.removeEventListener() with args ["click", .handleToggleVr()]', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             const vrButton = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
             controls.vrButtonEl = vrButton;
 
@@ -185,8 +185,8 @@ describe('lib/viewers/box3d/video360/Video360Controls', () => {
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
             const vrButton = {
                 classList: {
-                    remove: sandbox.stub()
-                }
+                    remove: sandbox.stub(),
+                },
             };
             controls.vrButtonEl = vrButton;
 
@@ -221,10 +221,10 @@ describe('lib/viewers/box3d/video360/Video360Controls', () => {
 
         it('should remove .vrButtonEl from control bar, if available and exists in the DOM', () => {
             const parent = {
-                removeChild: sandbox.stub()
+                removeChild: sandbox.stub(),
             };
             const vrButton = {
-                parentElement: parent
+                parentElement: parent,
             };
             controls.vrButtonEl = vrButton;
 

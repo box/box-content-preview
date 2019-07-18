@@ -28,18 +28,18 @@ describe('lib/viewers/image/ImageViewer', () => {
             file: {
                 id: '1',
                 file_version: {
-                    id: '1'
-                }
+                    id: '1',
+                },
             },
             viewer: {
                 NAME: 'Image',
-                ASSET: '1.png'
+                ASSET: '1.png',
             },
             representation: {
                 content: {
-                    url_template: 'foo'
-                }
-            }
+                    url_template: 'foo',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -118,7 +118,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         it('should not prefetch content if file is watermarked', () => {
             image.options.file.watermark_info = {
-                is_watermarked: true
+                is_watermarked: true,
             };
             sandbox.stub(image, 'createContentUrlWithAuthParams');
 
@@ -333,7 +333,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.setScale(width, height);
             expect(image.emit).to.be.calledWith('scale', {
                 scale: sinon.match.any,
-                rotationAngle: sinon.match.number
+                rotationAngle: sinon.match.number,
             });
         });
     });
@@ -356,15 +356,15 @@ describe('lib/viewers/image/ImageViewer', () => {
                 addEventListener() {},
                 contentWindow: {
                     document: {
-                        execCommand: stubs.execCommand
+                        execCommand: stubs.execCommand,
                     },
                     focus: stubs.focus,
-                    print: stubs.print
+                    print: stubs.print,
                 },
                 contentDocument: {
-                    querySelector: sandbox.stub().returns(containerEl.querySelector('img'))
+                    querySelector: sandbox.stub().returns(containerEl.querySelector('img')),
                 },
-                removeEventListener() {}
+                removeEventListener() {},
             };
 
             stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
@@ -379,7 +379,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(stubs.focus).to.be.called;
         });
 
-        it('should execute the print command if the browser is Explorer', (done) => {
+        it('should execute the print command if the browser is Explorer', done => {
             stubs.getName.returns('Explorer');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
@@ -391,7 +391,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.print();
         });
 
-        it('should execute the print command if the browser is Edge', (done) => {
+        it('should execute the print command if the browser is Edge', done => {
             stubs.getName.returns('Edge');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
@@ -403,7 +403,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.print();
         });
 
-        it('should call the contentWindow print for other browsers', (done) => {
+        it('should call the contentWindow print for other browsers', done => {
             stubs.getName.returns('Chrome');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
@@ -436,7 +436,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
             expect(widthAndHeightObj).to.deep.equal({
                 width,
-                height
+                height,
             });
         });
 
@@ -446,7 +446,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
             expect(widthAndHeightObj).to.deep.equal({
                 width: height,
-                height: width
+                height: width,
             });
         });
     });
@@ -532,7 +532,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             image.handleMouseUp(event);
             event.button = 1;
@@ -551,7 +551,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             image.isZoomable = true;
             image.handleMouseUp(event);
@@ -565,7 +565,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             image.isZoomable = false;
             image.didPan = false;
@@ -580,7 +580,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             image.isZoomable = false;
             image.didPan = true;
@@ -597,13 +597,13 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(stubs.padding).to.be.called;
             expect(image.emit).to.be.calledWith('scale', {
                 scale: sinon.match.any,
-                rotationAngle: sinon.match.number
+                rotationAngle: sinon.match.number,
             });
         });
     });
 
     describe('handleAssetAndRepLoad', () => {
-        it('should setup image src', (done) => {
+        it('should setup image src', done => {
             const url = 'foo';
             const imageEl = document.createElement('img');
 
@@ -611,10 +611,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             const startLoadTimer = sandbox.stub(image, 'startLoadTimer');
             const loadBoxAnnotations = sandbox.stub(image, 'loadBoxAnnotations').returns(Promise.resolve());
             const createAnnotator = sandbox.stub(image, 'createAnnotator').returns(
-                new Promise((resolve) => {
+                new Promise(resolve => {
                     resolve();
                     done();
-                })
+                }),
             );
 
             image.handleAssetAndRepLoad(url);

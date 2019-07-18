@@ -128,7 +128,7 @@ class DocFindBar extends EventEmitter {
             query: this.findFieldEl.value,
             phraseSearch: true, // true by default
             highlightAll: true, // true by default
-            findPrevious: findPrev
+            findPrevious: findPrev,
         });
     }
 
@@ -332,7 +332,7 @@ class DocFindBar extends EventEmitter {
 
             // Emit a metric that the user navigated forward in the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.NEXT
+                name: USER_DOCUMENT_FIND_EVENTS.NEXT,
             });
         }
     }
@@ -360,7 +360,7 @@ class DocFindBar extends EventEmitter {
 
             // Emit a metric that the user navigated back in the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS
+                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS,
             });
         }
     }
@@ -383,7 +383,7 @@ class DocFindBar extends EventEmitter {
             this.bar.classList.remove(CLASS_HIDDEN);
             // Emit a metric that the user opened the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.OPEN
+                name: USER_DOCUMENT_FIND_EVENTS.OPEN,
             });
         }
         this.findFieldEl.select();

@@ -18,8 +18,8 @@ describe('lib/viewers/media/MP4Viewer', () => {
         mp4 = new MP4Viewer({
             container: containerEl,
             file: {
-                id: 1
-            }
+                id: 1,
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });

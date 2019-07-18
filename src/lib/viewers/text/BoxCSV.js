@@ -58,7 +58,7 @@ class BoxCSV {
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
         const rowClass = this.getRowClassName(rowIndex);
         return (
-            <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>
+            <div key={key} className={`${rowClass} bp-text-csv-cell`} style={style}>
                 {this.data[rowIndex][columnIndex]}
             </div>
         );
@@ -89,16 +89,16 @@ class BoxCSV {
 
         this.gridComponent = render(
             <Grid
-                className='bp-text-csv-grid'
                 cellRenderer={this.cellRenderer}
-                width={maxWidth}
-                height={Math.min(maxHeight, calculatedHeight)}
+                className="bp-text-csv-grid"
                 columnCount={columnCount}
-                rowHeight={HEIGHT_ROW}
                 columnWidth={columnWidth}
+                height={Math.min(maxHeight, calculatedHeight)}
                 rowCount={rowCount}
+                rowHeight={HEIGHT_ROW}
+                width={maxWidth}
             />,
-            this.csvEl
+            this.csvEl,
         );
     }
 }

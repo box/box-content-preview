@@ -177,7 +177,13 @@ class OfficeViewer extends BaseViewer {
      * @return {void}
      */
     setupIframe() {
-        const { appHost, apiHost, file, sharedLink, location: { locale } } = this.options;
+        const {
+            appHost,
+            apiHost,
+            file,
+            sharedLink,
+            location: { locale },
+        } = this.options;
         const iframeEl = this.createIframeElement();
         this.createViewer(iframeEl);
 
@@ -296,7 +302,7 @@ class OfficeViewer extends BaseViewer {
         // origin for iframe postMessage communications.
         formEl.setAttribute(
             'action',
-            `${EXCEL_ONLINE_EMBED_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`
+            `${EXCEL_ONLINE_EMBED_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`,
         );
         formEl.setAttribute('method', 'POST');
         formEl.setAttribute('target', OFFICE_ONLINE_IFRAME_NAME);
@@ -327,7 +333,7 @@ class OfficeViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then(blob => {
             this.printBlob = blob;
         });
     }

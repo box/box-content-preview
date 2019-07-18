@@ -200,10 +200,10 @@ class PlainTextViewer extends TextBaseViewer {
         this.startLoadTimer();
         return api
             .get(contentUrl, { headers, type: 'text' })
-            .catch((error) => {
+            .catch(error => {
                 this.handleDownloadError(error, contentUrl);
             })
-            .then((text) => {
+            .then(text => {
                 if (this.isDestroyed()) {
                     return;
                 }
@@ -232,13 +232,13 @@ class PlainTextViewer extends TextBaseViewer {
      */
     initHighlightJs(text) {
         const workerBlob = new Blob([HIGHLIGHT_WORKER_JS], {
-            type: 'application/javascript'
+            type: 'application/javascript',
         });
         this.workerSrc = URL.createObjectURL(workerBlob);
         const worker = new Worker(this.workerSrc);
 
         // Once highlighting is done, replace content and finish loading
-        worker.onmessage = (event) => {
+        worker.onmessage = event => {
             this.finishLoading(event.data, true);
         };
 
@@ -247,7 +247,7 @@ class PlainTextViewer extends TextBaseViewer {
         const highlightSrc = assetUrlCreator(`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/highlight.min.js`);
         worker.postMessage({
             highlightSrc,
-            text
+            text,
         });
     }
 
@@ -290,7 +290,7 @@ class PlainTextViewer extends TextBaseViewer {
     preparePrint(stylesheets) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
-        stylesheets.forEach((stylesheet) => {
+        stylesheets.forEach(stylesheet => {
             this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
         });
 

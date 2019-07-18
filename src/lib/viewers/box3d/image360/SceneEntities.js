@@ -8,14 +8,14 @@ export default [
         properties: {
             near: 0.05, // Camera near-plane distance
             far: 200,
-            fov: 70
+            fov: 70,
         },
         components: [
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
             {
                 name: 'Render View',
                 enabled: true,
-                scriptId: 'vr_render_view'
+                scriptId: 'vr_render_view',
             },
             {
                 name: 'Orbit Camera',
@@ -23,17 +23,17 @@ export default [
                     panEnabled: false,
                     zoomEnabled: true,
                     inertialDamping: 0.2,
-                    lookSpeed: 0.5
+                    lookSpeed: 0.5,
                 },
                 enabled: true,
-                scriptId: 'orbit_camera'
+                scriptId: 'orbit_camera',
             },
             {
                 name: 'VR Camera Controller',
                 enabled: true,
-                scriptId: 'vr_camera_controller'
-            }
-        ]
+                scriptId: 'vr_camera_controller',
+            },
+        ],
     },
     {
         id: 'SCENE_ID',
@@ -44,18 +44,18 @@ export default [
             {
                 name: 'Skybox',
                 attributes: {
-                    size: 100
+                    size: 100,
                 },
                 scriptId: 'skybox_renderer',
-                enabled: false
-            }
-        ]
+                enabled: false,
+            },
+        ],
     },
     {
         id: 'APP_ASSET_ID',
         type: 'application',
         properties: {
-            startupSceneId: 'SCENE_ID' // The scene to load
+            startupSceneId: 'SCENE_ID', // The scene to load
         },
         components: [
             {
@@ -63,16 +63,16 @@ export default [
                 attributes: {
                     antialias: !Browser.isMobile(),
                     maxTextureSize2d: 8192,
-                    renderOnDemand: true
+                    renderOnDemand: true,
                 },
                 scriptId: 'box3d_renderer',
                 isBuiltIn: true,
-                enabled: true
+                enabled: true,
             },
             {
                 name: 'Debug Performance',
                 scriptId: 'debug_performance',
-                enabled: false
+                enabled: false,
             },
             {
                 name: 'Input',
@@ -93,7 +93,7 @@ export default [
                         contextMenu: true,
                         preventContextMenuDefault: true,
                         dragBufferDistance: 12,
-                        eventHandler: true
+                        eventHandler: true,
                     },
                     touchEvents: {
                         enable: true,
@@ -106,21 +106,21 @@ export default [
                         move: true,
                         preventMoveDefault: true,
                         dragBufferDistance: 12,
-                        eventHandler: true
+                        eventHandler: true,
                     },
                     keyEvents: {
                         enable: true,
                         down: true,
                         up: true,
                         preventDefault: false,
-                        eventHandler: true
-                    }
-                }
+                        eventHandler: true,
+                    },
+                },
             },
             {
                 name: 'VR Presenter',
-                scriptId: 'vr_presenter'
-            }
-        ]
-    }
+                scriptId: 'vr_presenter',
+            },
+        ],
+    },
 ];

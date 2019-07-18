@@ -29,15 +29,15 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             file: {
                 id: 0,
                 permissions: {
-                    can_download: true
-                }
+                    can_download: true,
+                },
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'foo'
-                }
-            }
+                    url_template: 'foo',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -62,9 +62,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should set up proper text elements and initialize print', () => {
             text = new PlainTextViewer({
                 file: {
-                    id: 0
+                    id: 0,
                 },
-                container: containerEl
+                container: containerEl,
             });
             sandbox.stub(text, 'initPrint');
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -167,14 +167,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.printReady = false;
             text.printPopup = {
                 show: sandbox.stub(),
-                disableButton: sandbox.stub()
+                disableButton: sandbox.stub(),
             };
 
             text.print();
 
             expect(text.preparePrint).to.be.calledWith([
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
-                'preview.css'
+                'preview.css',
             ]);
             expect(text.printPopup.show).to.be.called;
             expect(text.printPopup.disableButton).to.be.called;
@@ -286,8 +286,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(Worker.prototype, 'postMessage', {
                 value: sandbox.mock().withArgs({
                     highlightSrc: hljs,
-                    text: someText
-                })
+                    text: someText,
+                }),
             });
 
             text.initHighlightJs(someText);
@@ -301,9 +301,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         beforeEach(() => {
             text = new PlainTextViewer({
                 file: {
-                    id: 0
+                    id: 0,
                 },
-                container: containerEl
+                container: containerEl,
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
             text.containerEl = containerEl;
@@ -343,9 +343,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: appendStub
-                    }
-                }
+                        appendChild: appendStub,
+                    },
+                },
             });
             text.options.location = 'en-US';
             sandbox.stub(window, 'setTimeout');
@@ -363,9 +363,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: sandbox.stub()
-                    }
-                }
+                        appendChild: sandbox.stub(),
+                    },
+                },
             });
 
             text.initPrint();
@@ -387,8 +387,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.printframe = {
                 contentWindow: {
                     focus: sandbox.stub(),
-                    print: sandbox.stub()
-                }
+                    print: sandbox.stub(),
+                },
             };
             sandbox.stub(Browser, 'getName').returns('NotExplorer');
 
@@ -441,7 +441,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should set up download button and bind click handler', () => {
             const bindDownload = sandbox.stub();
             text.download = {
-                bind: sandbox.stub().returns(bindDownload)
+                bind: sandbox.stub().returns(bindDownload),
             };
 
             text.showTruncatedDownloadButton();

@@ -24,7 +24,7 @@ import {
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
-    SELECTOR_BOX_PREVIEW_CONTENT
+    SELECTOR_BOX_PREVIEW_CONTENT,
 } from './constants';
 
 class PreviewUI {
@@ -365,7 +365,7 @@ class PreviewUI {
 
         // First hide all possible headers
         const headers = this.container.querySelectorAll(`.${CLASS_BOX_PREVIEW_HEADER}`);
-        [].forEach.call(headers, (header) => {
+        [].forEach.call(headers, header => {
             header.classList.add(CLASS_HIDDEN);
         });
 

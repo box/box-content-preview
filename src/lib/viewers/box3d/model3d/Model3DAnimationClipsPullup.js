@@ -166,7 +166,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
      * @return {void}
      */
     selectClip(selectedClipId) {
-        Object.keys(this.clipEls).forEach((clipId) => {
+        Object.keys(this.clipEls).forEach(clipId => {
             const clipEl = this.clipEls[clipId];
             const iconEl = clipEl.querySelector('.box3d-animation-clip-icon');
             iconEl.innerHTML = clipId === selectedClipId ? ICON_CHECK_MARK : '';

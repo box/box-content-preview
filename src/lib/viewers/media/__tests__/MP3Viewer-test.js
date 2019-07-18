@@ -19,8 +19,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
         mp3 = new MP3Viewer({
             container: containerEl,
             file: {
-                id: 1
-            }
+                id: 1,
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -64,7 +64,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 show: () => {},
                 destroy: () => {},
                 resizeTimeScrubber: () => {},
-                removeAllListeners: () => {}
+                removeAllListeners: () => {},
             };
 
             const controlsMock = sandbox.mock(mp3.mediaControls);

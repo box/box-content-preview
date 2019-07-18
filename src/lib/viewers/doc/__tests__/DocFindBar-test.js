@@ -35,11 +35,11 @@ describe('lib/viewers/doc/DocFindBar', () => {
         pdfViewer = new PDFJS.PDFViewer({
             container: docEl,
             linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: false // improves text selection if true
+            enhanceTextSelection: false, // improves text selection if true
         });
 
         findController = new PDFJS.PDFFindController({
-            pdfViewer
+            pdfViewer,
         });
 
         docFindBar = new DocFindBar(findBarEl, findController, true);
@@ -156,7 +156,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
                 query: docFindBar.findFieldEl.value,
                 phraseSearch: true,
                 highlightAll: true,
-                findPrevious: 'test'
+                findPrevious: 'test',
             };
 
             docFindBar.dispatchFindEvent('string', 'test');
@@ -199,7 +199,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
     describe('updateUIResultsCount()', () => {
         beforeEach(() => {
             stubs.getBoundingClientRect = sandbox.stub(docFindBar.findResultsCountEl, 'getBoundingClientRect').returns({
-                width: 5
+                width: 5,
             });
         });
 
@@ -233,7 +233,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
     describe('setFindFieldElValue()', () => {
         it('should set the findFieldEl value', () => {
             docFindBar.findFieldEl = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             docFindBar.setFindFieldElValue('test');
@@ -282,7 +282,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             stubs.open = sandbox.stub(docFindBar, 'open');
             stubs.event = {
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
             stubs.close = sandbox.stub(docFindBar, 'close');
         });
@@ -362,7 +362,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             stubs.decodeKeydown = sandbox.stub(util, 'decodeKeydown');
             stubs.event = {
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
             stubs.findNextHandler = sandbox.stub(docFindBar, 'findNextHandler');
             stubs.findPreviousHandler = sandbox.stub(docFindBar, 'findPreviousHandler');
@@ -489,7 +489,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
 
             docFindBar.findNextHandler(true);
             expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.NEXT
+                name: USER_DOCUMENT_FIND_EVENTS.NEXT,
             });
         });
     });
@@ -538,7 +538,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
 
             docFindBar.findPreviousHandler(true);
             expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS
+                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS,
             });
         });
     });
@@ -573,7 +573,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(docFindBar.opened).to.equal(true);
             expect(stubs.remove).to.be.called;
             expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.OPEN
+                name: USER_DOCUMENT_FIND_EVENTS.OPEN,
             });
         });
 

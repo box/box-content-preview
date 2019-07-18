@@ -16,8 +16,8 @@ function sceneEntities(prefix) {
                 imageId: 'MAT_CAP_IMG',
                 wrapModeU: 'clampToEdge',
                 wrapModeV: 'clampToEdge',
-                flipY: true
-            }
+                flipY: true,
+            },
         },
         {
             id: 'MAT_CAP_IMG',
@@ -26,7 +26,7 @@ function sceneEntities(prefix) {
                 name: 'Mat Cap Image',
                 width: 256,
                 height: 256,
-                stream: false
+                stream: false,
             },
             representations: [
                 {
@@ -36,10 +36,10 @@ function sceneEntities(prefix) {
                     contentEncoding: 'identity',
                     width: 256,
                     height: 256,
-                    compression: 'zip'
-                }
-            ]
-        }
+                    compression: 'zip',
+                },
+            ],
+        },
     ];
 }
 

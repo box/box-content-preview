@@ -207,7 +207,7 @@ class ImageBaseViewer extends BaseViewer {
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */
     setOriginalImageSize(imageEl) {
-        const promise = new Promise((resolve) => {
+        const promise = new Promise(resolve => {
             // Do not bother loading a new image when the natural size attributes exist
             if (imageEl.naturalWidth && imageEl.naturalHeight) {
                 imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
@@ -217,9 +217,8 @@ class ImageBaseViewer extends BaseViewer {
                 // Case when natural dimensions are not assigned
                 // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
                 // IE11 workaround. Dimensions only displayed if the image is attached to the document.
-                api
-                    .get(imageEl.src, { type: 'text' })
-                    .then((imageAsText) => {
+                api.get(imageEl.src, { type: 'text' })
+                    .then(imageAsText => {
                         const parser = new DOMParser();
                         const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
 
@@ -341,7 +340,8 @@ class ImageBaseViewer extends BaseViewer {
         if (key === 'Shift++') {
             this.zoomIn();
             return true;
-        } else if (key === 'Shift+_') {
+        }
+        if (key === 'Shift+_') {
             this.zoomOut();
             return true;
         }

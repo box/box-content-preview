@@ -22,7 +22,7 @@ describe('lib/PreviewUI', () => {
         fixture.load('__tests__/PreviewUI-test.html');
         containerEl = document.querySelector('.ui');
         options = {
-            container: containerEl
+            container: containerEl,
         };
     });
 
@@ -168,7 +168,7 @@ describe('lib/PreviewUI', () => {
                 const { previewContainer } = ui;
                 ui.showNavigation('1', ['1']);
                 let isShowingNavigation = previewContainer.classList.contains(
-                    constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION
+                    constants.CLASS_BOX_PREVIEW_HAS_NAVIGATION,
                 );
                 expect(isShowingNavigation).to.be.false;
                 ui.showNavigation('1', ['1', '2']);
@@ -264,7 +264,7 @@ describe('lib/PreviewUI', () => {
     describe('startProgressBar()', () => {
         it('should start the progress bar', () => {
             ui.progressBar = {
-                start: sandbox.stub()
+                start: sandbox.stub(),
             };
 
             ui.startProgressBar();
@@ -275,7 +275,7 @@ describe('lib/PreviewUI', () => {
     describe('finishProgressBar()', () => {
         it('should finish the progress bar', () => {
             ui.progressBar = {
-                finish: sandbox.stub()
+                finish: sandbox.stub(),
             };
 
             ui.finishProgressBar();
@@ -286,7 +286,7 @@ describe('lib/PreviewUI', () => {
     describe('showNotification()', () => {
         it('should show a notification message', () => {
             ui.notification = {
-                show: sandbox.stub()
+                show: sandbox.stub(),
             };
 
             ui.showNotification('message');
@@ -297,7 +297,7 @@ describe('lib/PreviewUI', () => {
     describe('hideNotification()', () => {
         it('should hide the notification message', () => {
             ui.notification = {
-                hide: sandbox.stub()
+                hide: sandbox.stub(),
             };
 
             ui.hideNotification('message');
@@ -365,14 +365,14 @@ describe('lib/PreviewUI', () => {
             const url = 'http://test/foo';
 
             expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT)).to.not.have.class(
-                constants.CLASS_HIDDEN
+                constants.CLASS_HIDDEN,
             );
 
             ui.setupHeader('', url);
 
             const customLogoEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
             expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT)).to.have.class(
-                constants.CLASS_HIDDEN
+                constants.CLASS_HIDDEN,
             );
             expect(customLogoEl).to.not.have.class(constants.CLASS_HIDDEN);
             expect(customLogoEl.src).to.equal(url);

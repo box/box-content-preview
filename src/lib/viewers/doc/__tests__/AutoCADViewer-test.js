@@ -19,8 +19,8 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
         autocad = new AutoCADViewer({
             container: containerEl,
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
 
         stubs.getXrefsMetadata = sandbox.stub(metadataAPI, 'getXrefsMetadata');
@@ -30,11 +30,11 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
         autocad.options = {
             file: {
                 id: '123',
-                extension: EXTENSION
+                extension: EXTENSION,
             },
             ui: {
-                showNotification: stubs.showNotification
-            }
+                showNotification: stubs.showNotification,
+            },
         };
     });
 

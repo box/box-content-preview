@@ -25,7 +25,7 @@ import {
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     QUERY_PARAM_ENCODING,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -35,7 +35,7 @@ import {
     ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
-    ICON_THUMBNAILS_TOGGLE
+    ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
@@ -67,7 +67,7 @@ const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
-    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
 
 class DocBaseViewer extends BaseViewer {
@@ -360,7 +360,7 @@ class DocBaseViewer extends BaseViewer {
 
         /* global PDFJS */
         this.findController = new PDFJS.PDFFindController({
-            pdfViewer: this.pdfViewer
+            pdfViewer: this.pdfViewer,
         });
         this.pdfViewer.setFindController(this.findController);
 
@@ -525,7 +525,7 @@ class DocBaseViewer extends BaseViewer {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: true,
-                canZoomIn: newScale < MAX_SCALE
+                canZoomIn: newScale < MAX_SCALE,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
@@ -550,7 +550,7 @@ class DocBaseViewer extends BaseViewer {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: newScale > MIN_SCALE,
-                canZoomIn: true
+                canZoomIn: true,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
@@ -637,20 +637,20 @@ class DocBaseViewer extends BaseViewer {
         // Apply encoding request to the content request
         if (this.encoding) {
             url = appendQueryParams(url, {
-                [QUERY_PARAM_ENCODING]: this.encoding
+                [QUERY_PARAM_ENCODING]: this.encoding,
             });
         }
 
         const docInitParams = {
             url,
-            rangeChunkSize
+            rangeChunkSize,
         };
 
         // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
         // see: https://bugs.webkit.org/show_bug.cgi?id=82672
         if (Browser.isIOS()) {
             docInitParams.httpHeaders = {
-                'If-None-Match': 'webkit-no-cache'
+                'If-None-Match': 'webkit-no-cache',
             };
         }
 
@@ -661,7 +661,7 @@ class DocBaseViewer extends BaseViewer {
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
         return this.pdfLoadingTask
-            .then((doc) => {
+            .then(doc => {
                 this.pdfViewer.setDocument(doc);
 
                 if (this.shouldThumbnailsBeToggled()) {
@@ -676,7 +676,7 @@ class DocBaseViewer extends BaseViewer {
                     linkService.setViewer(this.pdfViewer);
                 }
             })
-            .catch((err) => {
+            .catch(err => {
                 // eslint-disable-next-line
                 console.error(err);
 
@@ -687,11 +687,11 @@ class DocBaseViewer extends BaseViewer {
                 const error =
                     status === 202
                         ? new PreviewError(
-                            ERROR_CODE.DELETED_REPS,
-                            __('error_refresh'),
-                            { isRepDeleted: true },
-                            message
-                        )
+                              ERROR_CODE.DELETED_REPS,
+                              __('error_refresh'),
+                              { isRepDeleted: true },
+                              message,
+                          )
                         : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
                 this.handleDownloadError(error, pdfUrl);
             });
@@ -709,7 +709,7 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            enhanceTextSelection: !this.isMobile,
         });
     }
 
@@ -773,7 +773,7 @@ class DocBaseViewer extends BaseViewer {
         Timer.stop(tag);
         this.emitMetric({
             name: LOAD_METRIC.previewPreloadEvent,
-            data: time.elapsed
+            data: time.elapsed,
         });
         Timer.reset(tag);
     }
@@ -881,7 +881,7 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPageIds() {
         const pageEls = this.containerEl.querySelectorAll('.page');
-        [].forEach.call(pageEls, (pageEl) => {
+        [].forEach.call(pageEls, pageEl => {
             /* eslint-disable no-param-reassign */
             const { pageNumber } = pageEl.dataset;
             if (pageNumber) {
@@ -899,7 +899,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
+        return api.get(pdfUrl, { type: 'blob' }).then(blob => {
             this.printBlob = blob;
         });
     }
@@ -1038,7 +1038,7 @@ class DocBaseViewer extends BaseViewer {
                 __('toggle_thumbnails'),
                 this.toggleThumbnails,
                 'bp-toggle-thumbnails-icon',
-                ICON_THUMBNAILS_TOGGLE
+                ICON_THUMBNAILS_TOGGLE,
             );
         }
 
@@ -1051,7 +1051,7 @@ class DocBaseViewer extends BaseViewer {
             __('enter_fullscreen'),
             this.toggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
@@ -1083,7 +1083,7 @@ class DocBaseViewer extends BaseViewer {
                 encoding: this.encoding,
                 numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
-                scale: currentScale
+                scale: currentScale,
             });
 
             // Add page IDs to each page after page structure is available
@@ -1101,7 +1101,7 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebar.init({
             currentPage: this.pdfViewer.currentPageNumber,
             isOpen: this.shouldThumbnailsBeToggled(),
-            onSelect: this.onThumbnailSelectHandler
+            onSelect: this.onThumbnailSelectHandler,
         });
     }
 
@@ -1133,7 +1133,7 @@ class DocBaseViewer extends BaseViewer {
             // Set scale to current numerical scale & rendered page number
             this.emit('scale', {
                 scale: this.pdfViewer.currentScale,
-                pageNum: pageNumber
+                pageNum: pageNumber,
             });
 
             // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
@@ -1204,7 +1204,7 @@ class DocBaseViewer extends BaseViewer {
             if (!this.scrollStarted) {
                 this.emit('scrollstart', {
                     scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
+                    scrollLeft: this.docEl.scrollLeft,
                 });
                 this.scrollStarted = true;
             }
@@ -1212,7 +1212,7 @@ class DocBaseViewer extends BaseViewer {
             this.scrollTimer = setTimeout(() => {
                 this.emit('scrollend', {
                     scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
+                    scrollLeft: this.docEl.scrollLeft,
                 });
                 this.scrollStarted = false;
             }, SCROLL_END_TIMEOUT);
@@ -1241,18 +1241,18 @@ class DocBaseViewer extends BaseViewer {
             event.pageX && event.pageY
                 ? [event.pageX, event.pageY]
                 : getMidpoint(
-                    event.touches[0].pageX,
-                    event.touches[0].pageY,
-                    event.touches[1].pageX,
-                    event.touches[1].pageY
-                );
+                      event.touches[0].pageX,
+                      event.touches[0].pageY,
+                      event.touches[1].pageX,
+                      event.touches[1].pageY,
+                  );
 
         // Find the page closest to the pinch
         const visiblePages = this.pdfViewer._getVisiblePages();
         this.pinchPage = getClosestPageToPinch(
             this.docEl.scrollLeft + touchMidpoint[0],
             this.docEl.scrollTop + touchMidpoint[1],
-            visiblePages
+            visiblePages,
         );
 
         // Set the scale point based on the pinch midpoint and scroll offsets
@@ -1270,7 +1270,7 @@ class DocBaseViewer extends BaseViewer {
             event.touches[0].pageX,
             event.touches[0].pageY,
             event.touches[1].pageX,
-            event.touches[1].pageY
+            event.touches[1].pageY,
         );
     }
 
@@ -1289,11 +1289,11 @@ class DocBaseViewer extends BaseViewer {
         const scale = event.scale
             ? event.scale
             : getDistance(
-                event.touches[0].pageX,
-                event.touches[0].pageY,
-                event.touches[1].pageX,
-                event.touches[1].pageY
-            ) / this.originalDistance;
+                  event.touches[0].pageX,
+                  event.touches[0].pageY,
+                  event.touches[1].pageX,
+                  event.touches[1].pageY,
+              ) / this.originalDistance;
 
         const proposedNewScale = this.pdfViewer.currentScale * scale;
         if (
@@ -1341,7 +1341,7 @@ class DocBaseViewer extends BaseViewer {
         // Scroll to correct position after zoom
         this.docEl.scroll(
             this.scaledXOffset * this.pinchScale - this.originalXOffset,
-            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop
+            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop,
         );
 
         this.isPinching = false;

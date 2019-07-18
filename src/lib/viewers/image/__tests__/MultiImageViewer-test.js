@@ -34,37 +34,37 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         options = {
             file: {
-                id: 100
+                id: 100,
             },
             viewerAsset: '{page}.png',
             viewer: {
-                ASSET: '{page}.png'
+                ASSET: '{page}.png',
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'link'
+                    url_template: 'link',
                 },
                 metadata: {
-                    pages: 3
-                }
-            }
+                    pages: 3,
+                },
+            },
         };
 
         stubs.singleImageEl = {
             src: undefined,
             setAttribute: sandbox.stub(),
             classList: {
-                add: sandbox.stub()
+                add: sandbox.stub(),
             },
-            scrollIntoView: sandbox.stub()
+            scrollIntoView: sandbox.stub(),
         };
 
         multiImage = new MultiImageViewer(options);
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', {
-            value: sandbox.stub().returns(Promise.resolve())
+            value: sandbox.stub().returns(Promise.resolve()),
         });
         multiImage.containerEl = containerEl;
         multiImage.setup();
@@ -96,8 +96,8 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.unbindDOMListeners = sandbox.stub(multiImage, 'unbindDOMListeners');
             multiImage.singleImageEls = [
                 {
-                    removeEventListener: sandbox.stub()
-                }
+                    removeEventListener: sandbox.stub(),
+                },
             ];
         });
 
@@ -122,7 +122,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.setupImageEls = sandbox.stub(multiImage, 'setupImageEls');
             multiImage.wrapperEl = {
-                addEventListener: sandbox.stub()
+                addEventListener: sandbox.stub(),
             };
             stubs.addWrapperListener = multiImage.wrapperEl.addEventListener;
         });
@@ -178,13 +178,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.options = {
                 viewerAsset: '{asset_path}',
                 viewer: {
-                    ASSET: '{page}.png'
+                    ASSET: '{page}.png',
                 },
                 representation: {
                     metadata: {
-                        pages: 3
-                    }
-                }
+                        pages: 3,
+                    },
+                },
             };
             const result2 = multiImage.constructImageUrls('file/100/content/{+asset_path}');
             expect(result2[0]).to.equal(firstURL);
@@ -242,7 +242,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(promise).to.be.a('Promise');
         });
 
-        it('should return a promise that resolves after each image has a proper size', (done) => {
+        it('should return a promise that resolves after each image has a proper size', done => {
             // We've overridden super.setOriginalImageSize() to resolve immediately
             multiImage.setOriginalImageSize().then(() => {
                 done();
@@ -326,11 +326,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.singleImageEls = [
                 {
                     naturalWidth: 1024,
-                    naturalHeight: 1024
+                    naturalHeight: 1024,
                 },
                 {
-                    src: 'www.NotTheRightImage.net'
-                }
+                    src: 'www.NotTheRightImage.net',
+                },
             ];
             sandbox.stub(multiImage, 'emit');
 
@@ -356,11 +356,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.pagesCount = 10;
             multiImage.pageControls = {
                 add: sandbox.stub(),
-                addListener: sandbox.stub()
+                addListener: sandbox.stub(),
             };
 
             multiImage.controls = {
-                add: sandbox.stub()
+                add: sandbox.stub(),
             };
         });
 
@@ -378,13 +378,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 __('enter_fullscreen'),
                 multiImage.toggleFullscreen,
                 'bp-enter-fullscreen-icon',
-                ICON_FULLSCREEN_IN
+                ICON_FULLSCREEN_IN,
             );
             expect(multiImage.controls.add).to.be.calledWith(
                 __('exit_fullscreen'),
                 multiImage.toggleFullscreen,
                 'bp-exit-fullscreen-icon',
-                ICON_FULLSCREEN_OUT
+                ICON_FULLSCREEN_OUT,
             );
         });
     });
@@ -393,11 +393,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {
-                    src: 'foo'
+                    src: 'foo',
                 },
                 {
-                    src: 'baz'
-                }
+                    src: 'baz',
+                },
             ];
 
             sandbox.stub(multiImage, 'handleDownloadError');
@@ -419,11 +419,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {
-                    addEventListener: sandbox.stub()
+                    addEventListener: sandbox.stub(),
                 },
                 {
-                    addEventListener: sandbox.stub()
-                }
+                    addEventListener: sandbox.stub(),
+                },
             ];
         });
 
@@ -442,11 +442,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {
-                    removeEventListener: sandbox.stub()
+                    removeEventListener: sandbox.stub(),
                 },
                 {
-                    removeEventListener: sandbox.stub()
-                }
+                    removeEventListener: sandbox.stub(),
+                },
             ];
         });
 
@@ -493,7 +493,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             stubs.isValidPageChange = sandbox.stub(multiImage, 'isValidPageChange');
             multiImage.pageControls = {
-                updateCurrentPage: sandbox.stub()
+                updateCurrentPage: sandbox.stub(),
             };
 
             stubs.emit = sandbox.stub(multiImage, 'emit');
@@ -585,7 +585,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.singleImageEls = multiImage.singleImageEls;
 
             multiImage.wrapperEl = {
-                scrollTop: 100
+                scrollTop: 100,
             };
             stubs.wrapperEl = multiImage.wrapperEl;
 

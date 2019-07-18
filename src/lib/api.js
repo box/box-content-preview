@@ -11,7 +11,7 @@ const api = {
     filterOptions(options = {}) {
         const result = {};
 
-        Object.keys(options).forEach((key) => {
+        Object.keys(options).forEach(key => {
             if (options[key] !== undefined && options[key] !== null && options[key] !== '') {
                 result[key] = options[key];
             }
@@ -43,7 +43,7 @@ const api = {
      * @param {Response} response - Response to parse
      * @return {Promise|Response} Response if 204 or 202, otherwise promise that resolves with JSON
      */
-    parseResponse: (response) => {
+    parseResponse: response => {
         if (response.status === 204 || response.status === 202) {
             return response;
         }
@@ -51,7 +51,7 @@ const api = {
         return response.data;
     },
 
-    transformTextResponse: (data) => data,
+    transformTextResponse: data => data,
 
     /**
      * Wrapper function for XHR post put and delete
@@ -134,7 +134,7 @@ const api = {
      */
     put(url, data, options = {}) {
         return api.xhr(url, { method: 'put', data, ...options });
-    }
+    },
 };
 
 export default api;

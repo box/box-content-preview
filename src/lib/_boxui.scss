@@ -17,7 +17,7 @@
 .bp-header,
 .bp button,
 .bp-header button {
-    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .bp li,
@@ -55,11 +55,11 @@
     &.is-disabled:active,
     &.is-disabled:hover,
     &.is-disabled:focus {
-        color: #666;
+        background-color: $haze;
         border: 1px solid $sf-fog;
         box-shadow: none;
+        color: #666;
         opacity: .4;
-        background-color: $haze;
     }
 
     svg {
@@ -89,10 +89,10 @@
     outline: none;
 
     &.is-disabled {
-        pointer-events: none;
+        background-color: $haze;
         color: #666;
         opacity: .4;
-        background-color: $haze;
+        pointer-events: none;
     }
 }
 
@@ -157,12 +157,11 @@
     &.is-disabled:active,
     &.is-disabled:hover,
     &.is-disabled:focus {
-        color: $white;
-        border-color: $primary-color;
         background-color: $primary-color;
+        border-color: $primary-color;
+        color: $white;
     }
 }
-
 
 //------------------------------------------------------------------------------
 // Forms
@@ -188,30 +187,30 @@
 
 .bp-controls {
     /* Inputs */
-    input[type="text"],
-    input[type="number"],
-    div[contentEditable="true"],
+    input[type='text'],
+    input[type='number'],
+    div[contentEditable='true'],
     textarea {
-        color: $twos;
         border: 1px solid #ccc;
         border-radius: 3px;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+        color: $twos;
         -webkit-font-smoothing: antialiased;
         padding: 7px;
         transition: border-color linear .15s, box-shadow linear .1s;
         width: 262px;
     }
 
-    input[type="text"]:hover,
-    input[type="number"]:hover,
-    div[contentEditable="true"]:hover,
+    input[type='text']:hover,
+    input[type='number']:hover,
+    div[contentEditable='true']:hover,
     textarea:hover {
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, .15);
     }
 
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    div[contentEditable="true"]:focus,
+    input[type='text']:focus,
+    input[type='number']:focus,
+    div[contentEditable='true']:focus,
     textarea:focus {
         border: 1px solid $primary-color;
         box-shadow: none;
@@ -231,7 +230,7 @@
 .bp-overlay {
     background: $white;
     border: 1px solid $sf-fog;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .1);
     margin: 0;
     opacity: 0;
     padding: 8px 0;
@@ -243,24 +242,24 @@
     transform-origin: left top;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
-    -webkit-transition: visibility 0s linear 0.075s, opacity 0.075s, -webkit-transform 0.125s;
-    transition: visibility 0s linear 0.075s, opacity 0.075s, -webkit-transform 0.125s;
-    transition: visibility 0s linear 0.075s, opacity 0.075s, transform 0.125s;
-    transition: visibility 0s linear 0.075s, opacity 0.075s, transform 0.125s, -webkit-transform 0.125s;
+    -webkit-transition: visibility 0s linear .075s, opacity .075s, -webkit-transform .125s;
+    transition: visibility 0s linear .075s, opacity .075s, -webkit-transform .125s;
+    transition: visibility 0s linear .075s, opacity .075s, transform .125s;
+    transition: visibility 0s linear .075s, opacity .075s, transform .125s, -webkit-transform .125s;
     visibility: hidden;
     z-index: 90;
 }
 
 .bp-link {
-    color: #64686D;
+    color: #64686d;
     font-smoothing: antialiased;
     line-height: 1.5em;
     overflow: hidden;
     text-decoration: none;
     text-overflow: ellipsis;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-    -webkit-transition: color 0.05s;
-    transition: color 0.05s;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .004);
+    -webkit-transition: color .05s;
+    transition: color .05s;
     white-space: nowrap;
 }
 
@@ -281,13 +280,12 @@
                 padding: 5px 35px 5px 15px;
 
                 &:hover {
-                    background: #F6FAFD;
-                    color: #1A5976;
-                    fill: #1A5976;
+                    background: #f6fafd;
+                    color: #1a5976;
                     cursor: pointer;
+                    fill: #1a5976;
                 }
             }
-
         }
     }
 }
@@ -308,16 +306,16 @@
     align-items: center;
     background-color: $sunset-grey;
     border-radius: 4px;
-    box-shadow: 0 2px 6px fade-out($black, 0.85);
+    box-shadow: 0 2px 6px fade-out($black, .85);
     color: $white;
     display: flex;
     font-weight: bold;
     margin: 10px auto;
     max-width: 572px;
     min-height: 48px;
-    padding: 10px 10px 10px 20px;
-    transition: opacity 0.1s ease-out;
     overflow: hidden;
+    padding: 10px 10px 10px 20px;
+    transition: opacity .1s ease-out;
 
     &.info {
         background-color: $thats-mint;
@@ -338,14 +336,14 @@
 
     > span {
         font-size: 15px;
-        padding-right: 10px;
         margin-right: auto;
+        padding-right: 10px;
     }
 
     &.wrap > span {
         overflow: hidden;
-        word-wrap: break-word; /* Include legacy name to support older browsers */
         overflow-wrap: break-word;
+        word-wrap: break-word; /* Include legacy name to support older browsers */
     }
 
     &.ellipsis > span {
@@ -373,7 +371,7 @@
             font-size: 14px;
             font-weight: bold;
             margin: 0 7px;
-            opacity: 0.6;
+            opacity: .6;
             outline: none;
 
             &.default-close-btn {
@@ -412,7 +410,7 @@
 .bp-modal-dialog {
     background-clip: padding-box;
     background-color: $white;
-    box-shadow: 0 3px 10px fade-out($black, 0.7);
+    box-shadow: 0 3px 10px fade-out($black, .7);
     margin: auto;
     padding: 30px;
     position: relative;
@@ -428,9 +426,9 @@
 .bp-modal-title {
     display: inline-block;
     flex: 1;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
     overflow: hidden;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .bp-modal-content {
@@ -445,7 +443,6 @@
     font-size: 11px;
     font-weight: bold;
     outline: 0;
-
 }
 
 .bp-modal-backdrop {
@@ -453,11 +450,11 @@
     bottom: 0;
     filter: alpha(opacity=75);
     left: 0;
-    opacity: 0.75;
+    opacity: .75;
     position: fixed;
     right: 0;
     top: 0;
-    z-index: -1;  // .modal creates a new stacking context. Let's just make sure that backdrop is below dialog.
+    z-index: -1; // .modal creates a new stacking context. Let's just make sure that backdrop is below dialog.
 }
 
 .bp-modal-actions {

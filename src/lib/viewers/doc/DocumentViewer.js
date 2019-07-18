@@ -45,13 +45,16 @@ class DocumentViewer extends DocBaseViewer {
         if (key === 'Shift++') {
             this.zoomIn();
             return true;
-        } else if (key === 'Shift+_') {
+        }
+        if (key === 'Shift+_') {
             this.zoomOut();
             return true;
-        } else if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
+        }
+        if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
             this.previousPage();
             return true;
-        } else if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
+        }
+        if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
             this.nextPage();
             return true;
         }

@@ -51,7 +51,7 @@ class CSVViewer extends TextBaseViewer {
 
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(() => {
-                api.get(papaWorkerUrl, { type: 'blob' }).then((papaWorkerBlob) => {
+                api.get(papaWorkerUrl, { type: 'blob' }).then(papaWorkerBlob => {
                     /* global Papa */
                     const workerSrc = URL.createObjectURL(papaWorkerBlob);
                     Papa.SCRIPT_PATH = workerSrc;
@@ -64,14 +64,14 @@ class CSVViewer extends TextBaseViewer {
                             const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
                             this.handleDownloadError(error, urlWithAuth);
                         },
-                        complete: (results) => {
+                        complete: results => {
                             if (this.isDestroyed() || !results) {
                                 return;
                             }
                             this.data = results.data;
                             this.finishLoading();
                             URL.revokeObjectURL(workerSrc);
-                        }
+                        },
                     });
                 });
             })

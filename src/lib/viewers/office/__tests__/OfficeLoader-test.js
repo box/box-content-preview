@@ -9,15 +9,15 @@ describe('lib/viewers/office/OfficeLoader', () => {
     const fakeFileTemplate = {
         size: 1000,
         permissions: {
-            can_download: true
+            can_download: true,
         },
         representations: {
             entries: [
                 {
-                    representation: 'ORIGINAL'
-                }
-            ]
-        }
+                    representation: 'ORIGINAL',
+                },
+            ],
+        },
     };
 
     afterEach(() => {
@@ -28,24 +28,24 @@ describe('lib/viewers/office/OfficeLoader', () => {
         const fakeFiles = [
             Object.assign({}, fakeFileTemplate, { extension: 'xlsx' }),
             Object.assign({}, fakeFileTemplate, { extension: 'xlsm' }),
-            Object.assign({}, fakeFileTemplate, { extension: 'xlsb' })
+            Object.assign({}, fakeFileTemplate, { extension: 'xlsb' }),
         ];
 
-        fakeFiles.forEach((fakeFile) => {
+        fakeFiles.forEach(fakeFile => {
             it('should choose the Office viewer if it is not disabled and the file is ok', () => {
                 const viewer = OfficeLoader.determineViewer(fakeFile);
                 expect(viewer).to.deep.equal({
                     NAME: 'Office',
                     CONSTRUCTOR: OfficeViewer,
                     REP: 'ORIGINAL',
-                    EXT: ['xlsx', 'xlsm', 'xlsb']
+                    EXT: ['xlsx', 'xlsm', 'xlsb'],
                 });
             });
 
             it('should choose the Office viewer if it is not disabled and the file is a shared link that is not password-protected', () => {
                 const editedFakeFile = fakeFile;
                 editedFakeFile.shared_link = {
-                    is_password_enabled: false
+                    is_password_enabled: false,
                 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile);
                 expect(viewer.NAME).to.equal('Office');
@@ -75,7 +75,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
             it('should not return a viewer if the file is a password-protected shared link', () => {
                 const editedFakeFile = fakeFile;
                 editedFakeFile.shared_link = {
-                    is_password_enabled: true
+                    is_password_enabled: true,
                 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile, []);
                 expect(viewer).to.equal(undefined);

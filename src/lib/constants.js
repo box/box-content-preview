@@ -119,7 +119,7 @@ export const FILE_OPTION_START = 'startAt';
 // Query parameter for requesting compressed representations
 export const QUERY_PARAM_ENCODING = 'encoding';
 export const ENCODING_TYPES = {
-    GZIP: 'gzip'
+    GZIP: 'gzip',
 };
 
 export const ANNOTATOR_EVENT = {
@@ -127,11 +127,11 @@ export const ANNOTATOR_EVENT = {
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
     error: 'annotationerror',
-    scale: 'scaleannotations'
+    scale: 'scaleannotations',
 };
 
 export const METADATA = {
     FIELD_HASXREFS: 'hasxrefs',
     SCOPE_GLOBAL: 'global',
-    TEMPLATE_AUTOCAD: 'autocad'
+    TEMPLATE_AUTOCAD: 'autocad',
 };

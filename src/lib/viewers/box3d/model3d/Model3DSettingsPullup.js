@@ -18,7 +18,7 @@ import {
     RENDER_MODE_NORMALS,
     RENDER_MODE_SHAPE,
     RENDER_MODE_UV,
-    ROTATION_STEP
+    ROTATION_STEP,
 } from './model3DConstants';
 
 import { CLASS_BOX_PREVIEW_OVERLAY_WRAPPER, CLASS_IS_VISIBLE } from '../../../constants';
@@ -28,41 +28,41 @@ const RENDER_MODES = [
     {
         text: RENDER_MODE_LIT,
         callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_LIT]
+        args: [RENDER_MODE_LIT],
     },
     {
         text: RENDER_MODE_UNLIT,
         callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_UNLIT]
+        args: [RENDER_MODE_UNLIT],
     },
     {
         text: RENDER_MODE_NORMALS,
         callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_NORMALS]
+        args: [RENDER_MODE_NORMALS],
     },
     {
         text: RENDER_MODE_SHAPE,
         callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_SHAPE]
+        args: [RENDER_MODE_SHAPE],
     },
     {
         text: RENDER_MODE_UV,
         callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_UV]
-    }
+        args: [RENDER_MODE_UV],
+    },
 ];
 
 const PROJECTION_MODES = [
     {
         text: 'Perspective',
         callback: 'onProjectionSelected',
-        args: [CAMERA_PROJECTION_PERSPECTIVE]
+        args: [CAMERA_PROJECTION_PERSPECTIVE],
     },
     {
         text: 'Orthographic',
         callback: 'onProjectionSelected',
-        args: [CAMERA_PROJECTION_ORTHOGRAPHIC]
-    }
+        args: [CAMERA_PROJECTION_ORTHOGRAPHIC],
+    },
 ];
 
 /**
@@ -133,7 +133,7 @@ class Model3DSettingsPullup extends EventEmitter {
         this.uiRegistry.registerItem('settings-pullup-el', this.pullupEl);
 
         // Render Mode dropdown
-        const renderPanelData = RENDER_MODES.map((entry) => {
+        const renderPanelData = RENDER_MODES.map(entry => {
             const entryCopy = Object.assign({}, entry);
             this.convertToValidCallback(entryCopy);
             return entryCopy;
@@ -180,7 +180,7 @@ class Model3DSettingsPullup extends EventEmitter {
         });
 
         // Camera Projection dropdown
-        const projectionPanelData = PROJECTION_MODES.map((entry) => {
+        const projectionPanelData = PROJECTION_MODES.map(entry => {
             const entryCopy = Object.assign({}, entry);
             this.convertToValidCallback(entryCopy);
             return entryCopy;
@@ -222,24 +222,24 @@ class Model3DSettingsPullup extends EventEmitter {
             this.createRotationAxis(
                 AXIS_X,
                 () => this.onAxisRotationSelected(AXIS_X, -1),
-                () => this.onAxisRotationSelected(AXIS_X, 1)
-            )
+                () => this.onAxisRotationSelected(AXIS_X, 1),
+            ),
         );
 
         rowEl.appendChild(
             this.createRotationAxis(
                 AXIS_Y,
                 () => this.onAxisRotationSelected(AXIS_Y, -1),
-                () => this.onAxisRotationSelected(AXIS_Y, 1)
-            )
+                () => this.onAxisRotationSelected(AXIS_Y, 1),
+            ),
         );
 
         rowEl.appendChild(
             this.createRotationAxis(
                 AXIS_Z,
                 () => this.onAxisRotationSelected(AXIS_Z, 1),
-                () => this.onAxisRotationSelected(AXIS_Z, -1)
-            )
+                () => this.onAxisRotationSelected(AXIS_Z, -1),
+            ),
         );
 
         return rowEl;

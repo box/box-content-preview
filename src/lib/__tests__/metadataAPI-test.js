@@ -18,14 +18,14 @@ describe('metadataAPI', () => {
 
     describe('getXrefsMetadata()', () => {
         it('Should reject the promise if id is not provided on the file', () => {
-            return metadataAPI.getXrefsMetadata(null, 'autocad').catch((err) => {
+            return metadataAPI.getXrefsMetadata(null, 'autocad').catch(err => {
                 expect(stubs.get).not.to.have.been.called;
                 expect(err instanceof Error).to.be.true;
             });
         });
 
         it('Should reject the promise if template is not provided on the file', () => {
-            return metadataAPI.getXrefsMetadata('123').catch((err) => {
+            return metadataAPI.getXrefsMetadata('123').catch(err => {
                 expect(stubs.get).not.to.have.been.called;
                 expect(err instanceof Error).to.be.true;
             });
@@ -35,7 +35,7 @@ describe('metadataAPI', () => {
             const expResponse = { hasxrefs: 'true' };
             stubs.get.resolves(expResponse);
 
-            return metadataAPI.getXrefsMetadata('123', 'autocad').then((response) => {
+            return metadataAPI.getXrefsMetadata('123', 'autocad').then(response => {
                 expect(stubs.get).to.have.been.called;
                 expect(response).to.eql({ hasxrefs: true });
             });
@@ -45,7 +45,7 @@ describe('metadataAPI', () => {
             const expResponse = { response: { status: 400 } };
             stubs.get.rejects(expResponse);
 
-            return metadataAPI.getXrefsMetadata('123', 'autocad').catch((err) => {
+            return metadataAPI.getXrefsMetadata('123', 'autocad').catch(err => {
                 expect(stubs.get).to.have.been.called;
                 expect(err).to.eql(expResponse);
             });
@@ -60,7 +60,7 @@ describe('metadataAPI', () => {
                 apiHost: 'foo.com',
                 token: '456',
                 sharedLink: 'shared-link',
-                sharedLinkPassword: 'shared-link-password'
+                sharedLinkPassword: 'shared-link-password',
             });
 
             expect(stubs.getHeaders).to.have.been.calledWith({}, '456', 'shared-link', 'shared-link-password');

@@ -12,7 +12,7 @@ import {
     EVENT_SET_WIREFRAMES_VISIBLE,
     EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
-    EVENT_TOGGLE_HELPERS
+    EVENT_TOGGLE_HELPERS,
 } from '../model3DConstants';
 
 import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../../icons/icons';
@@ -87,7 +87,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                 it('should add an event listener to the animationClipsPullup reference for animation clip selection', () => {
                     expect(animationListenStub).to.be.calledWith(
                         EVENT_SELECT_ANIMATION_CLIP,
-                        controls.handleSelectAnimationClip
+                        controls.handleSelectAnimationClip,
                     );
                 });
 
@@ -96,7 +96,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         __('box3d_toggle_animation'),
                         controls.handleToggleAnimation,
                         '',
-                        ICON_PLAY
+                        ICON_PLAY,
                     );
                 });
 
@@ -105,13 +105,13 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         __('box3d_animation_clips'),
                         controls.handleToggleAnimationClips,
                         '',
-                        ICON_ANIMATION
+                        ICON_ANIMATION,
                     );
                 });
 
                 it('should append the pullup of the animationClipsPullup to the parent element of the hide/show toggle', () => {
                     expect(controls.animationClipButtonEl.parentNode).to.contain(
-                        controls.animationClipsPullup.pullupEl
+                        controls.animationClipsPullup.pullupEl,
                     );
                 });
             });
@@ -121,31 +121,31 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                     const events = [
                         {
                             event: EVENT_SET_RENDER_MODE,
-                            callback: 'handleSetRenderMode'
+                            callback: 'handleSetRenderMode',
                         },
                         {
                             event: EVENT_SET_SKELETONS_VISIBLE,
-                            callback: 'handleSetSkeletonsVisible'
+                            callback: 'handleSetSkeletonsVisible',
                         },
                         {
                             event: EVENT_SET_WIREFRAMES_VISIBLE,
-                            callback: 'handleSetWireframesVisible'
+                            callback: 'handleSetWireframesVisible',
                         },
                         {
                             event: EVENT_SET_GRID_VISIBLE,
-                            callback: 'handleSetGridVisible'
+                            callback: 'handleSetGridVisible',
                         },
                         {
                             event: EVENT_SET_CAMERA_PROJECTION,
-                            callback: 'handleSetCameraProjection'
+                            callback: 'handleSetCameraProjection',
                         },
                         {
                             event: EVENT_ROTATE_ON_AXIS,
-                            callback: 'handleAxisRotation'
-                        }
+                            callback: 'handleAxisRotation',
+                        },
                     ];
 
-                    events.forEach((e) => {
+                    events.forEach(e => {
                         it(`should add an event listener for ${e.event} events`, () => {
                             const settingsListenStub = sandbox.stub(controls.settingsPullup, 'addListener');
                             controls.addUi();
@@ -160,7 +160,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         __('box3d_settings'),
                         controls.handleToggleSettings,
                         '',
-                        ICON_GEAR
+                        ICON_GEAR,
                     );
                 });
 
@@ -210,7 +210,10 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         });
 
         it('should emit an event to hide 3D scene helpers', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_TOGGLE_HELPERS, false);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_TOGGLE_HELPERS, false);
             controls.hidePullups();
         });
     });
@@ -229,20 +232,29 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         });
 
         it('should emit an event to toggle the 3D scene helpers', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_TOGGLE_HELPERS);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_TOGGLE_HELPERS);
             controls.handleToggleSettings();
         });
     });
 
     describe('handleSetRenderMode()', () => {
         it('should fire the "render mode set" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_RENDER_MODE);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_RENDER_MODE);
             controls.handleSetRenderMode();
         });
 
         it('should fire the "render mode set" event with the new render mode', () => {
             const renderMode = 'normals';
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_RENDER_MODE, renderMode);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_RENDER_MODE, renderMode);
             controls.handleSetRenderMode(renderMode);
         });
 
@@ -256,62 +268,92 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
 
     describe('handleSetSkeletonsVisible()', () => {
         it('should fire a "set skeleton visiblity" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_SKELETONS_VISIBLE);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_SKELETONS_VISIBLE);
             controls.handleSetSkeletonsVisible();
         });
 
         it('should fire a "set skeleton visiblity" event with a flag to turn them on and off explicitly', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_SKELETONS_VISIBLE, true);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_SKELETONS_VISIBLE, true);
             controls.handleSetSkeletonsVisible(true);
         });
     });
 
     describe('handleSetWireframesVisible()', () => {
         it('should fire a "set wireframe visiblity" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_WIREFRAMES_VISIBLE);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_WIREFRAMES_VISIBLE);
             controls.handleSetWireframesVisible();
         });
 
         it('should fire a "set wireframe visiblity" event with a flag to turn them on and off explicitly', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_WIREFRAMES_VISIBLE, true);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_WIREFRAMES_VISIBLE, true);
             controls.handleSetWireframesVisible(true);
         });
     });
 
     describe('handleSetGridVisible()', () => {
         it('should fire a "set grid visiblity" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_GRID_VISIBLE);
             controls.handleSetGridVisible();
         });
 
         it('should fire a "set grid visiblity" event with a flag to turn them on and off explicitly', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE, true);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_GRID_VISIBLE, true);
             controls.handleSetGridVisible(true);
         });
     });
 
     describe('handleSetCameraProjection()', () => {
         it('should fire a "set camera visibility" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_CAMERA_PROJECTION);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_CAMERA_PROJECTION);
             controls.handleSetCameraProjection();
         });
 
         it('should fire a "set camera visibility" event with a projection mode', () => {
             const projection = 'orthographic';
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_CAMERA_PROJECTION, projection);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_SET_CAMERA_PROJECTION, projection);
             controls.handleSetCameraProjection(projection);
         });
     });
 
     describe('handleAxisRotation()', () => {
         it('should fire a "rotate on axis" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_ROTATE_ON_AXIS);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_ROTATE_ON_AXIS);
             controls.handleAxisRotation();
         });
 
         it('should fire a "rotate on axis" event with an axis to rotate on', () => {
             const axis = '-x';
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_ROTATE_ON_AXIS, axis);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_ROTATE_ON_AXIS, axis);
             controls.handleAxisRotation(axis);
         });
     });
@@ -324,14 +366,14 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.animationToggleEl = {
                 classList: {
                     add: () => {},
-                    remove: () => {}
-                }
+                    remove: () => {},
+                },
             };
             controls.animationClipButtonEl = {
                 classList: {
                     add: () => {},
-                    remove: () => {}
-                }
+                    remove: () => {},
+                },
             };
 
             clipMock = sandbox.mock(controls.animationToggleEl.classList);
@@ -447,7 +489,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     describe('setAnimationPlaying()', () => {
         beforeEach(() => {
             controls.animationToggleEl = {
-                innerHTML: ''
+                innerHTML: '',
             };
         });
 
@@ -468,12 +510,18 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         });
 
         it('should emit an "animation toggled" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_TOGGLE_ANIMATION);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_TOGGLE_ANIMATION);
             controls.setAnimationPlaying(false);
         });
 
         it('should emit an "animation toggled" event with the current state of animation playback', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_TOGGLE_ANIMATION, false);
+            sandbox
+                .mock(controls)
+                .expects('emit')
+                .withArgs(EVENT_TOGGLE_ANIMATION, false);
             controls.setAnimationPlaying(false);
         });
     });
@@ -483,13 +531,19 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             const id = '1234';
             const name = 'my_clip';
             const duration = 10;
-            sandbox.mock(controls.animationClipsPullup).expects('addClip').withExactArgs(id, name, duration);
+            sandbox
+                .mock(controls.animationClipsPullup)
+                .expects('addClip')
+                .withExactArgs(id, name, duration);
             controls.addAnimationClip(id, name, duration);
         });
 
         it('should invoke animationClipsPullup.selectClip(), via selectAnimationClip()', () => {
             const id = '1234';
-            sandbox.mock(controls.animationClipsPullup).expects('selectClip').withExactArgs(id);
+            sandbox
+                .mock(controls.animationClipsPullup)
+                .expects('selectClip')
+                .withExactArgs(id);
             controls.selectAnimationClip(id);
         });
     });
@@ -510,7 +564,10 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
 
         it('should invoke settingsPullup.onProjectionSelected() with the new projection mode', () => {
             const mode = 'orthographic';
-            sandbox.mock(controls.settingsPullup).expects('onProjectionSelected').withArgs(mode);
+            sandbox
+                .mock(controls.settingsPullup)
+                .expects('onProjectionSelected')
+                .withArgs(mode);
             controls.setCurrentProjectionMode(mode);
         });
 
@@ -521,7 +578,10 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
 
         it('should invoke settingsPullup.setCurrentProjectionMode() with the new projection mode', () => {
             const mode = 'orthographic';
-            sandbox.mock(controls.settingsPullup).expects('setCurrentProjectionMode').withArgs(mode);
+            sandbox
+                .mock(controls.settingsPullup)
+                .expects('setCurrentProjectionMode')
+                .withArgs(mode);
             controls.setCurrentProjectionMode(mode);
         });
     });

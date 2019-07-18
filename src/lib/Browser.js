@@ -184,7 +184,7 @@ class Browser {
         if (!gl) {
             const canvas = document.createElement('canvas');
             // Should stop 'Rats! WebGL hit a snag' error when checking WebGL support
-            canvas.addEventListener(EVENT_WEBGL_CONTEXT_LOST, (e) => {
+            canvas.addEventListener(EVENT_WEBGL_CONTEXT_LOST, e => {
                 /* istanbul ignore next */
                 e.preventDefault();
                 /* istanbul ignore next */
@@ -358,8 +358,8 @@ class Browser {
             h264: {
                 baseline: Browser.canPlayH264Baseline(),
                 main: Browser.canPlayH264Main(),
-                high: Browser.canPlayH264High()
-            }
+                high: Browser.canPlayH264High(),
+            },
         };
     }
 }

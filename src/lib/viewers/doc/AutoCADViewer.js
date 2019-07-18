@@ -28,7 +28,7 @@ class AutoCADViewer extends DocumentViewer {
 
                 this.emitMetric({
                     name: MISSING_EXTERNAL_REFS,
-                    data: extension
+                    data: extension,
                 });
             }
         });

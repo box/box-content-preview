@@ -15,7 +15,7 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/PresentationPreloader-test.html');
         preloader = new PresentationPreloader({
-            hideLoadingIndicator: () => {}
+            hideLoadingIndicator: () => {},
         });
         stubs = {};
     });

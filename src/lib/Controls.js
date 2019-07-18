@@ -69,7 +69,7 @@ class Controls {
             this.controlsEl.removeEventListener('click', this.clickHandler);
         }
 
-        this.buttonRefs.forEach((ref) => {
+        this.buttonRefs.forEach(ref => {
             ref.button.removeEventListener('click', ref.handler);
         });
     }
@@ -148,7 +148,7 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusinHandler = (event) => {
+    focusinHandler = event => {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -163,7 +163,7 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusoutHandler = (event) => {
+    focusoutHandler = event => {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
             this.shouldHide = true;
@@ -213,7 +213,7 @@ class Controls {
         // Maintain a reference for cleanup
         this.buttonRefs.push({
             button,
-            handler
+            handler,
         });
 
         return button;

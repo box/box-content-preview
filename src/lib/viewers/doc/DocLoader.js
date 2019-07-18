@@ -16,38 +16,38 @@ const VIEWERS = [
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
-        EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx', 'key']
+        EXT: ['gslide', 'gslides', 'odp', 'ppt', 'pptx', 'key'],
     },
     {
         NAME: 'AutoCAD',
         CONSTRUCTOR: AutoCADViewer,
         REP: 'pdf',
-        EXT: ['dwg']
+        EXT: ['dwg'],
     },
     {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
         REP: 'pdf',
-        EXT: DOCUMENT_EXTENSIONS
+        EXT: DOCUMENT_EXTENSIONS,
     },
     // Allows other document types to use the presentation viewer when the document viewer is disabled.
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
-        EXT: DOCUMENT_EXTENSIONS
+        EXT: DOCUMENT_EXTENSIONS,
     },
     {
         NAME: 'SinglePage',
         CONSTRUCTOR: SinglePageViewer,
         REP: 'pdf',
-        EXT: DOCUMENT_EXTENSIONS
+        EXT: DOCUMENT_EXTENSIONS,
     },
     {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf', 'lcdpdf']
+        EXT: ['pdf', 'lcdpdf'],
     },
     //  Allows PDFs and lcpdf files that only have an original rep
     // to use the presentation viewer when the document viewer is disabled.
@@ -55,14 +55,14 @@ const VIEWERS = [
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf', 'lcdpdf']
+        EXT: ['pdf', 'lcdpdf'],
     },
     {
         NAME: 'SinglePage',
         CONSTRUCTOR: SinglePageViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf', 'lcdpdf']
-    }
+        EXT: ['pdf', 'lcdpdf'],
+    },
 ];
 
 class DocLoader extends AssetLoader {

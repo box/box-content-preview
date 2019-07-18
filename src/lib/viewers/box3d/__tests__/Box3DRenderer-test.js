@@ -46,7 +46,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             renderer.box3d = {
-                destroy: () => {}
+                destroy: () => {},
             };
         });
 
@@ -91,10 +91,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             camera = {
                 setPosition: () => {},
                 setQuaternion: () => {},
-                trigger: () => {}
+                trigger: () => {},
             };
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns(camera)
+                getObjectByClass: sandbox.stub().returns(camera),
             };
             renderer.savedCameraPosition = { x: 0, y: 0, z: 0 };
             renderer.savedCameraQuaternion = { x: 0, y: 0, z: 0, w: 1 };
@@ -112,7 +112,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('getCamera()', () => {
         it('should return a camera object if one exists in the scene', () => {
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns({})
+                getObjectByClass: sandbox.stub().returns({}),
             };
 
             const camera = renderer.getCamera();
@@ -128,7 +128,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('getScene()', () => {
         it('should return the scene prefab that exists in the Box3D runtime', () => {
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns({})
+                getObjectByClass: sandbox.stub().returns({}),
             };
 
             const scene = renderer.getScene();
@@ -159,9 +159,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             expect(promise).to.be.a('promise');
         });
 
-        it('should return a Promise that resolves in an XMLHttpRequest object', (done) => {
+        it('should return a Promise that resolves in an XMLHttpRequest object', done => {
             const promise = renderer.configureXHR({}, 'path/to/stuff.wav', { isExternal: true });
-            promise.then((xhr) => {
+            promise.then(xhr => {
                 expect(xhr).to.be.an('XMLHttpRequest');
                 done();
             });
@@ -186,7 +186,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the provided shared link', () => {
-            sandbox.stub(window, 'encodeURI').callsFake((uri) => {
+            sandbox.stub(window, 'encodeURI').callsFake(uri => {
                 return uri;
             });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
@@ -199,7 +199,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
-            sandbox.stub(window, 'encodeURI').callsFake((uri) => {
+            sandbox.stub(window, 'encodeURI').callsFake(uri => {
                 return uri;
             });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
@@ -225,13 +225,13 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 window.Box3D = box3D;
             });
 
-            it('should fail when no global Box3D present', (done) => {
+            it('should fail when no global Box3D present', done => {
                 window.Box3D = undefined;
                 const rejected = renderer.initBox3d();
 
                 expect(rejected).to.be.a('promise');
 
-                rejected.catch((err) => {
+                rejected.catch(err => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('Missing Box3D');
                     done();
@@ -240,34 +240,34 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         describe('with global Box3D', () => {
-            it('should fail when missing file property on option', (done) => {
+            it('should fail when missing file property on option', done => {
                 const rejected = renderer.initBox3d({});
 
                 expect(rejected).to.be.a('promise');
 
-                rejected.catch((err) => {
+                rejected.catch(err => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('Missing file version');
                     done();
                 });
             });
 
-            it('should fail when file option is missing version property', (done) => {
+            it('should fail when file option is missing version property', done => {
                 const rejected = renderer.initBox3d({ file: {} });
 
                 expect(rejected).to.be.a('promise');
 
-                rejected.catch((err) => {
+                rejected.catch(err => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('Missing file version');
                     done();
                 });
             });
 
-            it('should create a new box3d instance', (done) => {
+            it('should create a new box3d instance', done => {
                 const expectedEntities = {
                     one: 'a',
-                    two: 'b'
+                    two: 'b',
                 };
 
                 sandbox.stub(renderer, 'createBox3d').callsFake((loader, entities) => {
@@ -277,15 +277,15 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
                 renderer.initBox3d({
                     file: { file_version: 'abcdef' },
-                    sceneEntities: expectedEntities
+                    sceneEntities: expectedEntities,
                 });
             });
 
-            it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
-                const createBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader) => {
-                    sandbox.stub(loader.queue, 'add').callsFake((fn) => fn());
+            it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', done => {
+                const createBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake(loader => {
+                    sandbox.stub(loader.queue, 'add').callsFake(fn => fn());
                     const resource = {
-                        once: (event, cb) => cb()
+                        once: (event, cb) => cb(),
                     };
                     sandbox.stub(loader, 'load').callsFake(() => resource);
 
@@ -300,7 +300,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                     sceneEntities: [],
                     token: 'foo',
                     sharedLink: 'bar',
-                    sharedLinkPassword: 'baz'
+                    sharedLinkPassword: 'baz',
                 });
             });
         });
@@ -317,14 +317,14 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = box3D;
         });
 
-        it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new Box3D', (done) => {
+        it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new Box3D', done => {
             const loader = { name: 'loader' };
             const entities = { name: 'entities' };
             const expectedInitProps = {
                 apiBase: 'dummyBase',
                 container: containerEl,
                 engineName: 'Default',
-                resourceLoader: loader
+                resourceLoader: loader,
             };
             let initProps;
             const Box3DFake = {
@@ -332,13 +332,13 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                     initProps = props;
                     this.addEntities = sandbox.stub();
                     this.getAssetByClass = sandbox.stub().returns({
-                        load: function load() {}
+                        load: function load() {},
                     });
-                }
+                },
             };
             window.Box3D = Box3DFake;
 
-            const callPromise = renderer.createBox3d(loader, entities, [], 'dummyBase').then((b3d) => {
+            const callPromise = renderer.createBox3d(loader, entities, [], 'dummyBase').then(b3d => {
                 expect(b3d).to.be.an.instanceof(window.Box3D.Engine);
                 expect(initProps).to.deep.equal(expectedInitProps);
                 expect(callPromise).to.be.a('promise');
@@ -351,9 +351,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 Engine: function constructor() {
                     this.addEntities = sandbox.stub();
                     this.getAssetById = sandbox.stub().returns({
-                        load: function load() {}
+                        load: function load() {},
                     });
-                }
+                },
             };
             window.Box3D = Box3DFake;
 
@@ -362,19 +362,19 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             expect(shouldBePromise).to.be.a('promise');
         });
 
-        it('should bind to context loss and restore events', (done) => {
+        it('should bind to context loss and restore events', done => {
             sandbox.stub(renderer, 'handleContextRestored');
             const Box3DFake = {
                 Engine: function constructor() {
                     this.addEntities = sandbox.stub();
                     this.getAssetByClass = sandbox.stub().returns({
-                        load: function load() {}
+                        load: function load() {},
                     });
                     this.canvas = { addEventListener: () => {} };
                     sandbox.stub(this.canvas, 'addEventListener').callsFake(() => {
                         renderer.handleContextRestored();
                     });
-                }
+                },
             };
             window.Box3D = Box3DFake;
             renderer.createBox3d({}, {}).then(() => {
@@ -384,13 +384,13 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
         });
 
-        it('should not set reference if error occurs initializing engine', (done) => {
+        it('should not set reference if error occurs initializing engine', done => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.addEntities = function addEntities() {
                         throw new Error('Error while initializing');
                     };
-                }
+                },
             };
             window.Box3D = Box3DFake;
 
@@ -400,7 +400,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
         });
 
-        it('should not set reference if error loading app', (done) => {
+        it('should not set reference if error loading app', done => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.initialize = function initialize(props, callback) {
@@ -411,10 +411,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                         return {
                             load: function load() {
                                 throw new Error('Error while loading');
-                            }
+                            },
                         };
                     };
-                }
+                },
             };
             window.Box3D = Box3DFake;
 
@@ -436,7 +436,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
     describe('handleContextRestored()', () => {
         it('should fire event to be picked up by the viewer', () => {
-            const emitStub = sandbox.stub(renderer, 'emit').callsFake((eventName) => {
+            const emitStub = sandbox.stub(renderer, 'emit').callsFake(eventName => {
                 expect(eventName).to.equal(EVENT_WEBGL_CONTEXT_RESTORED);
             });
             renderer.handleContextRestored();
@@ -445,7 +445,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     });
 
     describe('toggleVr()', () => {
-        it('should enable vr if it\'s currently disabled', () => {
+        it("should enable vr if it's currently disabled", () => {
             let called = false;
             sandbox.stub(renderer, 'enableVr').callsFake(() => {
                 called = true;
@@ -454,7 +454,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             expect(called).to.be.true;
         });
 
-        it('should disable vr if it\'s currently enabled', () => {
+        it("should disable vr if it's currently enabled", () => {
             let called = false;
             sandbox.stub(renderer, 'disableVr').callsFake(() => {
                 called = true;
@@ -475,7 +475,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             const box3dRenderer = { setAttribute: setAttribStub };
             renderer.box3d = {
                 getRenderer: sandbox.stub().returns(box3dRenderer),
-                getVrDisplay: sandbox.stub().returns({ isPresenting: true })
+                getVrDisplay: sandbox.stub().returns({ isPresenting: true }),
             };
             renderer.onEnableVr();
         });
@@ -498,7 +498,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             renderer.box3d = {
-                trigger: () => {}
+                trigger: () => {},
             };
 
             b3dMock = sandbox.mock(renderer.box3d);
@@ -529,7 +529,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             renderer.box3d = {
                 getRenderer: sandbox.stub().returns(box3dRenderer),
                 getVrDisplay: sandbox.stub().returns({ isPresenting: false }),
-                trigger: sandbox.stub()
+                trigger: sandbox.stub(),
             };
             renderer.onDisableVr();
         });
@@ -560,7 +560,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             renderer.box3d = {
-                trigger: () => {}
+                trigger: () => {},
             };
 
             b3dMock = sandbox.mock(renderer.box3d);
@@ -580,7 +580,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     });
 
     describe('resize()', () => {
-        it('should do nothing if Box3D doesn\'t exist', () => {
+        it("should do nothing if Box3D doesn't exist", () => {
             /* eslint-disable require-jsdoc */
             const shouldNotThrow = () => {
                 renderer.resize();
@@ -592,7 +592,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should trigger resize on Box3D', () => {
             renderer.box3d = {
-                trigger: () => {}
+                trigger: () => {},
             };
             sandbox
                 .mock(renderer.box3d)
@@ -607,7 +607,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             const camera = {
-                getComponentByScriptId: () => {}
+                getComponentByScriptId: () => {},
             };
             cameraMock = sandbox.mock(camera);
             sandbox.stub(renderer, 'getCamera').returns(camera);
@@ -629,7 +629,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             const camera = {
-                getComponentByScriptId: () => {}
+                getComponentByScriptId: () => {},
             };
             cameraMock = sandbox.mock(camera);
             sandbox.stub(renderer, 'getCamera').returns(camera);
@@ -654,11 +654,11 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             vrPresenter = {
-                whenDisplaysAvailable: () => {}
+                whenDisplaysAvailable: () => {},
             };
             renderer.box3d = {
                 getApplication: () => {},
-                listenTo: () => {}
+                listenTo: () => {},
             };
             emitStub = sandbox.stub(renderer, 'emit');
             box3dMock = sandbox.mock(renderer.box3d);
@@ -671,8 +671,8 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 globalBox3DMock.expects('isTablet').returns(false);
             });
 
-            it('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', (done) => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
+            it('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', done => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
                     callback([{}, {}]);
                     done();
                 });
@@ -681,9 +681,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 expect(emitStub).to.be.calledWith(EVENT_SHOW_VR_BUTTON);
             });
 
-            it('should add an event listeners for vr enabled/disabled events via listenTo', (done) => {
+            it('should add an event listeners for vr enabled/disabled events via listenTo', done => {
                 box3dMock.expects('listenTo').twice();
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
                     callback([{}, {}]);
                     done();
                 });
@@ -691,8 +691,8 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 renderer.initVr();
             });
 
-            it('should do nothing if no displays are available', (done) => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
+            it('should do nothing if no displays are available', done => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
                     callback([]);
                     done();
                 });
@@ -701,7 +701,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
         });
 
-        it('should do nothing if the device we\'re using is a Tablet device', () => {
+        it("should do nothing if the device we're using is a Tablet device", () => {
             globalBox3DMock.expects('isTablet').returns(true);
             box3dMock.expects('getApplication').never();
             renderer.initVr();

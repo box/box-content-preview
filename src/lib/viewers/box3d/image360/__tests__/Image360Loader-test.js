@@ -17,15 +17,18 @@ describe('lib/viewers/box3d/image360/Image360Loader', () => {
             representations: {
                 entries: [
                     {
-                        representation: '3d'
-                    }
-                ]
-            }
+                        representation: '3d',
+                    },
+                ],
+            },
         };
 
         it('should throw an error if browser does not support WebGL', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(false);
-            expect(() => Image360Loader.determineViewer(file)).to.throw(PreviewError, /support preview for 360-degree images/);
+            expect(() => Image360Loader.determineViewer(file)).to.throw(
+                PreviewError,
+                /support preview for 360-degree images/,
+            );
         });
 
         it('should return viewer if 360 is properly supported', () => {

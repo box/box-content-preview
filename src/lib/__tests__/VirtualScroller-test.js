@@ -63,7 +63,7 @@ describe('VirtualScroller', () => {
                 totalItems: 10,
                 itemHeight: 100,
                 containerHeight: 500,
-                renderItemFn: stubs.renderItemFn
+                renderItemFn: stubs.renderItemFn,
             });
 
             expect(virtualScroller.totalItems).to.be.equal(10);
@@ -92,7 +92,7 @@ describe('VirtualScroller', () => {
                 itemHeight: 100,
                 containerHeight: 500,
                 renderItemFn: stubs.renderItemFn,
-                onInit: stubs.onInitHandler
+                onInit: stubs.onInitHandler,
             });
 
             expect(stubs.onInitHandler).to.be.calledWith(mockListInfo);
@@ -106,7 +106,7 @@ describe('VirtualScroller', () => {
                 itemHeight: 100,
                 containerHeight: 500,
                 renderItemFn: stubs.renderItemFn,
-                initialRowIndex: 50
+                initialRowIndex: 50,
             });
 
             expect(stubs.renderItems).to.be.calledWith(50);
@@ -120,7 +120,7 @@ describe('VirtualScroller', () => {
                 itemHeight: 100,
                 containerHeight: 500,
                 renderItemFn: stubs.renderItemFn,
-                initialRowIndex: 2
+                initialRowIndex: 2,
             });
 
             expect(stubs.renderItems).to.be.calledWith(0);
@@ -134,8 +134,8 @@ describe('VirtualScroller', () => {
                     totalItems: 10,
                     itemHeight: 100,
                     renderItemFn: () => {},
-                    containerHeight: 500
-                })
+                    containerHeight: 500,
+                }),
             ).to.not.throw();
         });
 
@@ -149,9 +149,9 @@ describe('VirtualScroller', () => {
             { name: 'containerHeight falsy', config: { totalItems: 10, itemHeight: 100, renderItemFn: () => {} } },
             {
                 name: 'containerHeight not finite',
-                config: { totalItems: 10, itemHeight: 100, renderItemFn: () => {}, containerHeight: '500' }
-            }
-        ].forEach((data) => {
+                config: { totalItems: 10, itemHeight: 100, renderItemFn: () => {}, containerHeight: '500' },
+            },
+        ].forEach(data => {
             it(`should throw an error if config is bad: ${data.name}`, () => {
                 expect(() => virtualScroller.validateRequiredConfig(data.config)).to.throw();
             });
@@ -211,7 +211,7 @@ describe('VirtualScroller', () => {
         it('should render the whole range of items (no reuse)', () => {
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
-                endOffset: -1
+                endOffset: -1,
             });
             virtualScroller.renderItems();
 
@@ -224,7 +224,7 @@ describe('VirtualScroller', () => {
         it('should render the last window into the list', () => {
             stubs.getCurrentListInfo.returns({
                 startOffset: -1,
-                endOffset: -1
+                endOffset: -1,
             });
             virtualScroller.renderItems(95);
 
@@ -237,7 +237,7 @@ describe('VirtualScroller', () => {
         it('should render items above the current list', () => {
             stubs.getCurrentListInfo.returns({
                 startOffset: 20,
-                endOffset: 30
+                endOffset: 30,
             });
             virtualScroller.renderItems(15);
 
@@ -323,7 +323,7 @@ describe('VirtualScroller', () => {
 
         it('should return -1 for offsets if elements do not exist', () => {
             virtualScroller.listEl = {
-                children: [{ children: [item1] }, { children: [item2] }]
+                children: [{ children: [item1] }, { children: [item2] }],
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
@@ -336,7 +336,7 @@ describe('VirtualScroller', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: {} },
                 lastElementChild: { children: [item2], dataset: {} },
-                children: [{ children: [item1] }, { children: [item2] }]
+                children: [{ children: [item1] }, { children: [item2] }],
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
@@ -349,7 +349,7 @@ describe('VirtualScroller', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: { bpVsRowIndex: '0' } },
                 lastElementChild: { children: [item2], dataset: { bpVsRowIndex: '10' } },
-                children: [{ children: [item1] }, { children: [item2] }]
+                children: [{ children: [item1] }, { children: [item2] }],
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
@@ -361,7 +361,7 @@ describe('VirtualScroller', () => {
         it('should return [] for items if no children', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: {} },
-                lastElementChild: { children: [item2], dataset: {} }
+                lastElementChild: { children: [item2], dataset: {} },
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
@@ -384,10 +384,10 @@ describe('VirtualScroller', () => {
             { name: 'no start provided', listEl, start: undefined, end: 2 },
             { name: 'no end provided', listEl, start: 1, end: undefined },
             { name: 'start is < 0 provided', listEl, start: -1, end: 2 },
-            { name: 'end is < 0 provided', listEl, start: 1, end: -1 }
+            { name: 'end is < 0 provided', listEl, start: 1, end: -1 },
         ];
 
-        paramaterizedTests.forEach((testData) => {
+        paramaterizedTests.forEach(testData => {
             it(`should do nothing if ${testData.name}`, () => {
                 const { listEl: list, start, end } = testData;
 
@@ -400,7 +400,7 @@ describe('VirtualScroller', () => {
         it('should remove the items specified', () => {
             const list = {
                 children: [{}, {}, {}, {}],
-                removeChild: stubs.removeChild
+                removeChild: stubs.removeChild,
             };
 
             virtualScroller.deleteItems(list, 0, 1);
@@ -411,7 +411,7 @@ describe('VirtualScroller', () => {
         it('should remove the items specified from start to the end when end is not provided', () => {
             const list = {
                 children: [{}, {}, {}, {}],
-                removeChild: stubs.removeChild
+                removeChild: stubs.removeChild,
             };
 
             virtualScroller.deleteItems(list, 2);
@@ -434,10 +434,10 @@ describe('VirtualScroller', () => {
             { name: 'no start provided', newListEl, oldListEl: {}, start: undefined, end: 2 },
             { name: 'no end provided', newListEl, oldListEl: {}, start: 1, end: undefined },
             { name: 'start is < 0 provided', newListEl, oldListEl: {}, start: -1, end: 2 },
-            { name: 'end is < 0 provided', newListEl, oldListEl: {}, start: 1, end: -1 }
+            { name: 'end is < 0 provided', newListEl, oldListEl: {}, start: 1, end: -1 },
         ];
 
-        paramaterizedTests.forEach((testData) => {
+        paramaterizedTests.forEach(testData => {
             it(`should do nothing if ${testData.name}`, () => {
                 const { newListEl: newList, start, end } = testData;
 
@@ -475,8 +475,8 @@ describe('VirtualScroller', () => {
                 children: [
                     { dataset: { bpVsRowIndex: 0 }, scrollIntoView: stubs.scrollIntoView },
                     { dataset: { bpVsRowIndex: 1 }, scrollIntoView: stubs.scrollIntoView },
-                    { dataset: { bpVsRowIndex: 2 }, scrollIntoView: stubs.scrollIntoView }
-                ]
+                    { dataset: { bpVsRowIndex: 2 }, scrollIntoView: stubs.scrollIntoView },
+                ],
             };
         });
 
@@ -594,7 +594,7 @@ describe('VirtualScroller', () => {
 
         it('should return only visible list items', () => {
             const listEl = {
-                children: [{ children: [{ val: 1 }] }, { children: [{ val: 2 }] }, { children: [{ val: 3 }] }]
+                children: [{ children: [{ val: 1 }] }, { children: [{ val: 2 }] }, { children: [{ val: 3 }] }],
             };
 
             const expectedItems = [{ val: 1 }, { val: 3 }];

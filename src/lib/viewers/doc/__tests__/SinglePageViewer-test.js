@@ -21,8 +21,8 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         doc = new SinglePageViewer({
             container: containerEl,
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -48,7 +48,7 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         const pdfViewer = {
             linkService: new PDFJS.PDFLinkService(),
             setDocument: sandbox.stub(),
-            enhanceTextSelection: true
+            enhanceTextSelection: true,
         };
 
         beforeEach(() => {
@@ -60,7 +60,7 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
             expect(stubs.pdfViewerStub).to.be.calledWith({
                 container: sinon.match.any,
                 linkService: sinon.match.any,
-                enhanceTextSelection: true
+                enhanceTextSelection: true,
             });
             expect(result).to.equal(pdfViewer);
         });

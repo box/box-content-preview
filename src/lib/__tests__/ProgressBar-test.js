@@ -38,7 +38,10 @@ describe('lib/ProgressBar', () => {
 
     describe('destroy()', () => {
         it('should clear progress interval and unmount the progress bar', () => {
-            sandbox.mock(window).expects('clearInterval').withArgs(progressBar.progressInterval);
+            sandbox
+                .mock(window)
+                .expects('clearInterval')
+                .withArgs(progressBar.progressInterval);
             progressBar.destroy();
             expect(mountEl.querySelector('.bp-progress-bar-container')).to.equal(null);
         });
@@ -74,7 +77,10 @@ describe('lib/ProgressBar', () => {
 
         it('should clear the interval when progress is >= 95', () => {
             sandbox.stub(progressBar, 'showProgress');
-            sandbox.mock(window).expects('clearInterval').withArgs(sinon.match.number);
+            sandbox
+                .mock(window)
+                .expects('clearInterval')
+                .withArgs(sinon.match.number);
 
             progressBar.start();
             progressBar.progress = 95;
@@ -89,13 +95,16 @@ describe('lib/ProgressBar', () => {
             const mock = sandbox.mock(progressBar);
             mock.expects('hideProgress');
             mock.expects('updateProgress').withArgs(100);
-            sandbox.mock(window).expects('clearInterval').withArgs(progressBar.progressInterval);
+            sandbox
+                .mock(window)
+                .expects('clearInterval')
+                .withArgs(progressBar.progressInterval);
             progressBar.finish();
         });
     });
 
     describe('updateProgress()', () => {
-        it('should update the progress bar element\'s width', () => {
+        it("should update the progress bar element's width", () => {
             const progress = 57;
             progressBar.updateProgress(progress);
             expect(progressBar.progressBarEl.style.width).to.equal(`${progress}%`);

@@ -15,7 +15,7 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
             NAME: 'IFrame',
             CONSTRUCTOR: IFrameViewer,
             REP: 'ORIGINAL',
-            EXT: ['boxnote', 'boxdicom']
+            EXT: ['boxnote', 'boxdicom'],
         });
     });
 });

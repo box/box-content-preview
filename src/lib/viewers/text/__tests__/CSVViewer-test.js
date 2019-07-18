@@ -26,13 +26,13 @@ describe('lib/viewers/text/CSVViewer', () => {
         options = {
             container: containerEl,
             file: {
-                id: 0
+                id: 0,
             },
             representation: {
                 content: {
-                    url_template: 'csvUrl{+asset_path}'
-                }
-            }
+                    url_template: 'csvUrl{+asset_path}',
+                },
+            },
         };
 
         csv = new CSVViewer(options);
@@ -110,7 +110,7 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expect(window.Papa.parse).to.be.calledWith(csvUrlWithAuth, {
                     download: true,
                     error: sinon.match.func,
-                    complete: sinon.match.func
+                    complete: sinon.match.func,
                 });
             });
         });
@@ -171,7 +171,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'resize', { value: sandbox.mock() });
             csv.csvComponent = {
                 renderCSV: sandbox.mock(),
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
 
             csv.resize();
@@ -186,7 +186,7 @@ describe('lib/viewers/text/CSVViewer', () => {
                 renderCSV: sandbox.mock(),
                 render: () => {
                     return '';
-                }
+                },
             });
             /* eslint-enable react/prefer-es6-class */
             sandbox.stub(csv, 'loadUI');

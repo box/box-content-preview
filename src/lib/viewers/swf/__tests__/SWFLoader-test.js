@@ -19,10 +19,10 @@ describe('lib/viewers/SWFLoader', () => {
                 representations: {
                     entries: [
                         {
-                            representation: 'ORIGINAL'
-                        }
-                    ]
-                }
+                            representation: 'ORIGINAL',
+                        },
+                    ],
+                },
             };
         });
 

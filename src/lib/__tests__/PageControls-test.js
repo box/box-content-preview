@@ -83,7 +83,7 @@ describe('lib/PageControls', () => {
                 value: 0,
                 focus: sandbox.stub(),
                 select: sandbox.stub(),
-                addEventListener: sandbox.stub()
+                addEventListener: sandbox.stub(),
             };
 
             pageControls.showPageNumInput();
@@ -98,7 +98,7 @@ describe('lib/PageControls', () => {
     describe('hidePageNumInput()', () => {
         it('should hide the input class and remove event listeners', () => {
             pageControls.pageNumInputEl = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             pageControls.hidePageNumInput();
@@ -161,7 +161,7 @@ describe('lib/PageControls', () => {
             pageControls.pagesCount = 10;
             pageControls.pageNumInputEl = {
                 value: 1,
-                textContent: 1
+                textContent: 1,
             };
             const checkPaginationButtonsStub = sandbox.stub(pageControls, 'checkPaginationButtons');
 
@@ -194,7 +194,7 @@ describe('lib/PageControls', () => {
     describe('currentPageNumber', () => {
         beforeEach(() => {
             pageControls.currentPageEl = {
-                textContent: '1'
+                textContent: '1',
             };
         });
 
@@ -225,8 +225,8 @@ describe('lib/PageControls', () => {
         beforeEach(() => {
             stubs.event = {
                 target: {
-                    value: 5
-                }
+                    value: 5,
+                },
             };
             stubs.emit = sandbox.stub(pageControls, 'emit');
             stubs.hidePageNumInputStub = sandbox.stub(pageControls, 'hidePageNumInput');
@@ -254,17 +254,17 @@ describe('lib/PageControls', () => {
                 stopPropagation: sandbox.stub(),
                 preventDefault: sandbox.stub(),
                 target: {
-                    blur: sandbox.stub()
-                }
+                    blur: sandbox.stub(),
+                },
             };
             pageControls.contentEl = {
-                focus: sandbox.stub()
+                focus: sandbox.stub(),
             };
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Explorer');
             stubs.hidePageNumInput = sandbox.stub(pageControls, 'hidePageNumInput');
         });
 
-        it('should focus the doc element and stop default actions on \'enter\'', () => {
+        it("should focus the doc element and stop default actions on 'enter'", () => {
             pageControls.pageNumInputKeydownHandler(stubs.event);
             expect(stubs.browser).to.be.called;
             expect(pageControls.contentEl.focus).to.be.called;
@@ -272,7 +272,7 @@ describe('lib/PageControls', () => {
             expect(stubs.event.preventDefault).to.be.called;
         });
 
-        it('should blur if not IE and stop default actions on \'enter\'', () => {
+        it("should blur if not IE and stop default actions on 'enter'", () => {
             stubs.browser.returns('Chrome');
 
             pageControls.pageNumInputKeydownHandler(stubs.event);
@@ -282,7 +282,7 @@ describe('lib/PageControls', () => {
             expect(stubs.event.preventDefault).to.be.called;
         });
 
-        it('should hide the page number input, focus the document, and stop default actions on \'Esc\'', () => {
+        it("should hide the page number input, focus the document, and stop default actions on 'Esc'", () => {
             stubs.event.key = 'Esc';
 
             pageControls.pageNumInputKeydownHandler(stubs.event);

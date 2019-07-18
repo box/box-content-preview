@@ -10,7 +10,7 @@ import {
     EVENT_RESET_SKELETONS,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
-    EVENT_SET_WIREFRAMES_VISIBLE
+    EVENT_SET_WIREFRAMES_VISIBLE,
 } from '../model3DConstants';
 
 describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
@@ -35,18 +35,18 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
         renderer = new Model3DRenderer(containerEl, {});
         app = {
-            getComponentByScriptId: () => {}
+            getComponentByScriptId: () => {},
         };
         animationComp = {
             setAsset: () => null,
-            setLoop: () => null
+            setLoop: () => null,
         };
         instance = {
             trigger: () => null,
             once: (name, fn) => fn(),
             id: 'INSTANCE_ID',
             addComponent: () => null,
-            getComponentByScriptId: (id) => (id === 'animation' ? animationComp : {})
+            getComponentByScriptId: id => (id === 'animation' ? animationComp : {}),
         };
         scene = {
             addChild: () => {},
@@ -54,20 +54,20 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             when: () => {},
             runtimeData: {
                 add: () => {},
-                remove: () => {}
+                remove: () => {},
             },
-            getDescendantByName: () => instance
+            getDescendantByName: () => instance,
         };
         animation = {
             id: 'my_animation',
             isLoading: () => true,
-            when: () => {}
+            when: () => {},
         };
         renderer.box3d = {
             importEntitiesFromUrl: () => Promise.resolve(),
             canvas: {
                 addEventListener: () => {},
-                removeEventListener: () => {}
+                removeEventListener: () => {},
             },
             createNode: () => {},
             destroy: () => {},
@@ -75,17 +75,17 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             getAssetsByType: () => [],
             getAssetsByClass: () => [animation],
             getAssetById: () => {},
-            getEntityById: (id) => {
+            getEntityById: id => {
                 return id === 'SCENE_ID' ? scene : undefined;
             },
             getEntitiesByType: () => [],
-            getObjectByClass: (classType) => {
+            getObjectByClass: classType => {
                 return classType === Box3D.SceneObject ? scene : undefined;
             },
             getVrDisplay: () => {},
             off: () => {},
             on: () => {},
-            trigger: () => {}
+            trigger: () => {},
         };
         renderMock = sandbox.mock(renderer);
     });
@@ -131,9 +131,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('load()', () => {
-        it('should do nothing with scene entities if location is not present in options', (done) => {
+        it('should do nothing with scene entities if location is not present in options', done => {
             const options = { file: { id: 'dummyId' } };
-            sandbox.stub(renderer, 'initBox3d').callsFake((opts) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(opts => {
                 expect(opts.sceneEntities).to.not.exist;
                 done();
                 return Promise.resolve();
@@ -142,13 +142,13 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.load('', options);
         });
 
-        it('should assign sceneEntities to the passed in options object', (done) => {
+        it('should assign sceneEntities to the passed in options object', done => {
             const options = {
                 location: {
-                    staticBaseURI: ''
-                }
+                    staticBaseURI: '',
+                },
             };
-            sandbox.stub(renderer, 'initBox3d').callsFake((opts) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(opts => {
                 expect(opts.sceneEntities).to.exist;
                 done();
                 return Promise.resolve();
@@ -160,18 +160,18 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should initialize the box3d runtime', () => {
             const options = {
                 location: {
-                    staticBaseURI: ''
+                    staticBaseURI: '',
                 },
                 file: {
-                    id: ''
-                }
+                    id: '',
+                },
             };
             renderMock.expects('initBox3d').returns(Promise.resolve());
             sandbox.stub(renderer, 'loadBox3dFile');
             renderer.load('', options);
         });
 
-        it('should load the box3d file after initializing the runtime', (done) => {
+        it('should load the box3d file after initializing the runtime', done => {
             const options = { file: { id: '' } };
             renderMock.expects('initBox3d').returns(Promise.resolve());
             renderMock.expects('loadBox3dFile').returns(Promise.resolve());
@@ -180,7 +180,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             });
         });
 
-        it('should setup the scene via onUnsupportedRepresentation() if it cannot load the model', (done) => {
+        it('should setup the scene via onUnsupportedRepresentation() if it cannot load the model', done => {
             const options = { file: { id: '' } };
             renderMock.expects('onUnsupportedRepresentation');
             sandbox.stub(renderer, 'loadBox3dFile').callsFake(() => Promise.reject());
@@ -192,7 +192,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         let renderMode;
         beforeEach(() => {
             renderMode = {
-                setAttribute: () => {}
+                setAttribute: () => {},
             };
             sandbox
                 .mock(app)
@@ -217,7 +217,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.loadBox3dFile('');
         });
 
-        it('should setup the scene via setupScene() if it can successfully load the model', (done) => {
+        it('should setup the scene via setupScene() if it can successfully load the model', done => {
             sandbox.mock(renderer.box3d, 'setupScene', () => {});
             renderMock.expects('setupScene').called;
             renderer.loadBox3dFile('').then(() => done());
@@ -289,7 +289,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             expect(stub).to.be.called;
         });
 
-        it('should invoke parent\'s reset()', () => {
+        it("should invoke parent's reset()", () => {
             sandbox.stub(renderer, 'resetModel');
             const stub = sandbox.stub(Box3DRenderer.prototype, 'reset');
             renderer.reset();
@@ -307,7 +307,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 scaleToSize: () => {},
                 unsetProperty: () => {},
                 getComponentByScriptId: () => {},
-                runtimeData: {}
+                runtimeData: {},
             };
         });
 
@@ -325,7 +325,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
-                unsetProperty: () => {}
+                unsetProperty: () => {},
             };
             sandbox.stub(renderer.instance, 'getChildren').returns([child]);
             sandbox
@@ -340,7 +340,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
-                unsetProperty: () => {}
+                unsetProperty: () => {},
             };
             sandbox.stub(renderer.instance, 'getChildren').returns([child]);
             sandbox
@@ -355,7 +355,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
-                unsetProperty: () => {}
+                unsetProperty: () => {},
             };
             sandbox.stub(renderer.instance, 'getChildren').returns([child]);
             sandbox
@@ -376,10 +376,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             orbitComp = {
                 setPivotPosition: () => {},
                 setOrbitDistance: () => {},
-                reset: () => {}
+                reset: () => {},
             };
             camera = {
-                getComponentByScriptId: () => {}
+                getComponentByScriptId: () => {},
             };
             renderer.instance = {
                 getCenter: () => {
@@ -392,8 +392,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 destroy: () => {},
                 runtimeData: {
                     matrixWorld: {},
-                    updateMatrixWorld: () => {}
-                }
+                    updateMatrixWorld: () => {},
+                },
             };
             sandbox.stub(renderer, 'getCamera').callsFake(() => camera);
         });
@@ -464,7 +464,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         const videos = [];
 
         beforeEach(() => {
-            sandbox.stub(renderer.box3d, 'getEntitiesByType').callsFake((type) => {
+            sandbox.stub(renderer.box3d, 'getEntitiesByType').callsFake(type => {
                 switch (type) {
                     case 'animation':
                         return animations;
@@ -485,12 +485,12 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             const vid1 = {
                 isLoading: () => false,
                 when: () => {},
-                play: sandbox.stub()
+                play: sandbox.stub(),
             };
             const vid2 = {
                 isLoading: () => false,
                 when: () => {},
-                play: sandbox.stub()
+                play: sandbox.stub(),
             };
             videos.push(vid1, vid2);
             renderer.onSceneLoad();
@@ -505,7 +505,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         let animAsset;
         beforeEach(() => {
             animAsset = {
-                when: () => {}
+                when: () => {},
             };
             animComp = {
                 asset: animAsset,
@@ -515,14 +515,14 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setAsset: () => {},
                 setClipId: () => {},
                 setLoop: () => {},
-                stop: () => {}
+                stop: () => {},
             };
             renderer.instance = {
                 alignToPosition: () => {},
                 destroy: () => {},
                 getComponentByScriptId: () => animComp,
                 scaleToSize: () => {},
-                when: () => {}
+                when: () => {},
             };
         });
 
@@ -546,7 +546,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
             it('should set the current animation being used by the component to the one passed in', () => {
                 const asset = {
-                    id: 'my_animation'
+                    id: 'my_animation',
                 };
                 sandbox
                     .mock(animComp)
@@ -733,20 +733,20 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         beforeEach(() => {
             grid = {
                 material: {
-                    dispose: sandbox.stub()
+                    dispose: sandbox.stub(),
                 },
                 geometry: {
-                    dispose: sandbox.stub()
-                }
+                    dispose: sandbox.stub(),
+                },
             };
             renderer.grid = grid;
             axis = {
                 material: {
-                    dispose: sandbox.stub()
+                    dispose: sandbox.stub(),
                 },
                 geometry: {
-                    dispose: sandbox.stub()
-                }
+                    dispose: sandbox.stub(),
+                },
             };
             renderer.axisDisplay = axis;
         });
@@ -823,7 +823,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should toggle axis display visiblity', () => {
             renderer.axisDisplay = {
-                visible: true
+                visible: true,
             };
             renderer.toggleHelpers();
             expect(renderer.axisDisplay.visible).to.be.false;
@@ -831,7 +831,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the axis display to flag passed in', () => {
             renderer.axisDisplay = {
-                visible: undefined
+                visible: undefined,
             };
             renderer.toggleHelpers(true);
             expect(renderer.axisDisplay.visible).to.be.true;
@@ -839,7 +839,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should tell the runtime to re-render', () => {
             renderer.axisDisplay = {
-                visible: true
+                visible: true,
             };
             renderer.toggleHelpers();
             expect(renderer.box3d.needsRender).to.be.true;
@@ -907,7 +907,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setProperty: () => {},
                 getProperty: () => {
                     return 'perspective';
-                }
+                },
             };
         });
 
@@ -917,7 +917,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             expect(renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE)).to.not.throw;
         });
 
-        it('should set the perspective properties of the camera if perspective mode is selected', (done) => {
+        it('should set the perspective properties of the camera if perspective mode is selected', done => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
             sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
                 expect(prop).to.equal('cameraType');
@@ -927,7 +927,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
         });
 
-        it('should set the orthographic properties of the camera if ortho mode is selected', (done) => {
+        it('should set the orthographic properties of the camera if ortho mode is selected', done => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
             sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
                 expect(prop).to.equal('cameraType');
@@ -955,7 +955,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.instance = {
                 trigger: () => {},
                 getCenter: sandbox.stub().returns(center),
-                destroy: () => {}
+                destroy: () => {},
             };
         });
 
@@ -1056,7 +1056,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should cause a change in grid visibility', () => {
             renderer.grid = {
-                visible: false
+                visible: false,
             };
             renderer.setGridVisible(true);
             expect(renderer.grid.visible).to.equal(true);
@@ -1088,11 +1088,11 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should enable the grid to be visible if the vr device has positional tracking capabilities', () => {
             const device = {
                 capabilities: {
-                    hasPosition: true
-                }
+                    hasPosition: true,
+                },
             };
             renderer.grid = {
-                visible: false
+                visible: false,
             };
             sandbox.stub(renderer.box3d, 'getVrDisplay').returns(device);
             renderer.enableVr();
@@ -1126,20 +1126,20 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             const pos = {
                 set: () => {},
                 applyQuaternion: () => {},
-                add: () => {}
+                add: () => {},
             };
             position = sandbox.mock(pos);
             quaternion = { x: 1, y: 2, z: 3, w: 1 };
             orbitCam = {
                 getOrbitDistance: () => orbitDist,
-                pivotPoint: { position: pos }
+                pivotPoint: { position: pos },
             };
             camera = {
                 runtimeData: {
                     quaternion,
-                    position: pos
+                    position: pos,
                 },
-                getComponentByScriptId: () => orbitCam
+                getComponentByScriptId: () => orbitCam,
             };
             sandbox
                 .mock(renderer)

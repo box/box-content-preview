@@ -22,24 +22,24 @@ describe('lib/viewers/image/ImageLoader', () => {
                             representation: 'jpg',
                             properties: {
                                 dimensions: '1024x1024',
-                                paged: 'false'
-                            }
+                                paged: 'false',
+                            },
                         },
                         {
                             representation: 'jpg',
                             properties: {
-                                dimensions: '2048x2048'
-                            }
-                        }
-                    ]
-                }
+                                dimensions: '2048x2048',
+                            },
+                        },
+                    ],
+                },
             };
 
             viewer = {
                 NAME: 'Image',
                 CONSTRUCTOR: ImageViewer,
                 REP: 'jpg',
-                EXT: ['jpg']
+                EXT: ['jpg'],
             };
         });
 
