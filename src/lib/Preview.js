@@ -1270,6 +1270,8 @@ class Preview extends EventEmitter {
             if (checkFeature(this.viewer, 'print')) {
                 this.ui.showPrintButton(this.print);
             }
+        } else {
+            this.ui.preventBrowserPrinting();
         }
 
         const { error } = data;

@@ -395,4 +395,13 @@ describe('lib/PreviewUI', () => {
             expect(ui.isSetup()).to.be.true;
         });
     });
+
+    describe('preventBrowserPrinting()', () => {
+        it('should insert media print rules', () => {
+            ui.preventBrowserPrinting();
+            const sheet = document.styleSheets[0];
+
+            console.error(sheet);
+        });
+    });
 });

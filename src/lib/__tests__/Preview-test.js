@@ -1814,6 +1814,7 @@ describe('lib/Preview', () => {
             stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.showPrintButton = sandbox.stub(preview.ui, 'showPrintButton');
             stubs.hideLoadingIndicator = sandbox.stub(preview.ui, 'hideLoadingIndicator');
+            stubs.preventBrowserPrinting = sandbox.stub(preview.ui, 'preventBrowserPrinting');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
@@ -1839,12 +1840,14 @@ describe('lib/Preview', () => {
             stubs.canDownload.returns(true);
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;
+            expect(stubs.preventBrowserPrinting).to.not.be.called;
         });
 
         it("should not show download button if file can't be downloaded", () => {
             stubs.canDownload.returns(false);
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
+            expect(stubs.preventBrowserPrinting).to.be.called;
         });
 
         it('should show print button if print is supported', () => {
@@ -1852,6 +1855,7 @@ describe('lib/Preview', () => {
             stubs.canDownload.returns(true);
             preview.finishLoading();
             expect(stubs.showPrintButton).to.be.called;
+            expect(stubs.preventBrowserPrinting).to.not.be.called;
         });
 
         it('should not show print button if print is not supported', () => {
@@ -1859,6 +1863,7 @@ describe('lib/Preview', () => {
             stubs.canDownload.returns(true);
             preview.finishLoading();
             expect(stubs.showPrintButton).to.not.be.called;
+            expect(stubs.preventBrowserPrinting).to.be.called;
         });
 
         it("should not show print button if file can't be downloaded", () => {

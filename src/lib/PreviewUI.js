@@ -426,6 +426,30 @@ class PreviewUI {
         const loadingDownloadButtonEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
         loadingDownloadButtonEl.textContent = __('download_file');
     }
+
+    /**
+     * Attempts to prevent printing using the browser.
+     *
+     * @private
+     * @return {void}
+     */
+    preventBrowserPrinting() {
+        const sheet = document.styleSheets[0];
+        // Doesn't matter which stylesheet is picked up.
+        // Under most circumstances there should be a stylesheet.
+        // However a user may remove all of them manually.
+        if (sheet) {
+            sheet.insertRule(`
+                @media print {
+                    ${SELECTOR_BOX_PREVIEW},
+                    ${SELECTOR_BOX_PREVIEW_CONTAINER},
+                    ${SELECTOR_BOX_PREVIEW_CONTENT} {
+                        display: none !important;
+                    }
+                }
+            `);
+        }
+    }
 }
 
 export default PreviewUI;
