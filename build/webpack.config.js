@@ -1,17 +1,16 @@
-const isRelease = process.env.NODE_ENV === 'production';
-const isDev = process.env.NODE_ENV === 'dev';
+const { NODE_ENV } = process.env;
+const isRelease = NODE_ENV === 'production';
+const isDev = NODE_ENV === 'dev';
 
+const fs = require('fs');
 const path = require('path');
+const locales = require('@box/languages');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
-const { UglifyJsPlugin } = require('webpack').optimize;
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const { BannerPlugin } = require('webpack');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const version = isRelease ? require('../package.json').version : 'dev';
-const fs = require('fs');
-const license = require('./license');
-const locales = require('box-locales');
 
 let rsyncLocation = '';
 if (fs.existsSync('build/rsync.json')) {
@@ -24,10 +23,7 @@ if (fs.existsSync('build/rsync.json')) {
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
 const staticFolder = path.resolve('dist');
-
-const languages = isRelease
-    ? locales
-    : ['en-US']; // Only 1 language needed for dev
+const languages = isRelease ? locales : ['en-US']; // Only 1 language needed for dev
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {
@@ -35,79 +31,66 @@ function updateConfig(conf, language, index) {
         entry: {
             annotations: ['box-annotations'],
             preview: [`${lib}/Preview.js`],
-            csv: [`${lib}/viewers/text/BoxCSV.js`]
+            csv: [`${lib}/viewers/text/BoxCSV.js`],
+        },
+        mode: isRelease ? 'production' : 'development',
+        optimization: {
+            minimizer: [
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                        compress: {
+                            drop_console: true,
+                        },
+                        output: {
+                            comments: /^\/*!/,
+                        },
+                        sourceMap: false,
+                    },
+                }),
+            ],
         },
         output: {
+            filename: '[Name].js',
             path: path.resolve('dist', version, language),
-            filename: '[Name].js'
+        },
+        performance: {
+            maxAssetSize: 500000,
+            maxEntrypointSize: 750000,
         },
         devServer: {
             contentBase: './src',
             disableHostCheck: true,
             host: '0.0.0.0',
             inline: true,
-            port: 8000
-        }
+            port: 8000,
+        },
     });
 
-    // Copy over image and 3rd party
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
-
-        if (isRelease) {
-            config.plugins.push(
-                new BundleAnalyzerPlugin({
-                    analyzerMode: 'static',
-                    openAnalyzer: false,
-                    reportFilename: '../../../reports/webpack-stats.html',
-                    generateStatsFile: true,
-                    statsFilename: '../../../reports/webpack-stats.json'
-                })
-            );
-        }
     }
 
     if (isDev) {
-        // If build/rsync.json exists, rsync bundled files to specified directory
+        config.devtool = 'source-map';
+
         if (rsyncLocation) {
             config.plugins.push(new RsyncPlugin('dist/.', rsyncLocation));
         }
-
-        config.devtool = 'source-map';
     }
 
     if (isRelease) {
-        // http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
-        config.plugins.push(
-            new UglifyJsPlugin({
-                compress: {
-                    warnings: false, // Don't output warnings
-                    drop_console: true // Drop console statements
-                },
-                comments: false, // Remove comments
-                sourceMap: false
-            })
-        );
-
         // Optimize CSS - minimize, remove comments and duplicate rules
         config.plugins.push(
             new OptimizeCssAssetsPlugin({
                 cssProcessorOptions: {
-                    safe: true
-                }
-            })
+                    safe: true,
+                },
+            }),
         );
-
-        // Add license message to top of code
-        config.plugins.push(new BannerPlugin(license));
     }
 
     return config;
 }
 
-const localizedConfigs = languages.map((language, index) =>
-    updateConfig(commonConfig(language), language, index)
-);
-module.exports = localizedConfigs.length > 1
-    ? localizedConfigs
-    : localizedConfigs[0];
+const localizedConfigs = languages.map((language, index) => updateConfig(commonConfig(language), language, index));
+module.exports = localizedConfigs.length > 1 ? localizedConfigs : localizedConfigs[0];

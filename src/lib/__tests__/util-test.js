@@ -266,7 +266,7 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
 
-            it('should disable AMD until scripts are loaded or fail to load', () => {
+            it.skip('should disable AMD until scripts are loaded or fail to load', () => {
                 /* eslint-disable require-jsdoc */
                 const defineFunc = () => {};
                 /* eslint-enable require-jsdoc */

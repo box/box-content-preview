@@ -59,7 +59,6 @@ const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
@@ -1209,13 +1208,16 @@ class DocBaseViewer extends BaseViewer {
                 this.scrollStarted = true;
             }
 
-            this.scrollTimer = setTimeout(() => {
-                this.emit('scrollend', {
-                    scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft,
-                });
-                this.scrollStarted = false;
-            }, SCROLL_END_TIMEOUT);
+            this.scrollTimer = setTimeout(
+                () => {
+                    this.emit('scrollend', {
+                        scrollTop: this.docEl.scrollTop,
+                        scrollLeft: this.docEl.scrollLeft,
+                    });
+                    this.scrollStarted = false;
+                },
+                this.isMobile ? 500 : 250,
+            );
         }, SCROLL_EVENT_THROTTLE_INTERVAL);
     }
 
