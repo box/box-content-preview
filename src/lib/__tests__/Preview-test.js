@@ -1209,11 +1209,6 @@ describe('lib/Preview', () => {
             };
         });
 
-        it('should use the saved preview options', () => {
-            preview.parseOptions(preview.previewOptions);
-            expect(stubs.assign).to.be.calledWith(preview.previewOptions);
-        });
-
         it('should set the container', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.container).to.equal(containerEl);

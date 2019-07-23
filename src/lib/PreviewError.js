@@ -17,12 +17,13 @@ class PreviewError extends Error {
      * @param {string} code - Error code
      * @param {string} [displayMessage] - Translated error message that can be displayed to a user
      * @param {Object} [details] - Optional error options
-     * @param {...Object} [params] - Additional params, this may contain the original error message
+     * @param {string} [message] - Original error message
+     * @param {...Object} [params] - Additional params
      * @return {PreviewError} PreviewError instance
      */
-    constructor(code, displayMessage = '', details = {}, ...params) {
+    constructor(code, displayMessage = '', details = {}, message, ...params) {
         // Pass remaining arguments to parent constructor
-        super(...params);
+        super(message, ...params);
 
         // Workaround to make `instanceof PreviewError` work in ES5
         this.constructor = PreviewError;
@@ -41,7 +42,7 @@ class PreviewError extends Error {
         this.displayMessage = displayMessage || __('error_generic');
 
         // Default base error message to display message if not set - some code may depend on Error.message
-        this.message = this.message || this.displayMessage;
+        this.message = message || this.displayMessage;
     }
 }
 
