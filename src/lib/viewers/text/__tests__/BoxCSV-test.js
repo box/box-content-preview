@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import * as ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
 import BoxCSV from '../BoxCSV';
 
 const sandbox = sinon.sandbox.create();
@@ -24,20 +24,6 @@ describe('lib/viewers/text/BoxCSV', () => {
             csvComponent.destroy();
         }
         csvComponent = null;
-    });
-
-    describe('destroy()', () => {
-        it('should unmount the component', () => {
-            csvComponent.gridComponent = {};
-            sandbox.stub(ReactDOM, 'unmountComponentAtNode');
-
-            csvComponent.destroy();
-
-            expect(ReactDOM.unmountComponentAtNode).to.be.called;
-
-            // Don't destroy again
-            csvComponent = null;
-        });
     });
 
     describe('getRowClassName()', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import ReactDOM from 'react-dom';
 import Grid from 'react-virtualized/dist/es/Grid/Grid';
 
 const HEIGHT_ROW = 30;
@@ -27,7 +27,7 @@ class BoxCSV {
      */
     destroy() {
         if (this.gridComponent) {
-            unmountComponentAtNode(this.csvEl);
+            ReactDOM.unmountComponentAtNode(this.csvEl);
             this.gridComponent = null;
         }
     }
@@ -87,7 +87,7 @@ class BoxCSV {
             columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
         }
 
-        this.gridComponent = render(
+        this.gridComponent = ReactDOM.render(
             <Grid
                 cellRenderer={this.cellRenderer}
                 className="bp-text-csv-grid"

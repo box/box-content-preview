@@ -964,7 +964,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if click is outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'click', target: this.containerEl });
+            settings.blurHandler({ type: 'click', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
@@ -972,7 +972,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if space is pressed outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Space', target: this.containerEl });
+            settings.blurHandler({ type: 'keydown', key: 'Space', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
@@ -980,7 +980,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if enter is pressed outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Enter', target: this.containerEl });
+            settings.blurHandler({ type: 'keydown', key: 'Enter', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
