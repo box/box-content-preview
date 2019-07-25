@@ -1,6 +1,6 @@
 const { NODE_ENV } = process.env;
-const isRelease = NODE_ENV === 'production';
 const isDev = NODE_ENV === 'dev';
+const isProd = NODE_ENV === 'production';
 
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +10,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
-const version = isRelease ? require('../package.json').version : 'dev';
+const version = isProd ? require('../package.json').version : 'dev';
 
 let rsyncLocation = '';
 if (fs.existsSync('build/rsync.json')) {
@@ -23,7 +23,7 @@ if (fs.existsSync('build/rsync.json')) {
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
 const staticFolder = path.resolve('dist');
-const languages = isRelease ? locales : ['en-US']; // Only 1 language needed for dev
+const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {
@@ -33,7 +33,7 @@ function updateConfig(conf, language, index) {
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`],
         },
-        mode: isRelease ? 'production' : 'development',
+        mode: isProd ? 'production' : 'development',
         optimization: {
             minimizer: [
                 new UglifyJsPlugin({
@@ -78,7 +78,7 @@ function updateConfig(conf, language, index) {
         }
     }
 
-    if (isRelease) {
+    if (isProd) {
         // Optimize CSS - minimize, remove comments and duplicate rules
         config.plugins.push(
             new OptimizeCssAssetsPlugin({
