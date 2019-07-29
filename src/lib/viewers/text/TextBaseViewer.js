@@ -12,6 +12,7 @@ class TextBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
 
+        this.api = options.api;
         // Bind context for handlers;
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);

@@ -1,4 +1,3 @@
-import api from './api';
 import { openUrlInsideIframe, isLocalStorageAvailable } from './util';
 
 const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
@@ -133,14 +132,24 @@ class DownloadReachability {
             : null;
     }
 
+    /** @property {Api} Previews instance of the api for XHR calls */
+    api;
+
+    /**
+     * @param {Api} client - Previews instance of the api.
+     */
+    constructor(client) {
+        this.api = client;
+    }
+
     /**
      * Checks if the provided host is reachable. If not set the session storage to reflect this.
      *
      * @param {string} downloadUrl - Content download URL, may either be a template or an actual URL
      * @return {void}
      */
-    static setDownloadReachability(downloadUrl) {
-        return api
+    setDownloadReachability(downloadUrl) {
+        return this.api
             .head(downloadUrl)
             .then(() => {
                 return Promise.resolve(false);
@@ -157,7 +166,7 @@ class DownloadReachability {
      * @param {string} downloadUrl - Content download URL
      * @return {void}
      */
-    static downloadWithReachabilityCheck(downloadUrl) {
+    downloadWithReachabilityCheck(downloadUrl) {
         const defaultDownloadUrl = DownloadReachability.replaceDownloadHostWithDefault(downloadUrl);
         if (DownloadReachability.isDownloadHostBlocked() || !DownloadReachability.isCustomDownloadHost(downloadUrl)) {
             // If we know the host is blocked, or we are already using the default,
@@ -166,7 +175,7 @@ class DownloadReachability {
         } else {
             // Try the custom host, then check reachability
             openUrlInsideIframe(downloadUrl);
-            DownloadReachability.setDownloadReachability(downloadUrl).then(isBlocked => {
+            this.setDownloadReachability(downloadUrl).then(isBlocked => {
                 if (isBlocked) {
                     // If download is unreachable, try again with default
                     openUrlInsideIframe(defaultDownloadUrl);

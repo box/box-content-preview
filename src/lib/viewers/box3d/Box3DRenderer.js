@@ -1,7 +1,6 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
 import EventEmitter from 'events';
-import api from '../../api';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
@@ -32,6 +31,9 @@ function appendSharedLinkHeaders(xhr, sharedLink, sharedLinkPassword) {
 }
 
 class Box3DRenderer extends EventEmitter {
+    /** @property {Api} - Preview API instance */
+    api;
+
     /** @property {HTMLElement} - Parent container element */
     containerEl;
 
@@ -68,11 +70,14 @@ class Box3DRenderer extends EventEmitter {
      * @constructor
      * @param {HTMLElement} containerEl - the container element
      * @param {BoxSDK} [boxSdk] - Box SDK instance, used for requests to Box
+     * @param {Object} options
+     * @param {Object} options.api - Api layer for http calls
+
      * @return {Image360Renderer} Image360Renderer instance
      */
-    constructor(containerEl, boxSdk) {
+    constructor(containerEl, boxSdk, { api } = {}) {
         super();
-
+        this.api = api;
         this.containerEl = containerEl;
         this.boxSdk = boxSdk;
 
@@ -205,7 +210,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {Promise} - A promise that resolves on completion of the load.
      */
     getEntitiesFromUrl(url) {
-        return api.get(url);
+        return this.api.get(url);
     }
 
     /**

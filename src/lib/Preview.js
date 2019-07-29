@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
-import api from './api';
+import Api from './api';
 import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
@@ -14,7 +14,6 @@ import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
-import DownloadReachability from './DownloadReachability';
 import {
     getProp,
     decodeKeydown,
@@ -84,6 +83,9 @@ const SUPPORT_URL = 'https://support.box.com';
 const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
 class Preview extends EventEmitter {
+    /** @property {Api} - Previews Api instance used for XHR calls  */
+    api = new Api();
+
     /** @property {boolean} - Whether preview is open */
     open = false;
 
@@ -211,6 +213,9 @@ class Preview extends EventEmitter {
                 Timer.reset(previewDurationTag);
                 this.emit(PREVIEW_METRIC, event);
             }
+
+            // Eject http interceptors
+            this.api.ejectInterceptors();
 
             this.viewer.destroy();
         }
@@ -538,14 +543,14 @@ class Preview extends EventEmitter {
                 params,
             );
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
 
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then(data => {
+            this.api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then(data => {
                 const downloadUrl = appendQueryParams(data.download_url, queryParams);
-                DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+                this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
             });
         }
 
@@ -773,6 +778,18 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
+        // Eject any previous interceptors
+        this.api.ejectInterceptors();
+
+        // Check to see if there are http interceptors and load them
+        if (this.options.responseInterceptor) {
+            this.api.addResponseInterceptor(this.options.responseInterceptor);
+        }
+
+        if (this.options.requestInterceptor) {
+            this.api.addRequestInterceptor(this.options.requestInterceptor);
+        }
+
         // @TODO: This may not be the best way to detect if we are offline. Make sure this works well if we decided to
         // combine Box Elements + Preview. This could potentially break if we have Box Elements fetch the file object
         // and pass the well-formed file object directly to the preview library to render.
@@ -942,6 +959,12 @@ class Preview extends EventEmitter {
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
+        // Add the request interceptor to the preview instance
+        this.options.requestInterceptor = options.requestInterceptor;
+
+        // Add the response interceptor to the preview instance
+        this.options.responseInterceptor = options.responseInterceptor;
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
@@ -964,7 +987,12 @@ class Preview extends EventEmitter {
      */
     createViewerOptions(moreOptions) {
         return cloneDeep(
-            Object.assign({}, this.options, moreOptions, { location: this.location, cache: this.cache, ui: this.ui }),
+            Object.assign({}, this.options, moreOptions, {
+                api: this.api,
+                location: this.location,
+                cache: this.cache,
+                ui: this.ui,
+            }),
         );
     }
 
@@ -1008,7 +1036,8 @@ class Preview extends EventEmitter {
         Timer.start(tag);
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
-        api.get(fileInfoUrl, { headers: this.getRequestHeaders() })
+        this.api
+            .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
     }
@@ -1360,7 +1389,8 @@ class Preview extends EventEmitter {
         };
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
-        api.post(`${apiHost}/2.0/events`, data, { headers })
+        this.api
+            .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
@@ -1646,7 +1676,8 @@ class Preview extends EventEmitter {
                     const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
-                    api.get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
+                    this.api
+                        .get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
                         .then(file => {
                             // Cache file info
                             cacheFile(this.cache, file);

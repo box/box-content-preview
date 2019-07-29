@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../api';
+import Api from '../api';
 import Preview from '../Preview';
 import loaders from '../loaders';
 import Logger from '../Logger';
@@ -35,6 +35,7 @@ describe('lib/Preview', () => {
         preview = new Preview();
         preview.container = containerEl;
         stubs = {};
+        stubs.api = new Api();
     });
 
     afterEach(() => {
@@ -788,6 +789,8 @@ describe('lib/Preview', () => {
 
     describe('download()', () => {
         beforeEach(() => {
+            stubs.downloadReachability = new DownloadReachability({});
+
             stubs.promise = Promise.resolve({
                 data: {
                     download_url: 'dl.boxcloud.com',
@@ -813,11 +816,11 @@ describe('lib/Preview', () => {
             sandbox.stub(file, 'shouldDownloadWM');
             sandbox.stub(util, 'openUrlInsideIframe');
             sandbox.stub(util, 'appendQueryParams');
-            sandbox.stub(DownloadReachability, 'downloadWithReachabilityCheck');
+            sandbox.stub(DownloadReachability.prototype, 'downloadWithReachabilityCheck');
 
             sandbox.stub(file, 'getDownloadURL');
             sandbox.stub(preview, 'getRequestHeaders');
-            sandbox.stub(api, 'get');
+            sandbox.stub(Api.prototype, 'get');
         });
 
         it('should show error notification and not download file if file cannot be downloaded', () => {
@@ -859,7 +862,7 @@ describe('lib/Preview', () => {
             preview.download();
 
             expect(util.appendQueryParams).to.be.calledWith(url, { response_content_disposition_type: 'attachment' });
-            expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
+            expect(stubs.downloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
         });
 
         it('should download original file if file should not be downloaded as watermarked', () => {
@@ -872,19 +875,19 @@ describe('lib/Preview', () => {
             const promise = Promise.resolve({
                 download_url: url,
             });
-            api.get.returns(promise);
+
+            stubs.api.get.returns(promise);
 
             preview.download();
 
             return promise.then(() => {
-                expect(DownloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
+                expect(stubs.downloadReachability.downloadWithReachabilityCheck).to.be.calledWith(url);
             });
         });
 
         it('should emit the download attempted metric', () => {
             file.canDownload.returns(true);
             file.shouldDownloadWM.returns(false);
-
             const url = 'someurl';
             util.appendQueryParams.returns(url);
 
@@ -892,7 +895,7 @@ describe('lib/Preview', () => {
                 download_url: url,
             });
 
-            api.get.returns(promise);
+            stubs.api.get.returns(promise);
             preview.download();
             expect(preview.emit).to.be.calledWith('preview_metric');
         });
@@ -950,6 +953,9 @@ describe('lib/Preview', () => {
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
             stubs.handleTokenResponse = sandbox.stub(preview, 'handleTokenResponse');
+            stubs.apiAddRequestInterceptor = sandbox.stub(Api.prototype, 'addRequestInterceptor');
+            stubs.apiAddResponseInterceptor = sandbox.stub(Api.prototype, 'addResponseInterceptor');
+
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
 
@@ -1091,16 +1097,30 @@ describe('lib/Preview', () => {
                 expect(stubs.handleTokenResponse).to.be.called;
             });
         });
+
+        it('should load response interceptor if an option', () => {
+            preview.options.responseInterceptor = sandbox.stub();
+
+            preview.load('0');
+            expect(stubs.apiAddResponseInterceptor).to.be.called;
+        });
+
+        it('should load request interceptor if an option', () => {
+            preview.options.requestInterceptor = sandbox.stub();
+
+            preview.load('0');
+            expect(stubs.apiAddRequestInterceptor).to.be.called;
+        });
     });
 
     describe('handleTokenResponse()', () => {
         beforeEach(() => {
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
+            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.setupUI = sandbox.stub(preview, 'setupUI');
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
-            stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
-            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.ui = sandbox.stub(preview.ui, 'isSetup');
         });
 
@@ -1310,6 +1330,22 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.enableThumbnailsSidebar).to.be.true;
         });
+
+        it('should set the request interceptor if provided', () => {
+            const requestInterceptor = sandbox.stub();
+            preview.previewOptions.requestInterceptor = requestInterceptor;
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.requestInterceptor).to.equal(requestInterceptor);
+        });
+
+        it('should set the response interceptor if provided', () => {
+            const responseInterceptor = sandbox.stub();
+            preview.previewOptions.responseInterceptor = responseInterceptor;
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.responseInterceptor).to.equal(responseInterceptor);
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -1359,7 +1395,7 @@ describe('lib/Preview', () => {
     describe('loadFromServer()', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve('file');
-            stubs.get = sandbox.stub(api, 'get').returns(stubs.promise);
+            stubs.get = sandbox.stub(Api.prototype, 'get').returns(stubs.promise);
             stubs.handleFileInfoResponse = sandbox.stub(preview, 'handleFileInfoResponse');
             stubs.handleFetchError = sandbox.stub(preview, 'handleFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
@@ -1993,14 +2029,14 @@ describe('lib/Preview', () => {
         });
 
         it('should get the headers for the post request', () => {
-            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(stubs.api, 'post').returns(stubs.promiseResolve);
 
             preview.logPreviewEvent(0, {});
             expect(stubs.getHeaders).to.be.called;
         });
 
         it('should reset the log retry count on a successful post', () => {
-            sandbox.stub(api, 'post').returns(stubs.promiseResolve);
+            sandbox.stub(Api.prototype, 'post').returns(stubs.promiseResolve);
             preview.logRetryCount = 3;
 
             preview.logPreviewEvent(0, {});
@@ -2011,7 +2047,7 @@ describe('lib/Preview', () => {
 
         it('should reset the log retry count if the post fails and retry limit has been reached', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
-            sandbox.stub(api, 'post').returns(promiseReject);
+            sandbox.stub(stubs.api, 'post').returns(promiseReject);
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
 
@@ -2025,7 +2061,7 @@ describe('lib/Preview', () => {
         it('should set a timeout to try to log the preview event again if post fails and the limit has not been met', () => {
             const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
             sandbox
-                .stub(api, 'post')
+                .stub(stubs.api, 'post')
                 .onCall(0)
                 .returns(promiseReject);
             preview.logRetryCount = 3;
@@ -2450,7 +2486,7 @@ describe('lib/Preview', () => {
                 id: 0,
             });
 
-            stubs.get = sandbox.stub(api, 'get').returns(stubs.getPromiseResolve);
+            stubs.get = sandbox.stub(Api.prototype, 'get').returns(stubs.getPromiseResolve);
             stubs.getURL = sandbox.stub(file, 'getURL');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
             stubs.set = sandbox.stub(preview.cache, 'set');

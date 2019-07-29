@@ -24,8 +24,8 @@ class PresentationPreloader extends DocPreloader {
      * @param {PreviewUI} previewUI - UI instance
      * @return {PresentationPreloader} PresentationPreloader instance
      */
-    constructor(previewUI) {
-        super(previewUI);
+    constructor(previewUI, options) {
+        super(previewUI, options);
 
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION;
     }

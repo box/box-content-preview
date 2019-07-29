@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
 import {
@@ -25,10 +25,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocPreloader-test.html');
         containerEl = document.querySelector('.container');
-        docPreloader = new DocPreloader({
-            hideLoadingIndicator: () => {},
-        });
         stubs = {};
+        stubs.api = new Api();
+        docPreloader = new DocPreloader({ hideLoadingIndicator: () => {} }, { api: stubs.api });
 
         docPreloader.previewUI = {
             hideLoadingIndicator: sandbox.stub(),
@@ -44,7 +43,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
     describe('showPreload()', () => {
         it('should not do anything if document is loaded', () => {
             sandbox.stub(docPreloader, 'checkDocumentLoaded').returns(true);
-            sandbox.stub(api, 'get').returns(Promise.resolve({}));
+            sandbox.stub(stubs.api, 'get').returns(Promise.resolve({}));
             sandbox.stub(docPreloader, 'bindDOMListeners');
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
@@ -55,9 +54,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should set up preload DOM structure and bind image load handler', () => {
             const imgSrc = 'https://someblobimgsrc/';
-            sandbox.stub(util, 'fetchRepresentationAsBlob').returns(Promise.resolve({}));
             sandbox.stub(URL, 'createObjectURL').returns(imgSrc);
             sandbox.stub(docPreloader, 'bindDOMListeners');
+            sandbox.stub(stubs.api, 'get').returns(Promise.resolve({}));
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
                 expect(docPreloader.wrapperEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD}`);

@@ -4,7 +4,6 @@ import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import Browser from '../Browser';
-import DownloadReachability from '../DownloadReachability';
 import {
     getProp,
     appendQueryParams,
@@ -63,6 +62,9 @@ const ANNOTATION_BUTTONS = {
 const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';
 
 class BaseViewer extends EventEmitter {
+    /** @property {Api} - Api instance used for XHR calls */
+    api;
+
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
 
@@ -126,6 +128,7 @@ class BaseViewer extends EventEmitter {
     constructor(options) {
         super();
         this.options = options;
+        this.api = options.api;
         this.cache = options.cache;
         this.previewUI = options.ui;
         this.repStatuses = [];
@@ -343,12 +346,12 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        if (DownloadReachability.isCustomDownloadHost(downloadURL)) {
-            DownloadReachability.setDownloadReachability(downloadURL).then(isBlocked => {
+        if (this.api.reachability.constructor.isCustomDownloadHost(downloadURL)) {
+            this.api.reachability.setDownloadReachability(downloadURL).then(isBlocked => {
                 if (isBlocked) {
                     this.emitMetric(
                         DOWNLOAD_REACHABILITY_METRICS.DOWNLOAD_BLOCKED,
-                        DownloadReachability.getHostnameFromUrl(downloadURL),
+                        this.api.reachability.constructor.getHostnameFromUrl(downloadURL),
                     );
                 }
             });
@@ -421,7 +424,7 @@ class BaseViewer extends EventEmitter {
     createContentUrl(template, asset) {
         if (this.hasRetriedContentDownload) {
             // eslint-disable-next-line
-            template = DownloadReachability.replaceDownloadHostWithDefault(template);
+            template = this.api.reachability.constructor.replaceDownloadHostWithDefault(template);
         }
 
         // Append optional query params
@@ -490,7 +493,7 @@ class BaseViewer extends EventEmitter {
      */
     viewerLoadHandler(event) {
         const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
-        const downloadHostToNotify = DownloadReachability.getDownloadNotificationToShow(contentTemplate);
+        const downloadHostToNotify = this.api.reachability.constructor.getDownloadNotificationToShow(contentTemplate);
         if (downloadHostToNotify) {
             this.previewUI.notification.show(
                 replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
@@ -498,7 +501,7 @@ class BaseViewer extends EventEmitter {
                 true,
             );
 
-            DownloadReachability.setDownloadHostNotificationShown(downloadHostToNotify);
+            this.api.reachability.constructor.setDownloadHostNotificationShown(downloadHostToNotify);
             this.emitMetric(DOWNLOAD_REACHABILITY_METRICS.NOTIFICATION_SHOWN, {
                 host: downloadHostToNotify,
             });
@@ -789,6 +792,7 @@ class BaseViewer extends EventEmitter {
     getRepStatus(representation) {
         const { token, sharedLink, sharedLinkPassword, logger, file } = this.options;
         const repStatus = new RepStatus({
+            api: this.api,
             representation: representation || this.options.representation,
             token,
             sharedLink,

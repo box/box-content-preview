@@ -1,4 +1,3 @@
-import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
@@ -85,7 +84,7 @@ class Box3DViewer extends BaseViewer {
      */
     createSubModules() {
         this.controls = new Box3DControls(this.wrapperEl);
-        this.renderer = new Box3DRenderer(this.wrapperEl, this.boxSdk);
+        this.renderer = new Box3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }
 
     /**
@@ -224,7 +223,7 @@ class Box3DViewer extends BaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrl(template, 'entities.json'), {
+            this.api.get(this.createContentUrl(template, 'entities.json'), {
                 headers: this.appendAuthHeader(),
                 type: 'document',
             });

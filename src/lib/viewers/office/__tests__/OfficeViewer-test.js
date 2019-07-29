@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import Location from '../../../Location';
@@ -13,6 +13,7 @@ const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const EXCEL_ONLINE_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
 
 const sandbox = sinon.sandbox.create();
+let api;
 let office;
 let stubs = {};
 let containerEl;
@@ -30,7 +31,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
         fixture.load('viewers/office/__tests__/OfficeViewer-test.html');
         containerEl = document.querySelector('.container');
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
+        api = new Api();
         office = new OfficeViewer({
+            api,
             container: containerEl,
             file: {
                 id: '123',
@@ -475,6 +478,8 @@ describe('lib/viewers/office/OfficeViewer', () => {
         });
 
         it('should get and return the blob', () => {
+            office.api = api;
+
             office.fetchPrintBlob('url');
 
             return stubs.promise.then(blob => {

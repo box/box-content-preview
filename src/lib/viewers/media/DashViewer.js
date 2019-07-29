@@ -1,4 +1,3 @@
-import api from '../../api';
 import VideoBaseViewer from './VideoBaseViewer';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
@@ -29,6 +28,7 @@ class DashViewer extends VideoBaseViewer {
     constructor(options) {
         super(options);
 
+        this.api = options.api;
         // Bind context for callbacks
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
@@ -131,7 +131,7 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
+            this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
         }
     }
 

@@ -1,6 +1,5 @@
 import Uri from 'jsuri';
 import { decode } from 'box-react-ui/lib/utils/keys';
-import api from './api';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 import PreviewError from './PreviewError';
@@ -735,15 +734,4 @@ export function handleRepresentationBlobFetch(response) {
     }
 
     return Promise.resolve(response);
-}
-
-/**
- * Method to fetch a given representation as a blob via an authenticated content URL.
- * Useful for determining the true state of a "successful" representation
- *
- * @param {string} contentUrl - a representation's authenticated content URL
- * @return {Promise} - Response from axios
- */
-export function fetchRepresentationAsBlob(contentUrl) {
-    return api.get(contentUrl, { type: 'blob' }).then(handleRepresentationBlobFetch);
 }

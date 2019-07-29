@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
@@ -25,8 +25,9 @@ describe('lib/viewers/media/DashViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/DashViewer-test.html');
         const containerEl = document.querySelector('.container');
-
+        stubs.api = new Api();
         dash = new DashViewer({
+            api: stubs.api,
             cache: {
                 set: () => {},
                 has: () => {},
@@ -177,7 +178,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should not prefetch rep content if content is false', () => {
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
             dash.prefetch({ assets: false, content: false });
@@ -187,7 +188,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.returns(false);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
 
@@ -199,7 +200,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const contentUrl = 'someUrl';
             stubs.createUrl.returns(contentUrl);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .withArgs(contentUrl, { type: 'document' });
 

@@ -13,7 +13,7 @@ class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
     constructor(options) {
         super(options);
-
+        this.api = options.api;
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
