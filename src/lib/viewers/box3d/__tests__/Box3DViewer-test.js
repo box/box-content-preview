@@ -419,7 +419,6 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 .mock(stubs.api)
                 .expects('get')
                 .withArgs(contentUrl, { headers, type: 'document' });
-            box3d.api = stubs.api;
             box3d.prefetch({ assets: false, content: true });
         });
 

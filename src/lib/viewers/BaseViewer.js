@@ -128,6 +128,7 @@ class BaseViewer extends EventEmitter {
     constructor(options) {
         super();
         this.options = options;
+        this.api = options.api;
         this.cache = options.cache;
         this.previewUI = options.ui;
         this.repStatuses = [];
@@ -169,11 +170,6 @@ class BaseViewer extends EventEmitter {
             const fileExt = this.options.file.extension;
             this.fileLoadingIcon = getIconFromExtension(fileExt);
             this.startAt = getProp(this.options, `fileOptions.${this.options.file.id}.${FILE_OPTION_START}`, {});
-        }
-
-        // Uses the passed in api if provided
-        if (this.options.api) {
-            this.api = this.options.api;
         }
 
         this.finishLoadingSetup();

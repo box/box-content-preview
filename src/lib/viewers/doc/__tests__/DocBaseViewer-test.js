@@ -343,7 +343,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 sandbox.stub(stubs.api, 'get');
                 sandbox.stub(file, 'getRepresentation').returns(preloadRep);
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-                docBase.api = stubs.api;
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
@@ -388,7 +387,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .mock(stubs.api)
                     .expects('get')
                     .withArgs(contentUrl, { type: 'document' });
-                docBase.api = stubs.api;
 
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
@@ -1634,8 +1632,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             it('should get and set the blob', () => {
-                docBase.api = stubs.api;
-
                 return docBase.fetchPrintBlob('url').then(() => {
                     expect(docBase.printBlob).to.equal('blob');
                 });
