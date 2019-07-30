@@ -1,3 +1,9 @@
+## 2.16.0 (2019-07-30)
+
+- fix(api): Add support for http interceptors (#1039) ([fbe052b](https://github.com/box/box-content-preview/commit/fbe052b)), closes [#1039](https://github.com/box/box-content-preview/issues/1039)
+- chore(deps): Upgrade to Babel 7 (#1047) ([bad7359](https://github.com/box/box-content-preview/commit/bad7359)), closes [#1047](https://github.com/box/box-content-preview/issues/1047)
+- chore(deps): Upgrade to Webpack 4 (#944) ([b8d6a85](https://github.com/box/box-content-preview/commit/b8d6a85)), closes [#944](https://github.com/box/box-content-preview/issues/944)
+
 ## 2.15.0 (2019-07-23)
 
 - chore(deps): Update Shaka Player to 2.5.3 (#1041) ([9a4e663](https://github.com/box/box-content-preview/commit/9a4e663)), closes [#1041](https://github.com/box/box-content-preview/issues/1041)
