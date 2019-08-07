@@ -5,7 +5,9 @@ $thumbnail-border-radius: 3px;
 $thumbnail-sidebar-width: 226px;
 
 @mixin bp-breakpoint-medium {
-    @media (min-width: 600px) { @content; }
+    @media (min-width: 600px) {
+        @content;
+    }
 }
 
 .bp {
@@ -266,11 +268,37 @@ $thumbnail-sidebar-width: 226px;
         user-select: text;
     }
 
-    // This is so hover and click targets for links inside the document show
-    // up correctly. We add 15px top margin since PDF.js sets the top for these
-    // manually assuming there is no vertical padding on the page
-    .annotationLayer section {
-        margin-top: 15px;
+    .annotationLayer {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1em;
+        }
+
+        // This is so hover and click targets for links inside the document show
+        // up correctly. We add 15px top margin since PDF.js sets the top for these
+        // manually assuming there is no vertical padding on the page
+        section {
+            margin-top: 15px;
+        }
+
+        // Prevent placeholder {{ date }}, {{ time }} text from displaying when
+        // hovering over baked-in pdf annotations
+        span[data-l10n-id] {
+            display: none;
+        }
+
+        .popup {
+            font-size: inherit;
+        }
     }
 }
 

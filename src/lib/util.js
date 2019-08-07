@@ -5,14 +5,25 @@ import Location from './Location';
 import PreviewError from './PreviewError';
 import { ERROR_CODE } from './events';
 
-const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
-const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+const CLIENT_NAME = __NAME__; // eslint-disable-line no-undef
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
-/* eslint-disable no-undef */
-const CLIENT_NAME = __NAME__;
-export const CLIENT_VERSION = __VERSION__;
-/* eslint-enable no-undef */
+export const CLIENT_VERSION = __VERSION__; // eslint-disable-line no-undef
+const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
+const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+const PROMISE_MAP = {};
+
+/**
+ * Clears the promise map of any active promises
+ *
+ * @private
+ * @return {void}
+ */
+export function clearPromises() {
+    Object.keys(PROMISE_MAP).forEach(promiseKey => {
+        delete PROMISE_MAP[promiseKey];
+    });
+}
 
 /**
  * Creates an empty iframe or uses an existing one
@@ -340,16 +351,17 @@ export function loadScripts(urls, disableAMD = false) {
     }
 
     urls.forEach(url => {
-        if (!head.querySelector(`script[src="${url}"]`)) {
+        if (!head.querySelector(`script[src="${url}"]`) && !PROMISE_MAP[url]) {
             const script = createScript(url);
-            promises.push(
-                new Promise((resolve, reject) => {
-                    script.addEventListener('load', resolve);
-                    script.addEventListener('error', reject);
-                }),
-            );
+            PROMISE_MAP[url] = new Promise((resolve, reject) => {
+                script.addEventListener('load', resolve);
+                script.addEventListener('error', reject);
+            });
+
             head.appendChild(script);
         }
+
+        promises.push(PROMISE_MAP[url]);
     });
 
     return Promise.all(promises)
@@ -357,11 +369,15 @@ export function loadScripts(urls, disableAMD = false) {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         })
         .catch(() => {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         });
 }
 

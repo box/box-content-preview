@@ -9,7 +9,8 @@ module.exports = {
         DocumentTouch: false,
         Assert: false,
         fixture: false,
-        PDFJS: false,
+        pdfjsLib: false,
+        pdfjsViewer: false,
         sinon: false,
     },
     rules: {

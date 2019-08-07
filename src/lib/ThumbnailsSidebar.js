@@ -172,7 +172,7 @@ class ThumbnailsSidebar {
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
         this.pdfViewer.pdfDocument.getPage(1).then(page => {
-            const { width, height } = page.getViewport(1);
+            const { width, height } = page.getViewport({ scale: 1 });
 
             // If the dimensions of the page are invalid then don't proceed further
             if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
@@ -185,7 +185,7 @@ class ThumbnailsSidebar {
             this.scale = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width;
             // Width : Height ratio of the page
             this.pageRatio = width / height;
-            const scaledViewport = page.getViewport(this.scale);
+            const scaledViewport = page.getViewport({ scale: this.scale });
             this.thumbnailHeight = Math.ceil(scaledViewport.height);
 
             this.virtualScroller.init({
@@ -347,7 +347,7 @@ class ThumbnailsSidebar {
         return this.pdfViewer.pdfDocument
             .getPage(pageNum)
             .then(page => {
-                const { width, height } = page.getViewport(1);
+                const { width, height } = page.getViewport({ scale: 1 });
                 // Get the current page w:h ratio in case it differs from the first page
                 const curPageRatio = width / height;
 
@@ -373,8 +373,8 @@ class ThumbnailsSidebar {
                 const scale = canvasWidth / width;
                 return page.render({
                     canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport(scale),
-                });
+                    viewport: page.getViewport({ scale }),
+                }).promise;
             })
             .then(() => canvas.toDataURL());
     }
