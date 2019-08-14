@@ -89,7 +89,7 @@
         "raw-loader": "^3.1.0",
         "react": "^16.7.0",
         "react-dom": "^16.7.0",
-        "react-virtualized": "^9.13.0",
+        "react-virtualized": "^9.21.1",
         "sass-loader": "^7.1.0",
         "sinon": "^7.3.2",
         "sinon-chai": "3.3.0",
