@@ -82,21 +82,22 @@ class DocBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
         // Bind context for callbacks
+        this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
-        this.print = this.print.bind(this);
-        this.setPage = this.setPage.bind(this);
-        this.zoomIn = this.zoomIn.bind(this);
-        this.zoomOut = this.zoomOut.bind(this);
-        this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
+        this.handleFindBarClose = this.handleFindBarClose.bind(this);
+        this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangeHandler = this.pagechangeHandler.bind(this);
+        this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
-        this.throttledScrollHandler = this.getScrollHandler().bind(this);
-        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
-        this.emitMetric = this.emitMetric.bind(this);
+        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.print = this.print.bind(this);
+        this.setPage = this.setPage.bind(this);
+        this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
-        this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
     }
 
     /**
@@ -346,6 +347,12 @@ class DocBaseViewer extends BaseViewer {
         super.handleAssetAndRepLoad();
     }
 
+    handleFindBarClose() {
+        if (this.docEl) {
+            this.docEl.focus(); // Prevent focus from transferring to the root document element
+        }
+    }
+
     /**
      * Initializes the Find Bar and Find Controller
      *
@@ -365,11 +372,13 @@ class DocBaseViewer extends BaseViewer {
         // the file. Users without download permissions shouldn't be able to
         // interact with the text layer
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (this.getViewerOption('disableFindBar')) {
+        if (!canDownload || this.getViewerOption('disableFindBar')) {
             return;
         }
+
         this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
+        this.findBar.addListener('close', this.handleFindBarClose);
     }
 
     /**
