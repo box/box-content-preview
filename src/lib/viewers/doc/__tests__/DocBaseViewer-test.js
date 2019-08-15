@@ -83,6 +83,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         stubs.api = new Api();
         stubs.classListAdd = sandbox.stub(rootEl.classList, 'add');
         stubs.classListRemove = sandbox.stub(rootEl.classList, 'remove');
+        stubs.checkPermission = sandbox.stub(file, 'checkPermission');
     });
 
     afterEach(() => {
@@ -675,7 +676,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.findBar).to.be.undefined;
             });
 
+            it('should not set find bar if the user does not have download permissions', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+                docBase.initFind();
+                expect(docBase.findBar).to.be.undefined;
+            });
+
             it('should set findBar to a function if viewer option disableFindBar is not set', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
                 docBase.initFind();
                 expect(docBase.findBar).to.be.instanceof(DocFindBar);
             });
@@ -1405,7 +1413,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     return 'asset';
                 });
                 stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
-                stubs.checkPermission = sandbox.stub(file, 'checkPermission');
                 stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
                 docBase.options = {
                     location: {

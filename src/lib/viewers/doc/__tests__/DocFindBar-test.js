@@ -65,7 +65,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(docFindBar.bar).to.equal(findBarEl);
             expect(docFindBar.findController).to.equal(findController);
             expect(docFindBar.currentMatch).to.equal(0);
-            expect(docFindBar.canDownload).to.be.true;
         });
 
         it('should throw an error if there is no findController', () => {
@@ -285,15 +284,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
                 stopPropagation: sandbox.stub(),
             };
             stubs.close = sandbox.stub(docFindBar, 'close');
-        });
-
-        it('should prevent default but not open the find bar if downloads are disabled', () => {
-            docFindBar.canDownload = false;
-            stubs.decodeKeydown.returns('meta+f');
-
-            docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.not.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
         });
 
         it('should open and prevent default if meta+f is entered', () => {
@@ -611,10 +601,13 @@ describe('lib/viewers/doc/DocFindBar', () => {
         });
 
         it('should hide the bar if it is open', () => {
+            sandbox.stub(docFindBar, 'emit');
+
             docFindBar.findFieldEl.value = 'test';
             docFindBar.opened = true;
 
             docFindBar.close();
+            expect(docFindBar.emit).to.be.calledWith('close');
             expect(docFindBar.opened).to.equal(false);
             expect(stubs.add).to.be.calledWith(CLASS_HIDDEN);
             expect(docFindBar.findController.active).to.equal(false);
