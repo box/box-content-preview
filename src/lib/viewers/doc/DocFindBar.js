@@ -19,17 +19,15 @@ class DocFindBar extends EventEmitter {
      *
      * @param {string|HTMLElement} findBar - Find bar selector or element
      * @param {Object} findController - Document find controller to use
-     * @param {boolean} canDownload - Whether user can download document or not
      * @return {DocFindBar} DocFindBar instance
      */
-    constructor(findBar, findController, canDownload) {
+    constructor(findBar, findController) {
         super();
 
         this.opened = false;
         this.bar = findBar;
         this.findController = findController;
         this.currentMatch = 0;
-        this.canDownload = canDownload;
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
@@ -249,9 +247,7 @@ class DocFindBar extends EventEmitter {
             case 'meta+g':
             case 'control+g':
             case 'f3':
-                if (this.canDownload) {
-                    this.open();
-                }
+                this.open();
                 event.preventDefault();
                 break;
             default:
@@ -405,6 +401,7 @@ class DocFindBar extends EventEmitter {
         if (!this.opened) {
             return;
         }
+        this.emit('close');
         this.opened = false;
         this.bar.classList.add(CLASS_HIDDEN);
         this.findController.active = false;
