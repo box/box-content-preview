@@ -294,6 +294,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.autoplay();
             expect(media.mediaEl.autoplay).to.be.true;
         });
+
+        it('should muted autoplay if the promise is rejected', done => {
+            sandbox.stub(media, 'setVolume');
+            media.mediaEl.play = sandbox.stub().returns(Promise.reject());
+            media.autoplay().then(() => {
+                expect(media.setVolume).to.be.calledWith(0);
+                done();
+            });
+        });
     });
 
     describe('loadUI()', () => {
