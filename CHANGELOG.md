@@ -1,3 +1,11 @@
+## 2.17.0 (2019-08-20)
+
+- feat(pdf): Update pdf.js to v2.2.228 and closure compiler to v20190729 (#1048) ([44cd681](https://github.com/box/box-content-preview/commit/44cd681)), closes [#1048](https://github.com/box/box-content-preview/issues/1048)
+- chore(i18n): Update Translations (#1055) ([734e3c0](https://github.com/box/box-content-preview/commit/734e3c0)), closes [#1055](https://github.com/box/box-content-preview/issues/1055)
+- fix(find): Prevent loss of focus on content when find bar is closed (#1052) ([0a210dd](https://github.com/box/box-content-preview/commit/0a210dd)), closes [#1052](https://github.com/box/box-content-preview/issues/1052)
+- fix(viewer): Audio can muted autoplay if failed (#1054) ([f55857e](https://github.com/box/box-content-preview/commit/f55857e)), closes [#1054](https://github.com/box/box-content-preview/issues/1054)
+- build(travis): Add libgconf addon to travis config for cypress tests (#1053) ([28fd209](https://github.com/box/box-content-preview/commit/28fd209)), closes [#1053](https://github.com/box/box-content-preview/issues/1053)
+
 ## 2.16.0 (2019-07-30)
 
 - fix(api): Add support for http interceptors (#1039) ([fbe052b](https://github.com/box/box-content-preview/commit/fbe052b)), closes [#1039](https://github.com/box/box-content-preview/issues/1039)
