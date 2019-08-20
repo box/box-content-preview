@@ -304,27 +304,31 @@ class MediaBaseViewer extends BaseViewer {
      *
      * @private
      * @emits volume
-     * @return {void}
+     * @return {Promise}
      */
     autoplay() {
-        // Play may return a promise depening on browser support. This promise
-        // will resolve when playback starts. If it fails, pause UI should be shown.
+        // Play may return a promise depending on browser support. This promise
+        // will resolve when playback starts. If it fails, we mute the video
+        // and try to play again.
         // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
         const autoPlayPromise = this.mediaEl.play();
 
         if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            autoPlayPromise
+            this.handleRate();
+            return autoPlayPromise
                 .then(() => {
-                    this.handleRate();
                     this.handleVolume();
                 })
                 .catch(() => {
-                    this.pause();
+                    // Auto-play was prevented, try muted play
+                    this.setVolume(0);
+                    this.mediaEl.play();
                 });
-        } else {
-            // Fallback to traditional autoplay tag if play does not return a promise
-            this.mediaEl.autoplay = true;
         }
+
+        // Fallback to traditional autoplay tag if play does not return a promise
+        this.mediaEl.autoplay = true;
+        return Promise.resolve();
     }
 
     /**
