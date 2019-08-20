@@ -1,45 +1,55 @@
-DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
-DOC_STATIC_ASSETS_PATH="src/third-party/doc/$DOC_STATIC_ASSETS_VERSION"
+#!/bin/bash
+# Run with specific branch/tag (e.g. ./upgrade_pdfjs.sh tags/v2.2.228) or with no arguments to use master
 
-if [ ! -d $DOC_STATIC_ASSETS_PATH ]; then
-    DOC_LATEST_STATIC_ASSETS=`ls src/third-party/doc | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
-    echo "Latest version is $DOC_LATEST_STATIC_ASSETS"
-    `cp -R src/third-party/doc/$DOC_LATEST_STATIC_ASSETS $DOC_STATIC_ASSETS_PATH`
-    echo "Created build directory for $DOC_STATIC_ASSETS_PATH"
-fi
+DOC_STATIC_ASSETS_BRANCH=${1:-master}
+DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
+DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}"
+
+echo "Upgrading pdf.js to $DOC_STATIC_ASSETS_BRANCH";
 
 echo "-----------------------------------------------------------------------------------"
-echo "Fetching latest pdf.js files from pdfjs-dist repo..."
+echo "Creating target directory at $DOC_STATIC_ASSETS_PATH..."
+echo "-----------------------------------------------------------------------------------"
+
+rm -rf ${DOC_STATIC_ASSETS_PATH}
+
+DOC_LATEST_STATIC_ASSETS=`ls src/third-party/doc | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
+echo "Usig base version from $DOC_LATEST_STATIC_ASSETS"
+`cp -R src/third-party/doc/${DOC_LATEST_STATIC_ASSETS} ${DOC_STATIC_ASSETS_PATH}`
+
+echo "-----------------------------------------------------------------------------------"
+echo "Cloining pdfjs-dist repo at branch: $DOC_STATIC_ASSETS_BRANCH..."
 echo "-----------------------------------------------------------------------------------"
 rm -rf ./pdfjs-dist/
-git clone https://github.com/mozilla/pdfjs-dist.git
+git clone https://github.com/mozilla/pdfjs-dist.git --depth 1 --single-branch --branch ${DOC_STATIC_ASSETS_BRANCH}
 
 echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to Preview third-party dir..."
 echo "-----------------------------------------------------------------------------------"
-cp pdfjs-dist/build/pdf.js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
-cp pdfjs-dist/build/pdf.worker.js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
-cp pdfjs-dist/web/pdf_viewer.js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
-cp pdfjs-dist/web/pdf_viewer.css src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
-cp pdfjs-dist/cmaps/* src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/cmaps/
+\cp -rf pdfjs-dist/build/pdf.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/build/pdf.worker.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/web/pdf_viewer.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/web/pdf_viewer.css src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/cmaps/* src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/
 rm -rf ./pdfjs-dist/
 
 # Fix Chrome console warning issue by not testing for moz-chunked-arraybuffer support in Chrome
 echo "-----------------------------------------------------------------------------------"
 echo "Tweaking pdf.js for Chrome..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's/function supportsMozChunkedClosure/!\(\/Chrome\/\.test\(navigator\.userAgent\)\) \&\& function supportsMozChunkedClosure/' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.js
+sed -e 's/function supportsMozChunkedClosure/!\(\/Chrome\/\.test\(navigator\.userAgent\)\) \&\& function supportsMozChunkedClosure/' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.js
 
 # Decreased default cached pages size to 5 on mobile web to lower memory usage
 echo "-----------------------------------------------------------------------------------"
-echo "Decreasing # of cached pages on mobile web"
+echo "Decreasing # of cached pages on mobile web..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.js
+sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf_viewer.js
 
-# Deletes code hiding PDF signatures.
-# For preview purposes, it is acceptable to show signatures without verifying them.
+# Render e-signatures without validation
 echo "-----------------------------------------------------------------------------------"
-echo "Enabling PDF signatures"
+echo "Enabling e-signature rendering without validation..."
 echo "-----------------------------------------------------------------------------------"
-# Deletes a block of code that starts with `if (data.fieldType === 'Sig') {``, and ends with `}`
-sed -e "/if (data.fieldType === 'Sig') {/,/}/d" -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.js
+sed -e 's@_this2.setFlags(_util.AnnotationFlag.HIDDEN);@\/\/_this2.setFlags(_util.AnnotationFlag.HIDDEN);@' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.js
+
+# Miniy the libraries
+./build/minify_pdfjs.sh

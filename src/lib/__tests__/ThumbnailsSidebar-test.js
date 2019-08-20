@@ -23,7 +23,9 @@ describe('ThumbnailsSidebar', () => {
         stubs.raf = sandbox.stub(window, 'requestAnimationFrame').callsFake(callback => callback());
 
         stubs.getViewport = sandbox.stub();
-        stubs.render = sandbox.stub();
+        stubs.render = sandbox.stub().returns({
+            promise: Promise.resolve(),
+        });
 
         page = {
             getViewport: stubs.getViewport,
@@ -281,14 +283,13 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has same ratio
-            stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
-            stubs.render.returns(Promise.resolve());
+            stubs.getViewport.withArgs({ scale: 1 }).returns({ width: 10, height: 10 });
 
             const expScale = TEST_SCALE; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
 
             return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+                expect(stubs.getViewport.withArgs({ scale: expScale })).to.be.called;
             });
         });
 
@@ -298,14 +299,13 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has ratio of 0.5 instead of 1
-            stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
-            stubs.render.returns(Promise.resolve());
+            stubs.getViewport.withArgs({ scale: 1 }).returns({ width: 10, height: 20 });
 
             const expScale = TEST_SCALE / 2; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10 / 2
 
             return thumbnailsSidebar.getThumbnailDataURL(0).then(() => {
                 expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+                expect(stubs.getViewport.withArgs({ scale: expScale })).to.be.called;
             });
         });
     });

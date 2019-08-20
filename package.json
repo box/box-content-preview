@@ -135,7 +135,7 @@
         "test:e2e:open": "npm-run-all -p -r start:dev cy:open",
         "test:watch": "yarn test --no-single-run --auto-watch",
         "upgrade:annotations": "./build/upgrade_annotations.sh",
-        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh"
+        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh"
     },
     "browserslist": [
         "last 2 Chrome versions",
@@ -151,8 +151,7 @@
             "*.md": ["prettier --write --parser=markdown", "git add"],
             "*.json": ["prettier --write --parser=json", "git add"],
             "*.html": ["prettier --write --parser=html", "git add"],
-            "*.scss": ["prettier --write --parser=scss", "stylelint --syntax scss --fix", "git add"],
-            "*.css": ["prettier --write --parser=css", "stylelint --syntax css --fix", "git add"]
+            "*.scss": ["prettier --write --parser=scss", "stylelint --syntax scss --fix", "git add"]
         }
     },
     "husky": {
