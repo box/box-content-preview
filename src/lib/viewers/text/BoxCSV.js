@@ -72,8 +72,9 @@ class BoxCSV {
      * @private
      */
     renderCSV() {
-        const rowCount = this.data.length;
-        const rowSample = this.data.sort((a, b) => b.length - a.length)[0]; // Find the row with the most columns
+        const rowData = [...this.data];
+        const rowCount = rowData.length;
+        const rowSample = rowData.sort((a, b) => b.length - a.length)[0]; // Find the row with the most columns
         const columnCount = rowSample.length;
 
         const maxWidth = this.csvEl.clientWidth;
