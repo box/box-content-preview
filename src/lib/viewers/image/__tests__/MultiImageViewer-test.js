@@ -157,7 +157,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 .catch(() => {});
         });
 
-        it('should make the images invisible', () => {
+        it('should ensure load timer is started', () => {
             sandbox.stub(multiImage, 'startLoadTimer');
             return multiImage
                 .load('file/100/content/{page}.png')

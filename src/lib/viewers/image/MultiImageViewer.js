@@ -9,6 +9,7 @@ const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
+const MULTI_PAGE_LOAD_LIMIT = 10;
 
 class MultiImageViewer extends ImageBaseViewer {
     /** @property {Image[]} - List of images rendered sequentially */
@@ -23,6 +24,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.handleFirstImageLoad = this.handleFirstImageLoad.bind(this);
     }
 
     /**
@@ -88,6 +90,22 @@ class MultiImageViewer extends ImageBaseViewer {
             .getPromise()
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Handles the load event for the first image.
+     *
+     * @return {void} Promise to load bunch of images
+     */
+
+    handleFirstImageLoad() {
+        if (this.singleImageEls.length > MULTI_PAGE_LOAD_LIMIT) {
+            super.setOriginalImageSize(this.imageEl).then(() => {
+                this.showUi();
+            });
+        }
+
+        this.finishLoading();
     }
 
     /**
@@ -288,7 +306,7 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     bindImageListeners(index) {
         if (index === 0) {
-            this.singleImageEls[index].addEventListener('load', this.finishLoading);
+            this.singleImageEls[index].addEventListener('load', this.handleFirstImageLoad);
         }
 
         this.singleImageEls[index].addEventListener('error', this.handleMultiImageDownloadError);
