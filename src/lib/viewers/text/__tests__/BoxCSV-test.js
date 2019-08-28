@@ -65,5 +65,14 @@ describe('lib/viewers/text/BoxCSV', () => {
             expect(gridComponent.props.rowCount).to.equal(3);
             expect(renderStub).to.be.calledWith(gridComponent, csvComponent.csvEl);
         });
+
+        it('should base its column count on the longest available row', () => {
+            const renderStub = sandbox.stub(ReactDOM, 'render');
+            csvComponent.data = [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4], [1, 2]];
+            csvComponent.renderCSV();
+
+            const gridComponent = renderStub.firstCall.args[0];
+            expect(gridComponent.props.columnCount).to.equal(4);
+        });
     });
 });
