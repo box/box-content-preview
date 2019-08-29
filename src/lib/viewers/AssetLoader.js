@@ -27,13 +27,13 @@ class AssetLoader {
      * @return {Object} The viewer to use
      */
     determineViewer(file, disabledViewers = []) {
-        return this.viewers.find((viewer) => {
+        return this.viewers.find(viewer => {
             if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
             }
             return (
                 viewer.EXT.indexOf(file.extension) > -1 &&
-                file.representations.entries.some((entry) => viewer.REP === entry.representation)
+                file.representations.entries.some(entry => viewer.REP === entry.representation)
             );
         });
     }
@@ -48,7 +48,7 @@ class AssetLoader {
      * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
-        return file.representations.entries.find((entry) => viewer.REP === entry.representation);
+        return file.representations.entries.find(entry => viewer.REP === entry.representation);
     }
 }
 

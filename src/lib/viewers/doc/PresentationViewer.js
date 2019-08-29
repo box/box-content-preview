@@ -39,7 +39,7 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
-        this.preloader = new PresentationPreloader(this.previewUI);
+        this.preloader = new PresentationPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 
@@ -63,7 +63,7 @@ class PresentationViewer extends DocBaseViewer {
 
         // Hide all pages
         const pages = this.docEl.querySelectorAll('.page');
-        [].forEach.call(pages, (pageEl) => {
+        [].forEach.call(pages, pageEl => {
             pageEl.classList.add(CLASS_INVISIBLE);
         });
 
@@ -89,7 +89,8 @@ class PresentationViewer extends DocBaseViewer {
         if (key === 'ArrowUp') {
             this.previousPage();
             return true;
-        } else if (key === 'ArrowDown') {
+        }
+        if (key === 'ArrowDown') {
             this.nextPage();
             return true;
         }
@@ -222,7 +223,7 @@ class PresentationViewer extends DocBaseViewer {
     pagesinitHandler() {
         // We implement presentation mode by hiding other pages except for the first page
         const pageEls = [].slice.call(this.docEl.querySelectorAll('.pdfViewer .page'), 0);
-        pageEls.forEach((pageEl) => {
+        pageEls.forEach(pageEl => {
             if (pageEl.getAttribute('data-page-number') === '1') {
                 return;
             }
@@ -254,7 +255,7 @@ class PresentationViewer extends DocBaseViewer {
      * @return {Function} Throttled wheel handler
      */
     getWheelHandler() {
-        return throttle((event) => {
+        return throttle(event => {
             // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
             if (event.deltaY === 0 || event.deltaX !== 0 || this.checkOverflow()) {
                 return;
@@ -282,7 +283,7 @@ class PresentationViewer extends DocBaseViewer {
         // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
         // This override is needed to allow PDF.js to change pages when clicking on links in a presentation that
         // navigate to other pages
-        this.pdfViewer.scrollPageIntoView = (pageObj) => {
+        this.pdfViewer.scrollPageIntoView = pageObj => {
             if (!this.loaded) {
                 return;
             }
@@ -301,14 +302,14 @@ class PresentationViewer extends DocBaseViewer {
             const visible = [
                 {
                     id: currentPageObj.id,
-                    view: currentPageObj
-                }
+                    view: currentPageObj,
+                },
             ];
 
             return {
                 first: currentPageObj,
                 last: currentPageObj,
-                views: visible
+                views: visible,
             };
         };
     }

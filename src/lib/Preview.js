@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
-import api from './api';
+import Api from './api';
 import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
@@ -14,7 +14,6 @@ import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
-import DownloadReachability from './DownloadReachability';
 import {
     getProp,
     decodeKeydown,
@@ -24,7 +23,7 @@ import {
     stripAuthFromString,
     isValidFileId,
     isBoxWebApp,
-    convertWatermarkPref
+    convertWatermarkPref,
 } from './util';
 import {
     getURL,
@@ -38,7 +37,7 @@ import {
     getCachedFile,
     normalizeFileVersion,
     canDownload,
-    shouldDownloadWM
+    shouldDownloadWM,
 } from './file';
 import {
     API_HOST,
@@ -51,7 +50,7 @@ import {
     X_REP_HINT_IMAGE,
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4,
-    FILE_OPTION_FILE_VERSION_ID
+    FILE_OPTION_FILE_VERSION_ID,
 } from './constants';
 import {
     VIEWER_EVENT,
@@ -61,7 +60,7 @@ import {
     LOAD_METRIC,
     DURATION_METRIC,
     PREVIEW_END_EVENT,
-    PREVIEW_DOWNLOAD_ATTEMPT_EVENT
+    PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
@@ -84,6 +83,9 @@ const SUPPORT_URL = 'https://support.box.com';
 const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
 class Preview extends EventEmitter {
+    /** @property {Api} - Previews Api instance used for XHR calls  */
+    api = new Api();
+
     /** @property {boolean} - Whether preview is open */
     open = false;
 
@@ -91,7 +93,7 @@ class Preview extends EventEmitter {
     count = {
         success: 0, // Counts how many previews have happened overall
         error: 0, // Counts how many errors have happened overall
-        navigation: 0 // Counts how many previews have happened by prev next navigation
+        navigation: 0, // Counts how many previews have happened by prev next navigation
     };
 
     /** @property {Object} - Current file being previewed */
@@ -154,7 +156,7 @@ class Preview extends EventEmitter {
     constructor() {
         super();
 
-        DEFAULT_DISABLED_VIEWERS.forEach((viewerName) => {
+        DEFAULT_DISABLED_VIEWERS.forEach(viewerName => {
             this.disabledViewers[viewerName] = 1;
         });
 
@@ -203,14 +205,17 @@ class Preview extends EventEmitter {
                     event_name: PREVIEW_END_EVENT,
                     value: {
                         duration: previewDurationTimer ? previewDurationTimer.elapsed : null,
-                        viewer_status: this.viewer.getLoadStatus()
+                        viewer_status: this.viewer.getLoadStatus(),
                     },
-                    ...this.createLogEvent()
+                    ...this.createLogEvent(),
                 };
 
                 Timer.reset(previewDurationTag);
                 this.emit(PREVIEW_METRIC, event);
             }
+
+            // Eject http interceptors
+            this.api.ejectInterceptors();
 
             this.viewer.destroy();
         }
@@ -320,14 +325,14 @@ class Preview extends EventEmitter {
         const files = [];
         const fileIds = [];
 
-        fileOrIds.forEach((fileOrId) => {
+        fileOrIds.forEach(fileOrId => {
             if (fileOrId && isValidFileId(fileOrId)) {
                 // String id found in the collection
                 fileIds.push(fileOrId.toString());
             } else if (fileOrId && typeof fileOrId === 'object' && isValidFileId(fileOrId.id)) {
                 // Possible well-formed file object found in the collection
                 const wellFormedFileObj = Object.assign({}, fileOrId, {
-                    id: fileOrId.id.toString()
+                    id: fileOrId.id.toString(),
                 });
                 fileIds.push(wellFormedFileObj.id);
                 files.push(wellFormedFileObj);
@@ -366,7 +371,7 @@ class Preview extends EventEmitter {
             files = [fileMetadata];
         }
 
-        files.forEach((file) => {
+        files.forEach(file => {
             if (file.watermark_info && file.watermark_info.is_watermarked) {
                 return;
             }
@@ -422,7 +427,7 @@ class Preview extends EventEmitter {
      */
     getViewers() {
         let viewers = [];
-        this.loaders.forEach((loader) => {
+        this.loaders.forEach(loader => {
             viewers = viewers.concat(loader.getViewers());
         });
         return viewers;
@@ -437,7 +442,7 @@ class Preview extends EventEmitter {
      */
     disableViewers(viewers) {
         if (Array.isArray(viewers)) {
-            viewers.forEach((viewer) => {
+            viewers.forEach(viewer => {
                 this.disabledViewers[viewer] = 1;
             });
         } else if (viewers) {
@@ -454,7 +459,7 @@ class Preview extends EventEmitter {
      */
     enableViewers(viewers) {
         if (Array.isArray(viewers)) {
-            viewers.forEach((viewer) => {
+            viewers.forEach(viewer => {
                 delete this.disabledViewers[viewer];
             });
         } else if (viewers) {
@@ -535,24 +540,24 @@ class Preview extends EventEmitter {
             const params = Object.assign({ response_content_disposition_type: 'attachment' }, queryParams);
             const downloadUrl = appendQueryParams(
                 this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
-                params
+                params,
             );
 
-            DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+            this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
 
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then((data) => {
+            this.api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then(data => {
                 const downloadUrl = appendQueryParams(data.download_url, queryParams);
-                DownloadReachability.downloadWithReachabilityCheck(downloadUrl);
+                this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
             });
         }
 
         const downloadAttemptEvent = {
             event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
             value: this.viewer ? this.viewer.getLoadStatus() : null,
-            ...this.createLogEvent()
+            ...this.createLogEvent(),
         };
 
         this.emit(PREVIEW_METRIC, downloadAttemptEvent);
@@ -629,7 +634,7 @@ class Preview extends EventEmitter {
             file,
             token,
             // Viewers may ignore this representation when prefetching a preload
-            representation: loader.determineRepresentation(file, viewer)
+            representation: loader.determineRepresentation(file, viewer),
         };
 
         // If we are prefetching for preload, shared link and password are not set on
@@ -647,7 +652,7 @@ class Preview extends EventEmitter {
                 // Prefetch preload if explicitly requested or if viewer has 'preload' option set
                 preload: preload || !!viewerInstance.getViewerOption('preload'),
                 // Don't prefetch file's representation content if this is for preload
-                content: !preload
+                content: !preload,
             });
         }
     }
@@ -661,19 +666,19 @@ class Preview extends EventEmitter {
      */
     prefetchViewers(viewerNames = []) {
         this.getViewers()
-            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
-            .forEach((viewer) => {
+            .filter(viewer => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach(viewer => {
                 const viewerInstance = new viewer.CONSTRUCTOR(
                     this.createViewerOptions({
-                        viewer
-                    })
+                        viewer,
+                    }),
                 );
 
                 if (typeof viewerInstance.prefetch === 'function') {
                     viewerInstance.prefetch({
                         assets: true,
                         preload: false,
-                        content: false
+                        content: false,
                     });
                 }
             });
@@ -721,7 +726,7 @@ class Preview extends EventEmitter {
             const bareFile = { id: fileId };
             if (fileVersionId) {
                 bareFile.file_version = {
-                    id: fileVersionId
+                    id: fileVersionId,
                 };
             }
 
@@ -739,7 +744,7 @@ class Preview extends EventEmitter {
             this.file = { id };
             if (file_version) {
                 this.file.file_version = {
-                    id: file_version.id
+                    id: file_version.id,
                 };
             }
             /* eslint-enable camelcase */
@@ -748,7 +753,7 @@ class Preview extends EventEmitter {
                 ERROR_CODE.BAD_INPUT,
                 __('error_generic'),
                 {},
-                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
+                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.',
             );
         }
 
@@ -771,6 +776,18 @@ class Preview extends EventEmitter {
             // Otherwise, reset retry count
         } else {
             this.retryCount = 0;
+        }
+
+        // Eject any previous interceptors
+        this.api.ejectInterceptors();
+
+        // Check to see if there are http interceptors and load them
+        if (this.options.responseInterceptor) {
+            this.api.addResponseInterceptor(this.options.responseInterceptor);
+        }
+
+        if (this.options.requestInterceptor) {
+            this.api.addRequestInterceptor(this.options.requestInterceptor);
         }
 
         // @TODO: This may not be the best way to detect if we are offline. Make sure this works well if we decided to
@@ -826,7 +843,7 @@ class Preview extends EventEmitter {
             this.keydownHandler,
             this.navigateLeft,
             this.navigateRight,
-            this.throttledMousemoveHandler
+            this.throttledMousemoveHandler,
         );
 
         // Set up the notification
@@ -942,8 +959,14 @@ class Preview extends EventEmitter {
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
+        // Add the request interceptor to the preview instance
+        this.options.requestInterceptor = options.requestInterceptor;
+
+        // Add the response interceptor to the preview instance
+        this.options.responseInterceptor = options.responseInterceptor;
+
         // Disable or enable viewers based on viewer options
-        Object.keys(this.options.viewers).forEach((viewerName) => {
+        Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
 
             // Explicitly check for booleans, disabled:false will override any default disabling
@@ -964,7 +987,12 @@ class Preview extends EventEmitter {
      */
     createViewerOptions(moreOptions) {
         return cloneDeep(
-            Object.assign({}, this.options, moreOptions, { location: this.location, cache: this.cache, ui: this.ui })
+            Object.assign({}, this.options, moreOptions, {
+                api: this.api,
+                location: this.location,
+                cache: this.cache,
+                ui: this.ui,
+            }),
         );
     }
 
@@ -997,9 +1025,9 @@ class Preview extends EventEmitter {
         const { apiHost, previewWMPref, queryParams } = this.options;
         const params = Object.assign(
             {
-                watermark_preference: convertWatermarkPref(previewWMPref)
+                watermark_preference: convertWatermarkPref(previewWMPref),
             },
-            queryParams
+            queryParams,
         );
 
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
@@ -1008,7 +1036,7 @@ class Preview extends EventEmitter {
         Timer.start(tag);
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
-        api
+        this.api
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
@@ -1098,9 +1126,9 @@ class Preview extends EventEmitter {
         if (this.file.is_download_available === false) {
             const details = isBoxWebApp()
                 ? {
-                    linkText: __('link_contact_us'),
-                    linkUrl: SUPPORT_URL
-                }
+                      linkText: __('link_contact_us'),
+                      linkUrl: SUPPORT_URL,
+                  }
                 : {};
             throw new PreviewError(ERROR_CODE.NOT_DOWNLOADABLE, __('error_not_downloadable'), details);
         }
@@ -1121,7 +1149,7 @@ class Preview extends EventEmitter {
         // If no loader, then check to see if any of our viewers support this file type.
         // If they do, we know the account can't preview this file type. If they can't we know this file type is unsupported.
         if (!loader) {
-            const isFileTypeSupported = this.getViewers().find((viewer) => {
+            const isFileTypeSupported = this.getViewers().find(viewer => {
                 return viewer.EXT.indexOf(this.file.extension) > -1;
             });
 
@@ -1153,7 +1181,7 @@ class Preview extends EventEmitter {
             viewer,
             representation,
             container: this.container,
-            file: this.file
+            file: this.file,
         });
         viewerOptions.logger = this.logger; // Don't clone the logger since it needs to track metrics
         this.viewer = new viewer.CONSTRUCTOR(viewerOptions);
@@ -1239,7 +1267,7 @@ class Preview extends EventEmitter {
         const formattedEvent = {
             event_name: data.event,
             value: data.data,
-            ...this.createLogEvent()
+            ...this.createLogEvent(),
         };
 
         this.emit(PREVIEW_METRIC, formattedEvent);
@@ -1282,12 +1310,12 @@ class Preview extends EventEmitter {
             this.emit(VIEWER_EVENT.load, {
                 error,
                 metrics: this.logger.done(this.count),
-                file: this.file
+                file: this.file,
             });
 
             // Explicit preview failure
             this.handleViewerMetrics({
-                event: 'failure'
+                event: 'failure',
             });
 
             // Hookup for phantom JS health check
@@ -1302,12 +1330,12 @@ class Preview extends EventEmitter {
             this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,
                 metrics: this.logger.done(this.count),
-                file: this.file
+                file: this.file,
             });
 
             // Explicit preview success
             this.handleViewerMetrics({
-                event: 'success'
+                event: 'success',
             });
 
             // If there wasn't an error and event logging is not disabled, use Events API to log a preview
@@ -1356,12 +1384,12 @@ class Preview extends EventEmitter {
             event_type: 'preview',
             source: {
                 type: 'file',
-                id: fileId
-            }
+                id: fileId,
+            },
         };
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
-        api
+        this.api
             .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
                 // Reset retry count after successfully logging
@@ -1440,8 +1468,8 @@ class Preview extends EventEmitter {
             this.createViewerOptions({
                 viewer: { NAME: 'Error' },
                 container: this.container,
-                file: this.file
-            })
+                file: this.file,
+            }),
         );
     }
 
@@ -1504,7 +1532,7 @@ class Preview extends EventEmitter {
             extension: file.extension || '',
             locale: getProp(this.location, 'locale', ''),
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
-            ...getClientLogDetails()
+            ...getClientLogDetails(),
         };
 
         return log;
@@ -1530,7 +1558,7 @@ class Preview extends EventEmitter {
 
         const errorLog = {
             error: sanitizedError,
-            ...this.createLogEvent()
+            ...this.createLogEvent(),
         };
 
         this.emit(PREVIEW_ERROR, errorLog);
@@ -1572,7 +1600,7 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
-            ...this.createLogEvent()
+            ...this.createLogEvent(),
         };
 
         this.emit(PREVIEW_METRIC, event);
@@ -1591,14 +1619,14 @@ class Preview extends EventEmitter {
         const videoHint =
             Browser.canPlayDash() && !this.disabledViewers.Dash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
         const headers = {
-            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
+            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,
         };
 
         return getHeaders(
             headers,
             token || this.options.token,
             this.options.sharedLink,
-            this.options.sharedLinkPassword
+            this.options.sharedLinkPassword,
         );
     }
 
@@ -1613,9 +1641,9 @@ class Preview extends EventEmitter {
         const { apiHost, previewWMPref, queryParams, skipServerUpdate } = this.options;
         const params = Object.assign(
             {
-                watermark_preference: convertWatermarkPref(previewWMPref)
+                watermark_preference: convertWatermarkPref(previewWMPref),
             },
-            queryParams
+            queryParams,
         );
 
         // Don't bother prefetching when there aren't more files or we need to skip server update
@@ -1630,7 +1658,7 @@ class Preview extends EventEmitter {
         const currentIndex = this.collection.indexOf(this.file.id);
         const filesToPrefetch = this.collection
             .slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
-            .filter((fileId) => this.prefetchedCollection.indexOf(fileId) === -1);
+            .filter(fileId => this.prefetchedCollection.indexOf(fileId) === -1);
 
         // Check if we need to prefetch anything
         if (filesToPrefetch.length === 0) {
@@ -1639,8 +1667,8 @@ class Preview extends EventEmitter {
 
         // Get access tokens for all files we should be prefetching
         getTokens(filesToPrefetch, this.previewOptions.token)
-            .then((tokenMap) => {
-                filesToPrefetch.forEach((fileId) => {
+            .then(tokenMap => {
+                filesToPrefetch.forEach(fileId => {
                     const token = tokenMap[fileId];
 
                     // Append optional query params
@@ -1648,9 +1676,9 @@ class Preview extends EventEmitter {
                     const fileInfoUrl = appendQueryParams(getURL(fileId, fileVersionId, apiHost), params);
 
                     // Prefetch and cache file information and content
-                    api
+                    this.api
                         .get(fileInfoUrl, { headers: this.getRequestHeaders(token) })
-                        .then((file) => {
+                        .then(file => {
                             // Cache file info
                             cacheFile(this.cache, file);
                             this.prefetchedCollection.push(file.id);
@@ -1658,10 +1686,10 @@ class Preview extends EventEmitter {
                             // Prefetch assets and content for file
                             this.prefetch({
                                 fileId: file.id,
-                                token
+                                token,
                             });
                         })
-                        .catch((err) => {
+                        .catch(err => {
                             const message = `Error prefetching file ID ${fileId} - ${err}`;
                             // eslint-disable-next-line
                             console.error(message);
@@ -1671,7 +1699,7 @@ class Preview extends EventEmitter {
                         });
                 });
             })
-            .catch((err) => {
+            .catch(err => {
                 const message = `Error prefetching files - ${err}`;
                 // eslint-disable-next-line
                 console.error(message);
@@ -1680,9 +1708,9 @@ class Preview extends EventEmitter {
                     ERROR_CODE.PREFETCH_FILE,
                     message,
                     {
-                        fileIds: filesToPrefetch
+                        fileIds: filesToPrefetch,
                     },
-                    err.message
+                    err.message,
                 );
                 this.emitPreviewError(error);
             });
@@ -1724,7 +1752,7 @@ class Preview extends EventEmitter {
                 }, MOUSEMOVE_THROTTLE_MS);
             },
             MOUSEMOVE_THROTTLE_MS - 500,
-            true
+            true,
         );
     }
 
@@ -1782,7 +1810,7 @@ class Preview extends EventEmitter {
      * @return {Object|null} Matching loader
      */
     getLoader(file) {
-        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        return this.loaders.find(loader => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**

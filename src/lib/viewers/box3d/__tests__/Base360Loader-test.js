@@ -12,8 +12,8 @@ describe('lib/viewers/box3d/Base360Loader', () => {
         base360Loader.viewers = [
             {
                 REP: 'dash',
-                EXT: 'mp4'
-            }
+                EXT: 'mp4',
+            },
         ];
 
         file = {
@@ -21,10 +21,10 @@ describe('lib/viewers/box3d/Base360Loader', () => {
             representations: {
                 entries: [
                     {
-                        representation: 'dash'
-                    }
-                ]
-            }
+                        representation: 'dash',
+                    },
+                ],
+            },
         };
     });
 

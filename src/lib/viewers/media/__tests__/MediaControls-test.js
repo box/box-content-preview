@@ -47,8 +47,8 @@ describe('lib/viewers/media/MediaControls', () => {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
-                }
+                    unset: () => {},
+                },
             );
         });
 
@@ -91,8 +91,8 @@ describe('lib/viewers/media/MediaControls', () => {
                 set: () => {},
                 has: () => {},
                 get: () => {},
-                unset: () => {}
-            }
+                unset: () => {},
+            },
         );
     });
 
@@ -101,7 +101,7 @@ describe('lib/viewers/media/MediaControls', () => {
             stubs.removeAllListeners = sandbox.stub(mediaControls, 'removeAllListeners');
             stubs.removeVolumeScrubberWrapperExpansionHandlers = sandbox.stub(
                 mediaControls,
-                'removeVolumeScrubberWrapperExpansionHandlers'
+                'removeVolumeScrubberWrapperExpansionHandlers',
             );
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             stubs.removeActivationListener = sandbox.stub(util, 'removeActivationListener');
@@ -109,18 +109,18 @@ describe('lib/viewers/media/MediaControls', () => {
 
             stubs.genericEl = {
                 getHandleEl: sandbox.stub().returns({
-                    removeEventListener: sandbox.stub()
+                    removeEventListener: sandbox.stub(),
                 }),
                 getConvertedEl: sandbox.stub().returns({
-                    removeEventListener: sandbox.stub()
+                    removeEventListener: sandbox.stub(),
                 }),
                 destroy: sandbox.stub(),
                 removeListener: sandbox.stub(),
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             stubs.timeScrubberEl = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
         });
 
@@ -148,15 +148,15 @@ describe('lib/viewers/media/MediaControls', () => {
 
             expect(stubs.genericEl.getHandleEl().removeEventListener).to.be.calledWith(
                 'mousedown',
-                mediaControls.timeScrubbingStartHandler
+                mediaControls.timeScrubbingStartHandler,
             );
             expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
                 'mousemove',
-                stubs.timeScrubberElShowHandler
+                stubs.timeScrubberElShowHandler,
             );
             expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
                 'mouseleave',
-                mediaControls.filmstripHideHandler
+                mediaControls.filmstripHideHandler,
             );
             expect(stubs.genericEl.destroy).to.be.called;
             expect(mediaControls.timeScrubber).to.equal(undefined);
@@ -196,15 +196,15 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
             expect(stubs.removeActivationListener).to.be.calledWith(
                 stubs.genericEl,
-                mediaControls.toggleFullscreenHandler
+                mediaControls.toggleFullscreenHandler,
             );
             expect(stubs.removeActivationListener).to.be.calledWith(
                 stubs.genericEl,
-                mediaControls.toggleSettingsHandler
+                mediaControls.toggleSettingsHandler,
             );
             expect(stubs.removeActivationListener).to.be.calledWith(
                 stubs.genericEl,
-                mediaControls.toggleSubtitlesHandler
+                mediaControls.toggleSubtitlesHandler,
             );
         });
     });
@@ -278,7 +278,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('getTimeFromScrubber()', () => {
         it('should compute the right time', () => {
             mediaControls.mediaEl = {
-                duration: 100
+                duration: 100,
             };
             mediaControls.setupScrubbers();
             sandbox.stub(mediaControls.timeScrubber, 'getValue').returns(0.3);
@@ -324,7 +324,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('setDuration()', () => {
         beforeEach(() => {
             mediaControls.durationEl = {
-                textContent: ''
+                textContent: '',
             };
             stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
         });
@@ -344,10 +344,10 @@ describe('lib/viewers/media/MediaControls', () => {
         beforeEach(() => {
             mediaControls.mediaEl = {
                 textContent: '',
-                duration: 500
+                duration: 500,
             };
             mediaControls.durationEl = {
-                textContent: '8:20'
+                textContent: '8:20',
             };
             mediaControls.setupScrubbers();
             stubs.setValue = sandbox.stub(mediaControls.timeScrubber, 'setValue');
@@ -378,9 +378,9 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.mediaEl = {
                 buffered: {
                     length: 5,
-                    end: sandbox.stub().returns(1)
+                    end: sandbox.stub().returns(1),
                 },
-                duration: 1
+                duration: 1,
             };
             mediaControls.setupScrubbers();
             stubs.setBufferedValueStub = sandbox.stub(mediaControls.timeScrubber, 'setBufferedValue');
@@ -445,7 +445,7 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.true;
         });
 
-        it('should set the label to enter fullscreen if it\'s not fullscreen', () => {
+        it("should set the label to enter fullscreen if it's not fullscreen", () => {
             stubs.isFullscreen.returns(false);
 
             mediaControls.handleFullscreenExit();
@@ -568,23 +568,23 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseleave', mediaControls.mouseleaveHandler);
             expect(stubs.addActivationListener).to.be.calledWith(
                 mediaControls.playButtonEl,
-                mediaControls.togglePlayHandler
+                mediaControls.togglePlayHandler,
             );
             expect(stubs.addActivationListener).to.be.calledWith(
                 mediaControls.volButtonEl,
-                mediaControls.toggleMuteHandler
+                mediaControls.toggleMuteHandler,
             );
             expect(stubs.addActivationListener).to.be.calledWith(
                 mediaControls.fullscreenButtonEl,
-                mediaControls.toggleFullscreenHandler
+                mediaControls.toggleFullscreenHandler,
             );
             expect(stubs.addActivationListener).to.be.calledWith(
                 mediaControls.settingsButtonEl,
-                mediaControls.toggleSettingsHandler
+                mediaControls.toggleSettingsHandler,
             );
             expect(stubs.addActivationListener).to.be.calledWith(
                 mediaControls.subtitlesButtonEl,
-                mediaControls.toggleSubtitlesHandler
+                mediaControls.toggleSubtitlesHandler,
             );
             expect(stubs.addListener).to.be.called;
         });
@@ -734,7 +734,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('setFilmstrip()', () => {
         it('should set the filmstrip source to the provided URL', () => {
             mediaControls.filmstripEl = {
-                src: ''
+                src: '',
             };
 
             mediaControls.filmstripUrl = 'testurl';
@@ -747,13 +747,13 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('initFilmstrip()', () => {
         beforeEach(() => {
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve()),
             };
             mediaControls.setupScrubbers();
             stubs.handleElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
             stubs.timeScrubberEl = {
                 addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
             mediaControls.timeScrubberEl = stubs.timeScrubberEl;
             stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
@@ -780,15 +780,15 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(stubs.handleElAddEventListener).to.be.calledWith(
                 'mousedown',
-                mediaControls.timeScrubbingStartHandler
+                mediaControls.timeScrubbingStartHandler,
             );
             expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
                 'mousemove',
-                mediaControls.timeScrubberElShowHandler
+                mediaControls.timeScrubberElShowHandler,
             );
             expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
                 'mouseleave',
-                mediaControls.filmstripHideHandler
+                mediaControls.filmstripHideHandler,
             );
             expect(spy).to.have.been.called.twice;
         });
@@ -798,7 +798,7 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(mediaControls.timeScrubberEl.addEventListener).to.be.calledWith(
                 'touchstart',
-                mediaControls.timeScrubbingStartHandler
+                mediaControls.timeScrubbingStartHandler,
             );
         });
 
@@ -833,7 +833,7 @@ describe('lib/viewers/media/MediaControls', () => {
         beforeEach(() => {
             mediaControls.setupScrubbers();
             stubs.event = {
-                target: mediaControls.timeScrubberEl.firstChild
+                target: mediaControls.timeScrubberEl.firstChild,
             };
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             mediaControls.filmstripContainerEl = document.createElement('div');
@@ -867,18 +867,18 @@ describe('lib/viewers/media/MediaControls', () => {
         beforeEach(() => {
             stubs.getBoundingClientRect = sandbox.stub(mediaControls.containerEl, 'getBoundingClientRect').returns({
                 left: 0,
-                width: 260
+                width: 260,
             });
             stubs.event = {
-                pageX: 100
+                pageX: 100,
             };
             stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
             stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
             mediaControls.mediaEl = {
-                duration: 3600
+                duration: 3600,
             };
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve()),
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
@@ -886,7 +886,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 time: 10,
                 left: -100,
                 top: -180,
-                containerLeft: 20
+                containerLeft: 20,
             });
         });
 
@@ -912,7 +912,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('computeFilmstripPositions()', () => {
         it('should compute correct positions when filmstrip not ready', () => {
             mediaControls.mediaEl = {
-                duration: 100
+                duration: 100,
             };
             mediaControls.filmstripInterval = 1;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.25);
@@ -927,7 +927,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should compute correct horizontal offset into filmstrip', () => {
             mediaControls.mediaEl = {
-                duration: 100
+                duration: 100,
             };
             mediaControls.filmstripInterval = 1;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
@@ -942,7 +942,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should compute correct vertical offset into filmstrip', () => {
             mediaControls.mediaEl = {
-                duration: 1100
+                duration: 1100,
             };
             mediaControls.filmstripInterval = 1;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
@@ -957,7 +957,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should compute correct offset into filmstrip with different interval', () => {
             mediaControls.mediaEl = {
-                duration: 2000
+                duration: 2000,
             };
             mediaControls.filmstripInterval = 5;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.6);
@@ -972,7 +972,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should compute correct container position when hovering near left boundary', () => {
             mediaControls.mediaEl = {
-                duration: 100
+                duration: 100,
             };
             mediaControls.filmstripInterval = 1;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.01);
@@ -987,7 +987,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should compute correct container position when hovering near right boundary', () => {
             mediaControls.mediaEl = {
-                duration: 100
+                duration: 100,
             };
             mediaControls.filmstripInterval = 1;
             sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.99);
@@ -1004,7 +1004,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('filmstripHideHandler()', () => {
         beforeEach(() => {
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve()),
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
@@ -1066,10 +1066,10 @@ describe('lib/viewers/media/MediaControls', () => {
             handler = mediaControls.timeScrubberHandler(stubs.timeScrubberCallbackSpy);
 
             stubs.playedEl = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
             stubs.convertedEl = {
-                removeEventListener: sandbox.stub()
+                removeEventListener: sandbox.stub(),
             };
 
             mediaControls.timeScrubber.playedEl = stubs.playedEl;
@@ -1078,7 +1078,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should execute the callback when target is playedEl', () => {
             const eventStub = {
-                target: stubs.playedEl
+                target: stubs.playedEl,
             };
             handler(eventStub);
             expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
@@ -1086,7 +1086,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should execute the callback when target is convertedEl', () => {
             const eventStub = {
-                target: stubs.convertedEl
+                target: stubs.convertedEl,
             };
             handler(eventStub);
             expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
@@ -1094,7 +1094,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should not execute the callback when target is not playedEl or convertedEl', () => {
             const eventStub = {
-                target: sandbox.stub()
+                target: sandbox.stub(),
             };
             handler(eventStub);
             expect(stubs.timeScrubberCallbackSpy).to.have.not.been.called;

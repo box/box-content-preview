@@ -21,15 +21,15 @@ describe('lib/viewers/SWFViewer', () => {
             file: {
                 id: 0,
                 permissions: {
-                    can_download: true
-                }
+                    can_download: true,
+                },
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'foo'
-                }
-            }
+                    url_template: 'foo',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -103,10 +103,10 @@ describe('lib/viewers/SWFViewer', () => {
                         allowNetworking: 'none',
                         allowscriptaccess: 'never',
                         allowScriptAccess: 'never',
-                        wmode: 'transparent'
+                        wmode: 'transparent',
                     },
                     null,
-                    sinon.match.func
+                    sinon.match.func,
                 );
             sandbox.stub(swf, 'createContentUrlWithAuthParams').returns(contentUrl);
 

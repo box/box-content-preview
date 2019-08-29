@@ -1,11 +1,11 @@
-Upgrading Guide
-=========================
+# Upgrading Guide
 
-Upgrading from 1.x to 2.x
--------------------------
+## Upgrading from 1.x to 2.x
+
 Version 2 includes a breaking change to the DOM structure of the Preview element.
 
 In version 1, the `.bp-navigate` buttons were siblings with the `.bp` container div
+
 ```
 <div class="bp" tabindex="0">
     ...
@@ -17,7 +17,9 @@ In version 1, the `.bp-navigate` buttons were siblings with the `.bp` container 
     ...
 </button>
 ```
+
 But in version 2, the buttons are now inside a new container div `.bp-content`.
+
 ```
 <div class="bp" tabindex="0">
     <div class="bp-content">

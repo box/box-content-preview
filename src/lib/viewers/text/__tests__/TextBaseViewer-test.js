@@ -21,9 +21,9 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         containerEl = document.querySelector('.container');
         textBase = new TextBaseViewer({
             file: {
-                id: 0
+                id: 0,
             },
-            container: containerEl
+            container: containerEl,
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -44,7 +44,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     describe('destroy()', () => {
         it('should destroy the controls if they exist', () => {
             textBase.controls = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
 
             textBase.destroy();
@@ -96,14 +96,23 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
     describe('load()', () => {
         it('should add selectable class if user has download permissions', () => {
-            sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            sandbox
+                .stub(file, 'checkPermission')
+                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
+                .returns(true);
             textBase.load();
             expect(textBase.containerEl).to.have.class('bp-is-selectable');
         });
 
         it('should not add selectable class if disableTextViewer option is true', () => {
-            sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
-            sandbox.stub(textBase, 'getViewerOption').withArgs('disableTextLayer').returns(true);
+            sandbox
+                .stub(file, 'checkPermission')
+                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
+                .returns(true);
+            sandbox
+                .stub(textBase, 'getViewerOption')
+                .withArgs('disableTextLayer')
+                .returns(true);
 
             textBase.load();
 
@@ -128,19 +137,19 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                 sinon.match.string,
                 textBase.zoomOut,
                 sinon.match.string,
-                sinon.match.string
+                sinon.match.string,
             );
             expect(Controls.prototype.add).to.be.calledWith(
                 sinon.match.string,
                 textBase.zoomIn,
                 sinon.match.string,
-                sinon.match.string
+                sinon.match.string,
             );
             expect(Controls.prototype.add).to.be.calledWith(
                 sinon.match.string,
                 textBase.toggleFullscreen,
                 sinon.match.string,
-                sinon.match.string
+                sinon.match.string,
             );
         });
     });

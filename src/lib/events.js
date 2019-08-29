@@ -12,7 +12,7 @@ export const VIEWER_EVENT = {
     default: 'viewerevent', // The default viewer event.
     metric: 'viewermetric', // A viewer metric.
     thumbnailsClose: 'thumbnailsClose', // When thumbnails sidebar closes
-    thumbnailsOpen: 'thumbnailsOpen' // When thumbnails sidebar opens
+    thumbnailsOpen: 'thumbnailsOpen', // When thumbnails sidebar opens
 };
 
 // Error codes logged by preview with "preview_error" events
@@ -45,7 +45,7 @@ export const ERROR_CODE = {
     RATE_LIMIT: 'error_rate_limit',
     SHAKA: 'error_shaka',
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
-    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout'
+    VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
 };
 
 // Event fired from Preview with error details
@@ -61,7 +61,7 @@ export const LOAD_METRIC = {
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
     contentLoadTime: 'full_document_load_time', // How long it took to load the document so it could be previewed.
     preloadTime: 'preload_time', // How long it takes to preload the document.
-    previewLoadTime: 'preview_loading' // Total preview load time. Maps to "value" of load event
+    previewLoadTime: 'preview_loading', // Total preview load time. Maps to "value" of load event
 };
 
 export const DURATION_METRIC = 'preview_duration_metric';
@@ -72,20 +72,20 @@ export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
 // Events around download reachability
 export const DOWNLOAD_REACHABILITY_METRICS = {
     NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
-    DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked'
+    DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked',
 };
 // Events fired when using find in preview
 export const USER_DOCUMENT_FIND_EVENTS = {
     NEXT: 'user_document_find_next', // The user navigates to the next find entry
     OPEN: 'user_document_find_open', // The user opens the find bar
-    PREVIOUS: 'user_document_find_previous' // The user navigates to the previous find entry
+    PREVIOUS: 'user_document_find_previous', // The user navigates to the previous find entry
 };
 
 // Events fired when using thumbnail sidebar
 export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
     CLOSE: 'user_document_thumbnails_close',
     NAVIGATE: 'user_document_thumbnails_navigate',
-    OPEN: 'user_document_thumbnails_open'
+    OPEN: 'user_document_thumbnails_open',
 };
 
 export const MISSING_EXTERNAL_REFS = 'missing_x_refs';

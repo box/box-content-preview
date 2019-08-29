@@ -28,7 +28,7 @@ class Scrubber extends EventEmitter {
         ariaValuemax,
         value = MIN_VALUE,
         bufferedValue = MAX_VALUE,
-        convertedValue = MAX_VALUE
+        convertedValue = MAX_VALUE,
     ) {
         super();
 
@@ -181,7 +181,7 @@ class Scrubber extends EventEmitter {
         //  no less than the last converted value
         this.convertedValue = Math.max(
             Math.min(Math.max(value, this.convertedValue || MIN_VALUE), MAX_VALUE),
-            MIN_VALUE
+            MIN_VALUE,
         );
         this.convertedEl.style.width = `${this.convertedValue * 100}%`;
     }

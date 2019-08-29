@@ -10,15 +10,10 @@ class SinglePageViewer extends DocumentViewer {
      *
      * @protected
      * @override
-     * @return {PDFJS.PDFViewer} PDF viewer type
+     * @return {pdfjsViewer.PDFViewer} PDF viewer type
      */
     initPdfViewer() {
-        return new PDFJS.PDFSinglePageViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
-        });
+        return this.initPdfViewerClass(this.pdfjsViewer.PDFSinglePageViewer);
     }
 }
 

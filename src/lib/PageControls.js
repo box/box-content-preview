@@ -39,6 +39,7 @@ class PageControls extends EventEmitter {
 
     /** @property {HTMLElement} - Page number input element */
     pageNumInputEl;
+
     /**
      * [constructor]
      *
@@ -74,7 +75,7 @@ class PageControls extends EventEmitter {
             __('previous_page'),
             this.setPreviousPage,
             `bp-previous-page-icon ${PREV_PAGE}`,
-            ICON_DROP_UP
+            ICON_DROP_UP,
         );
         this.controls.add(__('enter_page_num'), this.showPageNumInput, PAGE_NUM, pageNumTemplate);
         this.controls.add(__('next_page'), this.setNextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);

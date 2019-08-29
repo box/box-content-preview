@@ -75,7 +75,7 @@ class Timer {
         }
 
         const tagArray = typeof tagOrTags === 'string' ? [tagOrTags] : tagOrTags;
-        tagArray.forEach((tag) => {
+        tagArray.forEach(tag => {
             const time = this.get(tag);
             // If nothing exists, there's no reason to reset it
             if (!time) {
@@ -111,7 +111,7 @@ class Timer {
         const time = {
             start: undefined,
             end: undefined,
-            elapsed: undefined
+            elapsed: undefined,
         };
 
         this.times[tag] = time;

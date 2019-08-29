@@ -12,10 +12,12 @@ class TextBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
 
+        this.api = options.api;
         // Bind context for handlers;
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
     }
+
     /**
      * @inheritdoc
      */
@@ -62,7 +64,7 @@ class TextBaseViewer extends BaseViewer {
         this.emit('zoom', {
             zoom: newFontSize,
             canZoomIn: true,
-            canZoomOut: true
+            canZoomOut: true,
         });
     }
 
@@ -115,7 +117,7 @@ class TextBaseViewer extends BaseViewer {
             __('enter_fullscreen'),
             this.toggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
@@ -136,7 +138,8 @@ class TextBaseViewer extends BaseViewer {
         if (key === 'Shift++') {
             this.zoomIn();
             return true;
-        } else if (key === 'Shift+_') {
+        }
+        if (key === 'Shift+_') {
             this.zoomOut();
             return true;
         }

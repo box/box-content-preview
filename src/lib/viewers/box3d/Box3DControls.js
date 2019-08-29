@@ -66,13 +66,13 @@ class Box3DControls extends EventEmitter {
             __('enter_fullscreen'),
             this.handleToggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(
             __('exit_fullscreen'),
             this.handleToggleFullscreen,
             'bp-exit-fullscreen-icon',
-            ICON_FULLSCREEN_OUT
+            ICON_FULLSCREEN_OUT,
         );
     }
 

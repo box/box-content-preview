@@ -13,7 +13,7 @@ import {
     EVENT_SET_WIREFRAMES_VISIBLE,
     EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
-    EVENT_TOGGLE_HELPERS
+    EVENT_TOGGLE_HELPERS,
 } from '../model3DConstants';
 
 const sandbox = sinon.sandbox.create();
@@ -36,15 +36,15 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             file: {
                 id: 0,
                 file_version: {
-                    id: 1
-                }
+                    id: 1,
+                },
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'foo'
-                }
-            }
+                    url_template: 'foo',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -66,7 +66,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             hidePullups: () => {},
             removeListener: () => {},
             removeAllListeners: () => {},
-            destroy: () => {}
+            destroy: () => {},
         };
         model3d.renderer = {
             destroy: () => {},
@@ -89,7 +89,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             setCameraProjection: () => {},
             toggleHelpers: () => {},
             setWireframesVisible: () => {},
-            setGridVisible: () => {}
+            setGridVisible: () => {},
         };
 
         model3d.postLoad();
@@ -115,15 +115,15 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 file: {
                     id: 0,
                     file_version: {
-                        id: 1
-                    }
+                        id: 1,
+                    },
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
-                }
+                        url_template: 'foo',
+                    },
+                },
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
             m3d.containerEl = containerEl;
@@ -143,29 +143,29 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 file: {
                     id: 0,
                     file_version: {
-                        id: 1
-                    }
+                        id: 1,
+                    },
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
-                }
+                        url_template: 'foo',
+                    },
+                },
             });
             m3d.controls = {
                 on: () => {},
                 hidePullups: () => {},
                 removeListener: () => {},
                 removeAllListeners: () => {},
-                destroy: () => {}
+                destroy: () => {},
             };
             m3d.renderer = {
                 load: () => Promise.resolve(),
                 on: () => {},
                 removeListener: () => {},
                 removeAllListeners: () => {},
-                destroy: () => {}
+                destroy: () => {},
             };
         });
 
@@ -176,40 +176,40 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         const eventBindings = [
             {
                 event: EVENT_ROTATE_ON_AXIS,
-                callback: 'handleRotateOnAxis'
+                callback: 'handleRotateOnAxis',
             },
             {
                 event: EVENT_SELECT_ANIMATION_CLIP,
-                callback: 'handleSelectAnimationClip'
+                callback: 'handleSelectAnimationClip',
             },
             {
                 event: EVENT_SET_CAMERA_PROJECTION,
-                callback: 'handleSetCameraProjection'
+                callback: 'handleSetCameraProjection',
             },
             {
                 event: EVENT_SET_RENDER_MODE,
-                callback: 'handleSetRenderMode'
+                callback: 'handleSetRenderMode',
             },
             {
                 event: EVENT_SET_SKELETONS_VISIBLE,
-                callback: 'handleShowSkeletons'
+                callback: 'handleShowSkeletons',
             },
             {
                 event: EVENT_SET_WIREFRAMES_VISIBLE,
-                callback: 'handleShowWireframes'
+                callback: 'handleShowWireframes',
             },
             {
                 event: EVENT_SET_GRID_VISIBLE,
-                callback: 'handleShowGrid'
+                callback: 'handleShowGrid',
             },
             {
                 event: EVENT_TOGGLE_ANIMATION,
-                callback: 'handleToggleAnimation'
+                callback: 'handleToggleAnimation',
             },
             {
                 event: EVENT_TOGGLE_HELPERS,
-                callback: 'handleToggleHelpers'
-            }
+                callback: 'handleToggleHelpers',
+            },
         ];
 
         describe('attachEventHandlers()', () => {
@@ -220,7 +220,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
 
             describe('with controls enabled', () => {
-                eventBindings.forEach((binding) => {
+                eventBindings.forEach(binding => {
                     it(`should create an event listener for ${binding.event} events`, () => {
                         const onStub = sandbox.stub(m3d.controls, 'on');
                         m3d.attachEventHandlers();
@@ -238,7 +238,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
 
             describe('with controls enabled', () => {
-                eventBindings.forEach((binding) => {
+                eventBindings.forEach(binding => {
                     it(`should remove an event listener for ${binding.event} events`, () => {
                         const removeStub = sandbox.stub(m3d.controls, 'removeListener');
                         m3d.detachEventHandlers();
@@ -273,12 +273,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             model3d.handleReset();
         });
 
-        it('should populate animation controls after the scene has been loaded', (done) => {
+        it('should populate animation controls after the scene has been loaded', done => {
             const meta = {
-                get: () => Promise.resolve({ status: 200, response: {} })
+                get: () => Promise.resolve({ status: 200, response: {} }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             const stub = sandbox.stub(model3d, 'populateAnimationControls');
@@ -296,7 +296,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             beforeEach(() => {
                 controls = model3d.controls; // eslint-disable-line prefer-destructuring
                 model3d.renderer.box3d = {
-                    getEntitiesByType: () => {}
+                    getEntitiesByType: () => {},
                 };
                 b3dMock = sandbox.mock(model3d.renderer.box3d);
                 controlMock = sandbox.mock(model3d.controls);
@@ -322,7 +322,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             it('should get animation clip data for the first animation loaded', () => {
                 const animation = {
-                    getClipIds: () => []
+                    getClipIds: () => [],
                 };
                 b3dMock
                     .expects('getEntitiesByType')
@@ -334,17 +334,17 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             it('should add animation clip data for the first animation loaded', () => {
                 const animation = {
                     getClipIds: () => {},
-                    getClip: () => {}
+                    getClip: () => {},
                 };
                 const clipOne = {
                     start: 0,
                     stop: 1,
-                    name: 'one'
+                    name: 'one',
                 };
                 const clipTwo = {
                     start: 0,
                     stop: 2,
-                    name: 'two'
+                    name: 'two',
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1', '2']);
@@ -363,7 +363,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             it('should not show animation controls if no animation clips loaded', () => {
                 const animation = {
-                    getClipIds: () => []
+                    getClipIds: () => [],
                 };
                 b3dMock
                     .expects('getEntitiesByType')
@@ -376,7 +376,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             it('should not select the first animation clip if no clips loaded', () => {
                 const animation = {
-                    getClipIds: () => []
+                    getClipIds: () => [],
                 };
                 b3dMock
                     .expects('getEntitiesByType')
@@ -390,12 +390,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             it('should show animation controls when animation is loaded', () => {
                 const animation = {
                     getClipIds: () => {},
-                    getClip: () => {}
+                    getClip: () => {},
                 };
                 const clipOne = {
                     start: 0,
                     stop: 1,
-                    name: 'one'
+                    name: 'one',
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1']);
@@ -412,12 +412,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             it('should select the first available animation clip, when loaded', () => {
                 const animation = {
                     getClipIds: () => {},
-                    getClip: () => {}
+                    getClip: () => {},
                 };
                 const clipOne = {
                     start: 0,
                     stop: 1,
-                    name: 'one'
+                    name: 'one',
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1']);
@@ -456,12 +456,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             model3d.handleRotationAxisSet(up, forward);
         });
 
-        it('should rotate the object to the values saved in metadata, if different than defaults', (done) => {
+        it('should rotate the object to the values saved in metadata, if different than defaults', done => {
             const meta = {
-                get: () => Promise.resolve({ status: 200, response: { upAxis: '-z' } })
+                get: () => Promise.resolve({ status: 200, response: { upAxis: '-z' } }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             sandbox.stub(model3d, 'handleReset');
@@ -475,12 +475,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
         });
 
-        it('should not rotate the object if metadata matches defaults', (done) => {
+        it('should not rotate the object if metadata matches defaults', done => {
             const meta = {
-                get: () => Promise.resolve({ status: 200, response: {} })
+                get: () => Promise.resolve({ status: 200, response: {} }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             sandbox.stub(model3d, 'handleReset');
@@ -584,12 +584,12 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     });
 
     describe('scene load errors', () => {
-        it('should throw an error when metadata response code != 200', (done) => {
+        it('should throw an error when metadata response code != 200', done => {
             const meta = {
-                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } })
+                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             const onErrorStub = sandbox.stub(model3d, 'onMetadataError');
@@ -600,13 +600,13 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
         });
 
-        it('should should invoke onMetadataError() when issues loading metadata', (done) => {
+        it('should should invoke onMetadataError() when issues loading metadata', done => {
             const errStub = sandbox.stub(model3d, 'onMetadataError');
             const meta = {
-                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } })
+                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             model3d.handleSceneLoaded().catch(() => {
@@ -615,14 +615,14 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
         });
 
-        it('should still advance the promise chain for ui setup after failed metadata load', (done) => {
+        it('should still advance the promise chain for ui setup after failed metadata load', done => {
             sandbox.stub(model3d, 'onMetadataError');
             const addUi = sandbox.stub(model3d.controls, 'addUi');
             const meta = {
-                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } })
+                get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } }),
             };
             model3d.boxSdk = {
-                getMetadataClient: () => meta
+                getMetadataClient: () => meta,
             };
 
             model3d.handleSceneLoaded().catch(() => {

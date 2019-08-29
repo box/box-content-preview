@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import DocumentViewer from '../DocumentViewer';
+import Api from '../../../api';
 import AutoCADViewer from '../AutoCADViewer';
-import metadataAPI from '../../../metadataAPI';
 import { METADATA } from '../../../constants';
 import { MISSING_EXTERNAL_REFS } from '../../../events';
 
@@ -16,25 +16,27 @@ let stubs = {};
 describe('lib/viewers/doc/AutoCADViewer', () => {
     beforeEach(() => {
         containerEl = document.querySelector('.container');
+        stubs.api = new Api();
         autocad = new AutoCADViewer({
+            api: stubs.api,
             container: containerEl,
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
 
-        stubs.getXrefsMetadata = sandbox.stub(metadataAPI, 'getXrefsMetadata');
+        stubs.getXrefsMetadata = sandbox.stub(stubs.api.metadata, 'getXrefsMetadata');
         stubs.showNotification = sandbox.stub();
         stubs.emitMetric = sandbox.stub(autocad, 'emitMetric');
 
         autocad.options = {
             file: {
                 id: '123',
-                extension: EXTENSION
+                extension: EXTENSION,
             },
             ui: {
-                showNotification: stubs.showNotification
-            }
+                showNotification: stubs.showNotification,
+            },
         };
     });
 

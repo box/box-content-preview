@@ -21,24 +21,24 @@ describe('lib/viewers/doc/DocLoader', () => {
                         {
                             representation: 'pdf',
                             status: {
-                                state: 'success'
-                            }
+                                state: 'success',
+                            },
                         },
                         {
                             representation: 'ORIGINAL',
                             status: {
-                                state: 'success'
-                            }
-                        }
-                    ]
-                }
+                                state: 'success',
+                            },
+                        },
+                    ],
+                },
             };
 
             viewer = {
                 NAME: 'Document',
                 CONSTRUCTOR: DocumentViewer,
                 REP: 'pdf',
-                EXT: ['docx']
+                EXT: ['docx'],
             };
         });
 

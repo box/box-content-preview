@@ -23,9 +23,9 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         containerEl = document.querySelector('.container');
         error = new PreviewErrorViewer({
             file: {
-                id: '1'
+                id: '1',
             },
-            container: containerEl
+            container: containerEl,
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         error.containerEl = containerEl;
@@ -55,7 +55,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
     });
 
     describe('load()', () => {
-        [['zip', true], ['tgz', true], ['flv', true], ['blah', false]].forEach((testCase) => {
+        [['zip', true], ['tgz', true], ['flv', true], ['blah', false]].forEach(testCase => {
             it('should set appropriate icon', () => {
                 const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
                 const getIconFromNameStub = sandbox.stub(icons, 'getIconFromName');
@@ -79,7 +79,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             const err = new PreviewError('some_error_code', '', {
                 linkText: 'test',
-                linkUrl: 'someUrl'
+                linkUrl: 'someUrl',
             });
 
             error.load(err);
@@ -97,7 +97,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             expect(error.addDownloadButton).to.be.called;
         });
 
-        it('should not add download button if file can\'t be downloaded', () => {
+        it("should not add download button if file can't be downloaded", () => {
             sandbox.stub(error, 'addDownloadButton');
             sandbox.stub(file, 'canDownload').returns(false);
 
@@ -128,7 +128,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             error.load(err);
 
             expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
-                error: 'this is bad'
+                error: 'this is bad',
             });
         });
 
@@ -139,7 +139,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             error.load(err);
 
             expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
-                error: 'display message!'
+                error: 'display message!',
             });
         });
 
@@ -149,14 +149,14 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 'some_code',
                 'display',
                 {},
-                'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"'
+                'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"',
             );
 
             error.load(err);
 
             expect(error.emit).to.be.calledWith(VIEWER_EVENT.load, {
                 error:
-                    'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"'
+                    'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"',
             });
         });
     });

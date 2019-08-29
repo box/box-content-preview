@@ -124,7 +124,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         const urlBase = this.createContentUrlWithAuthParams(template, asset);
         const urls = [];
-        for (let pageNum = 1; pageNum <= this.pagesCount; pageNum++) {
+        for (let pageNum = 1; pageNum <= this.pagesCount; pageNum += 1) {
             urls.push(urlBase.replace('{page}', pageNum));
         }
 
@@ -155,7 +155,7 @@ class MultiImageViewer extends ImageBaseViewer {
     setOriginalImageSize() {
         const promises = [];
 
-        this.singleImageEls.forEach((imageEl) => {
+        this.singleImageEls.forEach(imageEl => {
             promises.push(super.setOriginalImageSize(imageEl));
         });
 
@@ -255,7 +255,7 @@ class MultiImageViewer extends ImageBaseViewer {
             __('enter_fullscreen'),
             this.toggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
@@ -357,7 +357,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.pageControls.updateCurrentPage(pageNumber);
 
         this.emit('pagefocus', {
-            pageNumber
+            pageNumber,
         });
     }
 
@@ -397,7 +397,7 @@ class MultiImageViewer extends ImageBaseViewer {
             this.currentPageNumber,
             this.previousScrollTop,
             this.singleImageEls[this.currentPageNumber - 1],
-            this.wrapperEl
+            this.wrapperEl,
         );
 
         this.updateCurrentPage(pageChange);

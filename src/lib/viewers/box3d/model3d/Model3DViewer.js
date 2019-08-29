@@ -13,7 +13,7 @@ import {
     EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
-    RENDER_MODE_LIT
+    RENDER_MODE_LIT,
 } from './model3DConstants';
 import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3DConstants';
 import './Model3D.scss';
@@ -34,7 +34,7 @@ class Model3DViewer extends Box3DViewer {
     /** @property {Object} - Tracks up and forward axes for the model alignment in the scene */
     axes = {
         up: null,
-        forward: null
+        forward: null,
     };
 
     /** @inheritdoc */
@@ -76,7 +76,7 @@ class Model3DViewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = new Model3DControls(this.wrapperEl);
-        this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk);
+        this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }
 
     /**
@@ -165,7 +165,7 @@ class Model3DViewer extends Box3DViewer {
         return this.boxSdk
             .getMetadataClient()
             .get(this.options.file.id, 'global', 'box3d')
-            .then((response) => {
+            .then(response => {
                 // Treat non-200 responses as errors.
                 if (response.status !== 200) {
                     throw new Error(`Received unsuccessful response status: ${response.status}`);
@@ -174,7 +174,7 @@ class Model3DViewer extends Box3DViewer {
                 return response.response;
             })
             .catch(this.onMetadataError)
-            .then((defaults) => {
+            .then(defaults => {
                 if (this.controls) {
                     this.controls.addUi();
                 }
@@ -239,7 +239,7 @@ class Model3DViewer extends Box3DViewer {
         if (animations.length > 0) {
             const clipIds = animations[0].getClipIds();
 
-            clipIds.forEach((clipId) => {
+            clipIds.forEach(clipId => {
                 const clip = animations[0].getClip(clipId);
                 const duration = clip.stop - clip.start;
                 this.controls.addAnimationClip(clipId, clip.name, duration);

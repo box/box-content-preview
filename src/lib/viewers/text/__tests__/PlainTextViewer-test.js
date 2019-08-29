@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import Browser from '../../../Browser';
 import PlainTextViewer from '../PlainTextViewer';
 import BaseViewer from '../../BaseViewer';
@@ -10,6 +10,7 @@ import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../const
 import { VIEWER_EVENT } from '../../../events';
 
 const sandbox = sinon.sandbox.create();
+const stubs = {};
 let containerEl;
 let text;
 let rootEl;
@@ -25,19 +26,21 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         fixture.load('viewers/text/__tests__/PlainTextViewer-test.html');
         containerEl = document.querySelector('.container');
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
+        stubs.api = new Api();
         text = new PlainTextViewer({
+            api: stubs.api,
             file: {
                 id: 0,
                 permissions: {
-                    can_download: true
-                }
+                    can_download: true,
+                },
             },
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'foo'
-                }
-            }
+                    url_template: 'foo',
+                },
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -62,9 +65,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should set up proper text elements and initialize print', () => {
             text = new PlainTextViewer({
                 file: {
-                    id: 0
+                    id: 0,
                 },
-                container: containerEl
+                container: containerEl,
             });
             sandbox.stub(text, 'initPrint');
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -136,7 +139,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(contentUrl);
             sandbox.stub(text, 'isRepresentationReady').returns(true);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .withArgs(contentUrl, { type: 'document' });
 
@@ -146,7 +149,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should not prefetch content if content is true but representation is not ready', () => {
             sandbox.stub(text, 'isRepresentationReady').returns(false);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
             text.prefetch({ assets: false, content: true });
@@ -167,14 +170,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.printReady = false;
             text.printPopup = {
                 show: sandbox.stub(),
-                disableButton: sandbox.stub()
+                disableButton: sandbox.stub(),
             };
 
             text.print();
 
             expect(text.preparePrint).to.be.calledWith([
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
-                'preview.css'
+                'preview.css',
             ]);
             expect(text.printPopup.show).to.be.called;
             expect(text.printPopup.disableButton).to.be.called;
@@ -187,13 +190,13 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const getPromise = Promise.resolve('');
             text.options.file.size = 196608 - 1; // 192KB - 1
 
-            sandbox.stub(api, 'get').returns(getPromise);
+            sandbox.stub(stubs.api, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(urlWithAccessToken);
             text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
-                expect(api.get).to.be.calledWith(urlWithAccessToken, { headers: {}, type: 'text' });
+                expect(stubs.api.get).to.be.calledWith(urlWithAccessToken, { headers: {}, type: 'text' });
             });
         });
 
@@ -203,21 +206,21 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             const headersWithRange = { Range: 'bytes=0-196608' };
             text.options.file.size = 196608 + 1; // 192KB + 1
 
-            sandbox.stub(api, 'get').returns(getPromise);
+            sandbox.stub(stubs.api, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(url);
 
             text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.true;
-                expect(api.get).to.be.calledWith(url, { headers: headersWithRange, type: 'text' });
+                expect(stubs.api.get).to.be.calledWith(url, { headers: headersWithRange, type: 'text' });
             });
         });
 
         it('should append dots to text if truncated', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(api, 'get').returns(getPromise);
+            sandbox.stub(stubs.api, 'get').returns(getPromise);
             sandbox.stub(text, 'finishLoading');
             text.options.file.size = 196608 + 1; // 192KB + 1;
 
@@ -231,7 +234,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should call initHighlightJs if file has code extension', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(api, 'get').returns(getPromise);
+            sandbox.stub(stubs.api, 'get').returns(getPromise);
             sandbox.stub(text, 'initHighlightJs');
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
@@ -245,7 +248,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         it('should invoke startLoadTimer()', () => {
             sandbox.stub(text, 'startLoadTimer');
-            sandbox.stub(api, 'get').returns(Promise.resolve(''));
+            sandbox.stub(stubs.api, 'get').returns(Promise.resolve(''));
 
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
@@ -259,7 +262,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         it('should handle a download error', () => {
             const getPromise = Promise.reject();
-            sandbox.stub(api, 'get').returns(getPromise);
+            sandbox.stub(stubs.api, 'get').returns(getPromise);
             sandbox.stub(text, 'handleDownloadError');
 
             const promise = text.postLoad();
@@ -286,8 +289,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(Worker.prototype, 'postMessage', {
                 value: sandbox.mock().withArgs({
                     highlightSrc: hljs,
-                    text: someText
-                })
+                    text: someText,
+                }),
             });
 
             text.initHighlightJs(someText);
@@ -301,9 +304,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         beforeEach(() => {
             text = new PlainTextViewer({
                 file: {
-                    id: 0
+                    id: 0,
                 },
-                container: containerEl
+                container: containerEl,
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
             text.containerEl = containerEl;
@@ -343,9 +346,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: appendStub
-                    }
-                }
+                        appendChild: appendStub,
+                    },
+                },
             });
             text.options.location = 'en-US';
             sandbox.stub(window, 'setTimeout');
@@ -363,9 +366,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             sandbox.stub(util, 'openContentInsideIframe').returns({
                 contentDocument: {
                     head: {
-                        appendChild: sandbox.stub()
-                    }
-                }
+                        appendChild: sandbox.stub(),
+                    },
+                },
             });
 
             text.initPrint();
@@ -387,8 +390,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.printframe = {
                 contentWindow: {
                     focus: sandbox.stub(),
-                    print: sandbox.stub()
-                }
+                    print: sandbox.stub(),
+                },
             };
             sandbox.stub(Browser, 'getName').returns('NotExplorer');
 
@@ -441,7 +444,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should set up download button and bind click handler', () => {
             const bindDownload = sandbox.stub();
             text.download = {
-                bind: sandbox.stub().returns(bindDownload)
+                bind: sandbox.stub().returns(bindDownload),
             };
 
             text.showTruncatedDownloadButton();

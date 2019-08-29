@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import * as ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
 import BoxCSV from '../BoxCSV';
 
 const sandbox = sinon.sandbox.create();
@@ -26,20 +26,6 @@ describe('lib/viewers/text/BoxCSV', () => {
         csvComponent = null;
     });
 
-    describe('destroy()', () => {
-        it('should unmount the component', () => {
-            csvComponent.gridComponent = {};
-            sandbox.stub(ReactDOM, 'unmountComponentAtNode');
-
-            csvComponent.destroy();
-
-            expect(ReactDOM.unmountComponentAtNode).to.be.called;
-
-            // Don't destroy again
-            csvComponent = null;
-        });
-    });
-
     describe('getRowClassName()', () => {
         it('should return appropriate classname for row', () => {
             expect(csvComponent.getRowClassName(1)).to.equal('bp-text-csv-odd-row');
@@ -56,7 +42,7 @@ describe('lib/viewers/text/BoxCSV', () => {
                 columnIndex: 1,
                 key: 'key',
                 rowIndex: 2,
-                style: 'style'
+                style: 'style',
             });
 
             expect(cell.props.className).to.equal('rowClass bp-text-csv-cell');
@@ -78,6 +64,15 @@ describe('lib/viewers/text/BoxCSV', () => {
             expect(gridComponent.props.columnCount).to.equal(2);
             expect(gridComponent.props.rowCount).to.equal(3);
             expect(renderStub).to.be.calledWith(gridComponent, csvComponent.csvEl);
+        });
+
+        it('should base its column count on the longest available row', () => {
+            const renderStub = sandbox.stub(ReactDOM, 'render');
+            csvComponent.data = [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4], [1, 2]];
+            csvComponent.renderCSV();
+
+            const gridComponent = renderStub.firstCall.args[0];
+            expect(gridComponent.props.columnCount).to.equal(4);
         });
     });
 });

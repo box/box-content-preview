@@ -1,104 +1,68 @@
 const path = require('path');
-const pkg = require('../package.json');
-const webpack = require('webpack');
 const I18nPlugin = require('i18n-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const { DefinePlugin } = webpack;
-const NormalPlugin = webpack.NormalModuleReplacementPlugin;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
+const license = require('./license');
+const pkg = require('../package.json');
 
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-module.exports = (language) => {
+module.exports = language => {
     const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
     return {
         bail: true,
-        resolve: {
-            modules: ['src', 'node_modules']
-        },
-        resolveLoader: {
-            modules: [path.resolve('src'), path.resolve('node_modules')]
-        },
         module: {
             rules: [
                 {
                     test: /\.js$/,
-                    use: 'babel-loader',
-                    exclude: [
-                        path.resolve('src/third-party'),
-                        path.resolve('node_modules')
-                    ]
+                    loader: 'babel-loader',
+                    include: [path.resolve('src/lib')],
                 },
                 {
                     test: /\.s?css$/,
-                    loader: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: [
-                            {
-                                loader: 'css-loader',
-                                options: {
-                                    importLoaders: 1
-                                }
-                            },
-                            {
-                                loader: 'postcss-loader'
-                            },
-                            {
-                                loader: 'sass-loader'
-                            }
-                        ]
-                    }),
-                    exclude: [
-                        path.resolve('src/third-party'),
-                        path.resolve('^(?!node_modules/box-annotations).*')
-                    ]
+                    use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+                    include: [path.resolve('src/lib'), path.resolve('node_modules/box-annotations')],
                 },
                 {
                     test: /\.(svg|html)$/,
                     loader: 'raw-loader',
-                    exclude: [
-                        path.resolve('src/third-party'),
-                        path.resolve('node_modules')
-                    ]
+                    include: [path.resolve('src/lib')],
                 },
                 {
                     test: /\.(jpe?g|png|gif|woff2|woff)$/,
                     loader: 'file-loader',
+                    include: [path.resolve('src/lib')],
                     options: {
-                        name: '[name].[ext]'
+                        name: '[name].[ext]',
                     },
-                    exclude: [
-                        path.resolve('src/third-party'),
-                        path.resolve('node_modules')
-                    ]
-                }
-            ]
+                },
+            ],
         },
         plugins: [
-            new ExtractTextPlugin({
-                filename: '[name].css',
-                allChunks: true
-            }),
-            new I18nPlugin(langJson),
+            new BannerPlugin(license),
             new DefinePlugin({
                 __NAME__: JSON.stringify(pkg.name),
                 __VERSION__: JSON.stringify(pkg.version),
                 'process.env': {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                    BABEL_ENV: JSON.stringify(process.env.BABEL_ENV)
-                }
+                    BABEL_ENV: JSON.stringify(process.env.BABEL_ENV),
+                },
             }),
-            new NormalPlugin(/\/iconv-loader$/, 'node-noop')
+            new I18nPlugin(langJson),
+            new MiniCssExtractPlugin({
+                filename: '[name].css',
+            }),
+            new NormalModuleReplacementPlugin(/\/iconv-loader$/),
         ],
         stats: {
             assets: true,
+            children: false,
+            chunkModules: false,
+            chunks: false,
             colors: true,
-            version: false,
             hash: false,
             timings: true,
-            chunks: false,
-            chunkModules: false,
-            children: false
-        }
+            version: false,
+        },
     };
 };

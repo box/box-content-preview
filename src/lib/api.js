@@ -1,77 +1,115 @@
 import axios from 'axios';
+import DownloadReachability from './DownloadReachability';
+import MetadataAPI from './metadataAPI';
 
-const api = {
+/**
+ * Retrieves JSON from response.
+ *
+ * @private
+ * @param {Response} response - Response to parse
+ * @return {Promise|Response} Response if 204 or 202, otherwise promise that resolves with JSON
+ */
+const parseResponse = response => {
+    if (response.status === 204 || response.status === 202) {
+        return response;
+    }
+
+    return response.data;
+};
+
+/**
+ * Filter empty values from the http request options object
+ *
+ * @private
+ * @param {Object} options - The request options
+ * @return {Object} The cleaned request options
+ */
+const filterOptions = (options = {}) => {
+    const result = {};
+
+    Object.keys(options).forEach(key => {
+        if (options[key] !== undefined && options[key] !== null && options[key] !== '') {
+            result[key] = options[key];
+        }
+    });
+
+    return result;
+};
+
+/**
+ * Helper function to convert an http error to the format Preview expects
+ *
+ * @private
+ * @param {Object} response - Axios error response
+ * @throws {Error} - Throws when an error response object exists
+ * @return {void}
+ */
+const handleError = ({ response }) => {
+    if (response) {
+        const error = new Error(response.statusText);
+        error.response = response; // Need to pass response through so we can see what kind of HTTP error this was
+        throw error;
+    }
+};
+
+/**
+ * Pass through transformer if the response type is text
+ * @param {Object} data
+ * @return {Object}
+ */
+const transformTextResponse = data => data;
+
+export default class Api {
     /**
-     * Filter empty values from the Axios request options object
+     * [constructor]
      *
-     * @private
-     * @param {Object} options - The request options
-     * @return {Object} The cleaned request options
+     * @return {Api} Instance of the API
      */
-    filterOptions(options = {}) {
-        const result = {};
-
-        Object.keys(options).forEach((key) => {
-            if (options[key] !== undefined && options[key] !== null && options[key] !== '') {
-                result[key] = options[key];
-            }
-        });
-
-        return result;
-    },
+    constructor() {
+        this.client = axios.create();
+        this.metadata = new MetadataAPI(this);
+        this.reachability = new DownloadReachability(this);
+    }
 
     /**
-     * Helper function to convert an Axios error to the format Preview expects
-     *
-     * @private
-     * @param {Object} response - Axios error response
-     * @throws {Error} - Throws when an error response object exists
+     * Adds a function that intercepts an http response
+
+     * @public
+     * @param {Function} responseInterceptor - Function that gets called on each response
      * @return {void}
      */
-    handleError({ response }) {
-        if (response) {
-            const error = new Error(response.statusText);
-            error.response = response; // Need to pass response through so we can see what kind of HTTP error this was
-            throw error;
+    addResponseInterceptor(responseInterceptor) {
+        if (typeof responseInterceptor === 'function') {
+            this.client.interceptors.response.use(responseInterceptor);
         }
-    },
+    }
 
     /**
-     * Retrieves JSON from response.
-     *
-     * @private
-     * @param {Response} response - Response to parse
-     * @return {Promise|Response} Response if 204 or 202, otherwise promise that resolves with JSON
+     * Adds a function that intercepts an http request
+     * @public
+     * @param {Function} requestInterceptor - function that gets called on each request
+     * @return {void}
+
      */
-    parseResponse: (response) => {
-        if (response.status === 204 || response.status === 202) {
-            return response;
+    addRequestInterceptor(requestInterceptor) {
+        if (typeof requestInterceptor === 'function') {
+            this.client.interceptors.request.use(requestInterceptor);
         }
-
-        return response.data;
-    },
-
-    transformTextResponse: (data) => data,
+    }
 
     /**
-     * Wrapper function for XHR post put and delete
+     * Ejects all interceptors
+     * @public
      *
-     * @private
-     * @param {string} url - The URL for XHR
-     * @param {Object} options - The request options
-     * @return {Promise} - XHR promise
+     * @return {void}
      */
-    xhr(url, options = {}) {
-        let transformResponse;
-
-        if (options.responseType === 'text') {
-            transformResponse = api.transformTextResponse;
-        }
-
-        return axios(url, api.filterOptions({ transformResponse, ...options }))
-            .then(api.parseResponse)
-            .catch(api.handleError);
-    },
+    ejectInterceptors() {
+        ['response', 'request'].forEach(interceptorType => {
+            this.client.interceptors[interceptorType].handlers.forEach((interceptor, index) => {
+                this.client.interceptors[interceptorType].eject(index);
+            });
+        });
+    }
 
     /**
      * HTTP GETs a URL
@@ -82,8 +120,8 @@ const api = {
      * @return {Promise} - HTTP response
      */
     get(url, { type: responseType = 'json', ...options } = {}) {
-        return api.xhr(url, { method: 'get', responseType, ...options });
-    },
+        return this.xhr(url, { method: 'get', responseType, ...options });
+    }
 
     /**
      * HTTP HEAD a URL
@@ -94,8 +132,8 @@ const api = {
      * @return {Promise} HTTP response
      */
     head(url, options = {}) {
-        return api.xhr(url, { method: 'head', ...options });
-    },
+        return this.xhr(url, { method: 'head', ...options });
+    }
 
     /**
      * HTTP POSTs a URL with JSON data
@@ -107,8 +145,8 @@ const api = {
      * @return {Promise} HTTP response
      */
     post(url, data, options = {}) {
-        return api.xhr(url, { method: 'post', data, ...options });
-    },
+        return this.xhr(url, { method: 'post', data, ...options });
+    }
 
     /**
      * HTTP DELETEs a URL with JSON data
@@ -120,8 +158,8 @@ const api = {
      * @return {Promise} HTTP response
      */
     delete(url, data, options = {}) {
-        return api.xhr(url, { method: 'delete', data, ...options });
-    },
+        return this.xhr(url, { method: 'delete', data, ...options });
+    }
 
     /**
      * HTTP PUTs a url with JSON data
@@ -133,8 +171,30 @@ const api = {
      * @return {Promise} HTTP response
      */
     put(url, data, options = {}) {
-        return api.xhr(url, { method: 'put', data, ...options });
+        return this.xhr(url, { method: 'put', data, ...options });
     }
-};
 
-export default api;
+    /**
+     * Wrapper function for XHR post put and delete
+     *
+     * @private
+     * @param {string} url - The URL for XHR
+     * @param {Object} options - The request options
+     * @return {Promise} - XHR promise
+     */
+    xhr(url, options = {}) {
+        if (!(this instanceof Api)) {
+            return Promise.reject(new SyntaxError('Invalid invocation'));
+        }
+
+        let transformResponse;
+
+        if (options.responseType === 'text') {
+            transformResponse = transformTextResponse;
+        }
+
+        return this.client(url, filterOptions({ transformResponse, ...options }))
+            .then(parseResponse)
+            .catch(handleError);
+    }
+}

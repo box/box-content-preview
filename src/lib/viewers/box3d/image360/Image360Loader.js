@@ -26,9 +26,9 @@ const VIEWERS = [
             'svs',
             'tga',
             'tif',
-            'tiff'
-        ]
-    }
+            'tiff',
+        ],
+    },
 ];
 
 class Image360Loader extends Base360Loader {

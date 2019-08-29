@@ -1,5 +1,4 @@
 import throttle from 'lodash/throttle';
-import api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -25,7 +24,7 @@ import {
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     QUERY_PARAM_ENCODING,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
@@ -35,7 +34,7 @@ import {
     ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
-    ICON_THUMBNAILS_TOGGLE
+    ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
@@ -50,25 +49,28 @@ const MAX_SCALE = 10.0;
 const MIN_PINCH_SCALE_DELTA = 0.01;
 const MIN_PINCH_SCALE_VALUE = 0.25;
 const MIN_SCALE = 0.1;
-const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
-const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
-const PAGES_UNIT_NAME = 'pages';
-const PINCH_PAGE_CLASS = 'pinch-page';
-const PINCHING_CLASS = 'pinching';
-const PRINT_DIALOG_TIMEOUT_MS = 500;
-const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
-const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
-const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
-const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
-const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
-const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
-// List of metrics to be emitted only once per session
 const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
-    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PAGES_UNIT_NAME = 'pages';
+const PDFJS_TEXT_LAYER_MODE = {
+    DISABLE: 0, // Should match TextLayerMode enum in pdf_viewer.js
+    ENABLE: 1,
+    ENABLE_ENHANCE: 2,
+};
+const PINCH_PAGE_CLASS = 'pinch-page';
+const PINCHING_CLASS = 'pinching';
+const PRINT_DIALOG_TIMEOUT_MS = 500;
+const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
+const RANGE_CHUNK_SIZE_US = 1048576; // 1MB
+const RANGE_REQUEST_MINIMUM_SIZE = 26214400; // 25MB
+const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
+const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
+const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -83,23 +85,23 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
-
         // Bind context for callbacks
+        this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
-        this.print = this.print.bind(this);
-        this.setPage = this.setPage.bind(this);
-        this.zoomIn = this.zoomIn.bind(this);
-        this.zoomOut = this.zoomOut.bind(this);
+        this.handleFindBarClose = this.handleFindBarClose.bind(this);
+        this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
+        this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
-        this.pagechangeHandler = this.pagechangeHandler.bind(this);
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
-        this.throttledScrollHandler = this.getScrollHandler().bind(this);
-        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
-        this.emitMetric = this.emitMetric.bind(this);
+        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.print = this.print.bind(this);
+        this.setPage = this.setPage.bind(this);
+        this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
-        this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
     }
 
     /**
@@ -152,6 +154,7 @@ class DocBaseViewer extends BaseViewer {
      */
     destroy() {
         this.unbindDOMListeners();
+        this.unbindEventBusListeners();
 
         // Clean up print blob
         this.printBlob = null;
@@ -171,7 +174,6 @@ class DocBaseViewer extends BaseViewer {
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
-            this.findBar.removeListener(VIEWER_EVENT.metric, this.emitMetric);
         }
 
         // Clean up PDF network requests
@@ -209,6 +211,31 @@ class DocBaseViewer extends BaseViewer {
         }
 
         super.destroy();
+    }
+
+    /**
+     * Unbinds all events on the internal PDFJS event bus
+     *
+     * @private
+     * @return {void}
+     */
+    unbindEventBusListeners() {
+        if (!this.pdfEventBus) {
+            return;
+        }
+
+        const eventBusListeners = this.pdfEventBus._listeners || {};
+
+        // EventBus does not have a destroy method, so iterate over and remove all subscribed event handlers
+        Object.keys(eventBusListeners).forEach(eventName => {
+            const eventListeners = eventBusListeners[eventName];
+
+            if (Array.isArray(eventListeners)) {
+                eventListeners.forEach(eventListener => {
+                    this.pdfEventBus.off(eventName, eventListener);
+                });
+            }
+        });
     }
 
     /**
@@ -263,13 +290,13 @@ class DocBaseViewer extends BaseViewer {
                 const { url_template: template } = preloadRep.content;
 
                 // Prefetch as blob since preload needs to load image as a blob
-                api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
             }
         }
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
     }
 
@@ -343,36 +370,16 @@ class DocBaseViewer extends BaseViewer {
     handleAssetAndRepLoad() {
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
-        this.initPrint();
         this.initFind();
+        this.initPrint();
 
         super.handleAssetAndRepLoad();
     }
 
-    /**
-     * Initializes the Find Bar and Find Controller
-     *
-     * @return {void}
-     */
-    initFind() {
-        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
-        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
-
-        /* global PDFJS */
-        this.findController = new PDFJS.PDFFindController({
-            pdfViewer: this.pdfViewer
-        });
-        this.pdfViewer.setFindController(this.findController);
-
-        // Only initialize the find bar if the user has download permissions on
-        // the file. Users without download permissions shouldn't be able to
-        // interact with the text layer
-        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (this.getViewerOption('disableFindBar')) {
-            return;
+    handleFindBarClose() {
+        if (this.docEl) {
+            this.docEl.focus(); // Prevent focus from transferring to the root document element
         }
-        this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
-        this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
     }
 
     /**
@@ -525,7 +532,7 @@ class DocBaseViewer extends BaseViewer {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: true,
-                canZoomIn: newScale < MAX_SCALE
+                canZoomIn: newScale < MAX_SCALE,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
@@ -550,7 +557,7 @@ class DocBaseViewer extends BaseViewer {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: newScale > MIN_SCALE,
-                canZoomIn: true
+                canZoomIn: true,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
@@ -608,60 +615,88 @@ class DocBaseViewer extends BaseViewer {
      *
      * @protected
      * @param {string} pdfUrl - The URL of the PDF to load
-     * @return {Promise} Promise to initialize Viewer
+     * @return {Promise} Promise to initialize viewer (used for testing)
      */
     initViewer(pdfUrl) {
         this.bindDOMListeners();
+        this.startLoadTimer();
+
+        this.pdfEventBus = new this.pdfjsViewer.EventBus();
+        this.pdfEventBus.on('pagechanging', this.pagechangingHandler);
+        this.pdfEventBus.on('pagerendered', this.pagerenderedHandler);
+        this.pdfEventBus.on('pagesinit', this.pagesinitHandler);
+
+        this.pdfLinkService = new this.pdfjsViewer.PDFLinkService({
+            eventBus: this.pdfEventBus,
+            externalLinkRel: 'noopener noreferrer nofollow', // Prevent referrer hijacking
+            externalLinkTarget: this.pdfjsLib.LinkTarget.BLANK, // Open links in new tab
+        });
+
+        this.pdfFindController = new this.pdfjsViewer.PDFFindController({
+            eventBus: this.pdfEventBus,
+            linkService: this.pdfLinkService,
+        });
 
         // Initialize pdf.js in container
         this.pdfViewer = this.initPdfViewer();
+        this.pdfLinkService.setViewer(this.pdfViewer);
 
-        // Use chunk size set in viewer options if available
-        let rangeChunkSize = this.getViewerOption('rangeChunkSize');
+        const { file, location } = this.options;
+        const { size, watermark_info: watermarkInfo } = file;
+        const assetUrlCreator = createAssetUrlCreator(location);
+        const httpHeaders = {};
+        const queryParams = {};
 
-        // If range requests are disabled, request the gzip compressed version of the representation
-        this.encoding = PDFJS.disableRange ? ENCODING_TYPES.GZIP : undefined;
+        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
+        // not applicable to Box's use case and disabling causes performance issues
+        const disableCreateObjectURL = false;
 
-        // Otherwise, use large chunk size if locale is en-US and the default,
-        // smaller chunk size if not. This is using a rough assumption that
-        // en-US users have higher bandwidth to Box.
-        if (!rangeChunkSize) {
-            rangeChunkSize =
-                this.options.location.locale === 'en-US'
-                    ? RANGE_REQUEST_CHUNK_SIZE_US
-                    : RANGE_REQUEST_CHUNK_SIZE_NON_US;
-        }
+        // Disable font faces on IOS 10.3.X
+        const disableFontFace = Browser.hasFontIssue();
 
-        let url = pdfUrl;
+        // Disable streaming via fetch until performance is improved
+        const disableStream = true;
 
-        // Apply encoding request to the content request
-        if (this.encoding) {
-            url = appendQueryParams(url, {
-                [QUERY_PARAM_ENCODING]: this.encoding
-            });
-        }
+        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
+        // previews outside of the US since the additional latency overhead per range request can be
+        // more than the additional time for a continuous request.
+        const isRangeSupported = location.locale !== 'en-US' && size > RANGE_REQUEST_MINIMUM_SIZE;
+        const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
+        const disableRange = isWatermarked || !isRangeSupported;
 
-        const docInitParams = {
-            url,
-            rangeChunkSize
-        };
+        // Use larger chunk sizes because we assume that en-US users have better connections to Box's servers
+        const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
+        const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
 
         // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
         // see: https://bugs.webkit.org/show_bug.cgi?id=82672
         if (Browser.isIOS()) {
-            docInitParams.httpHeaders = {
-                'If-None-Match': 'webkit-no-cache'
-            };
+            httpHeaders['If-None-Match'] = 'webkit-no-cache';
         }
 
-        // Start timing document load
-        this.startLoadTimer();
+        // If range requests are disabled, request the gzip compressed version of the representation
+        this.encoding = disableRange ? ENCODING_TYPES.GZIP : undefined;
 
-        // Load PDF from representation URL and set as document for pdf.js. Cache
-        // the loading task so we can cancel if needed
-        this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
-        return this.pdfLoadingTask
-            .then((doc) => {
+        if (this.encoding) {
+            queryParams[QUERY_PARAM_ENCODING] = this.encoding;
+        }
+
+        // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
+        this.pdfLoadingTask = this.pdfjsLib.getDocument({
+            cMapPacked: true,
+            cMapUrl: assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`),
+            disableCreateObjectURL,
+            disableFontFace,
+            disableRange,
+            disableStream,
+            httpHeaders,
+            rangeChunkSize,
+            url: appendQueryParams(pdfUrl, queryParams),
+        });
+
+        return this.pdfLoadingTask.promise
+            .then(doc => {
+                this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
 
                 if (this.shouldThumbnailsBeToggled()) {
@@ -669,16 +704,9 @@ class DocBaseViewer extends BaseViewer {
                     this.emit(VIEWER_EVENT.thumbnailsOpen);
                     this.resize();
                 }
-
-                const { linkService } = this.pdfViewer;
-                if (linkService instanceof PDFJS.PDFLinkService) {
-                    linkService.setDocument(doc, pdfUrl);
-                    linkService.setViewer(this.pdfViewer);
-                }
             })
-            .catch((err) => {
-                // eslint-disable-next-line
-                console.error(err);
+            .catch(err => {
+                console.error(err); // eslint-disable-line
 
                 // pdf.js gives us the status code in their error message
                 const { status, message } = err;
@@ -687,30 +715,72 @@ class DocBaseViewer extends BaseViewer {
                 const error =
                     status === 202
                         ? new PreviewError(
-                            ERROR_CODE.DELETED_REPS,
-                            __('error_refresh'),
-                            { isRepDeleted: true },
-                            message
-                        )
+                              ERROR_CODE.DELETED_REPS,
+                              __('error_refresh'),
+                              { isRepDeleted: true },
+                              message,
+                          )
                         : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
                 this.handleDownloadError(error, pdfUrl);
             });
     }
 
     /**
-     * Initialize pdf.js viewer.
+     * Initialize the pdf.js viewer.
      *
      * @protected
-     * @override
-     * @return {PDFJS.PDFViewer} PDF viewer type
+     * @return {pdfjsViewer.PDFViewer} PDF viewer type
      */
     initPdfViewer() {
-        return new PDFJS.PDFViewer({
+        return this.initPdfViewerClass(this.pdfjsViewer.PDFViewer);
+    }
+
+    /**
+     * Initialize the inner pdf.js viewer class.
+     *
+     * @protected
+     * @param {Function} PdfViewerClass - the pdf viewer class (PDFViewer, PDFSinglePageViewer, etc.) to initailize
+     * @returns {*}
+     */
+    initPdfViewerClass(PdfViewerClass) {
+        const { file, location } = this.options;
+        const assetUrlCreator = createAssetUrlCreator(location);
+        const hasDownload = checkPermission(file, PERMISSION_DOWNLOAD);
+        const hasTextLayer = hasDownload && !this.getViewerOption('disableTextLayer');
+        const textLayerMode = this.isMobile ? PDFJS_TEXT_LAYER_MODE.ENABLE : PDFJS_TEXT_LAYER_MODE.ENABLE_ENHANCE;
+
+        return new PdfViewerClass({
             container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            eventBus: this.pdfEventBus,
+            findController: this.pdfFindController,
+            imageResourcesPath: assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`),
+            linkService: this.pdfLinkService,
+            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            textLayerMode: hasTextLayer ? textLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    /**
+     * Initializes the Find Bar
+     *
+     * @protected
+     * @return {void}
+     */
+    initFind() {
+        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        // Only initialize the find bar if the user has download permissions on
+        // the file. Users without download permissions shouldn't be able to
+        // interact with the text layer
+        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        if (!canDownload || this.getViewerOption('disableFindBar')) {
+            return;
+        }
+
+        this.findBar = new DocFindBar(this.findBarEl, this.pdfFindController, this.pdfEventBus, canDownload);
+        this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
+        this.findBar.addListener('close', this.handleFindBarClose);
     }
 
     /**
@@ -773,7 +843,7 @@ class DocBaseViewer extends BaseViewer {
         Timer.stop(tag);
         this.emitMetric({
             name: LOAD_METRIC.previewPreloadEvent,
-            data: time.elapsed
+            data: time.elapsed,
         });
         Timer.reset(tag);
     }
@@ -802,47 +872,15 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
-        // Set PDFJS worker & character maps
-        const { file, location } = this.options;
-        const { size, watermark_info: watermarkInfo } = file;
+        this.pdfjsLib = window.pdfjsLib;
+        this.pdfjsViewer = window.pdfjsViewer;
+
+        // Set pdf.js worker source location
+        const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
+        const workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
 
-        // Set pdf.js worker, image, and character map locations
-        PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
-        PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
-        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
-        PDFJS.cMapPacked = true;
-
-        // Open links in new tab
-        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
-
-        // Disable streaming via fetch until performance is improved
-        PDFJS.disableStream = true;
-
-        // Disable font faces on IOS 10.3.X
-        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
-
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
-        // previews outside of the US since the additional latency overhead per range request can be
-        // more than the additional time for a continuous request. This also overrides any range request
-        // disabling that may be set by pdf.js's compatibility checking since the browsers we support
-        // should all be able to properly handle range requests.
-        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
-
-        // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
-
-        // Disable text layer if user doesn't have download permissions
-        PDFJS.disableTextLayer =
-            !checkPermission(file, PERMISSION_DOWNLOAD) || !!this.getViewerOption('disableTextLayer');
-
-        // Decrease mobile canvas size to ~3MP (1920x1536)
-        PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
-
-        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
-        // not applicable to Box's use case and disabling causes performance issues
-        PDFJS.disableCreateObjectURL = false;
+        this.pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
     }
 
     /**
@@ -881,7 +919,7 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPageIds() {
         const pageEls = this.containerEl.querySelectorAll('.page');
-        [].forEach.call(pageEls, (pageEl) => {
+        [].forEach.call(pageEls, pageEl => {
             /* eslint-disable no-param-reassign */
             const { pageNumber } = pageEl.dataset;
             if (pageNumber) {
@@ -899,7 +937,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return api.get(pdfUrl, { type: 'blob' }).then((blob) => {
+        return this.api.get(pdfUrl, { type: 'blob' }).then(blob => {
             this.printBlob = blob;
         });
     }
@@ -985,16 +1023,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindDOMListeners() {
-        // When page structure is initialized, set default zoom, load controls,
-        // and broadcast that preview has loaded
-        this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
-
-        // When a page is rendered, update scale
-        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
-
-        // Update page number when page changes
-        this.docEl.addEventListener('pagechange', this.pagechangeHandler);
-
         // Detects scroll so an event can be fired
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
@@ -1013,9 +1041,6 @@ class DocBaseViewer extends BaseViewer {
      */
     unbindDOMListeners() {
         if (this.docEl) {
-            this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
-            this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
-            this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
 
             if (this.hasTouch) {
@@ -1038,7 +1063,7 @@ class DocBaseViewer extends BaseViewer {
                 __('toggle_thumbnails'),
                 this.toggleThumbnails,
                 'bp-toggle-thumbnails-icon',
-                ICON_THUMBNAILS_TOGGLE
+                ICON_THUMBNAILS_TOGGLE,
             );
         }
 
@@ -1051,7 +1076,7 @@ class DocBaseViewer extends BaseViewer {
             __('enter_fullscreen'),
             this.toggleFullscreen,
             'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN
+            ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
@@ -1083,7 +1108,7 @@ class DocBaseViewer extends BaseViewer {
                 encoding: this.encoding,
                 numPages: pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
-                scale: currentScale
+                scale: currentScale,
             });
 
             // Add page IDs to each page after page structure is available
@@ -1101,7 +1126,7 @@ class DocBaseViewer extends BaseViewer {
         this.thumbnailsSidebar.init({
             currentPage: this.pdfViewer.currentPageNumber,
             isOpen: this.shouldThumbnailsBeToggled(),
-            onSelect: this.onThumbnailSelectHandler
+            onSelect: this.onThumbnailSelectHandler,
         });
     }
 
@@ -1123,29 +1148,29 @@ class DocBaseViewer extends BaseViewer {
      * @param {Event} event - 'pagerendered' event
      * @return {void}
      */
-    pagerenderedHandler(event) {
-        const pageNumber = event.detail ? event.detail.pageNumber : undefined;
+    pagerenderedHandler({ pageNumber }) {
+        if (!pageNumber) {
+            return;
+        }
 
-        if (pageNumber) {
-            // Page rendered event
-            this.emit('pagerender', pageNumber);
+        // Page rendered event
+        this.emit('pagerender', pageNumber);
 
-            // Set scale to current numerical scale & rendered page number
-            this.emit('scale', {
-                scale: this.pdfViewer.currentScale,
-                pageNum: pageNumber
-            });
+        // Set scale to current numerical scale & rendered page number
+        this.emit('scale', {
+            scale: this.pdfViewer.currentScale,
+            pageNum: pageNumber,
+        });
 
-            // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
-            if (!this.somePageRendered) {
-                this.hidePreload();
-                this.emit(VIEWER_EVENT.progressEnd);
-                this.somePageRendered = true;
+        // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
+        if (!this.somePageRendered) {
+            this.hidePreload();
+            this.emit(VIEWER_EVENT.progressEnd);
+            this.somePageRendered = true;
 
-                if (this.options.enableThumbnailsSidebar) {
-                    this.initThumbnails();
-                    this.resize();
-                }
+            if (this.options.enableThumbnailsSidebar) {
+                this.initThumbnails();
+                this.resize();
             }
         }
     }
@@ -1157,7 +1182,7 @@ class DocBaseViewer extends BaseViewer {
      * @param {Event} event - Pagechange event
      * @return {void}
      */
-    pagechangeHandler(event) {
+    pagechangingHandler(event) {
         const { pageNumber } = event;
         this.pageControls.updateCurrentPage(pageNumber);
 
@@ -1204,18 +1229,21 @@ class DocBaseViewer extends BaseViewer {
             if (!this.scrollStarted) {
                 this.emit('scrollstart', {
                     scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
+                    scrollLeft: this.docEl.scrollLeft,
                 });
                 this.scrollStarted = true;
             }
 
-            this.scrollTimer = setTimeout(() => {
-                this.emit('scrollend', {
-                    scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
-                });
-                this.scrollStarted = false;
-            }, SCROLL_END_TIMEOUT);
+            this.scrollTimer = setTimeout(
+                () => {
+                    this.emit('scrollend', {
+                        scrollTop: this.docEl.scrollTop,
+                        scrollLeft: this.docEl.scrollLeft,
+                    });
+                    this.scrollStarted = false;
+                },
+                this.isMobile ? 500 : 250,
+            );
         }, SCROLL_EVENT_THROTTLE_INTERVAL);
     }
 
@@ -1241,18 +1269,18 @@ class DocBaseViewer extends BaseViewer {
             event.pageX && event.pageY
                 ? [event.pageX, event.pageY]
                 : getMidpoint(
-                    event.touches[0].pageX,
-                    event.touches[0].pageY,
-                    event.touches[1].pageX,
-                    event.touches[1].pageY
-                );
+                      event.touches[0].pageX,
+                      event.touches[0].pageY,
+                      event.touches[1].pageX,
+                      event.touches[1].pageY,
+                  );
 
         // Find the page closest to the pinch
         const visiblePages = this.pdfViewer._getVisiblePages();
         this.pinchPage = getClosestPageToPinch(
             this.docEl.scrollLeft + touchMidpoint[0],
             this.docEl.scrollTop + touchMidpoint[1],
-            visiblePages
+            visiblePages,
         );
 
         // Set the scale point based on the pinch midpoint and scroll offsets
@@ -1270,7 +1298,7 @@ class DocBaseViewer extends BaseViewer {
             event.touches[0].pageX,
             event.touches[0].pageY,
             event.touches[1].pageX,
-            event.touches[1].pageY
+            event.touches[1].pageY,
         );
     }
 
@@ -1289,11 +1317,11 @@ class DocBaseViewer extends BaseViewer {
         const scale = event.scale
             ? event.scale
             : getDistance(
-                event.touches[0].pageX,
-                event.touches[0].pageY,
-                event.touches[1].pageX,
-                event.touches[1].pageY
-            ) / this.originalDistance;
+                  event.touches[0].pageX,
+                  event.touches[0].pageY,
+                  event.touches[1].pageX,
+                  event.touches[1].pageY,
+              ) / this.originalDistance;
 
         const proposedNewScale = this.pdfViewer.currentScale * scale;
         if (
@@ -1341,7 +1369,7 @@ class DocBaseViewer extends BaseViewer {
         // Scroll to correct position after zoom
         this.docEl.scroll(
             this.scaledXOffset * this.pinchScale - this.originalXOffset,
-            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop
+            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop,
         );
 
         this.isPinching = false;

@@ -10,8 +10,8 @@ describe('lib/viewers/text/TextLoader', () => {
         TextLoader.viewers = [
             {
                 REP: 'ORIGINAL',
-                EXT: 'html'
-            }
+                EXT: 'html',
+            },
         ];
 
         stubFile = {
@@ -19,10 +19,10 @@ describe('lib/viewers/text/TextLoader', () => {
             representations: {
                 entries: [
                     {
-                        representation: 'ORIGINAL'
-                    }
-                ]
-            }
+                        representation: 'ORIGINAL',
+                    },
+                ],
+            },
         };
     });
 

@@ -105,8 +105,8 @@ export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pd
 
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in karma.conf.js, which is needed for tests
-export const DOC_STATIC_ASSETS_VERSION = '1.60.0';
-export const MEDIA_STATIC_ASSETS_VERSION = '1.33.0';
+export const DOC_STATIC_ASSETS_VERSION = '2.16.0';
+export const MEDIA_STATIC_ASSETS_VERSION = '2.14.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
@@ -119,7 +119,7 @@ export const FILE_OPTION_START = 'startAt';
 // Query parameter for requesting compressed representations
 export const QUERY_PARAM_ENCODING = 'encoding';
 export const ENCODING_TYPES = {
-    GZIP: 'gzip'
+    GZIP: 'gzip',
 };
 
 export const ANNOTATOR_EVENT = {
@@ -127,11 +127,11 @@ export const ANNOTATOR_EVENT = {
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
     error: 'annotationerror',
-    scale: 'scaleannotations'
+    scale: 'scaleannotations',
 };
 
 export const METADATA = {
     FIELD_HASXREFS: 'hasxrefs',
     SCOPE_GLOBAL: 'global',
-    TEMPLATE_AUTOCAD: 'autocad'
+    TEMPLATE_AUTOCAD: 'autocad',
 };

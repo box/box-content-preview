@@ -19,17 +19,20 @@ class DocFindBar extends EventEmitter {
      *
      * @param {string|HTMLElement} findBar - Find bar selector or element
      * @param {Object} findController - Document find controller to use
-     * @param {boolean} canDownload - Whether user can download document or not
+     * @param {Object} eventBus - Document event bus to use
      * @return {DocFindBar} DocFindBar instance
      */
-    constructor(findBar, findController, canDownload) {
+    constructor(findBar, findController, eventBus) {
         super();
 
         this.opened = false;
         this.bar = findBar;
+        this.eventBus = eventBus;
         this.findController = findController;
-        this.currentMatch = 0;
-        this.canDownload = canDownload;
+
+        if (this.eventBus === null) {
+            throw new Error('DocFindBar cannot be used without an EventBus instance.');
+        }
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
@@ -43,9 +46,9 @@ class DocFindBar extends EventEmitter {
         this.findPreviousHandler = this.findPreviousHandler.bind(this);
         this.close = this.close.bind(this);
 
-        // overriding some find controller methods to update match count
-        this.findController.updateUIState = this.updateUIState.bind(this);
-        this.findController.updateUIResultsCount = this.updateUIResultsCount.bind(this);
+        // attaching some listeners to update match count
+        this.eventBus.on('updatefindcontrolstate', this.updateUIState.bind(this));
+        this.eventBus.on('updatefindmatchescount', this.updateUIResultsCount.bind(this));
 
         // Default hides find bar on load
         this.bar.classList.add(CLASS_HIDDEN);
@@ -108,7 +111,7 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        this.currentMatch = 0;
+        this.removeAllListeners();
         this.unbindDOMListeners();
 
         if (this.bar && this.bar.parentNode) {
@@ -128,17 +131,18 @@ class DocFindBar extends EventEmitter {
             query: this.findFieldEl.value,
             phraseSearch: true, // true by default
             highlightAll: true, // true by default
-            findPrevious: findPrev
+            findPrevious: findPrev,
         });
     }
 
     /**
      * Update Find Bar UI to current match state
      *
-     * @param  {number} state FindState from PDFFindController
+     * @param {number} matchesCount - total number of matches from find controller
+     * @param {number} state - Find state from find controller
      * @return {void}
      */
-    updateUIState(state) {
+    updateUIState({ matchesCount, state }) {
         this.status = '';
 
         switch (state) {
@@ -159,21 +163,24 @@ class DocFindBar extends EventEmitter {
         }
 
         this.findFieldEl.setAttribute('data-status', this.status);
-        this.updateUIResultsCount();
+        this.updateUIResultsCount({ matchesCount });
     }
 
     /**
      * Update results count to current match count
      *
+     * @param {Object} matchesCount - matches from find controller
+     * @param {number} matchesCount.current - current match index
+     * @param {number} matchesCount.total - current total number of matches
      * @return {void}
      */
-    updateUIResultsCount() {
+    updateUIResultsCount({ matchesCount }) {
         if (!this.findResultsCountEl) {
             return; // no UI control is provided
         }
 
         // If there are no matches, hide the counter
-        if (!this.findController.matchCount) {
+        if (!matchesCount || !matchesCount.total) {
             this.findResultsCountEl.classList.add(CLASS_HIDDEN);
             return;
         }
@@ -183,7 +190,7 @@ class DocFindBar extends EventEmitter {
         this.findFieldEl.style.paddingRight = `${paddingRight}px`;
 
         // Create the match counter
-        this.findResultsCountEl.textContent = this.currentMatch + MATCH_SEPARATOR + this.findController.matchCount;
+        this.findResultsCountEl.textContent = `${matchesCount.current} ${MATCH_SEPARATOR} ${matchesCount.total}`;
 
         // Show the counter
         this.findResultsCountEl.classList.remove(CLASS_HIDDEN);
@@ -249,9 +256,7 @@ class DocFindBar extends EventEmitter {
             case 'meta+g':
             case 'control+g':
             case 'f3':
-                if (this.canDownload) {
-                    this.open();
-                }
+                this.open();
                 event.preventDefault();
                 break;
             default:
@@ -268,7 +273,6 @@ class DocFindBar extends EventEmitter {
      */
     findFieldHandler() {
         this.dispatchFindEvent('find');
-        this.currentMatch = 1;
     }
 
     /**
@@ -322,17 +326,11 @@ class DocFindBar extends EventEmitter {
                 this.findNextButtonEl.focus();
             } else {
                 this.dispatchFindEvent('findagain', false);
-                this.currentMatch = this.currentMatch + 1;
-
-                // Loops search to first match in document
-                if (this.currentMatch > this.findController.matchCount) {
-                    this.currentMatch = 1;
-                }
             }
 
             // Emit a metric that the user navigated forward in the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.NEXT
+                name: USER_DOCUMENT_FIND_EVENTS.NEXT,
             });
         }
     }
@@ -350,17 +348,11 @@ class DocFindBar extends EventEmitter {
                 this.findPreviousButtonEl.focus();
             } else {
                 this.dispatchFindEvent('findagain', true);
-                this.currentMatch = this.currentMatch - 1;
-
-                // Loops search to last match in document
-                if (this.currentMatch <= 0) {
-                    this.currentMatch = this.findController.matchCount;
-                }
             }
 
             // Emit a metric that the user navigated back in the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS
+                name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS,
             });
         }
     }
@@ -383,7 +375,7 @@ class DocFindBar extends EventEmitter {
             this.bar.classList.remove(CLASS_HIDDEN);
             // Emit a metric that the user opened the find bar
             this.emit(VIEWER_EVENT.metric, {
-                name: USER_DOCUMENT_FIND_EVENTS.OPEN
+                name: USER_DOCUMENT_FIND_EVENTS.OPEN,
             });
         }
         this.findFieldEl.select();
@@ -405,9 +397,9 @@ class DocFindBar extends EventEmitter {
         if (!this.opened) {
             return;
         }
+        this.emit('close');
         this.opened = false;
         this.bar.classList.add(CLASS_HIDDEN);
-        this.findController.active = false;
     }
 }
 

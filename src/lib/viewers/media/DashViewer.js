@@ -1,4 +1,3 @@
-import api from '../../api';
 import VideoBaseViewer from './VideoBaseViewer';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
@@ -29,6 +28,7 @@ class DashViewer extends VideoBaseViewer {
     constructor(options) {
         super(options);
 
+        this.api = options.api;
         // Bind context for callbacks
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
@@ -131,7 +131,7 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
+            this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
         }
     }
 
@@ -163,7 +163,7 @@ class DashViewer extends VideoBaseViewer {
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
-                enabled: false
+                enabled: false,
             },
             streaming: {
                 bufferingGoal: MAX_BUFFER,
@@ -172,9 +172,9 @@ class DashViewer extends VideoBaseViewer {
                     maxAttempts: 100, // the maximum number of requests before we fail
                     baseDelay: 500, // the base delay in ms between retries
                     backoffFactor: 2, // the multiplicative backoff factor between retries
-                    fuzzFactor: 0.5 // the fuzz factor to apply to each retry delay
-                }
-            }
+                    fuzzFactor: 0.5, // the fuzz factor to apply to each retry delay
+                },
+            },
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
 
@@ -194,7 +194,7 @@ class DashViewer extends VideoBaseViewer {
     requestFilter(type, request) {
         const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
         /* eslint-disable no-param-reassign */
-        request.uris = request.uris.map((uri) => {
+        request.uris = request.uris.map(uri => {
             let newUri = this.createContentUrlWithAuthParams(uri, asset);
             if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
                 newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
@@ -212,7 +212,7 @@ class DashViewer extends VideoBaseViewer {
      */
     getActiveTrack() {
         const tracks = this.player.getVariantTracks();
-        return tracks.find((track) => track.active);
+        return tracks.find(track => track.active);
     }
 
     /**
@@ -240,7 +240,7 @@ class DashViewer extends VideoBaseViewer {
     enableVideoId(videoId) {
         const tracks = this.player.getVariantTracks();
         const activeTrack = this.getActiveTrack();
-        const newTrack = tracks.find((track) => track.videoId === videoId && track.audioId === activeTrack.audioId);
+        const newTrack = tracks.find(track => track.videoId === videoId && track.audioId === activeTrack.audioId);
         if (newTrack && newTrack.id !== activeTrack.id) {
             this.showLoadingIcon(newTrack.id);
             this.player.selectVariantTrack(newTrack, true);
@@ -259,7 +259,7 @@ class DashViewer extends VideoBaseViewer {
         const tracks = this.player.getVariantTracks();
         const activeTrack = this.getActiveTrack();
         // We select a track that has the desired audio role but maintains the same video ID as our currently active track.
-        const newTrack = tracks.find((track) => track.roles[0] === role && track.videoId === activeTrack.videoId);
+        const newTrack = tracks.find(track => track.roles[0] === role && track.videoId === activeTrack.videoId);
         if (newTrack && newTrack.audioId !== activeTrack.audioId) {
             this.showLoadingIcon(newTrack.id);
             this.player.selectVariantTrack(newTrack, true);
@@ -412,11 +412,11 @@ class DashViewer extends VideoBaseViewer {
             __('error_refresh'),
             {
                 code: normalizedShakaError.code,
-                severity: normalizedShakaError.severity
+                severity: normalizedShakaError.severity,
             },
             `Shaka error. Code = ${normalizedShakaError.code}, Category = ${
                 normalizedShakaError.category
-            }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`
+            }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`,
         );
 
         if (normalizedShakaError.severity > SHAKA_CODE_ERROR_RECOVERABLE) {
@@ -455,8 +455,8 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
         if (this.textTracks.length > 0) {
             this.mediaControls.initSubtitles(
-                this.textTracks.map((track) => getLanguageName(track.language) || track.language),
-                getLanguageName(this.options.location.locale.substring(0, 2))
+                this.textTracks.map(track => getLanguageName(track.language) || track.language),
+                getLanguageName(this.options.location.locale.substring(0, 2)),
             );
         }
     }
@@ -495,7 +495,7 @@ class DashViewer extends VideoBaseViewer {
             this.mediaControls.setLabel(this.mediaControls.subtitlesButtonEl, __('media_auto_generated_captions'));
             this.mediaControls.initSubtitles(
                 [__('auto_generated')],
-                getLanguageName(this.options.location.locale.substring(0, 2))
+                getLanguageName(this.options.location.locale.substring(0, 2)),
             );
         }
     }
@@ -508,7 +508,7 @@ class DashViewer extends VideoBaseViewer {
      */
     createTextCues(transcriptCard) {
         const entries = getProp(transcriptCard, 'entries', []);
-        return entries.map((entry) => {
+        return entries.map(entry => {
             // Set defaults if transcript data is malformed (start/end: 0s, text: '')
             const { appears = [{}], text = '' } = entry;
             const { start = 0, end = 0 } = Array.isArray(appears) && appears.length > 0 ? appears[0] : {};
@@ -540,7 +540,7 @@ class DashViewer extends VideoBaseViewer {
         const uniqueAudioVariants = [];
 
         let i = 0;
-        for (i = 0; i < variants.length; i++) {
+        for (i = 0; i < variants.length; i += 1) {
             const audioTrack = variants[i];
             if (audioIds.indexOf(audioTrack.audioId) < 0) {
                 audioIds.push(audioTrack.audioId);
@@ -548,14 +548,14 @@ class DashViewer extends VideoBaseViewer {
             }
         }
 
-        this.audioTracks = uniqueAudioVariants.map((track) => ({
+        this.audioTracks = uniqueAudioVariants.map(track => ({
             language: track.language,
-            role: track.roles[0]
+            role: track.roles[0],
         }));
 
         if (this.audioTracks.length > 1) {
             // translate the language first
-            const languages = this.audioTracks.map((track) => getLanguageName(track.language) || track.language);
+            const languages = this.audioTracks.map(track => getLanguageName(track.language) || track.language);
             this.mediaControls.initAlternateAudio(languages);
         }
     }
@@ -667,7 +667,7 @@ class DashViewer extends VideoBaseViewer {
         let height = this.videoHeight || 0;
         const viewport = {
             height: this.wrapperEl.clientHeight,
-            width: this.wrapperEl.clientWidth
+            width: this.wrapperEl.clientWidth,
         };
 
         // We need the width to be atleast wide enough for the controls

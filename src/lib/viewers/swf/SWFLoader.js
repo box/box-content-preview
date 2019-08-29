@@ -11,8 +11,8 @@ const VIEWERS = [
         NAME: 'SWF',
         CONSTRUCTOR: SWFViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['swf']
-    }
+        EXT: ['swf'],
+    },
 ];
 
 class SWFLoader extends AssetLoader {

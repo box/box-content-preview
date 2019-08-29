@@ -15,9 +15,14 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/PresentationPreloader-test.html');
         preloader = new PresentationPreloader({
-            hideLoadingIndicator: () => {}
+            hideLoadingIndicator: () => {},
         });
-        stubs = {};
+        preloader.previewUI = {
+            hideLoadingIndicator: sandbox.stub(),
+        };
+        stubs = {
+            hideLoadingIndicator: preloader.previewUI.hideLoadingIndicator,
+        };
     });
 
     afterEach(() => {
@@ -30,7 +35,6 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
             stubs.checkDocumentLoaded = sandbox.stub(preloader, 'checkDocumentLoaded');
             stubs.emit = sandbox.stub(preloader, 'emit');
             stubs.setDimensions = sandbox.stub(util, 'setDimensions');
-            stubs.hideLoadingIndicator = sandbox.stub(preloader.previewUI, 'hideLoadingIndicator');
             preloader.imageEl = {};
             preloader.preloadEl = document.createElement('div');
         });

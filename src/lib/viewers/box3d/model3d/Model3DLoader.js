@@ -10,8 +10,8 @@ const VIEWERS = [
         NAME: 'Model3d',
         CONSTRUCTOR: Model3DViewer,
         REP: '3d',
-        EXT: ['box3d', 'fbx', 'obj', 'dae', '3ds', 'ply', 'stl']
-    }
+        EXT: ['box3d', 'fbx', 'obj', 'dae', '3ds', 'ply', 'stl'],
+    },
 ];
 
 class Model3DLoader extends AssetLoader {

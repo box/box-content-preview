@@ -37,7 +37,7 @@ describe('lib/Popup', () => {
             expect(popup.popupEl.getAttribute('aria-labeledby')).to.not.equal(undefined);
         });
 
-        it('shouldn\'t have any message or button text', () => {
+        it("shouldn't have any message or button text", () => {
             expect(popup.buttonEl.textContext).to.equal(undefined);
             expect(popup.messageEl.textContent).to.equal('');
         });
@@ -67,9 +67,9 @@ describe('lib/Popup', () => {
                 removeEventListener: sandbox.stub(),
                 parentNode: {
                     parentNode: {
-                        removeChild: sandbox.stub()
-                    }
-                }
+                        removeChild: sandbox.stub(),
+                    },
+                },
             };
             const popupStub = popup.popupEl.removeEventListener;
 
@@ -210,7 +210,7 @@ describe('lib/Popup', () => {
             popup.hide = sandbox.stub(popup, 'hide');
             event = {
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
         });
 
@@ -263,7 +263,7 @@ describe('lib/Popup', () => {
     describe('popupClickHandler()', () => {
         it('should hide the popup and return true if Esc is pressed', () => {
             const event = {
-                key: 'Esc'
+                key: 'Esc',
             };
             const hideStub = sandbox.stub(popup, 'hide');
 
@@ -274,7 +274,7 @@ describe('lib/Popup', () => {
 
         it('should hide the popup and return true if Escape is pressed', () => {
             const event = {
-                key: 'Escape'
+                key: 'Escape',
             };
             const hideStub = sandbox.stub(popup, 'hide');
 
@@ -285,7 +285,7 @@ describe('lib/Popup', () => {
 
         it('should do nothing and return false if anything other key is pressed', () => {
             const event = {
-                key: 'EscapeNot'
+                key: 'EscapeNot',
             };
             const hideStub = sandbox.stub(popup, 'hide');
 

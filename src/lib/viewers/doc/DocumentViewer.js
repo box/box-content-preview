@@ -21,7 +21,7 @@ class DocumentViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.preloader = new DocPreloader(this.previewUI);
+        this.preloader = new DocPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 
@@ -45,13 +45,16 @@ class DocumentViewer extends DocBaseViewer {
         if (key === 'Shift++') {
             this.zoomIn();
             return true;
-        } else if (key === 'Shift+_') {
+        }
+        if (key === 'Shift+_') {
             this.zoomOut();
             return true;
-        } else if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
+        }
+        if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
             this.previousPage();
             return true;
-        } else if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
+        }
+        if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
             this.nextPage();
             return true;
         }

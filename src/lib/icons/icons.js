@@ -96,18 +96,18 @@ const FILE_LOADING_ICONS = {
     FILE_PRESENTATION,
     FILE_SPREADSHEET,
     FILE_WORD,
-    FILE_ZIP
+    FILE_ZIP,
 };
 
 export const ICON_FILE_MAP = {};
 
 // AUDIO ICON EXTENSIONS
-['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'].forEach((extension) => {
+['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_AUDIO';
 });
 
 // BOXNOTE ICON EXTENSIONS
-['boxnote'].forEach((extension) => {
+['boxnote'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_BOX_NOTE';
 });
 
@@ -161,33 +161,33 @@ export const ICON_FILE_MAP = {};
     'xml',
     'xsd',
     'xsl',
-    'yaml'
-].forEach((extension) => {
+    'yaml',
+].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_CODE';
 });
 
 // EXCEL ICON EXTENSIONS
-['xls', 'xlsm', 'xlsx', 'xlsb'].forEach((extension) => {
+['xls', 'xlsm', 'xlsx', 'xlsb'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_EXCEL';
 });
 
 // DOCUMENT ICON EXTENSIONS
-['log', 'msg', 'ods', 'rtf', 'txt', 'wpd'].forEach((extension) => {
+['log', 'msg', 'ods', 'rtf', 'txt', 'wpd'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_DOCUMENT';
 });
 
 // GOOGLE DOC ICON EXTENSIONS
-['gdoc'].forEach((extension) => {
+['gdoc'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_GOOGLE_DOC';
 });
 
 // GOOGLE SHEET ICON EXTENSIONS
-['gsheet'].forEach((extension) => {
+['gsheet'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SHEET';
 });
 
 // GOOGLE SLIDE ICON EXTENSIONS
-['gslide'].forEach((extension) => {
+['gslide'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SLIDE';
 });
 
@@ -209,13 +209,13 @@ export const ICON_FILE_MAP = {};
     'swf',
     'tga',
     'tif',
-    'tiff'
-].forEach((extension) => {
+    'tiff',
+].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_IMAGE';
 });
 
 // KEYNOTE ICON EXTENSIONS
-['key'].forEach((extension) => {
+['key'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_KEYNOTE';
 });
 
@@ -237,58 +237,58 @@ export const ICON_FILE_MAP = {};
     'ogg',
     'qt',
     'ts',
-    'wmv'
-].forEach((extension) => {
+    'wmv',
+].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_MEDIA';
 });
 
 // NUMBERS ICON EXTENSIONS
-['numbers'].forEach((extension) => {
+['numbers'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_NUMBERS';
 });
 
 // OBJ ICON EXTENSIONS
-['3ds', 'box3d', 'dae', 'fbx', 'obj', 'ply', 'stl'].forEach((extension) => {
+['3ds', 'box3d', 'dae', 'fbx', 'obj', 'ply', 'stl'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_OBJ';
 });
 
 // PAGES ICON EXTENSIONS
-['pages'].forEach((extension) => {
+['pages'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_PAGES';
 });
 
 // PDF ICON EXTENSIONS
-['pdf'].forEach((extension) => {
+['pdf'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_PDF';
 });
 
 // POWERPOINT ICON EXTENSIONS
-['ppt', 'pptx'].forEach((extension) => {
+['ppt', 'pptx'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_POWERPOINT';
 });
 
 // PRESENTATION ICON EXTENSIONS
-['odp'].forEach((extension) => {
+['odp'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_PRESENTATION';
 });
 
 // SPREADSHEET ICON EXTENSIONS
-['csv', 'tsv'].forEach((extension) => {
+['csv', 'tsv'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_SPREADSHEET';
 });
 
 // WORD ICON EXTENSIONS
-['doc', 'docx'].forEach((extension) => {
+['doc', 'docx'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_WORD';
 });
 
 // ZIP ICON EXTENSIONS
-['tgz', 'zip'].forEach((extension) => {
+['tgz', 'zip'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_ZIP';
 });
 
 // AUTOCAD ICON EXTENSIONS
-['dwg'].forEach((extension) => {
+['dwg'].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_AUTOCAD';
 });
 

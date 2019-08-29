@@ -18,7 +18,7 @@ import {
     RENDER_MODE_UNLIT,
     RENDER_MODE_SHAPE,
     RENDER_MODE_NORMALS,
-    RENDER_MODE_UV
+    RENDER_MODE_UV,
 } from './model3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
 import { createAssetUrlCreator } from '../../../util';
@@ -56,15 +56,15 @@ class Model3DRenderer extends Box3DRenderer {
      * @param {BoxSDK} [boxSdk] - Box SDK instance, used for requests to Box
      * @return {Model3DRenderer} Model3DRenderer instance
      */
-    constructor(containerEl, boxSdk) {
-        super(containerEl, boxSdk);
+    constructor(containerEl, boxSdk, options) {
+        super(containerEl, boxSdk, options);
 
         this.renderModeValues = {
             [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
             [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
             [RENDER_MODE_NORMALS]: Box3D.RenderMode.Normals,
             [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
-            [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
+            [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay,
         };
 
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -86,7 +86,7 @@ class Model3DRenderer extends Box3DRenderer {
     /** @inheritdoc */
     load(assetUrl, options = {}) {
         const opts = {
-            ...options
+            ...options,
         };
         const { location } = opts;
         if (location) {
@@ -201,14 +201,14 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         // Reset the transforms of the instances under the root (they can be modified in VR).
-        this.instance.getChildren().forEach((child) => {
+        this.instance.getChildren().forEach(child => {
             child.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
             child.setScale(1, 1, 1);
             child.setQuaternion(
                 IDENTITY_QUATERNION.x,
                 IDENTITY_QUATERNION.y,
                 IDENTITY_QUATERNION.z,
-                IDENTITY_QUATERNION.w
+                IDENTITY_QUATERNION.w,
             );
             // Clear the bounds of the object so that they need to be recalculated.
             child.unsetProperty('bounds');
@@ -274,7 +274,7 @@ class Model3DRenderer extends Box3DRenderer {
         this.initVrGamepadControls();
         this.resetSkeletons();
         const videos = this.box3d.getEntitiesByType('video');
-        videos.forEach((video) => video.play());
+        videos.forEach(video => video.play());
     }
 
     /**

@@ -4,13 +4,13 @@
 const controlType = {
     None: 0,
     Translation: 1,
-    Scale: 2
+    Scale: 2,
 };
 
 /** A mapping from the control to the ID of the gamepad button that triggers it. */
 const buttonMap = {
     grabObject: 1,
-    grabWorld: 2
+    grabWorld: 2,
 };
 
 /**
@@ -57,7 +57,7 @@ class Model3DVrControls {
         this.onGamepadButtonUp = this.onGamepadButtonUp.bind(this);
 
         // Listen for gamepad button events to trigger actions.
-        this.vrGamepads.forEach((gamepad) => {
+        this.vrGamepads.forEach(gamepad => {
             gamepad.listenTo(gamepad, 'gamepadButtonDown', this.onGamepadButtonDown);
             gamepad.listenTo(gamepad, 'gamepadButtonUp', this.onGamepadButtonUp);
         });
@@ -65,7 +65,7 @@ class Model3DVrControls {
             initiatingController: null,
             selectedObject: null,
             previousParent: null,
-            controlType: controlType.None
+            controlType: controlType.None,
         };
     }
 
@@ -75,7 +75,7 @@ class Model3DVrControls {
      * @return {void}
      */
     destroy() {
-        this.vrGamepads.forEach((gamepad) => gamepad.stopListening());
+        this.vrGamepads.forEach(gamepad => gamepad.stopListening());
     }
 
     /**
@@ -101,7 +101,7 @@ class Model3DVrControls {
             threeObject.quaternion.x,
             threeObject.quaternion.y,
             threeObject.quaternion.z,
-            threeObject.quaternion.w
+            threeObject.quaternion.w,
         );
         object.setScale(threeObject.scale.x, threeObject.scale.y, threeObject.scale.z);
         newParent.addChild(object);
@@ -180,7 +180,7 @@ class Model3DVrControls {
         } else if (this.controllerState.controlType === controlType.Scale) {
             this.controllerState.controlType = controlType.Translation;
             this.endScale();
-            const otherGamepad = this.vrGamepads.find((obj) => {
+            const otherGamepad = this.vrGamepads.find(obj => {
                 const gamepadComponent = obj.getComponentByScriptId('motion_gamepad_device');
                 return gamepadComponent && gamepadComponent.getGamepad() !== gamepad;
             });
@@ -211,7 +211,7 @@ class Model3DVrControls {
             return;
         }
 
-        const gamepadObject = this.vrGamepads.find((obj) => {
+        const gamepadObject = this.vrGamepads.find(obj => {
             const gamepadComponent = obj.getComponentByScriptId('motion_gamepad_device');
             return gamepadComponent && gamepadComponent.getGamepad() === gamepad;
         });
@@ -229,7 +229,7 @@ class Model3DVrControls {
 
         if (selectedPrefab) {
             // Make sure that the selected instance isn't the other controller.
-            if (this.vrGamepads.find((cont) => selectedPrefab === cont.getChild())) {
+            if (this.vrGamepads.find(cont => selectedPrefab === cont.getChild())) {
                 return;
             }
 

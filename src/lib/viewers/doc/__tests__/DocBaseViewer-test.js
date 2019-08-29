@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import DocBaseViewer from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
@@ -23,7 +23,7 @@ import {
     SELECTOR_BOX_PREVIEW_CONTENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
-    SELECTOR_BOX_PREVIEW
+    SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
 import {
     ICON_PRINT_CHECKMARK,
@@ -31,7 +31,7 @@ import {
     ICON_ZOOM_OUT,
     ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
+    ICON_FULLSCREEN_OUT,
 } from '../../../icons/icons';
 import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
@@ -61,7 +61,7 @@ const STANDARD_HEADERS = [
     'Downlink',
     'Save-Data',
     'Viewport-Width',
-    'Width'
+    'Width',
 ];
 
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
@@ -80,8 +80,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
 
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
+        stubs.api = new Api();
         stubs.classListAdd = sandbox.stub(rootEl.classList, 'add');
         stubs.classListRemove = sandbox.stub(rootEl.classList, 'remove');
+        stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+        stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => 'asset');
     });
 
     afterEach(() => {
@@ -108,19 +111,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
+                    unset: () => {},
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
+                        url_template: 'foo',
+                    },
                 },
                 file: {
                     id: '0',
-                    extension: 'ppt'
+                    extension: 'ppt',
                 },
-                enableThumbnailsSidebar: true
+                enableThumbnailsSidebar: true,
             });
 
             docBase.containerEl = containerEl;
@@ -145,19 +148,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
+                    unset: () => {},
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
+                        url_template: 'foo',
+                    },
                 },
                 file: {
                     id: '0',
-                    extension: 'ppt'
+                    extension: 'ppt',
                 },
-                enableThumbnailsSidebar: false
+                enableThumbnailsSidebar: false,
             });
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
@@ -172,19 +175,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
+                    unset: () => {},
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
+                        url_template: 'foo',
+                    },
                 },
                 file: {
                     id: '0',
-                    extension: 'ppt'
+                    extension: 'ppt',
                 },
-                enableThumbnailsSidebar: true
+                enableThumbnailsSidebar: true,
             });
             sandbox.stub(docBase, 'getCachedThumbnailsToggledState').returns(true);
             docBase.containerEl = containerEl;
@@ -198,19 +201,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
+                    unset: () => {},
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
+                        url_template: 'foo',
+                    },
                 },
                 file: {
                     id: '0',
-                    extension: 'ppt'
+                    extension: 'ppt',
                 },
-                enableThumbnailsSidebar: true
+                enableThumbnailsSidebar: true,
             });
             sandbox.stub(docBase, 'getCachedThumbnailsToggledState').returns(false);
             docBase.containerEl = containerEl;
@@ -224,23 +227,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('Non setup methods', () => {
         beforeEach(() => {
             docBase = new DocBaseViewer({
+                api: stubs.api,
                 cache: {
                     set: () => {},
                     has: () => {},
                     get: () => {},
-                    unset: () => {}
+                    unset: () => {},
                 },
                 container: containerEl,
                 representation: {
                     content: {
-                        url_template: 'foo'
-                    }
+                        url_template: 'foo',
+                    },
                 },
                 file: {
                     id: '0',
-                    extension: 'ppt'
+                    extension: 'ppt',
                 },
-                enableThumbnailsSidebar: true
+                enableThumbnailsSidebar: true,
             });
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
 
@@ -253,18 +257,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('destroy()', () => {
             it('should unbind listeners and clear the print blob', () => {
                 const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
+                const unbindEventBusListenersStub = sandbox.stub(docBase, 'unbindEventBusListeners');
                 docBase.printURL = 'someblob';
                 sandbox.stub(URL, 'revokeObjectURL');
 
                 docBase.destroy();
                 expect(unbindDOMListenersStub).to.be.called;
+                expect(unbindEventBusListenersStub).to.be.called;
                 expect(docBase.printBlob).to.equal(null);
                 expect(URL.revokeObjectURL).to.be.calledWith(docBase.printURL);
             });
 
             it('should destroy the controls', () => {
                 docBase.controls = {
-                    destroy: sandbox.stub()
+                    destroy: sandbox.stub(),
                 };
 
                 docBase.destroy();
@@ -274,17 +280,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should destroy the find bar', () => {
                 docBase.findBar = {
                     destroy: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
 
                 docBase.destroy();
                 expect(docBase.findBar.destroy).to.be.called;
-                expect(docBase.findBar.removeListener).to.be.called;
             });
 
             it('should clean up the PDF network requests', () => {
                 docBase.pdfLoadingTask = {
-                    destroy: sandbox.stub()
+                    destroy: sandbox.stub(),
                 };
 
                 docBase.destroy();
@@ -295,8 +300,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     cleanup: sandbox.stub(),
                     pdfDocument: {
-                        destroy: sandbox.stub()
-                    }
+                        destroy: sandbox.stub(),
+                    },
                 };
 
                 docBase.destroy();
@@ -306,10 +311,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should clean up the thumbnails sidebar instance and DOM element', () => {
                 docBase.thumbnailsSidebar = {
-                    destroy: sandbox.stub()
+                    destroy: sandbox.stub(),
                 };
                 const thumbnailsSidebarEl = {
-                    remove: sandbox.stub()
+                    remove: sandbox.stub(),
                 };
                 docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
 
@@ -323,7 +328,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('prefetch()', () => {
             it('should prefetch assets if assets is true', () => {
                 sandbox.stub(docBase, 'prefetchAssets');
-                sandbox.stub(api, 'get');
+                sandbox.stub(stubs.api, 'get');
                 docBase.prefetch({ assets: true, preload: false, content: false });
                 expect(docBase.prefetchAssets).to.be.called;
             });
@@ -332,13 +337,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const template = 'someTemplate';
                 const preloadRep = {
                     content: {
-                        url_template: template
+                        url_template: template,
                     },
                     status: {
-                        state: 'success'
-                    }
+                        state: 'success',
+                    },
                 };
-                sandbox.stub(api, 'get');
+                sandbox.stub(stubs.api, 'get');
                 sandbox.stub(file, 'getRepresentation').returns(preloadRep);
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams');
 
@@ -351,13 +356,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const template = 'someTemplate';
                 const preloadRep = {
                     content: {
-                        url_template: template
+                        url_template: template,
                     },
                     status: {
-                        state: 'pending'
-                    }
+                        state: 'pending',
+                    },
                 };
-                sandbox.stub(api, 'get');
+                sandbox.stub(stubs.api, 'get');
                 sandbox.stub(file, 'getRepresentation').returns(preloadRep);
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams');
 
@@ -368,7 +373,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should not prefetch preload if file is watermarked', () => {
                 docBase.options.file.watermark_info = {
-                    is_watermarked: true
+                    is_watermarked: true,
                 };
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams');
 
@@ -382,7 +387,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(contentUrl);
                 sandbox.stub(docBase, 'isRepresentationReady').returns(true);
                 sandbox
-                    .mock(api)
+                    .mock(stubs.api)
                     .expects('get')
                     .withArgs(contentUrl, { type: 'document' });
 
@@ -392,7 +397,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should not prefetch content if content is true but representation is not ready', () => {
                 sandbox.stub(docBase, 'isRepresentationReady').returns(false);
                 sandbox
-                    .mock(api)
+                    .mock(stubs.api)
                     .expects('get')
                     .never();
                 docBase.prefetch({ assets: false, preload: false, content: true });
@@ -400,10 +405,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should not prefetch content if file is watermarked', () => {
                 docBase.options.file.watermark_info = {
-                    is_watermarked: true
+                    is_watermarked: true,
                 };
                 sandbox
-                    .mock(api)
+                    .mock(stubs.api)
                     .expects('get')
                     .never();
                 docBase.prefetch({ assets: false, preload: false, content: true });
@@ -439,8 +444,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should not do anything if file is watermarked', () => {
                 docBase.options.file = {
                     watermark_info: {
-                        is_watermarked: true
-                    }
+                        is_watermarked: true,
+                    },
                 };
                 sandbox.stub(docBase, 'getCachedPage').returns(1);
                 sandbox
@@ -496,8 +501,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .returns(true);
                 sandbox.stub(file, 'getRepresentation').returns({
                     status: {
-                        state: STATUS_ERROR
-                    }
+                        state: STATUS_ERROR,
+                    },
                 });
                 sandbox
                     .mock(docBase.preloader)
@@ -515,8 +520,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .returns(true);
                 sandbox.stub(file, 'getRepresentation').returns({
                     status: {
-                        state: STATUS_PENDING
-                    }
+                        state: STATUS_PENDING,
+                    },
                 });
                 sandbox
                     .mock(docBase.preloader)
@@ -532,11 +537,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 sandbox.stub(docBase, 'getCachedPage').returns(1);
                 sandbox.stub(file, 'getRepresentation').returns({
                     content: {
-                        url_template: ''
+                        url_template: '',
                     },
                     status: {
-                        state: STATUS_SUCCESS
-                    }
+                        state: STATUS_SUCCESS,
+                    },
                 });
                 sandbox
                     .stub(docBase, 'getViewerOption')
@@ -557,11 +562,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 sandbox.stub(docBase, 'getCachedPage').returns(1);
                 sandbox.stub(file, 'getRepresentation').returns({
                     content: {
-                        url_template: ''
+                        url_template: '',
                     },
                     status: {
-                        state: STATUS_SUCCESS
-                    }
+                        state: STATUS_SUCCESS,
+                    },
                 });
                 sandbox
                     .stub(docBase, 'getViewerOption')
@@ -569,6 +574,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .returns(true);
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(preloadUrl);
 
+                sandbox.mock(docBase.preloader).expects('showPreload');
                 const startPreloadTimerStub = sandbox.stub(docBase, 'startPreloadTimer');
 
                 docBase.showPreload();
@@ -596,7 +602,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             it('should load a document', () => {
-                sandbox.stub(api, 'get');
+                sandbox.stub(stubs.api, 'get');
                 sandbox.stub(docBase, 'setup');
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
                 sandbox.stub(docBase, 'createContentUrlWithAuthParams');
@@ -615,11 +621,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('handleAssetAndRepLoad', () => {
-            it('should setup pdfjs, init viewer, print, and find', (done) => {
+            it('should setup pdfjs, init viewer, print, and find', done => {
                 const url = 'foo';
                 docBase.pdfUrl = url;
                 docBase.pdfViewer = {
-                    currentScale: 1
+                    currentScale: 1,
                 };
 
                 const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
@@ -628,10 +634,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const initFindStub = sandbox.stub(docBase, 'initFind');
                 const loadBoxAnnotations = sandbox.stub(docBase, 'loadBoxAnnotations').returns(Promise.resolve());
                 const createAnnotator = sandbox.stub(docBase, 'createAnnotator').returns(
-                    new Promise((resolve) => {
+                    new Promise(resolve => {
                         resolve();
                         done();
-                    })
+                    }),
                 );
 
                 docBase.handleAssetAndRepLoad();
@@ -647,8 +653,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('initFind()', () => {
             beforeEach(() => {
+                docBase.pdfEventBus = {
+                    off: sandbox.stub(),
+                    on: sandbox.stub(),
+                };
                 docBase.pdfViewer = {
-                    setFindController: sandbox.stub()
+                    setFindController: sandbox.stub(),
                 };
             });
 
@@ -656,11 +666,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.initFind();
                 expect(docBase.findBarEl.classList.contains(CLASS_BOX_PREVIEW_FIND_BAR)).to.be.true;
                 expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
-            });
-
-            it('should create and set a new findController', () => {
-                docBase.initFind();
-                expect(docBase.pdfViewer.setFindController).to.be.called;
             });
 
             it('should not set find bar if viewer option disableFindBar is true', () => {
@@ -672,7 +677,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.findBar).to.be.undefined;
             });
 
+            it('should not set find bar if the user does not have download permissions', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+                docBase.initFind();
+                expect(docBase.findBar).to.be.undefined;
+            });
+
             it('should set findBar to a function if viewer option disableFindBar is not set', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
                 docBase.initFind();
                 expect(docBase.findBar).to.be.instanceof(DocFindBar);
             });
@@ -685,7 +697,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     findFieldHandler: sandbox.stub(),
                     open: sandbox.stub(),
                     destroy: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
 
                 sandbox.stub(docBase, 'setPage');
@@ -788,7 +800,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('Page Methods', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
-                    currentPageNumber: 1
+                    currentPageNumber: 1,
                 };
                 stubs.cachePage = sandbox.stub(docBase, 'cachePage');
             });
@@ -805,7 +817,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             describe('nextPage()', () => {
                 it('should call setPage', () => {
                     docBase.pdfViewer = {
-                        currentPageNumber: 0
+                        currentPageNumber: 0,
                     };
                     const setPageStub = sandbox.stub(docBase, 'setPage');
 
@@ -815,10 +827,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             describe('setPage()', () => {
-                it('should set the pdfViewer\'s page and cache it', () => {
+                it("should set the pdfViewer's page and cache it", () => {
                     docBase.pdfViewer = {
                         currentPageNumber: 1,
-                        pagesCount: 3
+                        pagesCount: 3,
                     };
 
                     docBase.setPage(2);
@@ -830,7 +842,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 it('should not do anything if setting an invalid page', () => {
                     docBase.pdfViewer = {
                         currentPageNumber: 1,
-                        pagesCount: 3
+                        pagesCount: 3,
                     };
 
                     // Too low
@@ -856,8 +868,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return the cached current page if present', () => {
                 docBase.options = {
                     file: {
-                        id: 0
-                    }
+                        id: 0,
+                    },
                 };
 
                 const page = docBase.getCachedPage();
@@ -879,8 +891,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 docBase.options = {
                     file: {
-                        id: 0
-                    }
+                        id: 0,
+                    },
                 };
                 stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
                 stubs.get = sandbox.stub(docBase.cache, 'get').returns({ 0: 10 });
@@ -907,7 +919,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('zoom methods', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
-                    currentScale: 5
+                    currentScale: 5,
                 };
                 stubs.emit = sandbox.stub(docBase, 'emit');
             });
@@ -931,7 +943,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.emit).to.be.calledWith('zoom');
                 });
 
-                it('should not emit the zoom event if we can\'t zoom in', () => {
+                it("should not emit the zoom event if we can't zoom in", () => {
                     docBase.pdfViewer.currentScale = MAX_SCALE;
 
                     docBase.zoomIn(1);
@@ -956,7 +968,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.emit).to.be.calledWith('zoom');
                 });
 
-                it('should not emit the zoom event if we can\'t zoom out', () => {
+                it("should not emit the zoom event if we can't zoom out", () => {
                     docBase.pdfViewer.currentScale = MIN_SCALE;
 
                     docBase.zoomOut(1);
@@ -996,7 +1008,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.findBar = {
                     onKeydown: onKeydownStub,
                     destroy: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
                 docBase.onKeydown(keys, mockEvent);
                 expect(onKeydownStub).to.have.been.calledOnce;
@@ -1012,62 +1024,175 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('initViewer()', () => {
             beforeEach(() => {
-                stubs.pdfViewer = {
-                    linkService: new PDFJS.PDFLinkService(),
-                    setDocument: sandbox.stub()
-                };
-                stubs.pdfViewer.linkService.setDocument = sandbox.stub();
-                stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFViewer').returns(stubs.pdfViewer);
                 stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
                 stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.getDocument = sandbox.stub().returns({
+                    destroy: sandbox.stub(),
+                    promise: Promise.resolve(),
+                });
+                stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
+                stubs.pdfEventBus = {
+                    off: sandbox.stub(),
+                    on: sandbox.stub(),
+                };
+                stubs.pdfViewer = {
+                    setDocument: sandbox.stub(),
+                };
+                stubs.pdfViewerClass = sandbox.stub().returns(stubs.pdfViewer);
                 stubs.shouldThumbnailsBeToggled = sandbox.stub(docBase, 'shouldThumbnailsBeToggled');
                 stubs.resize = sandbox.stub(docBase, 'resize');
+
+                docBase.isMobile = false;
+                docBase.options.file = {
+                    size: 1000000,
+                    watermark_info: {},
+                };
+                docBase.options.location = {
+                    locale: 'en-US',
+                };
+                docBase.pdfjsLib = {
+                    disableRange: false,
+                    getDocument: stubs.getDocument,
+                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
+                };
+                docBase.pdfjsViewer = {
+                    EventBus: sandbox.stub().returns(stubs.pdfEventBus),
+                    PDFFindController: sandbox.stub().returns({
+                        setLinkService: sandbox.stub(),
+                    }),
+                    PDFLinkService: sandbox.stub().returns({
+                        setDocument: sandbox.stub(),
+                        setViewer: sandbox.stub(),
+                    }),
+                    PDFViewer: stubs.pdfViewerClass,
+                };
             });
 
-            it('should turn on enhanced text selection if not on mobile', () => {
-                docBase.options.location = {
-                    locale: 'en-US'
-                };
-                docBase.isMobile = false;
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
-
+            it('should create an event bus and subscribe to relevant events', () => {
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerStub).to.be.calledWith({
-                        container: sinon.match.any,
-                        linkService: sinon.match.any,
-                        enhanceTextSelection: true
-                    });
+                    expect(stubs.pdfViewerClass).to.be.called;
+                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagechanging', docBase.pagechangingHandler);
+                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
+                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
                 });
             });
 
-            it('should turn off enhanced text selection if on mobile', () => {
-                docBase.options.location = {
-                    locale: 'en-US'
-                };
+            it('should set maxCanvasPixels if on mobile', () => {
                 docBase.isMobile = true;
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerStub).to.be.calledWith({
-                        container: sinon.match.any,
-                        linkService: sinon.match.any,
-                        enhanceTextSelection: false
-                    });
+                    expect(stubs.pdfViewerClass).to.be.calledWith(
+                        sinon.match({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            it('should enable the text layer based on download permissions', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 2 }));
+                });
+            });
+
+            it('should simplify the text layer if the user is on mobile', () => {
+                docBase.isMobile = true;
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 1 }));
+                });
+            });
+
+            it('should disable the text layer based on download permissions', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 0 }));
+                });
+            });
+
+            it('should disable the text layer if disableTextLayer viewer option is set', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+                stubs.getViewerOption.withArgs('disableTextLayer').returns(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 0 }));
+                });
+            });
+
+            it('should setup the link controller settings correctly', () => {
+                return docBase.initViewer('').then(() => {
+                    expect(docBase.pdfjsViewer.PDFLinkService).to.be.calledWith(
+                        sinon.match({
+                            externalLinkRel: 'noopener noreferrer nofollow',
+                            externalLinkTarget: 2, // window.pdfjsLib.LinkTarget.BLANK
+                        }),
+                    );
+                });
+            });
+
+            it('should test if browser has font rendering issue', () => {
+                sandbox.stub(Browser, 'hasFontIssue').returns(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableFontFace: true }));
+                });
+            });
+
+            it('should not disable streaming', () => {
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: true }));
+                });
+            });
+
+            it('should enable range requests if locale is not en-US, the file is greater than 25MB', () => {
+                docBase.options.file.size = 26500000;
+                docBase.options.location.locale = 'ja-JP';
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
+                });
+            });
+
+            it('should disable range requests if locale is not en-US and the file is smaller than 25MB', () => {
+                docBase.options.file.size = 26000000;
+                docBase.options.location.locale = 'ja-JP';
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                });
+            });
+
+            it('should disable range requests if the file is greater than 25MB but watermarked', () => {
+                docBase.options.file.size = 26500000;
+                docBase.options.file.watermark_info.is_watermarked = true;
+                docBase.options.location.locale = 'ja-JP';
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                });
+            });
+
+            it('should disable range requests if the locale is en-US', () => {
+                docBase.options.location.locale = 'en-US';
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                });
+            });
+
+            it('should set disableCreateObjectURL to false', () => {
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableCreateObjectURL: false }));
                 });
             });
 
             it('should set a chunk size based on viewer options if available', () => {
-                const url = 'url';
-                const rangeChunkSize = 100;
+                stubs.getViewerOption.returns(100);
 
-                sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
-
-                return docBase.initViewer(url).then(() => {
-                    expect(PDFJS.getDocument).to.be.calledWith({
-                        url: sinon.match.string,
-                        rangeChunkSize
-                    });
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ rangeChunkSize: 100 }));
                 });
             });
 
@@ -1076,16 +1201,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const defaultChunkSize = 524288; // 512KB
 
                 docBase.options.location = {
-                    locale: 'not-en-US'
+                    locale: 'not-en-US',
                 };
-                sandbox.stub(docBase, 'getViewerOption').returns(null);
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+                stubs.getViewerOption.returns(null);
 
                 return docBase.initViewer(url).then(() => {
-                    expect(PDFJS.getDocument).to.be.calledWith({
-                        url: sinon.match.string,
-                        rangeChunkSize: defaultChunkSize
-                    });
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ rangeChunkSize: defaultChunkSize }));
                 });
             });
 
@@ -1094,49 +1215,50 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const largeChunkSize = 1048576; // 1MB
 
                 docBase.options.location = {
-                    locale: 'en-US'
+                    locale: 'en-US',
                 };
-                sandbox.stub(docBase, 'getViewerOption').returns(null);
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+                stubs.getViewerOption.returns(null);
 
                 return docBase.initViewer(url).then(() => {
-                    expect(PDFJS.getDocument).to.be.calledWith({
-                        url: sinon.match.string,
-                        rangeChunkSize: largeChunkSize
-                    });
+                    expect(stubs.getDocument).to.be.calledWith(
+                        sinon.match({
+                            httpHeaders: sinon.match.object,
+                            rangeChunkSize: largeChunkSize,
+                        }),
+                    );
                 });
             });
 
             it('should set a cache-busting header if on mobile', () => {
                 docBase.options.location = {
-                    locale: 'en-US'
+                    locale: 'en-US',
                 };
                 sandbox.stub(Browser, 'isIOS').returns(true);
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
                 return docBase.initViewer('').then(() => {
-                    expect(PDFJS.getDocument).to.be.calledWith({
-                        url: sinon.match.string,
-                        rangeChunkSize: 1048576,
-                        httpHeaders: {
-                            'If-None-Match': 'webkit-no-cache'
-                        }
-                    });
+                    expect(stubs.getDocument).to.be.calledWith(
+                        sinon.match({
+                            httpHeaders: {
+                                'If-None-Match': 'webkit-no-cache',
+                            },
+                            rangeChunkSize: 1048576,
+                        }),
+                    );
                 });
             });
 
-            it('should avoid preflight requests by not adding non-standard headers', (done) => {
+            it('should avoid preflight requests by not adding non-standard headers', done => {
                 docBase.options.location = {
-                    locale: 'en-US'
+                    locale: 'en-US',
                 };
                 // Excluding IOS for If-None-Match cache busting
                 sandbox.stub(Browser, 'isIOS').returns(false);
-                sandbox.stub(PDFJS, 'getDocument').callsFake((docInitParams) => {
+                stubs.getDocument.callsFake(docInitParams => {
                     return new Promise(() => {
                         const { httpHeaders = {} } = docInitParams;
                         const headerKeys = Object.keys(httpHeaders);
 
-                        const containsNonStandardHeader = headerKeys.some((header) => {
+                        const containsNonStandardHeader = headerKeys.some(header => {
                             return !STANDARD_HEADERS.includes(header);
                         });
 
@@ -1149,51 +1271,48 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             it('should append encoding query parameter for gzip content when range requests are disabled', () => {
-                // en-US allows for disabled range requests
-                docBase.options.location = {
-                    locale: 'en-US'
-                };
                 const defaultChunkSize = 1048576; // Taken from RANGE_REQUEST_CHUNK_SIZE_US
                 const url = 'www.myTestPDF.com/123456';
                 const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
-                const isDisabled = PDFJS.disableRange;
-                sandbox.stub(Browser, 'isIOS').returns(false);
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
-                PDFJS.disableRange = true;
-                return docBase.initViewer(url).then(() => {
-                    expect(PDFJS.getDocument).to.be.calledWith({
-                        url: `${url}?${paramsList}`,
-                        rangeChunkSize: defaultChunkSize
-                    });
 
-                    // Reset to original value
-                    PDFJS.disableRange = isDisabled;
+                docBase.options.location = {
+                    locale: 'en-US', // Disables range requests
+                };
+
+                return docBase.initViewer(url).then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(
+                        sinon.match({
+                            httpHeaders: sinon.match.object,
+                            rangeChunkSize: defaultChunkSize,
+                            url: `${url}?${paramsList}`,
+                        }),
+                    );
                 });
             });
 
             it('should resolve the loading task and set the document/viewer', () => {
                 const doc = {
-                    url: 'url'
+                    url: 'url',
                 };
-                const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
-                sandbox.stub(docBase, 'getViewerOption').returns(100);
+                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
+                stubs.getViewerOption.returns(100);
 
                 return docBase.initViewer('url').then(() => {
-                    expect(stubs.pdfViewerStub).to.be.called;
-                    expect(getDocumentStub).to.be.called;
                     expect(stubs.bindDOMListeners).to.be.called;
-                    expect(stubs.pdfViewer.setDocument).to.be.called;
-                    expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
                     expect(stubs.classListAdd).not.to.be.called;
+                    expect(stubs.getDocument).to.be.called;
+                    expect(stubs.pdfViewerClass).to.be.called;
+                    expect(stubs.pdfViewer.setDocument).to.be.called;
+                    expect(docBase.pdfLinkService.setDocument).to.be.called;
                 });
             });
 
             it('should invoke startLoadTimer()', () => {
                 const doc = {
-                    url: 'url'
+                    url: 'url',
                 };
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
-                sandbox.stub(docBase, 'getViewerOption').returns(100);
+                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
+                stubs.getViewerOption.returns(100);
                 sandbox.stub(docBase, 'startLoadTimer');
                 docBase.initViewer('url');
 
@@ -1201,16 +1320,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             it('should handle any download error', () => {
-                stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
                 const doc = {
-                    url: 'url'
+                    url: 'url',
                 };
 
+                stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
+                stubs.getDocument.returns({ promise: Promise.reject(doc) });
                 docBase.options.location = {
-                    locale: 'en-US'
+                    locale: 'en-US',
                 };
-
-                sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
 
                 return docBase.initViewer('url').catch(() => {
                     expect(stubs.handleDownloadError).to.be.called;
@@ -1219,18 +1337,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should adjust the layout if thumbnails should be toggled', () => {
                 const doc = {
-                    url: 'url'
+                    url: 'url',
                 };
-                const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
-                sandbox.stub(docBase, 'getViewerOption').returns(100);
+                stubs.getViewerOption.returns(100);
+                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
                 stubs.shouldThumbnailsBeToggled.returns(true);
 
                 return docBase.initViewer('url').then(() => {
-                    expect(stubs.pdfViewerStub).to.be.called;
-                    expect(getDocumentStub).to.be.called;
+                    expect(stubs.pdfViewerClass).to.be.called;
+                    expect(stubs.getDocument).to.be.called;
                     expect(stubs.bindDOMListeners).to.be.called;
                     expect(stubs.pdfViewer.setDocument).to.be.called;
-                    expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
+                    expect(docBase.pdfLinkService.setDocument).to.be.called;
                     expect(stubs.classListAdd).calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                     expect(stubs.resize).to.be.called;
                 });
@@ -1244,14 +1362,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     update: sandbox.stub(),
                     currentScaleValue: 0,
-                    currentPageNumber: 0
+                    currentPageNumber: 0,
                 };
 
                 docBase.somePageRendered = true;
 
                 stubs.setPage = sandbox.stub(docBase, 'setPage');
                 Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
-                    value: sandbox.stub()
+                    value: sandbox.stub(),
                 });
                 stubs.thumbnailsResize = sandbox.stub();
                 docBase.thumbnailsSidebar = { resize: stubs.thumbnailsResize, destroy: () => {} };
@@ -1259,7 +1377,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             afterEach(() => {
                 Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
-                    value: resizeFunc
+                    value: resizeFunc,
                 });
             });
 
@@ -1280,7 +1398,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should resize the preload', () => {
                 docBase.pdfViewer = null;
                 docBase.preloader = {
-                    resize: sandbox.stub()
+                    resize: sandbox.stub(),
                 };
                 docBase.resize();
                 expect(docBase.preloader.resize).to.be.called;
@@ -1306,7 +1424,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const id = '12345';
                 const tag = Timer.createTag(id, LOAD_METRIC.preloadTime);
                 docBase.options.file = {
-                    id
+                    id,
                 };
 
                 const startStub = sandbox.stub(Timer, 'start');
@@ -1321,7 +1439,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const tag = Timer.createTag(id, LOAD_METRIC.preloadTime);
             beforeEach(() => {
                 docBase.options.file = {
-                    id
+                    id,
                 };
             });
 
@@ -1352,7 +1470,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const preloadTime = {
                     start: 1,
                     end: 101,
-                    elapsed
+                    elapsed,
                 };
                 sandbox.stub(Timer, 'get').returns(preloadTime);
                 const metricStub = sandbox.stub(docBase, 'emitMetric');
@@ -1361,7 +1479,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(metricStub).to.be.calledWith({
                     name: LOAD_METRIC.previewPreloadEvent,
-                    data: elapsed
+                    data: elapsed,
                 });
             });
         });
@@ -1370,7 +1488,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let logger;
             beforeEach(() => {
                 logger = {
-                    setPreloaded: sandbox.stub()
+                    setPreloaded: sandbox.stub(),
                 };
                 docBase.options.logger = logger;
             });
@@ -1397,120 +1515,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('setupPdfjs()', () => {
-            beforeEach(() => {
-                stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => {
-                    return 'asset';
-                });
-                stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
-                stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-                stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
+            it('should set the worker source asset url', () => {
                 docBase.options = {
+                    file: {},
                     location: {
                         staticBaseURI: 'test/',
-                        locale: 'en-US'
+                        locale: 'en-US',
                     },
-                    file: {
-                        size: 10000000,
-                        extension: 'pdf',
-                        watermark_info: {
-                            is_watermarked: false
-                        },
-                        permissions: {
-                            can_download: undefined
-                        }
-                    }
                 };
-
-                PDFJS.disableRange = false;
-            });
-
-            it('should create the asset url', () => {
-                docBase.setupPdfjs();
-                expect(PDFJS.workerSrc).to.equal('asset');
-            });
-
-            it('should set external link settings', () => {
-                docBase.setupPdfjs();
-                expect(PDFJS.externalLinkTarget).to.equal(PDFJS.LinkTarget.BLANK);
-                expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
-            });
-
-            // @NOTE(JustinHoldstock) 2017-04-11: Check to remove or modify this after next IOS release after 10.3.1 or
-            // Safari version
-            it('should test if browser has font rendering issue', () => {
-                PDFJS.disableFontFace = false;
-                sandbox
-                    .mock(Browser)
-                    .expects('hasFontIssue')
-                    .returns(true);
-
                 docBase.setupPdfjs();
 
-                expect(PDFJS.disableFontFace).to.be.true;
-            });
-
-            it('should not disable streaming', () => {
-                docBase.setupPdfjs();
-                expect(PDFJS.disableStream).to.be.true;
-            });
-
-            it('should not disable range requests if the locale is en-US', () => {
-                docBase.setupPdfjs();
-                expect(PDFJS.disableRange).to.be.false;
-            });
-
-            it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
-                docBase.options.file.size = 26000000;
-                docBase.options.extension = 'pdf';
-                docBase.options.location.locale = 'ja-JP';
-                docBase.setupPdfjs();
-                expect(PDFJS.disableRange).to.be.true;
-            });
-
-            it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
-                docBase.options.location.locale = 'ja-JP';
-                docBase.options.file.size = 26500000;
-                docBase.options.extension = 'pdf';
-                docBase.options.file.watermark_info.is_watermarked = false;
-                docBase.setupPdfjs();
-                expect(PDFJS.disableRange).to.be.false;
-            });
-
-            it('should disable range requests if the file is watermarked', () => {
-                docBase.options.location.locale = 'ja-JP';
-                docBase.options.file.watermark_info.is_watermarked = true;
-                docBase.setupPdfjs();
-                expect(PDFJS.disableRange).to.be.true;
-            });
-
-            it('should disable or enable text layer based on download permissions', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
-                docBase.setupPdfjs();
-                expect(PDFJS.disableTextLayer).to.be.false;
-
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
-                docBase.setupPdfjs();
-                expect(PDFJS.disableTextLayer).to.be.true;
-            });
-
-            it('should disable the text layer if disableTextLayer viewer option is set', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
-                stubs.getViewerOption.withArgs('disableTextLayer').returns(true);
-
-                docBase.setupPdfjs();
-
-                expect(PDFJS.disableTextLayer).to.be.true;
-            });
-
-            it('should decrease max canvas size to 3MP if on mobile', () => {
-                docBase.isMobile = true;
-                docBase.setupPdfjs();
-                expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
-            });
-
-            it('should set disableCreateObjectURL to false', () => {
-                docBase.setupPdfjs();
-                expect(PDFJS.disableCreateObjectURL).to.equal(false);
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).to.equal('asset');
             });
         });
 
@@ -1539,7 +1554,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 <div></div>
                 `.trim();
                 expect(docBase.printPopup.loadingIndicator.innerHTML.replace(/\s/g, '')).to.equal(
-                    mockIndicator.innerHTML.replace(/\s/g, '')
+                    mockIndicator.innerHTML.replace(/\s/g, ''),
                 );
                 expect(docBase.printPopup.loadingIndicator.classList.contains('bp-crawler')).to.be.true;
             });
@@ -1552,7 +1567,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 clock = sinon.useFakeTimers();
                 docBase.printBlob = undefined;
                 stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({
-                    then: sandbox.stub()
+                    then: sandbox.stub(),
                 });
                 docBase.initPrint();
                 stubs.show = sandbox.stub(docBase.printPopup, 'show');
@@ -1577,7 +1592,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.printPopup.disableButton).to.be.called;
             });
 
-            it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
+            it("should directly print if print blob is ready and the print dialog hasn't been shown yet", () => {
                 docBase.printBlob = {};
                 docBase.printDialogTimeout = setTimeout(() => {});
                 sandbox.stub(docBase, 'browserPrint');
@@ -1586,7 +1601,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.browserPrint).to.be.called;
             });
 
-            it('should directly print if print blob is ready and the print dialog isn\'t visible', () => {
+            it("should directly print if print blob is ready and the print dialog isn't visible", () => {
                 docBase.printBlob = {};
                 docBase.printDialogTimeout = null;
                 sandbox.stub(docBase.printPopup, 'isVisible').returns(false);
@@ -1625,7 +1640,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('fetchPrintBlob()', () => {
             beforeEach(() => {
-                stubs.get = sandbox.stub(api, 'get').resolves('blob');
+                stubs.get = sandbox.stub(stubs.api, 'get').resolves('blob');
             });
 
             it('should get and set the blob', () => {
@@ -1657,11 +1672,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should add the correct listeners', () => {
                 docBase.hasTouch = false;
                 docBase.bindDOMListeners();
-                expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
-                expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-                expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-                expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
 
+                expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
                 expect(stubs.addEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
                 expect(stubs.addEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.addEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
@@ -1686,9 +1698,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should remove the docBase element listeners if the docBase element exists', () => {
                 docBase.unbindDOMListeners();
-                expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
-                expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-                expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
                 expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
             });
 
@@ -1721,6 +1730,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('unbindEventBusListeners', () => {
+            it('should remove all the event listeners on the internal PDFJS event bus', () => {
+                docBase.pdfEventBus = {
+                    _listeners: {
+                        event1: [() => {}],
+                        event2: [() => {}, () => {}],
+                    },
+                    off: sandbox.stub(),
+                };
+
+                docBase.unbindEventBusListeners();
+
+                expect(docBase.pdfEventBus.off).to.have.callCount(3);
+            });
+        });
+
         describe('pagesinitHandler()', () => {
             beforeEach(() => {
                 stubs.loadUI = sandbox.stub(docBase, 'loadUI');
@@ -1732,7 +1757,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
                 docBase.pdfViewer = {
-                    currentScale: 'unknown'
+                    currentScale: 'unknown',
                 };
 
                 docBase.pagesinitHandler();
@@ -1742,9 +1767,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.setupPages).to.be.called;
             });
 
-            it('should broadcast that the preview is loaded if it hasn\'t already', () => {
+            it("should broadcast that the preview is loaded if it hasn't already", () => {
                 docBase.pdfViewer = {
-                    currentScale: 'unknown'
+                    currentScale: 'unknown',
                 };
                 docBase.loaded = false;
                 docBase.pdfViewer.pagesCount = 5;
@@ -1755,7 +1780,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     encoding: docBase.encoding,
                     endProgress: false,
                     numPages: 5,
-                    scale: sinon.match.any
+                    scale: sinon.match.any,
                 });
                 expect(docBase.loaded).to.be.true;
             });
@@ -1765,7 +1790,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const PAGES_COUNT = 3;
                 docBase.startPageNum = START_PAGE_NUM;
                 docBase.pdfViewer = {
-                    pagesCount: PAGES_COUNT
+                    pagesCount: PAGES_COUNT,
                 };
                 docBase.pagesinitHandler();
 
@@ -1777,12 +1802,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
                     currentScale: 0.5,
-                    currentScaleValue: 0.5
+                    currentScaleValue: 0.5,
                 };
                 docBase.event = {
-                    detail: {
-                        pageNumber: 1
-                    }
+                    pageNumber: 1,
                 };
 
                 docBase.somePageRendered = false;
@@ -1819,45 +1842,45 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        describe('pagechangeHandler()', () => {
+        describe('pagechangingHandler()', () => {
             beforeEach(() => {
                 stubs.cachePage = sandbox.stub(docBase, 'cachePage');
                 stubs.emit = sandbox.stub(docBase, 'emit');
                 docBase.event = {
-                    pageNumber: 1
+                    pageNumber: 1,
                 };
                 docBase.pdfViewer = {
-                    pageCount: 1
+                    pageCount: 1,
                 };
                 docBase.pageControls = {
                     updateCurrentPage: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
                 stubs.updateCurrentPage = docBase.pageControls.updateCurrentPage;
             });
 
             it('should emit the pagefocus event', () => {
-                docBase.pagechangeHandler(docBase.event);
+                docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.emit).to.be.calledWith('pagefocus');
             });
 
             it('should update the current page', () => {
-                docBase.pagechangeHandler(docBase.event);
+                docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.updateCurrentPage).to.be.calledWith(docBase.event.pageNumber);
             });
 
             it('should cache the page if it is loaded', () => {
                 docBase.loaded = true;
-                docBase.pagechangeHandler(docBase.event);
+                docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.cachePage).to.be.calledWith(docBase.event.pageNumber);
             });
 
             it('should not cache the page if it is not loaded', () => {
                 docBase.loaded = false;
-                docBase.pagechangeHandler(docBase.event);
+                docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.cachePage).to.not.be.called;
             });
@@ -1867,7 +1890,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should update the scale value, and resize the page', () => {
                 docBase.pdfViewer = {
                     presentationModeState: 'normal',
-                    currentScaleValue: 'normal'
+                    currentScaleValue: 'normal',
                 };
                 const resizeStub = sandbox.stub(docBase, 'resize');
 
@@ -1881,7 +1904,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should update the scale value, and resize the page', () => {
                 docBase.pdfViewer = {
                     presentationModeState: 'fullscreen',
-                    currentScaleValue: 'pagefit'
+                    currentScaleValue: 'pagefit',
                 };
                 const resizeStub = sandbox.stub(docBase, 'resize');
 
@@ -1934,17 +1957,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     touches: [
                         {
                             pageX: 0,
-                            pageY: 100
+                            pageY: 100,
                         },
                         {
                             pageX: 200,
-                            pageY: 200
-                        }
-                    ]
+                            pageY: 200,
+                        },
+                    ],
                 };
                 docBase.isPinching = false;
                 docBase.pdfViewer = {
-                    _getVisiblePages: sandbox.stub()
+                    _getVisiblePages: sandbox.stub(),
                 };
                 sandbox.stub(util, 'getClosestPageToPinch').returns(document.createElement('div'));
                 sandbox.stub(util, 'getDistance');
@@ -1959,12 +1982,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 event.touches = [
                     {
                         pageX: 0,
-                        pageY: 100
+                        pageY: 100,
                     },
                     {
                         pageX: 200,
-                        pageY: 200
-                    }
+                        pageY: 200,
+                    },
                 ];
 
                 docBase.pinchToZoomStartHandler(event);
@@ -1995,7 +2018,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     event.touches[0].pageX,
                     event.touches[0].pageY,
                     event.touches[1].pageX,
-                    event.touches[1].pageY
+                    event.touches[1].pageY,
                 );
             });
         });
@@ -2009,24 +2032,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pinchPage = document.createElement('div');
                 docBase.isPinching = true;
                 eventWithScale = {
-                    scale: 1.5
+                    scale: 1.5,
                 };
 
                 eventWithoutScale = {
                     touches: [
                         {
                             pageX: 100,
-                            pageY: 100
+                            pageY: 100,
                         },
                         {
                             pageX: 300,
-                            pageY: 300
-                        }
-                    ]
+                            pageY: 300,
+                        },
+                    ],
                 };
 
                 docBase.pdfViewer = {
-                    currentScale: 1
+                    currentScale: 1,
                 };
 
                 sandbox.stub(util, 'getDistance');
@@ -2078,7 +2101,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 it('should do nothing if the proposed scale is greater than the MAX_SCALE', () => {
                     docBase.pdfViewer = {
-                        currentScale: 7
+                        currentScale: 7,
                     };
 
                     eventWithScale.scale = 2;
@@ -2089,7 +2112,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 it('should do nothing if the proposed scale is less than the MIN_SCALE', () => {
                     docBase.pdfViewer = {
-                        currentScale: 0.12
+                        currentScale: 0.12,
                     };
 
                     eventWithScale.scale = 0.25;
@@ -2111,7 +2134,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScaleValue: 1,
                     currentScale: 1,
-                    update: sandbox.stub()
+                    update: sandbox.stub(),
                 };
 
                 docBase.pinchScale = 1.5;
@@ -2158,7 +2181,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return the start page as a number', () => {
                 const startAt = {
                     value: 3,
-                    unit: PAGES_UNIT_NAME
+                    unit: PAGES_UNIT_NAME,
                 };
 
                 expect(docBase.getStartPage(startAt)).to.equal(3);
@@ -2167,7 +2190,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return the floored number if a floating point number is passed', () => {
                 const startAt = {
                     value: 4.1,
-                    unit: PAGES_UNIT_NAME
+                    unit: PAGES_UNIT_NAME,
                 };
 
                 expect(docBase.getStartPage(startAt)).to.equal(4);
@@ -2176,14 +2199,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return undefined if a value < 1 is passed', () => {
                 let startAt = {
                     value: 0,
-                    unit: PAGES_UNIT_NAME
+                    unit: PAGES_UNIT_NAME,
                 };
 
                 expect(docBase.getStartPage(startAt)).to.be.undefined;
 
                 startAt = {
                     value: -100,
-                    unit: PAGES_UNIT_NAME
+                    unit: PAGES_UNIT_NAME,
                 };
 
                 expect(docBase.getStartPage(startAt)).to.be.undefined;
@@ -2192,7 +2215,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return undefined if an invalid unit is passed', () => {
                 const startAt = {
                     value: 3,
-                    unit: 'foo'
+                    unit: 'foo',
                 };
 
                 expect(docBase.getStartPage(startAt)).to.be.undefined;
@@ -2201,7 +2224,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return undefined if an invalid value is passed', () => {
                 const startAt = {
                     value: 'foo',
-                    unit: PAGES_UNIT_NAME
+                    unit: PAGES_UNIT_NAME,
                 };
 
                 expect(docBase.getStartPage(startAt)).to.be.undefined;
@@ -2218,17 +2241,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     pagesCount: 4,
                     currentPageNumber: 1,
-                    cleanup: sandbox.stub()
+                    cleanup: sandbox.stub(),
                 };
 
                 docBase.controls = {
                     add: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
 
                 docBase.pageControls = {
                     add: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
             });
 
@@ -2239,20 +2262,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     __('toggle_thumbnails'),
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
-                    ICON_THUMBNAILS_TOGGLE
+                    ICON_THUMBNAILS_TOGGLE,
                 );
 
                 expect(docBase.controls.add).to.be.calledWith(
                     __('zoom_out'),
                     docBase.zoomOut,
                     'bp-doc-zoom-out-icon',
-                    ICON_ZOOM_OUT
+                    ICON_ZOOM_OUT,
                 );
                 expect(docBase.controls.add).to.be.calledWith(
                     __('zoom_in'),
                     docBase.zoomIn,
                     'bp-doc-zoom-in-icon',
-                    ICON_ZOOM_IN
+                    ICON_ZOOM_IN,
                 );
 
                 expect(docBase.pageControls.add).to.be.calledWith(1, 4);
@@ -2261,13 +2284,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     __('enter_fullscreen'),
                     docBase.toggleFullscreen,
                     'bp-enter-fullscreen-icon',
-                    ICON_FULLSCREEN_IN
+                    ICON_FULLSCREEN_IN,
                 );
                 expect(docBase.controls.add).to.be.calledWith(
                     __('exit_fullscreen'),
                     docBase.toggleFullscreen,
                     'bp-exit-fullscreen-icon',
-                    ICON_FULLSCREEN_OUT
+                    ICON_FULLSCREEN_OUT,
                 );
             });
 
@@ -2278,37 +2301,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         set: () => {},
                         has: () => {},
                         get: () => {},
-                        unset: () => {}
+                        unset: () => {},
                     },
                     container: containerEl,
                     representation: {
                         content: {
-                            url_template: 'foo'
-                        }
+                            url_template: 'foo',
+                        },
                     },
                     file: {
                         id: '0',
-                        extension: 'ppt'
+                        extension: 'ppt',
                     },
-                    enableThumbnailsSidebar: false
+                    enableThumbnailsSidebar: false,
                 });
                 docBase.containerEl = containerEl;
                 docBase.setup();
 
                 docBase.controls = {
                     add: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
 
                 docBase.pageControls = {
                     add: sandbox.stub(),
-                    removeListener: sandbox.stub()
+                    removeListener: sandbox.stub(),
                 };
 
                 docBase.pdfViewer = {
                     pagesCount: 4,
                     currentPageNumber: 1,
-                    cleanup: sandbox.stub()
+                    cleanup: sandbox.stub(),
                 };
 
                 // Invoke the method to test
@@ -2319,7 +2342,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     __('toggle_thumbnails'),
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
-                    ICON_THUMBNAILS_TOGGLE
+                    ICON_THUMBNAILS_TOGGLE,
                 );
             });
         });
@@ -2341,7 +2364,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 thumbnailsSidebar = {
                     toggle: stubs.toggleSidebar,
                     isOpen: false,
-                    destroy: () => {}
+                    destroy: () => {},
                 };
             });
 
@@ -2393,7 +2416,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const expWhitelist = [
                     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
                     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
-                    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN
+                    USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
                 ];
 
                 expect(docBase.getMetricsWhitelist()).to.be.eql(expWhitelist);
@@ -2410,9 +2433,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 thumbnailsSidebarEl = {
                     classList: {
                         add: stubs.classListAdd,
-                        remove: stubs.classListRemove
+                        remove: stubs.classListRemove,
                     },
-                    remove: sandbox.stub()
+                    remove: sandbox.stub(),
                 };
 
                 docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
@@ -2501,7 +2524,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.set).to.be.calledWith(
                     THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY,
                     { '0': true, '123': false },
-                    true
+                    true,
                 );
             });
 
@@ -2520,7 +2543,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 stubs.getCachedThumbnailsToggledState = sandbox.stub(docBase, 'getCachedThumbnailsToggledState');
                 mockPdfViewer = {
-                    pdfDocument: { numPages: 5 }
+                    pdfDocument: { numPages: 5 },
                 };
                 docBase.pdfViewer = mockPdfViewer;
             });
@@ -2549,7 +2572,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return false if document only has 1 page, even if cached state is true', () => {
                 stubs.getCachedThumbnailsToggledState.returns(true);
                 mockPdfViewer = {
-                    pdfDocument: { numPages: 1 }
+                    pdfDocument: { numPages: 1 },
                 };
                 docBase.pdfViewer = mockPdfViewer;
 
@@ -2559,7 +2582,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should return false if pdfDocument is not found', () => {
                 stubs.getCachedThumbnailsToggledState.returns(true);
                 mockPdfViewer = {
-                    pdfDocument: {}
+                    pdfDocument: {},
                 };
                 docBase.pdfViewer = mockPdfViewer;
 

@@ -39,6 +39,6 @@ export function getClientLogDetails() {
     return {
         client_version: CLIENT_VERSION,
         browser_name: Browser.getName(),
-        logger_session_id: PREVIEW_SESSION_ID
+        logger_session_id: PREVIEW_SESSION_ID,
     };
 }

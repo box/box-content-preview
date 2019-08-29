@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import api from '../../../api';
+import Api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
@@ -25,38 +25,39 @@ describe('lib/viewers/media/DashViewer', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/DashViewer-test.html');
         const containerEl = document.querySelector('.container');
-
+        stubs.api = new Api();
         dash = new DashViewer({
+            api: stubs.api,
             cache: {
                 set: () => {},
                 has: () => {},
                 get: () => {},
-                unset: () => {}
+                unset: () => {},
             },
             file: {
                 id: 0,
                 permissions: {
-                    can_download: true
-                }
+                    can_download: true,
+                },
             },
             container: containerEl,
             location: { locale: 'en-US' },
             representation: {
                 content: {
-                    url_template: 'url'
+                    url_template: 'url',
                 },
-                status: {}
-            }
+                status: {},
+            },
         });
 
         // Stubbing out sub-components of the dash player
         stubs.emit = sandbox.stub(dash, 'emit');
         dash.filmstripStatus = {
-            destroy: () => {}
+            destroy: () => {},
         };
 
         stubs.networkEngine = {
-            registerRequestFilter: () => {}
+            registerRequestFilter: () => {},
         };
         dash.player = {
             addEventListener: () => {},
@@ -71,11 +72,11 @@ describe('lib/viewers/media/DashViewer', () => {
             selectTextTrack: () => {},
             selectVariantTrack: () => {},
             selectAudioLanguage: () => {},
-            setTextTrackVisibility: () => {}
+            setTextTrackVisibility: () => {},
         };
         dash.autoCaptionDisplayer = {
             append: () => {},
-            setTextVisibility: () => {}
+            setTextVisibility: () => {},
         };
         stubs.mockPlayer = sandbox.mock(dash.player);
         stubs.mockDisplayer = sandbox.mock(dash.autoCaptionDisplayer);
@@ -90,7 +91,7 @@ describe('lib/viewers/media/DashViewer', () => {
             removeAllListeners: () => {},
             removeListener: () => {},
             show: sandbox.stub(),
-            setLabel: () => {}
+            setLabel: () => {},
         };
         stubs.mockControls = sandbox.mock(dash.mediaControls);
 
@@ -177,7 +178,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should not prefetch rep content if content is false', () => {
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
             dash.prefetch({ assets: false, content: false });
@@ -187,7 +188,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.returns(false);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .never();
 
@@ -199,7 +200,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const contentUrl = 'someUrl';
             stubs.createUrl.returns(contentUrl);
             sandbox
-                .mock(api)
+                .mock(stubs.api)
                 .expects('get')
                 .withArgs(contentUrl, { type: 'document' });
 
@@ -265,12 +266,12 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.options = {
                 file: {
                     watermark_info: {
-                        is_watermarked: false
+                        is_watermarked: false,
                     },
                     representations: {
-                        entries: [{ representation: 'dash' }]
-                    }
-                }
+                        entries: [{ representation: 'dash' }],
+                    },
+                },
             };
 
             dash.requestFilter('', stubs.req);
@@ -286,12 +287,12 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.options = {
                 file: {
                     watermark_info: {
-                        is_watermarked: true
+                        is_watermarked: true,
                     },
                     representations: {
-                        entries: [{ representation: 'dash' }]
-                    }
-                }
+                        entries: [{ representation: 'dash' }],
+                    },
+                },
             };
 
             dash.requestFilter('', stubs.req);
@@ -538,8 +539,8 @@ describe('lib/viewers/media/DashViewer', () => {
                     severity: 2, // critical severity
                     category: 1,
                     code: 1100,
-                    data: ['foobar']
-                }
+                    data: ['foobar'],
+                },
             };
 
             dash.shakaErrorHandler(shakaError);
@@ -558,8 +559,8 @@ describe('lib/viewers/media/DashViewer', () => {
                     severity: 1, // recoverable severity
                     category: 1,
                     code: 1100,
-                    data: ['foobar']
-                }
+                    data: ['foobar'],
+                },
             };
 
             dash.shakaErrorHandler(shakaError);
@@ -572,7 +573,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 severity: 2, // critical severity
                 category: 1,
                 code: 1100, // HTTP Error code
-                data: ['foobar']
+                data: ['foobar'],
             };
             dash.shakaErrorHandler(shakaError);
 
@@ -587,7 +588,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 severity: 2, // critical severity
                 category: 1,
                 code: 1002, // hTTP Error code
-                data: ['foobar']
+                data: ['foobar'],
             };
             sandbox.stub(dash, 'handleDownloadError');
             dash.shakaErrorHandler(shakaError);
@@ -601,13 +602,13 @@ describe('lib/viewers/media/DashViewer', () => {
 
         afterEach(() => {
             Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
-                value: listenerFunc
+                value: listenerFunc,
             });
         });
 
         it('should add event listeners to the media controls', () => {
             Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
-                value: sandbox.mock()
+                value: sandbox.mock(),
             });
             stubs.mockControls.expects('addListener').withArgs('qualitychange', sinon.match.func);
             stubs.mockControls.expects('addListener').withArgs('subtitlechange', sinon.match.func);
@@ -663,7 +664,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 enableHDSettings: sandbox.stub(),
                 removeListener: sandbox.stub(),
                 removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
 
             Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: sandbox.mock() });
@@ -696,11 +697,11 @@ describe('lib/viewers/media/DashViewer', () => {
                             {
                                 representation: 'filmstrip',
                                 content: { url_template: '' },
-                                metadata: { interval: 1 }
-                            }
-                        ]
-                    }
-                }
+                                metadata: { interval: 1 },
+                            },
+                        ],
+                    },
+                },
             };
             stubs.createUrl = sandbox.stub(dash, 'createContentUrlWithAuthParams');
             sandbox.stub(dash, 'getRepStatus');
@@ -715,7 +716,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should do nothing if the filmstrip metadata field does not exist', () => {
             dash.options.file.representations.entries[1] = {
                 representation: 'filmstrip',
-                content: { url_template: '' }
+                content: { url_template: '' },
                 // Missing metadata field
             };
             dash.loadFilmStrip();
@@ -805,7 +806,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 append: () => {},
                 setTextVisibility: () => {},
                 isTextVisible: () => {},
-                destroy: () => {}
+                destroy: () => {},
             };
             dash.createTextCues = sandbox.stub();
             dash.setupAutoCaptionDisplayer = sandbox.stub();
@@ -817,10 +818,10 @@ describe('lib/viewers/media/DashViewer', () => {
             appears: [
                 {
                     start: 0,
-                    end: 1
-                }
+                    end: 1,
+                },
             ],
-            text: 'sometext'
+            text: 'sometext',
         };
 
         const cues = [{ 1: 'foo' }, { 2: 'bar' }];
@@ -874,13 +875,13 @@ describe('lib/viewers/media/DashViewer', () => {
         beforeEach(() => {
             stubs.appendStub = sandbox.stub();
             sandbox.stub(shaka.text, 'SimpleTextDisplayer').returns({
-                append: stubs.appendStub
+                append: stubs.appendStub,
             });
         });
 
         it('should setup a simpleTextDisplayer and configure the player', () => {
             stubs.mockPlayer.expects('configure').withArgs({
-                textDisplayFactory: sandbox.match.any
+                textDisplayFactory: sandbox.match.any,
             });
 
             dash.setupAutoCaptionDisplayer('foo');
@@ -903,7 +904,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             expect(dash.audioTracks).to.deep.equal([
                 { language: 'eng', role: 'audio0' },
-                { language: 'rus', role: 'audio1' }
+                { language: 'rus', role: 'audio1' },
             ]);
         });
 
@@ -1022,7 +1023,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.audioTracks = [
                 { language: 'eng', role: 'audio0' },
                 { language: 'eng', role: 'audio1' },
-                { language: 'eng', role: 'audio2' }
+                { language: 'eng', role: 'audio2' },
             ];
             sandbox.stub(dash.cache, 'get').returns('1');
 
@@ -1034,7 +1035,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.audioTracks = [
                 { language: 'eng', role: 'audio0' },
                 { language: 'eng', role: 'audio1' },
-                { language: 'eng', role: 'audio2' }
+                { language: 'eng', role: 'audio2' },
             ];
             sandbox.stub(dash.cache, 'get').returns('3');
 
@@ -1166,7 +1167,7 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('getStats').returns({
                 estimatedBandwidth: 2000,
                 streamBandwidth: 1000,
-                switchHistory: 'history'
+                switchHistory: 'history',
             });
             dash.getBandwidthInterval();
             expect(dash.bandwidthHistory[0]).to.deep.equal({ bandwidth: 2000, stream: 1000 });
@@ -1177,7 +1178,7 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('getStats').returns({
                 estimatedBandwidth: 2000,
                 streamBandwidth: 1000,
-                switchHistory: 'history'
+                switchHistory: 'history',
             });
             dash.statsEl = { textContent: '' };
             dash.mediaContainerEl = null;
@@ -1197,7 +1198,7 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('removeStats()', () => {
         beforeEach(() => {
             dash.mediaContainerEl = {
-                removeChild: () => {}
+                removeChild: () => {},
             };
             stubs.mock = sandbox.mock(dash.mediaContainerEl);
         });
@@ -1264,11 +1265,11 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('showGearHdIcon()', () => {
         const hdTrack = {
-            videoId: 1
+            videoId: 1,
         };
 
         const sdTrack = {
-            videoId: 2
+            videoId: 2,
         };
 
         beforeEach(() => {

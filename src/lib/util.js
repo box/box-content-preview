@@ -1,19 +1,29 @@
 import Uri from 'jsuri';
 import { decode } from 'box-react-ui/lib/utils/keys';
-import api from './api';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 import PreviewError from './PreviewError';
 import { ERROR_CODE } from './events';
 
-const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
-const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+const CLIENT_NAME = __NAME__; // eslint-disable-line no-undef
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
-/* eslint-disable no-undef */
-const CLIENT_NAME = __NAME__;
-export const CLIENT_VERSION = __VERSION__;
-/* eslint-enable no-undef */
+export const CLIENT_VERSION = __VERSION__; // eslint-disable-line no-undef
+const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
+const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+const PROMISE_MAP = {};
+
+/**
+ * Clears the promise map of any active promises
+ *
+ * @private
+ * @return {void}
+ */
+export function clearPromises() {
+    Object.keys(PROMISE_MAP).forEach(promiseKey => {
+        delete PROMISE_MAP[promiseKey];
+    });
+}
 
 /**
  * Creates an empty iframe or uses an existing one
@@ -196,7 +206,7 @@ export function appendQueryParams(url, queryParams) {
     }
 
     const uri = new Uri(url);
-    Object.keys(queryParams).forEach((key) => {
+    Object.keys(queryParams).forEach(key => {
         const value = queryParams[key];
         if (value) {
             if (uri.hasQueryParam(key)) {
@@ -230,7 +240,7 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
         shared_link: sharedLink,
         shared_link_password: password,
         [CLIENT_NAME_KEY]: CLIENT_NAME,
-        [CLIENT_VERSION_KEY]: CLIENT_VERSION
+        [CLIENT_VERSION_KEY]: CLIENT_VERSION,
     });
 }
 
@@ -260,7 +270,7 @@ export function createContentUrl(template, asset) {
 export function createAssetUrlCreator(location) {
     const { baseURI, staticBaseURI } = location;
 
-    return (name) => {
+    return name => {
         let asset;
 
         if (name.indexOf('http') === 0) {
@@ -290,7 +300,7 @@ export function prefetchAssets(urls, preload = false) {
     const { head } = document;
     const rel = preload ? 'preload' : 'prefetch';
 
-    urls.forEach((url) => {
+    urls.forEach(url => {
         if (!head.querySelector(`link[rel="${rel}"][href="${url}"]`)) {
             head.appendChild(createPrefetch(url, preload));
         }
@@ -307,7 +317,7 @@ export function prefetchAssets(urls, preload = false) {
 export function loadStylesheets(urls) {
     const { head } = document;
 
-    urls.forEach((url) => {
+    urls.forEach(url => {
         if (!head.querySelector(`link[rel="stylesheet"][href="${url}"]`)) {
             head.appendChild(createStylesheet(url));
         }
@@ -340,17 +350,18 @@ export function loadScripts(urls, disableAMD = false) {
         define = undefined;
     }
 
-    urls.forEach((url) => {
-        if (!head.querySelector(`script[src="${url}"]`)) {
+    urls.forEach(url => {
+        if (!head.querySelector(`script[src="${url}"]`) && !PROMISE_MAP[url]) {
             const script = createScript(url);
-            promises.push(
-                new Promise((resolve, reject) => {
-                    script.addEventListener('load', resolve);
-                    script.addEventListener('error', reject);
-                })
-            );
+            PROMISE_MAP[url] = new Promise((resolve, reject) => {
+                script.addEventListener('load', resolve);
+                script.addEventListener('error', reject);
+            });
+
             head.appendChild(script);
         }
+
+        promises.push(PROMISE_MAP[url]);
     });
 
     return Promise.all(promises)
@@ -358,11 +369,15 @@ export function loadScripts(urls, disableAMD = false) {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         })
         .catch(() => {
             if (disableAMD && amdPresent) {
                 define = defineRef;
             }
+
+            clearPromises();
         });
 }
 
@@ -419,7 +434,7 @@ export function findScriptLocation(name, script) {
         locale,
         version,
         baseURI,
-        staticBaseURI
+        staticBaseURI,
     };
 }
 
@@ -439,7 +454,7 @@ export function replacePlaceholders(string, placeholderValues) {
         return string;
     }
 
-    return string.replace(regex, (match) => {
+    return string.replace(regex, match => {
         // extracting the index that is supposed to replace the matched placeholder
         const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
 
@@ -487,7 +502,7 @@ export function setDimensions(element, width, height) {
  * @return {void}
  */
 export function activationHandler(handler) {
-    return (event) => {
+    return event => {
         if (event.type === 'click') {
             handler(event);
         } else if (event.type === 'keydown') {
@@ -602,13 +617,13 @@ export function getClosestPageToPinch(x, y, visiblePages) {
     }
 
     let closestPage = null;
-    for (let i = visiblePages.first.id, closestDistance = null; i <= visiblePages.last.id; i++) {
+    for (let i = visiblePages.first.id, closestDistance = null; i <= visiblePages.last.id; i += 1) {
         const page = document.querySelector(`#bp-page-${i}`);
         const pageMidpoint = getMidpoint(
             page.offsetLeft,
             page.offsetTop,
             page.offsetLeft + page.scrollWidth,
-            page.offsetTop + page.scrollHeight
+            page.offsetTop + page.scrollHeight,
         );
 
         const distance = getDistance(pageMidpoint[0], pageMidpoint[1], x, y);
@@ -649,7 +664,7 @@ export function getProp(object, propPath, defaultValue) {
     let value = object;
     const path = propPath.split('.');
 
-    for (let i = 0; i < path.length; i++) {
+    for (let i = 0; i < path.length; i += 1) {
         // Checks against null or undefined
         if (value == null) {
             return defaultValue;
@@ -735,15 +750,4 @@ export function handleRepresentationBlobFetch(response) {
     }
 
     return Promise.resolve(response);
-}
-
-/**
- * Method to fetch a given representation as a blob via an authenticated content URL.
- * Useful for determining the true state of a "successful" representation
- *
- * @param {string} contentUrl - a representation's authenticated content URL
- * @return {Promise} - Response from axios
- */
-export function fetchRepresentationAsBlob(contentUrl) {
-    return api.get(contentUrl, { type: 'blob' }).then(handleRepresentationBlobFetch);
 }

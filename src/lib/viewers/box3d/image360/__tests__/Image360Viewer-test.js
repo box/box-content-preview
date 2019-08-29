@@ -24,8 +24,8 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
             container: containerEl,
             token: '12345',
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         viewer.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);

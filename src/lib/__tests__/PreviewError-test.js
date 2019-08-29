@@ -26,12 +26,12 @@ describe('lib/PreviewError', () => {
 
         it('should default display message to generic error message if not provided', () => {
             const previewError = new PreviewError('some_code');
-            expect(previewError.displayMessage).to.equal('We\'re sorry, the preview didn\'t load.');
+            expect(previewError.displayMessage).to.equal("We're sorry, the preview didn't load.");
         });
 
         it('should default message to display message if message is not provided', () => {
             const previewError = new PreviewError('some_code');
-            expect(previewError.message).to.equal('We\'re sorry, the preview didn\'t load.');
+            expect(previewError.message).to.equal("We're sorry, the preview didn't load.");
         });
     });
 });

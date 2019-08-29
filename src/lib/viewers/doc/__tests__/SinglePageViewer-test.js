@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import SinglePageViewer from '../SinglePageViewer';
 import BaseViewer from '../../BaseViewer';
+import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
 let containerEl;
 let doc;
-let stubs = {};
 
 describe('lib/viewers/doc/SinglePageViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -21,8 +21,8 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         doc = new SinglePageViewer({
             container: containerEl,
             file: {
-                id: '0'
-            }
+                id: '0',
+            },
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -41,28 +41,30 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         }
 
         doc = null;
-        stubs = {};
     });
 
     describe('initPdfViewer()', () => {
-        const pdfViewer = {
-            linkService: new PDFJS.PDFLinkService(),
-            setDocument: sandbox.stub(),
-            enhanceTextSelection: true
-        };
+        const stubs = {};
 
         beforeEach(() => {
-            stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFSinglePageViewer').returns(pdfViewer);
+            stubs.pdfViewer = {
+                enhanceTextSelection: true,
+                linkService: {},
+                setDocument: sandbox.stub(),
+            };
+            stubs.pdfViewerClass = sandbox.stub().returns(stubs.pdfViewer);
+            stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => 'asset');
+
+            doc.pdfjsViewer = {
+                PDFSinglePageViewer: stubs.pdfViewerClass,
+            };
         });
 
         it('should return the default pdfViewer', () => {
             const result = doc.initPdfViewer();
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: true
-            });
-            expect(result).to.equal(pdfViewer);
+
+            expect(doc.pdfjsViewer.PDFSinglePageViewer).to.be.called;
+            expect(result).to.equal(stubs.pdfViewer);
         });
     });
 });

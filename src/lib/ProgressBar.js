@@ -1,7 +1,7 @@
 import {
     CLASS_IS_VISIBLE,
     CLASS_BOX_PREVIEW_PROGRESS_BAR,
-    CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER
+    CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER,
 } from './constants';
 
 const PROGRESS_INTERVAL_MS = 150;
@@ -60,7 +60,8 @@ class ProgressBar {
             if (this.progress >= 95) {
                 clearInterval(this.progressInterval);
                 return;
-            } else if (this.progress >= 80) {
+            }
+            if (this.progress >= 80) {
                 this.progress += Math.random();
             } else {
                 this.progress += Math.random() * 5;

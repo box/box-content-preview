@@ -39,7 +39,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
         it('should invoke imageAsset.destroy(), if it exists', () => {
             renderer.imageAsset = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
             const { imageAsset } = renderer;
             renderer.destroy();
@@ -67,7 +67,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
         it('should invoke textureAsset.destroy()', () => {
             renderer.textureAsset = {
-                destroy: sandbox.stub()
+                destroy: sandbox.stub(),
             };
             const { textureAsset } = renderer;
 
@@ -79,7 +79,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
         it('should nullify textureAsset if it exists', () => {
             renderer.textureAsset = {
-                destroy: sandbox.mock()
+                destroy: sandbox.mock(),
             };
 
             sandbox.stub(renderer, 'getSkyboxComponent');
@@ -90,7 +90,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
         it('should set "skyboxTexture" attribute to null, if skybox component exists on the scene', () => {
             const skybox = {
-                setAttribute: sandbox.stub()
+                setAttribute: sandbox.stub(),
             };
             renderer.skybox = skybox;
             sandbox.stub(renderer, 'getSkyboxComponent').returns(skybox);
@@ -104,7 +104,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         it('should return the .skybox instance if available', () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub()
+                setAttribute: sandbox.stub(),
             };
 
             renderer.skybox = skybox;
@@ -117,12 +117,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         it('should should not attempt to get skybox_renderer component if .skybox exists', () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub()
+                setAttribute: sandbox.stub(),
             };
             renderer.skybox = skybox;
 
             renderer.box3d = {
-                getObjectByClass: sandbox.stub()
+                getObjectByClass: sandbox.stub(),
             };
 
             renderer.getSkyboxComponent();
@@ -132,18 +132,18 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.skybox = null;
         });
 
-        it('should should get skybox_renderer component from scene if .skybox doesn\'t exists', () => {
+        it("should should get skybox_renderer component from scene if .skybox doesn't exists", () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub()
+                setAttribute: sandbox.stub(),
             };
 
             const scene = {
-                getComponentByScriptId: sandbox.stub().returns(skybox)
+                getComponentByScriptId: sandbox.stub().returns(skybox),
             };
 
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns(scene)
+                getObjectByClass: sandbox.stub().returns(scene),
             };
 
             renderer.getSkyboxComponent();
@@ -155,14 +155,14 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
     });
 
     describe('load()', () => {
-        it('should use sceneEntities value if provided for initialization', (done) => {
+        it('should use sceneEntities value if provided for initialization', done => {
             const mySceneEntities = {
                 light: 'light',
                 camera: 'camera',
-                action: ':D'
+                action: ':D',
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
                 expect(options.sceneEntities).to.deep.equal(mySceneEntities);
                 done();
                 return new Promise(() => {});
@@ -171,8 +171,8 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', { sceneEntities: mySceneEntities });
         });
 
-        it('should use default sceneEntities, if none provided, for initialization', (done) => {
-            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
+        it('should use default sceneEntities, if none provided, for initialization', done => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
                 expect(options.sceneEntities).to.deep.equal(sceneEntities);
                 done();
                 return new Promise(() => {});
@@ -181,15 +181,15 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('');
         });
 
-        it('should use provided inputSettings for initialization', (done) => {
+        it('should use provided inputSettings for initialization', done => {
             const myInputSettings = {
                 mouse_control: true,
                 left_click: 'probably',
                 right_click: true,
-                middle_click: 'always'
+                middle_click: 'always',
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
                 expect(options.inputSettings).to.deep.equal(myInputSettings);
                 done();
                 return new Promise(() => {});
@@ -198,14 +198,14 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', { inputSettings: myInputSettings });
         });
 
-        it('should call initBox3d() with the passed in options object', (done) => {
+        it('should call initBox3d() with the passed in options object', done => {
             const myOptions = {
                 inputSettings: { some: 'stuff' },
                 sceneSettings: { more: 'stuff' },
-                even: { more: 'things' }
+                even: { more: 'things' },
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
                 expect(options).to.deep.equal(myOptions);
                 done();
                 return new Promise(() => {});
@@ -214,11 +214,11 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', myOptions);
         });
 
-        it('should call loadPanoramaFile() with url for box3d representation', (done) => {
+        it('should call loadPanoramaFile() with url for box3d representation', done => {
             const fileUrl = 'I/am/a/url';
 
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
-            sandbox.stub(renderer, 'loadPanoramaFile').callsFake((url) => {
+            sandbox.stub(renderer, 'loadPanoramaFile').callsFake(url => {
                 expect(url).to.equal(fileUrl);
                 done();
                 return new Promise(() => {});
@@ -227,7 +227,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load(fileUrl);
         });
 
-        it('should call onSceneLoad() when done loading file', (done) => {
+        it('should call onSceneLoad() when done loading file', done => {
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
             sandbox.stub(renderer, 'loadPanoramaFile').returns(Promise.resolve());
             sandbox.stub(renderer, 'onSceneLoad').callsFake(() => {
@@ -242,7 +242,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         beforeEach(() => {
             // We don't care about super calls :D
             Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'enableVr', {
-                value: sandbox.stub()
+                value: sandbox.stub(),
             });
         });
 
@@ -250,7 +250,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             const spy = sandbox.spy();
 
             const skybox = {
-                setAttribute: spy
+                setAttribute: spy,
             };
 
             renderer.skybox = skybox;
@@ -265,7 +265,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             const spy = sandbox.spy();
 
             const skybox = {
-                setAttribute: spy
+                setAttribute: spy,
             };
 
             renderer.skybox = skybox;
@@ -281,7 +281,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         beforeEach(() => {
             // We don't care about super calls :D
             Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'disableVr', {
-                value: sandbox.stub()
+                value: sandbox.stub(),
             });
         });
 
@@ -289,7 +289,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             const spy = sandbox.spy();
 
             const skybox = {
-                setAttribute: spy
+                setAttribute: spy,
             };
 
             renderer.skybox = skybox;
@@ -304,7 +304,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             const spy = sandbox.spy();
 
             const skybox = {
-                setAttribute: spy
+                setAttribute: spy,
             };
 
             renderer.skybox = skybox;

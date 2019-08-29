@@ -171,8 +171,8 @@ class ThumbnailsSidebar {
 
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
-        this.pdfViewer.pdfDocument.getPage(1).then((page) => {
-            const { width, height } = page.getViewport(1);
+        this.pdfViewer.pdfDocument.getPage(1).then(page => {
+            const { width, height } = page.getViewport({ scale: 1 });
 
             // If the dimensions of the page are invalid then don't proceed further
             if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
@@ -185,7 +185,7 @@ class ThumbnailsSidebar {
             this.scale = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width;
             // Width : Height ratio of the page
             this.pageRatio = width / height;
-            const scaledViewport = page.getViewport(this.scale);
+            const scaledViewport = page.getViewport({ scale: this.scale });
             this.thumbnailHeight = Math.ceil(scaledViewport.height);
 
             this.virtualScroller.init({
@@ -196,7 +196,7 @@ class ThumbnailsSidebar {
                 margin: THUMBNAIL_MARGIN,
                 renderItemFn: this.createPlaceholderThumbnail,
                 onScrollEnd: this.generateThumbnailImages,
-                onInit: this.generateThumbnailImages
+                onInit: this.generateThumbnailImages,
             });
         });
     }
@@ -226,7 +226,7 @@ class ThumbnailsSidebar {
         const visibleThumbnails = this.virtualScroller.getVisibleItems();
         const nextThumbnailEl = visibleThumbnails
             .concat(this.currentThumbnails)
-            .find((thumbnailEl) => !thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED));
+            .find(thumbnailEl => !thumbnailEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED));
 
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
@@ -290,7 +290,7 @@ class ThumbnailsSidebar {
      */
     requestThumbnailImage(itemIndex, thumbnailEl) {
         requestAnimationFrame(() => {
-            this.createThumbnailImage(itemIndex).then((imageEl) => {
+            this.createThumbnailImage(itemIndex).then(imageEl => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
                     // Appends to the thumbnail nav element
@@ -328,7 +328,7 @@ class ThumbnailsSidebar {
 
         return this.getThumbnailDataURL(itemIndex + 1)
             .then(this.createImageEl)
-            .then((imageEl) => {
+            .then(imageEl => {
                 // Cache this image element for future use
                 this.thumbnailImageCache.set(itemIndex, { inProgress: false, image: imageEl });
 
@@ -346,8 +346,8 @@ class ThumbnailsSidebar {
 
         return this.pdfViewer.pdfDocument
             .getPage(pageNum)
-            .then((page) => {
-                const { width, height } = page.getViewport(1);
+            .then(page => {
+                const { width, height } = page.getViewport({ scale: 1 });
                 // Get the current page w:h ratio in case it differs from the first page
                 const curPageRatio = width / height;
 
@@ -373,8 +373,8 @@ class ThumbnailsSidebar {
                 const scale = canvasWidth / width;
                 return page.render({
                     canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport(scale)
-                });
+                    viewport: page.getViewport({ scale }),
+                }).promise;
             })
             .then(() => canvas.toDataURL());
     }
@@ -433,7 +433,7 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     applyCurrentPageSelection() {
-        this.currentThumbnails.forEach((thumbnailEl) => {
+        this.currentThumbnails.forEach(thumbnailEl => {
             const parsedPageNum = parseInt(thumbnailEl.dataset.bpPageNum, 10);
             if (parsedPageNum === this.currentPage) {
                 thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);

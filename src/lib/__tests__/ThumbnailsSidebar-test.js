@@ -4,7 +4,7 @@ import VirtualScroller from '../VirtualScroller';
 import * as utils from '../util';
 
 const sandbox = sinon.sandbox.create();
-const TEST_SCALE = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2 / 10;
+const TEST_SCALE = (DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2) / 10;
 
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
@@ -20,14 +20,16 @@ describe('ThumbnailsSidebar', () => {
     beforeEach(() => {
         fixture.load('__tests__/ThumbnailsSidebar-test.html');
 
-        stubs.raf = sandbox.stub(window, 'requestAnimationFrame').callsFake((callback) => callback());
+        stubs.raf = sandbox.stub(window, 'requestAnimationFrame').callsFake(callback => callback());
 
         stubs.getViewport = sandbox.stub();
-        stubs.render = sandbox.stub();
+        stubs.render = sandbox.stub().returns({
+            promise: Promise.resolve(),
+        });
 
         page = {
             getViewport: stubs.getViewport,
-            render: stubs.render
+            render: stubs.render,
         };
         pagePromise = Promise.resolve(page);
 
@@ -40,13 +42,13 @@ describe('ThumbnailsSidebar', () => {
         virtualScroller = {
             destroy: stubs.vsDestroy,
             getVisibleItems: stubs.vsGetVisibleItems,
-            scrollIntoView: stubs.vsScrollIntoView
+            scrollIntoView: stubs.vsScrollIntoView,
         };
 
         pdfViewer = {
             pdfDocument: {
-                getPage: stubs.getPage
-            }
+                getPage: stubs.getPage,
+            },
         };
 
         anchorEl = document.getElementById('test-thumbnails-sidebar');
@@ -161,11 +163,11 @@ describe('ThumbnailsSidebar', () => {
         const createThumbnailEl = (pageNum, contains) => {
             return {
                 classList: {
-                    contains: () => contains
+                    contains: () => contains,
                 },
                 dataset: {
-                    bpPageNum: pageNum
-                }
+                    bpPageNum: pageNum,
+                },
             };
         };
 
@@ -215,7 +217,7 @@ describe('ThumbnailsSidebar', () => {
 
             const thumbnailEl = {
                 lastChild: { appendChild: stubs.appendChild },
-                classList: { add: stubs.addClass }
+                classList: { add: stubs.addClass },
             };
 
             thumbnailsSidebar.requestThumbnailImage(0, thumbnailEl);
@@ -250,7 +252,7 @@ describe('ThumbnailsSidebar', () => {
             const cachedImage = {};
             stubs.createImageEl.returns(cachedImage);
 
-            return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
+            return thumbnailsSidebar.createThumbnailImage(0).then(imageEl => {
                 expect(stubs.createImageEl).to.be.called;
                 expect(stubs.setCacheEntry).to.be.calledWith(0, { inProgress: false, image: imageEl });
             });
@@ -261,7 +263,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.getCacheEntry.withArgs(0).returns({ inProgress: true });
             stubs.createImageEl.returns(cachedImage);
 
-            return thumbnailsSidebar.createThumbnailImage(0).then((imageEl) => {
+            return thumbnailsSidebar.createThumbnailImage(0).then(imageEl => {
                 expect(stubs.createImageEl).not.to.be.called;
                 expect(imageEl).to.be.null;
             });
@@ -281,14 +283,13 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has same ratio
-            stubs.getViewport.withArgs(1).returns({ width: 10, height: 10 });
-            stubs.render.returns(Promise.resolve());
+            stubs.getViewport.withArgs({ scale: 1 }).returns({ width: 10, height: 10 });
 
             const expScale = TEST_SCALE; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
 
             return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+                expect(stubs.getViewport.withArgs({ scale: expScale })).to.be.called;
             });
         });
 
@@ -298,14 +299,13 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.pageRatio = 1;
 
             // Current page has ratio of 0.5 instead of 1
-            stubs.getViewport.withArgs(1).returns({ width: 10, height: 20 });
-            stubs.render.returns(Promise.resolve());
+            stubs.getViewport.withArgs({ scale: 1 }).returns({ width: 10, height: 20 });
 
             const expScale = TEST_SCALE / 2; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10 / 2
 
             return thumbnailsSidebar.getThumbnailDataURL(0).then(() => {
                 expect(stubs.getPage).to.be.called;
-                expect(stubs.getViewport.withArgs(expScale)).to.be.called;
+                expect(stubs.getViewport.withArgs({ scale: expScale })).to.be.called;
             });
         });
     });
@@ -332,7 +332,7 @@ describe('ThumbnailsSidebar', () => {
             evt = {
                 target: targetEl,
                 preventDefault: stubs.preventDefault,
-                stopImmediatePropagation: stubs.stopImmediatePropagation
+                stopImmediatePropagation: stubs.stopImmediatePropagation,
             };
 
             thumbnailsSidebar.onThumbnailSelect = stubs.onThumbnailSelect;
@@ -364,7 +364,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.onThumbnailSelect = sandbox.stub();
             stubs.event = {
                 stopImmediatePropagation: sandbox.stub(),
-                preventDefault: sandbox.stub()
+                preventDefault: sandbox.stub(),
             };
             utils.decodeKeydown = sandbox.stub();
 
@@ -421,7 +421,7 @@ describe('ThumbnailsSidebar', () => {
         const paramaterizedTests = [
             { name: 'pageNumber is undefined', pageNumber: undefined },
             { name: 'pageNumber is less than 1', pageNumber: 0 },
-            { name: 'pageNumber is greater than last page', pageNumber: 11 }
+            { name: 'pageNumber is greater than last page', pageNumber: 11 },
         ];
 
         paramaterizedTests.forEach(({ name, pageNumber }) => {
@@ -450,7 +450,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.removeClass = sandbox.stub();
 
             // eslint-disable-next-line
-            const createTestThumbnail = (pageNum) => {
+            const createTestThumbnail = pageNum => {
                 const thumbnail = document.createElement('div');
                 thumbnail.dataset.bpPageNum = pageNum;
                 thumbnail.classList.add = stubs.addClass;

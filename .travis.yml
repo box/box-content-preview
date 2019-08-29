@@ -1,17 +1,21 @@
 language: node_js
 node_js:
     - '10'
-cache: yarn
+addons:
+    apt:
+        packages:
+            - libgconf-2-4
+cache:
+    yarn: true
+    directories:
+        - node_modules
+        - ~/.cache/Cypress
 before_install:
     - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
     - export PATH=$HOME/.yarn/bin:$PATH
 jobs:
     include:
-        - name: "Code Lint"
-          script: yarn lint
-        - name: "Unit Tests"
-          script: yarn test
+        - name: "Build & Test"
+          script: commitlint-travis && yarn lint && npm-run-all clean build:i18n build:ci test
         - name: "E2E Tests"
           script: yarn test:e2e
-        - name: "Build"
-          script: npm-run-all clean build:i18n build:ci

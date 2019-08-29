@@ -173,7 +173,7 @@ class Popup {
      * @param {Event} event - DOM event
      * @return {void}
      */
-    popupClickHandler = (event) => {
+    popupClickHandler = event => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -195,7 +195,7 @@ class Popup {
      * @param {Event} event - Keydown event
      * @return {boolean} Consumed or not
      */
-    keydownHandler = (event) => {
+    keydownHandler = event => {
         const key = decodeKeydown(event);
         switch (key) {
             case 'Esc':

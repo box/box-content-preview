@@ -12,26 +12,26 @@ const VIEWERS = [
         NAME: 'CSV',
         CONSTRUCTOR: CSVViewer,
         REP: 'text',
-        EXT: ['csv', 'tsv']
+        EXT: ['csv', 'tsv'],
     },
     {
         NAME: 'Markdown',
         CONSTRUCTOR: MarkdownViewer,
         REP: 'text',
-        EXT: ['md']
+        EXT: ['md'],
     },
     {
         NAME: 'Text',
         CONSTRUCTOR: PlainTextViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: HTML_EXTENSIONS
+        EXT: HTML_EXTENSIONS,
     },
     {
         NAME: 'Text',
         CONSTRUCTOR: PlainTextViewer,
         REP: 'text',
-        EXT: TXT_EXTENSIONS
-    }
+        EXT: TXT_EXTENSIONS,
+    },
 ];
 
 class TextLoader extends AssetLoader {

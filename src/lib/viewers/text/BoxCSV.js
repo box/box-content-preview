@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import ReactDOM from 'react-dom';
 import Grid from 'react-virtualized/dist/es/Grid/Grid';
 
 const HEIGHT_ROW = 30;
@@ -27,7 +27,7 @@ class BoxCSV {
      */
     destroy() {
         if (this.gridComponent) {
-            unmountComponentAtNode(this.csvEl);
+            ReactDOM.unmountComponentAtNode(this.csvEl);
             this.gridComponent = null;
         }
     }
@@ -58,7 +58,7 @@ class BoxCSV {
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
         const rowClass = this.getRowClassName(rowIndex);
         return (
-            <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>
+            <div key={key} className={`${rowClass} bp-text-csv-cell`} style={style}>
                 {this.data[rowIndex][columnIndex]}
             </div>
         );
@@ -72,8 +72,10 @@ class BoxCSV {
      * @private
      */
     renderCSV() {
-        const rowCount = this.data.length;
-        const columnCount = this.data[0].length;
+        const rowData = [...this.data];
+        const rowCount = rowData.length;
+        const rowSample = rowData.sort((a, b) => b.length - a.length)[0]; // Find the row with the most columns
+        const columnCount = rowSample.length;
 
         const maxWidth = this.csvEl.clientWidth;
         const maxHeight = this.csvEl.clientHeight;
@@ -87,18 +89,18 @@ class BoxCSV {
             columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
         }
 
-        this.gridComponent = render(
+        this.gridComponent = ReactDOM.render(
             <Grid
-                className='bp-text-csv-grid'
                 cellRenderer={this.cellRenderer}
-                width={maxWidth}
-                height={Math.min(maxHeight, calculatedHeight)}
+                className="bp-text-csv-grid"
                 columnCount={columnCount}
-                rowHeight={HEIGHT_ROW}
                 columnWidth={columnWidth}
+                height={Math.min(maxHeight, calculatedHeight)}
                 rowCount={rowCount}
+                rowHeight={HEIGHT_ROW}
+                width={maxWidth}
             />,
-            this.csvEl
+            this.csvEl,
         );
     }
 }

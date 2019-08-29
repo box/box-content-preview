@@ -18,7 +18,7 @@ describe('lib/viewers/media/Settings', () => {
             set: () => {},
             has: () => {},
             get: () => {},
-            unset: () => {}
+            unset: () => {},
         });
     });
 
@@ -52,7 +52,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('MEDIA_SPEEDS', () => {
         it('should be aligned with speed options in template', () => {
             const speedElements = [...document.querySelectorAll('.bp-media-settings-sub-item[data-type="speed"]')];
-            const dataValues = speedElements.map((elem) => elem.getAttribute('data-value'));
+            const dataValues = speedElements.map(elem => elem.getAttribute('data-value'));
             const mediaSpeeds = settings.getMediaSpeeds();
             expect(mediaSpeeds).to.deep.equal(dataValues);
         });
@@ -126,8 +126,8 @@ describe('lib/viewers/media/Settings', () => {
             const menuEl = {
                 getBoundingClientRect: () => ({
                     width: 0,
-                    height: 500 // 210 is max height of settings menu
-                })
+                    height: 500, // 210 is max height of settings menu
+                }),
             };
             settings.setMenuContainerDimensions(menuEl);
 
@@ -140,8 +140,8 @@ describe('lib/viewers/media/Settings', () => {
             const menuEl = {
                 getBoundingClientRect: () => ({
                     width: 0,
-                    height: MENU_HEIGHT
-                })
+                    height: MENU_HEIGHT,
+                }),
             };
             settings.setMenuContainerDimensions(menuEl);
 
@@ -247,7 +247,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Space',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -268,7 +268,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Enter',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -304,7 +304,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Space',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
             settings.menuEventHandler(event);
             settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
@@ -326,7 +326,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Enter',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
             settings.menuEventHandler(event);
             settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
@@ -361,7 +361,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Space',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -382,7 +382,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Enter',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -410,7 +410,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowUp',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -432,7 +432,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowUp',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -453,7 +453,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowDown',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -475,7 +475,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowDown',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -496,7 +496,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowLeft',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -517,7 +517,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowLeft',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -538,7 +538,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowRight',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -558,7 +558,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowRight',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -578,7 +578,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'ArrowRight',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -599,7 +599,7 @@ describe('lib/viewers/media/Settings', () => {
                 type: 'keydown',
                 key: 'Escape',
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.menuEventHandler(event);
@@ -640,7 +640,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should focus on the currently selected value', () => {
             // Select a different speed for testing purposes
             const prevSelected = settings.settingsEl.querySelector(
-                '[data-type="speed"].bp-media-settings-sub-item.bp-media-settings-selected'
+                '[data-type="speed"].bp-media-settings-sub-item.bp-media-settings-selected',
             );
             prevSelected.classList.remove('bp-media-settings-selected');
             const selected = settings.settingsEl.querySelector('[data-value="1.25"]');
@@ -670,7 +670,7 @@ describe('lib/viewers/media/Settings', () => {
 
             sandbox.stub(settings, 'reset');
             settings.firstMenuItem = {
-                focus: sandbox.stub()
+                focus: sandbox.stub(),
             };
             sandbox.stub(settings, 'chooseOption');
             sandbox.stub(settings, 'showSubMenu');
@@ -725,10 +725,10 @@ describe('lib/viewers/media/Settings', () => {
 
             expect(document.querySelector('[data-type="speed"] .bp-media-settings-value').textContent).to.equal('0.5');
             expect(document.querySelector('[data-type="speed"][data-value="1.0"]')).to.not.have.class(
-                'bp-media-settings-selected'
+                'bp-media-settings-selected',
             );
             expect(document.querySelector('[data-type="speed"][data-value="0.5"]')).to.have.class(
-                'bp-media-settings-selected'
+                'bp-media-settings-selected',
             );
         });
 
@@ -964,7 +964,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if click is outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'click', target: this.containerEl });
+            settings.blurHandler({ type: 'click', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
@@ -972,7 +972,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if space is pressed outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Space', target: this.containerEl });
+            settings.blurHandler({ type: 'keydown', key: 'Space', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
@@ -980,7 +980,7 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide if enter is pressed outside of settings element', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Enter', target: this.containerEl });
+            settings.blurHandler({ type: 'keydown', key: 'Enter', target: settings.containerEl });
 
             expect(settings.hide).to.be.called;
         });
@@ -999,7 +999,7 @@ describe('lib/viewers/media/Settings', () => {
             settings.blurHandler({
                 type: 'keydown',
                 key: 'Space',
-                target: document.querySelector('.bp-media-gear-icon')
+                target: document.querySelector('.bp-media-gear-icon'),
             });
 
             expect(settings.hide).to.not.be.called;
@@ -1011,7 +1011,7 @@ describe('lib/viewers/media/Settings', () => {
             settings.blurHandler({
                 type: 'keydown',
                 key: 'Enter',
-                target: document.querySelector('.bp-media-gear-icon')
+                target: document.querySelector('.bp-media-gear-icon'),
             });
 
             expect(settings.hide).to.not.be.called;
@@ -1031,7 +1031,7 @@ describe('lib/viewers/media/Settings', () => {
             settings.blurHandler({
                 type: 'keydown',
                 key: 'Space',
-                target: document.querySelector('.bp-media-settings-item')
+                target: document.querySelector('.bp-media-settings-item'),
             });
 
             expect(settings.hide).to.not.be.called;
@@ -1043,7 +1043,7 @@ describe('lib/viewers/media/Settings', () => {
             settings.blurHandler({
                 type: 'keydown',
                 key: 'Enter',
-                target: document.querySelector('.bp-media-settings-item')
+                target: document.querySelector('.bp-media-settings-item'),
             });
 
             expect(settings.hide).to.not.be.called;
@@ -1056,7 +1056,7 @@ describe('lib/viewers/media/Settings', () => {
                 key: 'Escape',
                 target: document.querySelector('.bp-media-gear-icon'),
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.blurHandler(event);
@@ -1073,7 +1073,7 @@ describe('lib/viewers/media/Settings', () => {
                 key: 'Escape',
                 target: document.querySelector('.bp-media-settings-item'),
                 preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub()
+                stopPropagation: sandbox.stub(),
             };
 
             settings.blurHandler(event);

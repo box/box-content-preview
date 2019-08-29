@@ -46,6 +46,7 @@ class MediaBaseViewer extends BaseViewer {
         this.handleAutoplay = this.handleAutoplay.bind(this);
         this.mediaendHandler = this.mediaendHandler.bind(this);
     }
+
     /**
      * @inheritdoc
      */
@@ -303,27 +304,31 @@ class MediaBaseViewer extends BaseViewer {
      *
      * @private
      * @emits volume
-     * @return {void}
+     * @return {Promise}
      */
     autoplay() {
-        // Play may return a promise depening on browser support. This promise
-        // will resolve when playback starts. If it fails, pause UI should be shown.
+        // Play may return a promise depending on browser support. This promise
+        // will resolve when playback starts. If it fails, we mute the video
+        // and try to play again.
         // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
         const autoPlayPromise = this.mediaEl.play();
 
         if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            autoPlayPromise
+            this.handleRate();
+            return autoPlayPromise
                 .then(() => {
-                    this.handleRate();
                     this.handleVolume();
                 })
                 .catch(() => {
-                    this.pause();
+                    // Auto-play was prevented, try muted play
+                    this.setVolume(0);
+                    this.mediaEl.play();
                 });
-        } else {
-            // Fallback to traditional autoplay tag if play does not return a promise
-            this.mediaEl.autoplay = true;
         }
+
+        // Fallback to traditional autoplay tag if play does not return a promise
+        this.mediaEl.autoplay = true;
+        return Promise.resolve();
     }
 
     /**
@@ -604,7 +609,7 @@ class MediaBaseViewer extends BaseViewer {
         } else {
             this.mediaEl.pause();
             this.emit('pause', {
-                userInitiated
+                userInitiated,
             });
         }
     }
@@ -837,7 +842,7 @@ class MediaBaseViewer extends BaseViewer {
          * @param {string} match - the timestamp substring e.g. 1h, 2m, or 3s
          * @return {number} - the number for the given unit
          */
-        const getValueOfMatch = (match) => {
+        const getValueOfMatch = match => {
             // Strip off unit (h, m, s) and convert to float
             const parsedMatch = parseFloat(match[0].slice(0, -1), 10);
             return Number.isNaN(parsedMatch) ? 0 : parsedMatch;
