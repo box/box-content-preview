@@ -232,7 +232,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('setOriginalImageSize()', () => {
+    describe('setOriginalImageSizes()', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [stubs.singleImageEl, stubs.singleImageEl, stubs.singleImageEl];
         });
