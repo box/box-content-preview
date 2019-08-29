@@ -28995,7 +28995,7 @@ function (_Annotation2) {
     if (data.fieldType === 'Sig') {
       data.fieldValue = null;
 
-      _this3.setFlags(_util.AnnotationFlag.HIDDEN);
+      // _this3.setFlags(_util.AnnotationFlag.HIDDEN);
     }
 
     return _this3;
