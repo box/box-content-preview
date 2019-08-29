@@ -94,7 +94,7 @@ class MultiImageViewer extends ImageBaseViewer {
     /**
      * Handles the load event for the first image.
      *
-     * @return {Promise} Promise to load bunch of images
+     * @return {void} Promise to load bunch of images
      */
 
     finishLoading() {
