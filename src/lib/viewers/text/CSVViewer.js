@@ -67,7 +67,18 @@ class CSVViewer extends TextBaseViewer {
                             if (this.isDestroyed() || !results) {
                                 return;
                             }
-                            this.data = results.data;
+
+                            const { errors = [], data } = results;
+
+                            if (errors.length) {
+                                const error = new PreviewError(ERROR_CODE.LOAD_CSV, undefined, {
+                                    ...errors[0],
+                                    silent: true,
+                                });
+                                this.triggerError(error);
+                            }
+
+                            this.data = data;
                             this.finishLoading();
                             URL.revokeObjectURL(workerSrc);
                         },
