@@ -238,13 +238,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should return a promise', () => {
-            const promise = multiImage.setOriginalImageSize();
+            const promise = multiImage.setOriginalImageSizes();
             expect(promise).to.be.a('Promise');
         });
 
         it('should return a promise that resolves after each image has a proper size', done => {
             // We've overridden super.setOriginalImageSize() to resolve immediately
-            multiImage.setOriginalImageSize().then(() => {
+            multiImage.setOriginalImageSizes().then(() => {
                 done();
             });
         });
