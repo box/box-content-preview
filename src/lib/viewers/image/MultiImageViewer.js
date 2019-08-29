@@ -9,7 +9,6 @@ const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
-const MULTI_PAGE_LOAD_LIMIT = 10;
 
 class MultiImageViewer extends ImageBaseViewer {
     /** @property {Image[]} - List of images rendered sequentially */
@@ -99,13 +98,10 @@ class MultiImageViewer extends ImageBaseViewer {
      */
 
     handleFirstImageLoad() {
-        if (this.singleImageEls.length > MULTI_PAGE_LOAD_LIMIT) {
-            super.setOriginalImageSize(this.imageEl).then(() => {
-                this.showUi();
-            });
-        }
-
-        this.finishLoading();
+        super.setOriginalImageSize(this.imageEl).then(() => {
+            this.showUI();
+            this.finishLoading();
+        });
     }
 
     /**

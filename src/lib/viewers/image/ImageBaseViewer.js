@@ -30,7 +30,7 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
-        this.showUi = this.showUi.bind(this);
+        this.showUI = this.showUI.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -70,14 +70,16 @@ class ImageBaseViewer extends BaseViewer {
      *
      * @return {void}
      */
-    showUi() {
-        if (!this.isLoaded()) {
-            this.loadUI();
-            this.zoom();
-            this.imageEl.classList.remove(CLASS_INVISIBLE);
-            this.loaded = true;
-            this.emit(VIEWER_EVENT.load);
+    showUI() {
+        if (this.isLoaded()) {
+            return;
         }
+
+        this.loadUI();
+        this.zoom();
+        this.imageEl.classList.remove(CLASS_INVISIBLE);
+        this.loaded = true;
+        this.emit(VIEWER_EVENT.load);
     }
 
     /**
@@ -92,7 +94,7 @@ class ImageBaseViewer extends BaseViewer {
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions.then(() => {
-            this.showUi();
+            this.showUI();
         });
     }
 
