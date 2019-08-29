@@ -607,17 +607,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.finishLoading();
             expect(stubs.setOriginalImageSize).to.have.been.called;
         });
-
-        it('should not load UI if previously loaded', () => {
-            stubs.setOriginalImageSize.returns(Promise.resolve());
-            imageBase.destroyed = false;
-            imageBase.loaded = true;
-
-            imageBase.finishLoading();
-            expect(stubs.loadUI).to.not.have.been.called;
-            expect(stubs.emit).to.not.have.been.called;
-            expect(stubs.zoom).to.not.have.been.called;
-        });
     });
 
     describe('disableViewerControls()', () => {

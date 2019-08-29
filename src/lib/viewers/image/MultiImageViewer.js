@@ -23,7 +23,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
-        this.handleFirstImageLoad = this.handleFirstImageLoad.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
     }
 
     /**
@@ -94,14 +94,12 @@ class MultiImageViewer extends ImageBaseViewer {
     /**
      * Handles the load event for the first image.
      *
-     * @return {void} Promise to load bunch of images
+     * @return {Promise} Promise to load bunch of images
      */
 
-    handleFirstImageLoad() {
-        super.setOriginalImageSize(this.imageEl).then(() => {
-            this.showUI();
-            this.finishLoading();
-        });
+    finishLoading() {
+        super.finishLoading();
+        this.setOriginalImageSizes();
     }
 
     /**
@@ -165,8 +163,14 @@ class MultiImageViewer extends ImageBaseViewer {
         this.singleImageEls[index].src = imageUrl;
     }
 
-    /** @inheritdoc */
-    setOriginalImageSize() {
+    /**
+     * Sets the original image width and height on the img element. Can be removed when
+     * naturalHeight and naturalWidth attributes work correctly in IE 11.
+     *
+     * @protected
+     * @return {Promise} A promise that is resolved if the original image dimensions were set.
+     */
+    setOriginalImageSizes() {
         const promises = [];
 
         this.singleImageEls.forEach(imageEl => {
@@ -302,7 +306,7 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     bindImageListeners(index) {
         if (index === 0) {
-            this.singleImageEls[index].addEventListener('load', this.handleFirstImageLoad);
+            this.singleImageEls[index].addEventListener('load', this.finishLoading);
         }
 
         this.singleImageEls[index].addEventListener('error', this.handleMultiImageDownloadError);

@@ -30,7 +30,6 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
-        this.showUI = this.showUI.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -66,23 +65,6 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
-     * Shows controls for images and removes loading indicator
-     *
-     * @return {void}
-     */
-    showUI() {
-        if (this.isLoaded()) {
-            return;
-        }
-
-        this.loadUI();
-        this.zoom();
-        this.imageEl.classList.remove(CLASS_INVISIBLE);
-        this.loaded = true;
-        this.emit(VIEWER_EVENT.load);
-    }
-
-    /**
      * Finishes loading the images.
      *
      * @return {void}
@@ -94,7 +76,12 @@ class ImageBaseViewer extends BaseViewer {
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions.then(() => {
-            this.showUI();
+            this.loadUI();
+            this.zoom();
+
+            this.imageEl.classList.remove(CLASS_INVISIBLE);
+            this.loaded = true;
+            this.emit(VIEWER_EVENT.load);
         });
     }
 
