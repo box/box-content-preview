@@ -33,12 +33,6 @@ echo "--------------------------------------------------------------------------
 \cp -rf pdfjs-dist/cmaps/* src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/
 rm -rf ./pdfjs-dist/
 
-# Fix Chrome console warning issue by not testing for moz-chunked-arraybuffer support in Chrome
-echo "-----------------------------------------------------------------------------------"
-echo "Tweaking pdf.js for Chrome..."
-echo "-----------------------------------------------------------------------------------"
-sed -e 's/function supportsMozChunkedClosure/!\(\/Chrome\/\.test\(navigator\.userAgent\)\) \&\& function supportsMozChunkedClosure/' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.js
-
 # Decreased default cached pages size to 5 on mobile web to lower memory usage
 echo "-----------------------------------------------------------------------------------"
 echo "Decreasing # of cached pages on mobile web..."
@@ -49,7 +43,7 @@ sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipo
 echo "-----------------------------------------------------------------------------------"
 echo "Enabling e-signature rendering without validation..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's@_this2.setFlags(_util.AnnotationFlag.HIDDEN);@\/\/_this2.setFlags(_util.AnnotationFlag.HIDDEN);@' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.js
+sed -e 's@_this3.setFlags(_util.AnnotationFlag.HIDDEN);@\/\/_this3.setFlags(_util.AnnotationFlag.HIDDEN);@' -i '' src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.js
 
 # Miniy the libraries
 ./build/minify_pdfjs.sh
