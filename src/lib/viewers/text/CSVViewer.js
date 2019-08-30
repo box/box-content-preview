@@ -6,6 +6,16 @@ import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import PreviewError from '../../PreviewError';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
+const PAPAPARSE_ERROR_TYPES = {
+    DELIMITER: 'Delimiter',
+    FIELD_MISMATCH: 'FieldMismatch',
+    QUOTES: 'Quotes',
+};
+const ERROR_PRIORITY = {
+    [PAPAPARSE_ERROR_TYPES.DELIMITER]: 0,
+    [PAPAPARSE_ERROR_TYPES.QUOTES]: 1,
+    [PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH]: 2,
+};
 
 class CSVViewer extends TextBaseViewer {
     /**
@@ -67,6 +77,9 @@ class CSVViewer extends TextBaseViewer {
                             if (this.isDestroyed() || !results) {
                                 return;
                             }
+
+                            this.checkForParseErrors(results);
+
                             this.data = results.data;
                             this.finishLoading();
                             URL.revokeObjectURL(workerSrc);
@@ -75,6 +88,36 @@ class CSVViewer extends TextBaseViewer {
                 });
             })
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Checks for parse errors and if present triggers an error silently
+     * @param {Array} results.errors Papaparse results errors array
+     * @return {void}
+     */
+    checkForParseErrors({ errors = [] } = {}) {
+        if (!errors.length) {
+            return;
+        }
+
+        const parseError = this.getWorstParseError(errors);
+
+        const error = new PreviewError(ERROR_CODE.PARSE_CSV, undefined, {
+            ...parseError,
+            silent: true,
+        });
+
+        this.triggerError(error);
+    }
+
+    /**
+     * Utility to sort the PapaParse errors by most significant and returning the first.
+     * The significance is defined as DELIMTER > QUOTES > FIELD_MISMATCH
+     * @param {Array} errors Array of errors from PapaParse parse results
+     * @return {Object} returns PapaParse error or undefined
+     */
+    getWorstParseError(errors = []) {
+        return errors.sort((a, b) => ERROR_PRIORITY[a.type] - ERROR_PRIORITY[b.type])[0];
     }
 
     /**
