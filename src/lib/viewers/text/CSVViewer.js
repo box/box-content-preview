@@ -6,7 +6,7 @@ import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import PreviewError from '../../PreviewError';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
-const PAPAPARSE_TYPES = {
+const PAPAPARSE_ERROR_TYPES = {
     DELIMITER: 'Delimiter',
     FIELD_MISMATCH: 'FieldMismatch',
     QUOTES: 'Quotes',
@@ -118,28 +118,28 @@ class CSVViewer extends TextBaseViewer {
             const { type: aType } = a;
             const { type: bType } = b;
 
-            if (aType === PAPAPARSE_TYPES.DELIMITER) {
-                if (bType !== PAPAPARSE_TYPES.DELIMITER) {
+            if (aType === PAPAPARSE_ERROR_TYPES.DELIMITER) {
+                if (bType !== PAPAPARSE_ERROR_TYPES.DELIMITER) {
                     return -1;
                 }
 
                 return 0;
             }
 
-            if (aType === PAPAPARSE_TYPES.FIELD_MISMATCH) {
-                if (bType !== PAPAPARSE_TYPES.FIELD_MISMATCH) {
+            if (aType === PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
+                if (bType !== PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
                     return 1;
                 }
 
                 return 0;
             }
 
-            if (aType === PAPAPARSE_TYPES.QUOTES) {
-                if (bType === PAPAPARSE_TYPES.DELIMITER) {
+            if (aType === PAPAPARSE_ERROR_TYPES.QUOTES) {
+                if (bType === PAPAPARSE_ERROR_TYPES.DELIMITER) {
                     return 1;
                 }
 
-                if (bType === PAPAPARSE_TYPES.FIELD_MISMATCH) {
+                if (bType === PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
                     return -1;
                 }
 
