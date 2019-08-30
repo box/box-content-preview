@@ -202,4 +202,55 @@ describe('lib/viewers/text/CSVViewer', () => {
             expect(csv.emit).to.be.calledWith(VIEWER_EVENT.load);
         });
     });
+
+    describe('checkForParseErrors()', () => {
+        beforeEach(() => {
+            stubs.getWorstParseError = sandbox.stub(csv, 'getWorstParseError');
+            stubs.triggerError = sandbox.stub(csv, 'triggerError');
+        });
+
+        it('should do nothing if no errors', () => {
+            csv.checkForParseErrors();
+
+            expect(stubs.triggerError).not.to.be.called;
+        });
+
+        it('should trigger error with a parse error', () => {
+            stubs.getWorstParseError.returns({ foo: 'bar' });
+
+            csv.checkForParseErrors([{ foo: 'bar' }]);
+
+            expect(stubs.triggerError).to.be.called;
+        });
+    });
+
+    describe('getWorstParseError()', () => {
+        const delimiterError = { type: 'Delimiter' };
+        const fieldsMismatchError = { type: 'FieldMismatch', id: 1 };
+        const fieldsMismatchError2 = { type: 'FieldMismatch', id: 2 };
+        const quotesError = { type: 'Quotes' };
+
+        [
+            { name: 'should return undefined if empty array', errors: [], expectedError: undefined },
+            {
+                name: 'should return delimiter type if present',
+                errors: [fieldsMismatchError, delimiterError, quotesError],
+                expectedError: delimiterError,
+            },
+            {
+                name: 'should return quotes type if no delimiter type in array',
+                errors: [fieldsMismatchError, quotesError],
+                expectedError: quotesError,
+            },
+            {
+                name: 'should return fields mismatch type if no other type present',
+                errors: [fieldsMismatchError, fieldsMismatchError2],
+                expectedError: fieldsMismatchError,
+            },
+        ].forEach(({ name, errors, expectedError }) => {
+            it(`${name}`, () => {
+                expect(csv.getWorstParseError(errors)).to.be.eql(expectedError);
+            });
+        });
+    });
 });

@@ -6,6 +6,11 @@ import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import PreviewError from '../../PreviewError';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
+const PAPAPARSE_TYPES = {
+    DELIMITER: 'Delimiter',
+    FIELD_MISMATCH: 'FieldMismatch',
+    QUOTES: 'Quotes',
+};
 
 class CSVViewer extends TextBaseViewer {
     /**
@@ -68,15 +73,9 @@ class CSVViewer extends TextBaseViewer {
                                 return;
                             }
 
-                            const { errors = [], data } = results;
+                            const { errors, data } = results;
 
-                            if (errors.length) {
-                                const error = new PreviewError(ERROR_CODE.LOAD_CSV, undefined, {
-                                    ...errors[0],
-                                    silent: true,
-                                });
-                                this.triggerError(error);
-                            }
+                            this.checkForParseErrors(errors);
 
                             this.data = data;
                             this.finishLoading();
@@ -86,6 +85,69 @@ class CSVViewer extends TextBaseViewer {
                 });
             })
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Checks for parse errors and if present triggers an error silently
+     * @param {Array} errors Array of errors from PapaParse parse results
+     * @return {void}
+     */
+    checkForParseErrors(errors = []) {
+        if (!errors.length) {
+            return;
+        }
+
+        const parseError = this.getWorstParseError(errors);
+
+        const error = new PreviewError(ERROR_CODE.PARSE_CSV, undefined, {
+            ...parseError,
+            silent: true,
+        });
+
+        this.triggerError(error);
+    }
+
+    /**
+     * Utility to sort the PapaParse errors by most significant and returning the first.
+     * The significance is defined as DELIMTER > QUOTES > FIELD_MISMATCH
+     * @param {Array} errors Array of errors from PapaParse parse results
+     * @return {Object} returns PapaParse error or undefined
+     */
+    getWorstParseError(errors = []) {
+        return errors.sort((a, b) => {
+            const { type: aType } = a;
+            const { type: bType } = b;
+
+            if (aType === PAPAPARSE_TYPES.DELIMITER) {
+                if (bType !== PAPAPARSE_TYPES.DELIMITER) {
+                    return -1;
+                }
+
+                return 0;
+            }
+
+            if (aType === PAPAPARSE_TYPES.FIELD_MISMATCH) {
+                if (bType !== PAPAPARSE_TYPES.FIELD_MISMATCH) {
+                    return 1;
+                }
+
+                return 0;
+            }
+
+            if (aType === PAPAPARSE_TYPES.QUOTES) {
+                if (bType === PAPAPARSE_TYPES.DELIMITER) {
+                    return 1;
+                }
+
+                if (bType === PAPAPARSE_TYPES.FIELD_MISMATCH) {
+                    return -1;
+                }
+
+                return 0;
+            }
+
+            return 0;
+        })[0];
     }
 
     /**
