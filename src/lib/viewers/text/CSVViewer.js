@@ -95,7 +95,7 @@ class CSVViewer extends TextBaseViewer {
      * @param {Array} results.errors Papaparse results errors array
      * @return {void}
      */
-    checkForParseErrors({ errors = [] }) {
+    checkForParseErrors({ errors = [] } = {}) {
         if (!errors.length) {
             return;
         }

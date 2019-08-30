@@ -218,7 +218,7 @@ describe('lib/viewers/text/CSVViewer', () => {
         it('should trigger error with a parse error', () => {
             stubs.getWorstParseError.returns({ foo: 'bar' });
 
-            csv.checkForParseErrors([{ foo: 'bar' }]);
+            csv.checkForParseErrors({ errors: [{ foo: 'bar' }] });
 
             expect(stubs.triggerError).to.be.called;
         });
