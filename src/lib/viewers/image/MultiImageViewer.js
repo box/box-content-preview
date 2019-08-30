@@ -23,6 +23,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
     }
 
     /**
@@ -91,6 +92,17 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Handles the load event for the first image.
+     *
+     * @return {void}
+     */
+
+    finishLoading() {
+        super.finishLoading();
+        this.setOriginalImageSizes();
+    }
+
+    /**
      * Loads the multipart image for viewing
      *
      * @override
@@ -151,8 +163,14 @@ class MultiImageViewer extends ImageBaseViewer {
         this.singleImageEls[index].src = imageUrl;
     }
 
-    /** @inheritdoc */
-    setOriginalImageSize() {
+    /**
+     * Sets the original image width and height on the img element. Can be removed when
+     * naturalHeight and naturalWidth attributes work correctly in IE 11.
+     *
+     * @protected
+     * @return {Promise} A promise that is resolved if the original image dimensions were set.
+     */
+    setOriginalImageSizes() {
         const promises = [];
 
         this.singleImageEls.forEach(imageEl => {

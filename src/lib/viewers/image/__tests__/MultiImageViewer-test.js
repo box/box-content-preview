@@ -157,7 +157,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 .catch(() => {});
         });
 
-        it('should make the images invisible', () => {
+        it('should ensure load timer is started', () => {
             sandbox.stub(multiImage, 'startLoadTimer');
             return multiImage
                 .load('file/100/content/{page}.png')
@@ -232,19 +232,19 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('setOriginalImageSize()', () => {
+    describe('setOriginalImageSizes()', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [stubs.singleImageEl, stubs.singleImageEl, stubs.singleImageEl];
         });
 
         it('should return a promise', () => {
-            const promise = multiImage.setOriginalImageSize();
+            const promise = multiImage.setOriginalImageSizes();
             expect(promise).to.be.a('Promise');
         });
 
         it('should return a promise that resolves after each image has a proper size', done => {
             // We've overridden super.setOriginalImageSize() to resolve immediately
-            multiImage.setOriginalImageSize().then(() => {
+            multiImage.setOriginalImageSizes().then(() => {
                 done();
             });
         });
