@@ -11,6 +11,11 @@ const PAPAPARSE_ERROR_TYPES = {
     FIELD_MISMATCH: 'FieldMismatch',
     QUOTES: 'Quotes',
 };
+const ERROR_PRIORITY = {
+    [PAPAPARSE_ERROR_TYPES.DELIMITER]: 0,
+    [PAPAPARSE_ERROR_TYPES.QUOTES]: 1,
+    [PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH]: 2,
+};
 
 class CSVViewer extends TextBaseViewer {
     /**
@@ -73,11 +78,9 @@ class CSVViewer extends TextBaseViewer {
                                 return;
                             }
 
-                            const { errors, data } = results;
+                            this.checkForParseErrors(results);
 
-                            this.checkForParseErrors(errors);
-
-                            this.data = data;
+                            this.data = results.data;
                             this.finishLoading();
                             URL.revokeObjectURL(workerSrc);
                         },
@@ -89,10 +92,10 @@ class CSVViewer extends TextBaseViewer {
 
     /**
      * Checks for parse errors and if present triggers an error silently
-     * @param {Array} errors Array of errors from PapaParse parse results
+     * @param {Array} results.errors Papaparse results errors array
      * @return {void}
      */
-    checkForParseErrors(errors = []) {
+    checkForParseErrors({ errors = [] }) {
         if (!errors.length) {
             return;
         }
@@ -114,40 +117,7 @@ class CSVViewer extends TextBaseViewer {
      * @return {Object} returns PapaParse error or undefined
      */
     getWorstParseError(errors = []) {
-        return errors.sort((a, b) => {
-            const { type: aType } = a;
-            const { type: bType } = b;
-
-            if (aType === PAPAPARSE_ERROR_TYPES.DELIMITER) {
-                if (bType !== PAPAPARSE_ERROR_TYPES.DELIMITER) {
-                    return -1;
-                }
-
-                return 0;
-            }
-
-            if (aType === PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
-                if (bType !== PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
-                    return 1;
-                }
-
-                return 0;
-            }
-
-            if (aType === PAPAPARSE_ERROR_TYPES.QUOTES) {
-                if (bType === PAPAPARSE_ERROR_TYPES.DELIMITER) {
-                    return 1;
-                }
-
-                if (bType === PAPAPARSE_ERROR_TYPES.FIELD_MISMATCH) {
-                    return -1;
-                }
-
-                return 0;
-            }
-
-            return 0;
-        })[0];
+        return errors.sort((a, b) => ERROR_PRIORITY[a.type] - ERROR_PRIORITY[b.type])[0];
     }
 
     /**
