@@ -9,6 +9,35 @@ const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 
+const getTestFile = (src) => {
+    if (!src) {
+        return [
+            'src/lib/**/*-test.js',
+            'src/lib/**/*-test.html'
+        ];
+    }
+
+    if (src.endsWith('/')) {
+        return [
+            `src/lib/${src}**/*-test.js`,
+            `src/lib/${src}**/*-test.html`
+        ];
+    }
+
+    const frags = src.split('/');
+    const fileName = frags[frags.length - 1];
+    if (!fileName) {
+        throw new Error('Incorrect path to source file');
+    }
+
+    const path = src.replace(fileName, '');
+    const base = path ? `src/lib/${path}` : 'src/lib';
+    return [
+        `${base}/__tests__/${fileName}-test.js`,
+        `${base}/__tests__/${fileName}-test.html`
+    ];
+};
+
 module.exports = config =>
     config.set({
         autoWatch: false,
@@ -68,9 +97,7 @@ module.exports = config =>
             `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/swf/${SWF_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/text/${TEXT_STATIC_ASSETS_VERSION}/**/*.js`,
-            'src/**/__tests__/**/*-test.js',
-            'src/**/__tests__/**/*-test.html',
-        ],
+        ].concat(getTestFile(config.src)),
 
         preprocessors: {
             'src/**/__tests__/**/*-test.js': ['webpack', 'sourcemap'],
