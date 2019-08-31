@@ -10,11 +10,11 @@
 }
 
 .bp-progress-bar {
-    background-color: $box-blue;
+    width: 0%;
     height: 3px;
+    background-color: $box-blue;
     opacity: 0;
     transition: opacity .3s ease-in, width .2s ease-in;
-    width: 0%;
 
     &.bp-is-visible {
         opacity: 1;

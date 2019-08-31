@@ -1,31 +1,31 @@
 .bp-media-scrubber-container {
-    height: 16px;
     position: relative;
     width: 100%;
+    height: 16px;
 }
 
 .bp-media-scrubber-wrapper {
-    height: 100%;
-    left: 50%;
     position: absolute;
     top: 0;
+    left: 50%;
     width: 100%;
+    height: 100%;
 }
 
 .bp-media-scrubber {
-    height: 3px;
-    left: -50%;
     position: absolute;
     top: 7px; /* Wrapper is 16px high. Bar is 3px high leaving 13px. 7px for top buffer and 6px for bottom. */
+    left: -50%;
     width: 100%;
+    height: 3px;
 }
 
 .bp-media-scrubber-converted,
 .bp-media-scrubber-buffered,
 .bp-media-scrubber-played,
 .bp-media-scrubber-underlay {
-    height: 3px;
     position: absolute;
+    height: 3px;
     transition: transform .1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
 }
 
@@ -35,9 +35,9 @@
 }
 
 .bp-media-scrubber-buffered {
-    background-color: $white;
-    height: 3px;
     position: absolute;
+    height: 3px;
+    background-color: $white;
 }
 
 .bp-media-scrubber-played {
@@ -46,21 +46,21 @@
 }
 
 .bp-media-scrubber-underlay {
-    cursor: not-allowed;
     width: 100%;
+    cursor: not-allowed;
 }
 
 .bp-media-scrubber-handle {
-    background-color: $box-blue;
-    border-radius: 6px;
-    cursor: pointer;
-    height: 12px;
-    margin-left: -6px; // Half of the width, to account for the width of the handle
     position: absolute;
     top: -4.25px;
-    transform: scale(0);
-    transition: transform .05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
     width: 12px;
+    height: 12px;
+    margin-left: -6px; // Half of the width, to account for the width of the handle
+    background-color: $box-blue;
+    border-radius: 6px;
+    transform: scale(0);
+    cursor: pointer;
+    transition: transform .05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
 }
 
 .bp-media-scrubber-container:hover .bp-media-scrubber-handle,

@@ -2,13 +2,13 @@
 
 .bp-media-mp4 {
     video {
-        cursor: none;
         display: block;
-        margin-left: auto;
-        margin-right: auto;
-        max-height: 100%;
-        max-width: 100%;
         width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        margin-right: auto;
+        margin-left: auto;
+        cursor: none;
     }
 
     .bp-media-controls-is-visible {

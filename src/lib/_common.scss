@@ -16,17 +16,17 @@ $header-height: 48px;
 }
 
 .bp-container {
-    border: 0 none;
-    font-size: 13px;
+    position: relative;
+    width: 100%;
+    min-width: 300px;
     height: 100%;
     margin: 0;
-    min-width: 300px;
-    overflow: hidden;
     padding: 0;
-    position: relative;
+    overflow: hidden;
+    font-size: 13px;
+    border: 0 none;
     // disables non-standard gestures such as double-tap to zoom
     touch-action: manipulation;
-    width: 100%;
 
     a {
         color: $seesee;
@@ -40,13 +40,13 @@ $header-height: 48px;
 }
 
 .bp-header {
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    height: $header-height;
+    padding: 0 20px;
     background-color: $white;
     border-bottom: 1px solid $seesee;
-    display: flex;
-    height: $header-height;
-    justify-content: space-between;
-    padding: 0 20px;
 
     .bp-custom-logo {
         max-height: 30px;
@@ -62,8 +62,8 @@ $header-height: 48px;
         padding: 0 10px;
 
         svg {
-            fill: lighten($better-black, 15%);
             vertical-align: middle;
+            fill: lighten($better-black, 15%);
         }
 
         &:hover {
@@ -118,27 +118,27 @@ $header-height: 48px;
 }
 
 .bp {
-    background-color: $ffive;
-    border: 0 none;
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
+    left: 0;
     display: flex;
     flex: 1 1 100%;
-    left: 0;
     margin: 0;
+    padding: 0;
+    background-color: $ffive;
+    border: 0 none;
     outline: none;
     -webkit-overflow-scrolling: touch;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
 
     // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
     &.bp-fullscreen-unsupported {
+        position: fixed;
+        top: 0;
+        right: 0;
         bottom: 0;
         left: 0;
-        position: fixed;
-        right: 0;
-        top: 0;
     }
 
     &.bp-dark {
@@ -146,20 +146,20 @@ $header-height: 48px;
     }
 
     .bp-content {
-        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
         bottom: 0;
+        left: 0;
         display: flex;
         flex: 1 1 auto;
-        left: 0;
+        align-items: center;
         outline: none;
-        position: absolute;
-        right: 0;
-        top: 0;
     }
 
     .bp-content.bp-is-fullscreen {
-        background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
         width: 100%;
+        background-color: inherit; // Safari needs some reminder of what to do for flex items in a flex container when in fullscreen
     }
 
     .bp-is-scrollable:focus {
@@ -168,9 +168,9 @@ $header-height: 48px;
 }
 
 .accessibility-hidden {
-    left: -9999px;
     position: absolute;
     top: auto; // Some browsers ignore left without a top
+    left: -9999px;
 }
 
 .bp-no-user-highlight {
@@ -194,8 +194,8 @@ $header-height: 48px;
 }
 
 .bp-overlay-wrapper {
-    display: inherit;
     position: relative;
+    display: inherit;
 
     .bp-overlay {
         margin-top: 5px;
@@ -203,19 +203,19 @@ $header-height: 48px;
 
     &.bp-is-visible {
         .bp-overlay {
-            opacity: 1;
-            pointer-events: all;
             transform: rotateY(0deg) rotateX(0deg);
-            transition-delay: 0s;
             visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+            pointer-events: all;
         }
     }
 }
 
 //---------- Override popup related CSS from _boxui.scss ----------//
 .bp-modal-dialog {
-    padding: 20px;
     width: 380px;
+    padding: 20px;
 
     // Prevents modal from becoming taller when crawler is swapped with print checkmark
     .bp-print-check {
@@ -224,27 +224,27 @@ $header-height: 48px;
 
     // Fix crawler appearance
     .bp-crawler {
-        font-size: 0;
+        width: 10px;
         height: 16px;
         margin: 0 auto;
+        font-size: 0;
         white-space: nowrap;
-        width: 10px;
     }
 }
 
 .bp-modal-header {
     display: block;
     float: right;
-    height: 0;
     width: 100%;
+    height: 0;
 }
 
 .bp-modal-content {
     text-align: center;
 
     .bp-modal-message {
-        color: $fours;
         margin: 10px 0 20px;
+        color: $fours;
     }
 }
 
@@ -252,10 +252,10 @@ $header-height: 48px;
     float: right;
 
     svg {
-        fill: $downtown-grey;
+        width: 24px;
         height: 24px;
         pointer-events: none;
-        width: 24px;
+        fill: $downtown-grey;
     }
 }
 
@@ -265,10 +265,10 @@ $header-height: 48px;
 }
 
 .bp-modal-backdrop {
-    background-color: $black;
-    height: 100%;
     position: fixed;
     width: 100%;
+    height: 100%;
+    background-color: $black;
 }
 
 .bp-popup-btn {
@@ -276,14 +276,14 @@ $header-height: 48px;
 }
 
 .bp-popup-modal {
-    left: 0;
-    margin: 0 auto;
     position: absolute;
-    right: 0;
     top: 100px;
+    right: 0;
+    left: 0;
 
     // z-index as the base modal
     z-index: 160; // follows bp-modal from boxui
+    margin: 0 auto;
 }
 
 .bp-container .bp-btn-primary {

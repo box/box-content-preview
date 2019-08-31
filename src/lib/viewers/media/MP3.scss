@@ -11,11 +11,11 @@
 
 .bp-media-mp3 {
     .bp-media-container {
-        height: 60px; // same as controls
-        max-width: 360px;
-        outline: 0 none;
-        overflow: visible; // to show settings popup
         width: 100%;
+        max-width: 360px;
+        height: 60px; // same as controls
+        overflow: visible; // to show settings popup
+        outline: 0 none;
     }
 
     .bp-media-fullscreen-icon {
@@ -29,8 +29,8 @@
 
     .bp-media-controls-wrapper {
         background: $black;
-        opacity: 1;
         visibility: visible;
+        opacity: 1;
     }
 
     .bp-media-settings-item-quality,

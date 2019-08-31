@@ -1,18 +1,18 @@
 .bp-images-wrapper {
-    border: 0 none;
-    bottom: 0;
-    cursor: default; // regular cursor when not hovering over images
-    height: 100%;
-    left: 0;
-    margin: 0 auto;
-    overflow: auto;
-    padding: 0;
     position: absolute;
-    right: 0;
-    text-align: center;
     top: 0;
-    white-space: nowrap;
+    right: 0;
+    bottom: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow: auto;
+    white-space: nowrap;
+    text-align: center;
+    border: 0 none;
+    cursor: default; // regular cursor when not hovering over images
 }
 
 .bp-images.pannable {
@@ -31,13 +31,13 @@
 }
 
 .bp-images {
-    border: 0 none;
     margin: 0 auto;
     padding: 0;
+    border: 0 none;
 }
 
 .bp-images img {
     display: block;
-    margin-bottom: 10px;
     width: 100%;
+    margin-bottom: 10px;
 }

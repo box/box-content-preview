@@ -3,32 +3,32 @@ $item-height: 26px;
 $item-hover-color: #f6fafd;
 
 .bp-media-settings {
+    position: absolute;
+    right: 16px;
+    bottom: 60px;
+    display: inline-block;
+    max-width: 400px;
+    max-height: 210px;
+    padding: $padding;
+    overflow-x: hidden;
+    overflow-y: auto; // So scrollbar doesn't show on hover in IE/Edge
+    color: $fours;
+    font-size: 10px;
+    line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
     background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
-    bottom: 60px;
-    color: $fours;
-    display: inline-block;
-    font-size: 10px;
-    line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
-    max-height: 210px;
-    max-width: 400px;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-    overflow-x: hidden;
-    overflow-y: auto; // So scrollbar doesn't show on hover in IE/Edge
-    padding: $padding;
-    position: absolute;
-    right: 16px;
-    transition: width .2s, height .2s;
     visibility: hidden;
+    transition: width .2s, height .2s;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
 
     .bp-media-settings-is-open & {
         visibility: visible;
     }
 
     .bp-media-mp3 & {
-        bottom: 65px;
         right: 0;
+        bottom: 65px;
     }
 }
 
@@ -73,13 +73,13 @@ $item-hover-color: #f6fafd;
 
 .bp-media-settings-item,
 .bp-media-settings-sub-item {
-    cursor: pointer;
     display: table-row;
     height: $item-height;
-    outline: 0 none; // will be overridden by our own
-    overflow: hidden;
     padding: $padding / 2;
+    overflow: hidden;
     white-space: nowrap;
+    outline: 0 none; // will be overridden by our own
+    cursor: pointer;
 
     &:hover {
         background-color: $item-hover-color;
@@ -157,8 +157,8 @@ $item-hover-color: #f6fafd;
 
 .bp-media-settings-label {
     color: $downtown-grey;
-    font-size: 11px;
     font-weight: 400;
+    font-size: 11px;
     text-transform: uppercase;
 
     .bp-media-settings-item & {
@@ -171,9 +171,9 @@ $item-hover-color: #f6fafd;
 }
 
 .bp-media-settings-value {
+    padding-left: 10px;
     color: $sunset-grey;
     font-size: 12px;
-    padding-left: 10px;
     text-align: left;
 
     .bp-media-settings-selected & {
@@ -186,8 +186,8 @@ $item-hover-color: #f6fafd;
     vertical-align: middle;
 
     svg {
-        height: 18px;
         width: 18px;
+        height: 18px;
     }
 }
 
@@ -197,9 +197,9 @@ $item-hover-color: #f6fafd;
     vertical-align: middle;
 
     svg {
+        width: 16px;
         height: 16px;
         visibility: hidden;
-        width: 16px;
     }
 
     .bp-media-settings-selected & svg {

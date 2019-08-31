@@ -2,21 +2,21 @@
 @import './MediaControls';
 
 .bp-media {
-    align-items: center;
-    border: 0 none;
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    align-items: center;
     justify-content: center;
-    left: 0;
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
+    border: 0 none;
     visibility: hidden;
-    width: 100%;
 
     &.bp-is-visible {
         visibility: visible;
@@ -24,28 +24,28 @@
 }
 
 .bp-media-container {
+    position: relative;
     min-width: 300px; // Prevent media controls from overflowing on small screens
     outline: 0 none;
-    position: relative;
-    user-select: none;  // Prevents copy paste dialog from appearing on mobile
+    user-select: none; // Prevents copy paste dialog from appearing on mobile
 }
 
 .bp-media-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    padding-top: 12px;
+    color: $white;
+    font-size: 40px;
+    text-align: center;
     background: rgba($black, .5);
     border: 4px solid $white;
     border-radius: 40px;
-    color: $white;
-    cursor: pointer;
-    font-size: 40px;
-    height: 80px;
-    left: 50%;
-    padding-top: 12px;
-    position: absolute;
-    text-align: center;
-    top: 50%;
     transform: translate(-50%, -50%);
+    cursor: pointer;
     transition: all .2s;
-    width: 80px;
 
     &:hover {
         background: $black;
@@ -81,9 +81,9 @@
     &,
     &.bp-loaded {
         .bp-is-buffering .bp-loading-wrapper {
+            display: flex;
             // Show loading indicator immediately
             animation-name: none;
-            display: flex;
 
             .bp-icon,
             .bp-loading-text,

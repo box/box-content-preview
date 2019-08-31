@@ -6,12 +6,12 @@
     overflow: hidden;
 
     .pdfViewer .page {
+        position: absolute;
+        top: 0;
+        right: 0;
         bottom: 0;
         left: 0;
         margin: auto;
-        position: absolute;
-        right: 0;
-        top: 0;
     }
 
     &.overflow-x {
@@ -29,12 +29,12 @@
 
 // Used for showing preload, aka Instant Preview
 .bp-presentation-preload-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
     left: 0;
     margin: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
     transition: opacity .5s;
 
     &.bp-is-invisible {
@@ -55,14 +55,14 @@
 
     // Absolutely center preload content
     .bp-preload-content {
-        background-color: $white;
-        bottom: 0;
-        display: block;
-        left: 1px; // Slight padding to help image text align with real text
-        margin: auto;
         position: absolute;
-        right: 0;
         top: 0;
+        right: 0;
+        bottom: 0;
+        left: 1px; // Slight padding to help image text align with real text
+        display: block;
+        margin: auto;
+        background-color: $white;
 
         &.bp-preload-overlay {
             background-color: rgba(255, 255, 255, .4);
