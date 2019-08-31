@@ -238,7 +238,7 @@ class Preview extends EventEmitter {
         // Token can also be null or undefined for offline use case.
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
-            this.previewOptions = Object.assign({}, options, { token });
+            this.previewOptions = { ...options, token };
         } else {
             throw new Error('Bad access token!');
         }
@@ -331,9 +331,7 @@ class Preview extends EventEmitter {
                 fileIds.push(fileOrId.toString());
             } else if (fileOrId && typeof fileOrId === 'object' && isValidFileId(fileOrId.id)) {
                 // Possible well-formed file object found in the collection
-                const wellFormedFileObj = Object.assign({}, fileOrId, {
-                    id: fileOrId.id.toString(),
-                });
+                const wellFormedFileObj = { ...fileOrId, id: fileOrId.id.toString() };
                 fileIds.push(wellFormedFileObj.id);
                 files.push(wellFormedFileObj);
             } else {
@@ -537,7 +535,7 @@ class Preview extends EventEmitter {
             }
 
             // This allows the browser to download representation content
-            const params = Object.assign({ response_content_disposition_type: 'attachment' }, queryParams);
+            const params = { response_content_disposition_type: 'attachment', ...queryParams };
             const downloadUrl = appendQueryParams(
                 this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
                 params,
@@ -869,7 +867,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     parseOptions(previewOptions) {
-        const options = Object.assign({}, previewOptions);
+        const options = { ...previewOptions };
 
         // Reset all options
         this.options = {};
@@ -986,14 +984,14 @@ class Preview extends EventEmitter {
      * @return {Object} combined options
      */
     createViewerOptions(moreOptions) {
-        return cloneDeep(
-            Object.assign({}, this.options, moreOptions, {
-                api: this.api,
-                location: this.location,
-                cache: this.cache,
-                ui: this.ui,
-            }),
-        );
+        return cloneDeep({
+            ...this.options,
+            ...moreOptions,
+            api: this.api,
+            location: this.location,
+            cache: this.cache,
+            ui: this.ui,
+        });
     }
 
     /**
@@ -1023,12 +1021,10 @@ class Preview extends EventEmitter {
      */
     loadFromServer() {
         const { apiHost, previewWMPref, queryParams } = this.options;
-        const params = Object.assign(
-            {
-                watermark_preference: convertWatermarkPref(previewWMPref),
-            },
-            queryParams,
-        );
+        const params = {
+            watermark_preference: convertWatermarkPref(previewWMPref),
+            ...queryParams,
+        };
 
         const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
 
@@ -1639,12 +1635,10 @@ class Preview extends EventEmitter {
      */
     prefetchNextFiles() {
         const { apiHost, previewWMPref, queryParams, skipServerUpdate } = this.options;
-        const params = Object.assign(
-            {
-                watermark_preference: convertWatermarkPref(previewWMPref),
-            },
-            queryParams,
-        );
+        const params = {
+            watermark_preference: convertWatermarkPref(previewWMPref),
+            ...queryParams,
+        };
 
         // Don't bother prefetching when there aren't more files or we need to skip server update
         if (this.collection.length < 2 || skipServerUpdate) {

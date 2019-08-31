@@ -235,7 +235,7 @@ describe('lib/Preview', () => {
 
             preview.show(file, token, options);
 
-            expect(stubs.parseOptions).to.be.calledWith(Object.assign({}, options, { token }));
+            expect(stubs.parseOptions).to.be.calledWith({ ...options, token });
         });
     });
 

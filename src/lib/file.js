@@ -120,7 +120,7 @@ export function checkFileValid(file) {
  * @return {Object} File version object normalized to a file object from the API
  */
 export function normalizeFileVersion(fileVersion, fileId) {
-    const file = Object.assign({}, fileVersion);
+    const file = { ...fileVersion };
     file.id = fileId; // ID returned by file versions API is file version ID, so we need to set to file ID
     file.shared_link = {}; // File versions API does not return shared link object
     file.file_version = {

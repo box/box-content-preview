@@ -27,7 +27,8 @@ const languages = isProd ? locales : ['en-US']; // Only 1 language needed for de
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {
-    const config = Object.assign(conf, {
+    const config = {
+        ...conf,
         entry: {
             annotations: ['box-annotations'],
             preview: [`${lib}/Preview.js`],
@@ -64,7 +65,7 @@ function updateConfig(conf, language, index) {
             inline: true,
             port: 8000,
         },
-    });
+    };
 
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));

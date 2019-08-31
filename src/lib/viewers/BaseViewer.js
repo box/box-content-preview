@@ -1121,14 +1121,14 @@ class BaseViewer extends EventEmitter {
             whoDrew: __('annotation_who_drew'),
         };
 
-        return cloneDeep(
-            Object.assign({}, this.options, moreOptions, {
-                isMobile: this.isMobile,
-                hasTouch: this.hasTouch,
-                locale: this.options.location.locale,
-                localizedStrings,
-            }),
-        );
+        return cloneDeep({
+            ...this.options,
+            ...moreOptions,
+            isMobile: this.isMobile,
+            hasTouch: this.hasTouch,
+            locale: this.options.location.locale,
+            localizedStrings,
+        });
     }
 
     /**
