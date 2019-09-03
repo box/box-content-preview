@@ -134,6 +134,9 @@ class RepStatus extends EventEmitter {
                     case ERROR_CODE.CONVERSION_UNSUPPORTED_FORMAT:
                         errorMessage = __('error_bad_file');
                         break;
+                    case ERROR_CODE.CONVERSION_FAILED:
+                        errorMessage = __('error_reupload');
+                        break;
                     default:
                         errorMessage = __('error_refresh');
                         break;

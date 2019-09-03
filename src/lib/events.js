@@ -22,6 +22,7 @@ export const ERROR_CODE = {
     BROWSER_GENERIC: 'error_browser_generic',
     BROWSER_UNSUPPORTED: 'error_browser_unsupported',
     CONTENT_DOWNLOAD: 'error_content_download',
+    CONVERSION_FAILED: 'error_conversion_failed',
     CONVERSION_GENERIC: 'error_conversion_generic',
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
