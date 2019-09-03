@@ -4,23 +4,23 @@
 .bp-media-controls-is-visible .bp-media-controls-wrapper,
 .bp-media-controls-wrapper:active,
 .bp-media-controls-wrapper:focus {
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
 }
 
 .bp-media-controls-wrapper {
-    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
-    bottom: 0;
-    height: 60px;
-    left: 0;
-    margin: auto;
-    opacity: 0;
-    overflow: hidden;
     position: absolute;
     right: 0;
-    transition: visibility .3s, opacity .3s;
-    visibility: hidden;
+    bottom: 0;
+    left: 0;
     width: 100%;
+    height: 60px;
+    margin: auto;
+    overflow: hidden;
+    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility .3s, opacity .3s;
 }
 
 .bp-media-time-scrubber-container {
@@ -29,10 +29,10 @@
 
 .bp-media-volume-scrubber-container-wrapper {
     display: inline-block;
+    width: 0;
     height: 40px;
     overflow: hidden;
     transition: width .2s ease-in-out;
-    width: 0;
 }
 
 .bp-media-controls-volume-scrubber-expand {
@@ -40,12 +40,12 @@
 }
 
 .bp-media-volume-scrubber-container {
-    display: inline-block;
-    height: 40px;
-    outline: 0 none;
-    padding: 10px 8px 0; // Need to pad left and right so that scrubber handle doesn't spill out of parent container
     position: relative;
+    display: inline-block;
     width: 96px;
+    height: 40px;
+    padding: 10px 8px 0; // Need to pad left and right so that scrubber handle doesn't spill out of parent container
+    outline: 0 none;
 
     .bp-media-scrubber-handle {
         transform: scale(1);
@@ -70,21 +70,21 @@
 
 .bp-media-controls-label,
 .bp-media-controls-btn {
-    background-color: transparent;
-    border: none;
-    color: $white;
-    cursor: pointer;
     display: inline-block;
-    font-size: 12px;
-    font-weight: 400;
+    width: 45px;
     height: 40px;
     margin: 0;
-    opacity: .7;
-    outline: 0 none;
     padding: 0;
+    color: $white;
+    font-weight: 400;
+    font-size: 12px;
     text-align: center;
     vertical-align: top;
-    width: 45px;
+    background-color: transparent;
+    border: none;
+    outline: 0 none;
+    cursor: pointer;
+    opacity: .7;
 
     &:hover {
         opacity: 1;
@@ -92,11 +92,11 @@
 }
 
 .bp-media-volume-icon {
-    display: inline-block;
-    height: 40px;
     position: relative;
-    vertical-align: top;
+    display: inline-block;
     width: 36px;
+    height: 40px;
+    vertical-align: top;
 
     .bp-is-mobile & {
         display: none;
@@ -104,12 +104,12 @@
 }
 
 .bp-media-controls-label {
-    cursor: default;
     display: inline-block;
-    line-height: 40px;
-    margin: 0 4px;
-    vertical-align: top;
     width: auto;
+    margin: 0 4px;
+    line-height: 40px;
+    vertical-align: top;
+    cursor: default;
 }
 
 .bp-media-controls-timecode {
@@ -118,9 +118,9 @@
 
 .bp-media-controls-volume-control {
     display: inline-block;
+    width: 45px;
     height: 40px;
     vertical-align: top;
-    width: 45px;
 
     .bp-is-mobile & {
         display: none;
@@ -163,35 +163,35 @@
 }
 
 .bp-media-controls-cc-icon-text {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
+    color: $white;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 24px;
+    letter-spacing: .1em;
     background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
     border-radius: 4px;
-    color: $white;
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 600;
-    height: 24px;
-    letter-spacing: .1em;
-    line-height: 24px;
-    padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
-    width: 24px;
 
     .bp-media-settings-subtitles-on & {
-        background-color: $box-blue;
         color: $white;
+        background-color: $box-blue;
     }
 }
 
 .bp-media-controls-hd {
+    position: absolute;
+    left: 22px;
+    display: none;
+    padding: 2px 2px 2px 3px;
+    font-weight: 600;
+    font-size: 8px;
+    line-height: 8px;
+    letter-spacing: .1em;
     background-color: $box-blue;
     border-radius: 3px;
-    display: none;
-    font-size: 8px;
-    font-weight: 600;
-    left: 22px;
-    letter-spacing: .1em;
-    line-height: 8px;
-    padding: 2px 2px 2px 3px;
-    position: absolute;
 
     .bp-media-controls-is-hd & {
         display: inline;
@@ -218,9 +218,9 @@
 .bp-media-volume-icon-low,
 .bp-media-volume-icon-medium,
 .bp-media-volume-icon-high {
-    display: none;
-    left: 6px;
     position: absolute;
+    left: 6px;
+    display: none;
 }
 
 .bp-media-volume-icon-is-mute .bp-media-volume-icon-mute,

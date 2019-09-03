@@ -10,14 +10,15 @@ const commonConfig = require('./webpack.common.config');
 
 const baseConfig = commonConfig('en-US');
 
-const config = Object.assign(baseConfig, {
+const config = {
+    ...baseConfig,
     mode: 'development',
     resolve: {
         alias: {
             sinon: 'sinon/pkg/sinon',
         },
     },
-});
+};
 
 if (isDebug) {
     config.devtool = 'inline-source-map';

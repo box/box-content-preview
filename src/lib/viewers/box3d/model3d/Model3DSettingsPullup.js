@@ -134,7 +134,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
         // Render Mode dropdown
         const renderPanelData = RENDER_MODES.map(entry => {
-            const entryCopy = Object.assign({}, entry);
+            const entryCopy = { ...entry };
             this.convertToValidCallback(entryCopy);
             return entryCopy;
         });
@@ -181,7 +181,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
         // Camera Projection dropdown
         const projectionPanelData = PROJECTION_MODES.map(entry => {
-            const entryCopy = Object.assign({}, entry);
+            const entryCopy = { ...entry };
             this.convertToValidCallback(entryCopy);
             return entryCopy;
         });

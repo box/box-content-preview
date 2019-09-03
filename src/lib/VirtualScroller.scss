@@ -3,16 +3,16 @@
     overflow-y: auto;
 
     .bp-vs-list {
+        position: relative;
         margin: 0;
         padding: 0;
-        position: relative;
     }
 
     .bp-vs-list-item {
-        box-sizing: border-box;
-        display: flex;
-        left: 0;
         position: absolute;
         right: 0;
+        left: 0;
+        display: flex;
+        box-sizing: border-box;
     }
 }

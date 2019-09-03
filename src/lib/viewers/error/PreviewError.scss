@@ -1,11 +1,11 @@
 @import '../../boxuiVariables';
 
 .bp-error {
+    width: 100%; // IE11 flex width bug - https://caniuse.com/#search=flex
+    height: 247px; // Error icon + text + optional download button
     color: $twos;
     font-size: 14px;
-    height: 247px; // Error icon + text + optional download button
     text-align: center;
-    width: 100%; // IE11 flex width bug - https://caniuse.com/#search=flex
 
     .bp-error-text {
         padding: 0 80px;

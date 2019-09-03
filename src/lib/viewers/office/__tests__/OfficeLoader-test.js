@@ -26,9 +26,9 @@ describe('lib/viewers/office/OfficeLoader', () => {
 
     describe('determineViewer()', () => {
         const fakeFiles = [
-            Object.assign({}, fakeFileTemplate, { extension: 'xlsx' }),
-            Object.assign({}, fakeFileTemplate, { extension: 'xlsm' }),
-            Object.assign({}, fakeFileTemplate, { extension: 'xlsb' }),
+            { ...fakeFileTemplate, extension: 'xlsx' },
+            { ...fakeFileTemplate, extension: 'xlsm' },
+            { ...fakeFileTemplate, extension: 'xlsb' },
         ];
 
         fakeFiles.forEach(fakeFile => {

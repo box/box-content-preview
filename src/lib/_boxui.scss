@@ -30,35 +30,35 @@
 // Buttons
 //------------------------------------------------------------------------------
 .bp-btn {
-    border-style: solid;
-    border-width: 1px;
-    box-sizing: border-box;
-    cursor: pointer;
+    position: relative;
     display: inline-block;
-    font-size: 13px;
-    line-height: 10px;
+    box-sizing: border-box;
     margin: 5px;
     padding: 10px 16px;
-    position: relative;
+    font-size: 13px;
+    line-height: 10px;
+    white-space: nowrap;
     text-align: center;
     text-decoration: none;
     vertical-align: top;
-    white-space: nowrap;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
     zoom: 1;
 
     &.is-disabled {
-        cursor: default;
         top: 0; // prevents disabled button from being depressed on click
+        cursor: default;
     }
 
     &.is-disabled,
     &.is-disabled:active,
     &.is-disabled:hover,
     &.is-disabled:focus {
+        color: #666;
         background-color: $haze;
         border: 1px solid $sf-fog;
         box-shadow: none;
-        color: #666;
         opacity: .4;
     }
 
@@ -70,13 +70,13 @@
 .bp-btn-plain,
 .bp-btn-plain:hover,
 .bp-btn-plain:active {
-    border: 0;
-    cursor: pointer;
-    font-weight: normal;
     height: auto;
     margin: 0;
     padding: 0;
+    font-weight: normal;
     vertical-align: middle;
+    border: 0;
+    cursor: pointer;
 
     svg {
         pointer-events: none;
@@ -85,33 +85,33 @@
 
 .bp-btn-plain {
     background: transparent;
-    box-shadow: none;
     outline: none;
+    box-shadow: none;
 
     &.is-disabled {
-        background-color: $haze;
         color: #666;
+        background-color: $haze;
         opacity: .4;
         pointer-events: none;
     }
 }
 
 .bp-btn {
-    -webkit-appearance: none;
-    background-color: $white;
-    border: 1px solid $sf-fog;
-    border-radius: 2px;
     color: $sunset-grey;
-    cursor: pointer;
     font-weight: 400;
     letter-spacing: 1px;
     text-shadow: none;
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    cursor: pointer;
     -webkit-transition: border-color linear .15s, box-shadow linear .15s, background-color linear .15s;
     transition: background-color .05s ease-in-out, border-color .05s ease-in-out;
+    -webkit-appearance: none;
 
     &:hover {
-        background-color: darken($white, 3%);
         text-decoration: none;
+        background-color: darken($white, 3%);
     }
 
     &:active,
@@ -122,23 +122,23 @@
     }
 
     &:focus {
-        border-color: darken($sf-fog, 14%);
-        box-shadow: 0 1px 2px fade-out($black, .9);
-        outline: 0;
         text-decoration: none;
+        border-color: darken($sf-fog, 14%);
+        outline: 0;
+        box-shadow: 0 1px 2px fade-out($black, .9);
     }
 }
 
 .bp-btn-primary {
+    color: $white;
     background-color: $box-blue;
     border-color: $box-blue;
-    color: $white;
 
     &:focus:hover,
     &:focus {
         border-color: $box-blue;
-        box-shadow: inset 0 0 0 1px fade-out($white, .2), 0 1px 2px fade-out($black, .9);
         outline: 0;
+        box-shadow: inset 0 0 0 1px fade-out($white, .2), 0 1px 2px fade-out($black, .9);
     }
 
     &:hover {
@@ -157,9 +157,9 @@
     &.is-disabled:active,
     &.is-disabled:hover,
     &.is-disabled:focus {
+        color: $white;
         background-color: $primary-color;
         border-color: $primary-color;
-        color: $white;
     }
 }
 
@@ -167,10 +167,10 @@
 // Forms
 //------------------------------------------------------------------------------
 .bp-textarea {
+    color: $sunset-grey;
     border: 1px solid $sf-fog;
     border-radius: 2px;
     box-shadow: inset 0 1px 1px lighten($black, 90%);
-    color: $sunset-grey;
     -webkit-transition: border-color linear .15s, box-shadow linear .1s;
     transition: border-color linear .15s, box-shadow linear .1s;
 }
@@ -181,8 +181,8 @@
 
 .bp-textarea:focus {
     border: 1px solid $box-blue;
-    box-shadow: none;
     outline: 0;
+    box-shadow: none;
 }
 
 .bp-controls {
@@ -191,14 +191,14 @@
     input[type='number'],
     div[contentEditable='true'],
     textarea {
+        width: 262px;
+        padding: 7px;
+        color: $twos;
         border: 1px solid #ccc;
         border-radius: 3px;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
-        color: $twos;
-        -webkit-font-smoothing: antialiased;
-        padding: 7px;
         transition: border-color linear .15s, box-shadow linear .1s;
-        width: 262px;
+        -webkit-font-smoothing: antialiased;
     }
 
     input[type='text']:hover,
@@ -213,8 +213,8 @@
     div[contentEditable='true']:focus,
     textarea:focus {
         border: 1px solid $primary-color;
-        box-shadow: none;
         outline: 0;
+        box-shadow: none;
     }
 
     input::-webkit-input-placeholder,
@@ -228,60 +228,60 @@
 // Menus
 //------------------------------------------------------------------------------
 .bp-overlay {
+    position: absolute;
+    z-index: 90;
+    margin: 0;
+    padding: 8px 0;
     background: $white;
     border: 1px solid $sf-fog;
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .1);
-    margin: 0;
-    opacity: 0;
-    padding: 8px 0;
-    pointer-events: none;
-    position: absolute;
     -webkit-transform: rotateY(-10deg) rotateX(-10deg);
     transform: rotateY(-10deg) rotateX(-10deg);
     -webkit-transform-origin: left top;
     transform-origin: left top;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
+    visibility: hidden;
+    opacity: 0;
     -webkit-transition: visibility 0s linear .075s, opacity .075s, -webkit-transform .125s;
     transition: visibility 0s linear .075s, opacity .075s, -webkit-transform .125s;
     transition: visibility 0s linear .075s, opacity .075s, transform .125s;
     transition: visibility 0s linear .075s, opacity .075s, transform .125s, -webkit-transform .125s;
-    visibility: hidden;
-    z-index: 90;
+    pointer-events: none;
 }
 
 .bp-link {
-    color: #64686d;
-    font-smoothing: antialiased;
-    line-height: 1.5em;
     overflow: hidden;
+    color: #64686d;
+    line-height: 1.5em;
+    white-space: nowrap;
     text-decoration: none;
     text-overflow: ellipsis;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, .004);
     -webkit-transition: color .05s;
     transition: color .05s;
-    white-space: nowrap;
+    font-smoothing: antialiased;
 }
 
 .bp-menu {
-    list-style: none;
-    margin: 0;
     min-width: 225px;
+    margin: 0;
     padding: 0;
     white-space: nowrap;
+    list-style: none;
 
     .link-group {
         ul {
             margin: 0;
 
             a {
-                color: #494949;
                 display: block;
                 padding: 5px 35px 5px 15px;
+                color: #494949;
 
                 &:hover {
-                    background: #f6fafd;
                     color: #1a5976;
+                    background: #f6fafd;
                     cursor: pointer;
                     fill: #1a5976;
                 }
@@ -294,27 +294,27 @@
 // Notifications
 //------------------------------------------------------------------------------
 .bp-notifications-wrapper {
-    height: 0; /* allows elements around notifications to be clickable */
-    left: 0;
     position: fixed;
-    right: 0;
     top: 0;
+    right: 0;
+    left: 0;
     z-index: 130;
+    height: 0; /* allows elements around notifications to be clickable */
 }
 
 .bp-notification {
+    display: flex;
     align-items: center;
+    max-width: 572px;
+    min-height: 48px;
+    margin: 10px auto;
+    padding: 10px 10px 10px 20px;
+    overflow: hidden;
+    color: $white;
+    font-weight: bold;
     background-color: $sunset-grey;
     border-radius: 4px;
     box-shadow: 0 2px 6px fade-out($black, .85);
-    color: $white;
-    display: flex;
-    font-weight: bold;
-    margin: 10px auto;
-    max-width: 572px;
-    min-height: 48px;
-    overflow: hidden;
-    padding: 10px 10px 10px 20px;
     transition: opacity .1s ease-out;
 
     &.info {
@@ -335,15 +335,15 @@
     }
 
     > span {
-        font-size: 15px;
         margin-right: auto;
         padding-right: 10px;
+        font-size: 15px;
     }
 
     &.wrap > span {
         overflow: hidden;
-        overflow-wrap: break-word;
         word-wrap: break-word; /* Include legacy name to support older browsers */
+        overflow-wrap: break-word;
     }
 
     &.ellipsis > span {
@@ -353,32 +353,32 @@
 
     button,
     a {
-        color: $white;
         flex: none;
+        color: $white;
 
         &.btn,
         &.btn:active:focus {
-            background-color: transparent;
-            border-color: $off-white;
             margin: 0 5px;
             padding: 7px 13px;
+            background-color: transparent;
+            border-color: $off-white;
         }
 
         &.close-btn {
+            margin: 0 7px;
+            font-weight: bold;
+            font-size: 14px;
             background: none;
             border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 0 7px;
-            opacity: .6;
             outline: none;
+            cursor: pointer;
+            opacity: .6;
 
             &.default-close-btn {
                 svg {
+                    width: 24px;
                     height: 24px;
                     pointer-events: none;
-                    width: 24px;
 
                     path.icon {
                         fill: $white;
@@ -394,41 +394,41 @@
 //------------------------------------------------------------------------------
 
 .bp-modal {
-    align-items: center;
+    position: fixed;
+    top: 0;
+    right: 0;
     bottom: 0;
+    left: 0;
+    z-index: 160;
     display: flex;
     flex: 1;
-    left: 0;
-    overflow: hidden;
+    align-items: center;
     padding: 30px;
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 160;
+    overflow: hidden;
 }
 
 .bp-modal-dialog {
-    background-clip: padding-box;
-    background-color: $white;
-    box-shadow: 0 3px 10px fade-out($black, .7);
-    margin: auto;
-    padding: 30px;
     position: relative;
     width: 460px;
+    margin: auto;
+    padding: 30px;
+    background-color: $white;
+    background-clip: padding-box;
+    box-shadow: 0 3px 10px fade-out($black, .7);
 }
 
 .bp-modal-header {
     display: flex;
-    font-size: 15px;
     font-weight: bold;
+    font-size: 15px;
 }
 
 .bp-modal-title {
     display: inline-block;
     flex: 1;
     overflow: hidden;
-    overflow-wrap: break-word;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .bp-modal-content {
@@ -436,40 +436,40 @@
 }
 
 .bp-modal-close-button {
+    color: $downtown-grey;
+    font-weight: bold;
+    font-size: 11px;
     background: none;
     border: 0;
-    color: $downtown-grey;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: bold;
     outline: 0;
+    cursor: pointer;
 }
 
 .bp-modal-backdrop {
-    background: $white;
-    bottom: 0;
-    filter: alpha(opacity=75);
-    left: 0;
-    opacity: .75;
     position: fixed;
-    right: 0;
     top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: -1; // .modal creates a new stacking context. Let's just make sure that backdrop is below dialog.
+    background: $white;
+    opacity: .75;
+    filter: alpha(opacity=75);
 }
 
 .bp-modal-actions {
-    align-items: center;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     text-align: right;
 }
 
 .bp-modal-container {
-    bottom: 0;
-    display: flex;
-    left: 0;
     position: fixed;
-    right: 0;
     top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: 89;
+    display: flex;
 }
