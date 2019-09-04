@@ -209,6 +209,9 @@ class MediaBaseViewer extends BaseViewer {
         this.emit(VIEWER_EVENT.load);
 
         this.loadUI();
+        // If media is muted because of auto-play,
+        // the volume icon should be updated after the UI is loaded
+        this.updateVolumeIcon();
         this.resize();
 
         // Make media element visible after resize

@@ -163,6 +163,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'loadUI');
+            sandbox.stub(media, 'updateVolumeIcon');
             sandbox.stub(media, 'resize');
             sandbox.stub(media, 'showMedia');
 
@@ -173,6 +174,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.loaded).to.be.true;
             expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(media.loadUI).to.be.called;
+            expect(media.updateVolumeIcon).to.be.called;
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
             expect(document.activeElement).to.equal(media.mediaContainerEl);
