@@ -115,8 +115,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
-            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
-            sandbox.stub(media, 'autoplay');
         });
 
         it('should load mediaUrl in the media element', () => {
@@ -138,16 +136,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             });
         });
 
-        it('should autoplay if enabled', () => {
-            media.isAutoplayEnabled.returns(true);
-            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            media.mediaEl = document.createElement('video');
-
-            return media.load().then(() => {
-                expect(media.autoplay).to.be.called;
-            });
-        });
-
         it('should invoke startLoadTimer()', () => {
             sandbox.stub(media, 'startLoadTimer');
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
@@ -163,7 +151,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'loadUI');
-            sandbox.stub(media, 'updateVolumeIcon');
             sandbox.stub(media, 'resize');
             sandbox.stub(media, 'showMedia');
 
@@ -174,10 +161,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.loaded).to.be.true;
             expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(media.loadUI).to.be.called;
-            expect(media.updateVolumeIcon).to.be.called;
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
             expect(document.activeElement).to.equal(media.mediaContainerEl);
+        });
+
+        it('should autoplay if enabled', () => {
+            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
+            sandbox.stub(media, 'autoplay');
+            media.mediaEl = document.createElement('video');
+
+            media.loadeddataHandler();
+
+            expect(media.autoplay).to.be.called;
         });
     });
 
