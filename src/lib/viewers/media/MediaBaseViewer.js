@@ -175,9 +175,6 @@ class MediaBaseViewer extends BaseViewer {
             .then(() => {
                 this.startLoadTimer();
                 this.mediaEl.src = this.mediaUrl;
-                if (this.isAutoplayEnabled()) {
-                    this.autoplay();
-                }
             })
             .catch(this.handleAssetError);
     }
@@ -203,13 +200,19 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
-        this.setMediaTime(this.startTimeInSeconds);
-        this.handleVolume();
-        this.loaded = true;
-        this.emit(VIEWER_EVENT.load);
 
         this.loadUI();
+
+        if (this.isAutoplayEnabled()) {
+            this.autoplay();
+        }
+
+        this.setMediaTime(this.startTimeInSeconds);
         this.resize();
+        this.handleVolume();
+
+        this.loaded = true;
+        this.emit(VIEWER_EVENT.load);
 
         // Make media element visible after resize
         this.showMedia();

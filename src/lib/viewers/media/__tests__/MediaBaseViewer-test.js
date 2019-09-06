@@ -115,8 +115,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
-            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
-            sandbox.stub(media, 'autoplay');
         });
 
         it('should load mediaUrl in the media element', () => {
@@ -135,16 +133,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             return media.load().then(() => {
                 expect(media.mediaEl.autoplay).to.be.true;
-            });
-        });
-
-        it('should autoplay if enabled', () => {
-            media.isAutoplayEnabled.returns(true);
-            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            media.mediaEl = document.createElement('video');
-
-            return media.load().then(() => {
-                expect(media.autoplay).to.be.called;
             });
         });
 
@@ -176,6 +164,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
             expect(document.activeElement).to.equal(media.mediaContainerEl);
+        });
+
+        it('should autoplay if enabled', () => {
+            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
+            sandbox.stub(media, 'autoplay');
+            media.mediaEl = document.createElement('video');
+
+            media.loadeddataHandler();
+
+            expect(media.autoplay).to.be.called;
         });
     });
 
