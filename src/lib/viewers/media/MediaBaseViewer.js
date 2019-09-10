@@ -317,15 +317,22 @@ class MediaBaseViewer extends BaseViewer {
         const autoPlayPromise = this.mediaEl.play();
 
         if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            this.handleRate();
             return autoPlayPromise
                 .then(() => {
+                    this.handleRate();
                     this.handleVolume();
                 })
                 .catch(() => {
                     // Auto-play was prevented, try muted play
                     this.setVolume(0);
-                    this.mediaEl.play();
+                    this.mediaEl
+                        .play()
+                        .then(() => {
+                            this.handleRate();
+                        })
+                        .catch(() => {
+                            this.mediaEl.pause();
+                        });
                 });
         }
 

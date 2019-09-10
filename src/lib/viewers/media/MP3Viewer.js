@@ -34,6 +34,33 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
     }
+
+    /**
+     * Determines if media should autoplay based on cached settings value.
+     *
+     * @override
+     * @emits volume
+     * @return {Promise}
+     */
+    autoplay() {
+        const autoPlayPromise = this.mediaEl.play();
+
+        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
+            return autoPlayPromise
+                .then(() => {
+                    this.handleRate();
+                    this.handleVolume();
+                })
+                .catch(() => {
+                    // Auto-play was prevented, pause
+                    this.mediaEl.pause();
+                });
+        }
+
+        // Fallback to traditional autoplay tag if play does not return a promise
+        this.mediaEl.autoplay = true;
+        return Promise.resolve();
+    }
 }
 
 export default MP3Viewer;
