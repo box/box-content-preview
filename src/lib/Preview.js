@@ -1239,7 +1239,6 @@ class Preview extends EventEmitter {
                 this.ui.finishProgressBar();
                 break;
             case VIEWER_EVENT.mediaEndAutoplay:
-                this.navigateRight();
                 break;
             case VIEWER_EVENT.error:
                 // Do nothing since 'error' event was already caught, and will be emitted
