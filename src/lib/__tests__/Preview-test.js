@@ -1789,14 +1789,6 @@ describe('lib/Preview', () => {
             expect(preview.ui.finishProgressBar).to.be.called;
         });
 
-        it('should not navigate right on mediaendautoplay event', () => {
-            sandbox.stub(preview, 'navigateRight');
-            const data = { event: VIEWER_EVENT.mediaEndAutoplay };
-
-            preview.handleViewerEvents(data);
-            expect(preview.navigateRight).to.not.be.called;
-        });
-
         it('should emit viewerevent when event does not match', () => {
             sandbox.stub(preview, 'emit');
             const data = {
