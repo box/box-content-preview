@@ -562,11 +562,11 @@ class MediaBaseViewer extends BaseViewer {
             this.setMediaTime(start);
         }
         if (arguments.length === 0 || hasValidStart) {
-            const autoPlayPromise = this.mediaEl.play();
+            const playPromise = this.mediaEl.play();
             this.handleRate();
             this.handleVolume();
 
-            return autoPlayPromise;
+            return playPromise;
         }
         return Promise.resolve();
     }
