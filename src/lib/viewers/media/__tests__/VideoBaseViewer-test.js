@@ -244,4 +244,31 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.rootEl.classList.contains('bp-dark')).to.be.true;
         });
     });
+
+    describe('autoplay()', () => {
+        beforeEach(() => {
+            videoBase.play = sandbox.stub().returns(Promise.resolve());
+        });
+
+        it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
+            videoBase.autoplay();
+            expect(videoBase.play).to.be.called;
+            expect(videoBase.mediaEl.autoplay).to.be.undefined;
+        });
+
+        it('should set autoplay to true if play does not return a promise', () => {
+            videoBase.play.returns(undefined);
+            videoBase.autoplay();
+            expect(videoBase.mediaEl.autoplay).to.be.true;
+        });
+
+        it('should muted autoplay if the promise is rejected', done => {
+            sandbox.stub(videoBase, 'setVolume');
+            videoBase.play.returns(Promise.reject());
+            videoBase.autoplay().then(() => {
+                expect(videoBase.setVolume).to.be.calledWith(0);
+                done();
+            });
+        });
+    });
 });

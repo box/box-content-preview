@@ -271,38 +271,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('autoplay()', () => {
-        beforeEach(() => {
-            media.mediaEl = {
-                play: sandbox.stub().returns(Promise.resolve()),
-            };
-
-            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
-            sandbox.stub(Browser, 'isIOS').returns(false);
-        });
-
-        it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
-            media.autoplay();
-            expect(media.mediaEl.play).to.be.called;
-            expect(media.mediaEl.autoplay).to.be.undefined;
-        });
-
-        it('should set autoplay to true if play does not return a promise', () => {
-            media.mediaEl.play.returns(undefined);
-            media.autoplay();
-            expect(media.mediaEl.autoplay).to.be.true;
-        });
-
-        it('should muted autoplay if the promise is rejected', done => {
-            sandbox.stub(media, 'setVolume');
-            media.mediaEl.play = sandbox.stub().returns(Promise.reject());
-            media.autoplay().then(() => {
-                expect(media.setVolume).to.be.calledWith(0);
-                done();
-            });
-        });
-    });
-
     describe('loadUI()', () => {
         it('should set up media controls and element', () => {
             const duration = 10;

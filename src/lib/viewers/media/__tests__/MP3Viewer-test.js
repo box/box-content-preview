@@ -77,12 +77,10 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
     describe('autoplay()', () => {
         it('should pause autoplay if the promise is rejected', done => {
-            mp3.mediaEl = {
-                play: sandbox.stub().returns(Promise.reject()),
-                pause: sandbox.stub(),
-            };
+            mp3.play = sandbox.stub().returns(Promise.reject());
+            sandbox.stub(mp3, 'pause');
             mp3.autoplay().then(() => {
-                expect(mp3.mediaEl.pause).to.be.called;
+                expect(mp3.pause).to.be.called;
                 done();
             });
         });

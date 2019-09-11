@@ -36,25 +36,20 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Determines if media should autoplay based on cached settings value.
+     * Autoplay the audio
      *
      * @override
      * @emits volume
      * @return {Promise}
      */
     autoplay() {
-        const autoPlayPromise = this.mediaEl.play();
+        // Play may return a promise depending on browser support. This promise
+        // will resolve when playback starts. If it fails, we pause the audio.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        const autoPlayPromise = this.play();
 
         if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            return autoPlayPromise
-                .then(() => {
-                    this.handleRate();
-                    this.handleVolume();
-                })
-                .catch(() => {
-                    // Auto-play was prevented, pause
-                    this.mediaEl.pause();
-                });
+            return autoPlayPromise.catch(this.pause);
         }
 
         // Fallback to traditional autoplay tag if play does not return a promise

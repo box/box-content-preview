@@ -303,43 +303,14 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Determines if media should autoplay based on cached settings value.
+     * Autoplay the media
+     * Noop here and overrided in child class
      *
      * @private
      * @emits volume
      * @return {Promise}
      */
-    autoplay() {
-        // Play may return a promise depending on browser support. This promise
-        // will resolve when playback starts. If it fails, we mute the video
-        // and try to play again.
-        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
-        const autoPlayPromise = this.mediaEl.play();
-
-        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            return autoPlayPromise
-                .then(() => {
-                    this.handleRate();
-                    this.handleVolume();
-                })
-                .catch(() => {
-                    // Auto-play was prevented, try muted play
-                    this.setVolume(0);
-                    this.mediaEl
-                        .play()
-                        .then(() => {
-                            this.handleRate();
-                        })
-                        .catch(() => {
-                            this.mediaEl.pause();
-                        });
-                });
-        }
-
-        // Fallback to traditional autoplay tag if play does not return a promise
-        this.mediaEl.autoplay = true;
-        return Promise.resolve();
-    }
+    autoplay() {}
 
     /**
      * Determines if autoplay is enabled
@@ -577,7 +548,7 @@ class MediaBaseViewer extends BaseViewer {
      * @param {number} start - start time in seconds
      * @param {number} end - end time in seconds
      * @emits play
-     * @return {void}
+     * @return {Promise}
      */
     play(start, end) {
         const hasValidStart = this.isValidTime(start);
@@ -591,10 +562,13 @@ class MediaBaseViewer extends BaseViewer {
             this.setMediaTime(start);
         }
         if (arguments.length === 0 || hasValidStart) {
-            this.mediaEl.play();
+            const autoPlayPromise = this.mediaEl.play();
             this.handleRate();
             this.handleVolume();
+
+            return autoPlayPromise;
         }
+        return Promise.resolve();
     }
 
     /**

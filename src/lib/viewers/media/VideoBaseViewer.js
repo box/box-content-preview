@@ -234,6 +234,33 @@ class VideoBaseViewer extends MediaBaseViewer {
     onKeydown(key) {
         return super.onKeydown(key);
     }
+
+    /**
+     * Autoplay the video
+     *
+     * @override
+     * @emits volume
+     * @return {Promise}
+     */
+    autoplay() {
+        // Play may return a promise depending on browser support. This promise
+        // will resolve when playback starts. If it fails, we mute the video
+        // and try to play again.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        const autoPlayPromise = this.play();
+
+        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
+            return autoPlayPromise.catch(() => {
+                // Auto-play was prevented, try muted play
+                this.setVolume(0);
+                this.play().catch(this.pause);
+            });
+        }
+
+        // Fallback to traditional autoplay tag if play does not return a promise
+        this.mediaEl.autoplay = true;
+        return Promise.resolve();
+    }
 }
 
 export default VideoBaseViewer;
