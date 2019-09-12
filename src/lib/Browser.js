@@ -319,26 +319,14 @@ class Browser {
     }
 
     /**
-     * Returns whether or not the device is a laptop/desktop Mac
-     *
-     * @public
-     * @return {boolean} Whether device is a Mac
-     */
-    static isMac() {
-        return /Macintosh; Intel Mac OS X/g.test(userAgent);
-    }
-
-    /**
-     * Returns whether or not the device is running IOS 10.3.x or browser is desktop Safari, both of which have Font
+     * Returns whether or not the device is running IOS 10.3.x, which has Font
      * Ligature rendering issues due to the font loading API.
      *
      * @public
      * @return {boolean} Whether device or browser have font ligature issues
      */
     static hasFontIssue() {
-        return (
-            (Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent)) || (Browser.isMac() && Browser.getName() === 'Safari')
-        );
+        return Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent);
     }
 
     /**
