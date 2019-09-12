@@ -303,14 +303,34 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handler for autoplay failure
+     * overrided in child class
+     *
+     * @private
+     */
+    handleAutoplayFail = () => {};
+
+    /**
      * Autoplay the media
-     * Noop here and overrided in child class
      *
      * @private
      * @emits volume
      * @return {Promise}
      */
-    autoplay() {}
+    autoplay() {
+        // Play may return a promise depending on browser support. This promise
+        // will resolve when playback starts.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        const autoPlayPromise = this.play();
+
+        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
+            return autoPlayPromise.catch(this.handleAutoplayFail);
+        }
+
+        // Fallback to traditional autoplay tag if play does not return a promise
+        this.mediaEl.autoplay = true;
+        return Promise.resolve();
+    }
 
     /**
      * Determines if autoplay is enabled
