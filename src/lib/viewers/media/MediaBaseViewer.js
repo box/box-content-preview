@@ -3,8 +3,9 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import PreviewError from '../../PreviewError';
+import Timer from '../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
 
 const CSS_CLASS_MEDIA = 'bp-media';
@@ -21,6 +22,11 @@ const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 
 class MediaBaseViewer extends BaseViewer {
+    /** @property {Object} - Keeps track of the different media metrics */
+    metrics = {
+        [MEDIA_METRIC.seeked]: false,
+    };
+
     /**
      * @inheritdoc
      */
@@ -28,23 +34,27 @@ class MediaBaseViewer extends BaseViewer {
         super(options);
 
         // Bind context for callbacks
+        this.containerClickHandler = this.containerClickHandler.bind(this);
         this.errorHandler = this.errorHandler.bind(this);
-        this.setTimeCode = this.setTimeCode.bind(this);
-        this.progressHandler = this.progressHandler.bind(this);
-        this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
-        this.playingHandler = this.playingHandler.bind(this);
+        this.handleAutoplay = this.handleAutoplay.bind(this);
+        this.handleRate = this.handleRate.bind(this);
+        this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.mediaendHandler = this.mediaendHandler.bind(this);
         this.pauseHandler = this.pauseHandler.bind(this);
+        this.playingHandler = this.playingHandler.bind(this);
+        this.processBufferFillMetric = this.processBufferFillMetric.bind(this);
+        this.processMetrics = this.processMetrics.bind(this);
+        this.progressHandler = this.progressHandler.bind(this);
         this.resetPlayIcon = this.resetPlayIcon.bind(this);
         this.seekHandler = this.seekHandler.bind(this);
-        this.loadeddataHandler = this.loadeddataHandler.bind(this);
-        this.containerClickHandler = this.containerClickHandler.bind(this);
-        this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
+        this.setTimeCode = this.setTimeCode.bind(this);
         this.setVolume = this.setVolume.bind(this);
-        this.togglePlay = this.togglePlay.bind(this);
+        this.startBufferFillTimer = this.startBufferFillTimer.bind(this);
+        this.stopBufferFillTimer = this.stopBufferFillTimer.bind(this);
         this.toggleMute = this.toggleMute.bind(this);
-        this.handleRate = this.handleRate.bind(this);
-        this.handleAutoplay = this.handleAutoplay.bind(this);
-        this.mediaendHandler = this.mediaendHandler.bind(this);
+        this.togglePlay = this.togglePlay.bind(this);
+        this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
     }
 
     /**
@@ -122,15 +132,14 @@ class MediaBaseViewer extends BaseViewer {
         // Try catch is needed due to weird behavior when src is removed
         try {
             if (this.mediaEl) {
-                this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
-                this.mediaEl.removeEventListener('progress', this.progressHandler);
-                this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
-                this.mediaEl.removeEventListener('playing', this.playingHandler);
-                this.mediaEl.removeEventListener('pause', this.pauseHandler);
-                this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
-                this.mediaEl.removeEventListener('seeked', this.seekHandler);
+                this.removeEventListenersForMediaElement();
+
                 this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
                 this.mediaEl.removeEventListener('error', this.errorHandler);
+
+                // Attempt to process the playback metrics at whatever point of playback has occurred
+                // before we destroy the viewer
+                this.processMetrics();
 
                 this.removePauseEventListener();
                 this.mediaEl.removeAttribute('src');
@@ -156,6 +165,9 @@ class MediaBaseViewer extends BaseViewer {
      */
     load() {
         super.load();
+
+        // Add event listeners for the media element
+        this.addEventListenersForMediaElement();
 
         const template = this.options.representation.content.url_template;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
@@ -365,9 +377,6 @@ class MediaBaseViewer extends BaseViewer {
 
         // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
-
-        // Add event listeners for the media element
-        this.addEventListenersForMediaElement();
     }
 
     /**
@@ -467,6 +476,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     progressHandler() {
+        if (!this.mediaControls) {
+            return;
+        }
+
         this.mediaControls.updateProgress();
     }
 
@@ -489,6 +502,8 @@ class MediaBaseViewer extends BaseViewer {
      */
     seekHandler() {
         this.hideLoadingIcon();
+
+        this.metrics[MEDIA_METRIC.seeked] = true;
         this.debouncedEmit('seeked', this.mediaEl.currentTime);
     }
 
@@ -500,10 +515,21 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     mediaendHandler() {
+        this.resetPlayIcon();
+
+        this.processMetrics();
+
         if (this.isAutoplayEnabled()) {
             this.emit(VIEWER_EVENT.mediaEndAutoplay);
         }
     }
+
+    /**
+     * Abstract. Must be implemented to process end of playback metrics
+     * @emits MEDIA_METRIC_EVENTS.endPlayback
+     * @return {void}
+     */
+    processMetrics() {}
 
     /**
      * Shows the play button in media content.
@@ -680,15 +706,54 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     addEventListenersForMediaElement() {
-        this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
-        this.mediaEl.addEventListener('progress', this.progressHandler);
-        this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
-        this.mediaEl.addEventListener('playing', this.playingHandler);
-        this.mediaEl.addEventListener('pause', this.pauseHandler);
-        this.mediaEl.addEventListener('ended', this.resetPlayIcon);
-        this.mediaEl.addEventListener('seeked', this.seekHandler);
+        this.mediaEl.addEventListener('canplay', this.stopBufferFillTimer);
         this.mediaEl.addEventListener('ended', this.mediaendHandler);
+        this.mediaEl.addEventListener('loadstart', this.startBufferFillTimer);
+        this.mediaEl.addEventListener('pause', this.pauseHandler);
+        this.mediaEl.addEventListener('playing', this.playingHandler);
+        this.mediaEl.addEventListener('progress', this.progressHandler);
+        this.mediaEl.addEventListener('seeked', this.seekHandler);
+        this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
+        this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
     }
+
+    /**
+     * Removes event listeners to the media element
+     * @return {void}
+     */
+    removeEventListenersForMediaElement() {
+        this.mediaEl.removeEventListener('canplay', this.stopBufferFillTimer);
+        this.mediaEl.removeEventListener('ended', this.mediaendHandler);
+        this.mediaEl.removeEventListener('loadstart', this.startBufferFillTimer);
+        this.mediaEl.removeEventListener('pause', this.pauseHandler);
+        this.mediaEl.removeEventListener('playing', this.playingHandler);
+        this.mediaEl.removeEventListener('progress', this.progressHandler);
+        this.mediaEl.removeEventListener('seeked', this.seekHandler);
+        this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
+        this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
+    }
+
+    startBufferFillTimer() {
+        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
+        Timer.start(tag);
+    }
+
+    stopBufferFillTimer() {
+        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
+        Timer.stop(tag);
+
+        // Only interested in the first event after 'loadstart' to determine the buffer fill
+        this.mediaEl.removeEventListener('canplay', this.stopBufferFillTimer);
+
+        this.processBufferFillMetric();
+    }
+
+    /**
+     * Abstract. Processes the buffer fill metric which represents the initial buffer time before playback begins
+     * @emits MEDIA_METRIC_EVENTS.bufferFill
+     * @return {void}
+     */
+    processBufferFillMetric() {}
 
     /**
      * Seeks forwards/backwards from current point
@@ -703,6 +768,7 @@ class MediaBaseViewer extends BaseViewer {
         // Make sure it's within bounds
         newTime = Math.max(0, Math.min(newTime, this.mediaEl.duration));
         this.setMediaTime(newTime);
+        this.metrics[MEDIA_METRIC.seeked] = true;
     }
 
     /**
@@ -864,6 +930,16 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         return timeInSeconds;
+    }
+
+    /**
+     * Overrides the base method
+     *
+     * @override
+     * @return {Array} - the array of metric names to be emitted only once
+     */
+    getMetricsWhitelist() {
+        return [MEDIA_METRIC_EVENTS.bufferFill, MEDIA_METRIC_EVENTS.endPlayback];
     }
 }
 
