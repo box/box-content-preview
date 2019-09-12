@@ -1,3 +1,7 @@
+## <small>2.18.1 (2019-09-12)</small>
+
+- fix(pdf): Enable pdf font conversion option for Safari user agents (#1070) ([dcbb940](https://github.com/box/box-content-preview/commit/dcbb940)), closes [#1070](https://github.com/box/box-content-preview/issues/1070)
+
 ## 2.18.0 (2019-09-04)
 
 - chore: Re-enable running karma tests for a single test file (#1064) ([d2deb4d](https://github.com/box/box-content-preview/commit/d2deb4d)), closes [#1064](https://github.com/box/box-content-preview/issues/1064)
