@@ -107,8 +107,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     load() {
-        // Add event listeners for the media element
-        this.addEventListenersForMediaElement();
+        this.loadUI();
 
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
@@ -661,7 +660,6 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.calculateVideoDimensions();
-        this.loadUI();
 
         if (this.isAutoplayEnabled()) {
             this.autoplay();

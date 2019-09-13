@@ -104,7 +104,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.destroy();
 
-            expect(media.mediaEl.removeEventListener.callCount).to.equal(9);
+            expect(media.mediaEl.removeEventListener.callCount).to.equal(11);
             expect(media.mediaEl.removeAttribute).to.be.calledWith('src');
             expect(media.mediaEl.load).to.be.called;
             expect(media.removePauseEventListener.callCount).to.equal(1);
@@ -115,11 +115,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
+            sandbox.stub(media, 'loadUI');
         });
 
         it('should load mediaUrl in the media element', () => {
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             return media.load().then(() => {
+                expect(media.loadUI).to.be.called;
                 expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
                 expect(media.mediaEl.src).to.equal('www.netflix.com');
@@ -150,7 +152,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'emit');
-            sandbox.stub(media, 'loadUI');
             sandbox.stub(media, 'resize');
             sandbox.stub(media, 'showMedia');
 
@@ -160,7 +161,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.handleVolume).to.be.called;
             expect(media.loaded).to.be.true;
             expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
-            expect(media.loadUI).to.be.called;
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
             expect(document.activeElement).to.equal(media.mediaContainerEl);
@@ -313,7 +313,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.loadUI();
 
             expect(media.addEventListenersForMediaControls).to.be.called;
-            expect(media.addEventListenersForMediaElement).to.be.called;
         });
     });
 
@@ -723,7 +722,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.addEventListenersForMediaElement();
 
-            expect(media.mediaEl.addEventListener.callCount).to.equal(8);
+            expect(media.mediaEl.addEventListener.callCount).to.equal(9);
         });
     });
 

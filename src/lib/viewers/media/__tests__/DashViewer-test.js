@@ -148,6 +148,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'loadAssets');
             sandbox.stub(dash, 'isAutoplayEnabled').returns(true);
             sandbox.stub(dash, 'autoplay');
+            sandbox.stub(dash, 'loadUI');
 
             sandbox.stub(dash, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(Promise, 'all').returns(stubs.promise);
@@ -159,6 +160,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(dash.loadDashPlayer).to.be.called;
                     expect(dash.resetLoadTimeout).to.be.called;
                     expect(dash.autoplay).to.be.called;
+                    expect(dash.loadUI).to.be.called;
                 })
                 .catch(() => {});
         });
@@ -224,6 +226,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(shaka, 'Player').returns(dash.player);
             stubs.mockPlayer.expects('addEventListener').withArgs('adaptation', sinon.match.func);
             stubs.mockPlayer.expects('addEventListener').withArgs('error', sinon.match.func);
+            stubs.mockPlayer.expects('addEventListener').withArgs('buffering', sinon.match.func);
             stubs.mockPlayer.expects('configure');
             stubs.mockPlayer
                 .expects('load')
@@ -631,7 +634,6 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'isAutoplayEnabled').returns(true);
             sandbox.stub(dash, 'autoplay');
             sandbox.stub(dash, 'loadFilmStrip');
-            sandbox.stub(dash, 'loadUI');
             sandbox.stub(dash, 'resize');
             sandbox.stub(dash, 'handleVolume');
             sandbox.stub(dash, 'startBandwidthTracking');
@@ -644,7 +646,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.options.autoFocus = true;
             dash.loadeddataHandler();
             expect(dash.autoplay).to.be.called;
-            expect(dash.loadUI).to.be.called;
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
             expect(dash.calculateVideoDimensions).to.be.called;

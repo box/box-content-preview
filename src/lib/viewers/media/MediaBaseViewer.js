@@ -171,8 +171,7 @@ class MediaBaseViewer extends BaseViewer {
     load() {
         super.load();
 
-        // Add event listeners for the media element
-        this.addEventListenersForMediaElement();
+        this.loadUI();
 
         const template = this.options.representation.content.url_template;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
@@ -217,8 +216,6 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
-
-        this.loadUI();
 
         if (this.isAutoplayEnabled()) {
             this.autoplay();
@@ -382,6 +379,9 @@ class MediaBaseViewer extends BaseViewer {
 
         // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
+
+        // Add event listeners for the media element
+        this.addEventListenersForMediaElement();
     }
 
     /**
@@ -419,10 +419,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setTimeCode() {
-        if (!this.mediaControls) {
-            return;
-        }
-
         this.mediaControls.setTimeCode(this.mediaEl.currentTime);
     }
 
@@ -458,10 +454,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     updateVolumeIcon() {
-        if (!this.mediaControls) {
-            return;
-        }
-
         this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
     }
 
@@ -475,10 +467,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     playingHandler() {
-        if (this.mediaControls) {
-            this.mediaControls.showPauseIcon();
-        }
-
+        this.mediaControls.showPauseIcon();
         this.hideLoadingIcon();
         this.handleRate();
         this.handleVolume();
@@ -492,10 +481,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     progressHandler() {
-        if (!this.mediaControls) {
-            return;
-        }
-
         this.mediaControls.updateProgress();
     }
 
@@ -506,10 +491,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     pauseHandler() {
-        if (!this.mediaControls) {
-            return;
-        }
-
         this.mediaControls.showPlayIcon();
     }
 
