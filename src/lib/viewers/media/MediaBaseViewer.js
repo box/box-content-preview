@@ -316,19 +316,17 @@ class MediaBaseViewer extends BaseViewer {
      *
      * @private
      * @emits volume
-     * @return {void}
+     * @return {Promise}
      */
-    async autoplay() {
-        try {
-            await this.play();
-        } catch (error) {
+    autoplay() {
+        return this.play().catch(error => {
             if (error.message === ERROR_BROWSER_NOT_SUPPORT) {
                 // Fallback to traditional autoplay tag if mediaEl.play does not return a promise
                 this.mediaEl.autoplay = true;
             } else {
                 this.handleAutoplayFail();
             }
-        }
+        });
     }
 
     /**
