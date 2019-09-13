@@ -241,7 +241,7 @@ class DashViewer extends VideoBaseViewer {
         this.metrics[MEDIA_METRIC.duration] = this.mediaEl.duration * 1000;
         this.metrics[MEDIA_METRIC.watchLength] = playLength;
 
-        this.emitMetric(MEDIA_METRIC_EVENTS.endPlayback, this.metrics);
+        this.emitMetric(MEDIA_METRIC_EVENTS.endPlayback, { ...this.metrics });
     }
 
     /**

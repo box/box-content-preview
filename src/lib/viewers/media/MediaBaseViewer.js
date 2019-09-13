@@ -55,6 +55,8 @@ class MediaBaseViewer extends BaseViewer {
         this.toggleMute = this.toggleMute.bind(this);
         this.togglePlay = this.togglePlay.bind(this);
         this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
+
+        window.addEventListener('beforeunload', this.processMetrics);
     }
 
     /**
@@ -124,6 +126,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        // Best effort to emit current media metrics as page unloads
+        window.removeEventListener('beforeunload', this.processMetrics);
+
         if (this.mediaControls) {
             this.mediaControls.removeAllListeners();
             this.mediaControls.destroy();
@@ -414,6 +419,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setTimeCode() {
+        if (!this.mediaControls) {
+            return;
+        }
+
         this.mediaControls.setTimeCode(this.mediaEl.currentTime);
     }
 
@@ -449,6 +458,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     updateVolumeIcon() {
+        if (!this.mediaControls) {
+            return;
+        }
+
         this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
     }
 
@@ -462,7 +475,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     playingHandler() {
-        this.mediaControls.showPauseIcon();
+        if (this.mediaControls) {
+            this.mediaControls.showPauseIcon();
+        }
+
         this.hideLoadingIcon();
         this.handleRate();
         this.handleVolume();
@@ -490,6 +506,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     pauseHandler() {
+        if (!this.mediaControls) {
+            return;
+        }
+
         this.mediaControls.showPlayIcon();
     }
 
