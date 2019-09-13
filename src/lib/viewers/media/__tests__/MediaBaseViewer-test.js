@@ -272,6 +272,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('autoplay()', () => {
+        const ERROR_BROWSER_NOT_SUPPORT = 'browsernotsupport';
+
         beforeEach(() => {
             media.mediaEl = {};
             media.play = sandbox.stub().returns(Promise.resolve());
@@ -283,19 +285,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaEl.autoplay).to.be.undefined;
         });
 
-        it('should set autoplay to true if play does not return a promise', () => {
-            media.play.returns(undefined);
-            media.autoplay();
+        it('should set autoplay to true if mediaEl.play does not return a promise', async () => {
+            media.play.returns(Promise.reject(new Error(ERROR_BROWSER_NOT_SUPPORT)));
+            await media.autoplay();
             expect(media.mediaEl.autoplay).to.be.true;
         });
 
-        it('should call handleAutoplayFail if the promise is rejected', done => {
+        it('should call handleAutoplayFail if the promise is rejected', async () => {
             sandbox.stub(media, 'handleAutoplayFail');
-            media.play.returns(Promise.reject());
-            media.autoplay().then(() => {
-                expect(media.handleAutoplayFail).to.be.called;
-                done();
-            });
+            media.play.returns(Promise.reject(new Error('NotAllowedError')));
+            await media.autoplay();
+            expect(media.handleAutoplayFail).to.be.called;
         });
     });
 

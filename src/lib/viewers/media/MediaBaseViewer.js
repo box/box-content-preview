@@ -19,6 +19,7 @@ const TIMESTAMP_UNIT_NAME = 'timestamp';
 const INITIAL_TIME_IN_SECONDS = 0;
 const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
+const ERROR_BROWSER_NOT_SUPPORT = 'browsernotsupport';
 
 class MediaBaseViewer extends BaseViewer {
     /**
@@ -315,21 +316,19 @@ class MediaBaseViewer extends BaseViewer {
      *
      * @private
      * @emits volume
-     * @return {Promise}
+     * @return {void}
      */
-    autoplay() {
-        // Play may return a promise depending on browser support. This promise
-        // will resolve when playback starts.
-        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
-        const autoPlayPromise = this.play();
-
-        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            return autoPlayPromise.catch(this.handleAutoplayFail);
+    async autoplay() {
+        try {
+            await this.play();
+        } catch (error) {
+            if (error.message === ERROR_BROWSER_NOT_SUPPORT) {
+                // Fallback to traditional autoplay tag if mediaEl.play does not return a promise
+                this.mediaEl.autoplay = true;
+            } else {
+                this.handleAutoplayFail();
+            }
         }
-
-        // Fallback to traditional autoplay tag if play does not return a promise
-        this.mediaEl.autoplay = true;
-        return Promise.resolve();
     }
 
     /**
@@ -582,11 +581,18 @@ class MediaBaseViewer extends BaseViewer {
             this.setMediaTime(start);
         }
         if (arguments.length === 0 || hasValidStart) {
+            // Play may return a promise depending on browser support. This promise
+            // will resolve when playback starts.
+            // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
             const playPromise = this.mediaEl.play();
             this.handleRate();
             this.handleVolume();
 
-            return playPromise;
+            if (playPromise && typeof playPromise.then === 'function') {
+                return playPromise;
+            }
+
+            return Promise.reject(new Error(ERROR_BROWSER_NOT_SUPPORT));
         }
         return Promise.resolve();
     }
