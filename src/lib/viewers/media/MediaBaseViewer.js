@@ -304,9 +304,9 @@ class MediaBaseViewer extends BaseViewer {
 
     /**
      * Handler for autoplay failure
-     * overrided in child class
+     * Overridden in child class
      *
-     * @private
+     * @protected
      */
     handleAutoplayFail = () => {};
 
