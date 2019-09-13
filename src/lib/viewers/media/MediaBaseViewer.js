@@ -753,11 +753,22 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
     }
 
+    /**
+     * Callback from the 'loadstart' event from the media element. Triggers a timer to measure the initial buffer fill.
+     * @return {void}
+     */
     startBufferFillTimer() {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
         Timer.start(tag);
     }
 
+    /**
+     * Callback from the 'canplay' event from the media element. The first time this event is triggered we
+     * calculate the initial buffer fill time.
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/canplay_event}
+     * @emits MEDIA_METRIC_EVENTS.bufferFill
+     * @return {void}
+     */
     stopBufferFillTimer() {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
         Timer.stop(tag);
