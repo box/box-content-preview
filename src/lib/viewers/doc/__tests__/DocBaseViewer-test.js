@@ -1174,11 +1174,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should disable range requests if the locale is en-US', () => {
+            it('should not disable range requests if the locale is en-US', () => {
                 docBase.options.location.locale = 'en-US';
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
                 });
             });
 
@@ -1271,12 +1271,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             it('should append encoding query parameter for gzip content when range requests are disabled', () => {
-                const defaultChunkSize = 1048576; // Taken from RANGE_REQUEST_CHUNK_SIZE_US
+                const defaultChunkSize = 524288; // Taken from RANGE_CHUNK_SIZE_NON_US
                 const url = 'www.myTestPDF.com/123456';
                 const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
 
                 docBase.options.location = {
-                    locale: 'en-US', // Disables range requests
+                    locale: 'ja-JP', // Disables range requests
+                };
+
+                docBase.options.file = {
+                    size: 1048576, // 1MB < RANGE_REQUEST_MINIMUM_SIZE (25MB)
                 };
 
                 return docBase.initViewer(url).then(() => {

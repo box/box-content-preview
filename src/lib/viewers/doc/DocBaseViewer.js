@@ -660,7 +660,7 @@ class DocBaseViewer extends BaseViewer {
         // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
         // more than the additional time for a continuous request.
-        const isRangeSupported = location.locale !== 'en-US' && size > RANGE_REQUEST_MINIMUM_SIZE;
+        const isRangeSupported = location.locale === 'en-US' || size >= RANGE_REQUEST_MINIMUM_SIZE;
         const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
         const disableRange = isWatermarked || !isRangeSupported;
 
