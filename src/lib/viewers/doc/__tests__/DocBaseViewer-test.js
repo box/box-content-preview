@@ -1279,6 +1279,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     locale: 'ja-JP', // Disables range requests
                 };
 
+                docBase.options.file = {
+                    size: 1048576, // 1MB < RANGE_REQUEST_MINIMUM_SIZE (25MB)
+                };
+
                 return docBase.initViewer(url).then(() => {
                     expect(stubs.getDocument).to.be.calledWith(
                         sinon.match({
