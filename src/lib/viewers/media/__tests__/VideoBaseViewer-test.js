@@ -149,7 +149,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     describe('playingHandler()', () => {
         it('should hide the play button', () => {
             sandbox.stub(videoBase, 'hidePlayButton');
-            videoBase.loadeddataHandler(); // load media controls UI
+            videoBase.loadUI(); // load media controls UI
 
             videoBase.playingHandler();
 
@@ -160,7 +160,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     describe('pauseHandler()', () => {
         it('should show the play button', () => {
             sandbox.stub(videoBase, 'showPlayButton');
-            videoBase.loadeddataHandler(); // load media controls UI
+            videoBase.loadUI(); // load media controls UI
 
             videoBase.pauseHandler();
 
@@ -169,7 +169,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
         it('should hide the loading icon', () => {
             sandbox.stub(videoBase, 'hideLoadingIcon');
-            videoBase.loadeddataHandler(); // load media controls UI
+            videoBase.loadUI(); // load media controls UI
 
             videoBase.pauseHandler();
 

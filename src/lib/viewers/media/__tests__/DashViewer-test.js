@@ -642,6 +642,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'calculateVideoDimensions');
             sandbox.stub(dash, 'loadSubtitles');
             sandbox.stub(dash, 'loadAlternateAudio');
+            sandbox.stub(dash, 'loadUI');
 
             dash.options.autoFocus = true;
             dash.loadeddataHandler();
@@ -655,6 +656,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
             expect(dash.mediaControls.show).to.be.called;
+            expect(dash.loadUI).to.be.called;
         });
     });
 
@@ -1290,5 +1292,11 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.showGearHdIcon(sdTrack);
             expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
         });
+    });
+
+    describe('bufferingHandler()', () => {
+        it('should start a timer if buffering is true', () => {});
+
+        it('should start a timer if buffering is true', () => {});
     });
 });

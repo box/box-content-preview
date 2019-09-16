@@ -24,7 +24,12 @@ const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 class MediaBaseViewer extends BaseViewer {
     /** @property {Object} - Keeps track of the different media metrics */
     metrics = {
+        [MEDIA_METRIC.bufferFill]: 0,
+        [MEDIA_METRIC.duration]: 0,
+        [MEDIA_METRIC.lagRatio]: 0,
         [MEDIA_METRIC.seeked]: false,
+        [MEDIA_METRIC.totalBufferLag]: 0,
+        [MEDIA_METRIC.watchLength]: 0,
     };
 
     /**
@@ -171,11 +176,11 @@ class MediaBaseViewer extends BaseViewer {
     load() {
         super.load();
 
-        this.loadUI();
+        this.addEventListenersForMediaLoad();
 
         const template = this.options.representation.content.url_template;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
-        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
@@ -193,6 +198,16 @@ class MediaBaseViewer extends BaseViewer {
                 this.mediaEl.src = this.mediaUrl;
             })
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Add event listeners to the media element related to loading of data
+     * @return {void}
+     */
+    addEventListenersForMediaLoad() {
+        this.mediaEl.addEventListener('canplay', this.stopBufferFillTimer);
+        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+        this.mediaEl.addEventListener('loadstart', this.startBufferFillTimer);
     }
 
     /**
@@ -216,6 +231,8 @@ class MediaBaseViewer extends BaseViewer {
         if (this.destroyed) {
             return;
         }
+
+        this.loadUI();
 
         if (this.isAutoplayEnabled()) {
             this.autoplay();
@@ -707,9 +724,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     addEventListenersForMediaElement() {
-        this.mediaEl.addEventListener('canplay', this.stopBufferFillTimer);
         this.mediaEl.addEventListener('ended', this.mediaendHandler);
-        this.mediaEl.addEventListener('loadstart', this.startBufferFillTimer);
         this.mediaEl.addEventListener('pause', this.pauseHandler);
         this.mediaEl.addEventListener('playing', this.playingHandler);
         this.mediaEl.addEventListener('progress', this.progressHandler);

@@ -1,4 +1,3 @@
-import isFinite from 'lodash/isFinite';
 import VideoBaseViewer from './VideoBaseViewer';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
@@ -107,11 +106,10 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     load() {
-        this.loadUI();
-
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
-        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+
+        this.addEventListenersForMediaLoad();
 
         return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()])
             .then(() => {
@@ -192,7 +190,8 @@ class DashViewer extends VideoBaseViewer {
      * Handles the buffering events from shaka player
      *
      * @see {@link https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html#.event:BufferingEvent}
-     * @param {boolean} buffering - Indicates whether the player is buffering or not
+     * @param {Object} object - BufferingEvent object
+     * @param {boolean} object.buffering - Indicates whether the player is buffering or not
      */
     bufferingHandler({ buffering }) {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.totalBufferLag);
@@ -231,10 +230,6 @@ class DashViewer extends VideoBaseViewer {
         const lagLength = this.metrics[MEDIA_METRIC.totalBufferLag];
         const playLength = this.determinePlayLength();
 
-        if (!isFinite(lagLength) || playLength <= 0) {
-            return;
-        }
-
         this.metrics[MEDIA_METRIC.totalBufferLag] = lagLength;
         this.metrics[MEDIA_METRIC.lagRatio] = lagLength / playLength;
         this.metrics[MEDIA_METRIC.duration] = this.mediaEl.duration * 1000;
@@ -248,22 +243,16 @@ class DashViewer extends VideoBaseViewer {
      * @return {number} - The play length in milliseconds
      */
     determinePlayLength() {
-        if (!this.mediaEl) {
+        if (!this.mediaEl || !this.mediaEl.played) {
             return -1;
         }
 
         const playedParts = this.mediaEl.played;
-
-        if (!playedParts) {
-            return -1;
-        }
-
         let playLength = 0;
         for (let i = 0; i < playedParts.length; i += 1) {
             const start = playedParts.start(i);
             const end = playedParts.end(i);
-            const duration = end - start;
-            playLength += duration;
+            playLength += end - start;
         }
 
         return playLength * 1000;
@@ -658,6 +647,8 @@ class DashViewer extends VideoBaseViewer {
         if (this.isDestroyed()) {
             return;
         }
+
+        this.loadUI();
 
         this.calculateVideoDimensions();
 
