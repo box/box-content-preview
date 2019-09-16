@@ -10,6 +10,7 @@ import { VIEWER_EVENT } from '../../../events';
 
 let dash;
 let stubs = {};
+let mediaElRef;
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -99,6 +100,7 @@ describe('lib/viewers/media/DashViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         dash.containerEl = containerEl;
         dash.setup();
+        mediaElRef = dash.mediaEl;
     });
 
     afterEach(() => {
@@ -107,6 +109,7 @@ describe('lib/viewers/media/DashViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (dash && typeof dash.destroy === 'function' && !dash.destroyed) {
+            dash.mediaEl = mediaElRef;
             dash.destroy();
         }
 
@@ -1362,16 +1365,6 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('determinePlayLength()', () => {
-        let originalMediaEl;
-
-        beforeEach(() => {
-            originalMediaEl = dash.mediaEl;
-        });
-
-        afterEach(() => {
-            dash.mediaEl = originalMediaEl;
-        });
-
         it('should return -1 if mediaEl does not exist', () => {
             dash.mediaEl = null;
 
