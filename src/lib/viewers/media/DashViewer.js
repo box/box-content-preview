@@ -200,7 +200,7 @@ class DashViewer extends VideoBaseViewer {
             Timer.start(tag);
         } else {
             Timer.stop(tag);
-            this.metrics[MEDIA_METRIC.totalBufferLag] = this.metrics[MEDIA_METRIC.totalBufferLag] || 0;
+            this.metrics[MEDIA_METRIC.totalBufferLag] = this.metrics[MEDIA_METRIC.totalBufferLag];
             this.metrics[MEDIA_METRIC.totalBufferLag] += Timer.get(tag).elapsed;
             Timer.reset(tag);
         }

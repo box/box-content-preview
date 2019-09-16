@@ -4,6 +4,7 @@ import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import PreviewError from '../../../PreviewError';
+import Timer from '../../../Timer';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -1295,8 +1296,98 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('bufferingHandler()', () => {
-        it('should start a timer if buffering is true', () => {});
+        beforeEach(() => {
+            sandbox.stub(Timer, 'createTag').returns('foo');
+            sandbox.stub(Timer, 'get').returns({ elapsed: 5 });
+            sandbox.stub(Timer, 'reset');
+            sandbox.stub(Timer, 'start');
+            sandbox.stub(Timer, 'stop');
+        });
 
-        it('should start a timer if buffering is true', () => {});
+        it('should start a timer if buffering is true', () => {
+            dash.bufferingHandler({ buffering: true });
+            expect(Timer.start).to.have.been.called;
+            expect(Timer.stop).not.to.have.been.called;
+            expect(Timer.reset).not.to.have.been.called;
+            expect(dash.metrics.totalBufferLag).to.equal(0);
+        });
+
+        it('should stop the timer if buffering is false', () => {
+            dash.bufferingHandler({ buffering: false });
+            expect(Timer.start).not.to.have.been.called;
+            expect(Timer.stop).to.have.been.called;
+            expect(Timer.reset).to.have.been.called;
+            expect(dash.metrics.totalBufferLag).to.equal(5);
+        });
+    });
+
+    describe('processBufferFillMetric()', () => {
+        beforeEach(() => {
+            sandbox.stub(Timer, 'createTag').returns('foo');
+            sandbox.stub(Timer, 'get').returns({ elapsed: 5 });
+            sandbox.stub(dash, 'emitMetric');
+        });
+
+        it('should process the buffer fill metric', () => {
+            dash.processBufferFillMetric();
+
+            expect(Timer.createTag).to.have.been.calledWith(0, 'bufferFill');
+            expect(Timer.get).to.have.been.calledWith('foo');
+            expect(dash.emitMetric).to.have.been.calledWith('media_metric_buffer_fill', 5);
+            expect(dash.metrics.bufferFill).to.equal(5);
+        });
+    });
+
+    describe('processMetrics()', () => {
+        it('should process the current playback metrics', () => {
+            sandbox.stub(dash, 'determinePlayLength').returns(10);
+            sandbox.stub(dash, 'emitMetric');
+            dash.mediaEl.duration = 5;
+            dash.metrics.totalBufferLag = 1000;
+
+            const expMetrics = {
+                bufferFill: 0,
+                duration: 5000,
+                lagRatio: 100,
+                seeked: false,
+                totalBufferLag: 1000,
+                watchLength: 10,
+            };
+
+            dash.processMetrics();
+
+            expect(dash.emitMetric).to.have.been.called;
+            expect(dash.metrics).to.be.eql(expMetrics);
+        });
+    });
+
+    describe('determinePlayLength()', () => {
+        it('should return -1 if mediaEl does not exist', () => {
+            dash.mediaEl = null;
+
+            expect(dash.determinePlayLength()).to.be.equal(-1);
+        });
+
+        it('should return -1 if mediaEl.played is falsy', () => {
+            dash.mediaEl.played = false;
+
+            expect(dash.determinePlayLength()).to.be.equal(-1);
+        });
+
+        it('should return 0 if there are no played parts', () => {
+            dash.mediaEl.played = [];
+
+            expect(dash.determinePlayLength()).to.be.equal(0);
+        });
+
+        it('should return the sum of all the played parts', () => {
+            dash.mediaEl.played = { length: 2, start: sandbox.stub(), end: sandbox.stub() };
+            dash.mediaEl.played.start.withArgs(0).returns(0);
+            dash.mediaEl.played.end.withArgs(0).returns(5);
+            dash.mediaEl.played.start.withArgs(1).returns(10);
+            dash.mediaEl.played.end.withArgs(1).returns(15);
+
+            expect(dash.determinePlayLength()).to.be.equal(10000);
+        });
     });
 });

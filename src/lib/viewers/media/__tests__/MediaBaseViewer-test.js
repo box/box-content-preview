@@ -2,6 +2,7 @@
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
+import Timer from '../../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -115,13 +116,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
-            sandbox.stub(media, 'loadUI');
         });
 
         it('should load mediaUrl in the media element', () => {
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             return media.load().then(() => {
-                expect(media.loadUI).to.be.called;
                 expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
                 expect(media.mediaEl.src).to.equal('www.netflix.com');
@@ -154,6 +153,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'resize');
             sandbox.stub(media, 'showMedia');
+            sandbox.stub(media, 'loadUI');
 
             media.options.autoFocus = true;
             media.loadeddataHandler();
@@ -163,6 +163,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
+            expect(media.loadUI).to.be.called;
             expect(document.activeElement).to.equal(media.mediaContainerEl);
         });
 
@@ -424,10 +425,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaEl = { currentTime };
             stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
 
+            expect(media.metrics.seeked).to.be.equal(false);
+
             media.seekHandler();
 
             expect(media.hideLoadingIcon).to.be.called;
             expect(media.debouncedEmit).to.be.calledWith('seeked', currentTime);
+            expect(media.metrics.seeked).to.be.equal(true);
         });
     });
 
@@ -435,6 +439,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('emit the mediaendautoplay event if autoplay is enabled', () => {
             sandbox.stub(media, 'isAutoplayEnabled').returns(false);
             sandbox.stub(media, 'emit');
+            sandbox.stub(media, 'resetPlayIcon');
 
             media.mediaendHandler();
             expect(media.isAutoplayEnabled).to.be.called;
@@ -444,6 +449,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.mediaendHandler();
             expect(media.emit).to.be.calledWith(VIEWER_EVENT.mediaEndAutoplay);
+            expect(media.resetPlayIcon).to.be.called;
         });
     });
 
@@ -722,7 +728,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.addEventListenersForMediaElement();
 
-            expect(media.mediaEl.addEventListener.callCount).to.equal(9);
+            expect(media.mediaEl.addEventListener.callCount).to.equal(7);
         });
     });
 
@@ -1131,6 +1137,42 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.convertTimestampToSeconds('fdsfds')).to.equal(0);
 
             expect(media.convertTimestampToSeconds('ah1m3s')).to.equal(0);
+        });
+    });
+
+    describe('startBufferFillTime()', () => {
+        it('should start the timer', () => {
+            sandbox.stub(Timer, 'createTag').returns('foo');
+            sandbox.stub(Timer, 'start');
+
+            media.startBufferFillTimer();
+
+            expect(Timer.createTag).to.be.calledWith(1, 'bufferFill');
+            expect(Timer.start).to.be.calledWith('foo');
+        });
+    });
+
+    describe('stopBufferFillTimer()', () => {
+        it('should stop the timer and process the metrics', () => {
+            sandbox.stub(Timer, 'createTag').returns('foo');
+            sandbox.stub(Timer, 'stop');
+            sandbox.stub(media, 'processBufferFillMetric');
+
+            media.mediaEl = { removeEventListener: sandbox.stub() };
+
+            media.stopBufferFillTimer();
+
+            expect(Timer.stop).to.be.calledWith('foo');
+            expect(media.mediaEl.removeEventListener).to.be.calledWith('canplay', media.stopBufferFillTimer);
+            expect(media.processBufferFillMetric).to.be.called;
+        });
+    });
+
+    describe('getMetricsWhitelist()', () => {
+        it('should whitelist bufferFill and endPlayback metrics', () => {
+            const expWhitelist = ['media_metric_buffer_fill', 'media_metric_end_playback'];
+
+            expect(media.getMetricsWhitelist()).to.be.eql(expWhitelist);
         });
     });
 });
