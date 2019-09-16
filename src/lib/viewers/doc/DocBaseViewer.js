@@ -657,12 +657,12 @@ class DocBaseViewer extends BaseViewer {
         // Disable streaming via fetch until performance is improved
         const disableStream = true;
 
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
+        // Disable range requests for files smaller than RANGE_REQUEST_MINIMUM_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
         // more than the additional time for a continuous request.
-        const isRangeSupported = location.locale !== 'en-US' && size > RANGE_REQUEST_MINIMUM_SIZE;
-        const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
-        const disableRange = isWatermarked || !isRangeSupported;
+        const isRangeDisabled = location.locale !== 'en-US' && size < RANGE_REQUEST_MINIMUM_SIZE;
+        const isWatermarked = !!watermarkInfo && !!watermarkInfo.is_watermarked;
+        const disableRange = isRangeDisabled || isWatermarked;
 
         // Use larger chunk sizes because we assume that en-US users have better connections to Box's servers
         const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
