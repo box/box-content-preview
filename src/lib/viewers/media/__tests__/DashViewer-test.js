@@ -1362,6 +1362,16 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('determinePlayLength()', () => {
+        let originalMediaEl;
+
+        beforeEach(() => {
+            originalMediaEl = dash.mediaEl;
+        });
+
+        afterEach(() => {
+            dash.mediaEl = originalMediaEl;
+        });
+
         it('should return -1 if mediaEl does not exist', () => {
             dash.mediaEl = null;
 
