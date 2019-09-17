@@ -272,32 +272,32 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('autoplay()', () => {
-        beforeEach(() => {
-            media.mediaEl = {
-                play: sandbox.stub().returns(Promise.resolve()),
-            };
+        const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
 
-            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
-            sandbox.stub(Browser, 'isIOS').returns(false);
+        beforeEach(() => {
+            media.mediaEl = {};
+            media.play = sandbox.stub().returns(Promise.resolve());
         });
 
         it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
             media.autoplay();
-            expect(media.mediaEl.play).to.be.called;
+            expect(media.play).to.be.called;
             expect(media.mediaEl.autoplay).to.be.undefined;
         });
 
-        it('should set autoplay to true if play does not return a promise', () => {
-            media.mediaEl.play.returns(undefined);
-            media.autoplay();
-            expect(media.mediaEl.autoplay).to.be.true;
+        it('should set autoplay to true if mediaEl.play does not return a promise', done => {
+            media.play.returns(Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED)));
+            media.autoplay().then(() => {
+                expect(media.mediaEl.autoplay).to.be.true;
+                done();
+            });
         });
 
-        it('should muted autoplay if the promise is rejected', done => {
-            sandbox.stub(media, 'setVolume');
-            media.mediaEl.play = sandbox.stub().returns(Promise.reject());
+        it('should call handleAutoplayFail if the promise is rejected', done => {
+            sandbox.stub(media, 'handleAutoplayFail');
+            media.play.returns(Promise.reject(new Error('NotAllowedError')));
             media.autoplay().then(() => {
-                expect(media.setVolume).to.be.calledWith(0);
+                expect(media.handleAutoplayFail).to.be.called;
                 done();
             });
         });

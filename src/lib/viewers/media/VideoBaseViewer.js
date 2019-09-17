@@ -234,6 +234,16 @@ class VideoBaseViewer extends MediaBaseViewer {
     onKeydown(key) {
         return super.onKeydown(key);
     }
+
+    /**
+     * Auto-play was prevented, try muted play
+     *
+     * @override
+     */
+    handleAutoplayFail = () => {
+        this.setVolume(0);
+        this.play().catch(this.pause);
+    };
 }
 
 export default VideoBaseViewer;
