@@ -74,4 +74,12 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUI();
         });
     });
+
+    describe('handleAutoplayFail()', () => {
+        it('should call pause', () => {
+            sandbox.stub(mp3, 'pause');
+            mp3.handleAutoplayFail();
+            expect(mp3.pause).to.be.called;
+        });
+    });
 });

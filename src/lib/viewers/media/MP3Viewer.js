@@ -34,6 +34,15 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
     }
+
+    /**
+     * Auto-play was prevented, pause the audio
+     *
+     * @override
+     */
+    handleAutoplayFail = () => {
+        this.pause();
+    };
 }
 
 export default MP3Viewer;

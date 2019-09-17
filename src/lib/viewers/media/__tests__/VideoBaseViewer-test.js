@@ -244,4 +244,16 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.rootEl.classList.contains('bp-dark')).to.be.true;
         });
     });
+
+    describe('handleAutoplayFail()', () => {
+        it('should mute and play again', () => {
+            sandbox.stub(videoBase, 'setVolume');
+            videoBase.play = sandbox.stub().returns(Promise.reject());
+
+            videoBase.handleAutoplayFail();
+
+            expect(videoBase.setVolume).to.be.calledWith(0);
+            expect(videoBase.play).to.be.called;
+        });
+    });
 });

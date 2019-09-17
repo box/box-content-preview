@@ -20,6 +20,7 @@ const TIMESTAMP_UNIT_NAME = 'timestamp';
 const INITIAL_TIME_IN_SECONDS = 0;
 const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
+const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
 
 class MediaBaseViewer extends BaseViewer {
     /** @property {Object} - Keeps track of the different media metrics */
@@ -330,35 +331,28 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Determines if media should autoplay based on cached settings value.
+     * Handler for autoplay failure
+     * Overridden in child class
+     *
+     * @protected
+     */
+    handleAutoplayFail = () => {};
+
+    /**
+     * Autoplay the media
      *
      * @private
-     * @emits volume
      * @return {Promise}
      */
     autoplay() {
-        // Play may return a promise depending on browser support. This promise
-        // will resolve when playback starts. If it fails, we mute the video
-        // and try to play again.
-        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
-        const autoPlayPromise = this.mediaEl.play();
-
-        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
-            this.handleRate();
-            return autoPlayPromise
-                .then(() => {
-                    this.handleVolume();
-                })
-                .catch(() => {
-                    // Auto-play was prevented, try muted play
-                    this.setVolume(0);
-                    this.mediaEl.play();
-                });
-        }
-
-        // Fallback to traditional autoplay tag if play does not return a promise
-        this.mediaEl.autoplay = true;
-        return Promise.resolve();
+        return this.play().catch(error => {
+            if (error.message === PLAY_PROMISE_NOT_SUPPORTED) {
+                // Fallback to traditional autoplay tag if mediaEl.play does not return a promise
+                this.mediaEl.autoplay = true;
+            } else {
+                this.handleAutoplayFail();
+            }
+        });
     }
 
     /**
@@ -610,7 +604,7 @@ class MediaBaseViewer extends BaseViewer {
      * @param {number} start - start time in seconds
      * @param {number} end - end time in seconds
      * @emits play
-     * @return {void}
+     * @return {Promise}
      */
     play(start, end) {
         const hasValidStart = this.isValidTime(start);
@@ -624,10 +618,18 @@ class MediaBaseViewer extends BaseViewer {
             this.setMediaTime(start);
         }
         if (arguments.length === 0 || hasValidStart) {
-            this.mediaEl.play();
+            // Play may return a promise depending on browser support. This promise
+            // will resolve when playback starts.
+            // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+            const playPromise = this.mediaEl.play();
             this.handleRate();
             this.handleVolume();
+
+            return playPromise && typeof playPromise.then === 'function'
+                ? playPromise
+                : Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED));
         }
+        return Promise.resolve();
     }
 
     /**
