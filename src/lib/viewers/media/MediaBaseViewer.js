@@ -19,7 +19,7 @@ const TIMESTAMP_UNIT_NAME = 'timestamp';
 const INITIAL_TIME_IN_SECONDS = 0;
 const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
-const ERROR_BROWSER_NOT_SUPPORT = 'browsernotsupport';
+const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
 
 class MediaBaseViewer extends BaseViewer {
     /**
@@ -315,12 +315,11 @@ class MediaBaseViewer extends BaseViewer {
      * Autoplay the media
      *
      * @private
-     * @emits volume
      * @return {Promise}
      */
     autoplay() {
         return this.play().catch(error => {
-            if (error.message === ERROR_BROWSER_NOT_SUPPORT) {
+            if (error.message === PLAY_PROMISE_NOT_SUPPORTED) {
                 // Fallback to traditional autoplay tag if mediaEl.play does not return a promise
                 this.mediaEl.autoplay = true;
             } else {
@@ -586,11 +585,9 @@ class MediaBaseViewer extends BaseViewer {
             this.handleRate();
             this.handleVolume();
 
-            if (playPromise && typeof playPromise.then === 'function') {
-                return playPromise;
-            }
-
-            return Promise.reject(new Error(ERROR_BROWSER_NOT_SUPPORT));
+            return playPromise && typeof playPromise.then === 'function'
+                ? playPromise
+                : Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED));
         }
         return Promise.resolve();
     }

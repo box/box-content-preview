@@ -272,7 +272,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('autoplay()', () => {
-        const ERROR_BROWSER_NOT_SUPPORT = 'browsernotsupport';
+        const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
 
         beforeEach(() => {
             media.mediaEl = {};
@@ -286,7 +286,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         it('should set autoplay to true if mediaEl.play does not return a promise', done => {
-            media.play.returns(Promise.reject(new Error(ERROR_BROWSER_NOT_SUPPORT)));
+            media.play.returns(Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED)));
             media.autoplay().then(() => {
                 expect(media.mediaEl.autoplay).to.be.true;
                 done();
