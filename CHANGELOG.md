@@ -1,3 +1,7 @@
+## <small>2.19.1 (2019-09-17)</small>
+
+- fix(viewer): Re-enable support for range requests for most users (#1072) ([83424d0](https://github.com/box/box-content-preview/commit/83424d0)), closes [#1072](https://github.com/box/box-content-preview/issues/1072)
+
 ## 2.19.0 (2019-09-13)
 
 - fix(pdf): Enable pdf font conversion option for Safari user agents (#1070) ([d83196c](https://github.com/box/box-content-preview/commit/d83196c)), closes [#1070](https://github.com/box/box-content-preview/issues/1070)
