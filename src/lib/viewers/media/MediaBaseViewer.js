@@ -795,7 +795,6 @@ class MediaBaseViewer extends BaseViewer {
         // Make sure it's within bounds
         newTime = Math.max(0, Math.min(newTime, this.mediaEl.duration));
         this.setMediaTime(newTime);
-        this.metrics[MEDIA_METRIC.seeked] = true;
     }
 
     /**
