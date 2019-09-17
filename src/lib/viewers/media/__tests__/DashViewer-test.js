@@ -1340,7 +1340,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('processMetrics()', () => {
         beforeEach(() => {
-            sandbox.stub(dash, 'determinePlayLength').returns(10);
+            sandbox.stub(dash, 'determineWatchLength').returns(10);
             sandbox.stub(dash, 'emitMetric');
             dash.mediaEl.duration = 5;
         });
@@ -1382,23 +1382,23 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('determinePlayLength()', () => {
+    describe('determineWatchLength()', () => {
         it('should return -1 if mediaEl does not exist', () => {
             dash.mediaEl = null;
 
-            expect(dash.determinePlayLength()).to.be.equal(-1);
+            expect(dash.determineWatchLength()).to.be.equal(-1);
         });
 
         it('should return -1 if mediaEl.played is falsy', () => {
             dash.mediaEl.played = false;
 
-            expect(dash.determinePlayLength()).to.be.equal(-1);
+            expect(dash.determineWatchLength()).to.be.equal(-1);
         });
 
         it('should return 0 if there are no played parts', () => {
             dash.mediaEl.played = [];
 
-            expect(dash.determinePlayLength()).to.be.equal(0);
+            expect(dash.determineWatchLength()).to.be.equal(0);
         });
 
         it('should return the sum of all the played parts', () => {
@@ -1408,7 +1408,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.mediaEl.played.start.withArgs(1).returns(10);
             dash.mediaEl.played.end.withArgs(1).returns(15);
 
-            expect(dash.determinePlayLength()).to.be.equal(10000);
+            expect(dash.determineWatchLength()).to.be.equal(10000);
         });
     });
 });

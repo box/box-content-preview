@@ -194,7 +194,7 @@ class DashViewer extends VideoBaseViewer {
      * @param {boolean} object.buffering - Indicates whether the player is buffering or not
      */
     handleBuffering({ buffering }) {
-        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.totalBufferLag);
+        const tag = this.createTimerTag(MEDIA_METRIC.totalBufferLag);
 
         if (buffering) {
             Timer.start(tag);
@@ -212,7 +212,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     processBufferFillMetric() {
-        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
+        const tag = this.createTimerTag(MEDIA_METRIC.bufferFill);
         const bufferFill = Timer.get(tag).elapsed;
         this.metrics[MEDIA_METRIC.bufferFill] = bufferFill;
 
@@ -230,22 +230,22 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        const lagLength = this.metrics[MEDIA_METRIC.totalBufferLag];
-        const playLength = this.determinePlayLength();
+        const totalBufferLag = this.metrics[MEDIA_METRIC.totalBufferLag];
+        const watchLength = this.determineWatchLength();
 
-        this.metrics[MEDIA_METRIC.totalBufferLag] = lagLength;
-        this.metrics[MEDIA_METRIC.lagRatio] = lagLength / playLength;
+        this.metrics[MEDIA_METRIC.totalBufferLag] = totalBufferLag;
+        this.metrics[MEDIA_METRIC.lagRatio] = totalBufferLag / watchLength;
         this.metrics[MEDIA_METRIC.duration] = this.mediaEl ? this.mediaEl.duration * 1000 : 0;
-        this.metrics[MEDIA_METRIC.watchLength] = playLength;
+        this.metrics[MEDIA_METRIC.watchLength] = watchLength;
 
         this.emitMetric(MEDIA_METRIC_EVENTS.endPlayback, { ...this.metrics });
     }
 
     /**
-     * Determines the play length, or how much of the media was consumed
-     * @return {number} - The play length in milliseconds
+     * Determines the watch length, or how much of the media was consumed
+     * @return {number} - The watch length in milliseconds
      */
-    determinePlayLength() {
+    determineWatchLength() {
         if (!this.mediaEl || !this.mediaEl.played) {
             return -1;
         }

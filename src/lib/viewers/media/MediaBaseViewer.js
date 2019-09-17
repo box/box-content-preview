@@ -147,10 +147,6 @@ class MediaBaseViewer extends BaseViewer {
         try {
             if (this.mediaEl) {
                 this.removeEventListenersForMediaElement();
-
-                this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
-                this.mediaEl.removeEventListener('error', this.errorHandler);
-
                 this.removePauseEventListener();
                 this.mediaEl.removeAttribute('src');
                 this.mediaEl.load();
@@ -740,6 +736,8 @@ class MediaBaseViewer extends BaseViewer {
     removeEventListenersForMediaElement() {
         this.mediaEl.removeEventListener('canplay', this.handleCanPlay);
         this.mediaEl.removeEventListener('ended', this.mediaendHandler);
+        this.mediaEl.removeEventListener('error', this.errorHandler);
+        this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.removeEventListener('loadstart', this.handleLoadStart);
         this.mediaEl.removeEventListener('pause', this.pauseHandler);
         this.mediaEl.removeEventListener('playing', this.playingHandler);
@@ -754,7 +752,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleLoadStart() {
-        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
+        const tag = this.createTimerTag(MEDIA_METRIC.bufferFill);
         Timer.start(tag);
     }
 
@@ -766,7 +764,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleCanPlay() {
-        const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
+        const tag = this.createTimerTag(MEDIA_METRIC.bufferFill);
         Timer.stop(tag);
 
         // Only interested in the first event after 'loadstart' to determine the buffer fill
@@ -966,6 +964,14 @@ class MediaBaseViewer extends BaseViewer {
      */
     getMetricsWhitelist() {
         return [MEDIA_METRIC_EVENTS.bufferFill, MEDIA_METRIC_EVENTS.endPlayback];
+    }
+
+    /**
+     * Utility to create a Timer tag name
+     * @param {string} tagName - tag name
+     */
+    createTimerTag(tagName) {
+        return Timer.createTag(this.options.file.id, tagName);
     }
 }
 
