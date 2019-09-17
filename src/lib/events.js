@@ -90,3 +90,17 @@ export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
 };
 
 export const MISSING_EXTERNAL_REFS = 'missing_x_refs';
+
+export const MEDIA_METRIC = {
+    bufferFill: 'bufferFill',
+    duration: 'duration',
+    lagRatio: 'lagRatio',
+    seeked: 'seeked',
+    totalBufferLag: 'totalBufferLag',
+    watchLength: 'watchLength',
+};
+
+export const MEDIA_METRIC_EVENTS = {
+    bufferFill: 'media_metric_buffer_fill',
+    endPlayback: 'media_metric_end_playback',
+};

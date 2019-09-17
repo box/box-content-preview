@@ -44,6 +44,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         options.container = containerEl;
         options.location = {};
         viewer = new Video360Viewer(options);
+        sandbox.stub(viewer, 'processMetrics');
     });
 
     afterEach(() => {

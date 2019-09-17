@@ -1,11 +1,12 @@
 import VideoBaseViewer from './VideoBaseViewer';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
+import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import getLanguageName from '../../lang';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
 import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -30,14 +31,15 @@ class DashViewer extends VideoBaseViewer {
 
         this.api = options.api;
         // Bind context for callbacks
-        this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
-        this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
-        this.requestFilter = this.requestFilter.bind(this);
+        this.handleBuffering = this.handleBuffering.bind(this);
+        this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
+        this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
-        this.handleAudioTrack = this.handleAudioTrack.bind(this);
-        this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.requestFilter = this.requestFilter.bind(this);
+        this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
     }
 
     /**
@@ -106,7 +108,8 @@ class DashViewer extends VideoBaseViewer {
     load() {
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
-        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+
+        this.addEventListenersForMediaLoad();
 
         return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()])
             .then(() => {
@@ -161,6 +164,7 @@ class DashViewer extends VideoBaseViewer {
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
         this.player.addEventListener('error', this.shakaErrorHandler);
+        this.player.addEventListener('buffering', this.handleBuffering);
         this.player.configure({
             abr: {
                 enabled: false,
@@ -180,6 +184,81 @@ class DashViewer extends VideoBaseViewer {
 
         this.startLoadTimer();
         this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
+    }
+
+    /**
+     * Handles the buffering events from shaka player
+     *
+     * @see {@link https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html#.event:BufferingEvent}
+     * @param {Object} object - BufferingEvent object
+     * @param {boolean} object.buffering - Indicates whether the player is buffering or not
+     */
+    handleBuffering({ buffering }) {
+        const tag = this.createTimerTag(MEDIA_METRIC.totalBufferLag);
+
+        if (buffering) {
+            Timer.start(tag);
+        } else {
+            Timer.stop(tag);
+            this.metrics[MEDIA_METRIC.totalBufferLag] += Timer.get(tag).elapsed;
+            Timer.reset(tag);
+        }
+    }
+
+    /**
+     * Processes the buffer fill metric which represents the initial buffer time before playback begins
+     * @override
+     * @emits MEDIA_METRIC_EVENTS.bufferFill
+     * @return {void}
+     */
+    processBufferFillMetric() {
+        const tag = this.createTimerTag(MEDIA_METRIC.bufferFill);
+        const bufferFill = Timer.get(tag).elapsed;
+        this.metrics[MEDIA_METRIC.bufferFill] = bufferFill;
+
+        this.emitMetric(MEDIA_METRIC_EVENTS.bufferFill, bufferFill);
+    }
+
+    /**
+     * Processes the media playback metrics
+     * @override
+     * @emits MEDIA_METRIC_EVENTS.endPlayback
+     * @return {void}
+     */
+    processMetrics() {
+        if (!this.loaded) {
+            return;
+        }
+
+        const totalBufferLag = this.metrics[MEDIA_METRIC.totalBufferLag];
+        const watchLength = this.determineWatchLength();
+
+        this.metrics[MEDIA_METRIC.totalBufferLag] = totalBufferLag;
+        this.metrics[MEDIA_METRIC.lagRatio] = totalBufferLag / watchLength;
+        this.metrics[MEDIA_METRIC.duration] = this.mediaEl ? this.mediaEl.duration * 1000 : 0;
+        this.metrics[MEDIA_METRIC.watchLength] = watchLength;
+
+        this.emitMetric(MEDIA_METRIC_EVENTS.endPlayback, { ...this.metrics });
+    }
+
+    /**
+     * Determines the watch length, or how much of the media was consumed
+     * @return {number} - The watch length in milliseconds
+     */
+    determineWatchLength() {
+        if (!this.mediaEl || !this.mediaEl.played) {
+            return -1;
+        }
+
+        const playedParts = this.mediaEl.played;
+        let playLength = 0;
+        for (let i = 0; i < playedParts.length; i += 1) {
+            const start = playedParts.start(i);
+            const end = playedParts.end(i);
+            playLength += end - start;
+        }
+
+        return playLength * 1000;
     }
 
     /**
