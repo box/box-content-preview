@@ -32,7 +32,7 @@ class DashViewer extends VideoBaseViewer {
         this.api = options.api;
         // Bind context for callbacks
         this.adaptationHandler = this.adaptationHandler.bind(this);
-        this.bufferingHandler = this.bufferingHandler.bind(this);
+        this.handleBuffering = this.handleBuffering.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
@@ -164,7 +164,7 @@ class DashViewer extends VideoBaseViewer {
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
         this.player.addEventListener('error', this.shakaErrorHandler);
-        this.player.addEventListener('buffering', this.bufferingHandler);
+        this.player.addEventListener('buffering', this.handleBuffering);
         this.player.configure({
             abr: {
                 enabled: false,
@@ -193,14 +193,13 @@ class DashViewer extends VideoBaseViewer {
      * @param {Object} object - BufferingEvent object
      * @param {boolean} object.buffering - Indicates whether the player is buffering or not
      */
-    bufferingHandler({ buffering }) {
+    handleBuffering({ buffering }) {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.totalBufferLag);
 
         if (buffering) {
             Timer.start(tag);
         } else {
             Timer.stop(tag);
-            this.metrics[MEDIA_METRIC.totalBufferLag] = this.metrics[MEDIA_METRIC.totalBufferLag];
             this.metrics[MEDIA_METRIC.totalBufferLag] += Timer.get(tag).elapsed;
             Timer.reset(tag);
         }
@@ -227,6 +226,10 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     processMetrics() {
+        if (!this.loaded) {
+            return;
+        }
+
         const lagLength = this.metrics[MEDIA_METRIC.totalBufferLag];
         const playLength = this.determinePlayLength();
 

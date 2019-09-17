@@ -1295,7 +1295,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('bufferingHandler()', () => {
+    describe('handleBuffering()', () => {
         beforeEach(() => {
             sandbox.stub(Timer, 'createTag').returns('foo');
             sandbox.stub(Timer, 'get').returns({ elapsed: 5 });
@@ -1305,7 +1305,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should start a timer if buffering is true', () => {
-            dash.bufferingHandler({ buffering: true });
+            dash.handleBuffering({ buffering: true });
             expect(Timer.start).to.have.been.called;
             expect(Timer.stop).not.to.have.been.called;
             expect(Timer.reset).not.to.have.been.called;
@@ -1313,7 +1313,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should stop the timer if buffering is false', () => {
-            dash.bufferingHandler({ buffering: false });
+            dash.handleBuffering({ buffering: false });
             expect(Timer.start).not.to.have.been.called;
             expect(Timer.stop).to.have.been.called;
             expect(Timer.reset).to.have.been.called;
@@ -1339,10 +1339,31 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('processMetrics()', () => {
-        it('should process the current playback metrics', () => {
+        beforeEach(() => {
             sandbox.stub(dash, 'determinePlayLength').returns(10);
             sandbox.stub(dash, 'emitMetric');
             dash.mediaEl.duration = 5;
+        });
+
+        it('should not emit an event if loaded is false', () => {
+            dash.loaded = false;
+            const expMetrics = {
+                bufferFill: 0,
+                duration: 0,
+                lagRatio: 0,
+                seeked: false,
+                totalBufferLag: 0,
+                watchLength: 0,
+            };
+
+            dash.processMetrics();
+
+            expect(dash.emitMetric).not.to.have.been.called;
+            expect(dash.metrics).to.be.eql(expMetrics);
+        });
+
+        it('should process the current playback metrics if loaded', () => {
+            dash.loaded = true;
             dash.metrics.totalBufferLag = 1000;
 
             const expMetrics = {

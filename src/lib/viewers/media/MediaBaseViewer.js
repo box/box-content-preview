@@ -55,8 +55,8 @@ class MediaBaseViewer extends BaseViewer {
         this.seekHandler = this.seekHandler.bind(this);
         this.setTimeCode = this.setTimeCode.bind(this);
         this.setVolume = this.setVolume.bind(this);
-        this.startBufferFillTimer = this.startBufferFillTimer.bind(this);
-        this.stopBufferFillTimer = this.stopBufferFillTimer.bind(this);
+        this.handleLoadStart = this.handleLoadStart.bind(this);
+        this.handleCanPlay = this.handleCanPlay.bind(this);
         this.toggleMute = this.toggleMute.bind(this);
         this.togglePlay = this.togglePlay.bind(this);
         this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
@@ -131,6 +131,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        // Attempt to process the playback metrics at whatever point of playback has occurred
+        // before we destroy the viewer
+        this.processMetrics();
+
         // Best effort to emit current media metrics as page unloads
         window.removeEventListener('beforeunload', this.processMetrics);
 
@@ -146,10 +150,6 @@ class MediaBaseViewer extends BaseViewer {
 
                 this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
                 this.mediaEl.removeEventListener('error', this.errorHandler);
-
-                // Attempt to process the playback metrics at whatever point of playback has occurred
-                // before we destroy the viewer
-                this.processMetrics();
 
                 this.removePauseEventListener();
                 this.mediaEl.removeAttribute('src');
@@ -205,9 +205,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     addEventListenersForMediaLoad() {
-        this.mediaEl.addEventListener('canplay', this.stopBufferFillTimer);
+        this.mediaEl.addEventListener('canplay', this.handleCanPlay);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
-        this.mediaEl.addEventListener('loadstart', this.startBufferFillTimer);
+        this.mediaEl.addEventListener('loadstart', this.handleLoadStart);
     }
 
     /**
@@ -738,9 +738,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     removeEventListenersForMediaElement() {
-        this.mediaEl.removeEventListener('canplay', this.stopBufferFillTimer);
+        this.mediaEl.removeEventListener('canplay', this.handleCanPlay);
         this.mediaEl.removeEventListener('ended', this.mediaendHandler);
-        this.mediaEl.removeEventListener('loadstart', this.startBufferFillTimer);
+        this.mediaEl.removeEventListener('loadstart', this.handleLoadStart);
         this.mediaEl.removeEventListener('pause', this.pauseHandler);
         this.mediaEl.removeEventListener('playing', this.playingHandler);
         this.mediaEl.removeEventListener('progress', this.progressHandler);
@@ -753,7 +753,7 @@ class MediaBaseViewer extends BaseViewer {
      * Callback from the 'loadstart' event from the media element. Triggers a timer to measure the initial buffer fill.
      * @return {void}
      */
-    startBufferFillTimer() {
+    handleLoadStart() {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
         Timer.start(tag);
     }
@@ -765,12 +765,12 @@ class MediaBaseViewer extends BaseViewer {
      * @emits MEDIA_METRIC_EVENTS.bufferFill
      * @return {void}
      */
-    stopBufferFillTimer() {
+    handleCanPlay() {
         const tag = Timer.createTag(this.options.file.id, MEDIA_METRIC.bufferFill);
         Timer.stop(tag);
 
         // Only interested in the first event after 'loadstart' to determine the buffer fill
-        this.mediaEl.removeEventListener('canplay', this.stopBufferFillTimer);
+        this.mediaEl.removeEventListener('canplay', this.handleCanPlay);
 
         this.processBufferFillMetric();
     }

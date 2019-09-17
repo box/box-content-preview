@@ -1140,19 +1140,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('startBufferFillTime()', () => {
+    describe('handleLoadStart()', () => {
         it('should start the timer', () => {
             sandbox.stub(Timer, 'createTag').returns('foo');
             sandbox.stub(Timer, 'start');
 
-            media.startBufferFillTimer();
+            media.handleLoadStart();
 
             expect(Timer.createTag).to.be.calledWith(1, 'bufferFill');
             expect(Timer.start).to.be.calledWith('foo');
         });
     });
 
-    describe('stopBufferFillTimer()', () => {
+    describe('handleCanPlay()', () => {
         it('should stop the timer and process the metrics', () => {
             sandbox.stub(Timer, 'createTag').returns('foo');
             sandbox.stub(Timer, 'stop');
@@ -1160,10 +1160,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.mediaEl = { removeEventListener: sandbox.stub() };
 
-            media.stopBufferFillTimer();
+            media.handleCanPlay();
 
             expect(Timer.stop).to.be.calledWith('foo');
-            expect(media.mediaEl.removeEventListener).to.be.calledWith('canplay', media.stopBufferFillTimer);
+            expect(media.mediaEl.removeEventListener).to.be.calledWith('canplay', media.handleCanPlay);
             expect(media.processBufferFillMetric).to.be.called;
         });
     });
