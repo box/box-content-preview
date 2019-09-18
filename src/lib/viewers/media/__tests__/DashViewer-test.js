@@ -1377,7 +1377,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.processMetrics();
 
-            expect(dash.emitMetric).to.have.been.called;
+            expect(dash.emitMetric).to.have.been.calledWith('media_metric_end_playback', 100);
             expect(dash.metrics).to.be.eql(expMetrics);
         });
     });
