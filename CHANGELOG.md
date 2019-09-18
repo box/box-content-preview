@@ -1,3 +1,10 @@
+## 2.20.0 (2019-09-18)
+
+- chore(dashviewer): change video end metric to lag ratio (#1074) ([9baf0b2](https://github.com/box/box-content-preview/commit/9baf0b2)), closes [#1074](https://github.com/box/box-content-preview/issues/1074)
+- feat(dashviewer): Video performance instrumentation (#1071) ([ed492c1](https://github.com/box/box-content-preview/commit/ed492c1)), closes [#1071](https://github.com/box/box-content-preview/issues/1071) [#2](https://github.com/box/box-content-preview/issues/2)
+- fix(viewer): Pause audio instead of muting it if autoplay is prevented (#1068) ([09b22cf](https://github.com/box/box-content-preview/commit/09b22cf)), closes [#1068](https://github.com/box/box-content-preview/issues/1068)
+- fix(viewer): Re-enable support for range requests for most users (#1072) ([83424d0](https://github.com/box/box-content-preview/commit/83424d0)), closes [#1072](https://github.com/box/box-content-preview/issues/1072)
+
 ## 2.19.0 (2019-09-13)
 
 - fix(pdf): Enable pdf font conversion option for Safari user agents (#1070) ([d83196c](https://github.com/box/box-content-preview/commit/d83196c)), closes [#1070](https://github.com/box/box-content-preview/issues/1070)
