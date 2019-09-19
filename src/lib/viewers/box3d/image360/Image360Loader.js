@@ -27,6 +27,12 @@ const VIEWERS = [
             'tga',
             'tif',
             'tiff',
+            'cr2',
+            'crw',
+            'dng',
+            'nef',
+            'raf',
+            'raw',
         ],
     },
 ];
