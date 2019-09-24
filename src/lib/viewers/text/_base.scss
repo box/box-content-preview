@@ -1,0 +1,27 @@
+.bp-content {
+    .bp-text {
+        user-select: none;
+    }
+
+    &.bp-is-selectable {
+        .bp-text {
+            user-select: auto;
+        }
+
+        .bp-text-code {
+            cursor: text;
+        }
+    }
+}
+
+@media print {
+    .bp-content {
+        .bp-text {
+            display: none; // Hide text in app-level print preview window
+        }
+
+        &.bp-is-printable .bp-text {
+            display: block;
+        }
+    }
+}

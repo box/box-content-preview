@@ -1,4 +1,5 @@
 @import '../../boxuiVariables';
+@import 'base';
 
 .bp-text-plain {
     position: absolute;
@@ -12,11 +13,6 @@
     text-align: left;
     word-wrap: break-word;
     background-color: $white;
-    user-select: none;
-
-    .bp-is-selectable & {
-        user-select: auto;
-    }
 
     /* Override Github CSS */
     .bp & {

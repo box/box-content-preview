@@ -1,7 +1,7 @@
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
-import { CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
+import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 
@@ -97,6 +97,7 @@ class TextBaseViewer extends BaseViewer {
     load() {
         // Enable text selection if user has download permissions and 'disableTextLayer' option is not true
         if (checkPermission(this.options.file, PERMISSION_DOWNLOAD) && !this.getViewerOption('disableTextLayer')) {
+            this.containerEl.classList.add(CLASS_IS_PRINTABLE);
             this.containerEl.classList.add(CLASS_IS_SELECTABLE);
         }
 

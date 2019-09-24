@@ -2,7 +2,7 @@ import './Text.scss';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
-import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION, CLASS_IS_SCROLLABLE } from '../../constants';
+import { CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
@@ -116,7 +116,7 @@ class PlainTextViewer extends TextBaseViewer {
         this.textEl.tabIndex = '0';
 
         this.codeEl = this.textEl.appendChild(document.createElement('code'));
-        this.codeEl.classList.add(this.options.file.extension);
+        this.codeEl.className = `bp-text-code ${this.options.file.extension}`;
 
         // Whether or not we truncated text shown due to performance issues
         this.truncated = false;
