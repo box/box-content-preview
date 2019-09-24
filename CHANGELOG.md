@@ -1,3 +1,8 @@
+## 2.21.0 (2019-09-24)
+
+- fix(text): Hide print content for users without download permission (#1076) ([40a20ce](https://github.com/box/box-content-preview/commit/40a20ce)), closes [#1076](https://github.com/box/box-content-preview/issues/1076)
+- feat(loader): Add support for previewing raw image file types (#1075) ([1cae4d1](https://github.com/box/box-content-preview/commit/1cae4d1)), closes [#1075](https://github.com/box/box-content-preview/issues/1075)
+
 ## 2.20.0 (2019-09-18)
 
 - chore(dashviewer): change video end metric to lag ratio (#1074) ([9baf0b2](https://github.com/box/box-content-preview/commit/9baf0b2)), closes [#1074](https://github.com/box/box-content-preview/issues/1074)
