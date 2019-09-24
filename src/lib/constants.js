@@ -47,6 +47,7 @@ export const CLASS_MULTI_IMAGE_PAGE = 'bp-multi-image-page';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_TRANSPARENT = 'bp-is-transparent';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
+export const CLASS_IS_PRINTABLE = 'bp-is-printable';
 export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';
 export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';

@@ -95,16 +95,29 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     });
 
     describe('load()', () => {
-        it('should add selectable class if user has download permissions', () => {
+        it('should add selectable/printable classes if user has download permissions', () => {
             sandbox
                 .stub(file, 'checkPermission')
                 .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
                 .returns(true);
             textBase.load();
+
+            expect(textBase.containerEl).to.have.class('bp-is-printable');
             expect(textBase.containerEl).to.have.class('bp-is-selectable');
         });
 
-        it('should not add selectable class if disableTextViewer option is true', () => {
+        it('should not add selectable/printable classes if user does not have download permissions', () => {
+            sandbox
+                .stub(file, 'checkPermission')
+                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
+                .returns(false);
+            textBase.load();
+
+            expect(textBase.containerEl).to.not.have.class('bp-is-printable');
+            expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
+        });
+
+        it('should not add selectable/printable classes if disableTextViewer option is true', () => {
             sandbox
                 .stub(file, 'checkPermission')
                 .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
@@ -116,6 +129,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
             textBase.load();
 
+            expect(textBase.containerEl).to.not.have.class('bp-is-printable');
             expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
         });
     });
