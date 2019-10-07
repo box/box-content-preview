@@ -30,7 +30,7 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
             expect(() => Model3DLoader.determineViewer(file)).to.throw(
                 PreviewError,
-                /browser doesn't support preview for 3D models/,
+                /browser doesn’t support preview for 3D models/,
             );
         });
 

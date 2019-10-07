@@ -1670,7 +1670,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission.withArgs(sinon.match.any, PERMISSION_PREVIEW).returns(false);
             expect(() => preview.loadViewer()).to.throw(
                 PreviewError,
-                /We're sorry, you don't have permission to preview this file./,
+                /We’re sorry, you don’t have permission to preview this file./,
             );
         });
 
