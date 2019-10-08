@@ -1146,18 +1146,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should enable range requests if locale is not en-US, the file is greater than 25MB', () => {
+            it('should enable range requests if the file is greater than 25MB', () => {
                 docBase.options.file.size = 26500000;
-                docBase.options.location.locale = 'ja-JP';
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
                 });
             });
 
-            it('should disable range requests if locale is not en-US and the file is smaller than 25MB', () => {
+            it('should disable range requests if the file is smaller than 25MB', () => {
                 docBase.options.file.size = 26000000;
-                docBase.options.location.locale = 'ja-JP';
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
@@ -1171,14 +1169,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
-                });
-            });
-
-            it('should not disable range requests if the locale is en-US', () => {
-                docBase.options.location.locale = 'en-US';
-
-                return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
                 });
             });
 
