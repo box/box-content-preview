@@ -1,3 +1,9 @@
+## 2.22.0 (2019-10-08)
+
+- chore(viewer): Enable GZIP for users in the US (#1082) ([e7a427d](https://github.com/box/box-content-preview/commit/e7a427d)), closes [#1082](https://github.com/box/box-content-preview/issues/1082)
+- docs(examples): Provide example for startAt option (#1080) ([5011b81](https://github.com/box/box-content-preview/commit/5011b81)), closes [#1080](https://github.com/box/box-content-preview/issues/1080)
+- fix(viewer): Fix 3D viewer menu layout too narrow (#1078) ([c01b1a8](https://github.com/box/box-content-preview/commit/c01b1a8)), closes [#1078](https://github.com/box/box-content-preview/issues/1078)
+
 ## 2.21.0 (2019-09-24)
 
 - fix(text): Hide print content for users without download permission (#1076) ([40a20ce](https://github.com/box/box-content-preview/commit/40a20ce)), closes [#1076](https://github.com/box/box-content-preview/issues/1076)
