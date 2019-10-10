@@ -136,3 +136,6 @@ export const METADATA = {
     SCOPE_GLOBAL: 'global',
     TEMPLATE_AUTOCAD: 'autocad',
 };
+
+// Error Codes
+export const ERROR_CODE_403_FORBIDDEN_BY_POLICY = 'forbidden_by_policy';

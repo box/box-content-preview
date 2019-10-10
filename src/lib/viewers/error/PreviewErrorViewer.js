@@ -136,6 +136,7 @@ class PreviewErrorViewer extends BaseViewer {
     addDownloadButton() {
         this.downloadBtnEl = this.infoEl.appendChild(document.createElement('button'));
         this.downloadBtnEl.className = 'bp-btn bp-btn-primary';
+        this.downloadBtnEl.dataset.testid = 'preview-error-download-btn';
         this.downloadBtnEl.textContent = __('download');
         this.downloadBtnEl.addEventListener('click', this.download);
     }

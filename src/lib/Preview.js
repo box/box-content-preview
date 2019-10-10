@@ -43,6 +43,7 @@ import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
+    ERROR_CODE_403_FORBIDDEN_BY_POLICY,
     PERMISSION_PREVIEW,
     PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
@@ -517,6 +518,8 @@ class Preview extends EventEmitter {
      */
     download() {
         const downloadErrorMsg = __('notification_cannot_download');
+        const downloadErrorDueToPolicyMsg = __('notification_cannot_download_due_to_policy');
+
         if (!canDownload(this.file, this.options)) {
             this.ui.showNotification(downloadErrorMsg);
             return;
@@ -546,10 +549,18 @@ class Preview extends EventEmitter {
             // Otherwise, get the content download URL of the original file and download
         } else {
             const getDownloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
-            this.api.get(getDownloadUrl, { headers: this.getRequestHeaders() }).then(data => {
-                const downloadUrl = appendQueryParams(data.download_url, queryParams);
-                this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
-            });
+            this.api
+                .get(getDownloadUrl, { headers: this.getRequestHeaders() })
+                .then(data => {
+                    const downloadUrl = appendQueryParams(data.download_url, queryParams);
+                    this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
+                })
+                .catch(error => {
+                    const code = getProp(error, 'response.data.code');
+                    const msg =
+                        code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
+                    this.ui.showNotification(msg);
+                });
         }
 
         const downloadAttemptEvent = {
