@@ -7,6 +7,7 @@ import fullscreen from '../../../Fullscreen';
 import PreviewError from '../../../PreviewError';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
+import * as util from '../../../util';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -646,6 +647,77 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             sandbox.stub(imageBase, 'updateCursor');
             imageBase.enableViewerControls();
             expect(imageBase.updateCursor).to.be.called;
+        });
+    });
+
+    describe('print()', () => {
+        beforeEach(() => {
+            stubs.execCommand = sandbox.stub();
+            stubs.focus = sandbox.stub();
+            stubs.print = sandbox.stub();
+            stubs.mockIframe = {
+                addEventListener() {},
+                contentWindow: {
+                    document: {
+                        execCommand: stubs.execCommand,
+                    },
+                    focus: stubs.focus,
+                    print: stubs.print,
+                },
+                contentDocument: {
+                    querySelectorAll: sandbox.stub().returns(containerEl.querySelectorAll('img')),
+                },
+                removeEventListener() {},
+            };
+
+            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
+            stubs.getName = sandbox.stub(Browser, 'getName');
+        });
+
+        it('should open the content inside an iframe, center, and focus', () => {
+            imageBase.print();
+            expect(stubs.openContentInsideIframe).to.be.called;
+            console.log(imageBase.printImages[0]);
+            expect(imageBase.printImages[0].style.display).to.equal('block');
+            expect(imageBase.printImages[0].style.margin).to.equal('0px auto');
+            expect(imageBase.printImages[0].style.width).to.equal('100%');
+            expect(stubs.focus).to.be.called;
+        });
+
+        it('should execute the print command if the browser is Explorer', done => {
+            stubs.getName.returns('Explorer');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
+
+            imageBase.print();
+        });
+
+        it('should execute the print command if the browser is Edge', done => {
+            stubs.getName.returns('Edge');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+
+                done();
+            };
+
+            imageBase.print();
+        });
+
+        it('should call the contentWindow print for other browsers', done => {
+            stubs.getName.returns('Chrome');
+            stubs.mockIframe.addEventListener = (type, callback) => {
+                callback();
+                expect(stubs.print).to.be.called;
+
+                done();
+            };
+
+            imageBase.print();
         });
     });
 });

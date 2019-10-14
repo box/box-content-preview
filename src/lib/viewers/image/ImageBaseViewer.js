@@ -6,6 +6,7 @@ import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 
 import { CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import * as util from '../../util';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -432,6 +433,42 @@ class ImageBaseViewer extends BaseViewer {
         if (!this.isMobile) {
             this.updateCursor();
         }
+    }
+
+    /**
+     * Prints image using an an iframe.
+     *
+     * @return {void}
+     */
+    print() {
+        const browserName = Browser.getName();
+
+        /**
+         * Called async to ensure resource is loaded for print preview. Then removes listener to prevent
+         * multiple handlers.
+         *
+         * @return {void}
+         */
+        const defaultPrintHandler = () => {
+            if (browserName === 'Explorer' || browserName === 'Edge') {
+                this.printframe.contentWindow.document.execCommand('print', false, null);
+            } else {
+                this.printframe.contentWindow.print();
+            }
+
+            this.printframe.removeEventListener('load', defaultPrintHandler);
+            this.emit('printsuccess');
+        };
+
+        this.printframe = util.openContentInsideIframe(this.imageEl.outerHTML);
+        this.printImages = this.printframe.contentDocument.querySelectorAll('img');
+        this.printImages.forEach(element => {
+            element.setAttribute('style', 'display: block; margin: 0 auto; width: 100%');
+        });
+
+        this.printframe.contentWindow.focus();
+
+        this.printframe.addEventListener('load', defaultPrintHandler);
     }
 
     //--------------------------------------------------------------------------

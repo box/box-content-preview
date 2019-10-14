@@ -2,7 +2,6 @@
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
-import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
 const imageUrl =
@@ -344,75 +343,6 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
-        });
-    });
-
-    describe('print()', () => {
-        beforeEach(() => {
-            stubs.execCommand = sandbox.stub();
-            stubs.focus = sandbox.stub();
-            stubs.print = sandbox.stub();
-            stubs.mockIframe = {
-                addEventListener() {},
-                contentWindow: {
-                    document: {
-                        execCommand: stubs.execCommand,
-                    },
-                    focus: stubs.focus,
-                    print: stubs.print,
-                },
-                contentDocument: {
-                    querySelector: sandbox.stub().returns(containerEl.querySelector('img')),
-                },
-                removeEventListener() {},
-            };
-
-            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
-            stubs.getName = sandbox.stub(Browser, 'getName');
-        });
-
-        it('should open the content inside an iframe, center, and focus', () => {
-            image.print();
-            expect(stubs.openContentInsideIframe).to.be.called;
-            expect(image.printImage.style.display).to.equal('block');
-            expect(image.printImage.style.margin).to.equal('0px auto');
-            expect(stubs.focus).to.be.called;
-        });
-
-        it('should execute the print command if the browser is Explorer', done => {
-            stubs.getName.returns('Explorer');
-            stubs.mockIframe.addEventListener = (type, callback) => {
-                callback();
-                expect(stubs.execCommand).to.be.calledWith('print', false, null);
-
-                done();
-            };
-
-            image.print();
-        });
-
-        it('should execute the print command if the browser is Edge', done => {
-            stubs.getName.returns('Edge');
-            stubs.mockIframe.addEventListener = (type, callback) => {
-                callback();
-                expect(stubs.execCommand).to.be.calledWith('print', false, null);
-
-                done();
-            };
-
-            image.print();
-        });
-
-        it('should call the contentWindow print for other browsers', done => {
-            stubs.getName.returns('Chrome');
-            stubs.mockIframe.addEventListener = (type, callback) => {
-                callback();
-                expect(stubs.print).to.be.called;
-
-                done();
-            };
-
-            image.print();
         });
     });
 
