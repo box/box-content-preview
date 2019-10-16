@@ -1,16 +1,17 @@
 // Events emitted by Viewers
 export const VIEWER_EVENT = {
-    download: 'download', // Begin downloading the file.
-    reload: 'reload', // Reload preview.
-    load: 'load', // Preview is finished loading.
-    progressStart: 'progressstart', // Begin using loading indicator.
-    progressEnd: 'progressend', // Stop using loading indicator.
-    notificationShow: 'notificationshow', // Show notification modal.
-    notificationHide: 'notificationhide', // Hide notification modal.
-    mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
-    error: 'error', // When an error occurs.
     default: 'viewerevent', // The default viewer event.
+    download: 'download', // Begin downloading the file.
+    error: 'error', // When an error occurs.
+    load: 'load', // Preview is finished loading.
+    mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
     metric: 'viewermetric', // A viewer metric.
+    notificationHide: 'notificationhide', // Hide notification modal.
+    notificationShow: 'notificationshow', // Show notification modal.
+    printSuccess: 'printsuccess', // When printing is successful
+    progressEnd: 'progressend', // Stop using loading indicator.
+    progressStart: 'progressstart', // Begin using loading indicator.
+    reload: 'reload', // Reload preview.
     thumbnailsClose: 'thumbnailsClose', // When thumbnails sidebar closes
     thumbnailsOpen: 'thumbnailsOpen', // When thumbnails sidebar opens
 };
@@ -55,14 +56,14 @@ export const PREVIEW_ERROR = 'preview_error';
 export const PREVIEW_METRIC = 'preview_metric';
 // Milestone events for loading performance
 export const LOAD_METRIC = {
-    previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
-    previewPreloadEvent: 'preload', // Event name for preview_metrics based on preload times.
-    fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
+    contentLoadTime: 'full_document_load_time', // How long it took to load the document so it could be previewed.
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
-    contentLoadTime: 'full_document_load_time', // How long it took to load the document so it could be previewed.
+    fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
     preloadTime: 'preload_time', // How long it takes to preload the document.
+    previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
     previewLoadTime: 'preview_loading', // Total preview load time. Maps to "value" of load event
+    previewPreloadEvent: 'preload', // Event name for preview_metrics based on preload times.
 };
 
 export const DURATION_METRIC = 'preview_duration_metric';
@@ -72,8 +73,8 @@ export const PREVIEW_END_EVENT = 'preview_end';
 export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
 // Events around download reachability
 export const DOWNLOAD_REACHABILITY_METRICS = {
-    NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
     DOWNLOAD_BLOCKED: 'dl_reachability_host_blocked',
+    NOTIFICATION_SHOWN: 'dl_reachability_notification_shown',
 };
 // Events fired when using find in preview
 export const USER_DOCUMENT_FIND_EVENTS = {

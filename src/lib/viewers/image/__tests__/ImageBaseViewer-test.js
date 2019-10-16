@@ -677,9 +677,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         it('should open the content inside an iframe, center, and focus', () => {
             imageBase.print();
             expect(stubs.openContentInsideIframe).to.be.called;
-            expect(imageBase.printImages[0].style.display).to.equal('block');
-            expect(imageBase.printImages[0].style.margin).to.equal('0px auto');
-            expect(imageBase.printImages[0].style.width).to.equal('100%');
+            expect(imageBase.printImages[0].getAttribute('style')).to.be.equal(
+                'display: block; margin: 0 auto; width: 100%',
+            );
             expect(stubs.focus).to.be.called;
         });
 
