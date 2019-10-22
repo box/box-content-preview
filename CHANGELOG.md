@@ -1,3 +1,7 @@
+## 2.24.0 (2019-10-22)
+
+- chore(i18n): Update Translations (#1086) ([3393445](https://github.com/box/box-content-preview/commit/3393445)), closes [#1086](https://github.com/box/box-content-preview/issues/1086)
+
 ## 2.23.0 (2019-10-15)
 
 - chore(i18n): Update Translations (#1083) ([8c46793](https://github.com/box/box-content-preview/commit/8c46793)), closes [#1083](https://github.com/box/box-content-preview/issues/1083)
