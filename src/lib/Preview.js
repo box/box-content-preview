@@ -109,7 +109,7 @@ class Preview extends EventEmitter {
     /** @property {Object} - Map of disabled viewer names */
     disabledViewers = {};
 
-    /** @property {string} - Access token */
+    /** @property {string|Function} - Access token */
     token = '';
 
     /** @property {Object} - Current viewer instance */
@@ -973,6 +973,9 @@ class Preview extends EventEmitter {
 
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
+
+        // Add the token generator to refresh the token if necessary
+        this.options.tokenGenerator = options.token;
 
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {

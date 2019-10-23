@@ -505,6 +505,18 @@ class DashViewer extends VideoBaseViewer {
                 this.handleDownloadError(error, downloadURL);
                 return;
             }
+
+            if (
+                normalizedShakaError.code === shaka.util.Error.Code.BAD_HTTP_STATUS &&
+                normalizedShakaError.data[1] === 401 // token expired
+            ) {
+                this.refreshToken().then(newToken => {
+                    this.options.token = newToken;
+                    this.player.retryStreaming();
+                });
+                return;
+            }
+
             // critical error
             this.triggerError(error);
         }

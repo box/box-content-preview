@@ -4,6 +4,7 @@ import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
+import getTokens from '../../tokens';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
@@ -21,6 +22,7 @@ const INITIAL_TIME_IN_SECONDS = 0;
 const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
+const MEDIA_TOKEN_EXPIRE_ERROR = 'PIPELINE_ERROR_READ';
 
 class MediaBaseViewer extends BaseViewer {
     /** @property {Object} - Keeps track of the different media metrics */
@@ -229,6 +231,11 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
+        if (this.loaded) {
+            this.play(this.currentTime);
+            return;
+        }
+
         this.loadUI();
 
         if (this.isAutoplayEnabled()) {
@@ -261,6 +268,17 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Refresh the access token
+     *
+     * @private
+     * @return {Promise<Object>}
+     */
+    refreshToken = async () => {
+        const tokenMap = await getTokens(this.options.file.id, this.options.tokenGenerator);
+        return tokenMap[this.options.file.id];
+    };
+
+    /**
      * Handles media element loading errors.
      *
      * @private
@@ -273,7 +291,20 @@ class MediaBaseViewer extends BaseViewer {
         console.error(err);
 
         const errorCode = getProp(err, 'target.error.code');
-        const errorDetails = errorCode ? { error_code: errorCode } : {};
+        const errorMessage = getProp(err, 'target.error.message');
+        const errorDetails = errorCode ? { error_code: errorCode, error_message: errorMessage } : {};
+
+        // refresh the token if token expired
+        if (errorCode === MediaError.MEDIA_ERR_NETWORK && errorMessage.includes(MEDIA_TOKEN_EXPIRE_ERROR)) {
+            this.refreshToken().then(newToken => {
+                const { currentTime } = this.mediaEl;
+                this.currentTime = currentTime;
+                this.options.token = newToken;
+                this.mediaUrl = this.createContentUrlWithAuthParams(this.options.representation.content.url_template);
+                this.mediaEl.src = this.mediaUrl;
+            });
+            return;
+        }
 
         const error = new PreviewError(ERROR_CODE.LOAD_MEDIA, __('error_refresh'), errorDetails);
 
