@@ -1,3 +1,5 @@
+import { BROWSERS } from './constants';
+
 const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
 const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
@@ -36,17 +38,17 @@ class Browser {
         }
 
         if (userAgent.indexOf('Edge/') > 0) {
-            name = 'Edge';
+            name = BROWSERS.EDGE;
         } else if (userAgent.indexOf('OPR/') > 0 || userAgent.indexOf('Opera/') > 0) {
-            name = 'Opera';
+            name = BROWSERS.OPERA;
         } else if (userAgent.indexOf('Chrome/') > 0) {
-            name = 'Chrome';
+            name = BROWSERS.CHROME;
         } else if (userAgent.indexOf('Safari/') > 0) {
-            name = 'Safari';
+            name = BROWSERS.SAFARI;
         } else if (userAgent.indexOf('Trident/') > 0) {
-            name = 'Explorer';
+            name = BROWSERS.INTERNET_EXPLORER;
         } else if (userAgent.indexOf('Firefox/') > 0) {
-            name = 'Firefox';
+            name = BROWSERS.FIREFOX;
         }
 
         return name;

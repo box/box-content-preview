@@ -131,6 +131,15 @@ export const ANNOTATOR_EVENT = {
     scale: 'scaleannotations',
 };
 
+export const BROWSERS = {
+    CHROME: 'Chrome',
+    EDGE: 'Edge',
+    FIREFOX: 'Firefox',
+    INTERNET_EXPLORER: 'Explorer',
+    OPERA: 'Opera',
+    SAFARI: 'Safari',
+};
+
 export const METADATA = {
     FIELD_HASXREFS: 'hasxrefs',
     SCOPE_GLOBAL: 'global',
