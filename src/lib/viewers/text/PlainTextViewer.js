@@ -2,7 +2,7 @@ import './Text.scss';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
-import { CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
+import { BROWSERS, CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
@@ -314,7 +314,7 @@ class PlainTextViewer extends TextBaseViewer {
      */
     printIframe() {
         this.printframe.contentWindow.focus();
-        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
+        if (Browser.getName() === BROWSERS.INTERNET_EXPLORER || Browser.getName() === BROWSERS.EDGE) {
             this.printframe.contentWindow.document.execCommand('print', false, null);
         } else {
             this.printframe.contentWindow.print();

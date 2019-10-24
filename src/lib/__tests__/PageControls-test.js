@@ -3,6 +3,7 @@ import PageControls from '../PageControls';
 import Controls from '../Controls';
 import fullscreen from '../Fullscreen';
 import Browser from '../Browser';
+import { BROWSERS } from '../constants';
 
 let pageControls;
 let stubs = {};
@@ -260,7 +261,7 @@ describe('lib/PageControls', () => {
             pageControls.contentEl = {
                 focus: sandbox.stub(),
             };
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Explorer');
+            stubs.browser = sandbox.stub(Browser, 'getName').returns(BROWSERS.INTERNET_EXPLORER);
             stubs.hidePageNumInput = sandbox.stub(pageControls, 'hidePageNumInput');
         });
 
