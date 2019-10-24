@@ -45,6 +45,7 @@ export const ERROR_CODE = {
     PREFETCH_FILE: 'error_prefetch_file',
     RATE_LIMIT: 'error_rate_limit',
     SHAKA: 'error_shaka',
+    TOKEN_NOT_VALID: 'error_token_function_not_valid',
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
     VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
 };

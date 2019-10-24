@@ -109,9 +109,6 @@ class Preview extends EventEmitter {
     /** @property {Object} - Map of disabled viewer names */
     disabledViewers = {};
 
-    /** @property {string|Function} - Access token */
-    token = '';
-
     /** @property {Object} - Current viewer instance */
     viewer;
 
@@ -974,9 +971,6 @@ class Preview extends EventEmitter {
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
 
-        // Add the token generator to refresh the token if necessary
-        this.options.tokenGenerator = options.token;
-
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
@@ -1005,6 +999,7 @@ class Preview extends EventEmitter {
             location: this.location,
             cache: this.cache,
             ui: this.ui,
+            refreshToken: this.refreshToken,
         });
     }
 
@@ -1885,6 +1880,21 @@ class Preview extends EventEmitter {
         const fileId = typeof fileIdOrFile === 'string' ? fileIdOrFile : fileIdOrFile.id;
         return getProp(this.previewOptions, `fileOptions.${fileId}.${optionName}`);
     }
+
+    /**
+     * Refresh the access token
+     *
+     * @private
+     * @return {Promise<string|Error>}
+     */
+    refreshToken = () => {
+        if (typeof this.previewOptions.token !== 'function') {
+            return Promise.reject(new Error('Token is not a function and cannot be refreshed.'));
+        }
+        return getTokens(this.file.id, this.previewOptions.token).then(
+            tokenOrTokenMap => tokenOrTokenMap[this.file.id],
+        );
+    };
 }
 
 global.Box = global.Box || {};

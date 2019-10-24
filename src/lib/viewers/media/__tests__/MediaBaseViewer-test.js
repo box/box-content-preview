@@ -4,7 +4,10 @@ import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Timer from '../../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
-import { VIEWER_EVENT } from '../../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../../events';
+import PreviewError from '../../../PreviewError';
+
+const MAX_RETRY_TOKEN = 3; // number of times to retry refreshing token for unauthorized error
 
 let media;
 let stubs;
@@ -185,36 +188,42 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('refreshToken()', () => {
-        it('should return the same token if the tokenGenerator is a string', done => {
-            media.options.file = {
-                id: 'file_123',
-            };
-            media.options.tokenGenerator = 'new_token';
-            media.refreshToken().then(token => {
-                expect(token).to.equal('new_token');
-                done();
-            });
+    describe('handleExpiredTokenError()', () => {
+        it('should not trigger error if is not an ExpiredTokenError', () => {
+            sandbox.stub(media, 'isExpiredTokenError').returns(false);
+            sandbox.stub(media, 'triggerError');
+            const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
+            media.handleExpiredTokenError(error);
+            expect(media.triggerError).to.not.be.called;
         });
 
-        it('should return a new token if the tokenGenerator is a function', done => {
-            media.options.file = {
-                id: 'file_123',
-            };
-            media.options.tokenGenerator = id => Promise.resolve({ [id]: 'new_token' });
-            media.refreshToken().then(token => {
-                expect(token).to.equal('new_token');
-                done();
-            });
+        it('should trigger error if retry token count reaches max retry limit', () => {
+            media.retryTokenCount = MAX_RETRY_TOKEN + 1;
+            sandbox.stub(media, 'isExpiredTokenError').returns(true);
+            sandbox.stub(media, 'triggerError');
+            const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
+            media.handleExpiredTokenError(error);
+            expect(media.triggerError).to.be.calledWith(sinon.match.has('code', ERROR_CODE.TOKEN_NOT_VALID));
+        });
+
+        it('should call refreshToken if retry token count did not reach max retry limit', () => {
+            media.retryTokenCount = 0;
+            sandbox.stub(media, 'isExpiredTokenError').returns(true);
+            media.options.refreshToken = sandbox.stub().returns(Promise.resolve());
+            const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
+            media.handleExpiredTokenError(error);
+
+            expect(media.options.refreshToken).to.be.called;
+            expect(media.retryTokenCount).to.equal(1);
         });
     });
 
     describe('errorHandler()', () => {
         it('should handle download error if the viewer was not yet loaded', () => {
+            const err = new Error();
             media.mediaUrl = 'foo';
             sandbox.stub(media, 'isLoaded').returns(false);
             sandbox.stub(media, 'handleDownloadError');
-            const err = new Error();
 
             media.errorHandler(err);
 
@@ -222,9 +231,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         it('should trigger an error if Preview is already loaded', () => {
+            const err = new Error();
             sandbox.stub(media, 'isLoaded').returns(true);
             sandbox.stub(media, 'triggerError');
-            const err = new Error();
 
             media.errorHandler(err);
 
