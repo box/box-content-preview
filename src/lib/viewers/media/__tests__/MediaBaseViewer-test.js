@@ -185,6 +185,30 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('refreshToken()', () => {
+        it('should return the same token if the tokenGenerator is a string', done => {
+            media.options.file = {
+                id: 'file_123',
+            };
+            media.options.tokenGenerator = 'new_token';
+            media.refreshToken().then(token => {
+                expect(token).to.equal('new_token');
+                done();
+            });
+        });
+
+        it('should return a new token if the tokenGenerator is a function', done => {
+            media.options.file = {
+                id: 'file_123',
+            };
+            media.options.tokenGenerator = id => Promise.resolve({ [id]: 'new_token' });
+            media.refreshToken().then(token => {
+                expect(token).to.equal('new_token');
+                done();
+            });
+        });
+    });
+
     describe('errorHandler()', () => {
         it('should handle download error if the viewer was not yet loaded', () => {
             media.mediaUrl = 'foo';
