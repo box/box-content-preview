@@ -584,4 +584,29 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(stubs.add).to.be.calledWith(CLASS_HIDDEN);
         });
     });
+
+    describe('toggle()', () => {
+        beforeEach(() => {
+            stubs.open = sandbox.stub(docFindBar, 'open');
+            stubs.close = sandbox.stub(docFindBar, 'close');
+        });
+
+        it('should open if not currently opened', () => {
+            docFindBar.opened = false;
+
+            docFindBar.toggle();
+
+            expect(docFindBar.open).to.be.called;
+            expect(docFindBar.close).not.to.be.called;
+        });
+
+        it('should close if currently opened', () => {
+            docFindBar.opened = true;
+
+            docFindBar.toggle();
+
+            expect(docFindBar.open).not.to.be.called;
+            expect(docFindBar.close).to.be.called;
+        });
+    });
 });

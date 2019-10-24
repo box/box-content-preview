@@ -33,6 +33,7 @@ import {
     ICON_PRINT_CHECKMARK,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
+    ICON_SEARCH_TOGGLE,
     ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
@@ -774,14 +775,24 @@ class DocBaseViewer extends BaseViewer {
         // Only initialize the find bar if the user has download permissions on
         // the file. Users without download permissions shouldn't be able to
         // interact with the text layer
-        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (!canDownload || this.getViewerOption('disableFindBar')) {
+        if (this.isFindDisabled()) {
             return;
         }
 
-        this.findBar = new DocFindBar(this.findBarEl, this.pdfFindController, this.pdfEventBus, canDownload);
+        this.findBar = new DocFindBar(this.findBarEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
+    }
+
+    /**
+     * Determines if findbar is disabled
+     *
+     * @protected
+     * @return {boolean}
+     */
+    isFindDisabled() {
+        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        return !canDownload || this.getViewerOption('disableFindBar');
     }
 
     /**
@@ -1066,6 +1077,15 @@ class DocBaseViewer extends BaseViewer {
                 this.toggleThumbnails,
                 'bp-toggle-thumbnails-icon',
                 ICON_THUMBNAILS_TOGGLE,
+            );
+        }
+
+        if (!this.isFindDisabled()) {
+            this.controls.add(
+                __('toggle_findbar'),
+                () => this.findBar.toggle(),
+                'bp-toggle-findbar-icon',
+                ICON_SEARCH_TOGGLE,
             );
         }
 

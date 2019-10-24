@@ -27,7 +27,10 @@ import {
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
 import {
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
     ICON_PRINT_CHECKMARK,
+    ICON_SEARCH_TOGGLE,
     ICON_THUMBNAILS_TOGGLE,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
@@ -2257,6 +2260,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     add: sandbox.stub(),
                     removeListener: sandbox.stub(),
                 };
+
+                stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
             });
 
             it('should add the correct controls', () => {
@@ -2267,6 +2272,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
                     ICON_THUMBNAILS_TOGGLE,
+                );
+
+                expect(docBase.controls.add).to.be.calledWith(
+                    __('toggle_findbar'),
+                    sinon.match.func,
+                    'bp-toggle-findbar-icon',
+                    ICON_SEARCH_TOGGLE,
                 );
 
                 expect(docBase.zoomControls.init).to.be.calledWith(0.9, {
@@ -2307,6 +2319,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
                     ICON_THUMBNAILS_TOGGLE,
+                );
+            });
+
+            it('should not add the find controls if find is disabled', () => {
+                stubs.isFindDisabled.returns(true);
+
+                docBase.bindControlListeners();
+
+                expect(docBase.controls.add).not.to.be.calledWith(
+                    __('toggle_findbar'),
+                    sinon.match.func,
+                    'bp-toggle-findbar-icon',
+                    ICON_SEARCH_TOGGLE,
                 );
             });
         });
