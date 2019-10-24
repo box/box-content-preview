@@ -1,3 +1,12 @@
+## 2.24.0 (2019-10-22)
+
+- chore(i18n): Update Translations (#1086) ([3393445](https://github.com/box/box-content-preview/commit/3393445)), closes [#1086](https://github.com/box/box-content-preview/issues/1086)
+
+## 2.23.0 (2019-10-15)
+
+- chore(i18n): Update Translations (#1083) ([8c46793](https://github.com/box/box-content-preview/commit/8c46793)), closes [#1083](https://github.com/box/box-content-preview/issues/1083)
+- fix(download): show appropriate download error (#1081) ([269c9ff](https://github.com/box/box-content-preview/commit/269c9ff)), closes [#1081](https://github.com/box/box-content-preview/issues/1081)
+
 ## 2.22.0 (2019-10-08)
 
 - chore(viewer): Enable GZIP for users in the US (#1082) ([e7a427d](https://github.com/box/box-content-preview/commit/e7a427d)), closes [#1082](https://github.com/box/box-content-preview/issues/1082)
