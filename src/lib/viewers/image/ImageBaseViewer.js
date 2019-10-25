@@ -4,8 +4,9 @@ import Browser from '../../Browser';
 import PreviewError from '../../PreviewError';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 
-import { CLASS_INVISIBLE } from '../../constants';
+import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { openContentInsideIframe } from '../../util';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -432,6 +433,43 @@ class ImageBaseViewer extends BaseViewer {
         if (!this.isMobile) {
             this.updateCursor();
         }
+    }
+
+    /**
+     * Prints image using an an iframe.
+     *
+     * @return {void}
+     */
+    print() {
+        const browserName = Browser.getName();
+
+        /**
+         * Called async to ensure resource is loaded for print preview. Then removes listener to prevent
+         * multiple handlers.
+         *
+         * @return {void}
+         */
+        const defaultPrintHandler = () => {
+            if (browserName === BROWSERS.INTERNET_EXPLORER || browserName === BROWSERS.EDGE) {
+                this.printframe.contentWindow.document.execCommand('print', false, null);
+            } else {
+                this.printframe.contentWindow.print();
+            }
+
+            this.printframe.removeEventListener('load', defaultPrintHandler);
+            this.emit(VIEWER_EVENT.printSuccess);
+        };
+
+        this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
+        this.printImages = this.printframe.contentDocument.querySelectorAll('img');
+
+        for (let i = 0; i < this.printImages.length; i += 1) {
+            this.printImages[i].setAttribute('style', 'display: block; margin: 0 auto; width: 100%');
+        }
+
+        this.printframe.contentWindow.focus();
+
+        this.printframe.addEventListener(VIEWER_EVENT.load, defaultPrintHandler);
     }
 
     //--------------------------------------------------------------------------

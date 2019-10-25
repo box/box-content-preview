@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import fullscreen from './Fullscreen';
 import Browser from './Browser';
+import { BROWSERS } from './constants';
 import { decodeKeydown } from './util';
 import { ICON_DROP_DOWN, ICON_DROP_UP } from './icons/icons';
 
@@ -271,7 +272,7 @@ class PageControls extends EventEmitter {
                 // we blur the page behind the controls - this unfortunately
                 // is an IE-only solution that doesn't work with other browsers
 
-                if (Browser.getName() !== 'Explorer') {
+                if (Browser.getName() !== BROWSERS.INTERNET_EXPLORER) {
                     event.target.blur();
                 }
 
