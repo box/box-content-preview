@@ -33,7 +33,7 @@ import {
     ICON_PRINT_CHECKMARK,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
-    ICON_SEARCH_TOGGLE,
+    ICON_SEARCH,
     ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
@@ -787,7 +787,7 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Determines if findbar is disabled
      *
-     * @protected
+     * @private
      * @return {boolean}
      */
     isFindDisabled() {
@@ -1081,12 +1081,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (!this.isFindDisabled()) {
-            this.controls.add(
-                __('toggle_findbar'),
-                () => this.findBar.toggle(),
-                'bp-toggle-findbar-icon',
-                ICON_SEARCH_TOGGLE,
-            );
+            this.controls.add(__('toggle_findbar'), () => this.findBar.toggle(), 'bp-toggle-findbar-icon', ICON_SEARCH);
         }
 
         this.zoomControls.init(this.pdfViewer.currentScale, {

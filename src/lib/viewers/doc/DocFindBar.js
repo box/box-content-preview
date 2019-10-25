@@ -408,10 +408,10 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     toggle() {
-        if (!this.opened) {
-            this.open();
-        } else {
+        if (this.opened) {
             this.close();
+        } else {
+            this.open();
         }
     }
 }

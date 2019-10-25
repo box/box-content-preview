@@ -30,10 +30,8 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
     ICON_PRINT_CHECKMARK,
-    ICON_SEARCH_TOGGLE,
+    ICON_SEARCH,
     ICON_THUMBNAILS_TOGGLE,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
 } from '../../../icons/icons';
 import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
@@ -2278,7 +2276,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     __('toggle_findbar'),
                     sinon.match.func,
                     'bp-toggle-findbar-icon',
-                    ICON_SEARCH_TOGGLE,
+                    ICON_SEARCH,
                 );
 
                 expect(docBase.zoomControls.init).to.be.calledWith(0.9, {
@@ -2331,7 +2329,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     __('toggle_findbar'),
                     sinon.match.func,
                     'bp-toggle-findbar-icon',
-                    ICON_SEARCH_TOGGLE,
+                    ICON_SEARCH,
                 );
             });
         });

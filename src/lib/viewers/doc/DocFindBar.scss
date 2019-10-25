@@ -85,20 +85,23 @@ $blue: #00f !default;
         margin: 0;
         line-height: 1;
         text-align: left;
-    }
+        border: 0;
 
-    .bp-doc-find-close {
-        &:hover .icon {
-            fill: $better-black;
+        svg {
+            width: 12px;
+            height: 12px;
         }
     }
 
-    .bp-doc-find-search,
     .bp-doc-find-close {
         border: 0;
 
         svg {
             width: 22px;
+        }
+
+        &:hover .icon {
+            fill: $better-black;
         }
     }
 
