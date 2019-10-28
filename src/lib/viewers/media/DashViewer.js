@@ -527,15 +527,15 @@ class DashViewer extends VideoBaseViewer {
             }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`,
         );
 
+        if (this.handleExpiredTokenError(error)) {
+            return;
+        }
+
         if (normalizedShakaError.severity > SHAKA_CODE_ERROR_RECOVERABLE) {
             // Anything greater than a recoverable error should be critical
             if (normalizedShakaError.code === shaka.util.Error.Code.HTTP_ERROR) {
                 const downloadURL = normalizedShakaError.data[0];
                 this.handleDownloadError(error, downloadURL);
-                return;
-            }
-
-            if (this.handleExpiredTokenError(error)) {
                 return;
             }
 
