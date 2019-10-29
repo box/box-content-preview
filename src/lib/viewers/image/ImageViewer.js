@@ -1,8 +1,6 @@
-import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
-import * as util from '../../util';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -50,7 +48,7 @@ class ImageViewer extends ImageBaseViewer {
     /**
      * Loads an Image.
      *
-     * @return {void}
+     * @return {Promise}
      */
     load() {
         super.load();
@@ -283,40 +281,6 @@ class ImageViewer extends ImageBaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-    }
-
-    /**
-     * Prints image using an an iframe.
-     *
-     * @return {void}
-     */
-    print() {
-        const browserName = Browser.getName();
-
-        /**
-         * Called async to ensure resource is loaded for print preview. Then removes listener to prevent
-         * multiple handlers.
-         *
-         * @return {void}
-         */
-        const defaultPrintHandler = () => {
-            if (browserName === 'Explorer' || browserName === 'Edge') {
-                this.printframe.contentWindow.document.execCommand('print', false, null);
-            } else {
-                this.printframe.contentWindow.print();
-            }
-
-            this.printframe.removeEventListener('load', defaultPrintHandler);
-            this.emit('printsuccess');
-        };
-
-        this.printframe = util.openContentInsideIframe(this.imageEl.outerHTML);
-        this.printframe.addEventListener('load', defaultPrintHandler);
-        this.printframe.contentWindow.focus();
-
-        this.printImage = this.printframe.contentDocument.querySelector('img');
-        this.printImage.style.display = 'block';
-        this.printImage.style.margin = '0 auto';
     }
 
     /**
