@@ -40,6 +40,7 @@ class DashViewer extends VideoBaseViewer {
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
+        this.restartPlayback = this.restartPlayback.bind(this);
     }
 
     /**
@@ -478,6 +479,32 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Determain whether is an expired token error
+     *
+     * @private
+     * @param {Object} details - error details
+     * @return {bool}
+     */
+    isExpiredTokenError({ details }) {
+        // unauthorized error may be caused by token expired
+        return details.code === shaka.util.Error.Code.BAD_HTTP_STATUS && details.data[1] === 401;
+    }
+
+    /**
+     * Restart playback using new token
+     *
+     * @private
+     * @param {string} newToken - new token
+     * @return {void}
+     */
+    restartPlayback(newToken) {
+        this.options.token = newToken;
+        if (this.player.retryStreaming()) {
+            this.retryTokenCount = 0;
+        }
+    }
+
+    /**
      * Handles errors thrown by shaka player. See https://shaka-player-demo.appspot.com/docs/api/shaka.util.Error.html
      *
      * @private
@@ -491,12 +518,17 @@ class DashViewer extends VideoBaseViewer {
             __('error_refresh'),
             {
                 code: normalizedShakaError.code,
+                data: normalizedShakaError.data,
                 severity: normalizedShakaError.severity,
             },
             `Shaka error. Code = ${normalizedShakaError.code}, Category = ${
                 normalizedShakaError.category
             }, Severity = ${normalizedShakaError.severity}, Data = ${normalizedShakaError.data.toString()}`,
         );
+
+        if (this.handleExpiredTokenError(error)) {
+            return;
+        }
 
         if (normalizedShakaError.severity > SHAKA_CODE_ERROR_RECOVERABLE) {
             // Anything greater than a recoverable error should be critical
@@ -505,6 +537,7 @@ class DashViewer extends VideoBaseViewer {
                 this.handleDownloadError(error, downloadURL);
                 return;
             }
+
             // critical error
             this.triggerError(error);
         }

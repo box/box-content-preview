@@ -109,9 +109,6 @@ class Preview extends EventEmitter {
     /** @property {Object} - Map of disabled viewer names */
     disabledViewers = {};
 
-    /** @property {string} - Access token */
-    token = '';
-
     /** @property {Object} - Current viewer instance */
     viewer;
 
@@ -1002,6 +999,7 @@ class Preview extends EventEmitter {
             location: this.location,
             cache: this.cache,
             ui: this.ui,
+            refreshToken: this.refreshToken,
         });
     }
 
@@ -1882,6 +1880,21 @@ class Preview extends EventEmitter {
         const fileId = typeof fileIdOrFile === 'string' ? fileIdOrFile : fileIdOrFile.id;
         return getProp(this.previewOptions, `fileOptions.${fileId}.${optionName}`);
     }
+
+    /**
+     * Refresh the access token
+     *
+     * @private
+     * @return {Promise<string|Error>}
+     */
+    refreshToken = () => {
+        if (typeof this.previewOptions.token !== 'function') {
+            return Promise.reject(new Error('Token is not a function and cannot be refreshed.'));
+        }
+        return getTokens(this.file.id, this.previewOptions.token).then(
+            tokenOrTokenMap => tokenOrTokenMap[this.file.id],
+        );
+    };
 }
 
 global.Box = global.Box || {};
