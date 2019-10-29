@@ -279,15 +279,14 @@ class MediaBaseViewer extends BaseViewer {
      * Determain whether is an expired token error
      *
      * @protected
-     * @param {PreviewError} error
+     * @param {Object} details - error details
      * @return {bool}
      */
-    isExpiredTokenError(error) {
-        const errorDetails = error.details;
+    isExpiredTokenError({ details }) {
         return (
-            !isEmpty(errorDetails) &&
-            errorDetails.error_code === MediaError.MEDIA_ERR_NETWORK &&
-            errorDetails.error_message.includes(MEDIA_TOKEN_EXPIRE_ERROR)
+            !isEmpty(details) &&
+            details.error_code === MediaError.MEDIA_ERR_NETWORK &&
+            details.error_message.includes(MEDIA_TOKEN_EXPIRE_ERROR)
         );
     }
 

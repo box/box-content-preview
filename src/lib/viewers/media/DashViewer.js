@@ -482,13 +482,12 @@ class DashViewer extends VideoBaseViewer {
      * Determain whether is an expired token error
      *
      * @private
-     * @param {PreviewError} error
+     * @param {Object} details - error details
      * @return {bool}
      */
-    isExpiredTokenError(error) {
-        const errorDetails = error.details;
-        // unauthorized error may be cuased by token expired
-        return errorDetails.code === shaka.util.Error.Code.BAD_HTTP_STATUS && errorDetails.data[1] === 401;
+    isExpiredTokenError({ details }) {
+        // unauthorized error may be caused by token expired
+        return details.code === shaka.util.Error.Code.BAD_HTTP_STATUS && details.data[1] === 401;
     }
 
     /**
