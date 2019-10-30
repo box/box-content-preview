@@ -2,11 +2,11 @@ import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import PreviewError from '../../PreviewError';
-import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
+import ZoomControls from '../../ZoomControls';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -52,6 +52,11 @@ class ImageBaseViewer extends BaseViewer {
     destroy() {
         this.unbindDOMListeners();
 
+        if (this.zoomControls) {
+            this.zoomControls.removeListener('zoomin', this.zoomIn);
+            this.zoomControls.removeListener('zoomout', this.zoomOut);
+        }
+
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
@@ -77,8 +82,8 @@ class ImageBaseViewer extends BaseViewer {
 
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions.then(() => {
-            this.loadUI();
             this.zoom();
+            this.loadUI();
 
             this.imageEl.classList.remove(CLASS_INVISIBLE);
             this.loaded = true;
@@ -199,7 +204,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.bindControlListeners();
+        this.zoomControls = new ZoomControls(this.controls);
     }
 
     /**
@@ -253,17 +258,6 @@ class ImageBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Event Listeners
     //--------------------------------------------------------------------------
-
-    /**
-     * Bind event listeners for document controls
-     *
-     * @private
-     * @return {void}
-     */
-    bindControlListeners() {
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
-    }
 
     /**
      * Binds DOM listeners for image viewers.

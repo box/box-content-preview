@@ -189,34 +189,39 @@ class Controls {
      * @param {string} text - button text
      * @param {Function} handler - button handler
      * @param {string} [classList] - optional class list
-     * @param {string} [buttonContent] - Optional button content HTML
+     * @param {string} [content] - Optional button content HTML
      * @return {void}
      */
-    add(text, handler, classList = '', buttonContent = '') {
+    add(text, handler, classList = '', content = '', tag = 'button') {
         const cell = document.createElement('div');
         cell.className = 'bp-controls-cell';
 
-        const button = document.createElement('button');
-        button.setAttribute('aria-label', text);
-        button.setAttribute('type', 'button');
-        button.setAttribute('title', text);
-        button.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
-        button.addEventListener('click', handler);
+        const element = document.createElement(tag);
+        element.setAttribute('aria-label', text);
+        element.setAttribute('title', text);
 
-        if (buttonContent) {
-            button.innerHTML = buttonContent;
+        if (tag === 'button') {
+            element.setAttribute('type', 'button');
+            element.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
+            element.addEventListener('click', handler);
+
+            // Maintain a reference for cleanup
+            this.buttonRefs.push({
+                button: element,
+                handler,
+            });
+        } else {
+            element.className = `${classList}`;
         }
 
-        cell.appendChild(button);
+        if (content) {
+            element.innerHTML = content;
+        }
+
+        cell.appendChild(element);
         this.controlsEl.appendChild(cell);
 
-        // Maintain a reference for cleanup
-        this.buttonRefs.push({
-            button,
-            handler,
-        });
-
-        return button;
+        return element;
     }
 
     /**

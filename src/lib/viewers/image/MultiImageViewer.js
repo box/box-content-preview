@@ -4,6 +4,7 @@ import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
 import { pageNumberFromScroll } from '../../util';
+import ZoomControls from '../../ZoomControls';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -244,6 +245,9 @@ class MultiImageViewer extends ImageBaseViewer {
         // Grab the first page image dimensions
         const imageEl = this.singleImageEls[0];
         this.scale = width ? width / imageEl.naturalWidth : height / imageEl.naturalHeight;
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
         this.emit('scale', { scale: this.scale });
     }
 
@@ -255,8 +259,18 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
+
+        this.zoomControls = new ZoomControls(this.controls);
+        this.bindZoomControlListeners();
+
         this.pageControls = new PageControls(this.controls, this.wrapperEl);
         this.bindPageControlListeners();
+    }
+
+    bindZoomControlListeners() {
+        this.zoomControls.add(this.scale);
+        this.zoomControls.addListener('zoomin', this.zoomIn);
+        this.zoomControls.addListener('zoomout', this.zoomOut);
     }
 
     /**

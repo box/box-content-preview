@@ -258,6 +258,9 @@ class ImageViewer extends ImageBaseViewer {
             ? width / this.imageEl.getAttribute('originalWidth')
             : height / this.imageEl.getAttribute('originalHeight');
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
         this.emit('scale', {
             scale: this.scale,
             rotationAngle: this.rotationAngle,
@@ -272,6 +275,10 @@ class ImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
+
+        this.zoomControls.add(this.scale);
+        this.zoomControls.addListener('zoomin', this.zoomIn);
+        this.zoomControls.addListener('zoomout', this.zoomOut);
 
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(

@@ -3,6 +3,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import PageControls from '../../PageControls';
+import ZoomControls from '../../ZoomControls';
 import DocFindBar from './DocFindBar';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
@@ -30,8 +31,6 @@ import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import {
     ICON_PRINT_CHECKMARK,
-    ICON_ZOOM_OUT,
-    ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
     ICON_THUMBNAILS_TOGGLE,
@@ -41,7 +40,7 @@ import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS }
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
-const DEFAULT_SCALE_DELTA = 1.1;
+const DEFAULT_SCALE_DELTA = 0.1;
 const IS_SAFARI_CLASS = 'is-safari';
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const MAX_PINCH_SCALE_VALUE = 3;
@@ -165,6 +164,11 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.pageControls) {
             this.pageControls.removeListener('pagechange', this.setPage);
+        }
+
+        if (this.zoomControls) {
+            this.zoomControls.removeListener('zoomin', this.zoomIn);
+            this.zoomControls.removeListener('zoomout', this.zoomOut);
         }
 
         if (this.controls && typeof this.controls.destroy === 'function') {
@@ -523,7 +527,7 @@ class DocBaseViewer extends BaseViewer {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(3);
+            newScale += DEFAULT_SCALE_DELTA;
             newScale = Math.min(MAX_SCALE, newScale);
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
@@ -536,6 +540,7 @@ class DocBaseViewer extends BaseViewer {
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
+        this.zoomControls.setCurrentScale(newScale);
     }
 
     /**
@@ -548,7 +553,7 @@ class DocBaseViewer extends BaseViewer {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(3);
+            newScale -= DEFAULT_SCALE_DELTA;
             newScale = Math.max(MIN_SCALE, newScale);
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
@@ -561,6 +566,7 @@ class DocBaseViewer extends BaseViewer {
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
+        this.zoomControls.setCurrentScale(newScale);
     }
 
     /**
@@ -1006,7 +1012,10 @@ class DocBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
+        this.zoomControls = new ZoomControls(this.controls);
         this.pageControls.addListener('pagechange', this.setPage);
+        this.zoomControls.addListener('zoomin', this.zoomIn);
+        this.zoomControls.addListener('zoomout', this.zoomOut);
         this.bindControlListeners();
     }
 
@@ -1065,8 +1074,12 @@ class DocBaseViewer extends BaseViewer {
             );
         }
 
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
+        this.zoomControls.add(this.pdfViewer.currentScale, {
+            maxZoom: MAX_SCALE,
+            minZoom: MIN_SCALE,
+            zoomInClassName: 'bp-doc-zoom-in-icon',
+            zoomOutClassName: 'bp-doc-zoom-out-icon',
+        });
 
         this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 
