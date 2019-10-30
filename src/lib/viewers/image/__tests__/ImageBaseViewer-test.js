@@ -5,7 +5,6 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
 import PreviewError from '../../../PreviewError';
-import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 import * as util from '../../../util';
 
@@ -58,6 +57,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             sandbox.stub(imageBase.controls, 'destroy');
             sandbox.stub(imageBase.imageEl, 'removeEventListener');
+            sandbox.stub(imageBase.zoomControls, 'removeListener');
 
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'destroy', {
                 value: sandbox.stub(),
@@ -68,6 +68,8 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.controls.destroy).to.be.called;
             expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
             expect(BaseViewer.prototype.destroy).to.be.called;
+            expect(imageBase.zoomControls.removeListener).to.be.calledWith('zoomin', imageBase.zoomIn);
+            expect(imageBase.zoomControls.removeListener).to.be.calledWith('zoomout', imageBase.zoomOut);
         });
 
         it('should remove all the listeners', () => {
@@ -213,11 +215,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
     describe('loadUI()', () => {
         it('should create controls and add control buttons for zoom', () => {
-            sandbox.stub(imageBase, 'bindControlListeners');
             imageBase.loadUI();
 
             expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.bindControlListeners).to.be.called;
+            expect(imageBase.zoomControls).to.not.be.undefined;
         });
     });
 
@@ -272,28 +273,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             sandbox.stub(stubs.api, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise.then(() => Assert.fail()).catch(() => done());
-        });
-    });
-
-    describe('bindControlListeners()', () => {
-        it('should add the correct controls', () => {
-            imageBase.controls = {
-                add: sandbox.stub(),
-            };
-
-            imageBase.bindControlListeners();
-            expect(imageBase.controls.add).to.be.calledWith(
-                __('zoom_out'),
-                imageBase.zoomOut,
-                'bp-image-zoom-out-icon',
-                ICON_ZOOM_OUT,
-            );
-            expect(imageBase.controls.add).to.be.calledWith(
-                __('zoom_in'),
-                imageBase.zoomIn,
-                'bp-image-zoom-in-icon',
-                ICON_ZOOM_IN,
-            );
         });
     });
 

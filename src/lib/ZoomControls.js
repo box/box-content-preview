@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import EventEmitter from 'events';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
+import Controls from './Controls';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
@@ -28,11 +29,15 @@ class ZoomControls extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {HTMLElement} controls - Viewer controls
-     * @return {Controls} Instance of controls
+     * @param {Controls} controls - Viewer controls
+     * @return {ZoomControls} Instance of ZoomControls
      */
     constructor(controls) {
         super();
+
+        if (!controls || !(controls instanceof Controls)) {
+            throw Error('controls must be an instance of Controls');
+        }
 
         this.controls = controls;
         this.controlsElement = controls.controlsEl;

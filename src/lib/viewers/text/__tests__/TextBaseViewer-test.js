@@ -4,6 +4,7 @@ import TextBaseViewer from '../TextBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
+import ZoomControls from '../../../ZoomControls';
 
 let containerEl;
 let textBase;
@@ -47,8 +48,14 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                 destroy: sandbox.stub(),
             };
 
+            textBase.zoomControls = {
+                removeListener: sandbox.stub(),
+            };
+
             textBase.destroy();
             expect(textBase.controls.destroy).to.be.called;
+            expect(textBase.zoomControls.removeListener).to.be.calledWith('zoomin', textBase.zoomIn);
+            expect(textBase.zoomControls.removeListener).to.be.calledWith('zoomout', textBase.zoomOut);
         });
     });
 
@@ -59,6 +66,10 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textEl = document.createElement('div');
             textEl.className = 'bp-text';
             textBase.containerEl.appendChild(textEl);
+            textBase.zoomControls = {
+                setCurrentScale: sandbox.stub(),
+                removeListener: sandbox.stub(),
+            };
         });
 
         afterEach(() => {
@@ -69,16 +80,19 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             sandbox.stub(textBase, 'emit');
             textBase.zoom();
             expect(textBase.emit).to.be.calledWith('zoom');
+            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(0);
         });
 
         it('should increase font size when zooming in', () => {
             textBase.zoom('in');
             expect(textEl.style.fontSize).to.equal('110%');
+            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(1.1);
         });
 
         it('should decrease font size when zooming out', () => {
             textBase.zoom('out');
             expect(textEl.style.fontSize).to.equal('90%');
+            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(0.9);
         });
     });
 
@@ -136,35 +150,37 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
     describe('loadUI()', () => {
         const addFunc = Controls.prototype.add;
+        const zoomAddFunc = ZoomControls.prototype.add;
+
+        beforeEach(() => {
+            sandbox.stub(textBase, 'getFontSize');
+        });
 
         afterEach(() => {
             Object.defineProperty(Controls.prototype, 'add', { value: addFunc });
+            Object.defineProperty(ZoomControls.prototype, 'add', { value: zoomAddFunc });
         });
 
         it('should setup controls and add click handlers', () => {
             Object.defineProperty(Controls.prototype, 'add', { value: sandbox.stub() });
+            Object.defineProperty(ZoomControls.prototype, 'add', { value: sandbox.stub() });
+            textBase.getFontSize.returns(100);
 
             textBase.loadUI();
             expect(textBase.controls instanceof Controls).to.be.true;
-            expect(Controls.prototype.add.callCount).to.equal(4);
-            expect(Controls.prototype.add).to.be.calledWith(
-                sinon.match.string,
-                textBase.zoomOut,
-                sinon.match.string,
-                sinon.match.string,
-            );
-            expect(Controls.prototype.add).to.be.calledWith(
-                sinon.match.string,
-                textBase.zoomIn,
-                sinon.match.string,
-                sinon.match.string,
-            );
+            expect(Controls.prototype.add.callCount).to.equal(2);
             expect(Controls.prototype.add).to.be.calledWith(
                 sinon.match.string,
                 textBase.toggleFullscreen,
                 sinon.match.string,
                 sinon.match.string,
             );
+
+            expect(textBase.zoomControls instanceof ZoomControls).to.be.true;
+            expect(ZoomControls.prototype.add).to.be.calledWith(1, {
+                zoomInClassName: 'bp-text-zoom-in-icon',
+                zoomOutClassName: 'bp-text-zoom-out-icon',
+            });
         });
     });
 

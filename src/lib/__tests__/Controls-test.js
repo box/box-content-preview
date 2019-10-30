@@ -260,6 +260,10 @@ describe('lib/Controls', () => {
     });
 
     describe('add()', () => {
+        beforeEach(() => {
+            sandbox.stub(controls.buttonRefs, 'push');
+        });
+
         it('should create a button with the right attributes', () => {
             const btn = controls.add('test button', sandbox.stub(), 'test1', 'test content');
             expect(btn.attributes.title.value).to.equal('test button');
@@ -267,6 +271,18 @@ describe('lib/Controls', () => {
             expect(btn.classList.contains('test1')).to.be.true;
             expect(btn.innerHTML).to.equal('test content');
             expect(btn.parentNode.parentNode).to.equal(controls.controlsEl);
+            expect(controls.buttonRefs.push).to.be.called;
+        });
+
+        it('should create a span if specified', () => {
+            const span = controls.add('test span', null, 'span1', 'test content', 'span');
+            expect(span.attributes.title.value).to.equal('test span');
+            expect(span.attributes['aria-label'].value).to.equal('test span');
+            expect(span.classList.contains('span1')).to.be.true;
+            expect(span.classList.contains('bp-controls-btn')).to.be.false;
+            expect(span.innerHTML).to.equal('test content');
+            expect(span.parentNode.parentNode).to.equal(controls.controlsEl);
+            expect(controls.buttonRefs.push).not.to.be.called;
         });
     });
 

@@ -8,6 +8,7 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
+import ZoomControls from '../../../ZoomControls';
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
 
@@ -323,6 +324,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('setScale()', () => {
         it('should set the scale relative to the size of the first image dimensions', () => {
+            multiImage.zoomControls = {
+                setCurrentScale: sandbox.stub(),
+                removeListener: sandbox.stub(),
+            };
+
             multiImage.singleImageEls = [
                 {
                     naturalWidth: 1024,
@@ -336,17 +342,21 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setScale(512, 512);
             expect(multiImage.emit).to.be.calledWith('scale', { scale: 0.5 });
+            expect(multiImage.zoomControls.setCurrentScale).to.be.calledWith(0.5);
         });
     });
 
     describe('loadUI()', () => {
         it('should create page controls and bind the page control listeners', () => {
             stubs.bindPageControlListeners = sandbox.stub(multiImage, 'bindPageControlListeners');
+            stubs.bindZoomControlListeners = sandbox.stub(multiImage, 'bindZoomControlListeners');
 
             multiImage.loadUI();
             expect(multiImage.pageControls instanceof PageControls).to.be.true;
             expect(multiImage.pageControls.contentEl).to.equal(multiImage.wrapperEl);
+            expect(multiImage.zoomControls instanceof ZoomControls).to.be.true;
             expect(stubs.bindPageControlListeners).to.be.called;
+            expect(stubs.bindZoomControlListeners).to.be.called;
         });
     });
 
@@ -386,6 +396,23 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 'bp-exit-fullscreen-icon',
                 ICON_FULLSCREEN_OUT,
             );
+        });
+    });
+
+    describe('bindZoomControlListeners()', () => {
+        it('should add the zoom controls and bind the zoom event listeners', () => {
+            multiImage.scale = 0.5;
+
+            multiImage.zoomControls = {
+                add: sandbox.stub(),
+                addListener: sandbox.stub(),
+            };
+
+            multiImage.bindZoomControlListeners();
+
+            expect(multiImage.zoomControls.add).to.be.calledWith(0.5);
+            expect(multiImage.zoomControls.addListener).to.be.calledWith('zoomin', multiImage.zoomIn);
+            expect(multiImage.zoomControls.addListener).to.be.calledWith('zoomout', multiImage.zoomOut);
         });
     });
 

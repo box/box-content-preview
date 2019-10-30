@@ -183,14 +183,15 @@ class Controls {
     };
 
     /**
-     * Adds buttons to controls
+     * Adds element to controls
      *
      * @public
-     * @param {string} text - button text
-     * @param {Function} handler - button handler
+     * @param {string} text - text
+     * @param {Function} handler - on click handler
      * @param {string} [classList] - optional class list
-     * @param {string} [content] - Optional button content HTML
-     * @return {void}
+     * @param {string} [content] - Optional content HTML
+     * @param {string} [tag] - Optional html tag, defaults to 'button'
+     * @return {HTMLElement} The created HTMLElement inserted into the control
      */
     add(text, handler, classList = '', content = '', tag = 'button') {
         const cell = document.createElement('div');

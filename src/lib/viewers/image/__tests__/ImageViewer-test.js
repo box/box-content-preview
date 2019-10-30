@@ -326,6 +326,10 @@ describe('lib/viewers/image/ImageViewer', () => {
     describe('setScale()', () => {
         it('should emit a scale event with current scale and rotationAngle', () => {
             sandbox.stub(image, 'emit');
+            image.zoomControls = {
+                setCurrentScale: sandbox.stub(),
+                removeListener: sandbox.stub(),
+            };
             image.currentRotationAngle = -90;
             const [width, height] = [100, 100];
 
@@ -334,15 +338,19 @@ describe('lib/viewers/image/ImageViewer', () => {
                 scale: sinon.match.any,
                 rotationAngle: sinon.match.number,
             });
+            expect(image.zoomControls.setCurrentScale).to.be.calledWith(sinon.match.number);
         });
     });
 
     describe('loadUI()', () => {
         it('should load UI & controls for zoom', () => {
+            image.scale = 0.5;
+
             image.loadUI();
 
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
+            expect(image.zoomControls.currentScale).to.equal(50);
         });
     });
 

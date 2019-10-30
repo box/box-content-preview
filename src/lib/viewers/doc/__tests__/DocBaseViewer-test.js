@@ -28,13 +28,12 @@ import {
 import {
     ICON_PRINT_CHECKMARK,
     ICON_THUMBNAILS_TOGGLE,
-    ICON_ZOOM_OUT,
-    ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
 } from '../../../icons/icons';
 import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
+import ZoomControls from '../../../ZoomControls';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -919,7 +918,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('zoom methods', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
-                    currentScale: 5,
+                    currentScale: 8.9,
+                };
+                docBase.zoomControls = {
+                    setCurrentScale: sandbox.stub(),
+                    removeListener: sandbox.stub(),
                 };
                 stubs.emit = sandbox.stub(docBase, 'emit');
             });
@@ -936,6 +939,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.pdfViewer.currentScale = 1;
                     docBase.zoomIn(1);
                     expect(docBase.pdfViewer.currentScaleValue).to.equal(DEFAULT_SCALE_DELTA);
+                    expect(docBase.zoomControls.setCurrentScale).to.have.been.calledWith(DEFAULT_SCALE_DELTA);
                 });
 
                 it('should emit the zoom event', () => {
@@ -1652,6 +1656,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(bindControlListenersStub).to.be.called;
                 expect(docBase.controls instanceof Controls).to.be.true;
                 expect(docBase.pageControls instanceof PageControls).to.be.true;
+                expect(docBase.zoomControls instanceof ZoomControls).to.be.true;
                 expect(docBase.pageControls.contentEl).to.equal(docBase.docEl);
             });
         });
@@ -2235,10 +2240,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     pagesCount: 4,
                     currentPageNumber: 1,
+                    currentScale: 0.9,
                     cleanup: sandbox.stub(),
                 };
 
                 docBase.controls = {
+                    add: sandbox.stub(),
+                    removeListener: sandbox.stub(),
+                };
+
+                docBase.zoomControls = {
                     add: sandbox.stub(),
                     removeListener: sandbox.stub(),
                 };
@@ -2259,18 +2270,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     ICON_THUMBNAILS_TOGGLE,
                 );
 
-                expect(docBase.controls.add).to.be.calledWith(
-                    __('zoom_out'),
-                    docBase.zoomOut,
-                    'bp-doc-zoom-out-icon',
-                    ICON_ZOOM_OUT,
-                );
-                expect(docBase.controls.add).to.be.calledWith(
-                    __('zoom_in'),
-                    docBase.zoomIn,
-                    'bp-doc-zoom-in-icon',
-                    ICON_ZOOM_IN,
-                );
+                expect(docBase.zoomControls.add).to.be.calledWith(0.9, {
+                    maxZoom: 10,
+                    minZoom: 0.1,
+                    zoomInClassName: 'bp-doc-zoom-in-icon',
+                    zoomOutClassName: 'bp-doc-zoom-out-icon',
+                });
 
                 expect(docBase.pageControls.add).to.be.calledWith(1, 4);
 
@@ -2290,43 +2295,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             it('should not add the toggle thumbnails control if the option is not enabled', () => {
                 // Create a new instance that has enableThumbnailsSidebar as false
-                docBase = new DocBaseViewer({
-                    cache: {
-                        set: () => {},
-                        has: () => {},
-                        get: () => {},
-                        unset: () => {},
-                    },
-                    container: containerEl,
-                    representation: {
-                        content: {
-                            url_template: 'foo',
-                        },
-                    },
-                    file: {
-                        id: '0',
-                        extension: 'ppt',
-                    },
-                    enableThumbnailsSidebar: false,
-                });
-                docBase.containerEl = containerEl;
-                docBase.setup();
-
-                docBase.controls = {
-                    add: sandbox.stub(),
-                    removeListener: sandbox.stub(),
-                };
-
-                docBase.pageControls = {
-                    add: sandbox.stub(),
-                    removeListener: sandbox.stub(),
-                };
-
-                docBase.pdfViewer = {
-                    pagesCount: 4,
-                    currentPageNumber: 1,
-                    cleanup: sandbox.stub(),
-                };
+                docBase.options.enableThumbnailsSidebar = false;
 
                 // Invoke the method to test
                 docBase.bindControlListeners();

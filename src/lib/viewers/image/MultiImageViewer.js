@@ -267,6 +267,12 @@ class MultiImageViewer extends ImageBaseViewer {
         this.bindPageControlListeners();
     }
 
+    /**
+     * Binds listeners for the zoom controls
+     *
+     * @protected
+     * @return {void}
+     */
     bindZoomControlListeners() {
         this.zoomControls.add(this.scale);
         this.zoomControls.addListener('zoomin', this.zoomIn);
