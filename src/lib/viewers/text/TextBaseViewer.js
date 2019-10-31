@@ -1,11 +1,10 @@
-import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
+import Controls from '../../Controls';
+import ZoomControls from '../../ZoomControls';
 import { checkPermission } from '../../file';
 import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import ZoomControls from '../../ZoomControls';
-import { ZOOM_CONTROLS_EVENTS } from '../../events';
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -37,11 +36,6 @@ class TextBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
-        if (this.zoomControls) {
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
-        }
-
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
@@ -126,12 +120,13 @@ class TextBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.zoomControls = new ZoomControls(this.controls);
-        this.zoomControls.add(this.getFontSize() / 100, {
+        this.zoomControls.init(this.getFontSize() / 100, {
             zoomInClassName: 'bp-text-zoom-in-icon',
             zoomOutClassName: 'bp-text-zoom-out-icon',
+            onZoomIn: this.zoomIn,
+            onZoomOut: this.zoomOut,
         });
-        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
-        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
+
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,

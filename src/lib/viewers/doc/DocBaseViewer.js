@@ -36,13 +36,7 @@ import {
     ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import {
-    ERROR_CODE,
-    VIEWER_EVENT,
-    LOAD_METRIC,
-    USER_DOCUMENT_THUMBNAIL_EVENTS,
-    ZOOM_CONTROLS_EVENTS,
-} from '../../events';
+import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -170,11 +164,6 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.pageControls) {
             this.pageControls.removeListener('pagechange', this.setPage);
-        }
-
-        if (this.zoomControls) {
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
         }
 
         if (this.controls && typeof this.controls.destroy === 'function') {
@@ -534,19 +523,11 @@ class DocBaseViewer extends BaseViewer {
         let newScale = this.pdfViewer.currentScale;
         do {
             newScale += DEFAULT_SCALE_DELTA;
-            newScale = Math.min(MAX_SCALE, newScale);
+            newScale = Math.min(MAX_SCALE, newScale.toFixed(3));
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
 
-        if (this.pdfViewer.currentScale !== newScale) {
-            this.emit('zoom', {
-                zoom: newScale,
-                canZoomOut: true,
-                canZoomIn: newScale < MAX_SCALE,
-            });
-        }
-        this.pdfViewer.currentScaleValue = newScale;
-        this.zoomControls.setCurrentScale(newScale);
+        this.updateScale(newScale);
     }
 
     /**
@@ -560,15 +541,25 @@ class DocBaseViewer extends BaseViewer {
         let newScale = this.pdfViewer.currentScale;
         do {
             newScale -= DEFAULT_SCALE_DELTA;
-            newScale = Math.max(MIN_SCALE, newScale);
+            newScale = Math.max(MIN_SCALE, newScale.toFixed(3));
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
 
+        this.updateScale(newScale);
+    }
+
+    /**
+     * Updates the new scale to the pdfViewer as well as the zoom controls and emits an event
+     * @param {number} newScale - New zoom scale
+     * @emits zoom
+     * @returns {void}
+     */
+    updateScale(newScale) {
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: newScale > MIN_SCALE,
-                canZoomIn: true,
+                canZoomIn: newScale < MAX_SCALE,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
@@ -1020,8 +1011,6 @@ class DocBaseViewer extends BaseViewer {
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
         this.pageControls.addListener('pagechange', this.setPage);
-        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
-        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
         this.bindControlListeners();
     }
 
@@ -1080,11 +1069,13 @@ class DocBaseViewer extends BaseViewer {
             );
         }
 
-        this.zoomControls.add(this.pdfViewer.currentScale, {
+        this.zoomControls.init(this.pdfViewer.currentScale, {
             maxZoom: MAX_SCALE,
             minZoom: MIN_SCALE,
             zoomInClassName: 'bp-doc-zoom-in-icon',
             zoomOutClassName: 'bp-doc-zoom-out-icon',
+            onZoomIn: this.zoomIn,
+            onZoomOut: this.zoomOut,
         });
 
         this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);

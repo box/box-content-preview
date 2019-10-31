@@ -2250,8 +2250,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 docBase.zoomControls = {
-                    add: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    init: sandbox.stub(),
                 };
 
                 docBase.pageControls = {
@@ -2270,11 +2269,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     ICON_THUMBNAILS_TOGGLE,
                 );
 
-                expect(docBase.zoomControls.add).to.be.calledWith(0.9, {
+                expect(docBase.zoomControls.init).to.be.calledWith(0.9, {
                     maxZoom: 10,
                     minZoom: 0.1,
                     zoomInClassName: 'bp-doc-zoom-in-icon',
                     zoomOutClassName: 'bp-doc-zoom-out-icon',
+                    onZoomIn: docBase.zoomIn,
+                    onZoomOut: docBase.zoomOut,
                 });
 
                 expect(docBase.pageControls.add).to.be.calledWith(1, 4);

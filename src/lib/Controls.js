@@ -205,12 +205,6 @@ class Controls {
             element.setAttribute('type', 'button');
             element.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
             element.addEventListener('click', handler);
-
-            // Maintain a reference for cleanup
-            this.buttonRefs.push({
-                button: element,
-                handler,
-            });
         } else {
             element.className = `${classList}`;
         }
@@ -221,6 +215,14 @@ class Controls {
 
         cell.appendChild(element);
         this.controlsEl.appendChild(cell);
+
+        if (handler) {
+            // Maintain a reference for cleanup
+            this.buttonRefs.push({
+                button: element,
+                handler,
+            });
+        }
 
         return element;
     }

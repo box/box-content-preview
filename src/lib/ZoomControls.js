@@ -1,14 +1,13 @@
 import isFinite from 'lodash/isFinite';
-import EventEmitter from 'events';
+import noop from 'lodash/noop';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
 import Controls from './Controls';
-import { ZOOM_CONTROLS_EVENTS } from './events';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
 const CLASS_ZOOM_OUT_BUTTON = 'bp-zoom-out-btn';
 
-class ZoomControls extends EventEmitter {
+class ZoomControls {
     /** @property {Controls} - Controls object */
     controls;
 
@@ -34,42 +33,41 @@ class ZoomControls extends EventEmitter {
      * @return {ZoomControls} Instance of ZoomControls
      */
     constructor(controls) {
-        super();
-
         if (!controls || !(controls instanceof Controls)) {
             throw Error('controls must be an instance of Controls');
         }
 
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
-
-        this.handleZoomIn = this.handleZoomIn.bind(this);
-        this.handleZoomOut = this.handleZoomOut.bind(this);
     }
 
     /**
-     * Add the zoom controls
+     * Initialize the zoom controls with the initial scale and options.
      *
      * @param {number} currentScale - Initial scale value, assumes range on the scale of 0-1
      * @param {number} [options.maxZoom] - Maximum zoom, on the scale of 0-1, though the max could be upwards of 1
      * @param {number} [options.minZoom] - Minimum zoom, on the scale of 0-1
      * @param {String} [options.zoomInClassName] - Class name for zoom in button
      * @param {String} [options.zoomOutClassName] - Class name for zoom out button
+     * @param {Function} [options.onZoomIn] - Callback when zoom in is triggered
+     * @param {Function} [options.onZoomOut] - Callback when zoom out is triggered
      * @return {void}
      */
-    add(
+    init(
         currentScale,
-        { zoomOutClassName = '', zoomInClassName = '', minZoom = 0, maxZoom = Number.POSITIVE_INFINITY } = {},
+        {
+            zoomOutClassName = '',
+            zoomInClassName = '',
+            minZoom = 0,
+            maxZoom = Number.POSITIVE_INFINITY,
+            onZoomIn = noop,
+            onZoomOut = noop,
+        } = {},
     ) {
         this.maxZoom = Math.round(this.validateZoom(maxZoom, Number.POSITIVE_INFINITY) * 100);
         this.minZoom = Math.round(Math.max(this.validateZoom(minZoom, 0), 0) * 100);
 
-        this.controls.add(
-            __('zoom_out'),
-            this.handleZoomOut,
-            `${CLASS_ZOOM_OUT_BUTTON} ${zoomOutClassName}`,
-            ICON_ZOOM_OUT,
-        );
+        this.controls.add(__('zoom_out'), onZoomOut, `${CLASS_ZOOM_OUT_BUTTON} ${zoomOutClassName}`, ICON_ZOOM_OUT);
         this.controls.add(
             __('zoom_current_scale'),
             undefined,
@@ -77,7 +75,7 @@ class ZoomControls extends EventEmitter {
             `<span class="${CLASS_ZOOM_CURRENT_SCALE}" data-testid="current-zoom">100%</span>`,
             'div',
         );
-        this.controls.add(__('zoom_in'), this.handleZoomIn, `${CLASS_ZOOM_IN_BUTTON} ${zoomInClassName}`, ICON_ZOOM_IN);
+        this.controls.add(__('zoom_in'), onZoomIn, `${CLASS_ZOOM_IN_BUTTON} ${zoomInClassName}`, ICON_ZOOM_IN);
 
         this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE}`);
         this.setCurrentScale(currentScale);
@@ -127,24 +125,6 @@ class ZoomControls extends EventEmitter {
         if (zoomInElement) {
             zoomInElement.disabled = this.currentScale >= this.maxZoom;
         }
-    }
-
-    /**
-     * Handles the zoom in button click
-     *
-     * @emits zoomin
-     */
-    handleZoomIn() {
-        this.emit(ZOOM_CONTROLS_EVENTS.zoomin);
-    }
-
-    /**
-     * Handles the zoom out button click
-     *
-     * @emits zoomout
-     */
-    handleZoomOut() {
-        this.emit(ZOOM_CONTROLS_EVENTS.zoomout);
     }
 }
 

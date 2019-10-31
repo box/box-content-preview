@@ -347,16 +347,25 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     });
 
     describe('loadUI()', () => {
+        const zoomInitFunc = ZoomControls.prototype.init;
+
+        beforeEach(() => {
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
+        });
+
         it('should create page controls and bind the page control listeners', () => {
             stubs.bindPageControlListeners = sandbox.stub(multiImage, 'bindPageControlListeners');
-            stubs.bindZoomControlListeners = sandbox.stub(multiImage, 'bindZoomControlListeners');
 
             multiImage.loadUI();
             expect(multiImage.pageControls instanceof PageControls).to.be.true;
             expect(multiImage.pageControls.contentEl).to.equal(multiImage.wrapperEl);
             expect(multiImage.zoomControls instanceof ZoomControls).to.be.true;
             expect(stubs.bindPageControlListeners).to.be.called;
-            expect(stubs.bindZoomControlListeners).to.be.called;
+            expect(ZoomControls.prototype.init).to.be.called;
         });
     });
 
@@ -396,23 +405,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 'bp-exit-fullscreen-icon',
                 ICON_FULLSCREEN_OUT,
             );
-        });
-    });
-
-    describe('bindZoomControlListeners()', () => {
-        it('should add the zoom controls and bind the zoom event listeners', () => {
-            multiImage.scale = 0.5;
-
-            multiImage.zoomControls = {
-                add: sandbox.stub(),
-                addListener: sandbox.stub(),
-            };
-
-            multiImage.bindZoomControlListeners();
-
-            expect(multiImage.zoomControls.add).to.be.calledWith(0.5);
-            expect(multiImage.zoomControls.addListener).to.be.calledWith('zoomin', multiImage.zoomIn);
-            expect(multiImage.zoomControls.addListener).to.be.calledWith('zoomout', multiImage.zoomOut);
         });
     });
 

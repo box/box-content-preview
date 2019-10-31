@@ -37,21 +37,18 @@ describe('lib/ZoomControls', () => {
         });
     });
 
-    describe('add()', () => {
+    describe('init()', () => {
         beforeEach(() => {
             stubs.add = sandbox.stub(zoomControls.controls, 'add');
             stubs.setCurrentScale = sandbox.stub(zoomControls, 'setCurrentScale');
+            stubs.onZoomIn = sandbox.stub();
+            stubs.onZoomOut = sandbox.stub();
         });
 
         it('should add the controls', () => {
-            zoomControls.add(0.5);
+            zoomControls.init(0.5, { onZoomIn: stubs.onZoomIn, onZoomOut: stubs.onZoomOut });
 
-            expect(stubs.add).to.be.calledWith(
-                __('zoom_out'),
-                zoomControls.handleZoomOut,
-                'bp-zoom-out-btn ',
-                ICON_ZOOM_OUT,
-            );
+            expect(stubs.add).to.be.calledWith(__('zoom_out'), stubs.onZoomOut, 'bp-zoom-out-btn ', ICON_ZOOM_OUT);
             expect(stubs.add).to.be.calledWith(
                 __('zoom_current_scale'),
                 undefined,
@@ -59,12 +56,7 @@ describe('lib/ZoomControls', () => {
                 sinon.match.string,
                 'div',
             );
-            expect(stubs.add).to.be.calledWith(
-                __('zoom_in'),
-                zoomControls.handleZoomIn,
-                'bp-zoom-in-btn ',
-                ICON_ZOOM_IN,
-            );
+            expect(stubs.add).to.be.calledWith(__('zoom_in'), stubs.onZoomIn, 'bp-zoom-in-btn ', ICON_ZOOM_IN);
             expect(zoomControls.currentScaleElement).not.to.be.undefined;
             expect(stubs.setCurrentScale).to.be.calledWith(0.5);
             expect(zoomControls.maxZoom).to.be.equal(Number.POSITIVE_INFINITY);
@@ -72,39 +64,44 @@ describe('lib/ZoomControls', () => {
         });
 
         it('should set the min and max zooms if specified', () => {
-            zoomControls.add(0.5, { minZoom: 0.5, maxZoom: 5 });
+            zoomControls.init(0.5, { minZoom: 0.5, maxZoom: 5 });
 
             expect(zoomControls.maxZoom).to.be.equal(500);
             expect(zoomControls.minZoom).to.be.equal(50);
         });
 
         it('should set the min zoom to 0 if negative is provided', () => {
-            zoomControls.add(0.5, { minZoom: -0.1, maxZoom: 5 });
+            zoomControls.init(0.5, { minZoom: -0.1, maxZoom: 5 });
 
             expect(zoomControls.maxZoom).to.be.equal(500);
             expect(zoomControls.minZoom).to.be.equal(0);
         });
 
         it('should set the min zoom to 0 if number is not provided', () => {
-            zoomControls.add(0.5, { minZoom: '0.1', maxZoom: 5 });
+            zoomControls.init(0.5, { minZoom: '0.1', maxZoom: 5 });
 
             expect(zoomControls.maxZoom).to.be.equal(500);
             expect(zoomControls.minZoom).to.be.equal(0);
         });
 
         it('should set the max zoom to Number.POSITIVE_INFINITY if number is not provided', () => {
-            zoomControls.add(0.5, { minZoom: 0.5, maxZoom: '100' });
+            zoomControls.init(0.5, { minZoom: 0.5, maxZoom: '100' });
 
             expect(zoomControls.maxZoom).to.be.equal(Number.POSITIVE_INFINITY);
             expect(zoomControls.minZoom).to.be.equal(50);
         });
 
         it('should set optional classnames if specified', () => {
-            zoomControls.add(0.5, { zoomInClassName: 'zoom-in-classname', zoomOutClassName: 'zoom-out-classname' });
+            zoomControls.init(0.5, {
+                zoomInClassName: 'zoom-in-classname',
+                zoomOutClassName: 'zoom-out-classname',
+                onZoomIn: stubs.onZoomIn,
+                onZoomOut: stubs.onZoomOut,
+            });
 
             expect(stubs.add).to.be.calledWith(
                 __('zoom_out'),
-                zoomControls.handleZoomOut,
+                stubs.onZoomOut,
                 'bp-zoom-out-btn zoom-out-classname',
                 ICON_ZOOM_OUT,
             );
@@ -117,7 +114,7 @@ describe('lib/ZoomControls', () => {
             );
             expect(stubs.add).to.be.calledWith(
                 __('zoom_in'),
-                zoomControls.handleZoomIn,
+                stubs.onZoomIn,
                 'bp-zoom-in-btn zoom-in-classname',
                 ICON_ZOOM_IN,
             );
@@ -158,7 +155,7 @@ describe('lib/ZoomControls', () => {
 
     describe('checkButtonEnablement()', () => {
         it('should do nothing if currentScale is not at the limits', () => {
-            zoomControls.add(0.5, { maxZoom: 5, minZoom: 0.3 });
+            zoomControls.init(0.5, { maxZoom: 5, minZoom: 0.3 });
             zoomControls.checkButtonEnablement();
 
             expect(zoomControls.controlsElement.querySelector('.bp-zoom-out-btn').disabled).to.be.false;
@@ -166,7 +163,7 @@ describe('lib/ZoomControls', () => {
         });
 
         it('should disable zoom out if currentScale is at the minZoom limit', () => {
-            zoomControls.add(0.3, { maxZoom: 5, minZoom: 0.3 });
+            zoomControls.init(0.3, { maxZoom: 5, minZoom: 0.3 });
             zoomControls.checkButtonEnablement();
 
             expect(zoomControls.controlsElement.querySelector('.bp-zoom-out-btn').disabled).to.be.true;
@@ -174,27 +171,11 @@ describe('lib/ZoomControls', () => {
         });
 
         it('should disable zoom in if currentScale is at the maxZoom limit', () => {
-            zoomControls.add(5, { maxZoom: 5, minZoom: 0.3 });
+            zoomControls.init(5, { maxZoom: 5, minZoom: 0.3 });
             zoomControls.checkButtonEnablement();
 
             expect(zoomControls.controlsElement.querySelector('.bp-zoom-out-btn').disabled).to.be.false;
             expect(zoomControls.controlsElement.querySelector('.bp-zoom-in-btn').disabled).to.be.true;
-        });
-    });
-
-    describe('handleZoomIn()', () => {
-        it('should emit the zoomin event', () => {
-            sandbox.stub(zoomControls, 'emit');
-            zoomControls.handleZoomIn();
-            expect(zoomControls.emit).to.be.calledWith('zoomin');
-        });
-    });
-
-    describe('handleZoomOut()', () => {
-        it('should emit the zoomout event', () => {
-            sandbox.stub(zoomControls, 'emit');
-            zoomControls.handleZoomOut();
-            expect(zoomControls.emit).to.be.calledWith('zoomout');
         });
     });
 });

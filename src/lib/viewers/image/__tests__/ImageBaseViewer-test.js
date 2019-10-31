@@ -57,7 +57,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             sandbox.stub(imageBase.controls, 'destroy');
             sandbox.stub(imageBase.imageEl, 'removeEventListener');
-            sandbox.stub(imageBase.zoomControls, 'removeListener');
 
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'destroy', {
                 value: sandbox.stub(),
@@ -68,8 +67,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.controls.destroy).to.be.called;
             expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
             expect(BaseViewer.prototype.destroy).to.be.called;
-            expect(imageBase.zoomControls.removeListener).to.be.calledWith('zoomin', imageBase.zoomIn);
-            expect(imageBase.zoomControls.removeListener).to.be.calledWith('zoomout', imageBase.zoomOut);
         });
 
         it('should remove all the listeners', () => {

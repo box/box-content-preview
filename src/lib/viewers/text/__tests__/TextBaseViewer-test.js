@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
+import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
 import TextBaseViewer from '../TextBaseViewer';
-import BaseViewer from '../../BaseViewer';
+import ZoomControls from '../../../ZoomControls';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
-import ZoomControls from '../../../ZoomControls';
 
 let containerEl;
 let textBase;
@@ -48,14 +48,8 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                 destroy: sandbox.stub(),
             };
 
-            textBase.zoomControls = {
-                removeListener: sandbox.stub(),
-            };
-
             textBase.destroy();
             expect(textBase.controls.destroy).to.be.called;
-            expect(textBase.zoomControls.removeListener).to.be.calledWith('zoomin', textBase.zoomIn);
-            expect(textBase.zoomControls.removeListener).to.be.calledWith('zoomout', textBase.zoomOut);
         });
     });
 
@@ -150,7 +144,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
     describe('loadUI()', () => {
         const addFunc = Controls.prototype.add;
-        const zoomAddFunc = ZoomControls.prototype.add;
+        const zoomInitFunc = ZoomControls.prototype.init;
 
         beforeEach(() => {
             sandbox.stub(textBase, 'getFontSize');
@@ -158,12 +152,12 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
         afterEach(() => {
             Object.defineProperty(Controls.prototype, 'add', { value: addFunc });
-            Object.defineProperty(ZoomControls.prototype, 'add', { value: zoomAddFunc });
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
         });
 
         it('should setup controls and add click handlers', () => {
             Object.defineProperty(Controls.prototype, 'add', { value: sandbox.stub() });
-            Object.defineProperty(ZoomControls.prototype, 'add', { value: sandbox.stub() });
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: sandbox.stub() });
             textBase.getFontSize.returns(100);
 
             textBase.loadUI();
@@ -177,9 +171,11 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             );
 
             expect(textBase.zoomControls instanceof ZoomControls).to.be.true;
-            expect(ZoomControls.prototype.add).to.be.calledWith(1, {
+            expect(ZoomControls.prototype.init).to.be.calledWith(1, {
                 zoomInClassName: 'bp-text-zoom-in-icon',
                 zoomOutClassName: 'bp-text-zoom-out-icon',
+                onZoomIn: textBase.zoomIn,
+                onZoomOut: textBase.zoomOut,
             });
         });
     });

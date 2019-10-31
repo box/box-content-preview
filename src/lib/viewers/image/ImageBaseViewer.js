@@ -1,12 +1,12 @@
-import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
+import Controls from '../../Controls';
 import PreviewError from '../../PreviewError';
+import ZoomControls from '../../ZoomControls';
 
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
-import { ERROR_CODE, VIEWER_EVENT, ZOOM_CONTROLS_EVENTS } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
-import ZoomControls from '../../ZoomControls';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -51,11 +51,6 @@ class ImageBaseViewer extends BaseViewer {
      */
     destroy() {
         this.unbindDOMListeners();
-
-        if (this.zoomControls) {
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
-            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
-        }
 
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
