@@ -2,6 +2,7 @@ import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import './Image.scss';
+import { ZOOM_CONTROLS_EVENTS } from '../../events';
 
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
@@ -277,8 +278,8 @@ class ImageViewer extends ImageBaseViewer {
         super.loadUI();
 
         this.zoomControls.add(this.scale);
-        this.zoomControls.addListener('zoomin', this.zoomIn);
-        this.zoomControls.addListener('zoomout', this.zoomOut);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
 
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(

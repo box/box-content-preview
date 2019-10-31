@@ -5,6 +5,7 @@ import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
 import { pageNumberFromScroll } from '../../util';
 import ZoomControls from '../../ZoomControls';
+import { ZOOM_CONTROLS_EVENTS } from '../../events';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -275,8 +276,8 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     bindZoomControlListeners() {
         this.zoomControls.add(this.scale);
-        this.zoomControls.addListener('zoomin', this.zoomIn);
-        this.zoomControls.addListener('zoomout', this.zoomOut);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
     }
 
     /**

@@ -4,7 +4,7 @@ import Browser from '../../Browser';
 import PreviewError from '../../PreviewError';
 
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, VIEWER_EVENT, ZOOM_CONTROLS_EVENTS } from '../../events';
 import { openContentInsideIframe } from '../../util';
 import ZoomControls from '../../ZoomControls';
 
@@ -53,8 +53,8 @@ class ImageBaseViewer extends BaseViewer {
         this.unbindDOMListeners();
 
         if (this.zoomControls) {
-            this.zoomControls.removeListener('zoomin', this.zoomIn);
-            this.zoomControls.removeListener('zoomout', this.zoomOut);
+            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
+            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
         }
 
         // Destroy the controls

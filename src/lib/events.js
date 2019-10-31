@@ -105,3 +105,8 @@ export const MEDIA_METRIC_EVENTS = {
     bufferFill: 'media_metric_buffer_fill',
     endPlayback: 'media_metric_end_playback',
 };
+
+export const ZOOM_CONTROLS_EVENTS = {
+    zoomin: 'zoomin',
+    zoomout: 'zoomout',
+};

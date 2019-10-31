@@ -36,7 +36,13 @@ import {
     ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
+import {
+    ERROR_CODE,
+    VIEWER_EVENT,
+    LOAD_METRIC,
+    USER_DOCUMENT_THUMBNAIL_EVENTS,
+    ZOOM_CONTROLS_EVENTS,
+} from '../../events';
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -167,8 +173,8 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (this.zoomControls) {
-            this.zoomControls.removeListener('zoomin', this.zoomIn);
-            this.zoomControls.removeListener('zoomout', this.zoomOut);
+            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
+            this.zoomControls.removeListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
         }
 
         if (this.controls && typeof this.controls.destroy === 'function') {
@@ -1014,8 +1020,8 @@ class DocBaseViewer extends BaseViewer {
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
         this.pageControls.addListener('pagechange', this.setPage);
-        this.zoomControls.addListener('zoomin', this.zoomIn);
-        this.zoomControls.addListener('zoomout', this.zoomOut);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomin, this.zoomIn);
+        this.zoomControls.addListener(ZOOM_CONTROLS_EVENTS.zoomout, this.zoomOut);
         this.bindControlListeners();
     }
 

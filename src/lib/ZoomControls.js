@@ -2,6 +2,7 @@ import isFinite from 'lodash/isFinite';
 import EventEmitter from 'events';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
 import Controls from './Controls';
+import { ZOOM_CONTROLS_EVENTS } from './events';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
@@ -123,7 +124,7 @@ class ZoomControls extends EventEmitter {
      * @emits zoomin
      */
     handleZoomIn() {
-        this.emit('zoomin');
+        this.emit(ZOOM_CONTROLS_EVENTS.zoomin);
     }
 
     /**
@@ -132,7 +133,7 @@ class ZoomControls extends EventEmitter {
      * @emits zoomout
      */
     handleZoomOut() {
-        this.emit('zoomout');
+        this.emit(ZOOM_CONTROLS_EVENTS.zoomout);
     }
 }
 
