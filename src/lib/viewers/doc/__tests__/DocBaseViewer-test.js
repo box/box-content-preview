@@ -6,6 +6,7 @@ import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
 import PageControls from '../../../PageControls';
+import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
 import DocPreloader from '../DocPreloader';
 import * as file from '../../../file';
@@ -33,7 +34,6 @@ import {
 } from '../../../icons/icons';
 import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
-import ZoomControls from '../../../ZoomControls';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print

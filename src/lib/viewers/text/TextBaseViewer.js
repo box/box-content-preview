@@ -52,7 +52,7 @@ class TextBaseViewer extends BaseViewer {
      */
     zoom(inOrOut) {
         const el = this.containerEl.querySelector('.bp-text');
-        const size = parseInt(el.style.fontSize, 10) || 100;
+        const size = this.getFontSize();
         let newFontSize = 0;
 
         if (inOrOut === 'in') {
@@ -70,6 +70,10 @@ class TextBaseViewer extends BaseViewer {
         this.zoomControls.setCurrentScale(newFontSize / 100);
     }
 
+    /**
+     * Gets the font size applied to the text
+     * @returns {number} The font size as a number
+     */
     getFontSize() {
         const el = this.containerEl.querySelector('.bp-text');
         return parseInt(el.style.fontSize, 10) || 100;
