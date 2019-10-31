@@ -50,9 +50,9 @@ class ZoomControls extends EventEmitter {
     /**
      * Add the zoom controls
      *
-     * @param {number} currentScale - Initial scale value, assumes range of 0-1
-     * @param {number} [options.maxZoom] - Maximum zoom, range 0-1
-     * @param {number} [options.minZoom] - Minimum zoom, range 0-1
+     * @param {number} currentScale - Initial scale value, assumes range on the scale of 0-1
+     * @param {number} [options.maxZoom] - Maximum zoom, on the scale of 0-1, though the max could be upwards of 1
+     * @param {number} [options.minZoom] - Minimum zoom, on the scale of 0-1
      * @param {String} [options.zoomInClassName] - Class name for zoom in button
      * @param {String} [options.zoomOutClassName] - Class name for zoom out button
      * @return {void}
@@ -61,8 +61,8 @@ class ZoomControls extends EventEmitter {
         currentScale,
         { zoomOutClassName = '', zoomInClassName = '', minZoom = 0, maxZoom = Number.POSITIVE_INFINITY } = {},
     ) {
-        this.maxZoom = Math.ceil(maxZoom * 100);
-        this.minZoom = Math.ceil(minZoom * 100);
+        this.maxZoom = Math.round(this.validateZoom(maxZoom, Number.POSITIVE_INFINITY) * 100);
+        this.minZoom = Math.round(Math.max(this.validateZoom(minZoom, 0), 0) * 100);
 
         this.controls.add(
             __('zoom_out'),
@@ -81,6 +81,17 @@ class ZoomControls extends EventEmitter {
 
         this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE}`);
         this.setCurrentScale(currentScale);
+    }
+
+    /**
+     * Validates the zoom valid to ensure it is a number
+     *
+     * @param {number} zoomValue - Zoom value to validate
+     * @param {number} defaultZoomValue - Default zoom value
+     * @returns {number} The validated zoom value or the default value
+     */
+    validateZoom(zoomValue, defaultZoomValue = 0) {
+        return isFinite(zoomValue) ? zoomValue : defaultZoomValue;
     }
 
     /**

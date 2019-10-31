@@ -393,7 +393,10 @@ class MultiImageViewer extends ImageBaseViewer {
         }
 
         this.currentPageNumber = pageNumber;
-        this.pageControls.updateCurrentPage(pageNumber);
+
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(pageNumber);
+        }
 
         this.emit('pagefocus', {
             pageNumber,

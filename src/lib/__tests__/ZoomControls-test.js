@@ -78,6 +78,27 @@ describe('lib/ZoomControls', () => {
             expect(zoomControls.minZoom).to.be.equal(50);
         });
 
+        it('should set the min zoom to 0 if negative is provided', () => {
+            zoomControls.add(0.5, { minZoom: -0.1, maxZoom: 5 });
+
+            expect(zoomControls.maxZoom).to.be.equal(500);
+            expect(zoomControls.minZoom).to.be.equal(0);
+        });
+
+        it('should set the min zoom to 0 if number is not provided', () => {
+            zoomControls.add(0.5, { minZoom: '0.1', maxZoom: 5 });
+
+            expect(zoomControls.maxZoom).to.be.equal(500);
+            expect(zoomControls.minZoom).to.be.equal(0);
+        });
+
+        it('should set the max zoom to Number.POSITIVE_INFINITY if number is not provided', () => {
+            zoomControls.add(0.5, { minZoom: 0.5, maxZoom: '100' });
+
+            expect(zoomControls.maxZoom).to.be.equal(Number.POSITIVE_INFINITY);
+            expect(zoomControls.minZoom).to.be.equal(50);
+        });
+
         it('should set optional classnames if specified', () => {
             zoomControls.add(0.5, { zoomInClassName: 'zoom-in-classname', zoomOutClassName: 'zoom-out-classname' });
 
