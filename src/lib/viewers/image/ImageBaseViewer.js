@@ -200,6 +200,7 @@ class ImageBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.zoomControls = new ZoomControls(this.controls);
+        this.zoomControls.init(this.scale, { onZoomIn: this.zoomIn, onZoomOut: this.zoomOut });
     }
 
     /**

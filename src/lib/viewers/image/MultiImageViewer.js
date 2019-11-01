@@ -1,6 +1,5 @@
 import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
-import ZoomControls from '../../ZoomControls';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
 import { pageNumberFromScroll } from '../../util';
@@ -260,9 +259,6 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
-
-        this.zoomControls = new ZoomControls(this.controls);
-        this.zoomControls.init(this.scale, { onZoomIn: this.zoomIn, onZoomOut: this.zoomOut });
 
         this.pageControls = new PageControls(this.controls, this.wrapperEl);
         this.bindPageControlListeners();

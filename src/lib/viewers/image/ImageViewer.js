@@ -277,8 +277,6 @@ class ImageViewer extends ImageBaseViewer {
     loadUI() {
         super.loadUI();
 
-        this.zoomControls.init(this.scale, { onZoomIn: this.zoomIn, onZoomOut: this.zoomOut });
-
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(
             __('enter_fullscreen'),
