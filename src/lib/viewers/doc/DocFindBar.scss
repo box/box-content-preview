@@ -3,15 +3,18 @@ $moon-yellow: #ffba1a !default;
 $blue: #00f !default;
 
 .bp-find-bar {
+    $bdlGray10: #e8e8e8;
+
     position: absolute;
     top: 0;
     right: 17px; // Prevents overlap with scroll-bar
+    display: flex;
+    align-items: center;
     padding: 6px;
     font-size: 12px;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: $white;
-    border: 1px solid fade-out($black, .95);
-    box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
+    border: 1px solid $bdlGray10;
 
     // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
     ::-ms-clear {
@@ -24,13 +27,12 @@ $blue: #00f !default;
         padding: 6px 6px 6px 25px;
         color: $better-black;
         line-height: 20px;
-        border: 1px solid fade-out($black, .95);
+        border: 1px solid $bdlGray10;
         border-radius: 2px 0 0 2px;
         outline-style: none;
-        box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
         transition-timing-function: ease;
         transition-duration: 150ms;
-        transition-property: background-color, border-color, box-shadow;
+        transition-property: border-color;
 
         &:focus,
         &:hover {
@@ -55,14 +57,21 @@ $blue: #00f !default;
     .bp-doc-find-prev,
     .bp-doc-find-next,
     .bp-doc-find-close {
-        display: inline-block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 34px;
         height: 34px;
-        margin-top: -1px;
+        padding: 0;
         line-height: 1;
         vertical-align: middle;
         background: none;
         border: 1px solid $off-white;
+        border-left: 0;
+
+        svg {
+            width: 17px;
+        }
 
         .icon {
             fill: fade-out($better-black, .25);
@@ -78,11 +87,18 @@ $blue: #00f !default;
         line-height: 1;
         text-align: left;
         border: 0;
+
+        svg {
+            width: 22px;
+        }
     }
 
     .bp-doc-find-close {
-        padding: 6px;
         border: 0;
+
+        svg {
+            width: 22px;
+        }
 
         &:hover .icon {
             fill: $better-black;
@@ -93,6 +109,10 @@ $blue: #00f !default;
     .bp-find-match-not-found:hover,
     .bp-find-match-not-found:focus {
         border-color: fade-out($great-balls-of-fire, .5);
+    }
+
+    .bp-doc-find-controls {
+        display: flex;
     }
 }
 
