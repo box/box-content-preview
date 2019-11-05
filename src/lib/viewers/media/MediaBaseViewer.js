@@ -1,4 +1,5 @@
 import debounce from 'lodash/debounce';
+import isEmpty from 'lodash/isEmpty';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
@@ -21,6 +22,8 @@ const INITIAL_TIME_IN_SECONDS = 0;
 const ONE_MINUTE_IN_SECONDS = 60;
 const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 const PLAY_PROMISE_NOT_SUPPORTED = 'play_promise_not_supported';
+const MEDIA_TOKEN_EXPIRE_ERROR = 'PIPELINE_ERROR_READ';
+const MAX_RETRY_TOKEN = 3; // number of times to retry refreshing token for unauthorized error
 
 class MediaBaseViewer extends BaseViewer {
     /** @property {Object} - Keeps track of the different media metrics */
@@ -32,6 +35,9 @@ class MediaBaseViewer extends BaseViewer {
         [MEDIA_METRIC.totalBufferLag]: 0,
         [MEDIA_METRIC.watchLength]: 0,
     };
+
+    /** @property {number} - Number of times refreshing token has been retried for unauthorized error */
+    retryTokenCount = 0;
 
     /**
      * @inheritdoc
@@ -61,6 +67,7 @@ class MediaBaseViewer extends BaseViewer {
         this.toggleMute = this.toggleMute.bind(this);
         this.togglePlay = this.togglePlay.bind(this);
         this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
+        this.restartPlayback = this.restartPlayback.bind(this);
 
         window.addEventListener('beforeunload', this.processMetrics);
     }
@@ -229,6 +236,14 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
+        // If it's already loaded, this handler should be triggered by refreshing token,
+        // so we want to continue playing from the previous time, and don't need to load UI again.
+        if (this.loaded) {
+            this.play(this.currentTime);
+            this.retryTokenCount = 0;
+            return;
+        }
+
         this.loadUI();
 
         if (this.isAutoplayEnabled()) {
@@ -261,6 +276,73 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Determain whether is an expired token error
+     *
+     * @protected
+     * @param {Object} details - error details
+     * @return {bool}
+     */
+    isExpiredTokenError({ details }) {
+        return (
+            !isEmpty(details) &&
+            details.error_code === MediaError.MEDIA_ERR_NETWORK &&
+            details.error_message.includes(MEDIA_TOKEN_EXPIRE_ERROR)
+        );
+    }
+
+    /**
+     * Restart playback using new token
+     *
+     * @protected
+     * @param {string} newToken - new token
+     * @return {void}
+     */
+    restartPlayback(newToken) {
+        const { currentTime } = this.mediaEl;
+        this.currentTime = currentTime;
+        this.options.token = newToken;
+        this.mediaUrl = this.createContentUrlWithAuthParams(this.options.representation.content.url_template);
+        this.mediaEl.src = this.mediaUrl;
+    }
+
+    /**
+     * Handle expired token error
+     *
+     * @protected
+     * @param {PreviewError} error
+     * @return {boolean} True if it is a token error and is handled
+     */
+    handleExpiredTokenError(error) {
+        if (this.isExpiredTokenError(error)) {
+            if (this.retryTokenCount >= MAX_RETRY_TOKEN) {
+                const tokenError = new PreviewError(
+                    ERROR_CODE.TOKEN_NOT_VALID,
+                    null,
+                    { silent: true },
+                    'Reach refreshing token limit for unauthorized error.',
+                );
+                this.triggerError(tokenError);
+            } else {
+                this.options
+                    .refreshToken()
+                    .then(this.restartPlayback)
+                    .catch(e => {
+                        const tokenError = new PreviewError(
+                            ERROR_CODE.TOKEN_NOT_VALID,
+                            null,
+                            { silent: true },
+                            e.message,
+                        );
+                        this.triggerError(tokenError);
+                    });
+                this.retryTokenCount += 1;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Handles media element loading errors.
      *
      * @private
@@ -273,9 +355,13 @@ class MediaBaseViewer extends BaseViewer {
         console.error(err);
 
         const errorCode = getProp(err, 'target.error.code');
-        const errorDetails = errorCode ? { error_code: errorCode } : {};
-
+        const errorMessage = getProp(err, 'target.error.message');
+        const errorDetails = errorCode ? { error_code: errorCode, error_message: errorMessage } : {};
         const error = new PreviewError(ERROR_CODE.LOAD_MEDIA, __('error_refresh'), errorDetails);
+
+        if (this.handleExpiredTokenError(error)) {
+            return;
+        }
 
         if (!this.isLoaded()) {
             this.handleDownloadError(error, this.mediaUrl);

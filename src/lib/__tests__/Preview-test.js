@@ -62,7 +62,6 @@ describe('lib/Preview', () => {
             expect(preview.file).to.deep.equal({});
             expect(preview.options).to.deep.equal({});
             expect(preview.disabledViewers).to.deep.equal({ Office: 1 });
-            expect(preview.token).to.equal('');
             expect(preview.loaders).to.equal(loaders);
             expect(preview.location.hostname).to.equal('localhost');
         });
@@ -2835,6 +2834,27 @@ describe('lib/Preview', () => {
             preview.previewOptions = undefined;
 
             expect(preview.getFileOption('123', 'fileVersionId')).to.equal(undefined);
+        });
+    });
+
+    describe('refreshToken()', () => {
+        it('should return a new token if the previewOptions.token is a function', done => {
+            preview.file = {
+                id: 'file_123',
+            };
+            preview.previewOptions.token = id => Promise.resolve({ [id]: 'new_token' });
+            preview.refreshToken().then(token => {
+                expect(token).to.equal('new_token');
+                done();
+            });
+        });
+
+        it('should reject if previewOptions.token is not a function', done => {
+            preview.previewOptions.token = 'token';
+            preview.refreshToken().catch(error => {
+                expect(error.message).to.equal('Token is not a function and cannot be refreshed.');
+                done();
+            });
         });
     });
 });
