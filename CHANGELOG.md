@@ -1,3 +1,8 @@
+## 2.26.0 (2019-11-05)
+
+- fix(multiimage): Re-enable pan when zoomed in (#1094) ([004db6c](https://github.com/box/box-content-preview/commit/004db6c)), closes [#1094](https://github.com/box/box-content-preview/issues/1094)
+- style(doc-find-bar): Misaligned in Chrome (#1093) ([09508b3](https://github.com/box/box-content-preview/commit/09508b3)), closes [#1093](https://github.com/box/box-content-preview/issues/1093)
+
 ## 2.25.0 (2019-10-29)
 
 - fix(mediaviewer): Refresh token if token expired (#1087) ([a69c0aa](https://github.com/box/box-content-preview/commit/a69c0aa)), closes [#1087](https://github.com/box/box-content-preview/issues/1087)
