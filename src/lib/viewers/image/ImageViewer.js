@@ -1,6 +1,7 @@
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
+
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -258,6 +259,9 @@ class ImageViewer extends ImageBaseViewer {
             ? width / this.imageEl.getAttribute('originalWidth')
             : height / this.imageEl.getAttribute('originalHeight');
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
         this.emit('scale', {
             scale: this.scale,
             rotationAngle: this.rotationAngle,

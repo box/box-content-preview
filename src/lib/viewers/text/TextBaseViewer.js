@@ -1,9 +1,10 @@
-import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
+import Controls from '../../Controls';
+import ZoomControls from '../../ZoomControls';
 import { checkPermission } from '../../file';
 import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 
-import { ICON_ZOOM_IN, ICON_ZOOM_OUT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -51,21 +52,31 @@ class TextBaseViewer extends BaseViewer {
      */
     zoom(inOrOut) {
         const el = this.containerEl.querySelector('.bp-text');
-        const size = parseInt(el.style.fontSize, 10) || 100;
+        const size = this.getFontSize();
         let newFontSize = 0;
 
         if (inOrOut === 'in') {
-            newFontSize = `${size + 10}%`;
+            newFontSize = size + 10;
         } else if (inOrOut === 'out') {
-            newFontSize = `${size - 10}%`;
+            newFontSize = size - 10;
         }
 
-        el.style.fontSize = newFontSize;
+        el.style.fontSize = `${newFontSize}%`;
         this.emit('zoom', {
             zoom: newFontSize,
             canZoomIn: true,
             canZoomOut: true,
         });
+        this.zoomControls.setCurrentScale(newFontSize / 100);
+    }
+
+    /**
+     * Gets the font size applied to the text
+     * @returns {number} The font size as a number
+     */
+    getFontSize() {
+        const el = this.containerEl.querySelector('.bp-text');
+        return parseInt(el.style.fontSize, 10) || 100;
     }
 
     /**
@@ -112,8 +123,14 @@ class TextBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-text-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-text-zoom-in-icon', ICON_ZOOM_IN);
+        this.zoomControls = new ZoomControls(this.controls);
+        this.zoomControls.init(this.getFontSize() / 100, {
+            zoomInClassName: 'bp-text-zoom-in-icon',
+            zoomOutClassName: 'bp-text-zoom-out-icon',
+            onZoomIn: this.zoomIn,
+            onZoomOut: this.zoomOut,
+        });
+
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,

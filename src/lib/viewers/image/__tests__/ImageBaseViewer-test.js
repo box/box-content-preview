@@ -5,7 +5,6 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
 import PreviewError from '../../../PreviewError';
-import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 import * as util from '../../../util';
 
@@ -213,11 +212,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
     describe('loadUI()', () => {
         it('should create controls and add control buttons for zoom', () => {
-            sandbox.stub(imageBase, 'bindControlListeners');
             imageBase.loadUI();
 
             expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.bindControlListeners).to.be.called;
+            expect(imageBase.zoomControls).to.not.be.undefined;
         });
     });
 
@@ -272,28 +270,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             sandbox.stub(stubs.api, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
             promise.then(() => Assert.fail()).catch(() => done());
-        });
-    });
-
-    describe('bindControlListeners()', () => {
-        it('should add the correct controls', () => {
-            imageBase.controls = {
-                add: sandbox.stub(),
-            };
-
-            imageBase.bindControlListeners();
-            expect(imageBase.controls.add).to.be.calledWith(
-                __('zoom_out'),
-                imageBase.zoomOut,
-                'bp-image-zoom-out-icon',
-                ICON_ZOOM_OUT,
-            );
-            expect(imageBase.controls.add).to.be.calledWith(
-                __('zoom_in'),
-                imageBase.zoomIn,
-                'bp-image-zoom-in-icon',
-                ICON_ZOOM_IN,
-            );
         });
     });
 

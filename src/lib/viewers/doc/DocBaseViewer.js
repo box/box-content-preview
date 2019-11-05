@@ -3,6 +3,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import PageControls from '../../PageControls';
+import ZoomControls from '../../ZoomControls';
 import DocFindBar from './DocFindBar';
 import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
@@ -30,8 +31,6 @@ import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import {
     ICON_PRINT_CHECKMARK,
-    ICON_ZOOM_OUT,
-    ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
     ICON_THUMBNAILS_TOGGLE,
@@ -41,7 +40,7 @@ import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS }
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
-const DEFAULT_SCALE_DELTA = 1.1;
+const DEFAULT_SCALE_DELTA = 0.1;
 const IS_SAFARI_CLASS = 'is-safari';
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const MAX_PINCH_SCALE_VALUE = 3;
@@ -523,19 +522,12 @@ class DocBaseViewer extends BaseViewer {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(3);
-            newScale = Math.min(MAX_SCALE, newScale);
+            newScale += DEFAULT_SCALE_DELTA;
+            newScale = Math.min(MAX_SCALE, newScale.toFixed(3));
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
 
-        if (this.pdfViewer.currentScale !== newScale) {
-            this.emit('zoom', {
-                zoom: newScale,
-                canZoomOut: true,
-                canZoomIn: newScale < MAX_SCALE,
-            });
-        }
-        this.pdfViewer.currentScaleValue = newScale;
+        this.updateScale(newScale);
     }
 
     /**
@@ -548,19 +540,30 @@ class DocBaseViewer extends BaseViewer {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(3);
-            newScale = Math.max(MIN_SCALE, newScale);
+            newScale -= DEFAULT_SCALE_DELTA;
+            newScale = Math.max(MIN_SCALE, newScale.toFixed(3));
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
 
+        this.updateScale(newScale);
+    }
+
+    /**
+     * Updates the new scale to the pdfViewer as well as the zoom controls and emits an event
+     * @param {number} newScale - New zoom scale
+     * @emits zoom
+     * @returns {void}
+     */
+    updateScale(newScale) {
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
                 canZoomOut: newScale > MIN_SCALE,
-                canZoomIn: true,
+                canZoomIn: newScale < MAX_SCALE,
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
+        this.zoomControls.setCurrentScale(newScale);
     }
 
     /**
@@ -1006,6 +1009,7 @@ class DocBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
+        this.zoomControls = new ZoomControls(this.controls);
         this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
     }
@@ -1065,8 +1069,14 @@ class DocBaseViewer extends BaseViewer {
             );
         }
 
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
+        this.zoomControls.init(this.pdfViewer.currentScale, {
+            maxZoom: MAX_SCALE,
+            minZoom: MIN_SCALE,
+            zoomInClassName: 'bp-doc-zoom-in-icon',
+            zoomOutClassName: 'bp-doc-zoom-out-icon',
+            onZoomIn: this.zoomIn,
+            onZoomOut: this.zoomOut,
+        });
 
         this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 

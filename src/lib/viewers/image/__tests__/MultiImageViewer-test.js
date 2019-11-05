@@ -8,6 +8,7 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
+import ZoomControls from '../../../ZoomControls';
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
 
@@ -323,6 +324,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('setScale()', () => {
         it('should set the scale relative to the size of the first image dimensions', () => {
+            multiImage.zoomControls = {
+                setCurrentScale: sandbox.stub(),
+                removeListener: sandbox.stub(),
+            };
+
             multiImage.singleImageEls = [
                 {
                     naturalWidth: 1024,
@@ -336,17 +342,30 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setScale(512, 512);
             expect(multiImage.emit).to.be.calledWith('scale', { scale: 0.5 });
+            expect(multiImage.zoomControls.setCurrentScale).to.be.calledWith(0.5);
         });
     });
 
     describe('loadUI()', () => {
+        const zoomInitFunc = ZoomControls.prototype.init;
+
+        beforeEach(() => {
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
+        });
+
         it('should create page controls and bind the page control listeners', () => {
             stubs.bindPageControlListeners = sandbox.stub(multiImage, 'bindPageControlListeners');
 
             multiImage.loadUI();
             expect(multiImage.pageControls instanceof PageControls).to.be.true;
             expect(multiImage.pageControls.contentEl).to.equal(multiImage.wrapperEl);
+            expect(multiImage.zoomControls instanceof ZoomControls).to.be.true;
             expect(stubs.bindPageControlListeners).to.be.called;
+            expect(ZoomControls.prototype.init).to.be.called;
         });
     });
 
