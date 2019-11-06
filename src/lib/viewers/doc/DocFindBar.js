@@ -401,6 +401,19 @@ class DocFindBar extends EventEmitter {
         this.opened = false;
         this.bar.classList.add(CLASS_HIDDEN);
     }
+
+    /**
+     * Toggles the Find Bar open and closed
+     *
+     * @return {void}
+     */
+    toggle() {
+        if (this.opened) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
 }
 
 export default DocFindBar;

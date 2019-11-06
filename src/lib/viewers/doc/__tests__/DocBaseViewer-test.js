@@ -27,10 +27,11 @@ import {
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
 import {
-    ICON_PRINT_CHECKMARK,
-    ICON_THUMBNAILS_TOGGLE,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
+    ICON_PRINT_CHECKMARK,
+    ICON_SEARCH,
+    ICON_THUMBNAILS_TOGGLE,
 } from '../../../icons/icons';
 import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
 import Timer from '../../../Timer';
@@ -2257,6 +2258,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     add: sandbox.stub(),
                     removeListener: sandbox.stub(),
                 };
+
+                stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
             });
 
             it('should add the correct controls', () => {
@@ -2267,6 +2270,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
                     ICON_THUMBNAILS_TOGGLE,
+                );
+
+                expect(docBase.controls.add).to.be.calledWith(
+                    __('toggle_findbar'),
+                    sinon.match.func,
+                    'bp-toggle-findbar-icon',
+                    ICON_SEARCH,
                 );
 
                 expect(docBase.zoomControls.init).to.be.calledWith(0.9, {
@@ -2307,6 +2317,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
                     ICON_THUMBNAILS_TOGGLE,
+                );
+            });
+
+            it('should not add the find controls if find is disabled', () => {
+                stubs.isFindDisabled.returns(true);
+
+                docBase.bindControlListeners();
+
+                expect(docBase.controls.add).not.to.be.calledWith(
+                    __('toggle_findbar'),
+                    sinon.match.func,
+                    'bp-toggle-findbar-icon',
+                    ICON_SEARCH,
                 );
             });
         });
