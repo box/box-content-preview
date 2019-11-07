@@ -1,11 +1,12 @@
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
-import Controls from './Controls';
+import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
 const CLASS_ZOOM_OUT_BUTTON = 'bp-zoom-out-btn';
+const CLASS_ZOOM_BUTTON = 'bp-zoom-btn';
 
 class ZoomControls {
     /** @property {Controls} - Controls object */
@@ -67,15 +68,31 @@ class ZoomControls {
         this.maxZoom = Math.round(this.validateZoom(maxZoom, Number.POSITIVE_INFINITY) * 100);
         this.minZoom = Math.round(Math.max(this.validateZoom(minZoom, 0), 0) * 100);
 
-        this.controls.add(__('zoom_out'), onZoomOut, `${CLASS_ZOOM_OUT_BUTTON} ${zoomOutClassName}`, ICON_ZOOM_OUT);
+        const groupElement = this.controls.addGroup();
+        this.controls.add(
+            __('zoom_out'),
+            onZoomOut,
+            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_ZOOM_BUTTON} ${CLASS_ZOOM_OUT_BUTTON} ${zoomOutClassName}`,
+            ICON_ZOOM_OUT,
+            undefined,
+            groupElement,
+        );
         this.controls.add(
             __('zoom_current_scale'),
             undefined,
-            undefined,
-            `<span class="${CLASS_ZOOM_CURRENT_SCALE}" data-testid="current-zoom">100%</span>`,
+            CLASS_ZOOM_CURRENT_SCALE,
+            '<span data-testid="current-zoom">100%</span>',
             'div',
+            groupElement,
         );
-        this.controls.add(__('zoom_in'), onZoomIn, `${CLASS_ZOOM_IN_BUTTON} ${zoomInClassName}`, ICON_ZOOM_IN);
+        this.controls.add(
+            __('zoom_in'),
+            onZoomIn,
+            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_ZOOM_BUTTON} ${CLASS_ZOOM_IN_BUTTON} ${zoomInClassName}`,
+            ICON_ZOOM_IN,
+            undefined,
+            groupElement,
+        );
 
         this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE}`);
         this.setCurrentScale(currentScale);

@@ -284,6 +284,20 @@ describe('lib/Controls', () => {
             expect(span.parentNode.parentNode).to.equal(controls.controlsEl);
             expect(controls.buttonRefs.push).not.to.be.called;
         });
+
+        it('should append the controls to the provided element', () => {
+            const div = controls.addGroup('test-group');
+            const btn = controls.add('test button', sandbox.stub(), 'test1', 'test content', undefined, div);
+            expect(btn.parentNode.parentNode).to.equal(div);
+        });
+    });
+
+    describe('addGroup()', () => {
+        it('should create a controls group within the controls element', () => {
+            const div = controls.addGroup('test-group');
+            expect(div.parentNode).to.equal(controls.controlsEl);
+            expect(div.classList.contains('test-group'));
+        });
     });
 
     describe('enable()', () => {

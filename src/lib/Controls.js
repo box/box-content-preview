@@ -8,6 +8,8 @@ const CONTROLS_PAGE_NUM_INPUT_CLASS = 'bp-page-num-input';
 const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 2000;
 
+export const CLASS_BOX_CONTROLS_GROUP_BUTTON = 'bp-controls-group-btn';
+
 class Controls {
     /** @property {HTMLElement} - Controls container element */
     containerEl;
@@ -191,9 +193,12 @@ class Controls {
      * @param {string} [classList] - optional class list
      * @param {string} [content] - Optional content HTML
      * @param {string} [tag] - Optional html tag, defaults to 'button'
+     * @param {HTMLElement} [parent] - Optional parent tag, defaults to the controls element
      * @return {HTMLElement} The created HTMLElement inserted into the control
      */
-    add(text, handler, classList = '', content = '', tag = 'button') {
+    add(text, handler, classList = '', content = '', tag = 'button', parent = this.controlsEl) {
+        const parentElement = this.controlsEl.contains(parent) ? parent : this.controlsEl;
+
         const cell = document.createElement('div');
         cell.className = 'bp-controls-cell';
 
@@ -214,7 +219,7 @@ class Controls {
         }
 
         cell.appendChild(element);
-        this.controlsEl.appendChild(cell);
+        parentElement.appendChild(cell);
 
         if (handler) {
             // Maintain a reference for cleanup
@@ -225,6 +230,22 @@ class Controls {
         }
 
         return element;
+    }
+
+    /**
+     * Add div for a group of controls
+     *
+     * @public
+     * @param {string} classNames - optional class names
+     * @return {HTMLElement} The created HTMLElement for a group of controls
+     */
+    addGroup(classNames = '') {
+        const group = document.createElement('div');
+        group.className = `bp-controls-group ${classNames}`;
+
+        this.controlsEl.appendChild(group);
+
+        return group;
     }
 
     /**

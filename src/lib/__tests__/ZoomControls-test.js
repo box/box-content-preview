@@ -48,15 +48,30 @@ describe('lib/ZoomControls', () => {
         it('should add the controls', () => {
             zoomControls.init(0.5, { onZoomIn: stubs.onZoomIn, onZoomOut: stubs.onZoomOut });
 
-            expect(stubs.add).to.be.calledWith(__('zoom_out'), stubs.onZoomOut, 'bp-zoom-out-btn ', ICON_ZOOM_OUT);
+            expect(stubs.add).to.be.calledWith(
+                __('zoom_out'),
+                stubs.onZoomOut,
+                'bp-controls-group-btn bp-zoom-btn bp-zoom-out-btn ',
+                ICON_ZOOM_OUT,
+                undefined,
+                sinon.match.any,
+            );
             expect(stubs.add).to.be.calledWith(
                 __('zoom_current_scale'),
                 undefined,
-                undefined,
+                'bp-zoom-current-scale',
                 sinon.match.string,
                 'div',
+                sinon.match.any,
             );
-            expect(stubs.add).to.be.calledWith(__('zoom_in'), stubs.onZoomIn, 'bp-zoom-in-btn ', ICON_ZOOM_IN);
+            expect(stubs.add).to.be.calledWith(
+                __('zoom_in'),
+                stubs.onZoomIn,
+                'bp-controls-group-btn bp-zoom-btn bp-zoom-in-btn ',
+                ICON_ZOOM_IN,
+                undefined,
+                sinon.match.any,
+            );
             expect(zoomControls.currentScaleElement).not.to.be.undefined;
             expect(stubs.setCurrentScale).to.be.calledWith(0.5);
             expect(zoomControls.maxZoom).to.be.equal(Number.POSITIVE_INFINITY);
@@ -102,21 +117,26 @@ describe('lib/ZoomControls', () => {
             expect(stubs.add).to.be.calledWith(
                 __('zoom_out'),
                 stubs.onZoomOut,
-                'bp-zoom-out-btn zoom-out-classname',
+                'bp-controls-group-btn bp-zoom-btn bp-zoom-out-btn zoom-out-classname',
                 ICON_ZOOM_OUT,
+                undefined,
+                sinon.match.any,
             );
             expect(stubs.add).to.be.calledWith(
                 __('zoom_current_scale'),
                 undefined,
-                undefined,
+                'bp-zoom-current-scale',
                 sinon.match.string,
                 'div',
+                sinon.match.any,
             );
             expect(stubs.add).to.be.calledWith(
                 __('zoom_in'),
                 stubs.onZoomIn,
-                'bp-zoom-in-btn zoom-in-classname',
+                'bp-controls-group-btn bp-zoom-btn bp-zoom-in-btn zoom-in-classname',
                 ICON_ZOOM_IN,
+                undefined,
+                sinon.match.any,
             );
         });
     });
