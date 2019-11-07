@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="10" height="2" viewBox="0 0 10 2">
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="2" viewBox="0 0 10 2" focusable="false">
     <g fill="none" fill-rule="evenodd" transform="translate(-3 -7)">
         <path d="M0 0h16v16H0z"/>
         <rect width="9" height="1" x="3.5" y="7.5" stroke="#FFF" rx=".5"/>

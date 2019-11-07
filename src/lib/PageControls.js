@@ -1,9 +1,10 @@
 import EventEmitter from 'events';
 import fullscreen from './Fullscreen';
 import Browser from './Browser';
-import { BROWSERS, CLASS_BOX_CONTROLS_GROUP_BUTTON } from './constants';
+import { BROWSERS } from './constants';
 import { decodeKeydown } from './util';
 import { ICON_DROP_DOWN, ICON_DROP_UP } from './icons/icons';
+import { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-page-num-wrapper';

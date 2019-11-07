@@ -8,6 +8,8 @@ const CONTROLS_PAGE_NUM_INPUT_CLASS = 'bp-page-num-input';
 const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 2000;
 
+export const CLASS_BOX_CONTROLS_GROUP_BUTTON = 'bp-controls-group-btn';
+
 class Controls {
     /** @property {HTMLElement} - Controls container element */
     containerEl;

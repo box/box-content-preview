@@ -1,8 +1,7 @@
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
-import Controls from './Controls';
-import { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './constants';
+import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
