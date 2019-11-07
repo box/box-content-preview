@@ -2,6 +2,7 @@ export const CLASS_ACTIVE = 'bp-is-active';
 export const CLASS_NAVIGATION_VISIBILITY = 'bp-is-navigation-visible';
 export const CLASS_HIDDEN = 'bp-is-hidden';
 export const CLASS_PREVIEW_LOADED = 'bp-loaded';
+export const CLASS_BOX_CONTROLS_GROUP_BUTTON = 'bp-controls-group-btn';
 export const CLASS_BOX_PREVIEW = 'bp';
 export const CLASS_BOX_PREVIEW_BUTTON = 'bp-btn';
 export const CLASS_BOX_PREVIEW_CONTAINER = 'bp-container';

@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import fullscreen from './Fullscreen';
 import Browser from './Browser';
-import { BROWSERS } from './constants';
+import { BROWSERS, CLASS_BOX_CONTROLS_GROUP_BUTTON } from './constants';
 import { decodeKeydown } from './util';
 import { ICON_DROP_DOWN, ICON_DROP_UP } from './icons/icons';
 
@@ -72,14 +72,32 @@ class PageControls extends EventEmitter {
      * @return {void}
      */
     add(currentPageNumber, pagesCount) {
+        const groupElement = this.controls.addGroup();
+        // const groupElement = undefined;
         this.controls.add(
             __('previous_page'),
             this.setPreviousPage,
-            `bp-previous-page-icon ${PREV_PAGE}`,
+            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} bp-previous-page-icon ${PREV_PAGE}`,
             ICON_DROP_UP,
+            undefined,
+            groupElement,
         );
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, PAGE_NUM, pageNumTemplate);
-        this.controls.add(__('next_page'), this.setNextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);
+        this.controls.add(
+            __('enter_page_num'),
+            this.showPageNumInput,
+            PAGE_NUM,
+            pageNumTemplate,
+            undefined,
+            groupElement,
+        );
+        this.controls.add(
+            __('next_page'),
+            this.setNextPage,
+            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} bp-next-page-icon ${NEXT_PAGE}`,
+            ICON_DROP_DOWN,
+            undefined,
+            groupElement,
+        );
 
         const pageNumEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
         this.totalPagesEl = pageNumEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);

@@ -10,8 +10,7 @@
 .bp-controls {
     position: relative;
     left: -50%;
-    display: table;
-    table-layout: fixed;
+    display: flex;
     background: fade-out($twos, .05);
     border-radius: 3px;
     opacity: 0;
@@ -80,6 +79,12 @@
             display: inline-block;
             visibility: visible;
         }
+    }
+
+    .bp-zoom-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
@@ -155,6 +160,23 @@
 }
 
 .bp-zoom-current-scale {
+    min-width: 48px;
     color: $white;
     font-size: 14px;
+    text-align: center;
+}
+
+.bp-controls-group {
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+    margin-left: 4px;
+
+    .bp-controls-group-btn {
+        width: 32px;
+    }
+
+    & + .bp-controls-cell {
+        margin-left: 4px;
+    }
 }
