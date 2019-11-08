@@ -564,7 +564,6 @@ class DocBaseViewer extends BaseViewer {
             });
         }
         this.pdfViewer.currentScaleValue = newScale;
-        this.zoomControls.setCurrentScale(newScale);
     }
 
     /**
@@ -1175,6 +1174,8 @@ class DocBaseViewer extends BaseViewer {
         if (!pageNumber) {
             return;
         }
+
+        this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
 
         // Page rendered event
         this.emit('pagerender', pageNumber);

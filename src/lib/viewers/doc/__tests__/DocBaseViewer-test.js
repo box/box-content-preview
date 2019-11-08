@@ -921,10 +921,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScale: 8.9,
                 };
-                docBase.zoomControls = {
-                    setCurrentScale: sandbox.stub(),
-                    removeListener: sandbox.stub(),
-                };
                 stubs.emit = sandbox.stub(docBase, 'emit');
             });
 
@@ -940,7 +936,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.pdfViewer.currentScale = 1;
                     docBase.zoomIn(1);
                     expect(docBase.pdfViewer.currentScaleValue).to.equal(DEFAULT_SCALE_DELTA);
-                    expect(docBase.zoomControls.setCurrentScale).to.have.been.calledWith(DEFAULT_SCALE_DELTA);
                 });
 
                 it('should emit the zoom event', () => {
@@ -1804,6 +1799,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     currentScale: 0.5,
                     currentScaleValue: 0.5,
                 };
+                docBase.zoomControls = {
+                    setCurrentScale: sandbox.stub(),
+                    removeListener: sandbox.stub(),
+                };
                 docBase.event = {
                     pageNumber: 1,
                 };
@@ -1819,11 +1818,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emit).to.be.calledWith('pagerender');
                 expect(stubs.emit).to.be.calledWith('scale', { pageNum: 1, scale: 0.5 });
+                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
             });
 
             it('should emit handleAssetAndRepLoad event if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
+                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
             });
 
             it('should hide the preload and init thumbnails if no pages were previously rendered', () => {
@@ -1833,12 +1834,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.hidePreload).to.be.called;
                 expect(docBase.somePageRendered).to.be.true;
                 expect(docBase.resize).to.be.called;
+                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
             });
 
             it('should not init thumbnails if not enabled', () => {
                 docBase.options.enableThumbnailsSidebar = false;
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.initThumbnails).not.to.be.called;
+                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
             });
         });
 
