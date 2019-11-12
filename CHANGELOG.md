@@ -1,3 +1,12 @@
+## 2.27.0 (2019-11-12)
+
+- chore(i18n): Update Translations (#1095) ([fcae150](https://github.com/box/box-content-preview/commit/fcae150)), closes [#1095](https://github.com/box/box-content-preview/issues/1095)
+- chore(i18n): Update Translations (#1098) ([29e58b8](https://github.com/box/box-content-preview/commit/29e58b8)), closes [#1098](https://github.com/box/box-content-preview/issues/1098)
+- fix(doc zoom): Move zoom control update to pagerender handler (#1097) ([085131e](https://github.com/box/box-content-preview/commit/085131e)), closes [#1097](https://github.com/box/box-content-preview/issues/1097)
+- refactor(controls): Adjusting the size of the grouped controls (#1096) ([b04e7e6](https://github.com/box/box-content-preview/commit/b04e7e6)), closes [#1096](https://github.com/box/box-content-preview/issues/1096)
+- feat(docviewer): Toggle find bar control (#1088) ([1cca56c](https://github.com/box/box-content-preview/commit/1cca56c)), closes [#1088](https://github.com/box/box-content-preview/issues/1088)
+- feat(zoom controls): Restyle zoom controls (#1092) ([a9e66bf](https://github.com/box/box-content-preview/commit/a9e66bf)), closes [#1092](https://github.com/box/box-content-preview/issues/1092)
+
 ## 2.26.0 (2019-11-05)
 
 - fix(multiimage): Re-enable pan when zoomed in (#1094) ([004db6c](https://github.com/box/box-content-preview/commit/004db6c)), closes [#1094](https://github.com/box/box-content-preview/issues/1094)
