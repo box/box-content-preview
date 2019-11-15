@@ -4,6 +4,7 @@ import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
+const CLASS_ZOOM_CURRENT_SCALE_VALUE = 'bp-zoom-current-scale-value';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
 const CLASS_ZOOM_OUT_BUTTON = 'bp-zoom-out-btn';
 const CLASS_ZOOM_BUTTON = 'bp-zoom-btn';
@@ -81,7 +82,7 @@ class ZoomControls {
             __('zoom_current_scale'),
             undefined,
             CLASS_ZOOM_CURRENT_SCALE,
-            '<span data-testid="current-zoom">100%</span>',
+            `<span class="${CLASS_ZOOM_CURRENT_SCALE_VALUE}" data-testid="current-zoom">100%</span>`,
             'div',
             groupElement,
         );
@@ -94,7 +95,7 @@ class ZoomControls {
             groupElement,
         );
 
-        this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE} > span`);
+        this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE_VALUE}`);
         this.setCurrentScale(currentScale);
     }
 
