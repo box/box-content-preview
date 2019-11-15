@@ -94,7 +94,7 @@ class ZoomControls {
             groupElement,
         );
 
-        this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE}`);
+        this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE} > span`);
         this.setCurrentScale(currentScale);
     }
 

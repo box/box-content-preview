@@ -770,6 +770,7 @@ class DocBaseViewer extends BaseViewer {
     initFind() {
         this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+        this.findBarEl.setAttribute('data-testid', 'document-findbar');
 
         // Only initialize the find bar if the user has download permissions on
         // the file. Users without download permissions shouldn't be able to
