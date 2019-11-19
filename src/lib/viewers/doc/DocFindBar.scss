@@ -68,6 +68,7 @@ $blue: #00f !default;
         background: none;
         border: 1px solid $off-white;
         border-left: 0;
+        cursor: pointer;
 
         svg {
             width: 17px;
@@ -75,6 +76,14 @@ $blue: #00f !default;
 
         .icon {
             fill: fade-out($better-black, .25);
+        }
+    }
+
+    .bp-doc-find-prev,
+    .bp-doc-find-next,
+    .bp-doc-find-close {
+        &:hover .icon {
+            fill: $better-black;
         }
     }
 
@@ -98,10 +107,6 @@ $blue: #00f !default;
 
         svg {
             width: 22px;
-        }
-
-        &:hover .icon {
-            fill: $better-black;
         }
     }
 
