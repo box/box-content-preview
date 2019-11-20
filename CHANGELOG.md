@@ -1,3 +1,10 @@
+## 2.28.0 (2019-11-20)
+
+- chore(controls): add e2e tests for toggle findbar and zoom (#1099) ([b21c506](https://github.com/box/box-content-preview/commit/b21c506)), closes [#1099](https://github.com/box/box-content-preview/issues/1099)
+- chore(i18n): Update Translations (#1103) ([035d424](https://github.com/box/box-content-preview/commit/035d424)), closes [#1103](https://github.com/box/box-content-preview/issues/1103)
+- fix(find): Add tooltips and hover styles to find control buttons (#1102) ([1558bc4](https://github.com/box/box-content-preview/commit/1558bc4)), closes [#1102](https://github.com/box/box-content-preview/issues/1102)
+- fix(viewer): Find controls in PPT files update current page (#1101) ([ff74694](https://github.com/box/box-content-preview/commit/ff74694)), closes [#1101](https://github.com/box/box-content-preview/issues/1101)
+
 ## 2.27.0 (2019-11-12)
 
 - chore(i18n): Update Translations (#1095) ([fcae150](https://github.com/box/box-content-preview/commit/fcae150)), closes [#1095](https://github.com/box/box-content-preview/issues/1095)
