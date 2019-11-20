@@ -11,7 +11,6 @@ import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
     ANNOTATOR_EVENT,
-    CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
@@ -768,10 +767,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initFind() {
-        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
-        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
-        this.findBarEl.setAttribute('data-testid', 'document-findbar');
-
         // Only initialize the find bar if the user has download permissions on
         // the file. Users without download permissions shouldn't be able to
         // interact with the text layer
@@ -779,7 +774,7 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.findBarEl, this.pdfFindController, this.pdfEventBus);
+        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }

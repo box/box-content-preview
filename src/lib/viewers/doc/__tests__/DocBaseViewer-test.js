@@ -13,7 +13,6 @@ import * as file from '../../../file';
 import * as util from '../../../util';
 
 import {
-    CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
@@ -657,15 +656,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     off: sandbox.stub(),
                     on: sandbox.stub(),
                 };
+                docBase.pdfFindController = {
+                    execute: sandbox.stub(),
+                };
                 docBase.pdfViewer = {
                     setFindController: sandbox.stub(),
                 };
-            });
-
-            it('should correctly set the find bar', () => {
-                docBase.initFind();
-                expect(docBase.findBarEl.classList.contains(CLASS_BOX_PREVIEW_FIND_BAR)).to.be.true;
-                expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
             });
 
             it('should not set find bar if viewer option disableFindBar is true', () => {

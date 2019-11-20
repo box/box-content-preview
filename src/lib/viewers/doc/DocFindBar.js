@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import { decodeKeydown } from '../../util';
 import { USER_DOCUMENT_FIND_EVENTS, VIEWER_EVENT } from '../../events';
-import { CLASS_HIDDEN } from '../../constants';
+import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../constants';
 import { ICON_FIND_DROP_DOWN, ICON_FIND_DROP_UP, ICON_CLOSE, ICON_SEARCH } from '../../icons/icons';
 
 const MATCH_SEPARATOR = ' of ';
@@ -17,48 +17,52 @@ class DocFindBar extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} findBar - Find bar selector or element
+     * @param {Object} containerEl - Container element to which we append the find bar
      * @param {Object} findController - Document find controller to use
      * @param {Object} eventBus - Document event bus to use
      * @return {DocFindBar} DocFindBar instance
      */
-    constructor(findBar, findController, eventBus) {
+    constructor(containerEl, findController, eventBus) {
         super();
 
-        this.opened = false;
-        this.bar = findBar;
-        this.eventBus = eventBus;
-        this.findController = findController;
+        if (!containerEl) {
+            throw new Error('DocFindBar cannot be used without a container element.');
+        }
 
-        if (this.eventBus === null) {
+        if (!eventBus) {
             throw new Error('DocFindBar cannot be used without an EventBus instance.');
         }
 
-        if (this.findController === null) {
+        if (!findController) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
         }
 
+        this.eventBus = eventBus;
+        this.findBarEl = containerEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+        this.findBarEl.classList.add(CLASS_HIDDEN); // Default hides find bar on load
+        this.findBarEl.setAttribute('data-testid', 'document-findbar');
+        this.findController = findController;
+        this.opened = false;
+
         // Bind context for callbacks
-        this.onKeydown = this.onKeydown.bind(this);
+        this.close = this.close.bind(this);
+        this.findBarKeyDownHandler = this.findBarKeyDownHandler.bind(this);
         this.findFieldHandler = this.findFieldHandler.bind(this);
-        this.barKeyDownHandler = this.barKeyDownHandler.bind(this);
         this.findNextHandler = this.findNextHandler.bind(this);
         this.findPreviousHandler = this.findPreviousHandler.bind(this);
-        this.close = this.close.bind(this);
+        this.onKeydown = this.onKeydown.bind(this);
 
         // attaching some listeners to update match count
         this.eventBus.on('updatefindcontrolstate', this.updateUIState.bind(this));
         this.eventBus.on('updatefindmatchescount', this.updateUIResultsCount.bind(this));
 
-        // Default hides find bar on load
-        this.bar.classList.add(CLASS_HIDDEN);
-
         this.createFindField();
         this.createFindButtons();
 
-        this.findPreviousButtonEl = this.bar.querySelector('.bp-doc-find-prev');
-        this.findNextButtonEl = this.bar.querySelector('.bp-doc-find-next');
-        this.findCloseButtonEl = this.bar.querySelector('.bp-doc-find-close');
+        this.findCloseButtonEl = this.findBarEl.querySelector('.bp-doc-find-close');
+        this.findNextButtonEl = this.findBarEl.querySelector('.bp-doc-find-next');
+        this.findPreviousButtonEl = this.findBarEl.querySelector('.bp-doc-find-prev');
 
         this.bindDOMListeners();
     }
@@ -73,18 +77,18 @@ class DocFindBar extends EventEmitter {
         const findSearchButtonEL = document.createElement('span');
         findSearchButtonEL.classList.add('bp-doc-find-search');
         findSearchButtonEL.innerHTML = ICON_SEARCH.trim();
-        this.bar.appendChild(findSearchButtonEL);
+        this.findBarEl.appendChild(findSearchButtonEL);
 
         // Find input field
         this.findFieldEl = document.createElement('input');
         this.findFieldEl.classList.add('bp-doc-find-field');
-        this.bar.appendChild(this.findFieldEl);
+        this.findBarEl.appendChild(this.findFieldEl);
 
         // Match Results Count
         this.findResultsCountEl = document.createElement('span');
         this.findResultsCountEl.classList.add('bp-doc-find-results-count');
         this.findResultsCountEl.classList.add(CLASS_HIDDEN);
-        this.bar.appendChild(this.findResultsCountEl);
+        this.findBarEl.appendChild(this.findResultsCountEl);
     }
 
     /**
@@ -106,7 +110,7 @@ class DocFindBar extends EventEmitter {
         this.findButtonContainerEl.classList.add('bp-doc-find-controls');
         this.findButtonContainerEl.innerHTML = findPreviousButton + findNextButton + findCloseButton;
 
-        this.bar.appendChild(this.findButtonContainerEl);
+        this.findBarEl.appendChild(this.findButtonContainerEl);
     }
 
     /**
@@ -119,8 +123,8 @@ class DocFindBar extends EventEmitter {
         this.removeAllListeners();
         this.unbindDOMListeners();
 
-        if (this.bar && this.bar.parentNode) {
-            this.bar.parentNode.removeChild(this.bar);
+        if (this.findBarEl && this.findBarEl.parentNode) {
+            this.findBarEl.parentNode.removeChild(this.findBarEl);
         }
     }
 
@@ -221,7 +225,7 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     bindDOMListeners() {
-        this.bar.addEventListener('keydown', this.barKeyDownHandler);
+        this.findBarEl.addEventListener('keydown', this.findBarKeyDownHandler);
         this.findFieldEl.addEventListener('input', this.findFieldHandler);
         this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.addEventListener('click', this.findNextHandler);
@@ -235,7 +239,7 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     unbindDOMListeners() {
-        this.bar.removeEventListener('keydown', this.barKeyDownHandler);
+        this.findBarEl.removeEventListener('keydown', this.findBarKeyDownHandler);
         this.findFieldEl.removeEventListener('input', this.findFieldHandler);
         this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
@@ -287,7 +291,7 @@ class DocFindBar extends EventEmitter {
      * @param {Event} event - Key event
      * @return {void}
      */
-    barKeyDownHandler(event) {
+    findBarKeyDownHandler(event) {
         const key = decodeKeydown(event).toLowerCase();
         switch (key) {
             case 'enter':
@@ -377,7 +381,7 @@ class DocFindBar extends EventEmitter {
 
         if (!this.opened) {
             this.opened = true;
-            this.bar.classList.remove(CLASS_HIDDEN);
+            this.findBarEl.classList.remove(CLASS_HIDDEN);
             // Emit a metric that the user opened the find bar
             this.emit(VIEWER_EVENT.metric, {
                 name: USER_DOCUMENT_FIND_EVENTS.OPEN,
@@ -404,7 +408,7 @@ class DocFindBar extends EventEmitter {
         }
         this.emit('close');
         this.opened = false;
-        this.bar.classList.add(CLASS_HIDDEN);
+        this.findBarEl.classList.add(CLASS_HIDDEN);
     }
 
     /**
