@@ -219,18 +219,15 @@ class ImageBaseViewer extends BaseViewer {
                 imageEl.setAttribute('originalHeight', imageEl.naturalHeight);
                 resolve();
             } else {
-                // Case when natural dimensions are not assigned
+                // Case when natural dimensions are not assigned, such as with SVGs
                 // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
                 // IE11 workaround. Dimensions only displayed if the image is attached to the document.
                 this.api
                     .get(imageEl.src, { type: 'text' })
                     .then(imageAsText => {
-                        const parser = new DOMParser();
-                        const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
-
                         try {
-                            // Assume svgEl is an instanceof an SVG with a viewBox and preserveAspectRatio of meet
-                            // where the height is the limiting axis
+                            const parser = new DOMParser();
+                            const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml'); // Can throw in IE11
                             const viewBox = svgEl.documentElement.getAttribute('viewBox');
                             const [, , w, h] = viewBox.split(' ');
                             const aspectRatio = h ? w / h : w;
