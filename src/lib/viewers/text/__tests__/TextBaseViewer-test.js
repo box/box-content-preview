@@ -74,7 +74,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             sandbox.stub(textBase, 'emit');
             textBase.zoom();
             expect(textBase.emit).to.be.calledWith('zoom');
-            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(0);
+            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(1.0);
         });
 
         it('should increase font size when zooming in', () => {
@@ -146,10 +146,6 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         const addFunc = Controls.prototype.add;
         const zoomInitFunc = ZoomControls.prototype.init;
 
-        beforeEach(() => {
-            sandbox.stub(textBase, 'getFontSize');
-        });
-
         afterEach(() => {
             Object.defineProperty(Controls.prototype, 'add', { value: addFunc });
             Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
@@ -158,7 +154,6 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         it('should setup controls and add click handlers', () => {
             Object.defineProperty(Controls.prototype, 'add', { value: sandbox.stub() });
             Object.defineProperty(ZoomControls.prototype, 'init', { value: sandbox.stub() });
-            textBase.getFontSize.returns(100);
 
             textBase.loadUI();
             expect(textBase.controls instanceof Controls).to.be.true;
@@ -172,10 +167,12 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
             expect(textBase.zoomControls instanceof ZoomControls).to.be.true;
             expect(ZoomControls.prototype.init).to.be.calledWith(1, {
-                zoomInClassName: 'bp-text-zoom-in-icon',
-                zoomOutClassName: 'bp-text-zoom-out-icon',
+                maxZoom: 10,
+                minZoom: 0.1,
                 onZoomIn: textBase.zoomIn,
                 onZoomOut: textBase.zoomOut,
+                zoomInClassName: 'bp-text-zoom-in-icon',
+                zoomOutClassName: 'bp-text-zoom-out-icon',
             });
         });
     });
