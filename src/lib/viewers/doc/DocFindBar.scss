@@ -95,6 +95,7 @@ $blue: #00f !default;
         line-height: 1;
         text-align: left;
         border: 0;
+        pointer-events: none;
 
         svg {
             width: 12px;
