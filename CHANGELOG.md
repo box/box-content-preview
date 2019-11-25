@@ -1,3 +1,7 @@
+## <small>2.26.1 (2019-11-25)</small>
+
+- feat(icons): Update file icons to match latest design language (#1109) ([8b4ca09](https://github.com/box/box-content-preview/commit/8b4ca09)), closes [#1109](https://github.com/box/box-content-preview/issues/1109)
+
 ## 2.26.0 (2019-11-05)
 
 - fix(multiimage): Re-enable pan when zoomed in (#1094) ([004db6c](https://github.com/box/box-content-preview/commit/004db6c)), closes [#1094](https://github.com/box/box-content-preview/issues/1094)
