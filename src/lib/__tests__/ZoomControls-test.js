@@ -75,7 +75,7 @@ describe('lib/ZoomControls', () => {
             expect(zoomControls.currentScaleElement).not.to.be.undefined;
             expect(stubs.setCurrentScale).to.be.calledWith(0.5);
             expect(zoomControls.maxZoom).to.be.equal(Number.POSITIVE_INFINITY);
-            expect(zoomControls.minZoom).to.be.equal(0);
+            expect(zoomControls.minZoom).to.be.equal(10);
         });
 
         it('should set the min and max zooms if specified', () => {
@@ -86,17 +86,17 @@ describe('lib/ZoomControls', () => {
         });
 
         it('should set the min zoom to 0 if negative is provided', () => {
-            zoomControls.init(0.5, { minZoom: -0.1, maxZoom: 5 });
+            zoomControls.init(0.5, { minZoom: -0.2, maxZoom: 5 });
 
             expect(zoomControls.maxZoom).to.be.equal(500);
-            expect(zoomControls.minZoom).to.be.equal(0);
+            expect(zoomControls.minZoom).to.be.equal(10);
         });
 
-        it('should set the min zoom to 0 if number is not provided', () => {
-            zoomControls.init(0.5, { minZoom: '0.1', maxZoom: 5 });
+        it('should set the min zoom to 0.1 if number is not provided', () => {
+            zoomControls.init(0.5, { minZoom: '0.2', maxZoom: 5 });
 
             expect(zoomControls.maxZoom).to.be.equal(500);
-            expect(zoomControls.minZoom).to.be.equal(0);
+            expect(zoomControls.minZoom).to.be.equal(10);
         });
 
         it('should set the max zoom to Number.POSITIVE_INFINITY if number is not provided', () => {

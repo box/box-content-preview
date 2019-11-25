@@ -3,8 +3,12 @@ import Controls from '../../Controls';
 import ZoomControls from '../../ZoomControls';
 import { checkPermission } from '../../file';
 import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
-
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+
+const ZOOM_DEFAULT = 1.0;
+const ZOOM_MAX = 10;
+const ZOOM_MIN = 0.1;
+const ZOOM_STEP = 0.1;
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -14,6 +18,8 @@ class TextBaseViewer extends BaseViewer {
         super(options);
 
         this.api = options.api;
+        this.scale = ZOOM_DEFAULT;
+
         // Bind context for handlers;
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
@@ -47,36 +53,31 @@ class TextBaseViewer extends BaseViewer {
     /**
      * Zooms by increasing or decreasing font size
      * @public
-     * @param {string} inOrOut - in or out
+     * @param {string} type - in, out, reset
      * @return {void}
      */
-    zoom(inOrOut) {
-        const el = this.containerEl.querySelector('.bp-text');
-        const size = this.getFontSize();
-        let newFontSize = 0;
+    zoom(type) {
+        let newScale = ZOOM_DEFAULT;
 
-        if (inOrOut === 'in') {
-            newFontSize = size + 10;
-        } else if (inOrOut === 'out') {
-            newFontSize = size - 10;
+        if (type === 'in') {
+            newScale = this.scale + ZOOM_STEP;
+            newScale = newScale <= ZOOM_MAX ? newScale : ZOOM_MAX;
+        } else if (type === 'out') {
+            newScale = this.scale - ZOOM_STEP;
+            newScale = newScale >= ZOOM_MIN ? newScale : ZOOM_MIN;
         }
 
-        el.style.fontSize = `${newFontSize}%`;
+        // Convert the decimal scale to a percentage font size for text content
+        this.containerEl.querySelector('.bp-text').style.fontSize = `${Math.round(newScale * 100)}%`;
+
         this.emit('zoom', {
-            zoom: newFontSize,
             canZoomIn: true,
             canZoomOut: true,
+            zoom: newScale,
         });
-        this.zoomControls.setCurrentScale(newFontSize / 100);
-    }
 
-    /**
-     * Gets the font size applied to the text
-     * @returns {number} The font size as a number
-     */
-    getFontSize() {
-        const el = this.containerEl.querySelector('.bp-text');
-        return parseInt(el.style.fontSize, 10) || 100;
+        this.scale = newScale;
+        this.zoomControls.setCurrentScale(newScale);
     }
 
     /**
@@ -124,11 +125,13 @@ class TextBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.zoomControls = new ZoomControls(this.controls);
-        this.zoomControls.init(this.getFontSize() / 100, {
-            zoomInClassName: 'bp-text-zoom-in-icon',
-            zoomOutClassName: 'bp-text-zoom-out-icon',
+        this.zoomControls.init(this.scale, {
+            maxZoom: ZOOM_MAX,
+            minZoom: ZOOM_MIN,
             onZoomIn: this.zoomIn,
             onZoomOut: this.zoomOut,
+            zoomInClassName: 'bp-text-zoom-in-icon',
+            zoomOutClassName: 'bp-text-zoom-out-icon',
         });
 
         this.controls.add(

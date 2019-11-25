@@ -8,6 +8,8 @@ const CLASS_ZOOM_CURRENT_SCALE_VALUE = 'bp-zoom-current-scale-value';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
 const CLASS_ZOOM_OUT_BUTTON = 'bp-zoom-out-btn';
 const CLASS_ZOOM_BUTTON = 'bp-zoom-btn';
+const ZOOM_MAX = Number.POSITIVE_INFINITY;
+const ZOOM_MIN = 0.1;
 
 class ZoomControls {
     /** @property {Controls} - Controls object */
@@ -60,14 +62,14 @@ class ZoomControls {
         {
             zoomOutClassName = '',
             zoomInClassName = '',
-            minZoom = 0,
-            maxZoom = Number.POSITIVE_INFINITY,
+            minZoom = ZOOM_MIN,
+            maxZoom = ZOOM_MAX,
             onZoomIn = noop,
             onZoomOut = noop,
         } = {},
     ) {
-        this.maxZoom = Math.round(this.validateZoom(maxZoom, Number.POSITIVE_INFINITY) * 100);
-        this.minZoom = Math.round(Math.max(this.validateZoom(minZoom, 0), 0) * 100);
+        this.maxZoom = Math.round((isFinite(maxZoom) && maxZoom <= ZOOM_MAX ? maxZoom : ZOOM_MAX) * 100);
+        this.minZoom = Math.round((isFinite(minZoom) && minZoom >= ZOOM_MIN ? minZoom : ZOOM_MIN) * 100);
 
         const groupElement = this.controls.addGroup();
         this.controls.add(
@@ -97,17 +99,6 @@ class ZoomControls {
 
         this.currentScaleElement = this.controlsElement.querySelector(`.${CLASS_ZOOM_CURRENT_SCALE_VALUE}`);
         this.setCurrentScale(currentScale);
-    }
-
-    /**
-     * Validates the zoom valid to ensure it is a number
-     *
-     * @param {number} zoomValue - Zoom value to validate
-     * @param {number} defaultZoomValue - Default zoom value
-     * @returns {number} The validated zoom value or the default value
-     */
-    validateZoom(zoomValue, defaultZoomValue = 0) {
-        return isFinite(zoomValue) ? zoomValue : defaultZoomValue;
     }
 
     /**
