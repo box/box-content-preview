@@ -10,30 +10,30 @@ import ARROW_LEFT from './arrow_left_24px.svg';
 import ARROW_RIGHT from './arrow_right_24px.svg';
 import CHECK_MARK from './checkmark_24px.svg';
 import GEAR from './gear_24px.svg';
-import FILE_AUDIO from './file_audio.svg';
-import FILE_AUTOCAD from './file_autocad.svg';
-import FILE_BOX_NOTE from './file_box_note.svg';
-import FILE_CODE from './file_code.svg';
-import FILE_DICOM from './file_dicom.svg';
-import FILE_DEFAULT from './file_default.svg';
-import FILE_DOCUMENT from './file_document.svg';
-import FILE_EXCEL from './file_excel.svg';
-import FILE_GOOGLE_DOC from './file_google_doc.svg';
-import FILE_GOOGLE_SHEET from './file_google_sheet.svg';
-import FILE_GOOGLE_SLIDE from './file_google_slide.svg';
-import FILE_ILLUSTRATOR from './file_illustrator.svg';
-import FILE_IMAGE from './file_image.svg';
-import FILE_KEYNOTE from './file_keynote.svg';
-import FILE_MEDIA from './file_media.svg';
-import FILE_NUMBERS from './file_numbers.svg';
-import FILE_OBJ from './file_obj.svg';
-import FILE_PAGES from './file_pages.svg';
-import FILE_PDF from './file_pdf.svg';
-import FILE_POWERPOINT from './file_powerpoint.svg';
-import FILE_PRESENTATION from './file_presentation.svg';
-import FILE_SPREADSHEET from './file_spreadsheet.svg';
-import FILE_WORD from './file_word.svg';
-import FILE_ZIP from './file_zip.svg';
+import FILE_AUDIO from './IconFileAudio32.svg';
+import FILE_AUTOCAD from './IconFileDwg32.svg';
+import FILE_BOX_NOTE from './IconFileBoxNote32.svg';
+import FILE_CODE from './IconFileCode32.svg';
+import FILE_DEFAULT from './IconFileDefault32.svg';
+import FILE_DOCUMENT from './IconFileText32.svg';
+import FILE_EXCEL from './IconFileExcel32.svg';
+import FILE_GOOGLE_DOC from './IconFileDocs32.svg';
+import FILE_GOOGLE_SHEET from './IconFileSheets32.svg';
+import FILE_GOOGLE_SLIDE from './IconFileSlides32.svg';
+import FILE_ILLUSTRATOR from './IconFileIllustrator32.svg';
+import FILE_IMAGE from './IconFileImage32.svg';
+import FILE_KEYNOTE from './IconFileKeynote32.svg';
+import FILE_MEDIA from './IconFileVideo32.svg';
+import FILE_NUMBERS from './IconFileNumbers32.svg';
+import FILE_OBJ from './IconFileThreeD32.svg';
+import FILE_PAGES from './IconFilePages32.svg';
+import FILE_PDF from './IconFilePDF32.svg';
+import FILE_POWERPOINT from './IconFilePowerpoint32.svg';
+import FILE_PRESENTATION from './IconFilePresentation32.svg';
+import FILE_SPREADSHEET from './IconFileSpreadsheet32.svg';
+import FILE_VECTOR from './IconFileVector32.svg';
+import FILE_WORD from './IconFileWord32.svg';
+import FILE_ZIP from './IconFileZip32.svg';
 import ANIMATION from './animation_24px.svg';
 import PAUSE from './pause_24px.svg';
 import PLAY from './play_24px.svg';
@@ -78,7 +78,6 @@ const FILE_LOADING_ICONS = {
     FILE_BOX_NOTE,
     FILE_CODE,
     FILE_DEFAULT,
-    FILE_DICOM,
     FILE_DOCUMENT,
     FILE_EXCEL,
     FILE_GOOGLE_DOC,
@@ -95,6 +94,7 @@ const FILE_LOADING_ICONS = {
     FILE_POWERPOINT,
     FILE_PRESENTATION,
     FILE_SPREADSHEET,
+    FILE_VECTOR,
     FILE_WORD,
     FILE_ZIP,
 };
@@ -196,7 +196,6 @@ export const ICON_FILE_MAP = {};
     'ai',
     'bmp',
     'dcm',
-    'eps',
     'gif',
     'heic',
     'jpg',
@@ -212,6 +211,11 @@ export const ICON_FILE_MAP = {};
     'tiff',
 ].forEach(extension => {
     ICON_FILE_MAP[extension] = 'FILE_IMAGE';
+});
+
+// VECTOR ICON EXTENSIONS
+['eps'].forEach(extension => {
+    ICON_FILE_MAP[extension] = 'FILE_VECTOR';
 });
 
 // KEYNOTE ICON EXTENSIONS
