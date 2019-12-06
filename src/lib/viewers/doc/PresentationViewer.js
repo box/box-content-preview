@@ -1,6 +1,7 @@
 import throttle from 'lodash/throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
+import { CLASS_INVISIBLE } from '../../constants';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -21,6 +22,7 @@ class PresentationViewer extends DocBaseViewer {
         // Bind context for callbacks
         this.mobileScrollHandler = this.mobileScrollHandler.bind(this);
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
+        this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.throttledWheelHandler = this.getWheelHandler().bind(this);
     }
 
@@ -47,6 +49,33 @@ class PresentationViewer extends DocBaseViewer {
     destroy() {
         super.destroy();
         this.preloader.removeAllListeners('preload');
+    }
+
+    /**
+     * Go to specified page. We implement presentation mode by hiding all pages
+     * except for the page we are going to.
+     *
+     * @param {number} pageNum Page to navigate to
+     * @return {void}
+     */
+    setPage(pageNum) {
+        this.checkOverflow();
+
+        // Hide all pages
+        const pages = this.docEl.querySelectorAll('.page');
+        [].forEach.call(pages, pageEl => {
+            pageEl.classList.add(CLASS_INVISIBLE);
+        });
+
+        super.setPage(pageNum);
+
+        // Show page we are navigating to
+        const pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        pageEl.classList.remove(CLASS_INVISIBLE);
+
+        // Force page to be rendered - this is needed because the presentation
+        // DOM layout can trick pdf.js into thinking that this page is not visible
+        this.pdfViewer.update();
     }
 
     /**
@@ -100,14 +129,16 @@ class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
 
     /**
-     * Initialize pdf.js viewer.
+     * Loads PDF.js with provided PDF.
      *
-     * @protected
      * @override
-     * @return {pdfjsViewer.PDFViewer} PDF viewer type
+     * @param {string} pdfUrl The URL of the PDF to load
+     * @return {void}
+     * @protected
      */
-    initPdfViewer() {
-        return this.initPdfViewerClass(this.pdfjsViewer.PDFSinglePageViewer);
+    initViewer(pdfUrl) {
+        super.initViewer(pdfUrl);
+        this.overwritePdfViewerBehavior();
     }
 
     //--------------------------------------------------------------------------
@@ -125,7 +156,6 @@ class PresentationViewer extends DocBaseViewer {
         super.bindDOMListeners();
 
         this.docEl.addEventListener('wheel', this.throttledWheelHandler);
-
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
@@ -144,7 +174,6 @@ class PresentationViewer extends DocBaseViewer {
         super.unbindDOMListeners();
 
         this.docEl.removeEventListener('wheel', this.throttledWheelHandler);
-
         if (this.hasTouch) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
@@ -186,6 +215,41 @@ class PresentationViewer extends DocBaseViewer {
     }
 
     /**
+     * Handler for 'pagesinit' event.
+     *
+     * @private
+     * @return {void}
+     */
+    pagesinitHandler() {
+        // We implement presentation mode by hiding other pages except for the first page
+        const pageEls = [].slice.call(this.docEl.querySelectorAll('.pdfViewer .page'), 0);
+        pageEls.forEach(pageEl => {
+            if (pageEl.getAttribute('data-page-number') === '1') {
+                return;
+            }
+
+            pageEl.classList.add(CLASS_INVISIBLE);
+        });
+
+        super.pagesinitHandler();
+
+        // Initially scale the page to fit. This will change to auto on resize events.
+        this.pdfViewer.currentScaleValue = 'page-fit';
+    }
+
+    /**
+     * Page change handler.
+     *
+     * @private
+     * @param {event} e - Page change event
+     * @return {void}
+     */
+    pagechangingHandler(e) {
+        this.setPage(e.pageNumber);
+        super.pagechangingHandler(e);
+    }
+
+    /**
      * Returns throttled mousewheel handler
      *
      * @return {Function} Throttled wheel handler
@@ -203,6 +267,51 @@ class PresentationViewer extends DocBaseViewer {
                 this.previousPage();
             }
         }, WHEEL_THROTTLE);
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Overwrite some pdf_viewer.js behavior for presentations.
+     *
+     * @private
+     * @return {void}
+     */
+    overwritePdfViewerBehavior() {
+        // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
+        // This override is needed to allow PDF.js to change pages when clicking on links in a presentation that
+        // navigate to other pages
+        this.pdfViewer.scrollPageIntoView = pageObj => {
+            if (!this.loaded) {
+                return;
+            }
+
+            let pageNum = pageObj;
+            if (typeof pageNum !== 'number') {
+                pageNum = pageObj.pageNumber || 1;
+            }
+
+            this.setPage(pageNum);
+        };
+        // Overwrite _getVisiblePages for presentations to always calculate instead of fetching visible
+        // elements since we lay out presentations differently
+        this.pdfViewer._getVisiblePages = () => {
+            const currentPageObj = this.pdfViewer._pages[this.pdfViewer._currentPageNumber - 1];
+            const visible = [
+                {
+                    id: currentPageObj.id,
+                    view: currentPageObj,
+                },
+            ];
+
+            return {
+                first: currentPageObj,
+                last: currentPageObj,
+                views: visible,
+            };
+        };
     }
 }
 
