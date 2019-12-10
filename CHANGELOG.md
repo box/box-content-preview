@@ -1,3 +1,8 @@
+## 2.30.0 (2019-12-10)
+
+- fix(viewer): Annotations render correctly for presentation files (#1114) ([990fb00](https://github.com/box/box-content-preview/commit/990fb00)), closes [#1114](https://github.com/box/box-content-preview/issues/1114)
+- chore(i18n): Update Translations (#1113) ([7a31aff](https://github.com/box/box-content-preview/commit/7a31aff)), closes [#1113](https://github.com/box/box-content-preview/issues/1113)
+
 ## 2.29.0 (2019-11-26)
 
 - fix(find): Allow find input to receive focus upon find icon click (#1108) ([8b31ec0](https://github.com/box/box-content-preview/commit/8b31ec0)), closes [#1108](https://github.com/box/box-content-preview/issues/1108)
