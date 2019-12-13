@@ -1,5 +1,5 @@
 import Uri from 'jsuri';
-import { decode } from 'box-react-ui/lib/utils/keys';
+import { decode } from 'box-ui-elements/es/utils/keys';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 import PreviewError from './PreviewError';

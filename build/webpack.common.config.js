@@ -21,7 +21,11 @@ module.exports = language => {
                 {
                     test: /\.s?css$/,
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
-                    include: [path.resolve('src/lib'), path.resolve('node_modules/box-annotations')],
+                    include: [
+                        path.resolve('src/lib'),
+                        path.resolve('node_modules/box-annotations'),
+                        path.resolve('node_modules/box-ui-elements'),
+                    ],
                 },
                 {
                     test: /\.(svg|html)$/,

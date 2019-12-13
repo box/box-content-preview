@@ -97,9 +97,11 @@ module.exports = config =>
             `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/swf/${SWF_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/text/${TEXT_STATIC_ASSETS_VERSION}/**/*.js`,
+            'build/karma.setup.react.js',
         ].concat(getTestFile(config.src)),
 
         preprocessors: {
+            'build/karma.setup.react.js': ['webpack', 'sourcemap'],
             'src/**/__tests__/**/*-test.js': ['webpack', 'sourcemap'],
             'src/**/__tests__/**/*-test.html': ['html2js'],
         },
