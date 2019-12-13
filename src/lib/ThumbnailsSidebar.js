@@ -39,6 +39,9 @@ class ThumbnailsSidebar {
     /** @property {Object} - Cache for the thumbnail image elements */
     thumbnailImageCache;
 
+    /** @property {Array<number>} - The ID values returned by the call to window.requestAnimationFrame() */
+    animationFrameRequestIds;
+
     /**
      * [constructor]
      *
@@ -46,6 +49,7 @@ class ThumbnailsSidebar {
      * @param {PDFViewer} pdfViewer - the PDFJS viewer
      */
     constructor(element, pdfViewer) {
+        this.animationFrameRequestIds = [];
         this.anchorEl = element;
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
@@ -132,6 +136,10 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     destroy() {
+        if (this.animationFrameRequestIds.length > 0) {
+            this.animationFrameRequestIds.forEach(id => cancelAnimationFrame(id));
+        }
+
         if (this.virtualScroller) {
             this.virtualScroller.destroy();
             this.virtualScroller = null;
@@ -289,7 +297,8 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     requestThumbnailImage(itemIndex, thumbnailEl) {
-        requestAnimationFrame(() => {
+        const requestId = requestAnimationFrame(() => {
+            this.animationFrameRequestIds = this.animationFrameRequestIds.filter(id => id !== requestId);
             this.createThumbnailImage(itemIndex).then(imageEl => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
@@ -302,6 +311,8 @@ class ThumbnailsSidebar {
                 this.renderNextThumbnailImage();
             });
         });
+
+        this.animationFrameRequestIds.push(requestId);
     }
 
     /**
