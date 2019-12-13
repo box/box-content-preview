@@ -1,10 +1,5 @@
 require('babel-polyfill');
 
-const { argv } = process;
-const isDebug = argv.find(arg => {
-    return arg === '--auto-watch' || arg === '--no-single-run';
-});
-
 const { IgnorePlugin } = require('webpack');
 const commonConfig = require('./webpack.common.config');
 
@@ -12,6 +7,7 @@ const baseConfig = commonConfig('en-US');
 
 const config = {
     ...baseConfig,
+    devtool: 'inline-source-map',
     mode: 'development',
     resolve: {
         alias: {
@@ -19,10 +15,6 @@ const config = {
         },
     },
 };
-
-if (isDebug) {
-    config.devtool = 'inline-source-map';
-}
 
 config.plugins.push(
     new IgnorePlugin(/react\/addons/),

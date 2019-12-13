@@ -33,6 +33,7 @@ function updateConfig(conf, language, index) {
             annotations: ['box-annotations'],
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`],
+            archive: [`${lib}/viewers/archive/BoxArchive.js`],
         },
         mode: isProd ? 'production' : 'development',
         optimization: {
