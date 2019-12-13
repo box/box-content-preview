@@ -27,13 +27,9 @@ describe('lib/DownloadReachability', () => {
             { title: 'default prefix', url: 'https://dl.boxcloud.com/foo', expectedValue: false },
             { title: 'google', url: 'https://www.google.com', expectedValue: false },
             { title: 'has boxcloud domain', url: 'https://kld3lk.boxcloud.com', expectedValue: true },
-            {
-                title: 'number host prefix for inside-box',
-                url: 'https://dl3.user.inside-box.net',
-                expectedValue: false,
-            },
-            { title: 'default prefix for inside-box', url: 'https://dl.user.inside-box.net', expectedValue: false },
-            { title: 'dl-hnl for inside-box', url: 'https://dl-hnl.user.inside-box.net', expectedValue: false },
+            { title: 'number host prefix for test', url: 'https://dl3.a.test.org', expectedValue: false },
+            { title: 'default prefix for test', url: 'https://dl.a.test.org', expectedValue: false },
+            { title: 'dl-hnl for test', url: 'https://dl-hnl.a.test.org', expectedValue: false },
             { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true },
         ];
 
@@ -235,11 +231,7 @@ describe('lib/DownloadReachability', () => {
             },
             { title: 'google', downloadUrl: 'https://www.google.com', expectedResult: 'https://dl.google.com' },
             { title: 'aws', downloadUrl: 'https://kld3lk.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
-            {
-                title: 'inside-box',
-                downloadUrl: 'https://dl3.user.inside-box.net',
-                expectedResult: 'https://dl.user.inside-box.net',
-            },
+            { title: 'test', downloadUrl: 'https://dl3.a.test.org', expectedResult: 'https://dl.a.test.org' },
             { title: 'dl-las', downloadUrl: 'https://dl-las.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
         ];
 
