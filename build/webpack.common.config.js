@@ -9,6 +9,8 @@ const pkg = require('../package.json');
 /* eslint-disable import/no-dynamic-require */
 module.exports = language => {
     const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
+    const locale = language ? language.substr(0, language.indexOf('-')) : 'en';
+
     return {
         bail: true,
         module: {
@@ -45,6 +47,7 @@ module.exports = language => {
         plugins: [
             new BannerPlugin(license),
             new DefinePlugin({
+                __LANGUAGE__: JSON.stringify(language),
                 __NAME__: JSON.stringify(pkg.name),
                 __VERSION__: JSON.stringify(pkg.version),
                 'process.env': {
@@ -58,6 +61,12 @@ module.exports = language => {
             }),
             new NormalModuleReplacementPlugin(/\/iconv-loader$/),
         ],
+        resolve: {
+            alias: {
+                'box-elements-messages': path.resolve(`node_modules/box-ui-elements/i18n/${language}`),
+                'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
+            },
+        },
         stats: {
             assets: true,
             children: false,

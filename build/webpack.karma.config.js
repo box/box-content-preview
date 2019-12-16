@@ -1,12 +1,12 @@
 require('babel-polyfill');
 
+const merge = require('lodash/merge');
 const { IgnorePlugin } = require('webpack');
 const commonConfig = require('./webpack.common.config');
 
 const baseConfig = commonConfig('en-US');
 
-const config = {
-    ...baseConfig,
+const config = merge(baseConfig, {
     devtool: 'inline-source-map',
     mode: 'development',
     resolve: {
@@ -14,7 +14,7 @@ const config = {
             sinon: 'sinon/pkg/sinon',
         },
     },
-};
+});
 
 config.plugins.push(
     new IgnorePlugin(/react\/addons/),
