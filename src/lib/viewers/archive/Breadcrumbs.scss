@@ -1,0 +1,11 @@
+@import '~box-ui-elements/es/styles/variables';
+
+.bp-Breadcrumbs {
+    display: flex;
+    flex: 0 0 50px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 25px;
+    border-bottom: 1px solid $bdl-gray-10;
+    box-shadow: 0 4px 6px -2px $transparent-black;
+}

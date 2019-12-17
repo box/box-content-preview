@@ -68,9 +68,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
     });
 
     describe('render()', () => {
-        it('should render VirtualizedTable', () => {
+        it('should render correct components', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
+            expect(component.find('.bp-ArchiveExplorer').length).to.equal(1);
+            expect(component.find('Breadcrumbs').length).to.equal(1);
             expect(component.find('Internationalize').length).to.equal(1);
             expect(component.find('InjectIntl(VirtualizedTable)').length).to.equal(1);
         });
@@ -81,6 +83,16 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
             component.instance().handleClick({ name: 'subfolder' });
+
+            expect(component.state().fullPath).to.equal('test/subfolder/');
+        });
+    });
+
+    describe('handleClickFullPath()', () => {
+        it('should set state when handleClickFullPath() is called', () => {
+            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+
+            component.instance().handleClickFullPath('test/subfolder/');
 
             expect(component.state().fullPath).to.equal('test/subfolder/');
         });
