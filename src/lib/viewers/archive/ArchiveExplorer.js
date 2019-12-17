@@ -1,9 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import getProp from 'lodash/get';
+import fuzzysearch from 'fuzzysearch';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
+import SearchBar from 'box-ui-elements/es/elements/common/header';
 import {
     readableTimeCellRenderer,
     sizeCellRenderer,
@@ -18,6 +20,7 @@ import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
 const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
+const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
 class ArchiveExplorer extends React.Component {
     static propTypes = {
@@ -65,7 +68,8 @@ class ArchiveExplorer extends React.Component {
 
         this.state = {
             fullPath: props.itemCollection.find(info => !info.parent).absolute_path,
-            view: VIEWS.VIEW_FOLDER,
+            searchQuery: '',
+            view: VIEW_FOLDER,
         };
     }
 
@@ -96,10 +100,11 @@ class ArchiveExplorer extends React.Component {
      * @return {Object} formatted data
      */
     getRowData = itemList => ({ index }) => {
-        const { modified_at: modifiedAt, name, size, type, ...rest } = itemList[index];
+        const { absolute_path: fullPath, modified_at: modifiedAt, name, size, type, ...rest } = itemList[index];
 
         return {
             [KEY_NAME]: {
+                fullPath,
                 isExternal: false,
                 name,
                 type,
@@ -112,17 +117,12 @@ class ArchiveExplorer extends React.Component {
     };
 
     /**
-     * Handle click event, update fullPath state
+     * Handle click event, update fullPath state, reset search and view
      *
      * @param {Object} cellValue - the cell being clicked
      * @return {void}
      */
-    handleClick = ({ name }) => {
-        const { fullPath } = this.state;
-        this.setState({
-            fullPath: `${fullPath}${name}/`,
-        });
-    };
+    handleClick = ({ fullPath }) => this.setState({ view: VIEW_FOLDER, fullPath, searchQuery: '' });
 
     /**
      * Handle click event, update fullPath state
@@ -133,18 +133,64 @@ class ArchiveExplorer extends React.Component {
     handleClickFullPath = fullPath => this.setState({ fullPath });
 
     /**
+     * Handle search input, update view state
+     *
+     * @param {string} query - raw query string in the search bar
+     * @return {void}
+     */
+    search = query => {
+        const trimmedQuery = query.trim();
+
+        if (!query) {
+            this.setState({
+                searchQuery: query,
+                view: VIEW_FOLDER,
+            });
+            return;
+        }
+
+        if (!trimmedQuery) {
+            this.setState({
+                searchQuery: query,
+            });
+            return;
+        }
+
+        this.setState({
+            searchQuery: query,
+            view: VIEW_SEARCH,
+        });
+    };
+
+    /**
+     * Filter item collection for search query
+     *
+     * @param {Array<Object>} itemCollection - raw data
+     * @param {string} searchQuery - user input
+     * @return {Array<Object>} filtered items for search query
+     */
+    getSearchResult = (itemCollection, searchQuery) => {
+        const trimmedQuery = searchQuery.trim();
+        return itemCollection.filter(item => fuzzysearch(trimmedQuery, item.name));
+    };
+
+    /**
      * render data
      *
      * @return {jsx} VirtualizedTable
      */
     render() {
         const { itemCollection } = this.props;
-        const { fullPath, view } = this.state;
-        const itemList = this.getItemList(itemCollection, fullPath);
+        const { fullPath, searchQuery, view } = this.state;
+        const itemList =
+            view === VIEW_SEARCH
+                ? this.getSearchResult(itemCollection, searchQuery)
+                : this.getItemList(itemCollection, fullPath);
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer">
+                    <SearchBar isSmall={false} onSearch={this.search} searchQuery={searchQuery} view={view} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleClickFullPath} view={view} />
                     <VirtualizedTable rowData={itemList} rowGetter={this.getRowData(itemList)}>
                         {intl => [

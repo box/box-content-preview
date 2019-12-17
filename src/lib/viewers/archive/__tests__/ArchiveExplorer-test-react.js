@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import sinon from 'sinon';
 import ArchiveExplorer from '../ArchiveExplorer';
-import { TABLE_COLUMNS } from '../constants';
+import { TABLE_COLUMNS, VIEWS } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let data;
@@ -72,6 +72,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
             expect(component.find('.bp-ArchiveExplorer').length).to.equal(1);
+            expect(component.find('InjectIntl(Header)').length).to.equal(1);
             expect(component.find('Breadcrumbs').length).to.equal(1);
             expect(component.find('Internationalize').length).to.equal(1);
             expect(component.find('InjectIntl(VirtualizedTable)').length).to.equal(1);
@@ -82,9 +83,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         it('should set state when handleClick() is called', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
-            component.instance().handleClick({ name: 'subfolder' });
+            component.instance().handleClick({ fullPath: 'test/subfolder/' });
 
             expect(component.state().fullPath).to.equal('test/subfolder/');
+            expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
+            expect(component.state().searchQuery).to.equal('');
         });
     });
 
@@ -105,10 +108,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const rowData = component.instance().getRowData(data)({ index: 0 });
 
             const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
-            const { modified_at: modifiedAt, name, size, type, ...rest } = data[0];
+            const { absolute_path: fullPath, modified_at: modifiedAt, name, size, type, ...rest } = data[0];
 
             expect(rowData).to.eql({
                 [KEY_NAME]: {
+                    fullPath,
                     isExternal: false,
                     name,
                     type,
@@ -127,6 +131,36 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const itemList = component.instance().getItemList(data, 'test/');
 
             expect(itemList).to.eql([data[1], data[2]]);
+        });
+    });
+
+    describe('search()', () => {
+        it('should set correct state when search query is not empty', () => {
+            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+
+            component.instance().search('test');
+            expect(component.state().searchQuery).to.equal('test');
+            expect(component.state().view).to.equal(VIEWS.VIEW_SEARCH);
+
+            component.instance().search('');
+            expect(component.state().searchQuery).to.equal('');
+            expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
+
+            component.instance().search(' ');
+            expect(component.state().searchQuery).to.equal(' ');
+            expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
+        });
+    });
+
+    describe('getSearchResult()', () => {
+        it('should return correct item list', () => {
+            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+
+            const itemList = component.instance().getSearchResult(data, 'level-1');
+            const fuzzyList = component.instance().getSearchResult(data, 'leel1');
+
+            expect(itemList).to.eql([data[1], data[2]]);
+            expect(fuzzyList).to.eql([data[1], data[2]]);
         });
     });
 });
