@@ -4,5 +4,9 @@ const TABLE_COLUMNS = {
     KEY_SIZE: 'key_size',
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export { TABLE_COLUMNS };
+const VIEWS = {
+    VIEW_FOLDER: 'folder',
+    VIEW_SEARCH: 'search',
+};
+
+export { TABLE_COLUMNS, VIEWS };
