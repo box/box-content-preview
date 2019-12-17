@@ -1,11 +1,15 @@
 @import '~box-ui-elements/es/styles/variables';
 
-.bp-Breadcrumbs {
+.bp-SearchBar {
     display: flex;
-    flex: 0 0 50px;
+    flex: 0 0 70px;
     align-items: center;
-    justify-content: space-between;
     padding: 0 20px;
+    background: $almost-white;
     border-bottom: 1px solid $bdl-gray-10;
-    box-shadow: 0 4px 6px -2px $transparent-black;
+
+    input[type='search'] {
+        width: 100%;
+        font: inherit;
+    }
 }

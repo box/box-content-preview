@@ -72,7 +72,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
             expect(component.find('.bp-ArchiveExplorer').length).to.equal(1);
-            expect(component.find('InjectIntl(Header)').length).to.equal(1);
+            expect(component.find('SearchBar').length).to.equal(1);
             expect(component.find('Breadcrumbs').length).to.equal(1);
             expect(component.find('Internationalize').length).to.equal(1);
             expect(component.find('InjectIntl(VirtualizedTable)').length).to.equal(1);
@@ -134,19 +134,19 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
     });
 
-    describe('search()', () => {
+    describe('handleSearch()', () => {
         it('should set correct state when search query is not empty', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
-            component.instance().search('test');
+            component.instance().handleSearch('test');
             expect(component.state().searchQuery).to.equal('test');
             expect(component.state().view).to.equal(VIEWS.VIEW_SEARCH);
 
-            component.instance().search('');
+            component.instance().handleSearch('');
             expect(component.state().searchQuery).to.equal('');
             expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
 
-            component.instance().search(' ');
+            component.instance().handleSearch(' ');
             expect(component.state().searchQuery).to.equal(' ');
             expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
         });

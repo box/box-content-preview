@@ -1,11 +1,10 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import getProp from 'lodash/get';
-import fuzzysearch from 'fuzzysearch';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
-import SearchBar from 'box-ui-elements/es/elements/common/header';
+import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import {
     readableTimeCellRenderer,
     sizeCellRenderer,
@@ -15,6 +14,7 @@ import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
 import { addLocaleData } from 'react-intl';
 import { Column } from 'react-virtualized/dist/es/Table/index';
 import Breadcrumbs from './Breadcrumbs';
+import SearchBar from './SearchBar';
 import { TABLE_COLUMNS, VIEWS } from './constants';
 import './ArchiveExplorer.scss';
 
@@ -138,28 +138,19 @@ class ArchiveExplorer extends React.Component {
      * @param {string} query - raw query string in the search bar
      * @return {void}
      */
-    search = query => {
+    handleSearch = query => {
         const trimmedQuery = query.trim();
+        const newState = {
+            searchQuery: query,
+        };
 
         if (!query) {
-            this.setState({
-                searchQuery: query,
-                view: VIEW_FOLDER,
-            });
-            return;
+            newState.view = VIEW_FOLDER;
+        } else if (trimmedQuery) {
+            newState.view = VIEW_SEARCH;
         }
 
-        if (!trimmedQuery) {
-            this.setState({
-                searchQuery: query,
-            });
-            return;
-        }
-
-        this.setState({
-            searchQuery: query,
-            view: VIEW_SEARCH,
-        });
+        this.setState(newState);
     };
 
     /**
@@ -171,7 +162,7 @@ class ArchiveExplorer extends React.Component {
      */
     getSearchResult = (itemCollection, searchQuery) => {
         const trimmedQuery = searchQuery.trim();
-        return itemCollection.filter(item => fuzzysearch(trimmedQuery, item.name));
+        return itemCollection.filter(item => fuzzySearch(trimmedQuery, item.name, 0));
     };
 
     /**
@@ -190,7 +181,7 @@ class ArchiveExplorer extends React.Component {
         return (
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer">
-                    <SearchBar isSmall={false} onSearch={this.search} searchQuery={searchQuery} view={view} />
+                    <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleClickFullPath} view={view} />
                     <VirtualizedTable rowData={itemList} rowGetter={this.getRowData(itemList)}>
                         {intl => [
