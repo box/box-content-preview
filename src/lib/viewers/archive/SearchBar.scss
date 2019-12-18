@@ -1,0 +1,16 @@
+@import '~box-ui-elements/es/styles/variables';
+
+.bp-SearchBar {
+    display: flex;
+    flex: 0 0 70px;
+    align-items: center;
+    padding: 0 20px;
+    background: $almost-white;
+    border-bottom: 1px solid $bdl-gray-10;
+
+    // override .be input[type='serach']
+    input[type='search'] {
+        width: 100%;
+        font: inherit;
+    }
+}
