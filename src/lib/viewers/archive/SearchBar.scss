@@ -8,6 +8,7 @@
     background: $almost-white;
     border-bottom: 1px solid $bdl-gray-10;
 
+    // override .be input[type='serach']
     input[type='search'] {
         width: 100%;
         font: inherit;
