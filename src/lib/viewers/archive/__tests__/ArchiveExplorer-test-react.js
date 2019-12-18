@@ -79,11 +79,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
     });
 
-    describe('handleClick()', () => {
-        it('should set state when handleClick() is called', () => {
+    describe('handleItemClick()', () => {
+        it('should set state when handleItemClick() is called', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
-            component.instance().handleClick({ fullPath: 'test/subfolder/' });
+            component.instance().handleItemClick({ fullPath: 'test/subfolder/' });
 
             expect(component.state().fullPath).to.equal('test/subfolder/');
             expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
@@ -91,11 +91,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
     });
 
-    describe('handleClickFullPath()', () => {
-        it('should set state when handleClickFullPath() is called', () => {
+    describe('handleBreadcrumbClick()', () => {
+        it('should set state when handleBreadcrumbClick() is called', () => {
             const component = shallow(<ArchiveExplorer itemCollection={data} />);
 
-            component.instance().handleClickFullPath('test/subfolder/');
+            component.instance().handleBreadcrumbClick('test/subfolder/');
 
             expect(component.state().fullPath).to.equal('test/subfolder/');
         });

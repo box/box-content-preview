@@ -117,20 +117,20 @@ class ArchiveExplorer extends React.Component {
     };
 
     /**
-     * Handle click event, update fullPath state, reset search and view
+     * Handle item click event, update fullPath state, reset search and view
      *
      * @param {Object} cellValue - the cell being clicked
      * @return {void}
      */
-    handleClick = ({ fullPath }) => this.setState({ view: VIEW_FOLDER, fullPath, searchQuery: '' });
+    handleItemClick = ({ fullPath }) => this.setState({ view: VIEW_FOLDER, fullPath, searchQuery: '' });
 
     /**
-     * Handle click event, update fullPath state
+     * Handle breadcrumb click event, update fullPath state
      *
      * @param {string} fullPath - target folder path
      * @return {void}
      */
-    handleClickFullPath = fullPath => this.setState({ fullPath });
+    handleBreadcrumbClick = fullPath => this.setState({ fullPath });
 
     /**
      * Handle search input, update view state
@@ -138,20 +138,11 @@ class ArchiveExplorer extends React.Component {
      * @param {string} query - raw query string in the search bar
      * @return {void}
      */
-    handleSearch = query => {
-        const trimmedQuery = query.trim();
-        const newState = {
+    handleSearch = query =>
+        this.setState({
             searchQuery: query,
-        };
-
-        if (!query) {
-            newState.view = VIEW_FOLDER;
-        } else if (trimmedQuery) {
-            newState.view = VIEW_SEARCH;
-        }
-
-        this.setState(newState);
-    };
+            view: query.trim() ? VIEW_SEARCH : VIEW_FOLDER,
+        });
 
     /**
      * Filter item collection for search query
@@ -182,12 +173,12 @@ class ArchiveExplorer extends React.Component {
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
-                    <Breadcrumbs fullPath={fullPath} onClick={this.handleClickFullPath} view={view} />
+                    <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
                     <VirtualizedTable rowData={itemList} rowGetter={this.getRowData(itemList)}>
                         {intl => [
                             <Column
                                 key={KEY_NAME}
-                                cellRenderer={itemNameCellRenderer(intl, this.handleClick)}
+                                cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
                                 dataKey={KEY_NAME}
                                 disableSort
                                 flexGrow={3}
