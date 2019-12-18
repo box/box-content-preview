@@ -15,7 +15,7 @@ cmd() {
         return 0
     fi
 
-    eval "$@"
+    "$@"
 
     return 0
 }
