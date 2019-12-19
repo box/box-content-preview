@@ -1,7 +1,7 @@
 const TABLE_COLUMNS = {
-    KEY_MODIFIED_AT: 'modified_at',
-    KEY_NAME: 'name',
-    KEY_SIZE: 'size',
+    KEY_MODIFIED_AT: 'key_modified_at',
+    KEY_NAME: 'key_name',
+    KEY_SIZE: 'key_size',
 };
 
 const VIEWS = {
