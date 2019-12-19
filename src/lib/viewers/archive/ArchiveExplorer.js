@@ -85,7 +85,6 @@ class ArchiveExplorer extends React.Component {
      * @return {Array<Object>} filtered itemlist for target folder
      */
     getItemList = (itemCollection, fullPath) => {
-        const { sortBy, sortDirection } = this.state;
         const folderInfo = itemCollection.find(item => item.absolute_path === fullPath);
         const subItems = getProp(folderInfo, 'item_collection.entries');
         if (!subItems) {
@@ -93,10 +92,7 @@ class ArchiveExplorer extends React.Component {
         }
         const subItemsPath = subItems.map(item => item.absolute_path);
 
-        const items = itemCollection.filter(item => subItemsPath.includes(item.absolute_path));
-        const sortedItems = sortCollection(items, sortBy);
-
-        return sortDirection === SortDirection.ASC ? sortedItems : sortedItems.reverse();
+        return itemCollection.filter(item => subItemsPath.includes(item.absolute_path));
     };
 
     /**
@@ -175,6 +171,23 @@ class ArchiveExplorer extends React.Component {
     handleSort = ({ sortBy, sortDirection }) => this.setState({ sortBy, sortDirection });
 
     /**
+     * Sort the item list
+     * @param {Array<Object>} itemList
+     * @return {Array<Object>} filtered items for search query
+     */
+    sortItemList(itemList) {
+        const { sortBy, sortDirection } = this.state;
+
+        if (!sortBy.length) {
+            return itemList;
+        }
+
+        const sortedItems = sortCollection(itemList, sortBy);
+
+        return sortDirection === SortDirection.ASC ? sortedItems : sortedItems.reverse();
+    }
+
+    /**
      * render data
      *
      * @return {jsx} VirtualizedTable
@@ -182,10 +195,11 @@ class ArchiveExplorer extends React.Component {
     render() {
         const { itemCollection } = this.props;
         const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
-        const itemList =
+        const itemList = this.sortItemList(
             view === VIEW_SEARCH
                 ? this.getSearchResult(itemCollection, searchQuery)
-                : this.getItemList(itemCollection, fullPath);
+                : this.getItemList(itemCollection, fullPath),
+        );
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
@@ -202,7 +216,7 @@ class ArchiveExplorer extends React.Component {
                         {intl => [
                             <Column
                                 key={KEY_NAME}
-                                cellRenderer={itemNameCellRenderer(intl, this.handleClick)}
+                                cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
                                 dataKey={KEY_NAME}
                                 flexGrow={3}
                                 headerRenderer={sortableColumnHeaderRenderer}
