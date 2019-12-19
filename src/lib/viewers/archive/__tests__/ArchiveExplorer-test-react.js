@@ -173,7 +173,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
 
-            expect(component.state().sortType).to.equal('name');
+            expect(component.state().sortBy).to.equal('name');
             expect(component.state().sortDirection).to.equal('DESC');
         });
     });

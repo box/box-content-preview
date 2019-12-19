@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import getProp from 'lodash/get';
-import sortBy from 'lodash/sortBy';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
@@ -71,7 +70,7 @@ class ArchiveExplorer extends React.Component {
         this.state = {
             fullPath: props.itemCollection.find(info => !info.parent).absolute_path,
             searchQuery: '',
-            sortType: '',
+            sortBy: '',
             sortDirection: SortDirection.ASC,
             view: VIEW_FOLDER,
         };
@@ -156,7 +155,7 @@ class ArchiveExplorer extends React.Component {
      * @param {string} sort.sortDirection - Set direction of sort either ASC | DESC
      * @return {void}
      */
-    handleSort = ({ sortBy: sortType, sortDirection }) => this.setState({ sortType, sortDirection });
+    handleSort = ({ sortBy, sortDirection }) => this.setState({ sortBy, sortDirection });
 
     /**
      * Filter item collection for search query
@@ -176,13 +175,19 @@ class ArchiveExplorer extends React.Component {
      * @return {Array<Object>} filtered items for search query
      */
     sortItemList(itemList) {
-        const { sortType, sortDirection } = this.state;
+        const { sortBy, sortDirection } = this.state;
 
-        if (!sortType.length) {
+        if (!sortBy.length) {
             return itemList;
         }
 
-        const sortedItems = sortBy(itemList, sortType);
+        const sortedItems = itemList.sort((a, b) => {
+            if (typeof a[sortBy] === 'number' && typeof b[sortBy] === 'number') {
+                return a[sortBy] - b[sortBy];
+            }
+
+            return a[sortBy].localeCompare(b[sortBy]);
+        });
 
         return sortDirection === SortDirection.ASC ? sortedItems : sortedItems.reverse();
     }
@@ -194,7 +199,7 @@ class ArchiveExplorer extends React.Component {
      */
     render() {
         const { itemCollection } = this.props;
-        const { fullPath, searchQuery, sortType, sortDirection, view } = this.state;
+        const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
         const itemList = this.sortItemList(
             view === VIEW_SEARCH
                 ? this.getSearchResult(itemCollection, searchQuery)
@@ -210,7 +215,7 @@ class ArchiveExplorer extends React.Component {
                         rowData={itemList}
                         rowGetter={this.getRowData(itemList)}
                         sort={this.handleSort}
-                        sortBy={sortType}
+                        sortBy={sortBy}
                         sortDirection={sortDirection}
                     >
                         {intl => [
