@@ -1,12 +1,12 @@
 <html>
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <link rel="stylesheet" href='./preview.css' />
-        <link rel="stylesheet" href='./annotations.css' />
-        <script src='https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js'></script>
-        <script src='./preview.js'></script>
-        <script src='./annotations.js'></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="./preview.css" />
+        <link rel="stylesheet" href="./annotations.css" />
+        <script src="https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js"></script>
+        <script src="./preview.js"></script>
+        <script src="./annotations.js"></script>
 
         <style>
             * {
@@ -45,25 +45,25 @@
     </head>
 
     <body>
-        <div class='setters-container'>
-                <div class='container' id='token'>
-                        <div> Token: <span id='token-display'></span> </div>
-                        <input id='token-set' data-testid="token" placeholder='Enter token' />
-                        <button onClick="setProperty('token')" data-testid="token-set">Set new token</button>
-                </div>
+        <div class="setters-container">
+            <div class="container" id="token">
+                <div>Token: <span id="token-display"></span></div>
+                <input id="token-set" data-testid="token" placeholder="Enter token" />
+                <button onClick="setProperty('token')" data-testid="token-set">Set new token</button>
+            </div>
 
-                <div class='container' id='file'>
-                        <div> File ID: <span id='fileid-display'></span></div>
-                        <input id='fileid-set' placeholder='Enter file ID' data-testid="fileid"/>
-                        <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
-                </div>
+            <div class="container" id="file">
+                <div>File ID: <span id="fileid-display"></span></div>
+                <input id="fileid-set" placeholder="Enter file ID" data-testid="fileid" />
+                <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
+            </div>
 
-                <div class='container' id='load'>
-                    <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
-                </div>
+            <div class="container" id="load">
+                <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
+            </div>
         </div>
 
-        <div class='preview-container' data-testid="preview-container"> </div>
+        <div class="preview-container" data-testid="preview-container"></div>
         <script>
             // Create preview first so events can be bound before 'show'
             /* global Box */
@@ -71,9 +71,8 @@
 
             function setProperty(selector) {
                 // Get new value, fallback to local storage
-                var inputValue = document.querySelector('#' + selector + '-set')
-                value = inputValue && inputValue.value || localStorage.getItem(selector);
-
+                var inputValue = document.querySelector('#' + selector + '-set');
+                value = (inputValue && inputValue.value) || localStorage.getItem(selector);
 
                 if (!value) {
                     return;
@@ -84,14 +83,14 @@
                 displayElement.textContent = value;
 
                 // Cache it in local storage
-                localStorage.setItem(selector, value)
+                localStorage.setItem(selector, value);
             }
 
             function loadPreview(options) {
                 var token = localStorage.getItem('token');
                 var fileid = localStorage.getItem('fileid');
 
-                if ( !token || !fileid) {
+                if (!token || !fileid) {
                     return;
                 }
 
