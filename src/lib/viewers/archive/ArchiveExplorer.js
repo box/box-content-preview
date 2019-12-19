@@ -171,7 +171,7 @@ class ArchiveExplorer extends React.Component {
     handleSort = ({ sortBy, sortDirection }) => this.setState({ sortBy, sortDirection });
 
     /**
-     * Sort the item list
+     * Sort the item list depending on the key or direction
      * @param {Array<Object>} itemList
      * @return {Array<Object>} filtered items for search query
      */
