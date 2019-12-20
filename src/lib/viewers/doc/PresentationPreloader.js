@@ -9,15 +9,6 @@ class PresentationPreloader extends DocPreloader {
      */
     maxZoomScale = 0;
 
-    /** @property {HTMLElement} - Preload container element */
-    preloadEl;
-
-    /** @property {PreviewUI} - Preview's UI instance */
-    previewUI;
-
-    /** @property {string} - Class name for preload wrapper */
-    wrapperClassName;
-
     /**
      * [constructor]
      *
