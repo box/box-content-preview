@@ -1136,6 +1136,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
+            it('should disable font face if supplied the option', () => {
+                stubs.getViewerOption.returns(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableFontFace: true }));
+                });
+            });
+
             it('should not disable streaming', () => {
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: true }));
