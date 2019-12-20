@@ -6,13 +6,14 @@ import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import {
+    itemNameCellRenderer,
     readableTimeCellRenderer,
     sizeCellRenderer,
-    itemNameCellRenderer,
+    sortableColumnHeaderRenderer,
 } from 'box-ui-elements/es/features/virtualized-table-renderers';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
 import { addLocaleData } from 'react-intl';
-import { Column } from 'react-virtualized/dist/es/Table/index';
+import { Column, SortDirection } from 'react-virtualized/dist/es/Table/index';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { TABLE_COLUMNS, VIEWS } from './constants';
@@ -69,6 +70,8 @@ class ArchiveExplorer extends React.Component {
         this.state = {
             fullPath: props.itemCollection.find(info => !info.parent).absolute_path,
             searchQuery: '',
+            sortBy: '',
+            sortDirection: SortDirection.ASC,
             view: VIEW_FOLDER,
         };
     }
@@ -145,6 +148,16 @@ class ArchiveExplorer extends React.Component {
         });
 
     /**
+     * Handle sort click
+     *
+     * @param {object} sort
+     * @param {string} sort.sortBy - Used to sort
+     * @param {string} sort.sortDirection - Set direction of sort either ASC | DESC
+     * @return {void}
+     */
+    handleSort = ({ sortBy, sortDirection }) => this.setState({ sortBy, sortDirection });
+
+    /**
      * Filter item collection for search query
      *
      * @param {Array<Object>} itemCollection - raw data
@@ -157,31 +170,61 @@ class ArchiveExplorer extends React.Component {
     };
 
     /**
+     * Sort the item list depending on the key or direction
+     * @param {Array<Object>} itemList - Array of Item objects
+     * @return {Array<Object>} filtered items for search query
+     */
+    sortItemList(itemList) {
+        const { sortBy, sortDirection } = this.state;
+
+        if (!sortBy.length) {
+            return itemList;
+        }
+
+        const sortedItems = itemList.sort((a, b) => {
+            if (typeof a[sortBy] === 'number' && typeof b[sortBy] === 'number') {
+                return a[sortBy] - b[sortBy];
+            }
+
+            return a[sortBy].localeCompare(b[sortBy]);
+        });
+
+        return sortDirection === SortDirection.ASC ? sortedItems : sortedItems.reverse();
+    }
+
+    /**
      * render data
      *
      * @return {jsx} VirtualizedTable
      */
     render() {
         const { itemCollection } = this.props;
-        const { fullPath, searchQuery, view } = this.state;
-        const itemList =
+        const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
+        const itemList = this.sortItemList(
             view === VIEW_SEARCH
                 ? this.getSearchResult(itemCollection, searchQuery)
-                : this.getItemList(itemCollection, fullPath);
+                : this.getItemList(itemCollection, fullPath),
+        );
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
-                    <VirtualizedTable rowData={itemList} rowGetter={this.getRowData(itemList)}>
+                    <VirtualizedTable
+                        rowData={itemList}
+                        rowGetter={this.getRowData(itemList)}
+                        sort={this.handleSort}
+                        sortBy={sortBy}
+                        sortDirection={sortDirection}
+                    >
                         {intl => [
                             <Column
                                 key={KEY_NAME}
                                 cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
                                 dataKey={KEY_NAME}
-                                disableSort
                                 flexGrow={3}
+                                headerRenderer={sortableColumnHeaderRenderer}
                                 label={__('filename')}
                                 width={1}
                             />,
@@ -189,8 +232,8 @@ class ArchiveExplorer extends React.Component {
                                 key={KEY_MODIFIED_AT}
                                 cellRenderer={readableTimeCellRenderer}
                                 dataKey={KEY_MODIFIED_AT}
-                                disableSort
                                 flexGrow={2}
+                                headerRenderer={sortableColumnHeaderRenderer}
                                 label={__('last_modified_date')}
                                 width={1}
                             />,
@@ -198,8 +241,8 @@ class ArchiveExplorer extends React.Component {
                                 key={KEY_SIZE}
                                 cellRenderer={sizeCellRenderer()}
                                 dataKey={KEY_SIZE}
-                                disableSort
                                 flexGrow={1}
+                                headerRenderer={sortableColumnHeaderRenderer}
                                 label={__('size')}
                                 width={1}
                             />,
