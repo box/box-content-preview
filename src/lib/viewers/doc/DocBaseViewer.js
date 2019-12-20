@@ -654,7 +654,7 @@ class DocBaseViewer extends BaseViewer {
         const disableCreateObjectURL = false;
 
         // Disable font faces on IOS 10.3.X
-        const disableFontFace = Browser.hasFontIssue();
+        const disableFontFace = Browser.hasFontIssue() || this.getViewerOption('disableFontFace');
 
         // Disable streaming via fetch until performance is improved
         const disableStream = true;
