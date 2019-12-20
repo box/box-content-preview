@@ -111,6 +111,9 @@ class ArchiveExplorer extends React.Component {
                 isExternal: false,
                 name,
                 type,
+                dataAttributes: {
+                    'data-resin-target': type,
+                },
             },
             // TODO: fix when conversion changes it to standard date format
             [KEY_MODIFIED_AT]: `20${modifiedAt}`,
@@ -208,7 +211,7 @@ class ArchiveExplorer extends React.Component {
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
-                <div className="bp-ArchiveExplorer">
+                <div className="bp-ArchiveExplorer" data-resin-feature="archive">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
                     <VirtualizedTable

@@ -44,7 +44,12 @@ class Breadcrumbs extends React.PureComponent {
                         <span>{__('search_results')}</span>
                     ) : (
                         this.getPathItems(fullPath).map(pathItem => (
-                            <PlainButton key={pathItem.path} onClick={() => onClick(pathItem.path)} type="button">
+                            <PlainButton
+                                key={pathItem.path}
+                                data-resin-target="breadcrumb"
+                                onClick={() => onClick(pathItem.path)}
+                                type="button"
+                            >
                                 {pathItem.name}
                             </PlainButton>
                         ))
