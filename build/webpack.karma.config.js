@@ -7,7 +7,7 @@ const commonConfig = require('./webpack.common.config');
 const baseConfig = commonConfig('en-US');
 
 const config = merge(baseConfig, {
-    devtool: 'inline-source-map',
+    devtool: 'inline-cheap-source-map',
     mode: 'development',
     resolve: {
         alias: {
