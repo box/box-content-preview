@@ -7,6 +7,8 @@ import { TABLE_COLUMNS, VIEWS } from '../constants';
 const sandbox = sinon.sandbox.create();
 let data;
 
+const getComponent = props => shallow(<ArchiveExplorer {...props} />); // eslint-disable-line
+
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     beforeEach(() => {
         data = [
@@ -69,7 +71,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('render()', () => {
         it('should render correct components', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             expect(component.find('.bp-ArchiveExplorer').length).to.equal(1);
             expect(component.find('SearchBar').length).to.equal(1);
@@ -81,7 +83,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleItemClick()', () => {
         it('should set state when handleItemClick() is called', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             component.instance().handleItemClick({ fullPath: 'test/subfolder/' });
 
@@ -93,7 +95,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleBreadcrumbClick()', () => {
         it('should set state when handleBreadcrumbClick() is called', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             component.instance().handleBreadcrumbClick('test/subfolder/');
 
@@ -103,7 +105,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getRowData()', () => {
         it('should return correct row data', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             const rowData = component.instance().getRowData(data)({ index: 0 });
 
@@ -126,7 +128,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getItemList()', () => {
         it('should return correct item list', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             const itemList = component.instance().getItemList(data, 'test/');
 
@@ -136,7 +138,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleSearch()', () => {
         it('should set correct state when search query is not empty', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             component.instance().handleSearch('test');
             expect(component.state().searchQuery).to.equal('test');
@@ -154,13 +156,70 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getSearchResult()', () => {
         it('should return correct item list', () => {
-            const component = shallow(<ArchiveExplorer itemCollection={data} />);
+            const component = getComponent({ itemCollection: data });
 
             const itemList = component.instance().getSearchResult(data, 'level-1');
             const fuzzyList = component.instance().getSearchResult(data, 'leel1');
 
             expect(itemList).to.eql([data[1], data[2]]);
             expect(fuzzyList).to.eql([data[1], data[2]]);
+        });
+    });
+
+    describe('handleSort()', () => {
+        it('should set the sort direction and type', () => {
+            const component = getComponent({ itemCollection: data });
+            const instance = component.instance();
+
+            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
+
+            expect(component.state().sortBy).to.equal('name');
+            expect(component.state().sortDirection).to.equal('DESC');
+        });
+    });
+
+    describe('sortItemList()', () => {
+        it('should sort itemList by size and be in ASC order', () => {
+            const component = getComponent({ itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'size', sortDirection: 'ASC' });
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(data[1]);
+        });
+
+        it('should sort itemList by name and be in DESC order', () => {
+            const component = getComponent({ itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(data[2]);
+        });
+
+        it('should sort itemList by name and be in ASC order', () => {
+            const component = getComponent({ itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'name', sortDirection: 'ASC' });
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(data[1]);
+        });
+
+        it('should not sort itemList', () => {
+            const component = getComponent({ itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(itemList[0]);
         });
     });
 });
