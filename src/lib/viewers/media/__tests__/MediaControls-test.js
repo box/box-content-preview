@@ -1044,7 +1044,10 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('initAlternateAudio()', () => {
         it('should load alternate audio', () => {
             sandbox.stub(mediaControls.settings, 'loadAlternateAudio');
-            const audios = [{ language: 'eng', role: 'audio0' }, { language: 'rus', role: 'audio1' }];
+            const audios = [
+                { language: 'eng', role: 'audio0' },
+                { language: 'rus', role: 'audio1' },
+            ];
             mediaControls.initAlternateAudio(audios);
             expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
         });

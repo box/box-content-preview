@@ -313,7 +313,8 @@ class DocBaseViewer extends BaseViewer {
         if (
             !this.preloader ||
             isWatermarked ||
-            ((this.startPageNum && this.startPageNum !== 1) || this.getCachedPage() !== 1)
+            (this.startPageNum && this.startPageNum !== 1) ||
+            this.getCachedPage() !== 1
         ) {
             return;
         }

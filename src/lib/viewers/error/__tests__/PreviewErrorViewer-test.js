@@ -55,7 +55,12 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
     });
 
     describe('load()', () => {
-        [['zip', true], ['tgz', true], ['flv', true], ['blah', false]].forEach(testCase => {
+        [
+            ['zip', true],
+            ['tgz', true],
+            ['flv', true],
+            ['blah', false],
+        ].forEach(testCase => {
             it('should set appropriate icon', () => {
                 const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
                 const getIconFromNameStub = sandbox.stub(icons, 'getIconFromName');
