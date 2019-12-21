@@ -210,7 +210,7 @@ class MediaBaseViewer extends BaseViewer {
      */
     addEventListenersForMediaLoad() {
         this.mediaEl.addEventListener('canplay', this.handleCanPlay);
-        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+        this.mediaEl.addEventListener('loadedmetadata', this.loadeddataHandler);
         this.mediaEl.addEventListener('loadstart', this.handleLoadStart);
     }
 
