@@ -16,7 +16,7 @@ module.exports = language => {
         module: {
             rules: [
                 {
-                    test: /\.js$/,
+                    test: /\.(js|ts|tsx)$/,
                     loader: 'babel-loader',
                     include: [path.resolve('src/lib')],
                 },
@@ -66,6 +66,7 @@ module.exports = language => {
                 'box-elements-messages': path.resolve(`node_modules/box-ui-elements/i18n/${language}`),
                 'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
             },
+            extensions: ['.tsx', '.ts', '.js'],
         },
         stats: {
             assets: true,

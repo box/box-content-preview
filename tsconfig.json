@@ -1,0 +1,5 @@
+{
+    "extends": "@box/frontend/ts/tsconfig.json",
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}
