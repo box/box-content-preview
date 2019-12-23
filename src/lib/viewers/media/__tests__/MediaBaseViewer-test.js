@@ -124,7 +124,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should load mediaUrl in the media element', () => {
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             return media.load().then(() => {
-                expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
+                expect(media.mediaEl.addEventListener).to.be.calledWith('loadedmetadata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
                 expect(media.mediaEl.src).to.equal('www.netflix.com');
             });
