@@ -699,13 +699,15 @@ describe('lib/util', () => {
     });
 
     describe('convertWatermarkPref()', () => {
-        [['any', ''], ['all', 'only_watermarked'], ['none', 'only_non_watermarked']].forEach(
-            ([previewWMPref, expected]) => {
-                it('should convert previewWMPref to value expected by the API', () => {
-                    expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
-                });
-            },
-        );
+        [
+            ['any', ''],
+            ['all', 'only_watermarked'],
+            ['none', 'only_non_watermarked'],
+        ].forEach(([previewWMPref, expected]) => {
+            it('should convert previewWMPref to value expected by the API', () => {
+                expect(util.convertWatermarkPref(previewWMPref)).to.equal(expected);
+            });
+        });
     });
 
     describe('handleRepresentationBlobFetch()', () => {

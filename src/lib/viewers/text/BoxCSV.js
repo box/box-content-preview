@@ -65,6 +65,10 @@ class BoxCSV {
     };
     /* eslint-enable react/prop-types */
 
+    setRef = gridComponent => {
+        this.gridComponent = gridComponent;
+    };
+
     /**
      * Renders CSV into an html table
      *
@@ -89,8 +93,9 @@ class BoxCSV {
             columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
         }
 
-        this.gridComponent = ReactDOM.render(
+        ReactDOM.render(
             <Grid
+                ref={this.setRef}
                 cellRenderer={this.cellRenderer}
                 className="bp-text-csv-grid"
                 columnCount={columnCount}

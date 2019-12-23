@@ -346,20 +346,23 @@ describe('lib/file', () => {
     });
 
     describe('shouldDownloadWM()', () => {
-        [[false, false, false], [false, true, false], [true, true, true], [true, false, false]].forEach(
-            ([downloadWM, isFileWatermarked, expected]) => {
-                it('should return whether we should download the watermarked representation or original file', () => {
-                    const previewOptions = { downloadWM };
-                    const file = {
-                        watermark_info: {
-                            is_watermarked: isFileWatermarked,
-                        },
-                    };
+        [
+            [false, false, false],
+            [false, true, false],
+            [true, true, true],
+            [true, false, false],
+        ].forEach(([downloadWM, isFileWatermarked, expected]) => {
+            it('should return whether we should download the watermarked representation or original file', () => {
+                const previewOptions = { downloadWM };
+                const file = {
+                    watermark_info: {
+                        is_watermarked: isFileWatermarked,
+                    },
+                };
 
-                    expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
-                });
-            },
-        );
+                expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
+            });
+        });
     });
 
     describe('canDownload()', () => {

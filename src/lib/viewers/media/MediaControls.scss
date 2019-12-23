@@ -76,7 +76,7 @@
     margin: 0;
     padding: 0;
     color: $white;
-    font-weight: 400;
+    font-weight: normal;
     font-size: 12px;
     text-align: center;
     vertical-align: top;
@@ -168,7 +168,7 @@
     height: 24px;
     padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
     color: $white;
-    font-weight: 600;
+    font-weight: bold;
     font-size: 12px;
     line-height: 24px;
     letter-spacing: .1em;
@@ -186,7 +186,7 @@
     left: 22px;
     display: none;
     padding: 2px 2px 2px 3px;
-    font-weight: 600;
+    font-weight: bold;
     font-size: 8px;
     line-height: 8px;
     letter-spacing: .1em;

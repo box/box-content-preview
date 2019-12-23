@@ -54,7 +54,11 @@ describe('lib/viewers/text/BoxCSV', () => {
     describe('renderCSV()', () => {
         it('should render Grid using calculated properties', () => {
             const renderStub = sandbox.stub(ReactDOM, 'render');
-            csvComponent.data = [[1, 2], [2, 3], [3, 4]];
+            csvComponent.data = [
+                [1, 2],
+                [2, 3],
+                [3, 4],
+            ];
 
             csvComponent.renderCSV();
 

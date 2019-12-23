@@ -1051,9 +1051,10 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('calculateVideoDimensions()', () => {
         it('should calculate the video dimensions based on the reps', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(false);
-            stubs.mockPlayer
-                .expects('getVariantTracks')
-                .returns([{ width: 200, videoId: 1 }, { width: 100, videoId: 2 }]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: 200, videoId: 1 },
+                { width: 100, videoId: 2 },
+            ]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(1);
             expect(dash.sdVideoId).to.equal(2);
@@ -1062,9 +1063,10 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should use SD video dimensions if no HD', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(false);
-            stubs.mockPlayer
-                .expects('getVariantTracks')
-                .returns([{ width: 640, videoId: 1, audioId: 2 }, { width: 640, videoId: 1, audioId: 3 }]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: 640, videoId: 1, audioId: 2 },
+                { width: 640, videoId: 1, audioId: 3 },
+            ]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(-1);
             expect(dash.sdVideoId).to.equal(1);
@@ -1073,9 +1075,10 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should default video dimensions when video is audio-only', () => {
             stubs.mockPlayer.expects('isAudioOnly').returns(true);
-            stubs.mockPlayer
-                .expects('getVariantTracks')
-                .returns([{ width: null, videoId: null, audioId: 1 }, { width: null, videoId: null, audioId: 2 }]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: null, videoId: null, audioId: 1 },
+                { width: null, videoId: null, audioId: 2 },
+            ]);
             dash.calculateVideoDimensions();
             expect(dash.hdVideoId).to.equal(-1);
             expect(dash.sdVideoId).to.equal(-1);
