@@ -28,10 +28,11 @@ describe('lib/viewers/archive/BoxArchive', () => {
 
     describe('destroy()', () => {
         it('should unmount the component', () => {
-            sandbox.stub(ReactDOM, 'render').returns({});
+            sandbox.stub(ReactDOM, 'render');
             sandbox.stub(ReactDOM, 'unmountComponentAtNode');
-            archiveComponent = new BoxArchive(containerEl, []);
 
+            archiveComponent = new BoxArchive(containerEl, []);
+            archiveComponent.archiveExplorer = {};
             archiveComponent.destroy();
             archiveComponent = null;
 

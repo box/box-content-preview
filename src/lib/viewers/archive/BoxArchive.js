@@ -12,7 +12,7 @@ class BoxArchive {
      */
     constructor(archiveEl, data) {
         this.archiveEl = archiveEl;
-        this.archiveExplorer = ReactDOM.render(<ArchiveExplorer itemCollection={data} />, this.archiveEl);
+        ReactDOM.render(<ArchiveExplorer ref={this.setRef} itemCollection={data} />, this.archiveEl);
     }
 
     /**
@@ -26,6 +26,10 @@ class BoxArchive {
             this.archiveExplorer = null;
         }
     }
+
+    setRef = archiveExplorer => {
+        this.archiveExplorer = archiveExplorer;
+    };
 }
 
 global.BoxArchive = BoxArchive;

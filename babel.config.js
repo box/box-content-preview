@@ -16,6 +16,20 @@ module.exports = api => {
             '@babel/plugin-proposal-object-rest-spread',
             '@babel/plugin-transform-object-assign',
         ],
+        overrides: [
+            {
+                test: ['./src/**/*.ts', './src/**/*.tsx'],
+                presets: [
+                    [
+                        '@babel/preset-typescript',
+                        {
+                            isTSX: true,
+                            allExtensions: true,
+                        },
+                    ],
+                ],
+            },
+        ],
         env: {
             production: {
                 plugins: [['react-remove-properties', { properties: ['data-testid'] }]],
