@@ -257,7 +257,7 @@ describe('Preview Document Thumbnails', () => {
             });
     });
 
-    it('Should not show the thumbnails sidebar when a document preview errors', () => {
+    it.skip('Should not show the thumbnails sidebar when a document preview errors', () => {
         cy.showPreview(token, badFileId, { enableThumbnailsSidebar: true });
 
         cy.contains('We’re sorry the preview didn’t load. This file could not be converted.');
