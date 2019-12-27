@@ -118,6 +118,9 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                     isExternal: false,
                     name,
                     type,
+                    dataAttributes: {
+                        'data-resin-target': type,
+                    },
                 },
                 [KEY_MODIFIED_AT]: `20${modifiedAt}`,
                 [KEY_SIZE]: size,
