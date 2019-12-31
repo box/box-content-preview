@@ -2420,7 +2420,7 @@ describe('lib/Preview', () => {
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
                 'X-Rep-Hints':
-                    '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]',
+                    '[3d][pdf][text][mp3][json][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]',
             };
 
             preview.options.sharedLink = 'link';
