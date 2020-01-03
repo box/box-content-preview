@@ -11,6 +11,7 @@ import loaderList from './loaders';
 import Cache from './Cache';
 import PreviewError from './PreviewError';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
+import PreviewPerf from './PreviewPerf';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
@@ -198,18 +199,16 @@ class Preview extends EventEmitter {
                 const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
                 const previewDurationTimer = Timer.get(previewDurationTag);
                 Timer.stop(previewDurationTag);
+                const previewDuration = previewDurationTimer ? previewDurationTimer.elapsed : null;
+                Timer.reset(previewDurationTag);
 
-                const event = {
+                this.emitLogEvent(PREVIEW_METRIC, {
                     event_name: PREVIEW_END_EVENT,
                     value: {
-                        duration: previewDurationTimer ? previewDurationTimer.elapsed : null,
+                        duration: previewDuration,
                         viewer_status: this.viewer.getLoadStatus(),
                     },
-                    ...this.createLogEvent(),
-                };
-
-                Timer.reset(previewDurationTag);
-                this.emit(PREVIEW_METRIC, event);
+                });
             }
 
             // Eject http interceptors
@@ -241,6 +240,9 @@ class Preview extends EventEmitter {
             throw new Error('Bad access token!');
         }
 
+        // Initalize performance observers
+        this.perf = new PreviewPerf();
+
         // Update the optional file navigation collection and caches
         // if proper valid file objects were passed in.
         this.updateCollection(options.collection);
@@ -264,6 +266,11 @@ class Preview extends EventEmitter {
 
         // Destroy the viewer and cleanup preview
         this.destroy();
+
+        // Destroy pefromance observers
+        if (this.perf) {
+            this.perf.destroy();
+        }
 
         // Clean the UI
         this.ui.cleanup();
@@ -560,13 +567,10 @@ class Preview extends EventEmitter {
                 });
         }
 
-        const downloadAttemptEvent = {
+        this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
             value: this.viewer ? this.viewer.getLoadStatus() : null,
-            ...this.createLogEvent(),
-        };
-
-        this.emit(PREVIEW_METRIC, downloadAttemptEvent);
+        });
     }
 
     /**
@@ -1266,13 +1270,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     handleViewerMetrics(data) {
-        const formattedEvent = {
+        this.emitLogEvent(PREVIEW_METRIC, {
             event_name: data.event,
             value: data.data,
-            ...this.createLogEvent(),
-        };
-
-        this.emit(PREVIEW_METRIC, formattedEvent);
+        });
     }
 
     /**
@@ -1316,8 +1317,8 @@ class Preview extends EventEmitter {
             });
 
             // Explicit preview failure
-            this.handleViewerMetrics({
-                event: 'failure',
+            this.emitLogEvent(PREVIEW_METRIC, {
+                event_name: 'failure',
             });
 
             // Hookup for phantom JS health check
@@ -1336,9 +1337,12 @@ class Preview extends EventEmitter {
             });
 
             // Explicit preview success
-            this.handleViewerMetrics({
-                event: 'success',
+            this.emitLogEvent(PREVIEW_METRIC, {
+                event_name: 'success',
             });
+
+            // Emit performance metrics after rendering has settled
+            setTimeout(this.emitPerfMetrics.bind(this), 3000);
 
             // If there wasn't an error and event logging is not disabled, use Events API to log a preview
             if (!this.options.disableEventLog) {
@@ -1519,28 +1523,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Create a generic log Object.
-     *
-     * @private
-     * @return {Object} Log details for viewer session and current file.
-     */
-    createLogEvent() {
-        const file = this.file || {};
-        const log = {
-            timestamp: getISOTime(),
-            file_id: getProp(file, 'id', ''),
-            file_version_id: getProp(file, 'file_version.id', ''),
-            content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
-            extension: file.extension || '',
-            locale: getProp(this.location, 'locale', ''),
-            rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
-            ...getClientLogDetails(),
-        };
-
-        return log;
-    }
-
-    /**
      * Message, to any listeners of Preview, that an error has occurred.
      *
      * @private
@@ -1558,12 +1540,9 @@ class Preview extends EventEmitter {
         sanitizedError.displayMessage = stripAuthFromString(displayMessage);
         sanitizedError.message = stripAuthFromString(message);
 
-        const errorLog = {
+        this.emitLogEvent(PREVIEW_ERROR, {
             error: sanitizedError,
-            ...this.createLogEvent(),
-        };
-
-        this.emit(PREVIEW_ERROR, errorLog);
+        });
     }
 
     /**
@@ -1594,7 +1573,7 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
-        const event = {
+        this.emitLogEvent(PREVIEW_METRIC, {
             encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
             value: previewLoadTime.elapsed || 0,
@@ -1602,12 +1581,56 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
-            ...this.createLogEvent(),
-        };
-
-        this.emit(PREVIEW_METRIC, event);
+        });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
+    }
+
+    /**
+     * Emit events to log preview-specific performance metrics if they exist and are non-zero
+     *
+     * @private
+     * @return {void}
+     */
+    emitPerfMetrics() {
+        const { fcp, lcp } = this.perf.report();
+
+        if (fcp) {
+            this.emitLogEvent(PREVIEW_METRIC, {
+                event_name: 'preview_perf_fcp',
+                value: fcp,
+            });
+        }
+
+        if (lcp) {
+            this.emitLogEvent(PREVIEW_METRIC, {
+                event_name: 'preview_perf_lcp',
+                value: lcp,
+            });
+        }
+    }
+
+    /**
+     * Emit an event that includes a standard set of preview-specific properties for logging
+     *
+     * @private
+     * @param {string} name - event name
+     * @param {Object} payload - event payload object
+     */
+    emitLogEvent(name, payload = {}) {
+        const file = this.file || {};
+
+        this.emit(name, {
+            ...payload,
+            content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
+            extension: file.extension || '',
+            file_id: getProp(file, 'id', ''),
+            file_version_id: getProp(file, 'file_version.id', ''),
+            locale: getProp(this.location, 'locale', ''),
+            rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
+            timestamp: getISOTime(),
+            ...getClientLogDetails(),
+        });
     }
 
     /**
