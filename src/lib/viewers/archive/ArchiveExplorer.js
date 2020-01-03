@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import getProp from 'lodash/get';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
@@ -32,27 +31,7 @@ class ArchiveExplorer extends React.Component {
                 name: PropTypes.string.isRequired,
                 modified_at: PropTypes.string.isRequired,
                 size: PropTypes.number.isRequired,
-                path_collection: PropTypes.shape({
-                    total_count: PropTypes.number,
-                    entries: PropTypes.arrayOf(
-                        PropTypes.shape({
-                            type: PropTypes.string,
-                            absolute_path: PropTypes.string,
-                            name: PropTypes.string,
-                        }),
-                    ),
-                }),
-                parent: PropTypes.string,
-                item_collection: PropTypes.shape({
-                    total_count: PropTypes.number,
-                    entries: PropTypes.arrayOf(
-                        PropTypes.shape({
-                            type: PropTypes.string,
-                            absolute_path: PropTypes.string.isRequired,
-                            name: PropTypes.string,
-                        }),
-                    ).isRequired,
-                }).isRequired,
+                item_collection: PropTypes.arrayOf(PropTypes.string),
             }),
         ).isRequired,
     };
@@ -68,7 +47,7 @@ class ArchiveExplorer extends React.Component {
         addLocaleData(intlLocaleData);
 
         this.state = {
-            fullPath: props.itemCollection.find(info => !info.parent).absolute_path,
+            fullPath: props.itemCollection.find(info => info.name === info.absolute_path.slice(0, -1)).absolute_path,
             searchQuery: '',
             sortBy: '',
             sortDirection: SortDirection.ASC,
@@ -85,13 +64,12 @@ class ArchiveExplorer extends React.Component {
      */
     getItemList = (itemCollection, fullPath) => {
         const folderInfo = itemCollection.find(item => item.absolute_path === fullPath);
-        const subItems = getProp(folderInfo, 'item_collection.entries');
+        const subItems = folderInfo.item_collection;
         if (!subItems) {
             return [];
         }
-        const subItemsPath = subItems.map(item => item.absolute_path);
 
-        return itemCollection.filter(item => subItemsPath.includes(item.absolute_path));
+        return itemCollection.filter(item => subItems.includes(item.absolute_path));
     };
 
     /**
@@ -115,8 +93,7 @@ class ArchiveExplorer extends React.Component {
                     'data-resin-target': type,
                 },
             },
-            // TODO: fix when conversion changes it to standard date format
-            [KEY_MODIFIED_AT]: `20${modifiedAt}`,
+            [KEY_MODIFIED_AT]: modifiedAt,
             [KEY_SIZE]: type === 'folder' ? null : size,
             ...rest,
         };
