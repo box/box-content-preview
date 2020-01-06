@@ -2,7 +2,8 @@
 import get from 'lodash/get';
 import './Archive.scss';
 import BaseViewer from '../BaseViewer';
-import { VIEWER_EVENT } from '../../events';
+import PreviewError from '../../PreviewError';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 
 const JS = ['archive.js'];
 const CSS = ['archive.css'];
@@ -68,11 +69,12 @@ class ArchiveViewer extends BaseViewer {
             return;
         }
 
-        /*
-            global BoxArchive
-            The BoxArchive is loaded from archive.js
-        */
-        this.archiveComponent = new BoxArchive(this.archiveEl, data);
+        try {
+            /* global BoxArchive loaded from archive.js */
+            this.archiveComponent = new BoxArchive(this.archiveEl, data);
+        } catch {
+            throw new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_refresh'));
+        }
 
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
