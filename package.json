@@ -39,7 +39,7 @@
         "create-react-class": "^15.6.2",
         "css-loader": "^3.1.0",
         "cssnano-cli": "^1.0.5",
-        "cypress": "^3.4.1",
+        "cypress": "^3.8.1",
         "enzyme": "^3.10.0",
         "enzyme-adapter-react-16": "^1.15.1",
         "eslint": "^6.7.2",
