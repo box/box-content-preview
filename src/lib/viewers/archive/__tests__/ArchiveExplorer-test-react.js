@@ -123,7 +123,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                     },
                 },
                 [KEY_MODIFIED_AT]: `20${modifiedAt}`,
-                [KEY_SIZE]: size,
+                [KEY_SIZE]: type === 'folder' ? null : size,
                 ...rest,
             });
         });

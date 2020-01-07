@@ -117,7 +117,7 @@ class ArchiveExplorer extends React.Component {
             },
             // TODO: fix when conversion changes it to standard date format
             [KEY_MODIFIED_AT]: `20${modifiedAt}`,
-            [KEY_SIZE]: size,
+            [KEY_SIZE]: type === 'folder' ? null : size,
             ...rest,
         };
     };
