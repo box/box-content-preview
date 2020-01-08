@@ -5,8 +5,7 @@ import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
-import { AutoSizer } from 'react-virtualized';
-import { Column, SortDirection } from 'react-virtualized/dist/es/Table/index';
+import { AutoSizer, Column, SortDirection } from 'react-virtualized';
 import {
     itemNameCellRenderer,
     readableTimeCellRenderer,
@@ -190,7 +189,7 @@ class ArchiveExplorer extends React.Component {
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
-                    <div className="bp-AutoSizerContainer">
+                    <div className="bp-ArchiveExplorer-table">
                         <AutoSizer disableWidth>
                             {({ height }) => (
                                 <VirtualizedTable
