@@ -18,23 +18,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'test',
                 modified_at: '19-Dec-02 16:43',
                 size: 0,
-                path_collection: { total_count: 0, entries: [] },
-                parent: null,
-                item_collection: {
-                    total_count: 3,
-                    entries: [
-                        {
-                            type: 'file',
-                            absolute_path: 'test/csv-level-1.csv',
-                            name: 'csv-level-1.csv',
-                        },
-                        {
-                            type: 'file',
-                            absolute_path: 'test/test-level-1.jpg',
-                            name: 'test-level-1.jpg',
-                        },
-                    ],
-                },
+                item_collection: ['test/csv-level-1.csv', 'test/subfolder/'],
             },
             {
                 type: 'file',
@@ -42,24 +26,22 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'csv-level-1.csv',
                 modified_at: '19-Nov-04 16:11',
                 size: 133,
-                path_collection: {
-                    total_count: 1,
-                    entries: [{ type: 'folder', absolute_path: 'test/', name: 'test' }],
-                },
-                parent: 'test',
                 item_collection: null,
             },
             {
+                type: 'folder',
+                absolute_path: 'test/subfolder/',
+                name: 'subfolder',
+                modified_at: '19-Dec-02 16:43',
+                size: 0,
+                item_collection: ['test/test-level-2.jpg'],
+            },
+            {
                 type: 'file',
-                absolute_path: 'test/test-level-1.jpg',
+                absolute_path: 'test/test-level-2.jpg',
                 name: 'test-level-1.jpg',
                 modified_at: '19-Nov-08 15:08',
                 size: 57379,
-                path_collection: {
-                    total_count: 1,
-                    entries: [{ type: 'folder', absolute_path: 'test/', name: 'test' }],
-                },
-                parent: 'test',
                 item_collection: null,
             },
         ];
@@ -122,7 +104,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                         'data-resin-target': type,
                     },
                 },
-                [KEY_MODIFIED_AT]: `20${modifiedAt}`,
+                [KEY_MODIFIED_AT]: modifiedAt,
                 [KEY_SIZE]: type === 'folder' ? null : size,
                 ...rest,
             });
@@ -164,8 +146,8 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const itemList = component.instance().getSearchResult(data, 'level-1');
             const fuzzyList = component.instance().getSearchResult(data, 'leel1');
 
-            expect(itemList).to.eql([data[1], data[2]]);
-            expect(fuzzyList).to.eql([data[1], data[2]]);
+            expect(itemList).to.eql([data[1], data[3]]);
+            expect(fuzzyList).to.eql([data[1], data[3]]);
         });
     });
 
@@ -190,7 +172,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             instance.handleSort({ sortBy: 'size', sortDirection: 'ASC' });
             const sortedList = instance.sortItemList(itemList);
 
-            expect(sortedList[0]).to.equal(data[1]);
+            expect(sortedList[0]).to.equal(data[2]);
         });
 
         it('should sort itemList by name and be in DESC order', () => {
