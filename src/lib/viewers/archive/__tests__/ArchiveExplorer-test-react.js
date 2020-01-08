@@ -59,7 +59,6 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(component.find('SearchBar').length).to.equal(1);
             expect(component.find('Breadcrumbs').length).to.equal(1);
             expect(component.find('Internationalize').length).to.equal(1);
-            expect(component.find('InjectIntl(VirtualizedTable)').length).to.equal(1);
         });
     });
 
