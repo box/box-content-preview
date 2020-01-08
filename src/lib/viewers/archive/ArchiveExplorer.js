@@ -4,15 +4,16 @@ import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
+import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
+import { AutoSizer } from 'react-virtualized';
+import { Column, SortDirection } from 'react-virtualized/dist/es/Table/index';
 import {
     itemNameCellRenderer,
     readableTimeCellRenderer,
     sizeCellRenderer,
     sortableColumnHeaderRenderer,
 } from 'box-ui-elements/es/features/virtualized-table-renderers';
-import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
 import { addLocaleData } from 'react-intl';
-import { Column, SortDirection } from 'react-virtualized/dist/es/Table/index';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { TABLE_COLUMNS, VIEWS } from './constants';
@@ -189,43 +190,50 @@ class ArchiveExplorer extends React.Component {
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
-                    <VirtualizedTable
-                        rowData={itemList}
-                        rowGetter={this.getRowData(itemList)}
-                        sort={this.handleSort}
-                        sortBy={sortBy}
-                        sortDirection={sortDirection}
-                    >
-                        {intl => [
-                            <Column
-                                key={KEY_NAME}
-                                cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
-                                dataKey={KEY_NAME}
-                                flexGrow={3}
-                                headerRenderer={sortableColumnHeaderRenderer}
-                                label={__('filename')}
-                                width={1}
-                            />,
-                            <Column
-                                key={KEY_MODIFIED_AT}
-                                cellRenderer={readableTimeCellRenderer}
-                                dataKey={KEY_MODIFIED_AT}
-                                flexGrow={2}
-                                headerRenderer={sortableColumnHeaderRenderer}
-                                label={__('last_modified_date')}
-                                width={1}
-                            />,
-                            <Column
-                                key={KEY_SIZE}
-                                cellRenderer={sizeCellRenderer()}
-                                dataKey={KEY_SIZE}
-                                flexGrow={1}
-                                headerRenderer={sortableColumnHeaderRenderer}
-                                label={__('size')}
-                                width={1}
-                            />,
-                        ]}
-                    </VirtualizedTable>
+                    <div className="bp-AutoSizerContainer">
+                        <AutoSizer disableWidth>
+                            {({ height }) => (
+                                <VirtualizedTable
+                                    height={height}
+                                    rowData={itemList}
+                                    rowGetter={this.getRowData(itemList)}
+                                    sort={this.handleSort}
+                                    sortBy={sortBy}
+                                    sortDirection={sortDirection}
+                                >
+                                    {intl => [
+                                        <Column
+                                            key={KEY_NAME}
+                                            cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
+                                            dataKey={KEY_NAME}
+                                            flexGrow={3}
+                                            headerRenderer={sortableColumnHeaderRenderer}
+                                            label={__('filename')}
+                                            width={1}
+                                        />,
+                                        <Column
+                                            key={KEY_MODIFIED_AT}
+                                            cellRenderer={readableTimeCellRenderer}
+                                            dataKey={KEY_MODIFIED_AT}
+                                            flexGrow={2}
+                                            headerRenderer={sortableColumnHeaderRenderer}
+                                            label={__('last_modified_date')}
+                                            width={1}
+                                        />,
+                                        <Column
+                                            key={KEY_SIZE}
+                                            cellRenderer={sizeCellRenderer()}
+                                            dataKey={KEY_SIZE}
+                                            flexGrow={1}
+                                            headerRenderer={sortableColumnHeaderRenderer}
+                                            label={__('size')}
+                                            width={1}
+                                        />,
+                                    ]}
+                                </VirtualizedTable>
+                            )}
+                        </AutoSizer>
+                    </div>
                 </div>
             </Internationalize>
         );
