@@ -11,6 +11,7 @@ import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PERMISSION_PREVIEW, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import Timer from '../Timer';
+import PreviewPerf from '../PreviewPerf';
 
 const tokens = require('../tokens');
 
@@ -105,31 +106,24 @@ describe('lib/Preview', () => {
                 id: 1,
             };
             stubs.viewer.getLoadStatus.returns('loaded');
-            sandbox.stub(preview, 'createLogEvent');
-            const durationTimer = {
-                elapsed: 7,
-            };
-
-            const mockEventObject = {
-                event_name: 'preview_end',
-                value: {
-                    duration: durationTimer.elapsed,
-                    viewer_status: 'loaded',
-                },
-            };
-
+            sandbox.stub(preview, 'emitLogEvent');
             sandbox.stub(Timer, 'createTag').returns('duration_tag');
-            sandbox.stub(Timer, 'get').returns(durationTimer);
+            sandbox.stub(Timer, 'get').returns({ elapsed: 7 });
             sandbox.stub(Timer, 'stop');
             sandbox.stub(Timer, 'reset');
-            sandbox.stub(preview, 'emit');
             preview.viewer = stubs.viewer;
 
             preview.destroy();
             expect(Timer.createTag).to.be.called;
             expect(Timer.stop).to.be.calledWith('duration_tag');
             expect(stubs.viewer.getLoadStatus).to.be.called;
-            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, mockEventObject);
+            expect(preview.emitLogEvent).to.be.calledWith(PREVIEW_METRIC, {
+                event_name: 'preview_end',
+                value: {
+                    duration: 7,
+                    viewer_status: 'loaded',
+                },
+            });
         });
 
         it('should clear the viewer', () => {
@@ -236,6 +230,12 @@ describe('lib/Preview', () => {
 
             expect(stubs.parseOptions).to.be.calledWith({ ...options, token });
         });
+
+        it('should initialize performance observers', () => {
+            preview.show(file, 'token');
+
+            expect(preview.perf).to.be.instanceOf(PreviewPerf);
+        });
     });
 
     describe('hide()', () => {
@@ -266,6 +266,15 @@ describe('lib/Preview', () => {
 
             preview.hide();
             expect(preview.file).to.equal(undefined);
+        });
+
+        it('should initialize performance observers', () => {
+            preview.perf = {
+                destroy: sandbox.stub(),
+            };
+            preview.hide();
+
+            expect(preview.perf.destroy).to.be.called;
         });
     });
 
@@ -1812,19 +1821,18 @@ describe('lib/Preview', () => {
 
     describe('handleViewerMetrics()', () => {
         it('should create a formatted event and emit a preview_metric', () => {
-            sandbox.stub(preview, 'createLogEvent');
-            sandbox.stub(preview, 'emit');
+            sandbox.stub(preview, 'emitLogEvent');
             const fakeEvent = {
                 event: 'test',
                 data: 7,
             };
 
-            const fakeLog = {
+            preview.handleViewerMetrics(fakeEvent);
+
+            expect(preview.emitLogEvent).to.be.calledWith(PREVIEW_METRIC, {
                 event_name: fakeEvent.event,
                 value: fakeEvent.data,
-            };
-            preview.handleViewerMetrics(fakeEvent);
-            expect(preview.emit).to.be.calledWith(PREVIEW_METRIC, fakeLog);
+            });
         });
     });
 
@@ -1845,16 +1853,18 @@ describe('lib/Preview', () => {
             stubs.logger = {
                 done: sandbox.stub(),
             };
+            stubs.perf = {
+                report: sandbox.stub().returns({}),
+            };
 
             preview.file = {
                 id: 0,
             };
-
+            preview.logger = stubs.logger;
+            preview.perf = stubs.perf;
             preview.viewer = {
                 getPointModeClickHandler: sandbox.stub(),
             };
-
-            preview.logger = stubs.logger;
         });
 
         it('should show download button if file can be downloaded', () => {
@@ -1899,22 +1909,20 @@ describe('lib/Preview', () => {
 
         it('should emit a metrics message for successful preview', () => {
             const eventName = 'success';
-
-            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+            const emitLogEvent = sandbox.stub(preview, 'emitLogEvent');
 
             preview.finishLoading();
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
+            expect(emitLogEvent).to.be.calledWith(PREVIEW_METRIC, { event_name: eventName });
         });
 
         it('should emit a metrics message for failed preview', () => {
             const eventName = 'failure';
-
-            const handleViewerMetrics = sandbox.stub(preview, 'handleViewerMetrics');
+            const emitLogEvent = sandbox.stub(preview, 'emitLogEvent');
 
             preview.finishLoading({ error: {} });
 
-            expect(handleViewerMetrics).to.be.calledWith({ event: eventName });
+            expect(emitLogEvent).to.be.calledWith(PREVIEW_METRIC, { event_name: eventName });
         });
 
         it('should emit the load event', () => {
@@ -2241,28 +2249,36 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('createLogEvent()', () => {
-        it('should create a log object containing correct file info properties', () => {
-            const id = '12345';
-            preview.file = {
-                id,
-            };
+    describe('emitLogEvent()', () => {
+        beforeEach(() => {
+            sandbox.stub(preview, 'emit');
+        });
 
-            const log = preview.createLogEvent();
-            expect(log.timestamp).to.exist;
-            expect(log.file_id).to.equal(id);
-            expect(log.file_version_id).to.exist;
-            expect(log.content_type).to.exist;
-            expect(log.extension).to.exist;
-            expect(log.locale).to.exist;
-            expect(log.rep_type).to.exist;
+        it('should emit an event containing correct file info properties', () => {
+            preview.file = { id: '12345' };
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).to.be.calledWith(
+                'test',
+                sinon.match({
+                    content_type: '',
+                    extension: '',
+                    file_id: '12345',
+                    file_version_id: '',
+                }),
+            );
         });
 
         it('should use empty string for file_id, if no file', () => {
             preview.file = undefined;
-            const log = preview.createLogEvent();
+            preview.emitLogEvent('test');
 
-            expect(log.file_id).to.equal('');
+            expect(preview.emit).to.be.calledWith(
+                'test',
+                sinon.match({
+                    file_id: '',
+                }),
+            );
         });
 
         it('should use empty string for file_version_id, if no file version', () => {
@@ -2270,21 +2286,29 @@ describe('lib/Preview', () => {
                 id: '12345',
                 file_version: undefined,
             };
-            const log = preview.createLogEvent();
+            preview.emitLogEvent('test');
 
-            expect(log.file_version_id).to.equal('');
+            expect(preview.emit).to.be.calledWith(
+                'test',
+                sinon.match({
+                    file_version_id: '',
+                }),
+            );
         });
 
         it('should use empty string for rep_type, if no representation type available in viewer options', () => {
             preview.file = {
                 id: '12345',
             };
-
             preview.viewer = {};
+            preview.emitLogEvent('test');
 
-            const log = preview.createLogEvent();
-
-            expect(log.rep_type).to.equal('');
+            expect(preview.emit).to.be.calledWith(
+                'test',
+                sinon.match({
+                    rep_type: '',
+                }),
+            );
         });
     });
 

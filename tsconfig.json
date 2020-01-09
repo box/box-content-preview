@@ -1,5 +1,5 @@
 {
     "extends": "@box/frontend/ts/tsconfig.json",
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*.ts", "./src/**/*.tsx"],
     "exclude": ["node_modules", "dist"]
 }
