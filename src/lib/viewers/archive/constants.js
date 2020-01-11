@@ -9,4 +9,6 @@ const VIEWS = {
     VIEW_SEARCH: 'search',
 };
 
-export { TABLE_COLUMNS, VIEWS };
+const ROOT_FOLDER = 'root/';
+
+export { ROOT_FOLDER, TABLE_COLUMNS, VIEWS };

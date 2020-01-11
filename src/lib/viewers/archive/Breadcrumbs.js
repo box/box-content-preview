@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Breadcrumb from 'box-ui-elements/es/components/breadcrumb';
 import PlainButton from 'box-ui-elements/es/components/plain-button/PlainButton';
-import { VIEWS } from './constants';
+import { ROOT_FOLDER, VIEWS } from './constants';
 import './Breadcrumbs.scss';
 
 class Breadcrumbs extends React.PureComponent {
@@ -19,14 +19,21 @@ class Breadcrumbs extends React.PureComponent {
      * @return {Array<Object>} path items including name and path string
      */
     getPathItems = fullPath => {
+        if (fullPath === ROOT_FOLDER) {
+            return [{ name: __('root_folder'), path: ROOT_FOLDER }];
+        }
+
         const pathNames = fullPath.split('/').slice(0, -1);
         // join path names from root to current index to get absolute path
         const getAbsolutePath = index => pathNames.slice(0, index + 1).join('/');
 
-        return pathNames.map((name, index) => ({
-            name,
-            path: `${getAbsolutePath(index)}/`,
-        }));
+        return [
+            { name: __('root_folder'), path: ROOT_FOLDER },
+            ...pathNames.map((name, index) => ({
+                name,
+                path: `${getAbsolutePath(index)}/`,
+            })),
+        ];
     };
 
     /**

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import sinon from 'sinon';
 import Breadcrumbs from '../Breadcrumbs';
-import { VIEWS } from '../constants';
+import { ROOT_FOLDER, VIEWS } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let fullPath;
@@ -26,7 +26,7 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
 
             expect(component.find('.bp-Breadcrumbs').length).to.equal(1);
             expect(component.find('InjectIntl(Breadcrumb)').length).to.equal(1);
-            expect(component.find('PlainButton').length).to.equal(2);
+            expect(component.find('PlainButton').length).to.equal(3);
         });
 
         it('should render search result if view is search', () => {
@@ -43,6 +43,10 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
             const pathItems = component.instance().getPathItems(fullPath);
 
             expect(pathItems).to.eql([
+                {
+                    name: __('root_folder'),
+                    path: ROOT_FOLDER,
+                },
                 {
                     name: 'test',
                     path: 'test/',

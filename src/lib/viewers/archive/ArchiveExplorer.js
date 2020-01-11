@@ -15,7 +15,7 @@ import {
 import { addLocaleData } from 'react-intl';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
-import { TABLE_COLUMNS, VIEWS } from './constants';
+import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
@@ -47,10 +47,7 @@ class ArchiveExplorer extends React.Component {
         addLocaleData(intlLocaleData);
 
         this.state = {
-            // Trying to find the root folder
-            // The only way to tell what the root folder is
-            // is by comparing the name and absolute path, which differs by '/'
-            fullPath: props.itemCollection.find(info => info.name === info.absolute_path.slice(0, -1)).absolute_path,
+            fullPath: ROOT_FOLDER,
             searchQuery: '',
             sortBy: '',
             sortDirection: SortDirection.ASC,
@@ -66,6 +63,13 @@ class ArchiveExplorer extends React.Component {
      * @return {Array<Object>} filtered itemlist for target folder
      */
     getItemList = (itemCollection, fullPath) => {
+        if (fullPath === ROOT_FOLDER) {
+            // Trying to find the root items
+            // The only way to tell what the root items are
+            // is by comparing the name and absolute path, which differs by '/'
+            return itemCollection.filter(info => info.name === info.absolute_path.slice(0, -1));
+        }
+
         const { item_collection: folderItems = [] } = itemCollection.find(item => item.absolute_path === fullPath);
         return itemCollection.filter(item => folderItems.includes(item.absolute_path));
     };
