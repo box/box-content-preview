@@ -19,22 +19,13 @@ class Breadcrumbs extends React.PureComponent {
      * @return {Array<Object>} path items including name and path string
      */
     getPathItems = fullPath => {
-        const pathItems = [{ name: __('root_folder'), path: ROOT_FOLDER }];
-        if (fullPath === ROOT_FOLDER) {
-            return pathItems;
-        }
-
-        const pathNames = fullPath.split('/').slice(0, -1);
-        // join path names from root to current index to get absolute path
-        const getAbsolutePath = index => pathNames.slice(0, index + 1).join('/');
-
-        pathItems.push(
-            ...pathNames.map((name, index) => ({
-                name,
-                path: `${getAbsolutePath(index)}/`,
-            })),
-        );
-        return pathItems;
+        const pathNames = fullPath === ROOT_FOLDER ? [] : fullPath.split('/').slice(0, -1);
+        const getPath = index => pathNames.slice(0, index + 1).join('/');
+        const pathItems = pathNames.map((name, index) => ({
+            name,
+            path: `${getPath(index)}/`,
+        }));
+        return [{ name: __('root_folder'), path: ROOT_FOLDER }, ...pathItems];
     };
 
     /**
