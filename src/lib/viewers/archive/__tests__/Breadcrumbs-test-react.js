@@ -39,10 +39,9 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
     });
 
     describe('getPathItems()', () => {
-        it('should return correct path items', () => {
+        it('should return root folder', () => {
             const component = getComponent({ fullPath, onClick, view });
-
-            let pathItems = component.instance().getPathItems(ROOT_FOLDER);
+            const pathItems = component.instance().getPathItems(ROOT_FOLDER);
 
             expect(pathItems).to.eql([
                 {
@@ -50,8 +49,12 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
                     path: ROOT_FOLDER,
                 },
             ]);
+        });
 
-            pathItems = component.instance().getPathItems(fullPath);
+        it('should return correct path items', () => {
+            const component = getComponent({ fullPath, onClick, view });
+
+            const pathItems = component.instance().getPathItems(fullPath);
 
             expect(pathItems).to.eql([
                 {

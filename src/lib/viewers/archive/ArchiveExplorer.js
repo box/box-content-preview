@@ -69,7 +69,7 @@ class ArchiveExplorer extends React.Component {
             // is by comparing the name and absolute path,
             // which are the same for files and differ by '/' for folders
             return itemCollection.filter(
-                info => info.name === info.absolute_path || info.name === info.absolute_path.slice(0, -1),
+                ({ name, absolute_path: path }) => name === path || name === path.slice(0, -1),
             );
         }
 
