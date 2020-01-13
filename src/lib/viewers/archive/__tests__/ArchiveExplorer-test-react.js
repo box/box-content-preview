@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import sinon from 'sinon';
 import ArchiveExplorer from '../ArchiveExplorer';
-import { TABLE_COLUMNS, VIEWS } from '../constants';
+import { TABLE_COLUMNS, VIEWS, ROOT_FOLDER } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let data;
@@ -42,6 +42,14 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'test-level-1.jpg',
                 modified_at: '19-Nov-08 15:08',
                 size: 57379,
+                item_collection: null,
+            },
+            {
+                type: 'file',
+                absolute_path: 'level-0.txt',
+                name: 'level-0.txt',
+                modified_at: '19-Nov-04 16:11',
+                size: 1,
                 item_collection: null,
             },
         ];
@@ -114,7 +122,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         it('should return correct item list', () => {
             const component = getComponent({ itemCollection: data });
 
-            const itemList = component.instance().getItemList(data, 'test/');
+            let itemList = component.instance().getItemList(data, ROOT_FOLDER);
+
+            expect(itemList).to.eql([data[0], data[4]]);
+
+            itemList = component.instance().getItemList(data, 'test/');
 
             expect(itemList).to.eql([data[1], data[2]]);
         });

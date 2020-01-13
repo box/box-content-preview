@@ -66,8 +66,11 @@ class ArchiveExplorer extends React.Component {
         if (fullPath === ROOT_FOLDER) {
             // Trying to find the root items
             // The only way to tell what the root items are
-            // is by comparing the name and absolute path, which differs by '/'
-            return itemCollection.filter(info => info.name === info.absolute_path.slice(0, -1));
+            // is by comparing the name and absolute path,
+            // which are the same for files and differ by '/' for folders
+            return itemCollection.filter(
+                info => info.name === info.absolute_path || info.name === info.absolute_path.slice(0, -1),
+            );
         }
 
         const { item_collection: folderItems = [] } = itemCollection.find(item => item.absolute_path === fullPath);
