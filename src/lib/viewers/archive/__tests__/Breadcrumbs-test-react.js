@@ -9,6 +9,8 @@ let fullPath;
 let onClick;
 let view;
 
+const getComponent = props => shallow(<Breadcrumbs {...props} />);
+
 describe('lib/viewers/archive/Breadcrumbs', () => {
     beforeEach(() => {
         fullPath = 'test/subfolder/';
@@ -22,7 +24,7 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
 
     describe('render()', () => {
         it('should render correct components', () => {
-            const component = shallow(<Breadcrumbs fullPath={fullPath} onClick={onClick} view={view} />);
+            const component = getComponent({ fullPath, onClick, view });
 
             expect(component.find('.bp-Breadcrumbs').length).to.equal(1);
             expect(component.find('InjectIntl(Breadcrumb)').length).to.equal(1);
@@ -30,7 +32,7 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
         });
 
         it('should render search result if view is search', () => {
-            const component = shallow(<Breadcrumbs fullPath={fullPath} onClick={onClick} view={VIEWS.VIEW_SEARCH} />);
+            const component = getComponent({ fullPath, onClick, view: VIEWS.VIEW_SEARCH });
 
             expect(component.find('span').text()).to.equal(__('search_results'));
         });
@@ -38,9 +40,18 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
 
     describe('getPathItems()', () => {
         it('should return correct path items', () => {
-            const component = shallow(<Breadcrumbs fullPath={fullPath} onClick={onClick} view={view} />);
+            const component = getComponent({ fullPath, onClick, view });
 
-            const pathItems = component.instance().getPathItems(fullPath);
+            let pathItems = component.instance().getPathItems(ROOT_FOLDER);
+
+            expect(pathItems).to.eql([
+                {
+                    name: __('root_folder'),
+                    path: ROOT_FOLDER,
+                },
+            ]);
+
+            pathItems = component.instance().getPathItems(fullPath);
 
             expect(pathItems).to.eql([
                 {
