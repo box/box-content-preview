@@ -10,9 +10,12 @@ class BoxArchive {
      * @param {Object} data - Archive data
      * @return {BoxArchive} Instance
      */
-    constructor(archiveEl, data) {
+    constructor(archiveEl, filename, data) {
         this.archiveEl = archiveEl;
-        ReactDOM.render(<ArchiveExplorer ref={this.setRef} itemCollection={data} />, this.archiveEl);
+        ReactDOM.render(
+            <ArchiveExplorer ref={this.setRef} filename={filename} itemCollection={data} />,
+            this.archiveEl,
+        );
     }
 
     /**

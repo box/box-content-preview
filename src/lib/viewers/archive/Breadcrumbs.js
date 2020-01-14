@@ -7,6 +7,7 @@ import './Breadcrumbs.scss';
 
 class Breadcrumbs extends React.PureComponent {
     static propTypes = {
+        filename: PropTypes.string.isRequired,
         fullPath: PropTypes.string.isRequired,
         onClick: PropTypes.func.isRequired,
         view: PropTypes.string.isRequired,
@@ -19,13 +20,14 @@ class Breadcrumbs extends React.PureComponent {
      * @return {Array<Object>} path items including name and path string
      */
     getPathItems = fullPath => {
+        const { filename } = this.props;
         const pathNames = fullPath === ROOT_FOLDER ? [] : fullPath.split('/').slice(0, -1);
         const getPath = index => pathNames.slice(0, index + 1).join('/');
         const pathItems = pathNames.map((name, index) => ({
             name,
             path: `${getPath(index)}/`,
         }));
-        return [{ name: __('root_folder'), path: ROOT_FOLDER }, ...pathItems];
+        return [{ name: filename, path: ROOT_FOLDER }, ...pathItems];
     };
 
     /**

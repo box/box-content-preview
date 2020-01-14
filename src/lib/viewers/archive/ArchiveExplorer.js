@@ -24,6 +24,7 @@ const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
 class ArchiveExplorer extends React.Component {
     static propTypes = {
+        filename: PropTypes.string.isRequired,
         itemCollection: PropTypes.arrayOf(
             PropTypes.shape({
                 type: PropTypes.string.isRequired,
@@ -183,7 +184,7 @@ class ArchiveExplorer extends React.Component {
      * @return {jsx} VirtualizedTable
      */
     render() {
-        const { itemCollection } = this.props;
+        const { filename, itemCollection } = this.props;
         const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
         const itemList = this.sortItemList(
             view === VIEW_SEARCH
@@ -195,7 +196,12 @@ class ArchiveExplorer extends React.Component {
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
-                    <Breadcrumbs fullPath={fullPath} onClick={this.handleBreadcrumbClick} view={view} />
+                    <Breadcrumbs
+                        filename={filename}
+                        fullPath={fullPath}
+                        onClick={this.handleBreadcrumbClick}
+                        view={view}
+                    />
                     <div className="bp-ArchiveExplorer-table">
                         <AutoSizer disableWidth>
                             {({ height }) => (

@@ -6,11 +6,13 @@ import { TABLE_COLUMNS, VIEWS, ROOT_FOLDER } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 let data;
+let filename;
 
 const getComponent = props => shallow(<ArchiveExplorer {...props} />); // eslint-disable-line
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     beforeEach(() => {
+        filename = 'test.zip';
         data = [
             {
                 type: 'folder',
@@ -61,7 +63,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('render()', () => {
         it('should render correct components', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             expect(component.find('.bp-ArchiveExplorer').length).to.equal(1);
             expect(component.find('SearchBar').length).to.equal(1);
@@ -72,7 +74,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleItemClick()', () => {
         it('should set state when handleItemClick() is called', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             component.instance().handleItemClick({ fullPath: 'test/subfolder/' });
 
@@ -84,7 +86,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleBreadcrumbClick()', () => {
         it('should set state when handleBreadcrumbClick() is called', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             component.instance().handleBreadcrumbClick('test/subfolder/');
 
@@ -94,7 +96,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getRowData()', () => {
         it('should return correct row data', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             const rowData = component.instance().getRowData(data)({ index: 0 });
 
@@ -120,7 +122,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getItemList()', () => {
         it('should return correct item list', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             let itemList = component.instance().getItemList(data, ROOT_FOLDER);
 
@@ -134,7 +136,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleSearch()', () => {
         it('should set correct state when search query is not empty', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             component.instance().handleSearch('test');
             expect(component.state().searchQuery).to.equal('test');
@@ -152,7 +154,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('getSearchResult()', () => {
         it('should return correct item list', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
 
             const itemList = component.instance().getSearchResult(data, 'level-1');
             const fuzzyList = component.instance().getSearchResult(data, 'leel1');
@@ -164,7 +166,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('handleSort()', () => {
         it('should set the sort direction and type', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
 
             instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
@@ -176,7 +178,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('sortItemList()', () => {
         it('should sort itemList by size and be in ASC order', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
@@ -187,7 +189,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
 
         it('should sort itemList by name and be in DESC order', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
@@ -198,7 +200,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
 
         it('should sort itemList by name and be in ASC order', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
@@ -209,7 +211,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
 
         it('should not sort itemList', () => {
-            const component = getComponent({ itemCollection: data });
+            const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
