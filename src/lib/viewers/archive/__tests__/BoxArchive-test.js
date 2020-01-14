@@ -31,7 +31,7 @@ describe('lib/viewers/archive/BoxArchive', () => {
             sandbox.stub(ReactDOM, 'render');
             sandbox.stub(ReactDOM, 'unmountComponentAtNode');
 
-            archiveComponent = new BoxArchive(containerEl, []);
+            archiveComponent = new BoxArchive(containerEl, 'test.zip', []);
             archiveComponent.archiveExplorer = {};
             archiveComponent.destroy();
             archiveComponent = null;
@@ -45,7 +45,7 @@ describe('lib/viewers/archive/BoxArchive', () => {
             const renderStub = sandbox.stub(ReactDOM, 'render');
             const data = [{ name: 'test.json' }];
 
-            archiveComponent = new BoxArchive(containerEl, data);
+            archiveComponent = new BoxArchive(containerEl, 'test.zip', data);
 
             const archiveExplorer = renderStub.firstCall.args[0];
             expect(archiveExplorer.props.itemCollection).to.equal(data);
