@@ -1,3 +1,10 @@
+## <small>2.32.2 (2020-01-14)</small>
+
+- feat(archive): Add root folder (#1149) ([f8bfda9](https://github.com/box/box-content-preview/commit/f8bfda9)), closes [#1149](https://github.com/box/box-content-preview/issues/1149)
+- feat(archive): Change column name to match Content Explorer (#1150) ([4de9dc4](https://github.com/box/box-content-preview/commit/4de9dc4)), closes [#1150](https://github.com/box/box-content-preview/issues/1150)
+- chore(i18n): Update Translations (#1148) ([542e6b0](https://github.com/box/box-content-preview/commit/542e6b0)), closes [#1148](https://github.com/box/box-content-preview/issues/1148)
+- chore(i18n): Update Translations (#1151) ([bd0d727](https://github.com/box/box-content-preview/commit/bd0d727)), closes [#1151](https://github.com/box/box-content-preview/issues/1151)
+
 ## <small>2.32.1 (2020-01-08)</small>
 
 - chore(i18n): Update Translations (#1147) ([1bad89b](https://github.com/box/box-content-preview/commit/1bad89b)), closes [#1147](https://github.com/box/box-content-preview/issues/1147)
