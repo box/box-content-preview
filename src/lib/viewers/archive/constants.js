@@ -1,3 +1,5 @@
+const ROOT_FOLDER = 'root/';
+
 const TABLE_COLUMNS = {
     KEY_MODIFIED_AT: 'modified_at',
     KEY_NAME: 'name',
@@ -9,4 +11,4 @@ const VIEWS = {
     VIEW_SEARCH: 'search',
 };
 
-export { TABLE_COLUMNS, VIEWS };
+export { ROOT_FOLDER, TABLE_COLUMNS, VIEWS };

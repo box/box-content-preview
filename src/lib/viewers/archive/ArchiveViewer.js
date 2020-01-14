@@ -71,7 +71,7 @@ class ArchiveViewer extends BaseViewer {
 
         try {
             /* global BoxArchive loaded from archive.js */
-            this.archiveComponent = new BoxArchive(this.archiveEl, data);
+            this.archiveComponent = new BoxArchive(this.archiveEl, this.options.file.name, data);
         } catch (error) {
             throw new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_reupload'), error);
         }

@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Breadcrumb from 'box-ui-elements/es/components/breadcrumb';
 import PlainButton from 'box-ui-elements/es/components/plain-button/PlainButton';
-import { VIEWS } from './constants';
+import { ROOT_FOLDER, VIEWS } from './constants';
 import './Breadcrumbs.scss';
 
 class Breadcrumbs extends React.PureComponent {
     static propTypes = {
+        filename: PropTypes.string.isRequired,
         fullPath: PropTypes.string.isRequired,
         onClick: PropTypes.func.isRequired,
         view: PropTypes.string.isRequired,
@@ -19,14 +20,14 @@ class Breadcrumbs extends React.PureComponent {
      * @return {Array<Object>} path items including name and path string
      */
     getPathItems = fullPath => {
-        const pathNames = fullPath.split('/').slice(0, -1);
-        // join path names from root to current index to get absolute path
-        const getAbsolutePath = index => pathNames.slice(0, index + 1).join('/');
-
-        return pathNames.map((name, index) => ({
+        const { filename } = this.props;
+        const pathNames = fullPath === ROOT_FOLDER ? [] : fullPath.split('/').slice(0, -1);
+        const getPath = index => pathNames.slice(0, index + 1).join('/');
+        const pathItems = pathNames.map((name, index) => ({
             name,
-            path: `${getAbsolutePath(index)}/`,
+            path: `${getPath(index)}/`,
         }));
+        return [{ name: filename, path: ROOT_FOLDER }, ...pathItems];
     };
 
     /**
