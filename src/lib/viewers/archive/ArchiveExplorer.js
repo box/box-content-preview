@@ -162,14 +162,15 @@ class ArchiveExplorer extends React.Component {
      */
     sortItemList(itemList) {
         const { sortBy, sortDirection } = this.state;
-        let sortedItems;
 
         if (!sortBy.length) {
             return itemList;
         }
 
+        let sortedItems;
+
         try {
-            sortedItems = itemList.sort((a, b) => {
+            sortedItems = itemList.sort((a = {}, b = {}) => {
                 if (!a[sortBy] || !b[sortBy]) {
                     return -1;
                 }
