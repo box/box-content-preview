@@ -31,7 +31,7 @@
         "babel-plugin-react-remove-properties": "^0.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
         "box-annotations": "^2.3.0",
-        "box-ui-elements": "^11.1.0-beta.32",
+        "box-ui-elements": "^11.1.0-beta.41",
         "chai": "^4.2.0",
         "chai-dom": "^1.8.1",
         "conventional-changelog-cli": "^2.0.28",
