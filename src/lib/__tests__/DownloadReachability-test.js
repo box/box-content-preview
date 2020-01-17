@@ -3,22 +3,15 @@ import * as util from '../util';
 import Api from '../api';
 import DownloadReachability from '../DownloadReachability';
 
-const sandbox = sinon.sandbox.create();
-
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
 
 describe('lib/DownloadReachability', () => {
     beforeEach(() => {
-        sessionStorage.clear();
-        localStorage.clear();
-        sandbox.stub(DownloadReachability, 'isStorageAvailable').returns(true);
-    });
+        jest.spyOn(DownloadReachability, 'isStorageAvailable').mockReturnValue(true);
 
-    afterEach(() => {
-        sessionStorage.clear();
         localStorage.clear();
-        sandbox.verifyAndRestore();
+        sessionStorage.clear();
     });
 
     describe('isCustomDownloadHost()', () => {
@@ -33,40 +26,40 @@ describe('lib/DownloadReachability', () => {
             { title: 'dl-las', url: 'https://dl-las.boxcloud.com', expectedValue: true },
         ];
 
-        tests.forEach(testData => {
-            it(`should be ${testData.expectedValue} if the url is ${testData.title}`, () => {
-                const result = DownloadReachability.isCustomDownloadHost(testData.url);
-                expect(result).to.be[testData.expectedValue];
+        tests.forEach(({ expectedValue, title, url }) => {
+            test(`should be ${expectedValue} if the url is ${title}`, () => {
+                const result = DownloadReachability.isCustomDownloadHost(url);
+                expect(result).toBe(expectedValue);
             });
         });
     });
 
     describe('setDownloadHostNotificationShown()', () => {
-        it('should add the given host to the array of shown hosts', () => {
+        test('should add the given host to the array of shown hosts', () => {
             const blockedHost = 'https://dl3.boxcloud.com';
 
             DownloadReachability.setDownloadHostNotificationShown(blockedHost);
 
             const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
-            expect(shownHostsArr).to.contain('https://dl3.boxcloud.com');
+            expect(shownHostsArr).toContain('https://dl3.boxcloud.com');
         });
     });
 
     describe('setDownloadHostFallback()', () => {
-        it('should set the download host fallback key to be true', () => {
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.not.equal('true');
+        test('should set the download host fallback key to be true', () => {
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).not.toBe('true');
 
             DownloadReachability.setDownloadHostFallback();
 
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.equal('true');
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).toBe('true');
         });
 
-        it('should do nothing if we do not have access to session storage', () => {
-            DownloadReachability.isStorageAvailable.returns(false);
+        test('should do nothing if we do not have access to session storage', () => {
+            DownloadReachability.isStorageAvailable.mockReturnValue(false);
 
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.not.equal('true');
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).not.toBe('true');
             DownloadReachability.setDownloadHostFallback();
-            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).to.not.equal('true');
+            expect(sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY)).not.toBe('true');
         });
     });
 
@@ -74,27 +67,27 @@ describe('lib/DownloadReachability', () => {
         beforeEach(() => {
             sessionStorage.setItem(DOWNLOAD_HOST_FALLBACK_KEY, 'true');
         });
-        it('should be true if session storage contains the host blocked key', () => {
-            expect(DownloadReachability.isDownloadHostBlocked()).to.be.true;
+        test('should be true if session storage contains the host blocked key', () => {
+            expect(DownloadReachability.isDownloadHostBlocked()).toBe(true);
         });
 
-        it('should return false if we do not have access to session storage', () => {
-            DownloadReachability.isStorageAvailable.returns(false);
-            expect(DownloadReachability.isDownloadHostBlocked()).to.be.false;
+        test('should return false if we do not have access to session storage', () => {
+            DownloadReachability.isStorageAvailable.mockReturnValue(false);
+            expect(DownloadReachability.isDownloadHostBlocked()).toBe(false);
         });
     });
 
     describe('setDownloadHostNotificationShown()', () => {
-        it('should do nothing if we do not have access to local storage', () => {
-            DownloadReachability.isStorageAvailable.returns(false);
+        test('should do nothing if we do not have access to local storage', () => {
+            DownloadReachability.isStorageAvailable.mockReturnValue(false);
             DownloadReachability.setDownloadHostNotificationShown('foo');
-            expect(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)).to.be.null;
+            expect(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)).toBeNull();
         });
 
-        it('should add the shown host to the array of already shown hosts', () => {
+        test('should add the shown host to the array of already shown hosts', () => {
             const hostShown = 'www.blockedhost.box.com';
             DownloadReachability.setDownloadHostNotificationShown(hostShown);
-            expect(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)).to.equal(`["${hostShown}"]`);
+            expect(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)).toBe(`["${hostShown}"]`);
         });
     });
 
@@ -103,35 +96,37 @@ describe('lib/DownloadReachability', () => {
             sessionStorage.setItem('download_host_fallback', 'false');
         });
 
-        it('should do nothing if we do not have access to session storage', () => {
-            DownloadReachability.isStorageAvailable.returns(false);
+        test('should do nothing if we do not have access to session storage', () => {
+            DownloadReachability.isStorageAvailable.mockReturnValue(false);
             sessionStorage.setItem('download_host_fallback', 'true');
             const result = DownloadReachability.getDownloadNotificationToShow('https://dl5.boxcloud.com');
-            expect(result).to.equal(null);
+            expect(result).toBeNull();
         });
 
-        it('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
+        test('should return true if we do not have an entry for the given host and our session indicates we are falling back to the default host', () => {
             let result = DownloadReachability.getDownloadNotificationToShow('https://foo.com');
-            expect(result).to.be.null;
+            expect(result).toBeNull();
 
             sessionStorage.setItem('download_host_fallback', 'true');
             result = DownloadReachability.getDownloadNotificationToShow('https://dl5.boxcloud.com');
-            expect(result).to.equal('dl5.boxcloud.com');
+            expect(result).toBe('dl5.boxcloud.com');
 
             const shownHostsArr = ['dl5.boxcloud.com'];
             localStorage.setItem('download_host_notification_shown', JSON.stringify(shownHostsArr));
             result = DownloadReachability.getDownloadNotificationToShow('https://dl5.boxcloud.com');
-            expect(result).to.be.null;
+            expect(result).toBeNull();
         });
     });
 
     describe('setDownloadReachability()', () => {
-        it('should catch an errored response', () => {
-            const setDownloadHostFallbackStub = sandbox.stub(DownloadReachability, 'setDownloadHostFallback');
-            sandbox.stub(Api.prototype, 'head').rejects(new Error());
-            const api = new Api();
-            return api.reachability.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
-                expect(setDownloadHostFallbackStub).to.be.called;
+        test('should catch an errored response', () => {
+            const setDownloadHostFallbackStub = jest.spyOn(DownloadReachability, 'setDownloadHostFallback');
+            const downloadReachability = new DownloadReachability({
+                head: jest.fn().mockRejectedValue(new Error()),
+            });
+
+            return downloadReachability.setDownloadReachability('https://dl3.boxcloud.com').catch(() => {
+                expect(setDownloadHostFallbackStub).toBeCalled();
             });
         });
     });
@@ -147,73 +142,53 @@ describe('lib/DownloadReachability', () => {
             downloadReachability = undefined;
         });
 
-        it('should download with default host if download host is blocked', () => {
-            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(true);
-            sandbox.stub(util, 'openUrlInsideIframe');
+        test('should download with default host if download host is blocked', () => {
+            jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(true);
+            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
             const expected = 'https://dl.boxcloud.com/blah';
 
             downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
-            expect(util.openUrlInsideIframe).to.be.calledWith(expected);
+            expect(util.openUrlInsideIframe).toBeCalledWith(expected);
         });
 
-        it('should download with default host if download host is already default', () => {
-            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
-            sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(false);
-            sandbox.stub(util, 'openUrlInsideIframe');
+        test('should download with default host if download host is already default', () => {
+            jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
+            jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(false);
+            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://dl.boxcloud.com/blah';
 
             downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
-            expect(util.openUrlInsideIframe).to.be.calledWith(downloadUrl);
+            expect(util.openUrlInsideIframe).toBeCalledWith(downloadUrl);
         });
 
-        it('should download with the custom download host if host is not blocked', () => {
-            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
-            sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(util, 'openUrlInsideIframe');
+        test('should download with the custom download host if host is not blocked', () => {
+            jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
+            jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(true);
+            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 
             downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
-            expect(util.openUrlInsideIframe).to.be.calledWith(downloadUrl);
+            expect(util.openUrlInsideIframe).toBeCalledWith(downloadUrl);
         });
 
-        it('should check download reachability for custom host', () => {
-            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
-            sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(DownloadReachability.prototype, 'setDownloadReachability').returns(Promise.resolve(false));
-            sandbox.stub(util, 'openUrlInsideIframe');
+        test('should check download reachability for custom host', () => {
+            jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
+            jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(true);
+            jest.spyOn(downloadReachability, 'setDownloadReachability').mockResolvedValue(false);
+            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 
             downloadReachability.downloadWithReachabilityCheck(downloadUrl);
 
-            expect(downloadReachability.setDownloadReachability).to.be.calledWith(downloadUrl);
-        });
-
-        it('should retry download with default host if custom host is blocked', done => {
-            sandbox.stub(DownloadReachability, 'isDownloadHostBlocked').returns(false);
-            sandbox.stub(DownloadReachability, 'isCustomDownloadHost').returns(true);
-            sandbox.stub(DownloadReachability.prototype, 'setDownloadReachability').returns(
-                new Promise(resolve => {
-                    resolve(true);
-                    done();
-                }),
-            );
-            sandbox.stub(util, 'openUrlInsideIframe');
-
-            const downloadUrl = 'https://custom.boxcloud.com/blah';
-            const defaultDownloadUrl = 'https://dl.boxcloud.com/blah';
-
-            downloadReachability.downloadWithReachabilityCheck(downloadUrl);
-
-            expect(util.openUrlInsideIframe.getCall(0).args[0]).to.equal(downloadUrl);
-            expect(util.openUrlInsideIframe.getCall(0).args[1]).to.equal(defaultDownloadUrl);
+            expect(downloadReachability.setDownloadReachability).toBeCalledWith(downloadUrl);
         });
     });
 
@@ -235,12 +210,9 @@ describe('lib/DownloadReachability', () => {
             { title: 'dl-las', downloadUrl: 'https://dl-las.boxcloud.com', expectedResult: 'https://dl.boxcloud.com' },
         ];
 
-        tests.forEach(testData => {
-            it(`should replace host with default: ${testData.title}`, () => {
-                expect(
-                    DownloadReachability.replaceDownloadHostWithDefault(testData.downloadUrl),
-                    testData.expectedResult,
-                );
+        tests.forEach(({ downloadUrl, expectedResult, title }) => {
+            test(`should replace host with default: ${title}`, () => {
+                expect(DownloadReachability.replaceDownloadHostWithDefault(downloadUrl)).toBe(expectedResult);
             });
         });
     });

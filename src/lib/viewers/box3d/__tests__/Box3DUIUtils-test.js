@@ -26,136 +26,129 @@ import {
     CLASS_BOX_PREVIEW_TOGGLE_OVERLAY,
 } from '../../../constants';
 
-const sandbox = sinon.sandbox.create();
-
 let containerEl;
 
 describe('lib/viewers/box3d/Box3DUIUtils', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/box3d/__tests__/Box3DUIUtils-test.html');
         containerEl = document.querySelector('.container');
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
     });
 
     describe('createLabel()', () => {
-        it('should return a div element', () => {
+        test('should return a div element', () => {
             const el = createLabel();
-            expect(el.nodeName).to.equal('DIV');
+            expect(el.nodeName).toBe('DIV');
         });
 
-        it('should have CSS_CLASS_SETTINGS_PANEL_LABEL class', () => {
+        test('should have CSS_CLASS_SETTINGS_PANEL_LABEL class', () => {
             const el = createLabel();
-            expect(el).to.have.class(CSS_CLASS_SETTINGS_PANEL_LABEL);
+            expect(el).toHaveClass(CSS_CLASS_SETTINGS_PANEL_LABEL);
         });
 
-        it('should have text content that has been provided', () => {
+        test('should have text content that has been provided', () => {
             const text = 'my_label_text';
             const el = createLabel(text);
-            expect(el).to.have.text(text);
+            expect(el).toHaveTextContent(text);
         });
 
-        it('should put empty text if none provided', () => {
+        test('should put empty text if none provided', () => {
             const el = createLabel();
-            expect(el.textContent).to.be.empty;
+            expect(el.textContent).toEqual('');
         });
     });
 
     describe('createButton()', () => {
-        it('should return a button element', () => {
+        test('should return a button element', () => {
             const el = createButton();
-            expect(el.nodeName).to.equal('BUTTON');
+            expect(el.nodeName).toBe('BUTTON');
         });
 
-        it('should have CLASS_BOX_PREVIEW_BUTTON class', () => {
+        test('should have CLASS_BOX_PREVIEW_BUTTON class', () => {
             const el = createButton();
-            expect(el).to.have.class(CLASS_BOX_PREVIEW_BUTTON);
+            expect(el).toHaveClass(CLASS_BOX_PREVIEW_BUTTON);
         });
 
-        it('should have text content that has been provided', () => {
+        test('should have text content that has been provided', () => {
             const text = 'my_button_text';
             const el = createButton(text);
-            expect(el).to.have.text(text);
+            expect(el).toHaveTextContent(text);
         });
 
-        it('should put empty text if none provided', () => {
+        test('should put empty text if none provided', () => {
             const el = createButton();
-            expect(el.textContent).to.be.empty;
+            expect(el.textContent).toEqual('');
         });
     });
 
     describe('createCheckbox()', () => {
-        it('should return a checkbox element', () => {
+        test('should return a checkbox element', () => {
             const el = createCheckbox();
-            expect(el.nodeName).to.equal('INPUT');
-            expect(el.type).to.equal('checkbox');
+            expect(el.nodeName).toBe('INPUT');
+            expect(el.type).toBe('checkbox');
         });
     });
 
     describe('createPullup()', () => {
-        it('should create a div element', () => {
+        test('should create a div element', () => {
             const el = createPullup();
-            expect(el.nodeName).to.equal('DIV');
+            expect(el.nodeName).toBe('DIV');
         });
 
-        it('should have classes for Overlay, Pullup, and Hidden', () => {
+        test('should have classes for Overlay, Pullup, and Hidden', () => {
             const el = createPullup();
-            expect(el).to.have.class(CSS_CLASS_OVERLAY);
-            expect(el).to.have.class(CSS_CLASS_PULLUP);
-            expect(el).to.have.class(CSS_CLASS_HIDDEN);
+            expect(el).toHaveClass(CSS_CLASS_OVERLAY);
+            expect(el).toHaveClass(CSS_CLASS_PULLUP);
+            expect(el).toHaveClass(CSS_CLASS_HIDDEN);
         });
     });
 
     describe('createRow()', () => {
-        it('should create a div', () => {
+        test('should create a div', () => {
             const el = createRow();
-            expect(el.nodeName).to.equal('DIV');
+            expect(el.nodeName).toBe('DIV');
         });
 
-        it('should apply class CSS_CLASS_SETTINGS_PANEL_ROW', () => {
+        test('should apply class CSS_CLASS_SETTINGS_PANEL_ROW', () => {
             const el = createRow();
-            expect(el).to.have.class(CSS_CLASS_SETTINGS_PANEL_ROW);
+            expect(el).toHaveClass(CSS_CLASS_SETTINGS_PANEL_ROW);
         });
 
-        it('should not contain a label if no text is provided', () => {
+        test('should not contain a label if no text is provided', () => {
             const el = createRow();
-            expect(el).to.not.contain(`div.${CSS_CLASS_SETTINGS_PANEL_LABEL}`);
+            expect(el.querySelector(`div.${CSS_CLASS_SETTINGS_PANEL_LABEL}`)).toBeNull();
         });
 
-        it('should contain a label if text is provided', () => {
+        test('should contain a label if text is provided', () => {
             const labelSelector = `div.${CSS_CLASS_SETTINGS_PANEL_LABEL}`;
             const labelText = 'yay';
             const el = createRow(labelText);
-            expect(el).to.contain(labelSelector);
-            expect(el.querySelector(labelSelector)).to.have.text(labelText);
+            expect(el.querySelector(labelSelector)).toBeTruthy();
+            expect(el.querySelector(labelSelector)).toHaveTextContent(labelText);
         });
     });
 
     describe('createDropdown()', () => {
-        it('should create a row element as the main wrapper', () => {
+        test('should create a row element as the main wrapper', () => {
             const dd = createDropdown();
-            expect(dd.nodeName).to.equal('DIV');
-            expect(dd).to.have.class(CSS_CLASS_SETTINGS_PANEL_ROW);
+            expect(dd.nodeName).toBe('DIV');
+            expect(dd).toHaveClass(CSS_CLASS_SETTINGS_PANEL_ROW);
         });
 
-        it('should add a row element with provided labelText', () => {
+        test('should add a row element with provided labelText', () => {
             const text = 'my_row';
             const labelSel = `div.${CSS_CLASS_SETTINGS_PANEL_LABEL}`;
             const dd = createDropdown(text);
-            expect(dd).to.contain(labelSel);
-            expect(dd.querySelector(labelSel)).to.have.text(text);
+            expect(dd.querySelector(labelSel)).toBeTruthy();
+            expect(dd.querySelector(labelSel)).toHaveTextContent(text);
         });
 
-        it('should contain a overlay container div', () => {
+        test('should contain a overlay container div', () => {
             const dd = createDropdown();
-            expect(dd).to.contain(`div.${CLASS_BOX_PREVIEW_TOGGLE_OVERLAY}`);
+            expect(dd.querySelector(`div.${CLASS_BOX_PREVIEW_TOGGLE_OVERLAY}`)).toBeTruthy();
         });
 
         describe('add overlay wrapper with menu content to dropdown', () => {
@@ -172,36 +165,38 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 overlayWrapperEl = null;
             });
 
-            it('should nest an overlay wrapper (for all content) in the overlay wrapper', () => {
-                expect(dd).to.contain(overlayWrapperSel);
+            test('should nest an overlay wrapper (for all content) in the overlay wrapper', () => {
+                expect(dd.querySelector(overlayWrapperSel)).toBeTruthy();
             });
 
-            it('should append CLASS_BOX_PREVIEW_OVERLAY div to overlay wrapper', () => {
-                expect(overlayWrapperEl).to.contain(`div.${CLASS_BOX_PREVIEW_OVERLAY}`);
+            test('should append CLASS_BOX_PREVIEW_OVERLAY div to overlay wrapper', () => {
+                expect(overlayWrapperEl.querySelector(`div.${CLASS_BOX_PREVIEW_OVERLAY}`)).toBeTruthy();
             });
 
-            it('should append menu with class CLASS_BOX_PREVIEW_MENU to CLASS_BOX_PREVIEW_OVERLAY div', () => {
-                expect(dd).to.contain(`div.${CLASS_BOX_PREVIEW_OVERLAY} menu.${CLASS_BOX_PREVIEW_MENU}`);
+            test('should append menu with class CLASS_BOX_PREVIEW_MENU to CLASS_BOX_PREVIEW_OVERLAY div', () => {
+                expect(
+                    dd.querySelector(`div.${CLASS_BOX_PREVIEW_OVERLAY} menu.${CLASS_BOX_PREVIEW_MENU}`),
+                ).toBeTruthy();
             });
 
-            it("should append div with class 'link-group' to CLASS_BOX_PREVIEW_MENU", () => {
-                expect(dd).to.contain(`menu.${CLASS_BOX_PREVIEW_MENU} div.link-group`);
+            test("should append div with class 'link-group' to CLASS_BOX_PREVIEW_MENU", () => {
+                expect(dd.querySelector(`menu.${CLASS_BOX_PREVIEW_MENU} div.link-group`)).toBeTruthy();
             });
 
-            it('should append an ul element to link-group', () => {
-                expect(dd).to.contain('div.link-group ul');
+            test('should append an ul element to link-group', () => {
+                expect(dd.querySelector('div.link-group ul')).toBeTruthy();
             });
         });
 
-        it('should nest a button element for opening a dropdown', () => {
+        test('should nest a button element for opening a dropdown', () => {
             const dropdown = createDropdown();
-            expect(dropdown).to.contain(`button.${CLASS_BOX_PREVIEW_BUTTON}`);
+            expect(dropdown.querySelector(`button.${CLASS_BOX_PREVIEW_BUTTON}`)).toBeTruthy();
         });
 
-        it("should set the button element's text to the provided listText", () => {
+        test("should set the button element's text to the provided listText", () => {
             const buttonText = 'Gasp! Button!';
             const dropdown = createDropdown('', buttonText);
-            expect(dropdown.querySelector(`button.${CLASS_BOX_PREVIEW_BUTTON}`)).to.have.text(buttonText);
+            expect(dropdown.querySelector(`button.${CLASS_BOX_PREVIEW_BUTTON}`)).toHaveTextContent(buttonText);
         });
 
         describe('dropdown list population', () => {
@@ -221,17 +216,17 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 ddList = null;
             });
 
-            it('should create a list element and append it to the dropdown list', () => {
-                expect(ddList).to.contain('li');
+            test('should create a list element and append it to the dropdown list', () => {
+                expect(ddList.querySelector('li')).toBeTruthy();
             });
 
-            it('should append an anchor tag with class CLASS_BOX_PREVIEW_LINK to the list item', () => {
-                expect(ddList.querySelector('li')).to.contain(`a.${CLASS_BOX_PREVIEW_LINK}`);
+            test('should append an anchor tag with class CLASS_BOX_PREVIEW_LINK to the list item', () => {
+                expect(ddList.querySelector('li').querySelector(`a.${CLASS_BOX_PREVIEW_LINK}`)).toBeTruthy();
             });
 
-            it('should set textContent of anchor tag in list item to entry.text', () => {
+            test('should set textContent of anchor tag in list item to entry.text', () => {
                 const listItem = ddList.querySelector('li');
-                expect(listItem.querySelector(`a.${CLASS_BOX_PREVIEW_LINK}`)).to.have.text(text);
+                expect(listItem.querySelector(`a.${CLASS_BOX_PREVIEW_LINK}`)).toHaveTextContent(text);
             });
         });
     });
@@ -247,100 +242,96 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
         });
 
         describe('constructor()', () => {
-            it('should create an empty event registry', () => {
-                expect(registry.registry).to.be.an('object');
-                expect(registry.registry).to.be.empty;
+            test('should create an empty event registry', () => {
+                expect(typeof registry.registry).toBe('object');
+                expect(registry.registry).toEqual({});
             });
         });
 
         describe('registerItem()', () => {
-            it('should throw an error if no uniqueId provided', () => {
+            test('should throw an error if no uniqueId provided', () => {
                 /* eslint-disable require-jsdoc */
                 const registerFail = () => {
                     registry.registerItem();
                 };
-                /* eslint-enable require-jsdoc */
-
-                expect(registerFail).to.throw(Error);
+                expect(registerFail).toThrowError(Error);
             });
 
-            it('should throw an error if no element provided', () => {
+            test('should throw an error if no element provided', () => {
                 /* eslint-disable require-jsdoc */
                 const registerFail = () => {
                     registry.registerItem('uuid');
                 };
-                /* eslint-enable require-jsdoc */
-
-                expect(registerFail).to.throw(Error);
+                expect(registerFail).toThrowError(Error);
             });
 
             describe('add new entries to event registry', () => {
                 const id = 'my_new_item';
                 const element = document.createElement('div');
                 beforeEach(() => {
-                    expect(registry.registry[id]).to.not.exist;
+                    expect(registry.registry[id]).not.toBeDefined();
                     registry.registerItem(id, element);
                 });
 
-                it('should create a new entry in the event registry', () => {
+                test('should create a new entry in the event registry', () => {
                     const entry = registry.registry[id];
-                    expect(entry).to.exist;
+                    expect(entry).toBeDefined();
                 });
 
-                it('should add the unique id as property .uuid of new entry', () => {
+                test('should add the unique id as property .uuid of new entry', () => {
                     const entry = registry.registry[id];
-                    expect(entry.uuid).to.exist;
-                    expect(entry.uuid).to.equal(id);
+                    expect(entry.uuid).toBeDefined();
+                    expect(entry.uuid).toBe(id);
                 });
 
-                it('should add element as property .el of new entry', () => {
+                test('should add element as property .el of new entry', () => {
                     const entry = registry.registry[id];
-                    expect(entry.el).to.exist;
-                    expect(entry.el).to.equal(element);
+                    expect(entry.el).toBeDefined();
+                    expect(entry.el).toBe(element);
                 });
 
-                it('should add new empty object as property .events of new entry', () => {
+                test('should add new empty object as property .events of new entry', () => {
                     const entry = registry.registry[id];
-                    expect(entry.events).to.be.an('object');
-                    expect(entry.events).to.be.empty;
+                    expect(typeof entry.events).toBe('object');
+                    expect(entry.events).toEqual({});
                 });
             });
 
-            it('should not register any events if no event name provided', () => {
+            test('should not register any events if no event name provided', () => {
                 const id = '321';
                 const el = document.createElement('div');
                 registry.registerItem(id, el);
 
-                expect(registry.registry[id].events).to.be.empty;
+                expect(registry.registry[id].events).toEqual({});
             });
 
-            it('should not register any events if not callback provided', () => {
+            test('should not register any events if not callback provided', () => {
                 const id = '321';
                 const el = document.createElement('div');
                 registry.registerItem(id, el, 'an_event');
 
-                expect(registry.registry[id].events).to.be.empty;
+                expect(registry.registry[id].events).toEqual({});
             });
 
-            it('should register an event with name and callback provided', () => {
+            test('should register an event with name and callback provided', () => {
                 const id = '321';
                 const el = document.createElement('div');
                 registry.registerItem(id, el, 'an_event', () => {});
 
-                expect(registry.registry[id].events).to.not.be.empty;
+                expect(registry.registry[id].events).not.toEqual({});
             });
 
-            it('should add callback to list of registered events, with the same event name', () => {
+            test('should add callback to list of registered events, with the same event name', () => {
                 const id = '321';
                 const el = document.createElement('div');
                 const eventName = 'an_event';
                 registry.registerItem(id, el, eventName, () => {});
                 registry.registerItem(id, el, eventName, () => {}); // second event added with same name
 
-                expect(registry.registry[id].events[eventName]).to.have.lengthOf(2);
+                expect(registry.registry[id].events[eventName]).toHaveLength(2);
             });
 
-            it('should register multiple events with different names', () => {
+            test('should register multiple events with different names', () => {
                 const id = '321';
                 const el = document.createElement('div');
                 const eventName1 = 'an_event';
@@ -348,18 +339,18 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 registry.registerItem(id, el, eventName1, () => {});
                 registry.registerItem(id, el, eventName2, () => {}); // second event added with same name
 
-                expect(registry.registry[id].events).to.have.keys([eventName1, eventName2]);
+                expect(Object.keys(registry.registry[id].events)).toEqual([eventName1, eventName2]);
             });
 
-            it('should bind the event and callback provided to the supplied element', () => {
+            test('should bind the event and callback provided to the supplied element', () => {
                 const id = '321';
                 const el = document.createElement('div');
-                const attachStub = sandbox.stub(el, 'addEventListener');
+                const attachStub = jest.spyOn(el, 'addEventListener');
                 const eventName = 'an_event';
 
                 registry.registerItem(id, el, eventName, () => {});
 
-                expect(attachStub).to.be.called;
+                expect(attachStub).toBeCalled();
             });
         });
 
@@ -380,9 +371,9 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 registeredItem = null;
             });
 
-            it('should do nothing if the item provided does not exist in the registry', () => {
+            test('should do nothing if the item provided does not exist in the registry', () => {
                 const parentEl = {
-                    removeChild: sandbox.stub(),
+                    removeChild: jest.fn(),
                 };
 
                 const item = {
@@ -393,43 +384,43 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
 
                 registry.unregisterItem(item);
 
-                expect(parentEl.removeChild).to.not.be.called;
+                expect(parentEl.removeChild).not.toBeCalled();
             });
 
-            it('should remove the element, for the item, from its parent element', () => {
-                const removeStub = sandbox.spy(containerEl, 'removeChild');
+            test('should remove the element, for the item, from its parent element', () => {
+                const removeStub = jest.spyOn(containerEl, 'removeChild');
                 containerEl.appendChild(el);
 
                 registry.unregisterItem(registeredItem);
 
-                expect(removeStub).to.be.called;
+                expect(removeStub).toBeCalled();
             });
 
-            it('should unbind events on an element in the registry, for an item', () => {
-                const removeListenerStub = sandbox.stub(el, 'removeEventListener');
+            test('should unbind events on an element in the registry, for an item', () => {
+                const removeListenerStub = jest.spyOn(el, 'removeEventListener');
 
                 registry.unregisterItem(registeredItem);
 
-                expect(removeListenerStub).to.be.called;
+                expect(removeListenerStub).toBeCalled();
             });
 
-            it('should remove the list of events from the registry, for an item', () => {
+            test('should remove the list of events from the registry, for an item', () => {
                 const { events } = registeredItem;
                 const eventNames = Object.keys(registeredItem.events);
 
                 registry.unregisterItem(registeredItem);
 
-                expect(events).to.not.have.keys(eventNames);
+                expect(Object.keys(events)).not.toContain(eventNames);
             });
 
-            it('should remove the element from the registry, for an item', () => {
+            test('should remove the element from the registry, for an item', () => {
                 registry.unregisterItem(registeredItem);
-                expect(registeredItem.el).to.not.exist;
+                expect(registeredItem.el).not.toBeDefined();
             });
 
-            it('should remove the item from the registry', () => {
+            test('should remove the item from the registry', () => {
                 registry.unregisterItem(registeredItem);
-                expect(registry.registry[id]).to.not.exist;
+                expect(registry.registry[id]).not.toBeDefined();
             });
         });
 
@@ -447,15 +438,15 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 el = null;
             });
 
-            it('should unregister items from the registry', () => {
-                const removeListenerStub = sandbox.stub(el, 'removeEventListener');
+            test('should unregister items from the registry', () => {
+                const removeListenerStub = jest.spyOn(el, 'removeEventListener');
                 registry.unregisterAll();
-                expect(removeListenerStub).to.be.called;
+                expect(removeListenerStub).toBeCalled();
             });
 
-            it('should clear the registry completely', () => {
+            test('should clear the registry completely', () => {
                 registry.unregisterAll();
-                expect(registry.registry).to.be.empty;
+                expect(registry.registry).toEqual({});
             });
         });
     });

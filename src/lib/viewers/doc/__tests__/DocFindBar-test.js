@@ -13,7 +13,6 @@ const FIND_MATCH_PENDING = 3;
 
 const MATCH_OFFSET = 13;
 
-const sandbox = sinon.sandbox.create();
 let containerEl;
 let docFindBar;
 let eventBus;
@@ -21,17 +20,13 @@ let findController;
 let stubs = {};
 
 describe('lib/viewers/doc/DocFindBar', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocFindBar-test.html');
 
         containerEl = document.querySelector('.test-container');
-        eventBus = { off: sandbox.stub(), on: sandbox.stub() };
+        eventBus = { off: jest.fn(), on: jest.fn() };
         findController = {
-            executeCommand: sandbox.stub(),
+            executeCommand: jest.fn(),
             linkService: {},
         };
         docFindBar = new DocFindBar(containerEl, findController, eventBus);
@@ -45,117 +40,116 @@ describe('lib/viewers/doc/DocFindBar', () => {
         docFindBar = null;
         findController = null;
 
-        sandbox.verifyAndRestore();
         fixture.cleanup();
         stubs = {};
     });
 
     describe('constructor()', () => {
-        it('should correctly set the object parameters', () => {
-            expect(containerEl.querySelector(`.${CLASS_BOX_PREVIEW_FIND_BAR}`)).to.exist;
-            expect(docFindBar.eventBus).to.equal(eventBus);
-            expect(docFindBar.findController).to.equal(findController);
-            expect(docFindBar.opened).to.be.false;
+        test('should correctly set the object parameters', () => {
+            expect(containerEl.querySelector(`.${CLASS_BOX_PREVIEW_FIND_BAR}`)).toBeDefined();
+            expect(docFindBar.eventBus).toBe(eventBus);
+            expect(docFindBar.findController).toBe(findController);
+            expect(docFindBar.opened).toBe(false);
         });
 
-        it('should throw an error if there is no container element', () => {
+        test('should throw an error if there is no container element', () => {
             docFindBar.destroy();
             containerEl = null;
             try {
                 docFindBar = new DocFindBar(containerEl, findController, eventBus);
             } catch (e) {
-                expect(e.message).to.equal('DocFindBar cannot be used without a container element.');
+                expect(e.message).toBe('DocFindBar cannot be used without a container element.');
             }
         });
 
-        it('should throw an error if there is no eventBus', () => {
+        test('should throw an error if there is no eventBus', () => {
             docFindBar.destroy();
             eventBus = null;
             try {
                 docFindBar = new DocFindBar(containerEl, findController, eventBus);
             } catch (e) {
-                expect(e.message).to.equal('DocFindBar cannot be used without an EventBus instance.');
+                expect(e.message).toBe('DocFindBar cannot be used without an EventBus instance.');
             }
         });
 
-        it('should throw an error if there is no findController', () => {
+        test('should throw an error if there is no findController', () => {
             docFindBar.destroy();
             findController = null;
             try {
                 docFindBar = new DocFindBar(containerEl, findController, eventBus);
             } catch (e) {
-                expect(e.message).to.equal('DocFindBar cannot be used without a PDFFindController instance.');
+                expect(e.message).toBe('DocFindBar cannot be used without a PDFFindController instance.');
             }
         });
     });
 
     describe('createFindField()', () => {
-        it('should create the search icon', () => {
+        test('should create the search icon', () => {
             docFindBar.createFindField();
 
             const searchIconEl = document.querySelector('.bp-doc-find-search');
 
-            expect(searchIconEl.parentNode).to.equal(docFindBar.findBarEl);
-            expect(searchIconEl.className).to.equal('bp-doc-find-search');
+            expect(searchIconEl.parentNode).toBe(docFindBar.findBarEl);
+            expect(searchIconEl.className).toBe('bp-doc-find-search');
         });
 
-        it('should create the input field', () => {
+        test('should create the input field', () => {
             docFindBar.createFindField();
 
             const inputFieldEl = document.querySelector('.bp-doc-find-field');
 
-            expect(inputFieldEl.parentNode).to.equal(docFindBar.findBarEl);
-            expect(inputFieldEl.className).to.equal('bp-doc-find-field');
+            expect(inputFieldEl.parentNode).toBe(docFindBar.findBarEl);
+            expect(inputFieldEl.className).toBe('bp-doc-find-field');
         });
 
-        it('should create the match results count', () => {
+        test('should create the match results count', () => {
             docFindBar.createFindField();
 
             const resultsCountEl = document.querySelector('.bp-doc-find-results-count');
 
-            expect(resultsCountEl.parentNode).to.equal(docFindBar.findBarEl);
-            expect(resultsCountEl.classList.contains('bp-doc-find-results-count')).to.be.true;
-            expect(resultsCountEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(resultsCountEl.parentNode).toBe(docFindBar.findBarEl);
+            expect(resultsCountEl.classList.contains('bp-doc-find-results-count')).toBe(true);
+            expect(resultsCountEl.classList.contains(CLASS_HIDDEN)).toBe(true);
         });
     });
 
     describe('createFindButtons()', () => {
-        it('should create the find buttons with the correct class, and add to the bar', () => {
+        test('should create the find buttons with the correct class, and add to the bar', () => {
             docFindBar.createFindButtons();
 
-            expect(docFindBar.findButtonContainerEl.classList.contains('bp-doc-find-controls')).to.be.true;
-            expect(docFindBar.findButtonContainerEl.parentNode).to.equal(docFindBar.findBarEl);
+            expect(docFindBar.findButtonContainerEl.classList.contains('bp-doc-find-controls')).toBe(true);
+            expect(docFindBar.findButtonContainerEl.parentNode).toBe(docFindBar.findBarEl);
         });
     });
 
     describe('destroy()', () => {
         beforeEach(() => {
-            stubs.unbindDOMListeners = sandbox.stub(docFindBar, 'unbindDOMListeners');
-            stubs.removeChild = sandbox.stub(docFindBar.findBarEl.parentNode, 'removeChild');
+            stubs.unbindDOMListeners = jest.spyOn(docFindBar, 'unbindDOMListeners').mockImplementation();
+            stubs.removeChild = jest.spyOn(docFindBar.findBarEl.parentNode, 'removeChild').mockImplementation();
         });
 
-        it('should unbind DOM listeners', () => {
+        test('should unbind DOM listeners', () => {
             docFindBar.destroy();
 
-            expect(stubs.unbindDOMListeners).to.be.called;
+            expect(stubs.unbindDOMListeners).toBeCalled();
         });
 
-        it('should remove the find bar if it exists', () => {
+        test('should remove the find bar if it exists', () => {
             docFindBar.destroy();
 
-            expect(stubs.removeChild).to.be.called;
+            expect(stubs.removeChild).toBeCalled();
         });
 
-        it('should not remove the find bar if it does not exist', () => {
+        test('should not remove the find bar if it does not exist', () => {
             docFindBar.findBarEl = undefined;
 
             docFindBar.destroy();
-            expect(stubs.removeChild).to.not.be.called;
+            expect(stubs.removeChild).not.toBeCalled();
         });
     });
 
     describe('dispatchFindEvent()', () => {
-        it('should execute the find controller command with the given params', () => {
+        test('should execute the find controller command with the given params', () => {
             docFindBar.findFieldEl.value = 'value';
             const params = {
                 query: docFindBar.findFieldEl.value,
@@ -165,312 +159,316 @@ describe('lib/viewers/doc/DocFindBar', () => {
             };
 
             docFindBar.dispatchFindEvent('string', 'test');
-            expect(findController.executeCommand).to.be.calledWith('string', params);
+            expect(findController.executeCommand).toBeCalledWith('string', params);
         });
     });
 
     describe('updateUIState()', () => {
         beforeEach(() => {
-            stubs.updateUIResultsCount = sandbox.stub(docFindBar, 'updateUIResultsCount');
+            stubs.updateUIResultsCount = jest.spyOn(docFindBar, 'updateUIResultsCount').mockImplementation();
         });
 
-        it('should update the status and add the correct class if the match is not found', () => {
+        test('should update the status and add the correct class if the match is not found', () => {
             docFindBar.updateUIState({ state: FIND_MATCH_NOT_FOUND });
 
-            expect(docFindBar.status).to.equal('');
-            expect(docFindBar.findFieldEl.classList.contains(CLASS_FIND_MATCH_NOT_FOUND)).to.be.true;
-            expect(docFindBar.findFieldEl.getAttribute('data-status')).to.equal('');
-            expect(stubs.updateUIResultsCount).to.be.called;
+            expect(docFindBar.status).toBe('');
+            expect(docFindBar.findFieldEl.classList.contains(CLASS_FIND_MATCH_NOT_FOUND)).toBe(true);
+            expect(docFindBar.findFieldEl.getAttribute('data-status')).toBe('');
+            expect(stubs.updateUIResultsCount).toBeCalled();
         });
 
-        it('should update the status if the status is pending', () => {
+        test('should update the status if the status is pending', () => {
             docFindBar.updateUIState({ state: FIND_MATCH_PENDING });
 
-            expect(docFindBar.status).to.equal('pending');
-            expect(docFindBar.findFieldEl.getAttribute('data-status')).to.equal('pending');
-            expect(stubs.updateUIResultsCount).to.be.called;
+            expect(docFindBar.status).toBe('pending');
+            expect(docFindBar.findFieldEl.getAttribute('data-status')).toBe('pending');
+            expect(stubs.updateUIResultsCount).toBeCalled();
         });
 
-        it('should update the status and add the correct class if the status is found', () => {
+        test('should update the status and add the correct class if the status is found', () => {
             docFindBar.updateUIState({ state: FIND_MATCH_FOUND });
 
-            expect(docFindBar.status).to.equal('');
-            expect(docFindBar.findFieldEl.classList.contains(CLASS_FIND_MATCH_NOT_FOUND)).to.be.false;
-            expect(docFindBar.findFieldEl.getAttribute('data-status')).to.equal('');
-            expect(stubs.updateUIResultsCount).to.be.called;
+            expect(docFindBar.status).toBe('');
+            expect(docFindBar.findFieldEl.classList.contains(CLASS_FIND_MATCH_NOT_FOUND)).toBe(false);
+            expect(docFindBar.findFieldEl.getAttribute('data-status')).toBe('');
+            expect(stubs.updateUIResultsCount).toBeCalled();
         });
     });
 
     describe('updateUIResultsCount()', () => {
         beforeEach(() => {
-            stubs.getBoundingClientRect = sandbox.stub(docFindBar.findResultsCountEl, 'getBoundingClientRect').returns({
-                width: 5,
-            });
+            stubs.getBoundingClientRect = jest
+                .spyOn(docFindBar.findResultsCountEl, 'getBoundingClientRect')
+                .mockReturnValue({
+                    width: 5,
+                });
         });
 
-        it('should do nothing if there is no find results count element', () => {
+        test('should do nothing if there is no find results count element', () => {
             docFindBar.findResultsCountEl = undefined;
 
             docFindBar.updateUIResultsCount({ matchesCount: { current: 1, total: 2 } });
-            expect(stubs.getBoundingClientRect).to.not.be.called;
+            expect(stubs.getBoundingClientRect).not.toBeCalled();
         });
 
-        it('should hide the counter if there are no matches', () => {
+        test('should hide the counter if there are no matches', () => {
             docFindBar.updateUIResultsCount({ matchesCount: { current: 0, total: 0 } });
 
-            expect(docFindBar.findResultsCountEl.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(stubs.getBoundingClientRect).to.not.be.called;
+            expect(docFindBar.findResultsCountEl.classList.contains(CLASS_HIDDEN)).toBe(true);
+            expect(stubs.getBoundingClientRect).not.toBeCalled();
         });
 
-        it('should adjust padding, and create/show the counter', () => {
+        test('should adjust padding, and create/show the counter', () => {
             const paddingRight = `${5 + MATCH_OFFSET}px`;
 
             docFindBar.updateUIResultsCount({ matchesCount: { current: 1, total: 2 } });
 
-            expect(docFindBar.findFieldEl.style.paddingRight).to.be.equal(paddingRight);
-            expect(docFindBar.findResultsCountEl.classList.contains(CLASS_HIDDEN)).to.be.false;
-            expect(stubs.getBoundingClientRect).to.be.called;
+            expect(docFindBar.findFieldEl.style.paddingRight).toBe(paddingRight);
+            expect(docFindBar.findResultsCountEl.classList.contains(CLASS_HIDDEN)).toBe(false);
+            expect(stubs.getBoundingClientRect).toBeCalled();
         });
     });
 
     describe('setFindFieldElValue()', () => {
-        it('should set the findFieldEl value', () => {
+        test('should set the findFieldEl value', () => {
             docFindBar.findFieldEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
 
             docFindBar.setFindFieldElValue('test');
 
-            expect(docFindBar.findFieldEl.value).to.equal('test');
+            expect(docFindBar.findFieldEl.value).toBe('test');
         });
     });
 
     describe('bindDOMListeners()', () => {
-        it('should add the correct event listeners', () => {
-            const barStub = sandbox.stub(docFindBar.findBarEl, 'addEventListener');
-            const findFieldStub = sandbox.stub(docFindBar.findFieldEl, 'addEventListener');
-            const findPrevStub = sandbox.stub(docFindBar.findPreviousButtonEl, 'addEventListener');
-            const findNextStub = sandbox.stub(docFindBar.findNextButtonEl, 'addEventListener');
-            const findCloseStub = sandbox.stub(docFindBar.findCloseButtonEl, 'addEventListener');
+        test('should add the correct event listeners', () => {
+            const barStub = jest.spyOn(docFindBar.findBarEl, 'addEventListener').mockImplementation();
+            const findFieldStub = jest.spyOn(docFindBar.findFieldEl, 'addEventListener').mockImplementation();
+            const findPrevStub = jest.spyOn(docFindBar.findPreviousButtonEl, 'addEventListener').mockImplementation();
+            const findNextStub = jest.spyOn(docFindBar.findNextButtonEl, 'addEventListener').mockImplementation();
+            const findCloseStub = jest.spyOn(docFindBar.findCloseButtonEl, 'addEventListener').mockImplementation();
 
             docFindBar.bindDOMListeners();
-            expect(barStub).to.be.calledWith('keydown', docFindBar.findBarKeyDownHandler);
-            expect(findFieldStub).to.be.calledWith('input', docFindBar.findFieldHandler);
-            expect(findPrevStub).to.be.calledWith('click', docFindBar.findPreviousHandler);
-            expect(findNextStub).to.be.calledWith('click', docFindBar.findNextHandler);
-            expect(findCloseStub).to.be.calledWith('click', docFindBar.close);
+            expect(barStub).toBeCalledWith('keydown', docFindBar.findBarKeyDownHandler);
+            expect(findFieldStub).toBeCalledWith('input', docFindBar.findFieldHandler);
+            expect(findPrevStub).toBeCalledWith('click', docFindBar.findPreviousHandler);
+            expect(findNextStub).toBeCalledWith('click', docFindBar.findNextHandler);
+            expect(findCloseStub).toBeCalledWith('click', docFindBar.close);
         });
     });
 
     describe('unbindDOMListeners()', () => {
-        it('should remove the correct event listeners', () => {
-            const barStub = sandbox.stub(docFindBar.findBarEl, 'removeEventListener');
-            const findFieldStub = sandbox.stub(docFindBar.findFieldEl, 'removeEventListener');
-            const findPrevStub = sandbox.stub(docFindBar.findPreviousButtonEl, 'removeEventListener');
-            const findNextStub = sandbox.stub(docFindBar.findNextButtonEl, 'removeEventListener');
-            const findCloseStub = sandbox.stub(docFindBar.findCloseButtonEl, 'removeEventListener');
+        test('should remove the correct event listeners', () => {
+            const barStub = jest.spyOn(docFindBar.findBarEl, 'removeEventListener').mockImplementation();
+            const findFieldStub = jest.spyOn(docFindBar.findFieldEl, 'removeEventListener').mockImplementation();
+            const findPrevStub = jest
+                .spyOn(docFindBar.findPreviousButtonEl, 'removeEventListener')
+                .mockImplementation();
+            const findNextStub = jest.spyOn(docFindBar.findNextButtonEl, 'removeEventListener').mockImplementation();
+            const findCloseStub = jest.spyOn(docFindBar.findCloseButtonEl, 'removeEventListener').mockImplementation();
 
             docFindBar.unbindDOMListeners();
-            expect(barStub).to.be.calledWith('keydown', docFindBar.findBarKeyDownHandler);
-            expect(findFieldStub).to.be.calledWith('input', docFindBar.findFieldHandler);
-            expect(findPrevStub).to.be.calledWith('click', docFindBar.findPreviousHandler);
-            expect(findNextStub).to.be.calledWith('click', docFindBar.findNextHandler);
-            expect(findCloseStub).to.be.calledWith('click', docFindBar.close);
+            expect(barStub).toBeCalledWith('keydown', docFindBar.findBarKeyDownHandler);
+            expect(findFieldStub).toBeCalledWith('input', docFindBar.findFieldHandler);
+            expect(findPrevStub).toBeCalledWith('click', docFindBar.findPreviousHandler);
+            expect(findNextStub).toBeCalledWith('click', docFindBar.findNextHandler);
+            expect(findCloseStub).toBeCalledWith('click', docFindBar.close);
         });
     });
 
     describe('onKeydown()', () => {
         beforeEach(() => {
-            stubs.decodeKeydown = sandbox.stub(util, 'decodeKeydown');
-            stubs.open = sandbox.stub(docFindBar, 'open');
+            stubs.decodeKeydown = jest.spyOn(util, 'decodeKeydown').mockImplementation();
+            stubs.open = jest.spyOn(docFindBar, 'open').mockImplementation();
             stubs.event = {
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
             };
-            stubs.close = sandbox.stub(docFindBar, 'close');
+            stubs.close = jest.spyOn(docFindBar, 'close').mockImplementation();
         });
 
-        it('should open and prevent default if meta+f is entered', () => {
-            stubs.decodeKeydown.returns('meta+f');
+        test('should open and prevent default if meta+f is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('meta+f');
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.open).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should open and prevent default if control+f is entered', () => {
-            stubs.decodeKeydown.returns('control+f');
+        test('should open and prevent default if control+f is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('control+f');
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.open).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should open and prevent default if meta+g is entered', () => {
-            stubs.decodeKeydown.returns('meta+g');
+        test('should open and prevent default if meta+g is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('meta+g');
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.open).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should open and prevent default if control+g is entered', () => {
-            stubs.decodeKeydown.returns('control+g');
+        test('should open and prevent default if control+g is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('control+g');
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.open).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should open and prevent default if f3 is entered', () => {
-            stubs.decodeKeydown.returns('f3');
+        test('should open and prevent default if f3 is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('f3');
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.open).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should do nothing if find bar is already closed and escape is entered', () => {
-            stubs.decodeKeydown.returns('escape');
+        test('should do nothing if find bar is already closed and escape is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('escape');
             docFindBar.opened = false;
 
             docFindBar.onKeydown(stubs.event);
-            expect(stubs.open).to.not.be.called;
-            expect(stubs.close).to.not.be.called;
-            expect(stubs.event.preventDefault).to.not.be.called;
+            expect(stubs.open).not.toBeCalled();
+            expect(stubs.close).not.toBeCalled();
+            expect(stubs.event.preventDefault).not.toBeCalled();
         });
     });
 
     describe('findFieldHandler()', () => {
-        it('should dispatch the find event', () => {
-            const dispatchFindEventStub = sandbox.stub(docFindBar, 'dispatchFindEvent');
+        test('should dispatch the find event', () => {
+            const dispatchFindEventStub = jest.spyOn(docFindBar, 'dispatchFindEvent').mockImplementation();
 
             docFindBar.findFieldHandler();
-            expect(dispatchFindEventStub).to.be.calledWith('find');
+            expect(dispatchFindEventStub).toBeCalledWith('find');
         });
     });
 
     describe('findBarKeyDownHandler()', () => {
         beforeEach(() => {
-            stubs.decodeKeydown = sandbox.stub(util, 'decodeKeydown');
+            stubs.decodeKeydown = jest.spyOn(util, 'decodeKeydown').mockImplementation();
             stubs.event = {
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
             };
-            stubs.findNextHandler = sandbox.stub(docFindBar, 'findNextHandler');
-            stubs.findPreviousHandler = sandbox.stub(docFindBar, 'findPreviousHandler');
-            stubs.close = sandbox.stub(docFindBar, 'close');
+            stubs.findNextHandler = jest.spyOn(docFindBar, 'findNextHandler').mockImplementation();
+            stubs.findPreviousHandler = jest.spyOn(docFindBar, 'findPreviousHandler').mockImplementation();
+            stubs.close = jest.spyOn(docFindBar, 'close').mockImplementation();
         });
 
-        it('should find the next match if Enter is entered', () => {
-            stubs.decodeKeydown.returns('Enter');
+        test('should find the next match if Enter is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Enter');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.findNextHandler).to.be.called;
+            expect(stubs.findNextHandler).toBeCalled();
         });
 
-        it('should find the previous match if Shift+Enter is entered', () => {
-            stubs.decodeKeydown.returns('Shift+Enter');
+        test('should find the previous match if Shift+Enter is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Shift+Enter');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.findNextHandler).to.not.be.called;
-            expect(stubs.findPreviousHandler).to.be.called;
+            expect(stubs.findNextHandler).not.toBeCalled();
+            expect(stubs.findPreviousHandler).toBeCalled();
         });
 
-        it('should do nothing if the find bar is not open and Escape is entered', () => {
-            stubs.decodeKeydown.returns('Escape');
+        test('should do nothing if the find bar is not open and Escape is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Escape');
             docFindBar.opened = false;
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.close).to.not.be.called;
-            expect(stubs.event.stopPropagation).to.not.be.called;
-            expect(stubs.event.preventDefault).to.not.be.called;
+            expect(stubs.close).not.toBeCalled();
+            expect(stubs.event.stopPropagation).not.toBeCalled();
+            expect(stubs.event.preventDefault).not.toBeCalled();
         });
 
-        it('should close, prevent default behavior, and stop propogation if Escape is entered', () => {
-            stubs.decodeKeydown.returns('Escape');
+        test('should close, prevent default behavior, and stop propogation if Escape is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Escape');
             docFindBar.opened = true;
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.close).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.close).toBeCalled();
+            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should close, prevent default behavior, and stop propogation if Esc is entered', () => {
-            stubs.decodeKeydown.returns('Esc');
+        test('should close, prevent default behavior, and stop propogation if Esc is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Esc');
             docFindBar.opened = true;
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.close).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.close).toBeCalled();
+            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should stop propogation if Shift++ is entered', () => {
-            stubs.decodeKeydown.returns('Shift++');
+        test('should stop propogation if Shift++ is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Shift++');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.stopPropagation).toBeCalled();
         });
 
-        it('should stop propogation if Shift+_ is entered', () => {
-            stubs.decodeKeydown.returns('Shift+_');
+        test('should stop propogation if Shift+_ is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('Shift+_');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.stopPropagation).toBeCalled();
         });
 
-        it('should stop propogation if [ is entered', () => {
-            stubs.decodeKeydown.returns('[');
+        test('should stop propogation if [ is entered', () => {
+            stubs.decodeKeydown.mockReturnValue('[');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.stopPropagation).toBeCalled();
         });
 
-        it('should stop propogation if ] is entered', () => {
-            stubs.decodeKeydown.returns(']');
+        test('should stop propogation if ] is entered', () => {
+            stubs.decodeKeydown.mockReturnValue(']');
 
             docFindBar.findBarKeyDownHandler(stubs.event);
-            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.stopPropagation).toBeCalled();
         });
     });
 
     describe('findNextHandler()', () => {
         beforeEach(() => {
-            stubs.focus = sandbox.stub(docFindBar.findNextButtonEl, 'focus');
-            stubs.dispatchFindEvent = sandbox.stub(docFindBar, 'dispatchFindEvent');
+            stubs.focus = jest.spyOn(docFindBar.findNextButtonEl, 'focus').mockImplementation();
+            stubs.dispatchFindEvent = jest.spyOn(docFindBar, 'dispatchFindEvent').mockImplementation();
             docFindBar.findFieldEl.value = 'test';
             docFindBar.findController.matchCount = 1;
         });
 
-        it('should do nothing if there is nothing to find', () => {
+        test('should do nothing if there is nothing to find', () => {
             docFindBar.findFieldEl.value = '';
 
             docFindBar.findNextHandler(false);
-            expect(stubs.focus).to.not.be.called;
-            expect(stubs.dispatchFindEvent).to.not.be.called;
+            expect(stubs.focus).not.toBeCalled();
+            expect(stubs.dispatchFindEvent).not.toBeCalled();
         });
 
-        it('should focus the next button element if it has not been clicked', () => {
+        test('should focus the next button element if it has not been clicked', () => {
             docFindBar.findNextHandler(false);
-            expect(stubs.focus).to.be.called;
-            expect(stubs.dispatchFindEvent).to.not.be.called;
+            expect(stubs.focus).toBeCalled();
+            expect(stubs.dispatchFindEvent).not.toBeCalled();
         });
 
-        it('should find the next match if the next button element has been clicked', () => {
+        test('should find the next match if the next button element has been clicked', () => {
             docFindBar.findNextHandler(true);
-            expect(stubs.focus).to.not.be.called;
-            expect(stubs.dispatchFindEvent).to.be.called;
+            expect(stubs.focus).not.toBeCalled();
+            expect(stubs.dispatchFindEvent).toBeCalled();
         });
 
-        it('should emit the find next event', () => {
-            sandbox.stub(docFindBar, 'emit');
+        test('should emit the find next event', () => {
+            jest.spyOn(docFindBar, 'emit').mockImplementation();
 
             docFindBar.findFieldEl.value = 'test';
             docFindBar.findNextHandler(true);
 
-            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+            expect(docFindBar.emit).toBeCalledWith(VIEWER_EVENT.metric, {
                 name: USER_DOCUMENT_FIND_EVENTS.NEXT,
             });
         });
@@ -478,145 +476,145 @@ describe('lib/viewers/doc/DocFindBar', () => {
 
     describe('findPreviousHandler()', () => {
         beforeEach(() => {
-            stubs.focus = sandbox.stub(docFindBar.findPreviousButtonEl, 'focus');
-            stubs.dispatchFindEvent = sandbox.stub(docFindBar, 'dispatchFindEvent');
+            stubs.focus = jest.spyOn(docFindBar.findPreviousButtonEl, 'focus').mockImplementation();
+            stubs.dispatchFindEvent = jest.spyOn(docFindBar, 'dispatchFindEvent').mockImplementation();
             docFindBar.findFieldEl.value = 'test';
             docFindBar.findController.matchCount = 5;
         });
 
-        it('should do nothing if there is nothing to find', () => {
+        test('should do nothing if there is nothing to find', () => {
             docFindBar.findFieldEl.value = '';
             docFindBar.findPreviousHandler(false);
 
-            expect(stubs.focus).to.not.be.called;
-            expect(stubs.dispatchFindEvent).to.not.be.called;
+            expect(stubs.focus).not.toBeCalled();
+            expect(stubs.dispatchFindEvent).not.toBeCalled();
         });
 
-        it('should focus the previous button element if it has not been clicked', () => {
+        test('should focus the previous button element if it has not been clicked', () => {
             docFindBar.findPreviousHandler(false);
-            expect(stubs.focus).to.be.called;
-            expect(stubs.dispatchFindEvent).to.not.be.called;
+            expect(stubs.focus).toBeCalled();
+            expect(stubs.dispatchFindEvent).not.toBeCalled();
         });
 
-        it('should find the previous match if the previous button element has been clicked', () => {
+        test('should find the previous match if the previous button element has been clicked', () => {
             docFindBar.findPreviousHandler(true);
-            expect(stubs.focus).to.not.be.called;
-            expect(stubs.dispatchFindEvent).to.be.called;
+            expect(stubs.focus).not.toBeCalled();
+            expect(stubs.dispatchFindEvent).toBeCalled();
         });
 
-        it('should emit a find previous metric', () => {
-            sandbox.stub(docFindBar, 'emit');
+        test('should emit a find previous metric', () => {
+            jest.spyOn(docFindBar, 'emit').mockImplementation();
             docFindBar.findFieldEl.value = 'test';
 
             docFindBar.findPreviousHandler(true);
-            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+            expect(docFindBar.emit).toBeCalledWith(VIEWER_EVENT.metric, {
                 name: USER_DOCUMENT_FIND_EVENTS.PREVIOUS,
             });
         });
     });
     describe('open()', () => {
         beforeEach(() => {
-            stubs.findFieldHandler = sandbox.stub(docFindBar, 'findFieldHandler');
-            stubs.remove = sandbox.stub(docFindBar.findBarEl.classList, 'remove');
-            stubs.select = sandbox.stub(docFindBar.findFieldEl, 'select');
-            stubs.focus = sandbox.stub(docFindBar.findFieldEl, 'focus');
+            stubs.findFieldHandler = jest.spyOn(docFindBar, 'findFieldHandler').mockImplementation();
+            stubs.remove = jest.spyOn(docFindBar.findBarEl.classList, 'remove').mockImplementation();
+            stubs.select = jest.spyOn(docFindBar.findFieldEl, 'select').mockImplementation();
+            stubs.focus = jest.spyOn(docFindBar.findFieldEl, 'focus').mockImplementation();
         });
 
-        it('should repopulate and re-highlight the find field with the last search', () => {
+        test('should repopulate and re-highlight the find field with the last search', () => {
             docFindBar.prevSearchQuery = 'test';
 
             docFindBar.open();
-            expect(docFindBar.findFieldEl.value).to.equal(docFindBar.prevSearchQuery);
-            expect(stubs.findFieldHandler).to.be.called;
+            expect(docFindBar.findFieldEl.value).toBe(docFindBar.prevSearchQuery);
+            expect(stubs.findFieldHandler).toBeCalled();
         });
 
-        it('should not repopulate and re-highlight if there is no last search', () => {
+        test('should not repopulate and re-highlight if there is no last search', () => {
             docFindBar.prevSearchQuery = '';
 
             docFindBar.open();
-            expect(stubs.findFieldHandler).to.not.be.called;
+            expect(stubs.findFieldHandler).not.toBeCalled();
         });
 
-        it('should open the find bar if it is not open', () => {
-            sandbox.stub(docFindBar, 'emit');
+        test('should open the find bar if it is not open', () => {
+            jest.spyOn(docFindBar, 'emit').mockImplementation();
             docFindBar.opened = false;
 
             docFindBar.open();
-            expect(docFindBar.opened).to.equal(true);
-            expect(stubs.remove).to.be.called;
-            expect(docFindBar.emit).to.be.calledWith(VIEWER_EVENT.metric, {
+            expect(docFindBar.opened).toBe(true);
+            expect(stubs.remove).toBeCalled();
+            expect(docFindBar.emit).toBeCalledWith(VIEWER_EVENT.metric, {
                 name: USER_DOCUMENT_FIND_EVENTS.OPEN,
             });
         });
 
-        it('should not open the find bar if it is already open', () => {
+        test('should not open the find bar if it is already open', () => {
             docFindBar.opened = true;
 
             docFindBar.open();
-            expect(docFindBar.opened).to.equal(true);
-            expect(stubs.remove).to.not.be.called;
+            expect(docFindBar.opened).toBe(true);
+            expect(stubs.remove).not.toBeCalled();
         });
 
-        it('should select and focus the find bar field', () => {
+        test('should select and focus the find bar field', () => {
             docFindBar.opened = true;
 
             docFindBar.open();
-            expect(stubs.select).to.be.called;
-            expect(stubs.focus).to.be.called;
+            expect(stubs.select).toBeCalled();
+            expect(stubs.focus).toBeCalled();
         });
     });
 
     describe('close()', () => {
         beforeEach(() => {
-            stubs.findFieldHandler = sandbox.stub(docFindBar, 'findFieldHandler');
-            stubs.add = sandbox.stub(docFindBar.findBarEl.classList, 'add');
+            stubs.findFieldHandler = jest.spyOn(docFindBar, 'findFieldHandler').mockImplementation();
+            stubs.add = jest.spyOn(docFindBar.findBarEl.classList, 'add').mockImplementation();
         });
 
-        it('should save and clear the current search', () => {
+        test('should save and clear the current search', () => {
             docFindBar.findFieldEl.value = 'test';
             docFindBar.opened = false;
 
             docFindBar.close();
-            expect(docFindBar.findFieldEl.value).to.equal('');
-            expect(docFindBar.prevSearchQuery).to.equal('test');
-            expect(stubs.findFieldHandler).to.be.called;
+            expect(docFindBar.findFieldEl.value).toBe('');
+            expect(docFindBar.prevSearchQuery).toBe('test');
+            expect(stubs.findFieldHandler).toBeCalled();
         });
 
-        it('should hide the bar if it is open', () => {
-            sandbox.stub(docFindBar, 'emit');
+        test('should hide the bar if it is open', () => {
+            jest.spyOn(docFindBar, 'emit').mockImplementation();
 
             docFindBar.findFieldEl.value = 'test';
             docFindBar.opened = true;
 
             docFindBar.close();
-            expect(docFindBar.emit).to.be.calledWith('close');
-            expect(docFindBar.opened).to.equal(false);
-            expect(stubs.add).to.be.calledWith(CLASS_HIDDEN);
+            expect(docFindBar.emit).toBeCalledWith('close');
+            expect(docFindBar.opened).toBe(false);
+            expect(stubs.add).toBeCalledWith(CLASS_HIDDEN);
         });
     });
 
     describe('toggle()', () => {
         beforeEach(() => {
-            stubs.open = sandbox.stub(docFindBar, 'open');
-            stubs.close = sandbox.stub(docFindBar, 'close');
+            stubs.open = jest.spyOn(docFindBar, 'open').mockImplementation();
+            stubs.close = jest.spyOn(docFindBar, 'close').mockImplementation();
         });
 
-        it('should open if not currently opened', () => {
+        test('should open if not currently opened', () => {
             docFindBar.opened = false;
 
             docFindBar.toggle();
 
-            expect(docFindBar.open).to.be.called;
-            expect(docFindBar.close).not.to.be.called;
+            expect(docFindBar.open).toBeCalled();
+            expect(docFindBar.close).not.toBeCalled();
         });
 
-        it('should close if currently opened', () => {
+        test('should close if currently opened', () => {
             docFindBar.opened = true;
 
             docFindBar.toggle();
 
-            expect(docFindBar.open).not.to.be.called;
-            expect(docFindBar.close).to.be.called;
+            expect(docFindBar.open).not.toBeCalled();
+            expect(docFindBar.close).toBeCalled();
         });
     });
 });

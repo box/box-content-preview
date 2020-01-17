@@ -12,14 +12,9 @@ const MAX_RETRY_TOKEN = 3; // number of times to retry refreshing token for unau
 let media;
 let stubs;
 let containerEl;
-const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/MediaBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/MediaBaseViewer-test.html');
@@ -38,35 +33,35 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             container: containerEl,
             representation: {
                 content: {
-                    url_template: 'www.netflix.com',
+                    url_template: 'www.box.com',
                 },
             },
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+
         media.containerEl = containerEl;
         media.setup();
         media.mediaControls = {
-            addListener: sandbox.stub(),
-            destroy: sandbox.stub(),
-            removeAllListeners: sandbox.stub(),
-            setTimeCode: sandbox.stub(),
-            show: sandbox.stub(),
-            showPauseIcon: sandbox.stub(),
-            showPlayIcon: sandbox.stub(),
-            toggleFullscreen: sandbox.stub(),
-            toggleSubtitles: sandbox.stub(),
-            updateProgress: sandbox.stub(),
-            updateVolumeIcon: sandbox.stub(),
-            increaseSpeed: sandbox.stub(),
-            decreaseSpeed: sandbox.stub(),
-            isVolumeScrubberFocused: sandbox.stub(),
-            isTimeScrubberFocused: sandbox.stub(),
+            addListener: jest.fn(),
+            destroy: jest.fn(),
+            removeAllListeners: jest.fn(),
+            setTimeCode: jest.fn(),
+            show: jest.fn(),
+            showPauseIcon: jest.fn(),
+            showPlayIcon: jest.fn(),
+            toggleFullscreen: jest.fn(),
+            toggleSubtitles: jest.fn(),
+            updateProgress: jest.fn(),
+            updateVolumeIcon: jest.fn(),
+            increaseSpeed: jest.fn(),
+            decreaseSpeed: jest.fn(),
+            isVolumeScrubberFocused: jest.fn(),
+            isTimeScrubberFocused: jest.fn(),
         };
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
         media.destroy();
         media = null;
@@ -74,234 +69,226 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('MediaBase()', () => {
-        it('should setup wrapper and container and load timeout', () => {
-            expect(media.wrapperEl.className).to.equal('bp-media');
-            expect(media.mediaContainerEl.className).to.equal('bp-media-container');
-            expect(media.loadTimeout).to.equal(100000);
+        test('should setup wrapper and container and load timeout', () => {
+            expect(media.wrapperEl.className).toBe('bp-media');
+            expect(media.mediaContainerEl.className).toBe('bp-media-container');
+            expect(media.loadTimeout).toBe(100000);
         });
 
-        it('should setup click-handler to remove keyboard-focus class', () => {
+        test('should setup click-handler to remove keyboard-focus class', () => {
             media.mediaContainerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
 
             media.mediaContainerEl.click();
 
-            expect(media.mediaContainerEl).to.not.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
+            expect(media.mediaContainerEl).not.toHaveClass(CLASS_ELEM_KEYBOARD_FOCUS);
         });
     });
 
     describe('destroy()', () => {
-        it('should clean up media controls', () => {
+        test('should clean up media controls', () => {
             media.destroy();
 
-            expect(media.mediaControls.removeAllListeners).to.be.called;
-            expect(media.mediaControls.destroy).to.be.called;
+            expect(media.mediaControls.removeAllListeners).toBeCalled();
+            expect(media.mediaControls.destroy).toBeCalled();
         });
 
-        it('should remove event listeners from media element and then remove the element', () => {
+        test('should remove event listeners from media element and then remove the element', () => {
             media.mediaEl = document.createElement('video');
             media.mediaContainerEl.appendChild(media.mediaEl);
 
-            media.mediaEl.removeEventListener = sandbox.stub();
-            media.mediaEl.removeAttribute = sandbox.stub();
-            media.mediaEl.load = sandbox.stub();
-            sandbox.stub(media, 'removePauseEventListener');
+            media.mediaEl.removeEventListener = jest.fn();
+            media.mediaEl.removeAttribute = jest.fn();
+            media.mediaEl.load = jest.fn();
+            jest.spyOn(media, 'removePauseEventListener');
 
             media.destroy();
 
-            expect(media.mediaEl.removeEventListener.callCount).to.equal(11);
-            expect(media.mediaEl.removeAttribute).to.be.calledWith('src');
-            expect(media.mediaEl.load).to.be.called;
-            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.mediaEl.removeEventListener).toBeCalledTimes(11);
+            expect(media.mediaEl.removeAttribute).toBeCalledWith('src');
+            expect(media.mediaEl.load).toBeCalled();
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
         });
     });
 
     describe('load()', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
-            media.mediaEl.addEventListener = sandbox.stub();
+            media.mediaEl.addEventListener = jest.fn();
         });
 
-        it('should load mediaUrl in the media element', () => {
-            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+        test('should load mediaUrl in the media element', () => {
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+
             return media.load().then(() => {
-                expect(media.mediaEl.addEventListener).to.be.calledWith('loadedmetadata', media.loadeddataHandler);
-                expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
-                expect(media.mediaEl.src).to.equal('www.netflix.com');
+                expect(media.mediaEl.addEventListener).toBeCalledWith('loadedmetadata', media.loadeddataHandler);
+                expect(media.mediaEl.addEventListener).toBeCalledWith('error', media.errorHandler);
+                expect(media.mediaEl.src).toBe('http://localhost/www.box.com');
             });
         });
 
-        it('should enable autoplay if on iOS', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
-            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+        test('should enable autoplay if on iOS', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             media.mediaEl = document.createElement('video');
 
             return media.load().then(() => {
-                expect(media.mediaEl.autoplay).to.be.true;
+                expect(media.mediaEl.autoplay).toBe(true);
             });
         });
 
-        it('should invoke startLoadTimer()', () => {
-            sandbox.stub(media, 'startLoadTimer');
-            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+        test('should invoke startLoadTimer()', () => {
+            jest.spyOn(media, 'startLoadTimer');
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
 
             return media.load().then(() => {
-                expect(media.startLoadTimer).to.be.called;
+                expect(media.startLoadTimer).toBeCalled();
             });
         });
     });
 
     describe('loadeddataHandler()', () => {
-        it('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'emit');
-            sandbox.stub(media, 'resize');
-            sandbox.stub(media, 'showMedia');
-            sandbox.stub(media, 'loadUI');
+        test('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
+            jest.spyOn(media, 'handleVolume').mockImplementation();
+            jest.spyOn(media, 'emit').mockImplementation();
+            jest.spyOn(media, 'resize').mockImplementation();
+            jest.spyOn(media, 'showMedia').mockImplementation();
+            jest.spyOn(media, 'loadUI').mockImplementation();
 
             media.options.autoFocus = true;
             media.loadeddataHandler();
 
-            expect(media.handleVolume).to.be.called;
-            expect(media.loaded).to.be.true;
-            expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
-            expect(media.resize).to.be.called;
-            expect(media.showMedia).to.be.called;
-            expect(media.loadUI).to.be.called;
-            expect(document.activeElement).to.equal(media.mediaContainerEl);
+            expect(media.handleVolume).toBeCalled();
+            expect(media.loaded).toBe(true);
+            expect(media.emit).toBeCalledWith(VIEWER_EVENT.load);
+            expect(media.resize).toBeCalled();
+            expect(media.showMedia).toBeCalled();
+            expect(media.loadUI).toBeCalled();
+            expect(document.activeElement).toBe(media.mediaContainerEl);
         });
 
-        it('should autoplay if enabled', () => {
-            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
-            sandbox.stub(media, 'autoplay');
+        test('should autoplay if enabled', () => {
+            jest.spyOn(media, 'isAutoplayEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'autoplay').mockImplementation();
             media.mediaEl = document.createElement('video');
 
             media.loadeddataHandler();
 
-            expect(media.autoplay).to.be.called;
+            expect(media.autoplay).toBeCalled();
         });
     });
 
     describe('showMedia()', () => {
-        it('should add the bp-is-visible class to make wrapper visible', () => {
+        test('should add the bp-is-visible class to make wrapper visible', () => {
             media.showMedia();
-            expect(media.wrapperEl.classList.contains('bp-is-visible')).to.be.true;
+            expect(media.wrapperEl.classList.contains('bp-is-visible')).toBe(true);
         });
     });
 
     describe('handleExpiredTokenError()', () => {
-        it('should not trigger error if is not an ExpiredTokenError', () => {
-            sandbox.stub(media, 'isExpiredTokenError').returns(false);
-            sandbox.stub(media, 'triggerError');
+        test('should not trigger error if is not an ExpiredTokenError', () => {
+            jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(false);
+            jest.spyOn(media, 'triggerError').mockImplementation();
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
             media.handleExpiredTokenError(error);
-            expect(media.triggerError).to.not.be.called;
+            expect(media.triggerError).not.toBeCalled();
         });
 
-        it('should trigger error if retry token count reaches max retry limit', () => {
+        test('should trigger error if retry token count reaches max retry limit', () => {
             media.retryTokenCount = MAX_RETRY_TOKEN + 1;
-            sandbox.stub(media, 'isExpiredTokenError').returns(true);
-            sandbox.stub(media, 'triggerError');
+            jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(true);
+            jest.spyOn(media, 'triggerError').mockImplementation();
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
             media.handleExpiredTokenError(error);
-            expect(media.triggerError).to.be.calledWith(sinon.match.has('code', ERROR_CODE.TOKEN_NOT_VALID));
+            expect(media.triggerError).toBeCalledWith(expect.objectContaining({ code: ERROR_CODE.TOKEN_NOT_VALID }));
         });
 
-        it('should call refreshToken if retry token count did not reach max retry limit', () => {
+        test('should call refreshToken if retry token count did not reach max retry limit', () => {
             media.retryTokenCount = 0;
-            sandbox.stub(media, 'isExpiredTokenError').returns(true);
-            media.options.refreshToken = sandbox.stub().returns(Promise.resolve());
+            jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(true);
+            media.options.refreshToken = jest.fn(() => Promise.resolve());
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
             media.handleExpiredTokenError(error);
 
-            expect(media.options.refreshToken).to.be.called;
-            expect(media.retryTokenCount).to.equal(1);
+            expect(media.options.refreshToken).toBeCalled();
+            expect(media.retryTokenCount).toBe(1);
         });
     });
 
     describe('errorHandler()', () => {
-        it('should handle download error if the viewer was not yet loaded', () => {
+        test('should handle download error if the viewer was not yet loaded', () => {
             const err = new Error();
             media.mediaUrl = 'foo';
-            sandbox.stub(media, 'isLoaded').returns(false);
-            sandbox.stub(media, 'handleDownloadError');
+            jest.spyOn(media, 'isLoaded').mockReturnValue(false);
+            jest.spyOn(media, 'handleDownloadError').mockImplementation();
 
             media.errorHandler(err);
 
-            expect(media.handleDownloadError).to.be.calledWith(sinon.match.has('code'), 'foo');
+            expect(media.handleDownloadError).toBeCalledWith(expect.anything(), 'foo');
         });
 
-        it('should trigger an error if Preview is already loaded', () => {
+        test('should trigger an error if Preview is already loaded', () => {
             const err = new Error();
-            sandbox.stub(media, 'isLoaded').returns(true);
-            sandbox.stub(media, 'triggerError');
+            jest.spyOn(media, 'isLoaded').mockReturnValue(true);
+            jest.spyOn(media, 'triggerError').mockImplementation();
 
             media.errorHandler(err);
 
-            expect(media.triggerError).to.be.calledWith(sinon.match.has('code'));
+            expect(media.triggerError).toBeCalled();
         });
     });
 
     describe('handleRate()', () => {
-        it('should emit speed change if speed has changed', () => {
+        test('should emit speed change if speed has changed', () => {
             const speed = 2;
-            sandbox.stub(media, 'emit');
-            sandbox
-                .stub(media.cache, 'get')
-                .withArgs('media-speed')
-                .returns(speed);
+            jest.spyOn(media, 'emit');
+            jest.spyOn(media.cache, 'get').mockReturnValue(speed);
             media.mediaEl = document.createElement('video');
             media.mediaEl.playbackRate = 1;
 
             media.handleRate();
 
-            expect(media.emit).to.be.calledWith('ratechange', speed);
-            expect(media.mediaEl.playbackRate).to.equal(speed);
+            expect(media.emit).toBeCalledWith('ratechange', speed);
+            expect(media.mediaEl.playbackRate).toBe(speed);
         });
     });
 
     describe('handleVolume()', () => {
         beforeEach(() => {
-            stubs.volume = 50;
-            stubs.has = sandbox
-                .stub(media.cache, 'has')
-                .withArgs('media-volume')
-                .returns(true);
-            stubs.get = sandbox
-                .stub(media.cache, 'get')
-                .withArgs('media-volume')
-                .returns(stubs.volume);
-            stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
+            stubs.volume = 0.5;
+            jest.spyOn(media.cache, 'has').mockReturnValue(true);
+            jest.spyOn(media.cache, 'get').mockReturnValue(stubs.volume);
+            stubs.debouncedEmit = jest.spyOn(media, 'debouncedEmit').mockImplementation();
         });
 
-        it('should set volume from cache', () => {
+        test('should set volume from cache', () => {
             media.mediaEl = document.createElement('video');
 
             media.handleVolume();
-            expect(media.mediaEl.volume).to.equal(stubs.volume);
+            expect(media.mediaEl.volume).toBe(stubs.volume);
         });
 
-        it('should set emit volumechange if the volume has changed', () => {
+        test('should set emit volumechange if the volume has changed', () => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.volume = 0;
 
             media.handleVolume();
 
-            expect(stubs.debouncedEmit).to.be.calledWith('volume', 50);
+            expect(stubs.debouncedEmit).toBeCalledWith('volume', 0.5);
         });
     });
 
     describe('handleAutoplay()', () => {
-        it('should emit the new autoplay value', () => {
-            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
-            sandbox.stub(media, 'emit');
+        test('should emit the new autoplay value', () => {
+            jest.spyOn(media, 'isAutoplayEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'emit');
 
             media.handleAutoplay();
-            expect(media.emit).to.be.calledWith('autoplay', false);
+            expect(media.emit).toBeCalledWith('autoplay', false);
 
-            media.isAutoplayEnabled.returns(true);
+            media.isAutoplayEnabled.mockReturnValue(true);
 
             media.handleAutoplay();
-            expect(media.emit).to.be.calledWith('autoplay', true);
+            expect(media.emit).toBeCalledWith('autoplay', true);
         });
     });
 
@@ -310,214 +297,217 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         beforeEach(() => {
             media.mediaEl = {};
-            media.play = sandbox.stub().returns(Promise.resolve());
+            media.play = jest.fn(() => Promise.resolve());
         });
 
-        it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
+        test('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
             media.autoplay();
-            expect(media.play).to.be.called;
-            expect(media.mediaEl.autoplay).to.be.undefined;
+            expect(media.play).toBeCalled();
+            expect(media.mediaEl.autoplay).toBeUndefined();
         });
 
-        it('should set autoplay to true if mediaEl.play does not return a promise', done => {
-            media.play.returns(Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED)));
+        test('should set autoplay to true if mediaEl.play does not return a promise', done => {
+            media.play.mockReturnValue(Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED)));
             media.autoplay().then(() => {
-                expect(media.mediaEl.autoplay).to.be.true;
+                expect(media.mediaEl.autoplay).toBe(true);
                 done();
             });
         });
 
-        it('should call handleAutoplayFail if the promise is rejected', done => {
-            sandbox.stub(media, 'handleAutoplayFail');
-            media.play.returns(Promise.reject(new Error('NotAllowedError')));
+        test('should call handleAutoplayFail if the promise is rejected', done => {
+            jest.spyOn(media, 'handleAutoplayFail');
+            media.play.mockReturnValue(Promise.reject(new Error('NotAllowedError')));
             media.autoplay().then(() => {
-                expect(media.handleAutoplayFail).to.be.called;
+                expect(media.handleAutoplayFail).toBeCalled();
                 done();
             });
         });
     });
 
     describe('loadUI()', () => {
-        it('should set up media controls and element', () => {
+        beforeEach(() => {
+            jest.spyOn(media, 'addEventListenersForMediaControls').mockImplementation();
+            jest.spyOn(media, 'addEventListenersForMediaElement').mockImplementation();
+        });
+
+        test('should set up media controls and element', () => {
             const duration = 10;
             media.mediaEl = { duration };
-            sandbox.stub(media, 'addEventListenersForMediaControls');
-            sandbox.stub(media, 'addEventListenersForMediaElement');
 
             media.loadUI();
 
-            expect(media.addEventListenersForMediaControls).to.be.called;
+            expect(media.addEventListenersForMediaControls).toBeCalled();
         });
     });
 
     describe('handleTimeupdateFromMediaControls()', () => {
-        it('should set media time and remove pause listener', () => {
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'removePauseEventListener');
+        test('should set media time and remove pause listener', () => {
+            jest.spyOn(media, 'setMediaTime');
+            jest.spyOn(media, 'removePauseEventListener');
             media.handleTimeupdateFromMediaControls(100.23);
-            expect(media.setMediaTime).to.be.calledWith(100.23);
-            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.setMediaTime).toBeCalledWith(100.23);
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
         });
     });
 
     describe('addEventListenersForMediaControls()', () => {
-        it('should add event listeners for time and volume updates, play and mute toggles, and speed change', () => {
+        test('should add event listeners for time and volume updates, play and mute toggles, and speed change', () => {
             media.addEventListenersForMediaControls();
 
-            expect(media.mediaControls.addListener).to.be.calledWith('timeupdate', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('volumeupdate', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('toggleplayback', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('togglemute', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('ratechange', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('autoplaychange', sinon.match.func);
+            expect(media.mediaControls.addListener).toBeCalledWith('timeupdate', expect.any(Function));
+            expect(media.mediaControls.addListener).toBeCalledWith('volumeupdate', expect.any(Function));
+            expect(media.mediaControls.addListener).toBeCalledWith('toggleplayback', expect.any(Function));
+            expect(media.mediaControls.addListener).toBeCalledWith('togglemute', expect.any(Function));
+            expect(media.mediaControls.addListener).toBeCalledWith('ratechange', expect.any(Function));
+            expect(media.mediaControls.addListener).toBeCalledWith('autoplaychange', expect.any(Function));
         });
     });
 
     describe('setTimeCode()', () => {
-        it('should set the current time in controls', () => {
+        test('should set the current time in controls', () => {
             const currentTime = 1337;
             media.mediaEl = { currentTime };
 
             media.setTimeCode();
 
-            expect(media.mediaControls.setTimeCode).to.be.calledWith(currentTime);
+            expect(media.mediaControls.setTimeCode).toBeCalledWith(currentTime);
         });
     });
 
     describe('setMediaTime()', () => {
-        it('should set the time on the media element', () => {
+        test('should set the time on the media element', () => {
             media.mediaEl = document.createElement('video');
-            media.mediaEl.duration = 4;
+            Object.defineProperty(media.mediaEl, 'duration', { value: 4, writable: true });
             const newTime = 3.14;
 
             media.setMediaTime(newTime);
 
-            expect(media.mediaEl.currentTime).to.equal(newTime);
+            expect(media.mediaEl.currentTime).toBe(newTime);
         });
     });
 
     describe('setVolume()', () => {
-        it('should set volume', () => {
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media.cache, 'set');
+        test('should set volume', () => {
+            jest.spyOn(media, 'handleVolume').mockImplementation();
+            jest.spyOn(media.cache, 'set').mockImplementation();
             const newVol = 0.159;
             media.setVolume(newVol);
-            expect(media.cache.set).to.be.calledWith('media-volume', newVol);
-            expect(media.handleVolume).to.be.called;
+            expect(media.cache.set).toBeCalledWith('media-volume', newVol, true);
+            expect(media.handleVolume).toBeCalled();
         });
     });
 
     describe('updateVolumeIcon()', () => {
-        it('should update the controls volume icon', () => {
+        test('should update the controls volume icon', () => {
             const volume = 1337;
             media.mediaEl = { volume };
 
             media.updateVolumeIcon();
 
-            expect(media.mediaControls.updateVolumeIcon).to.be.calledWith(volume);
+            expect(media.mediaControls.updateVolumeIcon).toBeCalledWith(volume);
         });
     });
 
     describe('playingHandler()', () => {
-        it('should show pause icon, hide loading icon, and handle speed and volume', () => {
-            sandbox.stub(media, 'hideLoadingIcon');
-            sandbox.stub(media, 'handleRate');
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'emit');
+        test('should show pause icon, hide loading icon, and handle speed and volume', () => {
+            jest.spyOn(media, 'emit').mockImplementation();
+            jest.spyOn(media, 'handleRate').mockImplementation();
+            jest.spyOn(media, 'handleVolume').mockImplementation();
+            jest.spyOn(media, 'hideLoadingIcon').mockImplementation();
 
             media.playingHandler();
 
-            expect(media.mediaControls.showPauseIcon).to.be.called;
-            expect(media.hideLoadingIcon).to.be.called;
-            expect(media.handleRate).to.be.called;
-            expect(media.handleVolume).to.be.called;
-            expect(media.emit).to.be.calledWith('play');
+            expect(media.mediaControls.showPauseIcon).toBeCalled();
+            expect(media.hideLoadingIcon).toBeCalled();
+            expect(media.handleRate).toBeCalled();
+            expect(media.handleVolume).toBeCalled();
+            expect(media.emit).toBeCalledWith('play');
         });
     });
 
     describe('progressHandler()', () => {
-        it('should update controls progress', () => {
+        test('should update controls progress', () => {
             media.progressHandler();
 
-            expect(media.mediaControls.updateProgress).to.be.called;
+            expect(media.mediaControls.updateProgress).toBeCalled();
         });
     });
 
     describe('pauseHandler()', () => {
-        it('should show the controls play icon', () => {
+        test('should show the controls play icon', () => {
             media.pauseHandler();
 
-            expect(media.mediaControls.showPlayIcon).to.be.called;
+            expect(media.mediaControls.showPlayIcon).toBeCalled();
         });
     });
 
     describe('seekHandler()', () => {
-        it('should hide loading icon and emit current time', () => {
-            sandbox.stub(media, 'hideLoadingIcon');
+        test('should hide loading icon and emit current time', () => {
+            jest.spyOn(media, 'hideLoadingIcon');
             const currentTime = 20;
             media.mediaEl = { currentTime };
-            stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
+            stubs.debouncedEmit = jest.spyOn(media, 'debouncedEmit');
 
-            expect(media.metrics.seeked).to.be.equal(false);
+            expect(media.metrics.seeked).toBe(false);
 
             media.seekHandler();
 
-            expect(media.hideLoadingIcon).to.be.called;
-            expect(media.debouncedEmit).to.be.calledWith('seeked', currentTime);
-            expect(media.metrics.seeked).to.be.equal(true);
+            expect(media.hideLoadingIcon).toBeCalled();
+            expect(media.debouncedEmit).toBeCalledWith('seeked', currentTime);
+            expect(media.metrics.seeked).toBe(true);
         });
     });
 
     describe('mediaendHandler()', () => {
-        it('emit the mediaendautoplay event if autoplay is enabled', () => {
-            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
-            sandbox.stub(media, 'emit');
-            sandbox.stub(media, 'resetPlayIcon');
+        test('emit the mediaendautoplay event if autoplay is enabled', () => {
+            jest.spyOn(media, 'isAutoplayEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'emit');
+            jest.spyOn(media, 'resetPlayIcon');
 
             media.mediaendHandler();
-            expect(media.isAutoplayEnabled).to.be.called;
-            expect(media.emit).to.not.be.called;
+            expect(media.isAutoplayEnabled).toBeCalled();
+            expect(media.emit).not.toBeCalled();
 
-            media.isAutoplayEnabled.returns(true);
+            media.isAutoplayEnabled.mockReturnValue(true);
 
             media.mediaendHandler();
-            expect(media.emit).to.be.calledWith(VIEWER_EVENT.mediaEndAutoplay);
-            expect(media.resetPlayIcon).to.be.called;
+            expect(media.emit).toBeCalledWith(VIEWER_EVENT.mediaEndAutoplay);
+            expect(media.resetPlayIcon).toBeCalled();
         });
     });
 
     describe('showPlayButton', () => {
-        it('should show the play button if it exists', () => {
+        test('should show the play button if it exists', () => {
             media.playButtonEl = document.createElement('button');
             media.playButtonEl.classList.add('bp-is-hidden');
             media.showPlayButton();
-            expect(media.playButtonEl.classList.contains('bp-is-hidden')).to.be.false;
+            expect(media.playButtonEl.classList.contains('bp-is-hidden')).toBe(false);
         });
     });
 
     describe('hidePlayButton', () => {
-        it('should hide the play button if it exists', () => {
+        test('should hide the play button if it exists', () => {
             media.playButtonEl = document.createElement('button');
             media.hidePlayButton();
-            expect(media.playButtonEl.classList.contains('bp-is-hidden')).to.be.true;
+            expect(media.playButtonEl.classList.contains('bp-is-hidden')).toBe(true);
         });
     });
 
     describe('resetPlayIcon()', () => {
-        it('should set media controls timecode, hide loading icon, and pause', () => {
-            sandbox.stub(media, 'hideLoadingIcon');
-            sandbox.stub(media, 'pauseHandler');
+        test('should set media controls timecode, hide loading icon, and pause', () => {
+            jest.spyOn(media, 'hideLoadingIcon');
+            jest.spyOn(media, 'pauseHandler');
 
             media.resetPlayIcon();
 
-            expect(media.mediaControls.setTimeCode).to.be.calledWith(0);
-            expect(media.hideLoadingIcon).to.be.called;
-            expect(media.pauseHandler).to.be.called;
+            expect(media.mediaControls.setTimeCode).toBeCalledWith(0);
+            expect(media.hideLoadingIcon).toBeCalled();
+            expect(media.pauseHandler).toBeCalled();
         });
     });
 
     describe('isValidTime', () => {
-        it('should validate time parameter', () => {
+        test('should validate time parameter', () => {
             media.mediaEl = { duration: 100 };
             const nullCheck = media.isValidTime(null);
             const undefinedCheck = media.isValidTime(undefined);
@@ -526,172 +516,167 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const durationCheck = media.isValidTime(105);
             const numberCheck = media.isValidTime(50);
 
-            expect(nullCheck).to.be.false;
-            expect(undefinedCheck).to.be.false;
-            expect(stringCheck).to.be.false;
-            expect(InfinityCheck).to.be.false;
-            expect(durationCheck).to.be.false;
-            expect(numberCheck).to.be.true;
+            expect(nullCheck).toBe(false);
+            expect(undefinedCheck).toBe(false);
+            expect(stringCheck).toBe(false);
+            expect(InfinityCheck).toBe(false);
+            expect(durationCheck).toBe(false);
+            expect(numberCheck).toBe(true);
         });
     });
 
     describe('removePauseEventListener()', () => {
-        it('should remove pause event listener if it exists', () => {
+        test('should remove pause event listener if it exists', () => {
             let pauseListener = null;
-            media.mediaEl = { removeEventListener: sandbox.stub() };
+            media.mediaEl = { removeEventListener: jest.fn() };
 
             media.pauseListener = pauseListener;
             media.removePauseEventListener();
-            expect(media.mediaEl.removeEventListener).to.be.not.be.called;
+            expect(media.mediaEl.removeEventListener).not.toBeCalled();
 
             pauseListener = () => {};
             media.pauseListener = pauseListener;
             media.removePauseEventListener();
-            expect(media.mediaEl.removeEventListener).to.be.calledWith('timeupdate', pauseListener);
+            expect(media.mediaEl.removeEventListener).toBeCalledWith('timeupdate', pauseListener);
         });
     });
 
     describe('play()', () => {
-        it('should play the media when no time parameters are passed', () => {
-            media.mediaEl = { play: sandbox.stub() };
-            sandbox.stub(media, 'handleRate');
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'removePauseEventListener');
+        beforeEach(() => {
+            jest.spyOn(media, 'emit').mockImplementation();
+            jest.spyOn(media, 'handleRate').mockImplementation();
+            jest.spyOn(media, 'handleVolume').mockImplementation();
+            jest.spyOn(media, 'pause').mockImplementation();
+            jest.spyOn(media, 'removePauseEventListener').mockImplementation();
+            jest.spyOn(media, 'setMediaTime').mockImplementation();
+        });
+
+        test('should play the media when no time parameters are passed', () => {
+            media.mediaEl = { play: jest.fn() };
             media.play();
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.handleRate.callCount).to.equal(1);
-            expect(media.handleVolume.callCount).to.equal(1);
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.mediaEl.play).toBeCalledTimes(1);
+            expect(media.handleRate).toBeCalledTimes(1);
+            expect(media.handleVolume).toBeCalledTimes(1);
         });
 
-        it('should start playing from start time without pausing, when only one parameter is passed', () => {
-            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
-            media.mediaEl = { play: sandbox.stub() };
-            isValidTimeStub.withArgs(100).returns(true);
-            isValidTimeStub.withArgs(undefined).returns(false);
-            sandbox.stub(media, 'pause');
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'handleRate');
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'removePauseEventListener');
+        test('should start playing from start time without pausing, when only one parameter is passed', () => {
+            jest.spyOn(media, 'isValidTime')
+                .mockImplementation()
+                .mockReturnValueOnce(true)
+                .mockReturnValueOnce(false);
+            media.mediaEl = { play: jest.fn() };
             media.play(100);
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).to.be.calledWith(100);
-            expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.handleRate.callCount).to.equal(1);
-            expect(media.handleVolume.callCount).to.equal(1);
-            expect(media.pause.callCount).to.equal(0);
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(100);
+            expect(media.mediaEl.play).toBeCalledTimes(1);
+            expect(media.handleRate).toBeCalledTimes(1);
+            expect(media.handleVolume).toBeCalledTimes(1);
+            expect(media.pause).toBeCalledTimes(0);
         });
 
-        it('should start playing from start time and pause at end time', () => {
-            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
-            media.mediaEl = { play: sandbox.stub() };
-            isValidTimeStub.withArgs(100).returns(true);
-            isValidTimeStub.withArgs(200).returns(true);
-            sandbox.stub(media, 'pause');
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'handleRate');
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'removePauseEventListener');
+        test('should start playing from start time and pause at end time', () => {
+            jest.spyOn(media, 'isValidTime').mockReturnValue(true);
+            media.mediaEl = { play: jest.fn() };
             media.play(100, 200);
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).to.be.calledWith(100);
-            expect(media.pause).to.be.calledWith(200);
-            expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.handleRate.callCount).to.equal(1);
-            expect(media.handleVolume.callCount).to.equal(1);
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(100);
+            expect(media.pause).toBeCalledWith(200);
+            expect(media.mediaEl.play).toBeCalledTimes(1);
+            expect(media.handleRate).toBeCalledTimes(1);
+            expect(media.handleVolume).toBeCalledTimes(1);
         });
 
-        it('should ignore when invalid time parameters are passed', () => {
-            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
-            media.mediaEl = { play: sandbox.stub() };
-            isValidTimeStub.withArgs('abc').returns(false);
-            isValidTimeStub.withArgs('pqr').returns(false);
-            sandbox.stub(media, 'pause');
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'emit');
-            sandbox.stub(media, 'handleRate');
-            sandbox.stub(media, 'handleVolume');
-            sandbox.stub(media, 'removePauseEventListener');
+        test('should ignore when invalid time parameters are passed', () => {
+            jest.spyOn(media, 'isValidTime').mockReturnValue(false);
+            media.mediaEl = { play: jest.fn() };
             media.play(200, 100);
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime.callCount).to.equal(0);
-            expect(media.pause.callCount).to.equal(0);
-            expect(media.mediaEl.play.callCount).to.equal(0);
-            expect(media.emit.callCount).to.equal(0);
-            expect(media.handleRate.callCount).to.equal(0);
-            expect(media.handleVolume.callCount).to.equal(0);
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledTimes(0);
+            expect(media.pause).toBeCalledTimes(0);
+            expect(media.mediaEl.play).toBeCalledTimes(0);
+            expect(media.emit).toBeCalledTimes(0);
+            expect(media.handleRate).toBeCalledTimes(0);
+            expect(media.handleVolume).toBeCalledTimes(0);
         });
     });
 
     describe('pause()', () => {
-        it('should pause the media when no time parameter is passed', () => {
+        beforeEach(() => {
+            jest.spyOn(media, 'emit').mockImplementation();
+            jest.spyOn(media, 'removePauseEventListener').mockImplementation();
+        });
+
+        test('should pause the media when no time parameter is passed', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
-                pause: sandbox.stub(),
+                pause: jest.fn(),
             };
             media.pauseListener = pauseListener;
-            sandbox.stub(media, 'removePauseEventListener');
-            sandbox.stub(media, 'emit');
             media.pause();
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.mediaEl.pause.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('pause', {
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.mediaEl.pause).toBeCalledTimes(1);
+            expect(media.emit).toBeCalledWith('pause', {
                 userInitiated: false,
             });
         });
 
-        it('should update userInitiated flag IF the pause has been triggered by user interaction', () => {
+        test('should update userInitiated flag IF the pause has been triggered by user interaction', () => {
             media.mediaEl = {
                 duration: 100,
-                pause: sandbox.stub(),
+                pause: jest.fn(),
             };
-            sandbox.stub(media, 'removePauseEventListener');
-            sandbox.stub(media, 'emit');
             media.pause(undefined, true);
-            expect(media.emit).to.be.calledWith('pause', {
+
+            expect(media.emit).toBeCalledWith('pause', {
                 userInitiated: true,
             });
         });
 
-        it('should add eventListener to pause the media when valid time parameter is passed', () => {
+        test('should add eventListener to pause the media when valid time parameter is passed', () => {
             const pauseListener = () => {}; // eslint-disable-line require-jsdoc
             media.mediaEl = {
                 duration: 100,
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             };
             media.pauseListener = pauseListener;
-            sandbox.stub(media, 'removePauseEventListener');
             media.pause(100);
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.mediaEl.addEventListener.callCount).to.equal(1);
+
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.mediaEl.addEventListener).toBeCalledTimes(1);
         });
     });
 
     describe('togglePlay()', () => {
-        it('should pause if media element was playing', () => {
-            sandbox.stub(media, 'pause');
-            sandbox.stub(media, 'play');
-            media.mediaEl = { paused: false };
-            media.togglePlay();
-            expect(media.pause.callCount).to.equal(1);
-            expect(media.play.callCount).to.equal(0);
+        beforeEach(() => {
+            jest.spyOn(media, 'pause').mockImplementation();
+            jest.spyOn(media, 'play').mockImplementation();
         });
 
-        it('should play if media element was paused', () => {
-            sandbox.stub(media, 'pause');
-            sandbox.stub(media, 'play');
+        test('should pause if media element was playing', () => {
+            media.mediaEl = { paused: false };
+            media.togglePlay();
+            expect(media.pause).toBeCalledTimes(1);
+            expect(media.play).toBeCalledTimes(0);
+        });
+
+        test('should play if media element was paused', () => {
             media.mediaEl = { paused: true };
             media.togglePlay();
-            expect(media.pause.callCount).to.equal(0);
-            expect(media.play.callCount).to.equal(1);
+            expect(media.pause).toBeCalledTimes(0);
+            expect(media.play).toBeCalledTimes(1);
         });
     });
 
     describe('toggleMute()', () => {
-        it('should mute if volume was on', () => {
-            sandbox.stub(media.cache, 'set');
+        test('should mute if volume was on', () => {
+            jest.spyOn(media.cache, 'set');
 
             media.mediaEl = {
                 volume: 0.3,
@@ -699,11 +684,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.toggleMute();
 
-            expect(media.cache.set).to.be.calledWith('media-volume', 0);
+            expect(media.cache.set).toBeCalledWith('media-volume', 0, true);
         });
 
-        it('should restore old volume if volume was muted', () => {
-            sandbox.stub(media.cache, 'set');
+        test('should restore old volume if volume was muted', () => {
+            jest.spyOn(media.cache, 'set');
 
             const oldVol = 0.3;
             media.mediaEl = {
@@ -713,11 +698,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.toggleMute();
 
-            expect(media.cache.set).to.be.calledWith('media-volume', oldVol);
+            expect(media.cache.set).toBeCalledWith('media-volume', oldVol, true);
         });
 
-        it('should leave no change if called twice', () => {
-            sandbox.stub(media.cache, 'set');
+        test('should leave no change if called twice', () => {
+            jest.spyOn(media.cache, 'set');
 
             const vol = 0.3;
             media.mediaEl = {
@@ -727,369 +712,369 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.toggleMute();
             media.toggleMute();
 
-            expect(media.cache.set).to.be.calledWith('media-volume', 0);
+            expect(media.cache.set).toBeCalledWith('media-volume', 0, true);
         });
     });
 
     describe('hideLoadingIcon()', () => {
-        it('should add the loaded class to the container', () => {
+        test('should add the loaded class to the container', () => {
             media.hideLoadingIcon();
-            expect(media.containerEl.classList.contains('bp-is-buffering')).to.be.false;
+            expect(media.containerEl.classList.contains('bp-is-buffering')).toBe(false);
         });
     });
 
     describe('showLoadingIcon()', () => {
-        it('should remove the loaded class and hide the play button if media is not paused nor ended', () => {
+        test('should remove the loaded class and hide the play button if media is not paused nor ended', () => {
             media.mediaEl = {
                 paused: false,
                 ended: false,
             };
-            sandbox.stub(media, 'hidePlayButton');
+            jest.spyOn(media, 'hidePlayButton');
 
             media.showLoadingIcon();
 
-            expect(media.hidePlayButton).to.be.called;
-            expect(media.containerEl.classList.contains('bp-is-buffering')).to.be.true;
+            expect(media.hidePlayButton).toBeCalled();
+            expect(media.containerEl.classList.contains('bp-is-buffering')).toBe(true);
         });
     });
 
     describe('addEventListenersForMediaElement()', () => {
-        it('should add event listeners to media element', () => {
+        test('should add event listeners to media element', () => {
             media.mediaEl = {
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             };
 
             media.addEventListenersForMediaElement();
 
-            expect(media.mediaEl.addEventListener.callCount).to.equal(7);
+            expect(media.mediaEl.addEventListener).toBeCalledTimes(7);
         });
     });
 
     describe('quickSeek()', () => {
-        it('should seek with positive increments', () => {
+        test('should seek with positive increments', () => {
             media.mediaEl = {
                 currentTime: 30,
                 duration: 60,
             };
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'removePauseEventListener');
+            jest.spyOn(media, 'setMediaTime');
+            jest.spyOn(media, 'removePauseEventListener');
 
             media.quickSeek(5);
 
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).calledWith(35);
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(35);
         });
 
-        it('should seek with negative increments', () => {
+        test('should seek with negative increments', () => {
             media.mediaEl = {
                 currentTime: 30,
                 duration: 60,
             };
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'removePauseEventListener');
+            jest.spyOn(media, 'setMediaTime');
+            jest.spyOn(media, 'removePauseEventListener');
 
             media.quickSeek(-5);
 
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).calledWith(25);
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(25);
         });
 
-        it('should not go beyond beginning of video', () => {
+        test('should not go beyond beginning of video', () => {
             media.mediaEl = {
                 currentTime: 3,
                 duration: 60,
             };
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'removePauseEventListener');
+            jest.spyOn(media, 'setMediaTime');
+            jest.spyOn(media, 'removePauseEventListener');
 
             media.quickSeek(-5);
 
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).calledWith(0);
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(0);
         });
 
-        it('should not go beyond end of video', () => {
+        test('should not go beyond end of video', () => {
             media.mediaEl = {
                 currentTime: 57,
                 duration: 60,
             };
-            sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'removePauseEventListener');
+            jest.spyOn(media, 'setMediaTime');
+            jest.spyOn(media, 'removePauseEventListener');
 
             media.quickSeek(5);
 
-            expect(media.removePauseEventListener.callCount).to.equal(1);
-            expect(media.setMediaTime).calledWith(60);
+            expect(media.removePauseEventListener).toBeCalledTimes(1);
+            expect(media.setMediaTime).toBeCalledWith(60);
         });
     });
 
     describe('increaseVolume', () => {
-        it('should not exceed maximum volume', () => {
+        test('should not exceed maximum volume', () => {
             media.mediaEl = {
                 volume: 0.99,
             };
-            sandbox.stub(media, 'setVolume');
+            jest.spyOn(media, 'setVolume');
 
             media.increaseVolume();
 
-            expect(media.setVolume).calledWith(1);
+            expect(media.setVolume).toBeCalledWith(1);
         });
     });
 
     describe('decreaseVolume', () => {
-        it('should not fall below minimum volume', () => {
+        test('should not fall below minimum volume', () => {
             media.mediaEl = {
                 volume: 0.01,
             };
-            sandbox.stub(media, 'setVolume');
+            jest.spyOn(media, 'setVolume');
 
             media.decreaseVolume();
 
-            expect(media.setVolume).calledWith(0);
+            expect(media.setVolume).toBeCalledWith(0);
         });
     });
 
     describe('onKeydown()', () => {
-        it('should return false if media controls are not initialized', () => {
+        test('should return false if media controls are not initialized', () => {
             media.mediaControls = null;
-            expect(media.onKeydown()).to.be.false;
+            expect(media.onKeydown()).toBe(false);
         });
 
-        it('should add keyboard-focus class on tab and return false', () => {
-            expect(media.onKeydown('Tab')).to.be.false;
-            expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
-            expect(media.mediaControls.show).to.be.called;
+        test('should add keyboard-focus class on tab and return false', () => {
+            expect(media.onKeydown('Tab')).toBe(false);
+            expect(media.mediaContainerEl).toHaveClass(CLASS_ELEM_KEYBOARD_FOCUS);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should add keyboard-focus class on shift+tab and return false', () => {
-            expect(media.onKeydown('Shift+Tab')).to.be.false;
-            expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
-            expect(media.mediaControls.show).to.be.called;
+        test('should add keyboard-focus class on shift+tab and return false', () => {
+            expect(media.onKeydown('Shift+Tab')).toBe(false);
+            expect(media.mediaContainerEl).toHaveClass(CLASS_ELEM_KEYBOARD_FOCUS);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle play and return true on Space', () => {
-            sandbox.stub(media, 'togglePlay');
+        test('should toggle play and return true on Space', () => {
+            jest.spyOn(media, 'togglePlay').mockImplementation();
 
-            expect(media.onKeydown('Space')).to.be.true;
-            expect(media.togglePlay).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('Space')).toBe(true);
+            expect(media.togglePlay).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle play and return true on k', () => {
-            sandbox.stub(media, 'togglePlay');
+        test('should toggle play and return true on k', () => {
+            jest.spyOn(media, 'togglePlay').mockImplementation();
 
-            expect(media.onKeydown('k')).to.be.true;
-            expect(media.togglePlay).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('k')).toBe(true);
+            expect(media.togglePlay).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek backwards 5 seconds and return true on ArrowLeft', () => {
-            sandbox.stub(media, 'quickSeek');
+        test('should seek backwards 5 seconds and return true on ArrowLeft', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowLeft')).to.be.true;
-            expect(media.quickSeek).calledWith(-5);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowLeft')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(-5);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should lower volume on ArrowLeft if volume scrubber is focused', () => {
-            media.mediaControls.isVolumeScrubberFocused = sandbox.stub().returns(true);
-            sandbox.stub(media, 'decreaseVolume');
+        test('should lower volume on ArrowLeft if volume scrubber is focused', () => {
+            media.mediaControls.isVolumeScrubberFocused = jest.fn(() => true);
+            jest.spyOn(media, 'decreaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowLeft')).to.be.true;
-            expect(media.decreaseVolume).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowLeft')).toBe(true);
+            expect(media.decreaseVolume).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek backwards 10 seconds and return true on j', () => {
-            sandbox.stub(media, 'quickSeek');
+        test('should seek backwards 10 seconds and return true on j', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('j')).to.be.true;
-            expect(media.quickSeek).calledWith(-10);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('j')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(-10);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek forwards 5 seconds and return true on ArrowRight', () => {
-            sandbox.stub(media, 'quickSeek');
+        test('should seek forwards 5 seconds and return true on ArrowRight', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowRight')).to.be.true;
-            expect(media.quickSeek).calledWith(5);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowRight')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(5);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should increase volume on ArrowRight if volume scrubber is focused', () => {
-            media.mediaControls.isVolumeScrubberFocused = sandbox.stub().returns(true);
-            sandbox.stub(media, 'increaseVolume');
+        test('should increase volume on ArrowRight if volume scrubber is focused', () => {
+            media.mediaControls.isVolumeScrubberFocused = jest.fn(() => true);
+            jest.spyOn(media, 'increaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowRight')).to.be.true;
-            expect(media.increaseVolume).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowRight')).toBe(true);
+            expect(media.increaseVolume).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek forwards 10 seconds and return true on l', () => {
-            sandbox.stub(media, 'quickSeek');
+        test('should seek forwards 10 seconds and return true on l', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('l')).to.be.true;
-            expect(media.quickSeek).calledWith(10);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('l')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(10);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should go to beginning of video and return true on 0', () => {
-            sandbox.stub(media, 'setMediaTime');
+        test('should go to beginning of video and return true on 0', () => {
+            jest.spyOn(media, 'setMediaTime').mockImplementation();
 
-            expect(media.onKeydown('0')).to.be.true;
-            expect(media.setMediaTime).calledWith(0);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('0')).toBe(true);
+            expect(media.setMediaTime).toBeCalledWith(0);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should go to beginning of video and return true on Home', () => {
-            sandbox.stub(media, 'setMediaTime');
+        test('should go to beginning of video and return true on Home', () => {
+            jest.spyOn(media, 'setMediaTime').mockImplementation();
 
-            expect(media.onKeydown('Home')).to.be.true;
-            expect(media.setMediaTime).calledWith(0);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('Home')).toBe(true);
+            expect(media.setMediaTime).toBeCalledWith(0);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should increase volume and return true on ArrowUp', () => {
-            sandbox.stub(media, 'increaseVolume');
+        test('should increase volume and return true on ArrowUp', () => {
+            jest.spyOn(media, 'increaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowUp')).to.be.true;
-            expect(media.increaseVolume).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowUp')).toBe(true);
+            expect(media.increaseVolume).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek forwards 5 seconds on ArrowUp if time scrubber is focused', () => {
-            media.mediaControls.isTimeScrubberFocused = sandbox.stub().returns(true);
-            sandbox.stub(media, 'quickSeek');
+        test('should seek forwards 5 seconds on ArrowUp if time scrubber is focused', () => {
+            media.mediaControls.isTimeScrubberFocused = jest.fn(() => true);
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowUp')).to.be.true;
-            expect(media.quickSeek).calledWith(5);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowUp')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(5);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should decrease volume and return true on ArrowDown', () => {
-            sandbox.stub(media, 'decreaseVolume');
+        test('should decrease volume and return true on ArrowDown', () => {
+            jest.spyOn(media, 'decreaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowDown')).to.be.true;
-            expect(media.decreaseVolume).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowDown')).toBe(true);
+            expect(media.decreaseVolume).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should seek backwards 5 seconds on ArrowDown if time scrubber is focused', () => {
-            media.mediaControls.isTimeScrubberFocused = sandbox.stub().returns(true);
-            sandbox.stub(media, 'quickSeek');
+        test('should seek backwards 5 seconds on ArrowDown if time scrubber is focused', () => {
+            media.mediaControls.isTimeScrubberFocused = jest.fn(() => true);
+            jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowDown')).to.be.true;
-            expect(media.quickSeek).calledWith(-5);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('ArrowDown')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(-5);
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should increase speed and return true on Shift+>', () => {
-            expect(media.onKeydown('Shift+>')).to.be.true;
-            expect(media.mediaControls.increaseSpeed).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should increase speed and return true on Shift+>', () => {
+            expect(media.onKeydown('Shift+>')).toBe(true);
+            expect(media.mediaControls.increaseSpeed).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should increase speed and return true on Shift+<', () => {
-            expect(media.onKeydown('Shift+<')).to.be.true;
-            expect(media.mediaControls.decreaseSpeed).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should increase speed and return true on Shift+<', () => {
+            expect(media.onKeydown('Shift+<')).toBe(true);
+            expect(media.mediaControls.decreaseSpeed).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle fullscreen and return true on f', () => {
-            expect(media.onKeydown('f')).to.be.true;
-            expect(media.mediaControls.toggleFullscreen).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should toggle fullscreen and return true on f', () => {
+            expect(media.onKeydown('f')).toBe(true);
+            expect(media.mediaControls.toggleFullscreen).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle fullscreen and return true on Shift+F', () => {
-            expect(media.onKeydown('Shift+F')).to.be.true;
-            expect(media.mediaControls.toggleFullscreen).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should toggle fullscreen and return true on Shift+F', () => {
+            expect(media.onKeydown('Shift+F')).toBe(true);
+            expect(media.mediaControls.toggleFullscreen).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle mute and return true on m', () => {
-            sandbox.stub(media, 'toggleMute');
+        test('should toggle mute and return true on m', () => {
+            jest.spyOn(media, 'toggleMute').mockImplementation();
 
-            expect(media.onKeydown('m')).to.be.true;
-            expect(media.toggleMute).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('m')).toBe(true);
+            expect(media.toggleMute).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle mute and return true on Shift+M', () => {
-            sandbox.stub(media, 'toggleMute');
+        test('should toggle mute and return true on Shift+M', () => {
+            jest.spyOn(media, 'toggleMute').mockImplementation();
 
-            expect(media.onKeydown('Shift+M')).to.be.true;
-            expect(media.toggleMute).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.onKeydown('Shift+M')).toBe(true);
+            expect(media.toggleMute).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle subtitles and return true on c', () => {
-            expect(media.onKeydown('c')).to.be.true;
-            expect(media.mediaControls.toggleSubtitles).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should toggle subtitles and return true on c', () => {
+            expect(media.onKeydown('c')).toBe(true);
+            expect(media.mediaControls.toggleSubtitles).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should toggle subtitles and return true on Shift+C', () => {
-            expect(media.onKeydown('Shift+C')).to.be.true;
-            expect(media.mediaControls.toggleSubtitles).to.be.called;
-            expect(media.mediaControls.show).to.be.called;
+        test('should toggle subtitles and return true on Shift+C', () => {
+            expect(media.onKeydown('Shift+C')).toBe(true);
+            expect(media.mediaControls.toggleSubtitles).toBeCalled();
+            expect(media.mediaControls.show).toBeCalled();
         });
 
-        it('should return false if another key is pressed', () => {
-            expect(media.onKeydown('Esc')).to.be.false;
-            expect(media.mediaControls.show.callCount).to.equal(0);
+        test('should return false if another key is pressed', () => {
+            expect(media.onKeydown('Esc')).toBe(false);
+            expect(media.mediaControls.show).toBeCalledTimes(0);
         });
     });
 
     describe('getStartTimeInSeconds()', () => {
-        it('should parse seconds', () => {
+        test('should parse seconds', () => {
             const startAt = {
                 unit: 'seconds',
                 value: 55,
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(55);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(55);
         });
 
-        it('should parse timestamp', () => {
+        test('should parse timestamp', () => {
             const startAt = {
                 unit: 'timestamp',
                 value: '1m2s',
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(62);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(62);
         });
 
-        it('should return the default value if invalid unit', () => {
+        test('should return the default value if invalid unit', () => {
             const startAt = {
                 unit: 'foo',
                 value: 55,
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(0);
         });
 
-        it('should return the default value if invalid value', () => {
+        test('should return the default value if invalid value', () => {
             const startAt = {
                 unit: 'seconds',
                 value: 'foo',
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(0);
         });
 
-        it('should return the default value if invalid startAt', () => {
+        test('should return the default value if invalid startAt', () => {
             let startAt = {
                 value: 'foo',
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(0);
 
             startAt = {
                 unit: 'seconds',
             };
 
-            expect(media.getStartTimeInSeconds(startAt)).to.equal(0);
+            expect(media.getStartTimeInSeconds(startAt)).toBe(0);
         });
     });
 
@@ -1097,115 +1082,115 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         const ONE_MINUTE_IN_SECONDS = 60;
         const ONE_HOUR_IN_SECONDS = 60 * ONE_MINUTE_IN_SECONDS;
 
-        it('should parse the timestamp with just seconds', () => {
+        test('should parse the timestamp with just seconds', () => {
             const timestamp = '3s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(3);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(3);
         });
 
-        it('should parse the timestamp with just seconds and ms as floating point', () => {
+        test('should parse the timestamp with just seconds and ms as floating point', () => {
             const timestamp = '3.5432s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(3.5432);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(3.5432);
         });
 
-        it('should parse the timestamp with minutes, and seconds', () => {
+        test('should parse the timestamp with minutes, and seconds', () => {
             const timestamp = '2m3s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(2 * ONE_MINUTE_IN_SECONDS + 3);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(2 * ONE_MINUTE_IN_SECONDS + 3);
         });
 
-        it('should parse the timestamp with hours and seconds', () => {
+        test('should parse the timestamp with hours and seconds', () => {
             const timestamp = '4h3s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(4 * ONE_HOUR_IN_SECONDS + 3);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(4 * ONE_HOUR_IN_SECONDS + 3);
         });
 
-        it('should parse the timestamp with just minutes', () => {
+        test('should parse the timestamp with just minutes', () => {
             const timestamp = '4m';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(4 * ONE_MINUTE_IN_SECONDS);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(4 * ONE_MINUTE_IN_SECONDS);
         });
 
-        it('should parse the timestamp with hours and minutes', () => {
+        test('should parse the timestamp with hours and minutes', () => {
             const timestamp = '6h7m';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(
                 6 * ONE_HOUR_IN_SECONDS + 7 * ONE_MINUTE_IN_SECONDS,
             );
         });
 
-        it('should parse the timestamp with just hours', () => {
+        test('should parse the timestamp with just hours', () => {
             const timestamp = '8h';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(8 * ONE_HOUR_IN_SECONDS);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(8 * ONE_HOUR_IN_SECONDS);
         });
 
-        it('should parse the timestamp with hours, minutes and seconds', () => {
+        test('should parse the timestamp with hours, minutes and seconds', () => {
             const timestamp = '5h30m15s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(
                 5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15,
             );
         });
 
-        it('should parse the timestamp with hours, minutes, and seconds', () => {
+        test('should parse the timestamp with hours, minutes, and seconds', () => {
             const timestamp = '5h30m15s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(
                 5 * ONE_HOUR_IN_SECONDS + 30 * ONE_MINUTE_IN_SECONDS + 15,
             );
         });
 
-        it('should parse the timestamp with hours, minutes, seconds (large values and decimal)', () => {
+        test('should parse the timestamp with hours, minutes, seconds (large values and decimal)', () => {
             const timestamp = '5h75m653.546s';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(
                 5 * ONE_HOUR_IN_SECONDS + 75 * ONE_MINUTE_IN_SECONDS + 653.546,
             );
         });
 
-        it('should return 0 if invalid string passed', () => {
+        test('should return 0 if invalid string passed', () => {
             let timestamp = '5h3m2s5d';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(0);
 
             timestamp = '5h3m2ss';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(0);
 
             timestamp = '5hms';
-            expect(media.convertTimestampToSeconds(timestamp)).to.equal(0);
+            expect(media.convertTimestampToSeconds(timestamp)).toBe(0);
 
-            expect(media.convertTimestampToSeconds()).to.equal(0);
+            expect(media.convertTimestampToSeconds()).toBe(0);
 
-            expect(media.convertTimestampToSeconds('fdsfds')).to.equal(0);
+            expect(media.convertTimestampToSeconds('fdsfds')).toBe(0);
 
-            expect(media.convertTimestampToSeconds('ah1m3s')).to.equal(0);
+            expect(media.convertTimestampToSeconds('ah1m3s')).toBe(0);
         });
     });
 
     describe('handleLoadStart()', () => {
-        it('should start the timer', () => {
-            sandbox.stub(Timer, 'createTag').returns('foo');
-            sandbox.stub(Timer, 'start');
+        test('should start the timer', () => {
+            jest.spyOn(Timer, 'createTag').mockReturnValue('foo');
+            jest.spyOn(Timer, 'start');
 
             media.handleLoadStart();
 
-            expect(Timer.createTag).to.be.calledWith(1, 'bufferFill');
-            expect(Timer.start).to.be.calledWith('foo');
+            expect(Timer.createTag).toBeCalledWith(1, 'bufferFill');
+            expect(Timer.start).toBeCalledWith('foo');
         });
     });
 
     describe('handleCanPlay()', () => {
-        it('should stop the timer and process the metrics', () => {
-            sandbox.stub(Timer, 'createTag').returns('foo');
-            sandbox.stub(Timer, 'stop');
-            sandbox.stub(media, 'processBufferFillMetric');
+        test('should stop the timer and process the metrics', () => {
+            jest.spyOn(Timer, 'createTag').mockReturnValue('foo');
+            jest.spyOn(Timer, 'stop');
+            jest.spyOn(media, 'processBufferFillMetric');
 
-            media.mediaEl = { removeEventListener: sandbox.stub() };
+            media.mediaEl = { removeEventListener: jest.fn() };
 
             media.handleCanPlay();
 
-            expect(Timer.stop).to.be.calledWith('foo');
-            expect(media.mediaEl.removeEventListener).to.be.calledWith('canplay', media.handleCanPlay);
-            expect(media.processBufferFillMetric).to.be.called;
+            expect(Timer.stop).toBeCalledWith('foo');
+            expect(media.mediaEl.removeEventListener).toBeCalledWith('canplay', media.handleCanPlay);
+            expect(media.processBufferFillMetric).toBeCalled();
         });
     });
 
     describe('getMetricsWhitelist()', () => {
-        it('should whitelist bufferFill and endPlayback metrics', () => {
+        test('should whitelist bufferFill and endPlayback metrics', () => {
             const expWhitelist = ['media_metric_buffer_fill', 'media_metric_end_playback'];
 
-            expect(media.getMetricsWhitelist()).to.be.eql(expWhitelist);
+            expect(media.getMetricsWhitelist()).toEqual(expWhitelist);
         });
     });
 });

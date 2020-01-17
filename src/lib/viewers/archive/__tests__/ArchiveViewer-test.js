@@ -5,21 +5,26 @@ import ArchiveViewer from '../ArchiveViewer';
 import BaseViewer from '../../BaseViewer';
 import { VIEWER_EVENT } from '../../../events';
 
+const stubs = {};
 let containerEl;
 let options;
 let archive;
-const sandbox = sinon.sandbox.create();
-const stubs = {};
 
 describe('lib/viewers/archive/ArchiveViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/archive/__tests__/ArchiveViewer-test.html');
+
+        /* eslint-disable react/prefer-es6-class */
+        window.BoxArchive = createReactClass({
+            destroy: jest.fn(),
+            render: () => {
+                return '';
+            },
+        });
+        /* eslint-enable react/prefer-es6-class */
+
         containerEl = document.querySelector('.container');
         stubs.api = new Api();
         options = {
@@ -36,13 +41,12 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
         };
 
         archive = new ArchiveViewer(options);
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         archive.containerEl = containerEl;
         archive.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -54,9 +58,9 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up the container and DOM structure', () => {
-            expect(archive.archiveEl.parentNode).to.equal(archive.containerEl);
-            expect(archive.archiveEl).to.have.class('bp-archive');
+        test('should set up the container and DOM structure', () => {
+            expect(archive.archiveEl.parentNode).toBe(archive.containerEl);
+            expect(archive.archiveEl).toHaveClass('bp-archive');
         });
     });
 
@@ -64,56 +68,48 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
         const loadFunc = BaseViewer.prototype.load;
 
         beforeEach(() => {
-            sandbox.stub(archive, 'setup');
-            sandbox.stub(archive, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(archive, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(archive, 'finishLoading');
+            jest.spyOn(stubs.api, 'get').mockResolvedValue(undefined);
+            jest.spyOn(archive, 'setup').mockImplementation();
+            jest.spyOn(archive, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(archive, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(archive, 'finishLoading').mockImplementation();
+            jest.spyOn(archive, 'startLoadTimer').mockImplementation();
         });
 
         afterEach(() => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should call createContentUrlWithAuthParams with right template', () => {
-            Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
+        test('should call createContentUrlWithAuthParams with right template', () => {
+            Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
 
-            sandbox.stub(archive, 'createContentUrlWithAuthParams');
+            jest.spyOn(archive, 'createContentUrlWithAuthParams');
 
             return archive.load().then(() => {
-                expect(archive.createContentUrlWithAuthParams).to.be.calledWith('archiveUrl{+asset_path}');
+                expect(archive.createContentUrlWithAuthParams).toBeCalledWith('archiveUrl{+asset_path}');
             });
         });
 
-        it('should invoke startLoadTimer()', () => {
-            Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.stub() });
+        test('should invoke startLoadTimer()', () => {
+            Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
             archive.options.token = 'token';
             archive.options.sharedLink = 'sharedLink';
             archive.options.sharedLinkPassword = 'sharedLinkPassword';
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve());
-            sandbox.stub(archive, 'startLoadTimer');
 
             return archive.load().then(() => {
-                expect(archive.startLoadTimer).to.be.called;
+                expect(archive.startLoadTimer).toBeCalled();
             });
         });
     });
 
     describe('finishLoading()', () => {
-        it('should render BoxArchive component and emit load event', () => {
-            /* eslint-disable react/prefer-es6-class */
-            window.BoxArchive = createReactClass({
-                destroy: sandbox.stub(),
-                render: () => {
-                    return '';
-                },
-            });
-            /* eslint-enable react/prefer-es6-class */
-            sandbox.stub(archive, 'emit');
+        test('should render BoxArchive component and emit load event', () => {
+            jest.spyOn(archive, 'emit');
 
             archive.finishLoading([]);
 
-            expect(archive.loaded).to.be.true;
-            expect(archive.emit).to.be.calledWith(VIEWER_EVENT.load);
+            expect(archive.loaded).toBe(true);
+            expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
         });
     });
 });

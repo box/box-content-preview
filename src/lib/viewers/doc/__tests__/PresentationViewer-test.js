@@ -5,18 +5,12 @@ import DocBaseViewer from '../DocBaseViewer';
 import PresentationPreloader from '../PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
 
-const sandbox = sinon.sandbox.create();
-
 let containerEl;
 let presentation;
 let stubs = {};
 
 describe('lib/viewers/doc/PresentationViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/PresentationViewer-test.html');
@@ -35,23 +29,22 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             },
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         presentation.containerEl = containerEl;
         presentation.setup();
 
         presentation.pdfViewer = {
             currentPageNumber: 1,
-            update: sandbox.stub(),
-            cleanup: sandbox.stub(),
+            update: jest.fn(),
+            cleanup: jest.fn(),
         };
 
         presentation.controls = {
-            add: sandbox.stub(),
+            add: jest.fn(),
         };
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -66,19 +59,19 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should add the presentation class to the presentation element and set up preloader', () => {
-            expect(presentation.docEl).to.have.class('bp-doc-presentation');
-            expect(presentation.preloader).to.be.instanceof(PresentationPreloader);
+        test('should add the presentation class to the presentation element and set up preloader', () => {
+            expect(presentation.docEl).toHaveClass('bp-doc-presentation');
+            expect(presentation.preloader).toBeInstanceOf(PresentationPreloader);
         });
 
-        it('should invoke onPreload callback', () => {
+        test('should invoke onPreload callback', () => {
             presentation.options.logger = {
-                setPreloaded: sandbox.stub(),
+                setPreloaded: jest.fn(),
             };
             stubs.setPreloaded = presentation.options.logger.setPreloaded;
             presentation.preloader.emit('preload');
 
-            expect(stubs.setPreloaded).to.be.called;
+            expect(stubs.setPreloaded).toBeCalled();
         });
     });
 
@@ -89,10 +82,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'destroy', { value: destroyFunc });
         });
 
-        it('should remove listeners from preloader', () => {
-            Object.defineProperty(DocBaseViewer.prototype, 'destroy', { value: sandbox.stub() });
+        test('should remove listeners from preloader', () => {
+            Object.defineProperty(DocBaseViewer.prototype, 'destroy', { value: jest.fn() });
             presentation.preloader = {
-                removeAllListeners: sandbox.mock().withArgs('preload'),
+                removeAllListeners: jest.fn(),
             };
             presentation.destroy();
             presentation = null; // Don't call destroy again during cleanup
@@ -105,6 +98,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         let page3;
 
         beforeEach(() => {
+            jest.spyOn(presentation, 'checkOverflow').mockImplementation();
+
             page1 = document.createElement('div');
             page1.setAttribute('data-page-number', '1');
             page1.classList.add('page');
@@ -128,64 +123,60 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.docEl.removeChild(page3);
         });
 
-        it('should check to see if overflow is present', () => {
-            const checkOverflowStub = sandbox.stub(presentation, 'checkOverflow');
-
+        test('should check to see if overflow is present', () => {
             presentation.setPage(2);
-            expect(checkOverflowStub).to.be.called;
+            expect(presentation.checkOverflow).toBeCalled();
         });
 
-        it('should all other pages', () => {
-            sandbox.stub(presentation, 'checkOverflow');
+        test('should all other pages', () => {
             presentation.setPage(2);
 
-            expect(page1).to.have.class(CLASS_INVISIBLE);
-            expect(page3).to.have.class(CLASS_INVISIBLE);
+            expect(page1).toHaveClass(CLASS_INVISIBLE);
+            expect(page3).toHaveClass(CLASS_INVISIBLE);
         });
 
-        it('should show the page being set', () => {
-            sandbox.stub(presentation, 'checkOverflow');
+        test('should show the page being set', () => {
             presentation.setPage(2);
 
-            expect(page2).to.not.have.class(CLASS_INVISIBLE);
+            expect(page2).not.toHaveClass(CLASS_INVISIBLE);
         });
     });
 
     describe('onKeydown()', () => {
         beforeEach(() => {
-            stubs.previousPage = sandbox.stub(presentation, 'previousPage');
-            stubs.nextPage = sandbox.stub(presentation, 'nextPage');
+            stubs.previousPage = jest.spyOn(presentation, 'previousPage').mockImplementation();
+            stubs.nextPage = jest.spyOn(presentation, 'nextPage').mockImplementation();
         });
 
-        it('should go to the previous page and return true if ArrowUp', () => {
+        test('should go to the previous page and return true if ArrowUp', () => {
             const result = presentation.onKeydown('ArrowUp');
 
-            expect(result).to.be.true;
-            expect(stubs.previousPage).to.be.called;
+            expect(result).toBe(true);
+            expect(stubs.previousPage).toBeCalled();
         });
 
-        it('should go to the next page and return true if ArrowDown is entered ', () => {
+        test('should go to the next page and return true if ArrowDown is entered ', () => {
             const result = presentation.onKeydown('ArrowDown');
 
-            expect(result).to.be.true;
-            expect(stubs.nextPage).to.be.called;
+            expect(result).toBe(true);
+            expect(stubs.nextPage).toBeCalled();
         });
 
-        it("should fallback to doc base's onKeydown if no entry matches", () => {
-            const docBaseSpy = sandbox.spy(DocBaseViewer.prototype, 'onKeydown');
-            const eventStub = sandbox.stub();
+        test("should fallback to doc base's onKeydown if no entry matches", () => {
+            const docBaseSpy = jest.spyOn(DocBaseViewer.prototype, 'onKeydown');
+            const eventStub = jest.fn();
 
             const key = 'ArrowRight';
 
             const result = presentation.onKeydown(key, eventStub);
 
-            expect(docBaseSpy).to.have.been.calledWithExactly(key, eventStub);
-            expect(result).to.be.true;
-            expect(stubs.nextPage).to.be.called;
+            expect(docBaseSpy).toBeCalledWith(key, eventStub);
+            expect(result).toBe(true);
+            expect(stubs.nextPage).toBeCalled();
 
             const result2 = presentation.onKeydown('d');
 
-            expect(result2).to.be.false;
+            expect(result2).toBe(false);
         });
     });
 
@@ -195,6 +186,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             stubs.page1.setAttribute('data-page-number', '1');
             stubs.page1.classList.add('page');
 
+            Object.defineProperty(stubs.page1, 'clientHeight', { value: 0, writable: true });
+            Object.defineProperty(stubs.page1, 'clientWidth', { value: 0, writable: true });
+            Object.defineProperty(presentation.docEl, 'clientHeight', { value: 100, writable: true });
+            Object.defineProperty(presentation.docEl, 'clientWidth', { value: 100, writable: true });
+
             presentation.docEl.appendChild(stubs.page1);
         });
 
@@ -202,35 +198,29 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.docEl.removeChild(stubs.page1);
         });
 
-        it('should remove the both overflow classes and return false if there is no overflow', () => {
-            presentation.docEl.style.width = '100px';
-            presentation.docEl.style.height = '100px';
-
+        test('should remove the both overflow classes and return false if there is no overflow', () => {
             const result = presentation.checkOverflow();
-            expect(presentation.docEl).to.not.have.class('overflow-x');
-            expect(presentation.docEl).to.not.have.class('overflow-y');
-            expect(result).to.equal(false);
+
+            expect(presentation.docEl).not.toHaveClass('overflow-x');
+            expect(presentation.docEl).not.toHaveClass('overflow-y');
+            expect(result).toBe(false);
         });
 
-        it('should add overflow-y class and return true if there is y overflow', () => {
-            stubs.page1.style.height = '500px';
-            presentation.docEl.style.width = '100px';
-            presentation.docEl.style.height = '100px';
+        test('should add overflow-y class and return true if there is y overflow', () => {
+            stubs.page1.clientHeight = 500;
 
             const result = presentation.checkOverflow();
-            expect(presentation.docEl).to.have.class('overflow-y');
-            expect(result).to.equal(true);
+            expect(presentation.docEl).toHaveClass('overflow-y');
+            expect(result).toBe(true);
         });
 
-        it('should add the overflow-x class and return true if there is x overflow', () => {
-            stubs.page1.style.width = '500px';
-            presentation.docEl.style.width = '100px';
-            presentation.docEl.style.height = '100px';
+        test('should add the overflow-x class and return true if there is x overflow', () => {
+            stubs.page1.clientWidth = 500;
 
             const result = presentation.checkOverflow();
-            expect(presentation.docEl).to.have.class('overflow-x');
-            expect(presentation.docEl).to.not.have.class('overflow-y');
-            expect(result).to.equal(true);
+            expect(presentation.docEl).toHaveClass('overflow-x');
+            expect(presentation.docEl).not.toHaveClass('overflow-y');
+            expect(result).toBe(true);
         });
     });
 
@@ -241,59 +231,59 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'initViewer', { value: initViewerFunc });
         });
 
-        it('should overwrite the scrollPageIntoView method', () => {
-            const stub = sandbox.stub(presentation, 'overwritePdfViewerBehavior');
-            Object.defineProperty(DocBaseViewer.prototype, 'initViewer', { value: sandbox.stub() });
+        test('should overwrite the scrollPageIntoView method', () => {
+            const stub = jest.spyOn(presentation, 'overwritePdfViewerBehavior').mockImplementation();
+            Object.defineProperty(DocBaseViewer.prototype, 'initViewer', { value: jest.fn() });
 
             presentation.initViewer('url');
 
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
     });
 
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
-            stubs.addEventListener = sandbox.stub(presentation.docEl, 'addEventListener');
+            stubs.addEventListener = jest.spyOn(presentation.docEl, 'addEventListener').mockImplementation();
         });
 
-        it('should add a wheel handler', () => {
+        test('should add a wheel handler', () => {
             presentation.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.throttledWheelHandler);
+            expect(stubs.addEventListener).toBeCalledWith('wheel', presentation.throttledWheelHandler);
         });
 
-        it('should add a touch handlers if touch events are supported', () => {
+        test('should add a touch handlers if touch events are supported', () => {
             presentation.hasTouch = true;
 
             presentation.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
+            expect(stubs.addEventListener).toBeCalledWith('touchstart', presentation.mobileScrollHandler);
+            expect(stubs.addEventListener).toBeCalledWith('touchmove', presentation.mobileScrollHandler);
+            expect(stubs.addEventListener).toBeCalledWith('touchend', presentation.mobileScrollHandler);
         });
     });
 
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
-            stubs.removeEventListener = sandbox.stub(presentation.docEl, 'removeEventListener');
+            stubs.removeEventListener = jest.spyOn(presentation.docEl, 'removeEventListener').mockImplementation();
         });
 
-        it('should remove a wheel handler', () => {
+        test('should remove a wheel handler', () => {
             presentation.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.throttledWheelHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('wheel', presentation.throttledWheelHandler);
         });
 
-        it('should remove the touchhandlers if on mobile', () => {
+        test('should remove the touchhandlers if on mobile', () => {
             presentation.hasTouch = true;
 
             presentation.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('touchstart', presentation.mobileScrollHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('touchmove', presentation.mobileScrollHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('touchend', presentation.mobileScrollHandler);
         });
     });
 
     describe('mobileScrollHandler()', () => {
         beforeEach(() => {
-            stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
+            stubs.checkOverflow = jest.spyOn(presentation, 'checkOverflow').mockReturnValue(false);
             stubs.event = {
                 type: '',
                 changedTouches: [
@@ -303,73 +293,73 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                     },
                 ],
                 touches: [1],
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
-            stubs.nextPage = sandbox.stub(presentation, 'nextPage');
-            stubs.previousPage = sandbox.stub(presentation, 'previousPage');
+            stubs.nextPage = jest.spyOn(presentation, 'nextPage').mockImplementation();
+            stubs.previousPage = jest.spyOn(presentation, 'previousPage').mockImplementation();
         });
 
-        it('should do nothing if there is overflow', () => {
-            stubs.checkOverflow.returns(true);
+        test('should do nothing if there is overflow', () => {
+            stubs.checkOverflow.mockReturnValue(true);
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(undefined);
-            expect(stubs.event.preventDefault).to.not.be.called;
+            expect(presentation.scrollStart).toBeUndefined();
+            expect(stubs.event.preventDefault).not.toBeCalled();
         });
 
-        it('should do nothing if we are pinching or touch with more than one finger', () => {
+        test('should do nothing if we are pinching or touch with more than one finger', () => {
             presentation.isPinching = true;
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(undefined);
-            expect(stubs.event.preventDefault).to.not.be.called;
+            expect(presentation.scrollStart).toBeUndefined();
+            expect(stubs.event.preventDefault).not.toBeCalled();
 
             presentation.isPinching = false;
             stubs.event.touches = [1, 2];
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(undefined);
-            expect(stubs.event.preventDefault).to.not.be.called;
+            expect(presentation.scrollStart).toBeUndefined();
+            expect(stubs.event.preventDefault).not.toBeCalled();
         });
 
-        it('should set the scroll start position if the event is a touch start', () => {
+        test('should set the scroll start position if the event is a touch start', () => {
             stubs.event.type = 'touchstart';
             stubs.event.changedTouches[0].clientY = 100;
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(100);
+            expect(presentation.scrollStart).toBe(100);
         });
 
-        it('should prevent default behavior if the event is touchmove', () => {
+        test('should prevent default behavior if the event is touchmove', () => {
             stubs.event.type = 'touchmove';
             stubs.event.changedTouches[0].clientY = 100;
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it('should go to the next page if the scroll is in the correct direction', () => {
+        test('should go to the next page if the scroll is in the correct direction', () => {
             stubs.event.type = 'touchend';
             presentation.scrollStart = 500;
             stubs.event.changedTouches[0].clientY = 100;
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(stubs.nextPage).to.be.called;
+            expect(stubs.nextPage).toBeCalled();
         });
 
-        it('should go to the previous page if the scroll is in the correct direction', () => {
+        test('should go to the previous page if the scroll is in the correct direction', () => {
             stubs.event.type = 'touchend';
             presentation.scrollStart = 100;
             stubs.event.changedTouches[0].clientY = 500;
 
             presentation.mobileScrollHandler(stubs.event);
-            expect(stubs.previousPage).to.be.called;
+            expect(stubs.previousPage).toBeCalled();
         });
     });
 
     describe('pagesInitHandler()', () => {
         beforeEach(() => {
-            stubs.setPage = sandbox.stub(presentation, 'setPage');
+            stubs.setPage = jest.spyOn(presentation, 'setPage').mockImplementation();
             stubs.page1 = document.createElement('div');
             stubs.page1.setAttribute('data-page-number', '1');
             stubs.page1.className = 'page';
@@ -387,18 +377,18 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             document.querySelector('.pdfViewer').appendChild(stubs.page3);
         });
 
-        it('should hide all pages except for the first one', () => {
+        test('should hide all pages except for the first one', () => {
             presentation.pagesinitHandler();
 
-            expect(stubs.page1).to.not.have.class(CLASS_INVISIBLE);
-            expect(stubs.page2).to.have.class(CLASS_INVISIBLE);
-            expect(stubs.page3).to.have.class(CLASS_INVISIBLE);
+            expect(stubs.page1).not.toHaveClass(CLASS_INVISIBLE);
+            expect(stubs.page2).toHaveClass(CLASS_INVISIBLE);
+            expect(stubs.page3).toHaveClass(CLASS_INVISIBLE);
         });
 
-        it('should set the pdf viewer scale to page-fit', () => {
+        test('should set the pdf viewer scale to page-fit', () => {
             presentation.pagesinitHandler();
 
-            expect(presentation.pdfViewer.currentScaleValue).to.equal('page-fit');
+            expect(presentation.pdfViewer.currentScaleValue).toBe('page-fit');
         });
     });
 
@@ -406,9 +396,9 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         let wheelHandler;
 
         beforeEach(() => {
-            stubs.nextPage = sandbox.stub(presentation, 'nextPage');
-            stubs.previousPage = sandbox.stub(presentation, 'previousPage');
-            stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
+            stubs.nextPage = jest.spyOn(presentation, 'nextPage').mockImplementation();
+            stubs.previousPage = jest.spyOn(presentation, 'previousPage').mockImplementation();
+            stubs.checkOverflow = jest.spyOn(presentation, 'checkOverflow').mockReturnValue(false);
             presentation.event = {
                 deltaY: 5,
                 deltaX: -0,
@@ -416,36 +406,39 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             wheelHandler = presentation.getWheelHandler();
         });
 
-        it('should call next page if the event delta is positive', () => {
+        test('should call next page if the event delta is positive', () => {
             wheelHandler(presentation.event);
-            expect(stubs.nextPage).to.be.called;
+            expect(stubs.nextPage).toBeCalled();
         });
 
-        it('should call previous page if the event delta is negative', () => {
+        test('should call previous page if the event delta is negative', () => {
             presentation.event.deltaY = -5;
             wheelHandler(presentation.event);
-            expect(stubs.previousPage).to.be.called;
+            expect(stubs.previousPage).toBeCalled();
         });
 
-        it('should do nothing if x scroll is detected', () => {
+        test('should do nothing if x scroll is detected', () => {
             presentation.event.deltaX = -7;
             wheelHandler(presentation.event);
-            expect(stubs.previousPage).to.not.be.called;
-            expect(stubs.nextPage).to.not.be.called;
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(stubs.nextPage).not.toBeCalled();
         });
 
-        it('should do nothing if there is overflow', () => {
-            stubs.checkOverflow.returns(true);
+        test('should do nothing if there is overflow', () => {
+            stubs.checkOverflow.mockReturnValue(true);
             wheelHandler(presentation.event);
-            expect(stubs.previousPage).to.not.be.called;
-            expect(stubs.nextPage).to.not.be.called;
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(stubs.nextPage).not.toBeCalled();
         });
     });
 
     describe('overwritePdfViewerBehavior()', () => {
         describe('should overwrite the scrollPageIntoView method', () => {
-            it('should do nothing if the viewer is not loaded', () => {
-                const setPageStub = sandbox.stub(presentation, 'setPage');
+            beforeEach(() => {
+                jest.spyOn(presentation, 'setPage').mockImplementation();
+            });
+
+            test('should do nothing if the viewer is not loaded', () => {
                 const page = {
                     pageNumber: 3,
                 };
@@ -454,11 +447,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 presentation.overwritePdfViewerBehavior();
                 presentation.pdfViewer.scrollPageIntoView(page);
 
-                expect(setPageStub).to.not.be.called;
+                expect(presentation.setPage).not.toBeCalled();
             });
 
-            it('should change the page if the viewer is loaded', () => {
-                const setPageStub = sandbox.stub(presentation, 'setPage');
+            test('should change the page if the viewer is loaded', () => {
                 const page = {
                     pageNumber: 3,
                 };
@@ -467,11 +459,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 presentation.overwritePdfViewerBehavior();
                 presentation.pdfViewer.scrollPageIntoView(page);
 
-                expect(setPageStub).to.be.calledWith(3);
+                expect(presentation.setPage).toBeCalledWith(3);
             });
         });
 
-        it('should overwrite the _getVisiblePages method', () => {
+        test('should overwrite the _getVisiblePages method', () => {
             presentation.pdfViewer = {
                 _pages: {
                     0: {
@@ -485,8 +477,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.overwritePdfViewerBehavior();
             const result = presentation.pdfViewer._getVisiblePages();
 
-            expect(result.first.id).to.equal(1);
-            expect(result.last.id).to.equal(1);
+            expect(result.first.id).toBe(1);
+            expect(result.last.id).toBe(1);
         });
     });
 
@@ -495,11 +487,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         let scrollToAnnotationStub;
 
         beforeEach(() => {
-            setPageStub = sandbox.stub(presentation, 'setPage');
-            scrollToAnnotationStub = sandbox.stub();
+            setPageStub = jest.spyOn(presentation, 'setPage').mockImplementation();
+            scrollToAnnotationStub = jest.fn();
         });
 
-        it('should call setPage is location value provided', () => {
+        test('should call setPage is location value provided', () => {
             const mockPartialAnnotation = { id: '123', target: { location: { value: 5 } } };
 
             presentation.annotator = {
@@ -508,11 +500,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
-            expect(setPageStub).to.be.calledWith(5);
-            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation.id);
+            expect(setPageStub).toBeCalledWith(5);
+            expect(scrollToAnnotationStub).toBeCalledWith(mockPartialAnnotation.id);
         });
 
-        it('should call setPage with 1 if location not provided', () => {
+        test('should call setPage with 1 if location not provided', () => {
             const mockPartialAnnotation = { id: '123' };
 
             presentation.annotator = {
@@ -522,11 +514,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
-            expect(setPageStub).to.be.calledWith(1);
-            expect(scrollToAnnotationStub).to.be.calledWith('123');
+            expect(setPageStub).toBeCalledWith(1);
+            expect(scrollToAnnotationStub).toBeCalledWith('123');
         });
 
-        it('should defer to the base viewer if the location value provided matches the current page', () => {
+        test('should defer to the base viewer if the location value provided matches the current page', () => {
             const mockPartialAnnotation = { id: '123', target: { location: { value: 1 } } };
 
             presentation.annotator = {
@@ -535,8 +527,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
-            expect(setPageStub).not.to.be.called;
-            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation.id);
+            expect(setPageStub).not.toBeCalled();
+            expect(scrollToAnnotationStub).toBeCalledWith(mockPartialAnnotation.id);
         });
     });
 });

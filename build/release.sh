@@ -78,7 +78,7 @@ reset_to_master() {
 
 build_lint_and_test() {
     # The build command includes linting
-    cmd yarn build && cmd yarn test || return 1
+    cmd yarn build && cmd yarn test:ci || return 1
 }
 
 increment_version() {

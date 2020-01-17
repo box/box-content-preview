@@ -3,14 +3,14 @@ import { shallow } from 'enzyme';
 import sinon from 'sinon';
 import SearchBar from '../SearchBar';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let searchQuery;
 let onSearch;
 
 describe('lib/viewers/archive/SearchBar', () => {
     beforeEach(() => {
         searchQuery = 'test';
-        onSearch = sandbox.stub();
+        onSearch = jest.fn();
     });
 
     afterEach(() => {
@@ -18,11 +18,11 @@ describe('lib/viewers/archive/SearchBar', () => {
     });
 
     describe('render()', () => {
-        it('should render correct components', () => {
+        test('should render correct components', () => {
             const component = shallow(<SearchBar onSearch={onSearch} searchQuery={searchQuery} />);
 
-            expect(component.find('.bp-SearchBar').length).to.equal(1);
-            expect(component.find('input').length).to.equal(1);
+            expect(component.find('.bp-SearchBar').length).toBe(1);
+            expect(component.find('input').length).toBe(1);
         });
     });
 });

@@ -1,15 +1,17 @@
 /* eslint-disable no-unused-expressions */
 import Image360Renderer from '../Image360Renderer';
 import sceneEntities from '../SceneEntities';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../../constants';
 
-const sandbox = sinon.sandbox.create();
+// eslint-disable-next-line import/no-dynamic-require
+const Box3DRuntime = require(`../../../../../third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/box3d-runtime.min.js`);
 
 describe('lib/viewers/box3d/image360/Image360Renderer', () => {
     let containerEl;
     let renderer;
 
-    before(() => {
-        fixture.setBase('src/lib');
+    beforeAll(() => {
+        global.Box3D = Box3DRuntime;
     });
 
     beforeEach(() => {
@@ -19,7 +21,6 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         if (renderer && typeof renderer.destroy === 'function') {
@@ -30,21 +31,21 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
     });
 
     describe('destroy()', () => {
-        it('should call cleanupTexture()', () => {
-            const stub = sandbox.stub(renderer, 'cleanupTexture');
+        test('should call cleanupTexture()', () => {
+            const stub = jest.spyOn(renderer, 'cleanupTexture');
             renderer.destroy();
 
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should invoke imageAsset.destroy(), if it exists', () => {
+        test('should invoke imageAsset.destroy(), if it exists', () => {
             renderer.imageAsset = {
-                destroy: sandbox.stub(),
+                destroy: jest.fn(),
             };
             const { imageAsset } = renderer;
             renderer.destroy();
 
-            expect(imageAsset.destroy).to.be.called;
+            expect(imageAsset.destroy).toBeCalled();
         });
     });
 
@@ -57,113 +58,113 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.box3d = null;
         });
 
-        it('should do nothing if .box3d does not exist', () => {
-            sandbox.stub(renderer, 'getSkyboxComponent');
+        test('should do nothing if .box3d does not exist', () => {
+            jest.spyOn(renderer, 'getSkyboxComponent');
             renderer.box3d = null;
             renderer.cleanupTexture();
 
-            expect(renderer.getSkyboxComponent).to.not.be.called;
+            expect(renderer.getSkyboxComponent).not.toBeCalled();
         });
 
-        it('should invoke textureAsset.destroy()', () => {
+        test('should invoke textureAsset.destroy()', () => {
             renderer.textureAsset = {
-                destroy: sandbox.stub(),
+                destroy: jest.fn(),
             };
             const { textureAsset } = renderer;
 
-            sandbox.stub(renderer, 'getSkyboxComponent');
+            jest.spyOn(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();
 
-            expect(textureAsset.destroy).to.be.called;
+            expect(textureAsset.destroy).toBeCalled();
         });
 
-        it('should nullify textureAsset if it exists', () => {
+        test('should nullify textureAsset if it exists', () => {
             renderer.textureAsset = {
-                destroy: sandbox.mock(),
+                destroy: jest.fn(),
             };
 
-            sandbox.stub(renderer, 'getSkyboxComponent');
+            jest.spyOn(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();
 
-            expect(renderer.textureAsset).to.not.exist;
+            expect(renderer.textureAsset).toBeNull();
         });
 
-        it('should set "skyboxTexture" attribute to null, if skybox component exists on the scene', () => {
+        test('should set "skyboxTexture" attribute to null, if skybox component exists on the scene', () => {
             const skybox = {
-                setAttribute: sandbox.stub(),
+                setAttribute: jest.fn(),
             };
             renderer.skybox = skybox;
-            sandbox.stub(renderer, 'getSkyboxComponent').returns(skybox);
+            jest.spyOn(renderer, 'getSkyboxComponent').mockReturnValue(skybox);
             renderer.cleanupTexture();
 
-            expect(skybox.setAttribute).to.be.calledWith('skyboxTexture', null);
+            expect(skybox.setAttribute).toBeCalledWith('skyboxTexture', null);
         });
     });
 
     describe('getSkyboxComponent()', () => {
-        it('should return the .skybox instance if available', () => {
+        test('should return the .skybox instance if available', () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub(),
+                setAttribute: jest.fn(),
             };
 
             renderer.skybox = skybox;
 
             const skyboxComponent = renderer.getSkyboxComponent();
 
-            expect(skyboxComponent).to.deep.equal(skybox);
+            expect(skyboxComponent).toBe(skybox);
         });
 
-        it('should should not attempt to get skybox_renderer component if .skybox exists', () => {
+        test('should should not attempt to get skybox_renderer component if .skybox exists', () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub(),
+                setAttribute: jest.fn(),
             };
             renderer.skybox = skybox;
 
             renderer.box3d = {
-                getObjectByClass: sandbox.stub(),
+                getObjectByClass: jest.fn(),
             };
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getObjectByClass).to.not.be.called;
+            expect(renderer.box3d.getObjectByClass).not.toBeCalled();
             renderer.box3d = null;
             renderer.skybox = null;
         });
 
-        it("should should get skybox_renderer component from scene if .skybox doesn't exists", () => {
+        test("should should get skybox_renderer component from scene if .skybox doesn't exists", () => {
             const skybox = {
                 name: 'skybox',
-                setAttribute: sandbox.stub(),
+                setAttribute: jest.fn(),
             };
 
             const scene = {
-                getComponentByScriptId: sandbox.stub().returns(skybox),
+                getComponentByScriptId: jest.fn().mockReturnValue(skybox),
             };
 
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns(scene),
+                getObjectByClass: jest.fn().mockReturnValue(scene),
             };
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getObjectByClass).to.be.called;
+            expect(renderer.box3d.getObjectByClass).toBeCalled();
             renderer.box3d = null;
             renderer.skybox = null;
         });
     });
 
     describe('load()', () => {
-        it('should use sceneEntities value if provided for initialization', done => {
+        test('should use sceneEntities value if provided for initialization', done => {
             const mySceneEntities = {
                 light: 'light',
                 camera: 'camera',
                 action: ':D',
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
-                expect(options.sceneEntities).to.deep.equal(mySceneEntities);
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(options => {
+                expect(options.sceneEntities).toBe(mySceneEntities);
                 done();
                 return new Promise(() => {});
             });
@@ -171,9 +172,9 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', { sceneEntities: mySceneEntities });
         });
 
-        it('should use default sceneEntities, if none provided, for initialization', done => {
-            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
-                expect(options.sceneEntities).to.deep.equal(sceneEntities);
+        test('should use default sceneEntities, if none provided, for initialization', done => {
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(options => {
+                expect(options.sceneEntities).toBe(sceneEntities);
                 done();
                 return new Promise(() => {});
             });
@@ -181,7 +182,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('');
         });
 
-        it('should use provided inputSettings for initialization', done => {
+        test('should use provided inputSettings for initialization', done => {
             const myInputSettings = {
                 mouse_control: true,
                 left_click: 'probably',
@@ -189,8 +190,8 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
                 middle_click: 'always',
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
-                expect(options.inputSettings).to.deep.equal(myInputSettings);
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(options => {
+                expect(options.inputSettings).toBe(myInputSettings);
                 done();
                 return new Promise(() => {});
             });
@@ -198,15 +199,15 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', { inputSettings: myInputSettings });
         });
 
-        it('should call initBox3d() with the passed in options object', done => {
+        test('should call initBox3d() with the passed in options object', done => {
             const myOptions = {
                 inputSettings: { some: 'stuff' },
                 sceneSettings: { more: 'stuff' },
                 even: { more: 'things' },
             };
 
-            sandbox.stub(renderer, 'initBox3d').callsFake(options => {
-                expect(options).to.deep.equal(myOptions);
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(options => {
+                expect(options).toBe(myOptions);
                 done();
                 return new Promise(() => {});
             });
@@ -214,12 +215,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load('', myOptions);
         });
 
-        it('should call loadPanoramaFile() with url for box3d representation', done => {
+        test('should call loadPanoramaFile() with url for box3d representation', done => {
             const fileUrl = 'I/am/a/url';
 
-            sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
-            sandbox.stub(renderer, 'loadPanoramaFile').callsFake(url => {
-                expect(url).to.equal(fileUrl);
+            jest.spyOn(renderer, 'initBox3d').mockResolvedValue(undefined);
+            jest.spyOn(renderer, 'loadPanoramaFile').mockImplementation(url => {
+                expect(url).toBe(fileUrl);
                 done();
                 return new Promise(() => {});
             });
@@ -227,10 +228,10 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.load(fileUrl);
         });
 
-        it('should call onSceneLoad() when done loading file', done => {
-            sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
-            sandbox.stub(renderer, 'loadPanoramaFile').returns(Promise.resolve());
-            sandbox.stub(renderer, 'onSceneLoad').callsFake(() => {
+        test('should call onSceneLoad() when done loading file', done => {
+            jest.spyOn(renderer, 'initBox3d').mockResolvedValue(undefined);
+            jest.spyOn(renderer, 'loadPanoramaFile').mockResolvedValue(undefined);
+            jest.spyOn(renderer, 'onSceneLoad').mockImplementation(() => {
                 done();
             });
 
@@ -242,12 +243,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         beforeEach(() => {
             // We don't care about super calls :D
             Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'enableVr', {
-                value: sandbox.stub(),
+                value: jest.fn(),
             });
         });
 
-        it('should invoke .skybox.setAttribute()', () => {
-            const spy = sandbox.spy();
+        test('should invoke .skybox.setAttribute()', () => {
+            const spy = jest.fn();
 
             const skybox = {
                 setAttribute: spy,
@@ -257,12 +258,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
             renderer.enableVr();
 
-            expect(spy).to.be.called;
+            expect(spy).toBeCalled();
             renderer.skybox = null;
         });
 
-        it('should invoke .skybox.setAttribute() with arguments "stereoEnabled" and true', () => {
-            const spy = sandbox.spy();
+        test('should invoke .skybox.setAttribute() with arguments "stereoEnabled" and true', () => {
+            const spy = jest.fn();
 
             const skybox = {
                 setAttribute: spy,
@@ -272,7 +273,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
             renderer.enableVr();
 
-            expect(spy.calledWith('stereoEnabled', true)).to.be.true;
+            expect(spy).toBeCalledWith('stereoEnabled', true);
             renderer.skybox = null;
         });
     });
@@ -281,12 +282,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         beforeEach(() => {
             // We don't care about super calls :D
             Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'disableVr', {
-                value: sandbox.stub(),
+                value: jest.fn(),
             });
         });
 
-        it('should call .skybox.setAttribute()', () => {
-            const spy = sandbox.spy();
+        test('should call .skybox.setAttribute()', () => {
+            const spy = jest.fn();
 
             const skybox = {
                 setAttribute: spy,
@@ -296,12 +297,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
             renderer.disableVr();
 
-            expect(spy).to.be.called;
+            expect(spy).toBeCalled();
             renderer.skybox = null;
         });
 
-        it('should call .skybox.setAttribute() with arguments "stereoEnabled" and false', () => {
-            const spy = sandbox.spy();
+        test('should call .skybox.setAttribute() with arguments "stereoEnabled" and false', () => {
+            const spy = jest.fn();
 
             const skybox = {
                 setAttribute: spy,
@@ -311,7 +312,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
 
             renderer.disableVr();
 
-            expect(spy.calledWith('stereoEnabled', false)).to.be.true;
+            expect(spy).toBeCalledWith('stereoEnabled', false);
             renderer.skybox = null;
         });
     });

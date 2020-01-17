@@ -8,27 +8,20 @@ import { BROWSERS } from '../constants';
 let pageControls;
 let stubs = {};
 
-const sandbox = sinon.sandbox.create();
-
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const PAGE_NUM = 'bp-page-num';
 const PREV_PAGE = 'bp-previous-page';
 const NEXT_PAGE = 'bp-next-page';
 
 describe('lib/PageControls', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('__tests__/PageControls-test.html');
         const controls = new Controls(document.getElementById('test-page-controls-container'));
-        pageControls = new PageControls(controls, sandbox.stub, sandbox.stub);
+        pageControls = new PageControls(controls, jest.fn(), jest.fn());
     });
 
     afterEach(() => {
         fixture.cleanup();
-        sandbox.verifyAndRestore();
 
         if (pageControls && typeof pageControls.destroy === 'function') {
             pageControls.destroy();
@@ -39,8 +32,8 @@ describe('lib/PageControls', () => {
     });
 
     describe('constructor()', () => {
-        it('should create the correct DOM structure', () => {
-            expect(pageControls.controlsEl).to.not.be.undefined;
+        test('should create the correct DOM structure', () => {
+            expect(pageControls.controlsEl).toBeDefined();
         });
     });
 
@@ -48,64 +41,64 @@ describe('lib/PageControls', () => {
         beforeEach(() => {
             stubs.currentPageNumber = 1;
             stubs.pagesCount = 10;
-            stubs.add = sandbox.spy(pageControls.controls, 'add');
-            stubs.checkPaginationButtons = sandbox.stub(pageControls, 'checkPaginationButtons');
+            stubs.add = jest.spyOn(pageControls.controls, 'add');
+            stubs.checkPaginationButtons = jest.spyOn(pageControls, 'checkPaginationButtons');
         });
 
-        it('should add the page number controls', () => {
+        test('should add the page number controls', () => {
             pageControls.add(stubs.currentPageNumber, stubs.pagesCount);
 
-            expect(stubs.add).to.be.calledThrice;
+            expect(stubs.add).toBeCalledTimes(3);
         });
 
-        it('should initialize the number of total pages', () => {
+        test('should initialize the number of total pages', () => {
             pageControls.add(stubs.currentPageNumber, stubs.pagesCount);
 
-            expect(pageControls.controls.buttonRefs.length).equals(3);
-            expect(parseInt(pageControls.totalPagesEl.textContent, 10)).to.equal(stubs.pagesCount);
+            expect(pageControls.controls.buttonRefs.length).toBe(3);
+            expect(parseInt(pageControls.totalPagesEl.textContent, 10)).toBe(stubs.pagesCount);
         });
 
-        it('should initialize the current page number', () => {
+        test('should initialize the current page number', () => {
             pageControls.add(stubs.currentPageNumber, stubs.pagesCount);
 
-            expect(parseInt(pageControls.currentPageEl.textContent, 10)).to.equal(stubs.currentPageNumber);
+            expect(parseInt(pageControls.currentPageEl.textContent, 10)).toBe(stubs.currentPageNumber);
         });
 
-        it('should check the pagination buttons', () => {
+        test('should check the pagination buttons', () => {
             pageControls.add(stubs.currentPageNumber, stubs.pagesCount);
-            expect(stubs.checkPaginationButtons).to.be.called;
+            expect(stubs.checkPaginationButtons).toBeCalled();
         });
     });
 
     describe('showPageNumInput()', () => {
-        it('should set the page number input value, focus, select, and add listeners', () => {
+        test('should set the page number input value, focus, select, and add listeners', () => {
             pageControls.currentPageEl = 0;
             pageControls.pageNumInputEl = {
                 value: 0,
-                focus: sandbox.stub(),
-                select: sandbox.stub(),
-                addEventListener: sandbox.stub(),
+                focus: jest.fn(),
+                select: jest.fn(),
+                addEventListener: jest.fn(),
             };
 
             pageControls.showPageNumInput();
-            expect(pageControls.controlsEl).to.have.class(SHOW_PAGE_NUM_INPUT_CLASS);
-            expect(pageControls.pageNumInputEl.focus).to.be.called;
-            expect(pageControls.pageNumInputEl.select).to.be.called;
-            expect(pageControls.pageNumInputEl.addEventListener).to.be.calledWith('blur', sinon.match.func);
-            expect(pageControls.pageNumInputEl.addEventListener).to.be.calledWith('keydown', sinon.match.func);
+            expect(pageControls.controlsEl).toHaveClass(SHOW_PAGE_NUM_INPUT_CLASS);
+            expect(pageControls.pageNumInputEl.focus).toBeCalled();
+            expect(pageControls.pageNumInputEl.select).toBeCalled();
+            expect(pageControls.pageNumInputEl.addEventListener).toBeCalledWith('blur', expect.any(Function));
+            expect(pageControls.pageNumInputEl.addEventListener).toBeCalledWith('keydown', expect.any(Function));
         });
     });
 
     describe('hidePageNumInput()', () => {
-        it('should hide the input class and remove event listeners', () => {
+        test('should hide the input class and remove event listeners', () => {
             pageControls.pageNumInputEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
 
             pageControls.hidePageNumInput();
-            expect(pageControls.controlsEl).to.not.have.class(SHOW_PAGE_NUM_INPUT_CLASS);
-            expect(pageControls.pageNumInputEl.removeEventListener).to.be.calledWith('blur', sinon.match.func);
-            expect(pageControls.pageNumInputEl.removeEventListener).to.be.calledWith('keydown', sinon.match.func);
+            expect(pageControls.controlsEl).not.toHaveClass(SHOW_PAGE_NUM_INPUT_CLASS);
+            expect(pageControls.pageNumInputEl.removeEventListener).toBeCalledWith('blur', expect.any(Function));
+            expect(pageControls.pageNumInputEl.removeEventListener).toBeCalledWith('keydown', expect.any(Function));
         });
     });
 
@@ -116,79 +109,79 @@ describe('lib/PageControls', () => {
             stubs.previousPageButtonEl = pageControls.controlsEl.querySelector(`.${PREV_PAGE}`);
             stubs.nextPageButtonEl = pageControls.controlsEl.querySelector(`.${NEXT_PAGE}`);
 
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
-            stubs.fullscreen = sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+            stubs.browser = jest.spyOn(Browser, 'getName').mockReturnValue('Safari');
+            stubs.fullscreen = jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
         });
 
-        it('should disable/enable page number button el based on current page and browser type', () => {
+        test('should disable/enable page number button el based on current page and browser type', () => {
             pageControls.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
+            expect(stubs.pageNumButtonEl.disabled).toBe(true);
 
-            stubs.browser.returns('Chrome');
+            stubs.browser.mockReturnValue('Chrome');
             pageControls.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(false);
+            expect(stubs.pageNumButtonEl.disabled).toBe(false);
 
-            stubs.browser.returns('Safari');
-            stubs.fullscreen.returns(false);
+            stubs.browser.mockReturnValue('Safari');
+            stubs.fullscreen.mockReturnValue(false);
             pageControls.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(false);
+            expect(stubs.pageNumButtonEl.disabled).toBe(false);
 
             pageControls.totalPagesEl.textContent = '1';
             pageControls.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
+            expect(stubs.pageNumButtonEl.disabled).toBe(true);
         });
 
-        it('should disable/enable previous page button el based on current page', () => {
+        test('should disable/enable previous page button el based on current page', () => {
             pageControls.checkPaginationButtons();
-            expect(stubs.previousPageButtonEl.disabled).to.equal(true);
+            expect(stubs.previousPageButtonEl.disabled).toBe(true);
 
             pageControls.setCurrentPageNumber(3);
             pageControls.checkPaginationButtons();
-            expect(stubs.previousPageButtonEl.disabled).to.equal(false);
+            expect(stubs.previousPageButtonEl.disabled).toBe(false);
         });
 
-        it('should disable/enable next page button el based on current page', () => {
+        test('should disable/enable next page button el based on current page', () => {
             pageControls.checkPaginationButtons();
-            expect(stubs.nextPageButtonEl.disabled).to.equal(false);
+            expect(stubs.nextPageButtonEl.disabled).toBe(false);
 
             pageControls.setCurrentPageNumber(10);
             pageControls.checkPaginationButtons();
-            expect(stubs.nextPageButtonEl.disabled).to.equal(true);
+            expect(stubs.nextPageButtonEl.disabled).toBe(true);
         });
     });
 
     describe('updateCurrentPage()', () => {
-        it('should update the page to a value', () => {
+        test('should update the page to a value', () => {
             pageControls.pagesCount = 10;
             pageControls.pageNumInputEl = {
                 value: 1,
                 textContent: 1,
             };
-            const checkPaginationButtonsStub = sandbox.stub(pageControls, 'checkPaginationButtons');
+            const checkPaginationButtonsStub = jest.spyOn(pageControls, 'checkPaginationButtons');
 
             pageControls.updateCurrentPage(7);
-            expect(checkPaginationButtonsStub).to.be.called;
-            expect(pageControls.pageNumInputEl.value).to.equal(7);
+            expect(checkPaginationButtonsStub).toBeCalled();
+            expect(pageControls.pageNumInputEl.value).toBe(7);
         });
     });
 
     describe('setPreviousPage()', () => {
-        it('should emit the page change event for the previous page', () => {
-            stubs.emit = sandbox.stub(pageControls, 'emit');
-            stubs.getCurrentPageNumber = sandbox.stub(pageControls, 'getCurrentPageNumber').returns(3);
+        test('should emit the page change event for the previous page', () => {
+            stubs.emit = jest.spyOn(pageControls, 'emit');
+            stubs.getCurrentPageNumber = jest.spyOn(pageControls, 'getCurrentPageNumber').mockReturnValue(3);
 
             pageControls.setPreviousPage();
-            expect(stubs.emit).to.be.calledWith('pagechange', 2);
+            expect(stubs.emit).toBeCalledWith('pagechange', 2);
         });
     });
 
     describe('setNextPage()', () => {
-        it('should emit the page change event for the next page', () => {
-            stubs.emit = sandbox.stub(pageControls, 'emit');
-            stubs.getCurrentPageNumber = sandbox.stub(pageControls, 'getCurrentPageNumber').returns(3);
+        test('should emit the page change event for the next page', () => {
+            stubs.emit = jest.spyOn(pageControls, 'emit');
+            stubs.getCurrentPageNumber = jest.spyOn(pageControls, 'getCurrentPageNumber').mockReturnValue(3);
 
             pageControls.setNextPage();
-            expect(stubs.emit).to.be.calledWith('pagechange', 4);
+            expect(stubs.emit).toBeCalledWith('pagechange', 4);
         });
     });
 
@@ -200,25 +193,25 @@ describe('lib/PageControls', () => {
         });
 
         describe('getCurrentPageNumber()', () => {
-            it('should return the correct page number', () => {
+            test('should return the correct page number', () => {
                 const currPageNum = pageControls.getCurrentPageNumber();
-                expect(currPageNum).to.equal(1);
+                expect(currPageNum).toBe(1);
             });
         });
 
         describe('setCurrentPageNumber()', () => {
-            it('should set the correct value', () => {
+            test('should set the correct value', () => {
                 pageControls.setCurrentPageNumber(3);
                 const currPageNum = pageControls.getCurrentPageNumber();
-                expect(currPageNum).to.equal(3);
+                expect(currPageNum).toBe(3);
             });
         });
     });
 
     describe('getTotalPages()', () => {
-        it('should return the total number of pages', () => {
+        test('should return the total number of pages', () => {
             pageControls.add(1, 10);
-            expect(pageControls.getTotalPages()).to.equal(10);
+            expect(pageControls.getTotalPages()).toBe(10);
         });
     });
 
@@ -229,22 +222,22 @@ describe('lib/PageControls', () => {
                     value: 5,
                 },
             };
-            stubs.emit = sandbox.stub(pageControls, 'emit');
-            stubs.hidePageNumInputStub = sandbox.stub(pageControls, 'hidePageNumInput');
+            stubs.emit = jest.spyOn(pageControls, 'emit');
+            stubs.hidePageNumInputStub = jest.spyOn(pageControls, 'hidePageNumInput').mockImplementation();
         });
 
-        it('should hide the page number input and set the page if given valid input', () => {
+        test('should hide the page number input and set the page if given valid input', () => {
             pageControls.pageNumInputBlurHandler(stubs.event);
-            expect(stubs.emit).to.be.calledWith('pagechange', stubs.event.target.value);
-            expect(stubs.hidePageNumInputStub).to.be.called;
+            expect(stubs.emit).toBeCalledWith('pagechange', stubs.event.target.value);
+            expect(stubs.hidePageNumInputStub).toBeCalled();
         });
 
-        it('should hide the page number input but not set the page if given invalid input', () => {
+        test('should hide the page number input but not set the page if given invalid input', () => {
             stubs.event.target.value = 'not a number';
 
             pageControls.pageNumInputBlurHandler(stubs.event);
-            expect(stubs.emit).to.be.not.be.called;
-            expect(stubs.hidePageNumInputStub).to.be.called;
+            expect(stubs.emit).not.toBeCalled();
+            expect(stubs.hidePageNumInputStub).toBeCalled();
         });
     });
 
@@ -252,45 +245,45 @@ describe('lib/PageControls', () => {
         beforeEach(() => {
             stubs.event = {
                 key: 'Enter',
-                stopPropagation: sandbox.stub(),
-                preventDefault: sandbox.stub(),
+                stopPropagation: jest.fn(),
+                preventDefault: jest.fn(),
                 target: {
-                    blur: sandbox.stub(),
+                    blur: jest.fn(),
                 },
             };
             pageControls.contentEl = {
-                focus: sandbox.stub(),
+                focus: jest.fn(),
             };
-            stubs.browser = sandbox.stub(Browser, 'getName').returns(BROWSERS.INTERNET_EXPLORER);
-            stubs.hidePageNumInput = sandbox.stub(pageControls, 'hidePageNumInput');
+            stubs.browser = jest.spyOn(Browser, 'getName').mockReturnValue(BROWSERS.INTERNET_EXPLORER);
+            stubs.hidePageNumInput = jest.spyOn(pageControls, 'hidePageNumInput').mockImplementation();
         });
 
-        it("should focus the doc element and stop default actions on 'enter'", () => {
+        test("should focus the doc element and stop default actions on 'enter'", () => {
             pageControls.pageNumInputKeydownHandler(stubs.event);
-            expect(stubs.browser).to.be.called;
-            expect(pageControls.contentEl.focus).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.browser).toBeCalled();
+            expect(pageControls.contentEl.focus).toBeCalled();
+            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it("should blur if not IE and stop default actions on 'enter'", () => {
-            stubs.browser.returns('Chrome');
+        test("should blur if not IE and stop default actions on 'enter'", () => {
+            stubs.browser.mockReturnValue('Chrome');
 
             pageControls.pageNumInputKeydownHandler(stubs.event);
-            expect(stubs.browser).to.be.called;
-            expect(stubs.event.target.blur).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.browser).toBeCalled();
+            expect(stubs.event.target.blur).toBeCalled();
+            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
 
-        it("should hide the page number input, focus the document, and stop default actions on 'Esc'", () => {
+        test("should hide the page number input, focus the document, and stop default actions on 'Esc'", () => {
             stubs.event.key = 'Esc';
 
             pageControls.pageNumInputKeydownHandler(stubs.event);
-            expect(stubs.hidePageNumInput).to.be.called;
-            expect(pageControls.contentEl.focus).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
+            expect(stubs.hidePageNumInput).toBeCalled();
+            expect(pageControls.contentEl.focus).toBeCalled();
+            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toBeCalled();
         });
     });
 });

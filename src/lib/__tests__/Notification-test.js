@@ -4,15 +4,8 @@ import Notification from '../Notification';
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
 let notif;
-let clock;
-
-const sandbox = sinon.sandbox.create();
 
 describe('lib/Notification', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('__tests__/Notification-test.html');
         notif = new Notification(document.getElementById('test-notif-container'));
@@ -20,99 +13,98 @@ describe('lib/Notification', () => {
 
     afterEach(() => {
         fixture.cleanup();
-        sandbox.verifyAndRestore();
 
         notif = null;
     });
 
     describe('Notification()', () => {
-        it('should have the right classes assigned', () => {
-            assert.equal(notif.notificationEl.className, 'bp-notification bp-is-hidden');
+        test('should have the right classes assigned', () => {
+            expect(notif.notificationEl.className).toEqual('bp-notification bp-is-hidden');
         });
 
-        it("shouldn't have any message or button text", () => {
-            assert.equal(notif.buttonEl.textContext, undefined);
-            assert.equal(notif.messageEl.textContext, undefined);
+        test("shouldn't have any message or button text", () => {
+            expect(notif.buttonEl.textContext).toEqual(undefined);
+            expect(notif.messageEl.textContext).toEqual(undefined);
         });
 
-        it('should have the correct parent wrapper', () => {
-            assert.notEqual(notif.notificationEl.parentNode, 'undefined');
-            assert.equal(notif.notificationEl.parentNode.className, 'bp-notifications-wrapper');
+        test('should have the correct parent wrapper', () => {
+            expect(notif.notificationEl.parentNode).not.toEqual('undefined');
+            expect(notif.notificationEl.parentNode.className).toEqual('bp-notifications-wrapper');
         });
     });
 
     describe('show()', () => {
         beforeEach(() => {
-            sandbox.stub(window, 'setTimeout');
-            sandbox.stub(notif, 'hide');
-            clock = sinon.useFakeTimers();
+            jest.spyOn(window, 'setTimeout');
+            jest.spyOn(notif, 'hide');
+            jest.useFakeTimers();
         });
 
         afterEach(() => {
-            clock.restore();
+            jest.clearAllTimers();
         });
 
-        it('should properly show the notification', () => {
+        test('should properly show the notification', () => {
             notif.show('test', 'test');
-            assert.equal(notif.notificationEl.className, 'bp-notification');
+            expect(notif.notificationEl.className).toEqual('bp-notification');
         });
 
-        it('should add text to both the button and the message', () => {
+        test('should add text to both the button and the message', () => {
             notif.show('test', 'test');
-            assert.equal(notif.messageEl.textContent, 'test');
-            assert.equal(notif.buttonEl.textContent, 'test');
+            expect(notif.messageEl.textContent).toEqual('test');
+            expect(notif.buttonEl.textContent).toEqual('test');
         });
 
-        it('should not show button text if the notification is hidden and re-shown with no text', () => {
+        test('should not show button text if the notification is hidden and re-shown with no text', () => {
             notif.show('test', 'test');
             notif.hide();
             notif.show('test');
-            assert.equal(notif.messageEl.textContent, 'test');
-            assert.equal(notif.buttonEl.children[0].nodeName, 'svg');
+            expect(notif.messageEl.textContent).toEqual('test');
+            expect(notif.buttonEl.children[0].nodeName).toEqual('svg');
         });
 
-        it('should hide after the timeout', () => {
+        test('should hide after the timeout', () => {
             notif.show('test', 'test');
-            clock.tick(HIDE_TIMEOUT_MS + 1);
-            expect(notif.hide).to.be.called;
+            jest.advanceTimersByTime(HIDE_TIMEOUT_MS + 1);
+            expect(notif.hide).toBeCalled();
         });
 
-        it('should not hide after the timeout if the notification is set to persist', () => {
+        test('should not hide after the timeout if the notification is set to persist', () => {
             notif.show('test', 'test', true);
-            clock.tick(HIDE_TIMEOUT_MS + 1);
-            expect(notif.hide).to.not.be.called;
+            jest.advanceTimersByTime(HIDE_TIMEOUT_MS + 1);
+            expect(notif.hide).not.toBeCalled();
         });
     });
 
     describe('hide()', () => {
-        it('should be properly hidden', () => {
+        test('should be properly hidden', () => {
             notif.hide();
-            expect(notif.notificationEl).to.have.class('bp-is-hidden');
+            expect(notif.notificationEl).toHaveClass('bp-is-hidden');
         });
     });
 
     describe('clickHandler()', () => {
-        it('should stop propagation of event', () => {
+        test('should stop propagation of event', () => {
             const event = {
-                stopPropagation: sandbox.stub(),
+                stopPropagation: jest.fn(),
             };
 
             notif.clickHandler(event);
 
-            expect(event.stopPropagation).to.have.been.called;
+            expect(event.stopPropagation).toBeCalled();
         });
 
-        it('should hide notification if button is clicked', () => {
-            sandbox.stub(notif, 'hide');
+        test('should hide notification if button is clicked', () => {
+            jest.spyOn(notif, 'hide');
 
             const event = {
-                stopPropagation: sandbox.stub(),
+                stopPropagation: jest.fn(),
                 target: notif.notificationEl.querySelector('button'),
             };
 
             notif.clickHandler(event);
 
-            expect(notif.hide).to.have.been.called;
+            expect(notif.hide).toBeCalled();
         });
     });
 });

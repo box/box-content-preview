@@ -1,50 +1,42 @@
-import 'mock-local-storage';
 import Cache from '../Cache';
 
-const sandbox = sinon.sandbox.create();
-let cache;
-
 describe('Cache', () => {
+    let cache;
+
     beforeEach(() => {
         cache = new Cache();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         localStorage.clear();
     });
 
-    it('should set and get correctly', () => {
-        sandbox.stub(cache, 'isLocalStorageAvailable').returns(true);
-        const getSpy = sandbox.spy(localStorage, 'getItem');
-        const setSpy = sandbox.spy(localStorage, 'setItem');
+    test('should set and get correctly', () => {
+        jest.spyOn(cache, 'isLocalStorageAvailable').mockReturnValue(true);
 
         cache.set('foo', 'bar', true);
-        assert.ok(cache.has('foo'));
-        assert.equal(cache.get('foo'), 'bar');
+        expect(cache.has('foo')).toBeTruthy();
+        expect(cache.get('foo')).toEqual('bar');
 
         // Nuke from in-mem cache
         delete cache.cache.foo;
 
-        assert.ok(cache.has('foo'));
-        assert.equal(cache.get('foo'), 'bar');
-
-        /* eslint-disable no-unused-expressions */
-        expect(getSpy).to.be.calledWith('bp-foo');
-        expect(setSpy).to.be.calledWith('bp-foo', JSON.stringify('bar'));
-        /* eslint-enable no-unused-expressions */
+        expect(cache.has('foo')).toBeTruthy();
+        expect(cache.get('foo')).toEqual('bar');
+        expect(JSON.parse(localStorage.getItem('bp-foo'))).toBe('bar');
 
         cache.unset('foo');
-        assert.notOk(cache.has('foo'));
+        expect(cache.has('foo')).toBeFalsy();
+        expect(JSON.parse(localStorage.getItem('bp-foo'))).toBeNull();
     });
 
-    it('should set and get correctly with 0 value', () => {
+    test('should set and get correctly with 0 value', () => {
         cache.set('foo', 0, true);
-        assert.ok(cache.has('foo'));
-        assert.equal(cache.get('foo'), 0);
+        expect(cache.has('foo')).toBeTruthy();
+        expect(cache.get('foo')).toEqual(0);
     });
 
-    it('should return undefined when not set', () => {
-        assert.equal(cache.get('foobar'), undefined);
+    test('should return undefined when not set', () => {
+        expect(cache.get('foobar')).toEqual(undefined);
     });
 });

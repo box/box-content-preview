@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import BoundedCache from '../BoundedCache';
 
-const sandbox = sinon.sandbox.create();
-
 describe('BoundedCache', () => {
     let cache;
 
@@ -11,49 +9,47 @@ describe('BoundedCache', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
-
         cache = null;
     });
 
     describe('constructor()', () => {
-        it('should initialize properties', () => {
+        test('should initialize properties', () => {
             cache = new BoundedCache();
 
-            expect(cache.maxEntries).to.be.equal(500);
-            expect(cache.cache).to.be.empty;
-            expect(cache.cacheQueue.length).to.be.equal(0);
+            expect(cache.maxEntries).toBe(500);
+            expect(cache.cache).toEqual({});
+            expect(cache.cacheQueue.length).toBe(0);
         });
 
-        it('should handle maxEntries', () => {
-            expect(cache.maxEntries).to.be.equal(2);
+        test('should handle maxEntries', () => {
+            expect(cache.maxEntries).toBe(2);
         });
     });
 
     describe('set()', () => {
-        it('should add the entry to the cache', () => {
+        test('should add the entry to the cache', () => {
             cache.set('foo', 'bar');
 
-            expect(cache.inCache('foo')).to.be.true;
-            expect(cache.cacheQueue).to.be.eql(['foo']);
+            expect(cache.inCache('foo')).toBe(true);
+            expect(cache.cacheQueue).toEqual(['foo']);
         });
 
-        it('should not update the cacheQueue if key already exists', () => {
+        test('should not update the cacheQueue if key already exists', () => {
             cache.set('foo', 'bar');
             cache.set('foo', 'bar2');
 
-            expect(cache.inCache('foo')).to.be.true;
-            expect(cache.get('foo')).to.be.equal('bar2');
-            expect(cache.cacheQueue).to.be.eql(['foo']);
+            expect(cache.inCache('foo')).toBe(true);
+            expect(cache.get('foo')).toBe('bar2');
+            expect(cache.cacheQueue).toEqual(['foo']);
         });
 
-        it('should remove the earliest added entry when entries exceed maxEntries', () => {
+        test('should remove the earliest added entry when entries exceed maxEntries', () => {
             cache.set('foo', 'bar');
             cache.set('hello', 'world');
             cache.set('goodnight', 'moon');
 
-            expect(cache.inCache('foo')).to.be.false;
-            expect(cache.cacheQueue).to.be.eql(['hello', 'goodnight']);
+            expect(cache.inCache('foo')).toBe(false);
+            expect(cache.cacheQueue).toEqual(['hello', 'goodnight']);
         });
     });
 });

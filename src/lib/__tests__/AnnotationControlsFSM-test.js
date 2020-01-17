@@ -45,8 +45,8 @@ describe('lib/AnnotationControlsFSM', () => {
             it(`should go to state ${nextState} and output ${output} if input is ${input} and mode is ${mode}`, () => {
                 const annotationControlsFSM = new AnnotationControlsFSM();
 
-                expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
-                expect(annotationControlsFSM.getState()).to.equal(nextState);
+                expect(annotationControlsFSM.transition(input, mode)).toBe(output);
+                expect(annotationControlsFSM.getState()).toBe(nextState);
             });
         });
 
@@ -55,8 +55,8 @@ describe('lib/AnnotationControlsFSM', () => {
             it(`should stay in state none if input is ${input}`, () => {
                 const annotationControlsFSM = new AnnotationControlsFSM();
 
-                expect(annotationControlsFSM.transition(input)).to.equal(AnnotationMode.NONE);
-                expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
+                expect(annotationControlsFSM.transition(input)).toBe(AnnotationMode.NONE);
+                expect(annotationControlsFSM.getState()).toBe(AnnotationState.NONE);
             });
         });
 
@@ -64,8 +64,8 @@ describe('lib/AnnotationControlsFSM', () => {
         it('should reset state if input is AnnotationInput.RESET', () => {
             const annotationControlsFSM = new AnnotationControlsFSM();
 
-            expect(annotationControlsFSM.transition(AnnotationInput.RESET)).to.equal(AnnotationMode.NONE);
-            expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
+            expect(annotationControlsFSM.transition(AnnotationInput.RESET)).toEqual(AnnotationMode.NONE);
+            expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
         });
     });
 
@@ -78,8 +78,8 @@ describe('lib/AnnotationControlsFSM', () => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
 
-                        expect(annotationControlsFSM.transition(input)).to.equal(state);
-                        expect(annotationControlsFSM.getState()).to.equal(state);
+                        expect(annotationControlsFSM.transition(input)).toBe(state);
+                        expect(annotationControlsFSM.getState()).toBe(state);
                     });
                 });
         });
@@ -108,11 +108,11 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
             ].forEach(({ input, mode, output }) => {
-                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
+                test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT);
 
-                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
-                    expect(annotationControlsFSM.getState()).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
         });
@@ -141,11 +141,11 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
             ].forEach(({ input, mode, output }) => {
-                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
+                test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
 
-                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
-                    expect(annotationControlsFSM.getState()).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
         });
@@ -180,21 +180,21 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
             ].forEach(({ input, nextState, output }) => {
-                it(`should go to state ${nextState} and output ${output} if input is ${input}`, () => {
+                test(`should go to state ${nextState} and output ${output} if input is ${input}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(state);
 
-                    expect(annotationControlsFSM.transition(input)).to.equal(output);
-                    expect(annotationControlsFSM.getState()).to.equal(nextState);
+                    expect(annotationControlsFSM.transition(input)).toBe(output);
+                    expect(annotationControlsFSM.getState()).toBe(nextState);
                 });
             });
 
             // Stay in the same state
             [AnnotationInput.CREATE, AnnotationInput.STARTED, AnnotationInput.UPDATE].forEach(input => {
-                it(`should stay in state ${state} if input is ${input}`, () => {
+                test(`should stay in state ${state} if input is ${input}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(state);
 
-                    expect(annotationControlsFSM.transition(input)).to.equal(stateMode);
-                    expect(annotationControlsFSM.getState()).to.equal(state);
+                    expect(annotationControlsFSM.transition(input)).toEqual(stateMode);
+                    expect(annotationControlsFSM.getState()).toEqual(state);
                 });
             });
         });
@@ -223,11 +223,11 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
             ].forEach(({ input, mode, output }) => {
-                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
+                test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT_TEMP);
 
-                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
-                    expect(annotationControlsFSM.getState()).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
         });
@@ -256,11 +256,11 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
             ].forEach(({ input, mode, output }) => {
-                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
+                test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
 
-                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
-                    expect(annotationControlsFSM.getState()).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
         });

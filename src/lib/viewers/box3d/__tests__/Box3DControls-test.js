@@ -6,16 +6,10 @@ import { CLASS_HIDDEN } from '../../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../../icons/icons';
 import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from '../box3DConstants';
 
-const sandbox = sinon.sandbox.create();
-
 let containerEl;
 let controls;
 
 describe('lib/viewers/box3d/Box3DControls', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/box3d/__tests__/Box3DControls-test.html');
         containerEl = document.querySelector('.container');
@@ -23,8 +17,6 @@ describe('lib/viewers/box3d/Box3DControls', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
-
         if (controls && typeof controls.destroy === 'function') {
             controls.destroy();
         }
@@ -34,50 +26,50 @@ describe('lib/viewers/box3d/Box3DControls', () => {
     });
 
     describe('constructor()', () => {
-        it('should set .el to passed in container element', () => {
-            expect(controls.el).to.deep.equal(containerEl);
+        test('should set .el to passed in container element', () => {
+            expect(controls.el).toBe(containerEl);
         });
 
-        it('should create new Controls instance for .controls', () => {
-            expect(controls.controls).to.be.an.instanceof(Controls);
+        test('should create new Controls instance for .controls', () => {
+            expect(controls.controls).toBeInstanceOf(Controls);
         });
 
-        it('should create new UIRegistry for .uiRegistry', () => {
-            expect(controls.uiRegistry).to.be.an.instanceof(UIRegistry);
+        test('should create new UIRegistry for .uiRegistry', () => {
+            expect(controls.uiRegistry).toBeInstanceOf(UIRegistry);
         });
     });
 
     describe('addUi()', () => {
-        it('should call .addVrButton()', () => {
-            const stub = sandbox.stub(controls, 'addVrButton');
+        test('should call .addVrButton()', () => {
+            const stub = jest.spyOn(controls, 'addVrButton');
             controls.addUi();
 
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should call .addFullscreenButton()', () => {
-            const stub = sandbox.stub(controls, 'addFullscreenButton');
+        test('should call .addFullscreenButton()', () => {
+            const stub = jest.spyOn(controls, 'addFullscreenButton');
             controls.addUi();
 
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should call .hideVrButton()', () => {
-            const stub = sandbox.stub(controls, 'hideVrButton');
+        test('should call .hideVrButton()', () => {
+            const stub = jest.spyOn(controls, 'hideVrButton');
             controls.addUi();
 
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
     });
 
     describe('addFullscreenButton()', () => {
         beforeEach(() => {
-            sandbox.stub(controls.controls, 'add');
+            jest.spyOn(controls.controls, 'add');
             controls.addFullscreenButton();
         });
 
-        it('should invoke controls.add() with enter fullscreen button params', () => {
-            expect(controls.controls.add).to.be.calledWith(
+        test('should invoke controls.add() with enter fullscreen button params', () => {
+            expect(controls.controls.add).toBeCalledWith(
                 'Enter fullscreen',
                 controls.handleToggleFullscreen,
                 'bp-enter-fullscreen-icon',
@@ -85,8 +77,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             );
         });
 
-        it('should invoke controls.add() with exit fullscreen button params', () => {
-            expect(controls.controls.add).to.be.calledWith(
+        test('should invoke controls.add() with exit fullscreen button params', () => {
+            expect(controls.controls.add).toBeCalledWith(
                 'Exit fullscreen',
                 controls.handleToggleFullscreen,
                 'bp-exit-fullscreen-icon',
@@ -96,53 +88,53 @@ describe('lib/viewers/box3d/Box3DControls', () => {
     });
 
     describe('addVrButton()', () => {
-        it('should invoke controls.add() with vr button params', () => {
-            const vrAddStub = sandbox.stub(controls.controls, 'add');
+        test('should invoke controls.add() with vr button params', () => {
+            const vrAddStub = jest.spyOn(controls.controls, 'add');
             controls.addVrButton();
 
-            expect(vrAddStub).to.be.calledWith('Toggle VR display', controls.handleToggleVr, '', ICON_3D_VR);
+            expect(vrAddStub).toBeCalledWith('Toggle VR display', controls.handleToggleVr, '', ICON_3D_VR);
         });
     });
 
     describe('handleSceneLoaded()', () => {
-        it('should call emit() with EVENT_SCENE_LOADED', () => {
-            const emitStub = sandbox.stub(controls, 'emit');
+        test('should call emit() with EVENT_SCENE_LOADED', () => {
+            const emitStub = jest.spyOn(controls, 'emit');
             controls.handleSceneLoaded();
 
-            expect(emitStub).to.be.calledWith(EVENT_SCENE_LOADED);
+            expect(emitStub).toBeCalledWith(EVENT_SCENE_LOADED);
         });
     });
 
     describe('handleToggleVr()', () => {
-        it('should call emit() with EVENT_TOGGLE_VR', () => {
-            const emitStub = sandbox.stub(controls, 'emit');
+        test('should call emit() with EVENT_TOGGLE_VR', () => {
+            const emitStub = jest.spyOn(controls, 'emit');
             controls.handleToggleVr();
 
-            expect(emitStub).to.be.calledWith(EVENT_TOGGLE_VR);
+            expect(emitStub).toBeCalledWith(EVENT_TOGGLE_VR);
         });
     });
 
     describe('handleToggleFullscreen()', () => {
-        it('should call emit() with EVENT_TOGGLE_FULLSCREEN', () => {
-            const emitStub = sandbox.stub(controls, 'emit');
+        test('should call emit() with EVENT_TOGGLE_FULLSCREEN', () => {
+            const emitStub = jest.spyOn(controls, 'emit');
             controls.handleToggleFullscreen();
 
-            expect(emitStub).to.be.calledWith(EVENT_TOGGLE_FULLSCREEN);
+            expect(emitStub).toBeCalledWith(EVENT_TOGGLE_FULLSCREEN);
         });
     });
 
     describe('handleReset()', () => {
-        it('should call emit() with EVENT_RESET', () => {
-            const emitStub = sandbox.stub(controls, 'emit');
+        test('should call emit() with EVENT_RESET', () => {
+            const emitStub = jest.spyOn(controls, 'emit');
             controls.handleReset();
 
-            expect(emitStub).to.be.calledWith(EVENT_RESET);
+            expect(emitStub).toBeCalledWith(EVENT_RESET);
         });
     });
 
     describe('showVrButton()', () => {
-        it('should should remove CLASS_HIDDEN to vrButtonEl if it exists', () => {
-            const removeStub = sandbox.stub();
+        test('should should remove CLASS_HIDDEN to vrButtonEl if it exists', () => {
+            const removeStub = jest.fn();
             controls.vrButtonEl = {
                 classList: {
                     remove: removeStub,
@@ -151,13 +143,13 @@ describe('lib/viewers/box3d/Box3DControls', () => {
 
             controls.showVrButton();
 
-            expect(removeStub).to.be.calledWith(CLASS_HIDDEN);
+            expect(removeStub).toBeCalledWith(CLASS_HIDDEN);
         });
     });
 
     describe('hideVrButton()', () => {
-        it('should should add CLASS_HIDDEN to vrButtonEl if it exists', () => {
-            const addStub = sandbox.stub();
+        test('should should add CLASS_HIDDEN to vrButtonEl if it exists', () => {
+            const addStub = jest.fn();
             controls.vrButtonEl = {
                 classList: {
                     add: addStub,
@@ -166,7 +158,7 @@ describe('lib/viewers/box3d/Box3DControls', () => {
 
             controls.hideVrButton();
 
-            expect(addStub).to.be.calledWith(CLASS_HIDDEN);
+            expect(addStub).toBeCalledWith(CLASS_HIDDEN);
         });
     });
 
@@ -175,8 +167,8 @@ describe('lib/viewers/box3d/Box3DControls', () => {
         beforeEach(() => {
             el = {
                 classList: {
-                    add: sandbox.stub(),
-                    remove: sandbox.stub(),
+                    add: jest.fn(),
+                    remove: jest.fn(),
                 },
             };
         });
@@ -185,75 +177,75 @@ describe('lib/viewers/box3d/Box3DControls', () => {
             el = null;
         });
 
-        it('should element.classList.remove() with CLASS_HIDDEN from provided element if visible param is true', () => {
+        test('should element.classList.remove() with CLASS_HIDDEN from provided element if visible param is true', () => {
             controls.setElementVisibility(el, true);
-            expect(el.classList.remove).to.be.calledWith(CLASS_HIDDEN);
+            expect(el.classList.remove).toBeCalledWith(CLASS_HIDDEN);
         });
 
-        it('should element.classList.add() with CLASS_HIDDEN to provided element if visible param is false', () => {
+        test('should element.classList.add() with CLASS_HIDDEN to provided element if visible param is false', () => {
             controls.setElementVisibility(el, false);
-            expect(el.classList.add).to.be.calledWith(CLASS_HIDDEN);
+            expect(el.classList.add).toBeCalledWith(CLASS_HIDDEN);
         });
 
-        it('should invoke element.classList.add() with CLASS_HIDDEN to provided element if visible param is missing', () => {
+        test('should invoke element.classList.add() with CLASS_HIDDEN to provided element if visible param is missing', () => {
             controls.setElementVisibility(el);
-            expect(el.classList.add).to.be.calledWith(CLASS_HIDDEN);
+            expect(el.classList.add).toBeCalledWith(CLASS_HIDDEN);
         });
     });
 
     describe('toggleElementVisibility()', () => {
-        it('should invoke element.classList.toggle() with CLASS_HIDDEN', () => {
+        test('should invoke element.classList.toggle() with CLASS_HIDDEN', () => {
             const el = {
                 classList: {
-                    toggle: sandbox.stub(),
+                    toggle: jest.fn(),
                 },
             };
 
             controls.toggleElementVisibility(el);
 
-            expect(el.classList.toggle).to.be.calledWith(CLASS_HIDDEN);
+            expect(el.classList.toggle).toBeCalledWith(CLASS_HIDDEN);
         });
     });
 
     describe('destroy()', () => {
-        it('should call controls.destroy() if .controls exists', () => {
-            const destroyStub = sandbox.stub(controls.controls, 'destroy');
+        test('should call controls.destroy() if .controls exists', () => {
+            const destroyStub = jest.spyOn(controls.controls, 'destroy');
             controls.destroy();
 
-            expect(destroyStub).to.be.called;
+            expect(destroyStub).toBeCalled();
         });
 
-        it("should not call controls.destroy() if .controls doesn't exist", () => {
-            const destroyStub = sandbox.stub(controls.controls, 'destroy');
+        test("should not call controls.destroy() if .controls doesn't exist", () => {
+            const destroyStub = jest.spyOn(controls.controls, 'destroy');
             controls.controls = null;
             controls.destroy();
 
-            expect(destroyStub).to.not.be.called;
+            expect(destroyStub).not.toBeCalled();
         });
 
-        it('should nullify .controls', () => {
+        test('should nullify .controls', () => {
             controls.destroy();
-            expect(controls.controls).to.not.exist;
+            expect(controls.controls).toBeNull();
         });
 
-        it('should call uiRegistry.unregisterAll() if .uiRegistry exists', () => {
-            const unregisterStub = sandbox.stub(controls.uiRegistry, 'unregisterAll');
+        test('should call uiRegistry.unregisterAll() if .uiRegistry exists', () => {
+            const unregisterStub = jest.spyOn(controls.uiRegistry, 'unregisterAll');
             controls.destroy();
 
-            expect(unregisterStub).to.be.called;
+            expect(unregisterStub).toBeCalled();
         });
 
-        it("should not call uiRegistry.unregisterAll() if .uiRegistry doesn't exist", () => {
-            const unregisterStub = sandbox.stub(controls.uiRegistry, 'unregisterAll');
+        test("should not call uiRegistry.unregisterAll() if .uiRegistry doesn't exist", () => {
+            const unregisterStub = jest.spyOn(controls.uiRegistry, 'unregisterAll');
             controls.uiRegistry = null;
             controls.destroy();
 
-            expect(unregisterStub).to.not.be.called;
+            expect(unregisterStub).not.toBeCalled();
         });
 
-        it('should nullify uiRegistry', () => {
+        test('should nullify uiRegistry', () => {
             controls.destroy();
-            expect(controls.uiRegistry).to.not.exist;
+            expect(controls.uiRegistry).toBeNull();
         });
     });
 });

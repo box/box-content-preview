@@ -2,22 +2,15 @@
 import ReactDOM from 'react-dom';
 import BoxCSV from '../BoxCSV';
 
-const sandbox = sinon.sandbox.create();
 let csvComponent;
 
 describe('lib/viewers/text/BoxCSV', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/BoxCSV-test.html');
-        const containerEl = document.querySelector('.container');
-        csvComponent = new BoxCSV(containerEl, {});
+        csvComponent = new BoxCSV(document.querySelector('.container'), {});
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         if (csvComponent && typeof csvComponent.destroy === 'function') {
@@ -27,15 +20,15 @@ describe('lib/viewers/text/BoxCSV', () => {
     });
 
     describe('getRowClassName()', () => {
-        it('should return appropriate classname for row', () => {
-            expect(csvComponent.getRowClassName(1)).to.equal('bp-text-csv-odd-row');
-            expect(csvComponent.getRowClassName(2)).to.equal('bp-text-csv-even-row');
+        test('should return appropriate classname for row', () => {
+            expect(csvComponent.getRowClassName(1)).toBe('bp-text-csv-odd-row');
+            expect(csvComponent.getRowClassName(2)).toBe('bp-text-csv-even-row');
         });
     });
 
     describe('cellRenderer()', () => {
-        it('should render cell with supplied properties', () => {
-            sandbox.stub(csvComponent, 'getRowClassName').returns('rowClass');
+        test('should render cell with supplied properties', () => {
+            jest.spyOn(csvComponent, 'getRowClassName').mockReturnValue('rowClass');
             csvComponent.data = [[], [], ['some', 'stuff']];
 
             const cell = csvComponent.cellRenderer({
@@ -45,15 +38,15 @@ describe('lib/viewers/text/BoxCSV', () => {
                 style: 'style',
             });
 
-            expect(cell.props.className).to.equal('rowClass bp-text-csv-cell');
-            expect(cell.props.children).to.equal('stuff');
-            expect(cell.props.style).to.equal('style');
+            expect(cell.props.className).toBe('rowClass bp-text-csv-cell');
+            expect(cell.props.children).toBe('stuff');
+            expect(cell.props.style).toBe('style');
         });
     });
 
     describe('renderCSV()', () => {
-        it('should render Grid using calculated properties', () => {
-            const renderStub = sandbox.stub(ReactDOM, 'render');
+        test('should render Grid using calculated properties', () => {
+            const renderStub = jest.spyOn(ReactDOM, 'render');
             csvComponent.data = [
                 [1, 2],
                 [2, 3],
@@ -62,21 +55,21 @@ describe('lib/viewers/text/BoxCSV', () => {
 
             csvComponent.renderCSV();
 
-            const gridComponent = renderStub.firstCall.args[0];
-            expect(gridComponent.props.className).to.equal('bp-text-csv-grid');
-            expect(gridComponent.props.cellRenderer).to.equal(csvComponent.cellRenderer);
-            expect(gridComponent.props.columnCount).to.equal(2);
-            expect(gridComponent.props.rowCount).to.equal(3);
-            expect(renderStub).to.be.calledWith(gridComponent, csvComponent.csvEl);
+            const gridComponent = renderStub.mock.calls[0][0];
+            expect(gridComponent.props.className).toBe('bp-text-csv-grid');
+            expect(gridComponent.props.cellRenderer).toBe(csvComponent.cellRenderer);
+            expect(gridComponent.props.columnCount).toBe(2);
+            expect(gridComponent.props.rowCount).toBe(3);
+            expect(renderStub).toBeCalledWith(gridComponent, csvComponent.csvEl);
         });
 
-        it('should base its column count on the longest available row', () => {
-            const renderStub = sandbox.stub(ReactDOM, 'render');
+        test('should base its column count on the longest available row', () => {
+            const renderStub = jest.spyOn(ReactDOM, 'render');
             csvComponent.data = [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4], [1, 2]];
             csvComponent.renderCSV();
 
-            const gridComponent = renderStub.firstCall.args[0];
-            expect(gridComponent.props.columnCount).to.equal(4);
+            const gridComponent = renderStub.mock.calls[0][0];
+            expect(gridComponent.props.columnCount).toBe(4);
         });
     });
 });

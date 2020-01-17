@@ -3,13 +3,7 @@ import Image360Loader from '../Image360Loader';
 import Browser from '../../../../Browser';
 import PreviewError from '../../../../PreviewError';
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/viewers/box3d/image360/Image360Loader', () => {
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     describe('determineViewer()', () => {
         const file = {
             extension: 'jpg',
@@ -23,17 +17,14 @@ describe('lib/viewers/box3d/image360/Image360Loader', () => {
             },
         };
 
-        it('should throw an error if browser does not support WebGL', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(false);
-            expect(() => Image360Loader.determineViewer(file)).to.throw(
-                PreviewError,
-                /support preview for 360-degree images/,
-            );
+        test('should throw an error if browser does not support WebGL', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(false);
+            expect(() => Image360Loader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it('should return viewer if 360 is properly supported', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(true);
-            expect(Image360Loader.determineViewer(file)).to.equal(Image360Loader.viewers[0]);
+        test('should return viewer if 360 is properly supported', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(true);
+            expect(Image360Loader.determineViewer(file)).toBe(Image360Loader.viewers[0]);
         });
     });
 });

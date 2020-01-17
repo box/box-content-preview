@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import createReactClass from 'create-react-class';
+import Papa from '../../../../third-party/text/0.114.0/papaparse.min.js';
 import Api from '../../../api';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
@@ -11,14 +12,13 @@ import { VIEWER_EVENT } from '../../../events';
 let containerEl;
 let options;
 let csv;
-const sandbox = sinon.sandbox.create();
 const stubs = {};
 
 describe('lib/viewers/text/CSVViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
+    beforeAll(() => {
+        global.Papa = Papa;
     });
 
     beforeEach(() => {
@@ -39,13 +39,12 @@ describe('lib/viewers/text/CSVViewer', () => {
         };
 
         csv = new CSVViewer(options);
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         csv.containerEl = containerEl;
         csv.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -57,9 +56,9 @@ describe('lib/viewers/text/CSVViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up the container and DOM structure', () => {
-            expect(csv.csvEl.parentNode).to.equal(csv.containerEl);
-            expect(csv.csvEl).to.have.class('bp-text');
+        test('should set up the container and DOM structure', () => {
+            expect(csv.csvEl.parentNode).toBe(csv.containerEl);
+            expect(csv.csvEl).toHaveClass('bp-text');
         });
     });
 
@@ -67,99 +66,98 @@ describe('lib/viewers/text/CSVViewer', () => {
         const loadFunc = TextBaseViewer.prototype.load;
 
         beforeEach(() => {
-            sandbox.stub(URL, 'createObjectURL');
-            sandbox.stub(window.Papa, 'parse');
-            sandbox.stub(csv, 'setup');
-            sandbox.stub(csv, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(csv, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(csv, 'finishLoading');
+            jest.spyOn(URL, 'createObjectURL');
+            jest.spyOn(window.Papa, 'parse');
+            jest.spyOn(csv, 'setup');
+            jest.spyOn(csv, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(csv, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(csv, 'finishLoading');
         });
 
         afterEach(() => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should load papaparse worker and call parent load()', () => {
+        test('should load papaparse worker and call parent load()', () => {
             const blob = {};
             const workerUrl = 'workerUrl';
-            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns(workerUrl));
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.mock() });
+            jest.spyOn(stubs.api, 'get').mockResolvedValue(blob);
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue(workerUrl));
 
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .withArgs(workerUrl, { type: 'blob' })
-                .returns(Promise.resolve(blob));
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
 
             return csv.load().then(() => {
-                expect(URL.createObjectURL).to.be.calledWith(blob);
+                expect(URL.createObjectURL).toBeCalledWith(blob);
+                expect(stubs.api.get).toBeCalledWith(workerUrl, { type: 'blob' });
             });
         });
 
         /* eslint-disable no-undef */
-        it('should parse with Papaparse', () => {
-            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.stub() });
+        test('should parse with Papaparse', () => {
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue('someUrl'));
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
 
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
 
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve());
+            jest.spyOn(stubs.api, 'get').mockResolvedValue(undefined);
 
             const csvUrlWithAuth = `csvUrl/?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`;
 
             return csv.load().then(() => {
-                expect(window.Papa.parse).to.be.calledWith(csvUrlWithAuth, {
-                    download: true,
-                    error: sinon.match.func,
-                    complete: sinon.match.func,
-                });
+                expect(window.Papa.parse).toBeCalledWith(
+                    csvUrlWithAuth,
+                    expect.objectContaining({
+                        download: true,
+                        error: expect.any(Function),
+                        complete: expect.any(Function),
+                    }),
+                );
             });
         });
         /* eslint-enable no-undef */
 
-        it('should invoke startLoadTimer()', () => {
-            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.stub() });
+        test('should invoke startLoadTimer()', () => {
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue('someUrl'));
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve());
-            sandbox.stub(csv, 'startLoadTimer');
+            jest.spyOn(stubs.api, 'get').mockResolvedValue(undefined);
+            jest.spyOn(csv, 'startLoadTimer');
 
             return csv.load().then(() => {
-                expect(csv.startLoadTimer).to.be.called;
+                expect(csv.startLoadTimer).toBeCalled();
             });
         });
     });
 
     describe('prefetch()', () => {
-        it('should prefetch assets if assets is true', () => {
-            sandbox.stub(csv, 'prefetchAssets');
+        test('should prefetch assets if assets is true', () => {
+            jest.spyOn(csv, 'prefetchAssets').mockImplementation();
             csv.prefetch({ assets: true, content: false });
-            expect(csv.prefetchAssets).to.be.called;
+            expect(csv.prefetchAssets).toBeCalled();
         });
 
-        it('should prefetch content if content is true and representation is ready', () => {
+        test('should prefetch content if content is true and representation is ready', () => {
             const contentUrl = 'someContentUrl';
-            sandbox.stub(csv, 'createContentUrlWithAuthParams').returns(contentUrl);
-            sandbox.stub(csv, 'isRepresentationReady').returns(true);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .withArgs(contentUrl, { type: 'document' });
+            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
+            jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
 
             csv.prefetch({ assets: false, content: true });
+
+            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document' });
         });
 
-        it('should not prefetch content if content is true but representation is not ready', () => {
-            sandbox.stub(csv, 'isRepresentationReady').returns(false);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .never();
+        test('should not prefetch content if content is true but representation is not ready', () => {
+            jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(false);
+            jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
+
             csv.prefetch({ assets: false, content: true });
+
+            expect(csv.api.get).not.toBeCalled();
         });
     });
 
@@ -170,11 +168,11 @@ describe('lib/viewers/text/CSVViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'resize', { value: resizeFunc });
         });
 
-        it('should force rendering of CSV and call parent resize', () => {
-            Object.defineProperty(TextBaseViewer.prototype, 'resize', { value: sandbox.mock() });
+        test('should force rendering of CSV and call parent resize', () => {
+            Object.defineProperty(TextBaseViewer.prototype, 'resize', { value: jest.fn() });
             csv.csvComponent = {
-                renderCSV: sandbox.mock(),
-                destroy: sandbox.stub(),
+                renderCSV: jest.fn(),
+                destroy: jest.fn(),
             };
 
             csv.resize();
@@ -182,45 +180,45 @@ describe('lib/viewers/text/CSVViewer', () => {
     });
 
     describe('finishLoading()', () => {
-        it('should render CSV and finish setting up UI', () => {
+        test('should render CSV and finish setting up UI', () => {
             /* eslint-disable react/prefer-es6-class */
             window.BoxCSV = createReactClass({
-                destroy: sandbox.stub(),
-                renderCSV: sandbox.mock(),
+                destroy: jest.fn(),
+                renderCSV: jest.fn(),
                 render: () => {
                     return '';
                 },
             });
             /* eslint-enable react/prefer-es6-class */
-            sandbox.stub(csv, 'loadUI');
-            sandbox.stub(csv, 'emit');
+            jest.spyOn(csv, 'loadUI');
+            jest.spyOn(csv, 'emit');
 
             csv.finishLoading();
 
-            expect(csv.loadUI).to.be.called;
-            expect(csv.loaded).to.be.true;
-            expect(csv.emit).to.be.calledWith(VIEWER_EVENT.load);
+            expect(csv.loadUI).toBeCalled();
+            expect(csv.loaded).toBe(true);
+            expect(csv.emit).toBeCalledWith(VIEWER_EVENT.load);
         });
     });
 
     describe('checkForParseErrors()', () => {
         beforeEach(() => {
-            stubs.getWorstParseError = sandbox.stub(csv, 'getWorstParseError');
-            stubs.triggerError = sandbox.stub(csv, 'triggerError');
+            stubs.getWorstParseError = jest.spyOn(csv, 'getWorstParseError').mockImplementation();
+            stubs.triggerError = jest.spyOn(csv, 'triggerError').mockImplementation();
         });
 
-        it('should do nothing if no errors', () => {
+        test('should do nothing if no errors', () => {
             csv.checkForParseErrors();
 
-            expect(stubs.triggerError).not.to.be.called;
+            expect(stubs.triggerError).not.toBeCalled();
         });
 
-        it('should trigger error with a parse error', () => {
-            stubs.getWorstParseError.returns({ foo: 'bar' });
+        test('should trigger error with a parse error', () => {
+            stubs.getWorstParseError.mockReturnValue({ foo: 'bar' });
 
             csv.checkForParseErrors({ errors: [{ foo: 'bar' }] });
 
-            expect(stubs.triggerError).to.be.called;
+            expect(stubs.triggerError).toBeCalled();
         });
     });
 
@@ -248,8 +246,8 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expectedError: fieldsMismatchError,
             },
         ].forEach(({ name, errors, expectedError }) => {
-            it(`${name}`, () => {
-                expect(csv.getWorstParseError(errors)).to.be.eql(expectedError);
+            test(`${name}`, () => {
+                expect(csv.getWorstParseError(errors)).toEqual(expectedError);
             });
         });
     });

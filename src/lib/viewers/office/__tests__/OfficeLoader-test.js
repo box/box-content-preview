@@ -1,11 +1,8 @@
 import OfficeLoader from '../OfficeLoader';
 import OfficeViewer from '../OfficeViewer';
 import * as file from '../../../file';
-import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 const FIVE_MB = 5242880;
-
-const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/office/OfficeLoader', () => {
     const fakeFileTemplate = {
@@ -22,10 +19,6 @@ describe('lib/viewers/office/OfficeLoader', () => {
         },
     };
 
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     describe('determineViewer()', () => {
         const fakeFiles = [
             { ...fakeFileTemplate, extension: 'xlsx' },
@@ -34,9 +27,9 @@ describe('lib/viewers/office/OfficeLoader', () => {
         ];
 
         fakeFiles.forEach(fakeFile => {
-            it('should choose the Office viewer if it is not disabled and the file is ok', () => {
+            test('should choose the Office viewer if it is not disabled and the file is ok', () => {
                 const viewer = OfficeLoader.determineViewer(fakeFile);
-                expect(viewer).to.deep.equal({
+                expect(viewer).toEqual({
                     NAME: 'Office',
                     CONSTRUCTOR: OfficeViewer,
                     REP: 'ORIGINAL',
@@ -44,7 +37,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
                 });
             });
 
-            it('should choose the Office viewer if it is not disabled and the file is a shared link that is not password-protected', () => {
+            test('should choose the Office viewer if it is not disabled and the file is a shared link that is not password-protected', () => {
                 const editedFakeFile = {
                     ...fakeFile,
                     shared_link: {
@@ -52,30 +45,27 @@ describe('lib/viewers/office/OfficeLoader', () => {
                     },
                 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile);
-                expect(viewer.NAME).to.equal('Office');
+                expect(viewer.NAME).toEqual('Office');
             });
 
-            it('should not return a viewer if the Office viewer is disabled', () => {
+            test('should not return a viewer if the Office viewer is disabled', () => {
                 const viewer = OfficeLoader.determineViewer(fakeFile, ['Office']);
-                expect(viewer).to.equal(undefined);
+                expect(viewer).toBeUndefined();
             });
 
-            it('should not return a viewer if the file is too large', () => {
+            test('should not return a viewer if the file is too large', () => {
                 const editedFakeFile = { ...fakeFile, size: FIVE_MB + 1 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile, []);
-                expect(viewer).to.equal(undefined);
+                expect(viewer).toBeUndefined();
             });
 
-            it('should not return a viewer if the user does not have download permissions', () => {
-                sandbox
-                    .stub(file, 'checkPermission')
-                    .withArgs(fakeFile, PERMISSION_DOWNLOAD)
-                    .returns(false);
+            test('should not return a viewer if the user does not have download permissions', () => {
+                jest.spyOn(file, 'checkPermission').mockReturnValueOnce(false);
                 const viewer = OfficeLoader.determineViewer(fakeFile, []);
-                expect(viewer).to.equal(undefined);
+                expect(viewer).toBeUndefined();
             });
 
-            it('should not return a viewer if the file is a password-protected shared link', () => {
+            test('should not return a viewer if the file is a password-protected shared link', () => {
                 const editedFakeFile = {
                     ...fakeFile,
                     shared_link: {
@@ -83,10 +73,10 @@ describe('lib/viewers/office/OfficeLoader', () => {
                     },
                 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile, []);
-                expect(viewer).to.equal(undefined);
+                expect(viewer).toBeUndefined();
             });
 
-            it('should respect maxFileSize in viewerOptions', () => {
+            test('should respect maxFileSize in viewerOptions', () => {
                 const viewerOptions = {
                     Office: {
                         maxFileSize: FIVE_MB + 1,
@@ -94,7 +84,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
                 };
                 const editedFakeFile = { ...fakeFile, size: FIVE_MB + 1 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile, [], viewerOptions);
-                expect(viewer).to.not.equal(undefined);
+                expect(viewer).toBeDefined();
             });
         });
     });

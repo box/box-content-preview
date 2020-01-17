@@ -1,17 +1,16 @@
 /* eslint-disable no-unused-expressions */
-/* global swfobject */
 import SWFViewer from '../SWFViewer';
 import BaseViewer from '../../BaseViewer';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let swf;
 let containerEl;
 
 describe('lib/viewers/SWFViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
+    beforeAll(() => {
+        Object.defineProperty(window, 'swfobject', { value: { embedSWF: () => {} } });
     });
 
     beforeEach(() => {
@@ -51,42 +50,42 @@ describe('lib/viewers/SWFViewer', () => {
 
     describe('load()', () => {
         const baseLoad = BaseViewer.prototype.load;
-        after(() => {
+        afterAll(() => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: baseLoad });
         });
 
-        it('should fetch assets and call postload', () => {
+        test('should fetch assets and call postload', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
 
-            sandbox.stub(swf, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(swf, 'postLoad');
-            sandbox.stub(swf, 'setup');
+            jest.spyOn(swf, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(swf, 'postLoad');
+            jest.spyOn(swf, 'setup');
 
             return swf.load().then(() => {
-                expect(swf.setup).not.to.be.called;
-                expect(swf.postLoad).to.be.called;
+                expect(swf.setup).not.toBeCalled();
+                expect(swf.postLoad).toBeCalled();
             });
         });
 
-        it('should invoke startLoadTimer()', () => {
+        test('should invoke startLoadTimer()', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
 
-            sandbox.stub(swf, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(swf, 'setup');
+            jest.spyOn(swf, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(swf, 'setup');
 
-            sandbox.stub(swf, 'startLoadTimer');
+            jest.spyOn(swf, 'startLoadTimer');
 
             return swf.load().then(() => {
-                expect(swf.startLoadTimer).to.be.called;
+                expect(swf.startLoadTimer).toBeCalled();
             });
         });
     });
 
     describe('postLoad()', () => {
-        it('should call embedSWF', () => {
+        test('should call embedSWF', () => {
             const contentUrl = 'someurl';
             sandbox
-                .mock(swfobject)
+                .mock(window.swfobject)
                 .expects('embedSWF')
                 .withArgs(
                     contentUrl,
@@ -108,17 +107,18 @@ describe('lib/viewers/SWFViewer', () => {
                     null,
                     sinon.match.func,
                 );
-            sandbox.stub(swf, 'createContentUrlWithAuthParams').returns(contentUrl);
+            jest.spyOn(swf, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
 
             swf.postLoad();
         });
     });
 
     describe('prefetch()', () => {
-        it('should prefetch assets if assets is true', () => {
-            sandbox.stub(swf, 'prefetchAssets');
+        test('should prefetch assets if assets is true', () => {
+            swf.prefetchAssets = jest.fn();
             swf.prefetch({ assets: true });
-            expect(swf.prefetchAssets).to.be.called;
+
+            expect(swf.prefetchAssets).toBeCalled();
         });
     });
 });

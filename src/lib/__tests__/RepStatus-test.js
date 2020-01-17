@@ -6,7 +6,7 @@ import { LOAD_METRIC } from '../events';
 import Timer from '../Timer';
 import { STATUS_SUCCESS } from '../constants';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let repStatus;
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
@@ -49,7 +49,7 @@ describe('lib/RepStatus', () => {
     });
 
     describe('getStatus()', () => {
-        it('should return the status from the representation state object', () => {
+        test('should return the status from the representation state object', () => {
             const status = 'someStatus';
             expect(
                 RepStatus.getStatus({
@@ -57,19 +57,19 @@ describe('lib/RepStatus', () => {
                         state: status,
                     },
                 }),
-            ).to.equal(status);
+            ).toBe(status);
         });
     });
 
     describe('getErrorCode()', () => {
-        it('should return the code from the representation state object', () => {
+        test('should return the code from the representation state object', () => {
             expect(
                 RepStatus.getErrorCode({
                     status: {
                         code: 'conversion_failed',
                     },
                 }),
-            ).to.equal('conversion_failed');
+            ).toBe('conversion_failed');
         });
     });
 
@@ -77,25 +77,25 @@ describe('lib/RepStatus', () => {
         const infoUrl = 'someUrl';
 
         beforeEach(() => {
-            sandbox.stub(util, 'appendAuthParams').returns(infoUrl);
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue(infoUrl);
         });
 
-        it('should set the correct object properties', () => {
+        test('should set the correct object properties', () => {
             repStatus = new RepStatus({
                 api: {},
                 representation: rep,
                 logger: {},
             });
 
-            expect(repStatus.representation).to.deep.equal(rep);
-            expect(repStatus.logger).to.be.a('object');
-            expect(repStatus.infoUrl).to.equal(infoUrl);
-            expect(repStatus.promise).to.be.a.promise;
+            expect(repStatus.representation).toBe(rep);
+            expect(typeof repStatus.logger).toBe('object');
+            expect(repStatus.infoUrl).toBe(infoUrl);
+            expect(repStatus.promise).toBeInstanceOf(Promise);
         });
     });
 
     describe('destroy()', () => {
-        it('should clear the status timeout', () => {
+        test('should clear the status timeout', () => {
             sandbox.mock(window).expects('clearTimeout');
             repStatus.destroy();
         });
@@ -104,10 +104,10 @@ describe('lib/RepStatus', () => {
     describe('updateStatus()', () => {
         const state = 'success';
         beforeEach(() => {
-            sandbox.stub(repStatus, 'handleResponse');
+            jest.spyOn(repStatus, 'handleResponse');
         });
 
-        it('should fetch latest status', () => {
+        test('should fetch latest status', () => {
             sandbox
                 .mock(repStatus.api)
                 .expects('get')
@@ -120,12 +120,12 @@ describe('lib/RepStatus', () => {
                 );
 
             return repStatus.updateStatus().then(() => {
-                expect(repStatus.representation.status.state).to.equal(state);
-                expect(repStatus.handleResponse).to.be.called;
+                expect(repStatus.representation.status.state).toBe(state);
+                expect(repStatus.handleResponse).toBeCalled();
             });
         });
 
-        it('should update provided metadata', () => {
+        test('should update provided metadata', () => {
             sandbox
                 .mock(repStatus.api)
                 .expects('get')
@@ -141,26 +141,26 @@ describe('lib/RepStatus', () => {
                 );
 
             return repStatus.updateStatus().then(() => {
-                expect(repStatus.representation.status.state).to.equal(state);
-                expect(repStatus.handleResponse).to.be.called;
-                expect(repStatus.representation.metadata.pages).to.equal(10);
+                expect(repStatus.representation.status.state).toBe(state);
+                expect(repStatus.handleResponse).toBeCalled();
+                expect(repStatus.representation.metadata.pages).toBe(10);
             });
         });
 
-        it('should return a resolved promise if there is no info url', () => {
+        test('should return a resolved promise if there is no info url', () => {
             sandbox
                 .mock(Api.prototype)
                 .expects('get')
                 .never();
             repStatus.infoUrl = '';
-            expect(repStatus.updateStatus()).to.be.instanceof(Promise);
+            expect(repStatus.updateStatus()).toBeInstanceOf(Promise);
         });
 
-        it('should start a convert time Timer', () => {
+        test('should start a convert time Timer', () => {
             const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
             repStatus.updateStatus();
 
-            expect(Timer.get(tag)).to.exist;
+            expect(Timer.get(tag)).toBeDefined();
         });
     });
 
@@ -171,12 +171,12 @@ describe('lib/RepStatus', () => {
             repStatus.updateStatus = () => {};
         });
 
-        it('should reject with the refresh message if the rep status is error', done => {
+        test('should reject with the refresh message if the rep status is error', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).to.equal(__('error_refresh'));
+                    expect(err.displayMessage).toBe(__('error_refresh'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -184,12 +184,12 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the protected message if the rep status is error due to a password protected PDF', done => {
+        test('should reject with the protected message if the rep status is error due to a password protected PDF', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).to.equal(__('error_password_protected'));
+                    expect(err.displayMessage).toBe(__('error_password_protected'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -198,12 +198,12 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the try again message if the rep status is error due to unavailability', done => {
+        test('should reject with the try again message if the rep status is error due to unavailability', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).to.equal(__('error_try_again_later'));
+                    expect(err.displayMessage).toBe(__('error_try_again_later'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -212,12 +212,12 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the unsupported format message if the rep status is error due a bad file', done => {
+        test('should reject with the unsupported format message if the rep status is error due a bad file', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).to.equal(__('error_bad_file'));
+                    expect(err.displayMessage).toBe(__('error_bad_file'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -226,12 +226,12 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should reject with the re upload message if the rep status is error due to conversion failure', done => {
+        test('should reject with the re upload message if the rep status is error due to conversion failure', done => {
             sandbox
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).to.equal(__('error_reupload'));
+                    expect(err.displayMessage).toBe(__('error_reupload'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -240,34 +240,34 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should resolve if the rep status is success', () => {
+        test('should resolve if the rep status is success', () => {
             sandbox.mock(repStatus).expects('resolve');
             repStatus.representation.status.state = 'success';
 
             repStatus.handleResponse();
         });
 
-        it('should resolve if the rep status is viewable', () => {
+        test('should resolve if the rep status is viewable', () => {
             sandbox.mock(repStatus).expects('resolve');
             repStatus.representation.status.state = 'viewable';
 
             repStatus.handleResponse();
         });
 
-        it('should log that file needs conversion if status is pending and logger exists', () => {
+        test('should log that file needs conversion if status is pending and logger exists', () => {
             repStatus.logger = {
                 setUnConverted: () => {},
             };
             sandbox.mock(repStatus.logger).expects('setUnConverted');
-            sandbox.stub(repStatus, 'emit');
+            jest.spyOn(repStatus, 'emit');
             repStatus.representation.status.state = 'pending';
 
             repStatus.handleResponse();
 
-            expect(repStatus.emit).to.be.calledWith('conversionpending');
+            expect(repStatus.emit).toBeCalledWith('conversionpending');
         });
 
-        it('should update status after a timeout and update interval when pending', () => {
+        test('should update status after a timeout and update interval when pending', () => {
             const clock = sinon.useFakeTimers();
             repStatus.logger = false;
             sandbox.mock(repStatus).expects('updateStatus');
@@ -278,7 +278,7 @@ describe('lib/RepStatus', () => {
             clock.restore();
         });
 
-        it('should update status immediately after a timeout when none', () => {
+        test('should update status immediately after a timeout when none', () => {
             const clock = sinon.useFakeTimers();
             repStatus.logger = false;
             sandbox.mock(repStatus).expects('updateStatus');
@@ -289,24 +289,24 @@ describe('lib/RepStatus', () => {
             clock.restore();
         });
 
-        it('should stop a convert time Timer on success converting', () => {
+        test('should stop a convert time Timer on success converting', () => {
             repStatus.representation.status.state = STATUS_SUCCESS;
             const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
             Timer.start(tag);
             repStatus.handleResponse();
 
             // Elapsed will not exist if stop isn't called
-            expect(Timer.get(tag).elapsed).to.exist;
+            expect(Timer.get(tag).elapsed).toBeDefined();
         });
     });
 
     describe('getPromise()', () => {
-        it('handle response and return a promise', () => {
-            sandbox.stub(repStatus, 'handleResponse');
+        test('handle response and return a promise', () => {
+            jest.spyOn(repStatus, 'handleResponse');
             repStatus.promise = 'promise';
 
-            expect(repStatus.getPromise()).to.equal('promise');
-            expect(repStatus.handleResponse).to.be.called;
+            expect(repStatus.getPromise()).toBe('promise');
+            expect(repStatus.handleResponse).toBeCalled();
         });
     });
 });

@@ -406,10 +406,10 @@ Install the following plugins in your preferred editor
 - `yarn build` to generate resource bundles and JS webpack bundles.
 - `yarn start` to only generate JS webpack bundles on file changes.
 - `yarn start:dev` to launch a webpack-dev-server instance for local development.
-- `yarn test` launches karma tests with PhantomJS.
-- `yarn test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn test -- --src=viewers/doc/`.
-- `yarn test:watch` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-- `yarn test:watch -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
+- `yarn test` to run all unit tests with Jest.
+- `yarn test path/to/filename.js` to run Jest only for that file and/or its related tests.
+- `yarn test:watch` to run all unit tests with Jest for debugging.
+- `yarn test:watch path/to/src/filename.js` to run Jest only for that file and/or its related tests for debugging.
 
 For more script commands see `package.json`. Test coverage reports are available under reports/coverage.
 

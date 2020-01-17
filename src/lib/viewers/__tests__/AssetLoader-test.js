@@ -2,7 +2,6 @@
 import AssetLoader from '../AssetLoader';
 
 let loader;
-const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/AssetLoader', () => {
     beforeEach(() => {
@@ -10,8 +9,6 @@ describe('lib/viewers/AssetLoader', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
-
         if (typeof loader.destroy === 'function') {
             loader.destroy();
         }
@@ -20,30 +17,30 @@ describe('lib/viewers/AssetLoader', () => {
     });
 
     describe('canLoad()', () => {
-        it('should return true if loader can find a viewer to match the file', () => {
-            sandbox.stub(loader, 'determineViewer').returns({});
+        test('should return true if loader can find a viewer to match the file', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue({});
 
-            expect(loader.canLoad({}, [], { viewer: {} })).to.be.true;
-            expect(loader.determineViewer).to.be.calledWith({}, [], { viewer: {} });
+            expect(loader.canLoad({}, [], { viewer: {} })).toBe(true);
+            expect(loader.determineViewer).toBeCalledWith({}, [], { viewer: {} });
         });
 
-        it("should return false if loader can't find a viewer to match the file", () => {
-            sandbox.stub(loader, 'determineViewer').returns(null);
+        test("should return false if loader can't find a viewer to match the file", () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
 
-            expect(loader.canLoad({}, [], { viewer: {} })).to.be.false;
-            expect(loader.determineViewer).to.be.calledWith({}, [], { viewer: {} });
+            expect(loader.canLoad({}, [], { viewer: {} })).toBe(false);
+            expect(loader.determineViewer).toBeCalledWith({}, [], { viewer: {} });
         });
     });
 
     describe('getViewers()', () => {
-        it("should return the loader's viewers", () => {
+        test("should return the loader's viewers", () => {
             loader.viewers = [{}, {}];
 
-            expect(loader.getViewers()).to.deep.equal(loader.viewers);
+            expect(loader.getViewers()).toBe(loader.viewers);
         });
 
-        it("should return an empty array if the loader doesn't have viewers", () => {
-            expect(loader.getViewers()).to.deep.equal([]);
+        test("should return an empty array if the loader doesn't have viewers", () => {
+            expect(loader.getViewers()).toEqual([]);
         });
     });
 
@@ -68,7 +65,7 @@ describe('lib/viewers/AssetLoader', () => {
             ];
         });
 
-        it('should choose the first viewer that matches by extension and representation', () => {
+        test('should choose the first viewer that matches by extension and representation', () => {
             const file = {
                 extension: 'pdf',
                 representations: {
@@ -81,10 +78,10 @@ describe('lib/viewers/AssetLoader', () => {
             };
 
             const viewer = loader.determineViewer(file);
-            expect(viewer.NAME).to.equal('Adobe');
+            expect(viewer.NAME).toBe('Adobe');
         });
 
-        it('should not choose a disabled viewer and instead choose the next matching viewer', () => {
+        test('should not choose a disabled viewer and instead choose the next matching viewer', () => {
             const file = {
                 extension: 'pdf',
                 representations: {
@@ -100,10 +97,10 @@ describe('lib/viewers/AssetLoader', () => {
             };
 
             const viewer = loader.determineViewer(file, ['Adobe']);
-            expect(viewer.NAME).to.equal('Document');
+            expect(viewer.NAME).toBe('Document');
         });
 
-        it('should not return a viewer if no matching viewer is found', () => {
+        test('should not return a viewer if no matching viewer is found', () => {
             const file = {
                 extension: 'mp3',
                 representations: {
@@ -119,7 +116,7 @@ describe('lib/viewers/AssetLoader', () => {
             };
 
             const viewer = loader.determineViewer(file, ['Adobe']);
-            expect(viewer).to.be.undefined;
+            expect(viewer).toBeUndefined();
         });
     });
 
@@ -137,22 +134,22 @@ describe('lib/viewers/AssetLoader', () => {
             },
         };
 
-        it('should return a representation based on the file and viewer', () => {
+        test('should return a representation based on the file and viewer', () => {
             const viewer = {
                 REP: 'pdf',
             };
 
             const representation = loader.determineRepresentation(file, viewer);
-            expect(representation.representation).to.equal('pdf');
+            expect(representation.representation).toBe('pdf');
         });
 
-        it('should not return a representation if there is no match', () => {
+        test('should not return a representation if there is no match', () => {
             const viewer = {
                 REP: 'xlsx',
             };
 
             const representation = loader.determineRepresentation(file, viewer);
-            expect(representation).to.be.undefined;
+            expect(representation).toBeUndefined();
         });
     });
 });

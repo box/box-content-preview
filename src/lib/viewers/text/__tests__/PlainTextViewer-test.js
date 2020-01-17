@@ -9,7 +9,7 @@ import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 const stubs = {};
 let containerEl;
 let text;
@@ -17,10 +17,6 @@ let rootEl;
 
 describe('lib/viewers/text/PlainTextViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/PlainTextViewer-test.html');
@@ -43,7 +39,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             },
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         text.containerEl = containerEl;
         text.rootEl = rootEl;
         text.setup();
@@ -62,23 +58,23 @@ describe('lib/viewers/text/PlainTextViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up proper text elements and initialize print', () => {
+        test('should set up proper text elements and initialize print', () => {
             text = new PlainTextViewer({
                 file: {
                     id: 0,
                 },
                 container: containerEl,
             });
-            sandbox.stub(text, 'initPrint');
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            jest.spyOn(text, 'initPrint').mockImplementation();
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
             text.containerEl = containerEl;
 
             text.setup();
 
-            expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-is-scrollable bp-is-hidden');
-            expect(text.codeEl.parentNode === text.textEl).to.be.true;
-            expect(text.truncated).to.be.false;
-            expect(text.initPrint).to.be.called;
+            expect(text.textEl.className).toBe('bp-text bp-text-plain hljs bp-is-scrollable bp-is-hidden');
+            expect(text.codeEl.parentNode === text.textEl).toBe(true);
+            expect(text.truncated).toBe(false);
+            expect(text.initPrint).toBeCalled();
         });
     });
 
@@ -89,18 +85,18 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'destroy', { value: destroyFunc });
         });
 
-        it('should remove the download event listener if it exists', () => {
+        test('should remove the download event listener if it exists', () => {
             const downloadBtnEl = text.textEl.appendChild(document.createElement('div'));
             downloadBtnEl.classList.add('bp-btn-download');
-            sandbox.stub(downloadBtnEl, 'removeEventListener');
+            jest.spyOn(downloadBtnEl, 'removeEventListener');
 
             text.destroy();
 
-            expect(downloadBtnEl.removeEventListener).to.be.calledWith('click', sinon.match.func);
+            expect(downloadBtnEl.removeEventListener).toBeCalledWith('click', expect.any(Function));
         });
 
-        it('should call super.destroy()', () => {
-            Object.defineProperty(TextBaseViewer.prototype, 'destroy', { value: sandbox.mock() });
+        test('should call super.destroy()', () => {
+            Object.defineProperty(TextBaseViewer.prototype, 'destroy', { value: jest.fn() });
             text.destroy();
         });
     });
@@ -112,32 +108,32 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should fetch assets and rep and call postload', () => {
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: sandbox.mock() });
+        test('should fetch assets and rep and call postload', () => {
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
 
-            sandbox.stub(text, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(text, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(text, 'postLoad');
-            sandbox.stub(text, 'setup');
+            jest.spyOn(text, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(text, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(text, 'postLoad');
+            jest.spyOn(text, 'setup');
 
             return text.load().then(() => {
-                expect(text.setup).not.to.be.called;
-                expect(text.postLoad).to.be.called;
+                expect(text.setup).not.toBeCalled();
+                expect(text.postLoad).toBeCalled();
             });
         });
     });
 
     describe('prefetch()', () => {
-        it('should prefetch assets if assets is true', () => {
-            sandbox.stub(text, 'prefetchAssets');
+        test('should prefetch assets if assets is true', () => {
+            jest.spyOn(text, 'prefetchAssets').mockImplementation();
             text.prefetch({ assets: true, content: false });
-            expect(text.prefetchAssets).to.be.called;
+            expect(text.prefetchAssets).toBeCalled();
         });
 
-        it('should prefetch content if content is true and representation is ready', () => {
+        test('should prefetch content if content is true and representation is ready', () => {
             const contentUrl = 'someContentUrl';
-            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(contentUrl);
-            sandbox.stub(text, 'isRepresentationReady').returns(true);
+            jest.spyOn(text, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(text, 'isRepresentationReady').mockReturnValue(true);
             sandbox
                 .mock(stubs.api)
                 .expects('get')
@@ -146,8 +142,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.prefetch({ assets: false, content: true });
         });
 
-        it('should not prefetch content if content is true but representation is not ready', () => {
-            sandbox.stub(text, 'isRepresentationReady').returns(false);
+        test('should not prefetch content if content is true but representation is not ready', () => {
+            jest.spyOn(text, 'isRepresentationReady').mockReturnValue(false);
             sandbox
                 .mock(stubs.api)
                 .expects('get')
@@ -157,98 +153,98 @@ describe('lib/viewers/text/PlainTextViewer', () => {
     });
 
     describe('print()', () => {
-        it('should print iframe if print is ready', () => {
-            sandbox.stub(text, 'printIframe');
+        test('should print iframe if print is ready', () => {
+            jest.spyOn(text, 'printIframe').mockImplementation();
             text.printReady = true;
 
             text.print();
-            expect(text.printIframe).to.be.called;
+            expect(text.printIframe).toBeCalled();
         });
 
-        it('should prepare printing and show print popup if print is not ready', () => {
-            sandbox.stub(text, 'preparePrint');
+        test('should prepare printing and show print popup if print is not ready', () => {
+            jest.spyOn(text, 'preparePrint').mockImplementation();
             text.printReady = false;
             text.printPopup = {
-                show: sandbox.stub(),
-                disableButton: sandbox.stub(),
+                show: jest.fn(),
+                disableButton: jest.fn(),
             };
 
             text.print();
 
-            expect(text.preparePrint).to.be.calledWith([
+            expect(text.preparePrint).toBeCalledWith([
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
                 'preview.css',
             ]);
-            expect(text.printPopup.show).to.be.called;
-            expect(text.printPopup.disableButton).to.be.called;
+            expect(text.printPopup.show).toBeCalled();
+            expect(text.printPopup.disableButton).toBeCalled();
         });
     });
 
     describe('postLoad()', () => {
-        it('should fetch text representation with access token in query param if file is small enough', () => {
+        test('should fetch text representation with access token in query param if file is small enough', () => {
             const urlWithAccessToken = 'blah';
             const getPromise = Promise.resolve('');
             text.options.file.size = 196608 - 1; // 192KB - 1
 
-            sandbox.stub(stubs.api, 'get').returns(getPromise);
-            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(urlWithAccessToken);
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+            jest.spyOn(text, 'createContentUrlWithAuthParams').mockReturnValue(urlWithAccessToken);
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.truncated).to.be.false;
-                expect(stubs.api.get).to.be.calledWith(urlWithAccessToken, { headers: {}, type: 'text' });
+                expect(text.truncated).toBe(false);
+                expect(stubs.api.get).toBeCalledWith(urlWithAccessToken, { headers: {}, type: 'text' });
             });
         });
 
-        it('should fetch text representation with a byte range if file size is too large', () => {
+        test('should fetch text representation with a byte range if file size is too large', () => {
             const getPromise = Promise.resolve('');
             const url = 'url';
             const headersWithRange = { Range: 'bytes=0-196608' };
             text.options.file.size = 196608 + 1; // 192KB + 1
 
-            sandbox.stub(stubs.api, 'get').returns(getPromise);
-            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(url);
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+            jest.spyOn(text, 'createContentUrlWithAuthParams').mockReturnValue(url);
 
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.truncated).to.be.true;
-                expect(stubs.api.get).to.be.calledWith(url, { headers: headersWithRange, type: 'text' });
+                expect(text.truncated).toBe(true);
+                expect(stubs.api.get).toBeCalledWith(url, { headers: headersWithRange, type: 'text' });
             });
         });
 
-        it('should append dots to text if truncated', () => {
+        test('should append dots to text if truncated', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(stubs.api, 'get').returns(getPromise);
-            sandbox.stub(text, 'finishLoading');
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+            jest.spyOn(text, 'finishLoading');
             text.options.file.size = 196608 + 1; // 192KB + 1;
 
             const promise = text.postLoad();
 
             return promise.then(() => {
-                expect(text.finishLoading).to.be.called;
+                expect(text.finishLoading).toBeCalled();
             });
         });
 
-        it('should call initHighlightJs if file has code extension', () => {
+        test('should call initHighlightJs if file has code extension', () => {
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
-            sandbox.stub(stubs.api, 'get').returns(getPromise);
-            sandbox.stub(text, 'initHighlightJs');
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+            jest.spyOn(text, 'initHighlightJs').mockImplementation();
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
 
             const promise = text.postLoad();
 
             return promise.then(() => {
-                expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
+                expect(text.initHighlightJs).toBeCalledWith(`${someText}...`);
             });
         });
 
-        it('should invoke startLoadTimer()', () => {
-            sandbox.stub(text, 'startLoadTimer');
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve(''));
+        test('should invoke startLoadTimer()', () => {
+            jest.spyOn(text, 'startLoadTimer');
+            jest.spyOn(stubs.api, 'get').mockReturnValue(Promise.resolve(''));
 
             const someText = 'blah';
             const getPromise = Promise.resolve(someText);
@@ -256,19 +252,19 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.startLoadTimer).to.be.called;
+                expect(text.startLoadTimer).toBeCalled();
             });
         });
 
-        it('should handle a download error', () => {
+        test('should handle a download error', () => {
             const getPromise = Promise.reject();
-            sandbox.stub(stubs.api, 'get').returns(getPromise);
-            sandbox.stub(text, 'handleDownloadError');
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+            jest.spyOn(text, 'handleDownloadError');
 
             const promise = text.postLoad();
 
             return promise.catch(() => {
-                expect(text.handleDownloadError).to.be.called;
+                expect(text.handleDownloadError).toBeCalled();
             });
         });
     });
@@ -280,10 +276,10 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(Worker.prototype, 'postMessage', { value: postMessageFunc });
         });
 
-        it('should create worker and set it up with hljs and pass in the text to convert', () => {
+        test('should create worker and set it up with hljs and pass in the text to convert', () => {
             const hljs = 'hljs';
-            const assetUrlCreatorStub = sandbox.stub().returns(hljs);
-            sandbox.stub(util, 'createAssetUrlCreator').returns(assetUrlCreatorStub);
+            const assetUrlCreatorStub = jest.fn(() => hljs);
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(assetUrlCreatorStub);
 
             const someText = 'text';
             Object.defineProperty(Worker.prototype, 'postMessage', {
@@ -295,8 +291,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             text.initHighlightJs(someText);
 
-            expect(util.createAssetUrlCreator).to.be.called;
-            expect(assetUrlCreatorStub).to.be.called;
+            expect(util.createAssetUrlCreator).toBeCalled();
+            expect(assetUrlCreatorStub).toBeCalled();
         });
     });
 
@@ -308,18 +304,18 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 },
                 container: containerEl,
             });
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
             text.containerEl = containerEl;
             text.rootEl = rootEl;
             text.setup();
         });
 
-        it('should initialize print popup', () => {
+        test('should initialize print popup', () => {
             text.initPrint();
-            expect(text.printPopup instanceof Popup).to.be.true;
+            expect(text.printPopup instanceof Popup).toBe(true);
         });
 
-        it('should set up print checkmark and loading indicator', () => {
+        test('should set up print checkmark and loading indicator', () => {
             text.initPrint();
             expect(text.printPopup.loadingIndicator instanceof HTMLElement);
             expect(text.printPopup.loadingIndicator.classList.contains('bp-crawler'));
@@ -329,21 +325,19 @@ describe('lib/viewers/text/PlainTextViewer', () => {
     });
 
     describe('preparePrint()', () => {
-        let clock;
-
         beforeEach(() => {
-            clock = sandbox.useFakeTimers();
+            jest.useFakeTimers();
         });
 
         afterEach(() => {
-            clock.restore();
+            jest.clearAllTimers();
         });
 
-        it('should setup the print iframe', () => {
-            const appendStub = sandbox.stub();
+        test('should setup the print iframe', () => {
+            const appendStub = jest.fn();
 
-            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub());
-            sandbox.stub(util, 'openContentInsideIframe').returns({
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn());
+            jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({
                 contentDocument: {
                     head: {
                         appendChild: appendStub,
@@ -351,118 +345,118 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 },
             });
             text.options.location = 'en-US';
-            sandbox.stub(window, 'setTimeout');
+            jest.spyOn(window, 'setTimeout');
 
             text.preparePrint(['blah']);
 
-            expect(util.createAssetUrlCreator).to.be.calledWith(text.options.location);
-            expect(util.openContentInsideIframe).to.be.calledWith(text.textEl.outerHTML);
-            expect(appendStub).to.be.called;
+            expect(util.createAssetUrlCreator).toBeCalledWith(text.options.location);
+            expect(util.openContentInsideIframe).toBeCalledWith(text.textEl.outerHTML);
+            expect(appendStub).toBeCalled();
         });
 
-        it('should enable printing via print popup after a delay', () => {
-            sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub());
-            sandbox.stub(util, 'createStylesheet');
-            sandbox.stub(util, 'openContentInsideIframe').returns({
+        test('should enable printing via print popup after a delay', () => {
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn());
+            jest.spyOn(util, 'createStylesheet');
+            jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({
                 contentDocument: {
                     head: {
-                        appendChild: sandbox.stub(),
+                        appendChild: jest.fn(),
                     },
                 },
             });
 
             text.initPrint();
-            sandbox.stub(text.printPopup, 'enableButton');
+            jest.spyOn(text.printPopup, 'enableButton');
 
             text.preparePrint(['blah']);
-            clock.tick(5001);
+            jest.advanceTimersByTime(5001);
 
-            expect(text.printPopup.enableButton).to.be.called;
-            expect(text.printPopup.messageEl.textContent).to.equal('Ready to print.');
-            expect(text.printPopup.loadingIndicator.classList.contains('bp-is-hidden')).to.be.true;
-            expect(text.printPopup.printCheckmark.classList.contains('bp-is-hidden')).to.be.false;
-            expect(text.printReady).to.be.true;
+            expect(text.printPopup.enableButton).toBeCalled();
+            expect(text.printPopup.messageEl.textContent).toBe('Ready to print.');
+            expect(text.printPopup.loadingIndicator.classList.contains('bp-is-hidden')).toBe(true);
+            expect(text.printPopup.printCheckmark.classList.contains('bp-is-hidden')).toBe(false);
+            expect(text.printReady).toBe(true);
         });
     });
 
     describe('printIframe()', () => {
-        it('should focus on content window and print', () => {
+        test('should focus on content window and print', () => {
             text.printframe = {
                 contentWindow: {
-                    focus: sandbox.stub(),
-                    print: sandbox.stub(),
+                    focus: jest.fn(),
+                    print: jest.fn(),
                 },
             };
-            sandbox.stub(Browser, 'getName').returns('NotExplorer');
+            jest.spyOn(Browser, 'getName').mockReturnValue('NotExplorer');
 
             text.printIframe();
 
-            expect(text.printframe.contentWindow.focus).to.be.called;
-            expect(text.printframe.contentWindow.focus).to.be.called;
+            expect(text.printframe.contentWindow.focus).toBeCalled();
+            expect(text.printframe.contentWindow.focus).toBeCalled();
         });
     });
 
     describe('finishLoading()', () => {
-        it('should set code with innerHTML if highlighted', () => {
+        test('should set code with innerHTML if highlighted', () => {
             const content = '<div>test</div>';
             text.finishLoading(content, true);
-            expect(text.codeEl.innerHTML).to.equal(content);
+            expect(text.codeEl.innerHTML).toBe(content);
         });
 
-        it('should set code with textContent if not highlighted', () => {
+        test('should set code with textContent if not highlighted', () => {
             const content = '<div>test</div>';
             text.finishLoading(content, false);
-            expect(text.codeEl.textContent).to.equal(content);
+            expect(text.codeEl.textContent).toBe(content);
         });
 
-        it('should finish loading, show the text, and emit load', () => {
-            sandbox.stub(text, 'loadUI');
-            sandbox.stub(text, 'emit');
+        test('should finish loading, show the text, and emit load', () => {
+            jest.spyOn(text, 'loadUI');
+            jest.spyOn(text, 'emit');
 
             text.finishLoading('', true);
 
-            expect(text.loadUI).to.be.called;
-            expect(text.emit).to.be.calledWith(VIEWER_EVENT.load);
-            expect(text.loaded).to.be.true;
-            expect(text.textEl.classList.contains('bp-is-hidden')).to.be.false;
+            expect(text.loadUI).toBeCalled();
+            expect(text.emit).toBeCalledWith(VIEWER_EVENT.load);
+            expect(text.loaded).toBe(true);
+            expect(text.textEl.classList.contains('bp-is-hidden')).toBe(false);
         });
 
-        it('should cleanup worker and show truncated download button if needed', () => {
+        test('should cleanup worker and show truncated download button if needed', () => {
             text.workerSrc = 'blah';
             text.truncated = true;
-            sandbox.stub(text, 'showTruncatedDownloadButton');
-            sandbox.stub(URL, 'revokeObjectURL');
+            jest.spyOn(text, 'showTruncatedDownloadButton');
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
 
             text.finishLoading('', true);
 
-            expect(text.showTruncatedDownloadButton).to.be.called;
-            expect(URL.revokeObjectURL).to.be.calledWith(text.workerSrc);
+            expect(text.showTruncatedDownloadButton).toBeCalled();
+            expect(URL.revokeObjectURL).toBeCalledWith(text.workerSrc);
         });
     });
 
     describe('showTruncatedDownloadButton()', () => {
-        it('should set up download button and bind click handler', () => {
-            const bindDownload = sandbox.stub();
+        test('should set up download button and bind click handler', () => {
+            const bindDownload = jest.fn();
             text.download = {
-                bind: sandbox.stub().returns(bindDownload),
+                bind: jest.fn(() => bindDownload),
             };
 
             text.showTruncatedDownloadButton();
 
-            expect(text.textEl.querySelector('.bp-text-truncated')).to.not.be.null;
+            expect(text.textEl.querySelector('.bp-text-truncated')).not.toBeNull();
             const downloadBtnEl = text.textEl.querySelector('.bp-btn-download');
-            expect(downloadBtnEl).to.not.be.null;
+            expect(downloadBtnEl).not.toBeNull();
 
             downloadBtnEl.click();
-            expect(bindDownload).to.be.called;
+            expect(bindDownload).toBeCalled();
         });
     });
 
     describe('download()', () => {
-        it('should emit download', () => {
-            sandbox.stub(text, 'emit');
+        test('should emit download', () => {
+            jest.spyOn(text, 'emit');
             text.download();
-            expect(text.emit).to.be.calledWith(VIEWER_EVENT.download);
+            expect(text.emit).toBeCalledWith(VIEWER_EVENT.download);
         });
     });
 });

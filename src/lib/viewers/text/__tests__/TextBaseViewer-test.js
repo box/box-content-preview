@@ -8,14 +8,9 @@ import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 let containerEl;
 let textBase;
-const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/TextBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/TextBaseViewer-test.html');
@@ -27,13 +22,12 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             container: containerEl,
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         textBase.containerEl = containerEl;
         textBase.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
         if (typeof textBase.destroy === 'function') {
             textBase.destroy();
@@ -43,13 +37,13 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     });
 
     describe('destroy()', () => {
-        it('should destroy the controls if they exist', () => {
+        test('should destroy the controls if they exist', () => {
             textBase.controls = {
-                destroy: sandbox.stub(),
+                destroy: jest.fn(),
             };
 
             textBase.destroy();
-            expect(textBase.controls.destroy).to.be.called;
+            expect(textBase.controls.destroy).toBeCalled();
         });
     });
 
@@ -61,8 +55,8 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textEl.className = 'bp-text';
             textBase.containerEl.appendChild(textEl);
             textBase.zoomControls = {
-                setCurrentScale: sandbox.stub(),
-                removeListener: sandbox.stub(),
+                setCurrentScale: jest.fn(),
+                removeListener: jest.fn(),
             };
         });
 
@@ -70,75 +64,69 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textBase.containerEl.removeChild(textEl);
         });
 
-        it('should emit the zoom event', () => {
-            sandbox.stub(textBase, 'emit');
+        test('should emit the zoom event', () => {
+            jest.spyOn(textBase, 'emit');
             textBase.zoom();
-            expect(textBase.emit).to.be.calledWith('zoom');
-            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(1.0);
+            expect(textBase.emit).toBeCalledWith('zoom', { canZoomIn: true, canZoomOut: true, zoom: 1 });
+            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(1.0);
         });
 
-        it('should increase font size when zooming in', () => {
+        test('should increase font size when zooming in', () => {
             textBase.zoom('in');
-            expect(textEl.style.fontSize).to.equal('110%');
-            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(1.1);
+            expect(textEl.style.fontSize).toBe('110%');
+            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(1.1);
         });
 
-        it('should decrease font size when zooming out', () => {
+        test('should decrease font size when zooming out', () => {
             textBase.zoom('out');
-            expect(textEl.style.fontSize).to.equal('90%');
-            expect(textBase.zoomControls.setCurrentScale).to.be.calledWith(0.9);
+            expect(textEl.style.fontSize).toBe('90%');
+            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(0.9);
         });
     });
 
     describe('zoomIn() / zoomOut()', () => {
-        it('should call zoom() with appropriate parameter', () => {
-            sandbox.stub(textBase, 'zoom');
+        test('should call zoom() with appropriate parameter', () => {
+            jest.spyOn(textBase, 'zoom').mockImplementation();
 
             textBase.zoomIn();
-            expect(textBase.zoom).to.be.calledWith('in');
+            expect(textBase.zoom).toBeCalledWith('in');
 
             textBase.zoomOut();
-            expect(textBase.zoom).to.be.calledWith('out');
+            expect(textBase.zoom).toBeCalledWith('out');
         });
     });
 
     describe('load()', () => {
-        it('should add selectable/printable classes if user has download permissions', () => {
-            sandbox
-                .stub(file, 'checkPermission')
-                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
-                .returns(true);
+        test('should add selectable/printable classes if user has download permissions', () => {
+            jest.spyOn(file, 'checkPermission').mockReturnValue(true);
+
             textBase.load();
 
-            expect(textBase.containerEl).to.have.class('bp-is-printable');
-            expect(textBase.containerEl).to.have.class('bp-is-selectable');
+            expect(file.checkPermission).toBeCalledWith(textBase.options.file, PERMISSION_DOWNLOAD);
+            expect(textBase.containerEl).toHaveClass('bp-is-printable');
+            expect(textBase.containerEl).toHaveClass('bp-is-selectable');
         });
 
-        it('should not add selectable/printable classes if user does not have download permissions', () => {
-            sandbox
-                .stub(file, 'checkPermission')
-                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
-                .returns(false);
+        test('should not add selectable/printable classes if user does not have download permissions', () => {
+            jest.spyOn(file, 'checkPermission').mockReturnValue(false);
+
             textBase.load();
 
-            expect(textBase.containerEl).to.not.have.class('bp-is-printable');
-            expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
+            expect(file.checkPermission).toBeCalledWith(textBase.options.file, PERMISSION_DOWNLOAD);
+            expect(textBase.containerEl).not.toHaveClass('bp-is-printable');
+            expect(textBase.containerEl).not.toHaveClass('bp-is-selectable');
         });
 
-        it('should not add selectable/printable classes if disableTextViewer option is true', () => {
-            sandbox
-                .stub(file, 'checkPermission')
-                .withArgs(textBase.options.file, PERMISSION_DOWNLOAD)
-                .returns(true);
-            sandbox
-                .stub(textBase, 'getViewerOption')
-                .withArgs('disableTextLayer')
-                .returns(true);
+        test('should not add selectable/printable classes if disableTextViewer option is true', () => {
+            jest.spyOn(file, 'checkPermission').mockReturnValue(true);
+            jest.spyOn(textBase, 'getViewerOption').mockReturnValue(true);
 
             textBase.load();
 
-            expect(textBase.containerEl).to.not.have.class('bp-is-printable');
-            expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
+            expect(file.checkPermission).toBeCalledWith(textBase.options.file, PERMISSION_DOWNLOAD);
+            expect(textBase.getViewerOption).toBeCalledWith('disableTextLayer');
+            expect(textBase.containerEl).not.toHaveClass('bp-is-printable');
+            expect(textBase.containerEl).not.toHaveClass('bp-is-selectable');
         });
     });
 
@@ -151,22 +139,22 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
         });
 
-        it('should setup controls and add click handlers', () => {
-            Object.defineProperty(Controls.prototype, 'add', { value: sandbox.stub() });
-            Object.defineProperty(ZoomControls.prototype, 'init', { value: sandbox.stub() });
+        test('should setup controls and add click handlers', () => {
+            Object.defineProperty(Controls.prototype, 'add', { value: jest.fn() });
+            Object.defineProperty(ZoomControls.prototype, 'init', { value: jest.fn() });
 
             textBase.loadUI();
-            expect(textBase.controls instanceof Controls).to.be.true;
-            expect(Controls.prototype.add.callCount).to.equal(2);
-            expect(Controls.prototype.add).to.be.calledWith(
-                sinon.match.string,
+            expect(textBase.controls).toBeInstanceOf(Controls);
+            expect(Controls.prototype.add).toBeCalledTimes(2);
+            expect(Controls.prototype.add).toBeCalledWith(
+                expect.any(String),
                 textBase.toggleFullscreen,
-                sinon.match.string,
-                sinon.match.string,
+                expect.any(String),
+                expect.any(String),
             );
 
-            expect(textBase.zoomControls instanceof ZoomControls).to.be.true;
-            expect(ZoomControls.prototype.init).to.be.calledWith(1, {
+            expect(textBase.zoomControls).toBeInstanceOf(ZoomControls);
+            expect(ZoomControls.prototype.init).toBeCalledWith(1, {
                 maxZoom: 10,
                 minZoom: 0.1,
                 onZoomIn: textBase.zoomIn,
@@ -178,27 +166,27 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     });
 
     describe('onKeydown()', () => {
-        it('should return false if controls are not initialized', () => {
-            expect(textBase.onKeydown()).to.be.false;
+        test('should return false if controls are not initialized', () => {
+            expect(textBase.onKeydown()).toBe(false);
         });
 
-        it('should call zoomIn() for Shift++', () => {
+        test('should call zoomIn() for Shift++', () => {
             textBase.controls = {};
-            sandbox.stub(textBase, 'zoomIn');
-            expect(textBase.onKeydown('Shift++')).to.be.true;
-            expect(textBase.zoomIn).to.be.called;
+            jest.spyOn(textBase, 'zoomIn').mockImplementation();
+            expect(textBase.onKeydown('Shift++')).toBe(true);
+            expect(textBase.zoomIn).toBeCalled();
         });
 
-        it('should call zoomOut() for Shift+_', () => {
+        test('should call zoomOut() for Shift+_', () => {
             textBase.controls = {};
-            sandbox.stub(textBase, 'zoomOut');
-            expect(textBase.onKeydown('Shift+_')).to.be.true;
-            expect(textBase.zoomOut).to.be.called;
+            jest.spyOn(textBase, 'zoomOut').mockImplementation();
+            expect(textBase.onKeydown('Shift+_')).toBe(true);
+            expect(textBase.zoomOut).toBeCalled();
         });
 
-        it('should return false for other keypresses', () => {
+        test('should return false for other keypresses', () => {
             textBase.controls = {};
-            expect(textBase.onKeydown('blah')).to.be.false;
+            expect(textBase.onKeydown('blah')).toBe(false);
         });
     });
 });

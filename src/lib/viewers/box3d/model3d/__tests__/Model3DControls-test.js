@@ -19,14 +19,10 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
 import { CSS_CLASS_HIDDEN } from '../../box3DConstants';
 
-describe('lib/viewers/box3d/model3d/Model3DControls', () => {
+describe.skip('lib/viewers/box3d/model3d/Model3DControls', () => {
     let containerEl;
     let controls;
-    const sandbox = sinon.sandbox.create();
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
+    const sandbox = sinon.createSandbox();
 
     beforeEach(() => {
         fixture.load('viewers/box3d/model3d/__tests__/Model3DControls-test.html');
@@ -46,12 +42,12 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('Settings panel ui creation', () => {
-        it('should create and store a reference to the animation pullup', () => {
-            expect(controls.animationClipsPullup).to.be.an.instanceof(Model3DAnimationClipsPullup);
+        test('should create and store a reference to the animation pullup', () => {
+            expect(controls.animationClipsPullup).toBeInstanceOf(Model3DAnimationClipsPullup);
         });
 
-        it('should create and store a reference to the settings pullup', () => {
-            expect(controls.settingsPullup).to.be.an.instanceof(Model3DSettingsPullup);
+        test('should create and store a reference to the settings pullup', () => {
+            expect(controls.settingsPullup).toBeInstanceOf(Model3DSettingsPullup);
         });
 
         describe('addUi()', () => {
@@ -59,23 +55,23 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
 
             beforeEach(() => {
                 const emptyDivEl = document.createElement('div').appendChild(document.createElement('div'));
-                addStub = sandbox.stub(controls.controls, 'add').returns(emptyDivEl);
+                addStub = jest.spyOn(controls.controls, 'add').mockReturnValue(emptyDivEl);
             });
 
             afterEach(() => {
                 addStub = undefined;
             });
 
-            it('should add a reset button to the control bar', () => {
+            test('should add a reset button to the control bar', () => {
                 controls.addUi();
-                expect(addStub).to.be.calledWith(__('box3d_reset'), controls.handleReset, '', ICON_3D_RESET);
+                expect(addStub).toBeCalledWith(__('box3d_reset'), controls.handleReset, '', ICON_3D_RESET);
             });
 
             describe('Animation controls', () => {
                 let animationListenStub;
 
                 beforeEach(() => {
-                    animationListenStub = sandbox.stub(controls.animationClipsPullup, 'addListener');
+                    animationListenStub = jest.spyOn(controls.animationClipsPullup, 'addListener');
 
                     controls.addUi();
                 });
@@ -84,15 +80,15 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                     animationListenStub = undefined;
                 });
 
-                it('should add an event listener to the animationClipsPullup reference for animation clip selection', () => {
-                    expect(animationListenStub).to.be.calledWith(
+                test('should add an event listener to the animationClipsPullup reference for animation clip selection', () => {
+                    expect(animationListenStub).toBeCalledWith(
                         EVENT_SELECT_ANIMATION_CLIP,
                         controls.handleSelectAnimationClip,
                     );
                 });
 
-                it('should add an animation playback toggle to the control bar', () => {
-                    expect(addStub).to.be.calledWith(
+                test('should add an animation playback toggle to the control bar', () => {
+                    expect(addStub).toBeCalledWith(
                         __('box3d_toggle_animation'),
                         controls.handleToggleAnimation,
                         '',
@@ -100,8 +96,8 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                     );
                 });
 
-                it('should add a toggle to hide/show the animation clip pullup to the control bar', () => {
-                    expect(addStub).to.be.calledWith(
+                test('should add a toggle to hide/show the animation clip pullup to the control bar', () => {
+                    expect(addStub).toBeCalledWith(
                         __('box3d_animation_clips'),
                         controls.handleToggleAnimationClips,
                         '',
@@ -109,8 +105,8 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                     );
                 });
 
-                it('should append the pullup of the animationClipsPullup to the parent element of the hide/show toggle', () => {
-                    expect(controls.animationClipButtonEl.parentNode).to.contain(
+                test('should append the pullup of the animationClipsPullup to the parent element of the hide/show toggle', () => {
+                    expect(controls.animationClipButtonEl.parentNode).toContainElement(
                         controls.animationClipsPullup.pullupEl,
                     );
                 });
@@ -146,70 +142,65 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                     ];
 
                     events.forEach(e => {
-                        it(`should add an event listener for ${e.event} events`, () => {
-                            const settingsListenStub = sandbox.stub(controls.settingsPullup, 'addListener');
+                        test(`should add an event listener for ${e.event} events`, () => {
+                            const settingsListenStub = jest.spyOn(controls.settingsPullup, 'addListener');
                             controls.addUi();
-                            expect(settingsListenStub).to.be.calledWith(e.event, controls[e.callback]);
+                            expect(settingsListenStub).toBeCalledWith(e.event, controls[e.callback]);
                         });
                     });
                 });
 
-                it('should add a toggle for the settings panel, in the control bar', () => {
+                test('should add a toggle for the settings panel, in the control bar', () => {
                     controls.addUi();
-                    expect(addStub).to.be.calledWith(
-                        __('box3d_settings'),
-                        controls.handleToggleSettings,
-                        '',
-                        ICON_GEAR,
-                    );
+                    expect(addStub).toBeCalledWith(__('box3d_settings'), controls.handleToggleSettings, '', ICON_GEAR);
                 });
 
-                it('should and the settings panel element to the parent element of the settings panel toggle', () => {
+                test('should and the settings panel element to the parent element of the settings panel toggle', () => {
                     controls.addUi();
-                    expect(controls.settingsButtonEl.parentNode).to.contain(controls.settingsPullup.pullupEl);
+                    expect(controls.settingsButtonEl.parentNode).toContainElement(controls.settingsPullup.pullupEl);
                 });
             });
 
-            it('should hide all animation UI after creating it', () => {
-                const hideStub = sandbox.stub(controls, 'hideAnimationControls');
+            test('should hide all animation UI after creating it', () => {
+                const hideStub = jest.spyOn(controls, 'hideAnimationControls');
                 controls.addUi();
-                expect(hideStub).to.be.called;
+                expect(hideStub).toBeCalled();
             });
 
-            it('should add the fullscreen button to the control bar', () => {
-                const fsStub = sandbox.stub(controls, 'addFullscreenButton');
+            test('should add the fullscreen button to the control bar', () => {
+                const fsStub = jest.spyOn(controls, 'addFullscreenButton');
                 controls.addUi();
-                expect(fsStub).to.be.called;
+                expect(fsStub).toBeCalled();
             });
 
-            it('should add the VR button to the control bar', () => {
-                const addVrStub = sandbox.stub(controls, 'addVrButton');
+            test('should add the VR button to the control bar', () => {
+                const addVrStub = jest.spyOn(controls, 'addVrButton');
                 controls.addUi();
-                expect(addVrStub).to.be.called;
+                expect(addVrStub).toBeCalled();
             });
 
-            it('should hide the VR button after adding it', () => {
-                const hideVrStub = sandbox.stub(controls, 'hideVrButton');
+            test('should hide the VR button after adding it', () => {
+                const hideVrStub = jest.spyOn(controls, 'hideVrButton');
                 controls.addUi();
-                expect(hideVrStub).to.be.called;
+                expect(hideVrStub).toBeCalled();
             });
         });
     });
 
     describe('hidePullups()', () => {
-        it('should hide animation clip pullup', () => {
-            const hideStub = sandbox.stub(controls.animationClipsPullup, 'hide');
+        test('should hide animation clip pullup', () => {
+            const hideStub = jest.spyOn(controls.animationClipsPullup, 'hide');
             controls.hidePullups();
-            expect(hideStub).to.be.called;
+            expect(hideStub).toBeCalled();
         });
 
-        it('should hide the settings pullup', () => {
-            const hideStub = sandbox.stub(controls.settingsPullup, 'hide');
+        test('should hide the settings pullup', () => {
+            const hideStub = jest.spyOn(controls.settingsPullup, 'hide');
             controls.hidePullups();
-            expect(hideStub).to.be.called;
+            expect(hideStub).toBeCalled();
         });
 
-        it('should emit an event to hide 3D scene helpers', () => {
+        test('should emit an event to hide 3D scene helpers', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -219,19 +210,19 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleToggleSettings()', () => {
-        it('should hide the animation clip pullup', () => {
-            const hideStub = sandbox.stub(controls.animationClipsPullup, 'hide');
+        test('should hide the animation clip pullup', () => {
+            const hideStub = jest.spyOn(controls.animationClipsPullup, 'hide');
             controls.handleToggleSettings();
-            expect(hideStub).to.be.called;
+            expect(hideStub).toBeCalled();
         });
 
-        it('should toggle the settings pullup visibility', () => {
-            const toggleStub = sandbox.stub(controls.settingsPullup, 'toggle');
+        test('should toggle the settings pullup visibility', () => {
+            const toggleStub = jest.spyOn(controls.settingsPullup, 'toggle');
             controls.handleToggleSettings();
-            expect(toggleStub).to.be.called;
+            expect(toggleStub).toBeCalled();
         });
 
-        it('should emit an event to toggle the 3D scene helpers', () => {
+        test('should emit an event to toggle the 3D scene helpers', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -241,7 +232,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleSetRenderMode()', () => {
-        it('should fire the "render mode set" event', () => {
+        test('should fire the "render mode set" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -249,7 +240,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetRenderMode();
         });
 
-        it('should fire the "render mode set" event with the new render mode', () => {
+        test('should fire the "render mode set" event with the new render mode', () => {
             const renderMode = 'normals';
             sandbox
                 .mock(controls)
@@ -258,16 +249,16 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetRenderMode(renderMode);
         });
 
-        it('should set the current render mode of the settings pullup', () => {
-            const stub = sandbox.stub(controls.settingsPullup, 'setCurrentRenderMode');
+        test('should set the current render mode of the settings pullup', () => {
+            const stub = jest.spyOn(controls.settingsPullup, 'setCurrentRenderMode');
             const renderMode = 'normals';
             controls.handleSetRenderMode(renderMode);
-            expect(stub).to.be.calledWith(renderMode);
+            expect(stub).toBeCalledWith(renderMode);
         });
     });
 
     describe('handleSetSkeletonsVisible()', () => {
-        it('should fire a "set skeleton visiblity" event', () => {
+        test('should fire a "set skeleton visiblity" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -275,7 +266,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetSkeletonsVisible();
         });
 
-        it('should fire a "set skeleton visiblity" event with a flag to turn them on and off explicitly', () => {
+        test('should fire a "set skeleton visiblity" event with a flag to turn them on and off explicitly', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -285,7 +276,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleSetWireframesVisible()', () => {
-        it('should fire a "set wireframe visiblity" event', () => {
+        test('should fire a "set wireframe visiblity" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -293,7 +284,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetWireframesVisible();
         });
 
-        it('should fire a "set wireframe visiblity" event with a flag to turn them on and off explicitly', () => {
+        test('should fire a "set wireframe visiblity" event with a flag to turn them on and off explicitly', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -303,7 +294,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleSetGridVisible()', () => {
-        it('should fire a "set grid visiblity" event', () => {
+        test('should fire a "set grid visiblity" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -311,7 +302,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetGridVisible();
         });
 
-        it('should fire a "set grid visiblity" event with a flag to turn them on and off explicitly', () => {
+        test('should fire a "set grid visiblity" event with a flag to turn them on and off explicitly', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -321,7 +312,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleSetCameraProjection()', () => {
-        it('should fire a "set camera visibility" event', () => {
+        test('should fire a "set camera visibility" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -329,7 +320,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleSetCameraProjection();
         });
 
-        it('should fire a "set camera visibility" event with a projection mode', () => {
+        test('should fire a "set camera visibility" event with a projection mode', () => {
             const projection = 'orthographic';
             sandbox
                 .mock(controls)
@@ -340,7 +331,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleAxisRotation()', () => {
-        it('should fire a "rotate on axis" event', () => {
+        test('should fire a "rotate on axis" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -348,7 +339,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.handleAxisRotation();
         });
 
-        it('should fire a "rotate on axis" event with an axis to rotate on', () => {
+        test('should fire a "rotate on axis" event with an axis to rotate on', () => {
             const axis = '-x';
             sandbox
                 .mock(controls)
@@ -381,48 +372,48 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         });
 
         describe('show controls', () => {
-            it('should do nothing if no animation toggle', () => {
+            test('should do nothing if no animation toggle', () => {
                 clipMock.expects('remove').never();
                 controls.animationToggleEl = undefined;
                 controls.showAnimationControls();
             });
 
-            it('should do nothing if no animation clip button', () => {
+            test('should do nothing if no animation clip button', () => {
                 toggleMock.expects('remove').never();
                 controls.animationClipButtonEl = undefined;
                 controls.showAnimationControls();
             });
 
-            it('should remove hidden class from the animation toggle element', () => {
+            test('should remove hidden class from the animation toggle element', () => {
                 toggleMock.expects('remove').withArgs(CSS_CLASS_HIDDEN);
                 controls.showAnimationControls();
             });
 
-            it('should remove the hidden class from the animation clip button', () => {
+            test('should remove the hidden class from the animation clip button', () => {
                 clipMock.expects('remove').withArgs(CSS_CLASS_HIDDEN);
                 controls.showAnimationControls();
             });
         });
 
         describe('hide controls', () => {
-            it('should do nothing if no animation toggle', () => {
+            test('should do nothing if no animation toggle', () => {
                 clipMock.expects('remove').never();
                 controls.animationToggleEl = undefined;
                 controls.hideAnimationControls();
             });
 
-            it('should do nothing if no animation clip button', () => {
+            test('should do nothing if no animation clip button', () => {
                 toggleMock.expects('remove').never();
                 controls.animationClipButtonEl = undefined;
                 controls.hideAnimationControls();
             });
 
-            it('should add hidden class to the animation toggle element', () => {
+            test('should add hidden class to the animation toggle element', () => {
                 toggleMock.expects('add').withArgs(CSS_CLASS_HIDDEN);
                 controls.hideAnimationControls();
             });
 
-            it('should add the hidden class to the animation clip button', () => {
+            test('should add the hidden class to the animation clip button', () => {
                 clipMock.expects('add').withArgs(CSS_CLASS_HIDDEN);
                 controls.hideAnimationControls();
             });
@@ -430,59 +421,59 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleSelectAnimationClip()', () => {
-        it('should invoke setAnimationPlaying() to stop animation playback', () => {
-            const stub = sandbox.stub(controls, 'setAnimationPlaying');
+        test('should invoke setAnimationPlaying() to stop animation playback', () => {
+            const stub = jest.spyOn(controls, 'setAnimationPlaying');
             controls.handleSelectAnimationClip();
-            expect(stub).to.be.calledWith(false);
+            expect(stub).toBeCalledWith(false);
         });
 
-        it('should emit a "select animation clip" event', () => {
-            sandbox.stub(controls, 'setAnimationPlaying');
-            const stub = sandbox.stub(controls, 'emit');
+        test('should emit a "select animation clip" event', () => {
+            jest.spyOn(controls, 'setAnimationPlaying');
+            const stub = jest.spyOn(controls, 'emit');
             controls.handleSelectAnimationClip();
-            expect(stub).to.be.calledWith(EVENT_SELECT_ANIMATION_CLIP);
+            expect(stub).toBeCalledWith(EVENT_SELECT_ANIMATION_CLIP);
         });
 
-        it('should emit a "select animation clip" event, with the clip selected', () => {
-            sandbox.stub(controls, 'setAnimationPlaying');
-            const stub = sandbox.stub(controls, 'emit');
+        test('should emit a "select animation clip" event, with the clip selected', () => {
+            jest.spyOn(controls, 'setAnimationPlaying');
+            const stub = jest.spyOn(controls, 'emit');
             const id = 'p1p1p1p1';
             controls.handleSelectAnimationClip(id);
-            expect(stub).to.be.calledWith(EVENT_SELECT_ANIMATION_CLIP, id);
+            expect(stub).toBeCalledWith(EVENT_SELECT_ANIMATION_CLIP, id);
         });
     });
 
     describe('handleToggleAnimationClips()', () => {
-        it('should hide the settings pullup', () => {
+        test('should hide the settings pullup', () => {
             sandbox.mock(controls.settingsPullup).expects('hide');
             controls.handleToggleAnimationClips();
         });
 
-        it('should hide the animation clip selection pullup', () => {
+        test('should hide the animation clip selection pullup', () => {
             sandbox.mock(controls.animationClipsPullup).expects('toggle');
             controls.handleToggleAnimationClips();
         });
     });
 
     describe('handleToggleAnimation()', () => {
-        it('should invoke hidePullups()', () => {
-            const hidePullupsStub = sandbox.stub(controls, 'hidePullups');
-            sandbox.stub(controls, 'setAnimationPlaying');
+        test('should invoke hidePullups()', () => {
+            const hidePullupsStub = jest.spyOn(controls, 'hidePullups');
+            jest.spyOn(controls, 'setAnimationPlaying');
             controls.handleToggleAnimation();
-            expect(hidePullupsStub).to.be.called;
+            expect(hidePullupsStub).toBeCalled();
         });
 
-        it('should toggle playback of the current animation via setAnimationPlaying()', () => {
-            const playStub = sandbox.stub(controls, 'setAnimationPlaying');
+        test('should toggle playback of the current animation via setAnimationPlaying()', () => {
+            const playStub = jest.spyOn(controls, 'setAnimationPlaying');
             controls.handleToggleAnimation();
-            expect(playStub).to.be.called;
+            expect(playStub).toBeCalled();
         });
 
-        it('should set toggle animation playback by inverting playback state (.isAnimationPlaying)', () => {
-            const playStub = sandbox.stub(controls, 'setAnimationPlaying');
+        test('should set toggle animation playback by inverting playback state (.isAnimationPlaying)', () => {
+            const playStub = jest.spyOn(controls, 'setAnimationPlaying');
             controls.isAnimationPlaying = true;
             controls.handleToggleAnimation();
-            expect(playStub).to.be.calledWith(false);
+            expect(playStub).toBeCalledWith(false);
         });
     });
 
@@ -493,23 +484,23 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             };
         });
 
-        it('should set isAnimationPlaying to value provided', () => {
+        test('should set isAnimationPlaying to value provided', () => {
             controls.isAnimationPlaying = false;
             controls.setAnimationPlaying(true);
-            expect(controls.isAnimationPlaying).to.be.true;
+            expect(controls.isAnimationPlaying).toBe(true);
         });
 
-        it('should replace the toggle icon to pause, if animation is playing', () => {
+        test('should replace the toggle icon to pause, if animation is playing', () => {
             controls.setAnimationPlaying(true);
-            expect(controls.animationToggleEl.innerHTML).to.equal(ICON_PAUSE);
+            expect(controls.animationToggleEl.innerHTML).toBe(ICON_PAUSE);
         });
 
-        it('should replace the toggle icon to play, if animation is paused', () => {
+        test('should replace the toggle icon to play, if animation is paused', () => {
             controls.setAnimationPlaying(false);
-            expect(controls.animationToggleEl.innerHTML).to.equal(ICON_PLAY);
+            expect(controls.animationToggleEl.innerHTML).toBe(ICON_PLAY);
         });
 
-        it('should emit an "animation toggled" event', () => {
+        test('should emit an "animation toggled" event', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -517,7 +508,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.setAnimationPlaying(false);
         });
 
-        it('should emit an "animation toggled" event with the current state of animation playback', () => {
+        test('should emit an "animation toggled" event with the current state of animation playback', () => {
             sandbox
                 .mock(controls)
                 .expects('emit')
@@ -527,7 +518,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('animation clip ui', () => {
-        it('should invoke animationClipsPullup.addClip() with data for a clip, via addAnimationClip()', () => {
+        test('should invoke animationClipsPullup.addClip() with data for a clip, via addAnimationClip()', () => {
             const id = '1234';
             const name = 'my_clip';
             const duration = 10;
@@ -538,7 +529,7 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.addAnimationClip(id, name, duration);
         });
 
-        it('should invoke animationClipsPullup.selectClip(), via selectAnimationClip()', () => {
+        test('should invoke animationClipsPullup.selectClip(), via selectAnimationClip()', () => {
             const id = '1234';
             sandbox
                 .mock(controls.animationClipsPullup)
@@ -549,20 +540,20 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleToggleFullscreen()', () => {
-        it('should hide all pullups', () => {
-            const stub = sandbox.stub(controls, 'hidePullups');
+        test('should hide all pullups', () => {
+            const stub = jest.spyOn(controls, 'hidePullups');
             controls.handleToggleFullscreen();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
     });
 
     describe('setCurrentProjectionMode()', () => {
-        it('should invoke settingsPullup.onProjectionSelected()', () => {
+        test('should invoke settingsPullup.onProjectionSelected()', () => {
             sandbox.mock(controls.settingsPullup).expects('onProjectionSelected');
             controls.setCurrentProjectionMode();
         });
 
-        it('should invoke settingsPullup.onProjectionSelected() with the new projection mode', () => {
+        test('should invoke settingsPullup.onProjectionSelected() with the new projection mode', () => {
             const mode = 'orthographic';
             sandbox
                 .mock(controls.settingsPullup)
@@ -571,12 +562,12 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             controls.setCurrentProjectionMode(mode);
         });
 
-        it('should invoke settingsPullup.setCurrentProjectionMode()', () => {
+        test('should invoke settingsPullup.setCurrentProjectionMode()', () => {
             sandbox.mock(controls.settingsPullup).expects('setCurrentProjectionMode');
             controls.setCurrentProjectionMode();
         });
 
-        it('should invoke settingsPullup.setCurrentProjectionMode() with the new projection mode', () => {
+        test('should invoke settingsPullup.setCurrentProjectionMode() with the new projection mode', () => {
             const mode = 'orthographic';
             sandbox
                 .mock(controls.settingsPullup)
@@ -587,23 +578,23 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     });
 
     describe('handleReset()', () => {
-        it('should hide all pullups', () => {
-            sandbox.stub(controls, 'setAnimationPlaying');
-            const stub = sandbox.stub(controls, 'hidePullups');
+        test('should hide all pullups', () => {
+            jest.spyOn(controls, 'setAnimationPlaying');
+            const stub = jest.spyOn(controls, 'hidePullups');
             controls.handleReset();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should reset the settings pullup', () => {
-            sandbox.stub(controls, 'setAnimationPlaying');
+        test('should reset the settings pullup', () => {
+            jest.spyOn(controls, 'setAnimationPlaying');
             sandbox.mock(controls.settingsPullup).expects('reset');
             controls.handleReset();
         });
 
-        it('should pause animation playback', () => {
-            const stub = sandbox.stub(controls, 'setAnimationPlaying');
+        test('should pause animation playback', () => {
+            const stub = jest.spyOn(controls, 'setAnimationPlaying');
             controls.handleReset();
-            expect(stub).to.be.calledWith(false);
+            expect(stub).toBeCalledWith(false);
         });
     });
 });

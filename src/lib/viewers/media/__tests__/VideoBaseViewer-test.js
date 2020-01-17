@@ -6,14 +6,9 @@ import BaseViewer from '../../BaseViewer';
 let containerEl;
 let rootEl;
 let videoBase;
-const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/VideoBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/VideoBaseViewer-test.html');
@@ -35,24 +30,22 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             },
         });
         videoBase.mediaControls = {
-            on: sandbox.stub(),
-            addListener: sandbox.stub(),
-            removeAllListeners: sandbox.stub(),
-            destroy: sandbox.stub(),
-            show: sandbox.stub(),
-            toggle: sandbox.stub(),
-            resizeTimeScrubber: sandbox.stub(),
+            on: jest.fn(),
+            addListener: jest.fn(),
+            removeAllListeners: jest.fn(),
+            destroy: jest.fn(),
+            show: jest.fn(),
+            toggle: jest.fn(),
+            resizeTimeScrubber: jest.fn(),
         };
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         videoBase.containerEl = containerEl;
         videoBase.rootEl = rootEl;
         videoBase.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
-
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (videoBase && typeof videoBase.destroy === 'function') {
@@ -62,11 +55,11 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up media element, play button, and lower lights', () => {
+        test('should set up media element, play button, and lower lights', () => {
             const { lowerLights } = VideoBaseViewer.prototype;
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
-                value: sandbox.stub(),
+                value: jest.fn(),
             });
 
             videoBase = new VideoBaseViewer({
@@ -75,15 +68,15 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 },
                 container: containerEl,
             });
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
             videoBase.containerEl = containerEl;
             videoBase.setup();
 
-            expect(videoBase.mediaEl.getAttribute('preload')).to.equal('auto');
-            expect(videoBase.mediaEl.getAttribute('playsinline')).to.equal('');
-            expect(videoBase.playButtonEl.className).to.equal('bp-media-play-button bp-is-hidden');
-            expect(videoBase.playButtonEl.innerHTML).contains('<path d="M0 0h24v24H0z" fill="none"');
-            expect(VideoBaseViewer.prototype.lowerLights).to.be.called;
+            expect(videoBase.mediaEl.getAttribute('preload')).toBe('auto');
+            expect(videoBase.mediaEl.getAttribute('playsinline')).toBe('');
+            expect(videoBase.playButtonEl.className).toBe('bp-media-play-button bp-is-hidden');
+            expect(videoBase.playButtonEl).toContainHTML('<path d="M0 0h24v24H0z" fill="none"');
+            expect(VideoBaseViewer.prototype.lowerLights).toBeCalled();
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: lowerLights,
@@ -92,17 +85,17 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('destroy()', () => {
-        it('should remove event listeners on the media and play button', () => {
-            sandbox.stub(videoBase.mediaEl, 'removeEventListener');
-            sandbox.stub(videoBase.playButtonEl, 'removeEventListener');
+        test('should remove event listeners on the media and play button', () => {
+            jest.spyOn(videoBase.mediaEl, 'removeEventListener');
+            jest.spyOn(videoBase.playButtonEl, 'removeEventListener');
 
             videoBase.destroy();
 
-            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('mousemove', videoBase.mousemoveHandler);
-            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('click', videoBase.pointerHandler);
-            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('touchstart', videoBase.pointerHandler);
-            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('waiting', videoBase.waitingHandler);
-            expect(videoBase.playButtonEl.removeEventListener).to.be.calledWith('click', videoBase.togglePlay);
+            expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('mousemove', videoBase.mousemoveHandler);
+            expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('click', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
+            expect(videoBase.playButtonEl.removeEventListener).toBeCalledWith('click', videoBase.togglePlay);
         });
     });
 
@@ -113,147 +106,146 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: loadeddataHandlerFunc });
         });
 
-        it('should show the play button', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: sandbox.mock() });
-            sandbox.stub(videoBase, 'showPlayButton');
+        test('should show the play button', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            jest.spyOn(videoBase, 'showPlayButton');
             videoBase.loadeddataHandler();
-            expect(videoBase.showPlayButton).to.be.called;
+            expect(videoBase.showPlayButton).toBeCalled();
         });
     });
 
     describe('pointerHandler()', () => {
-        it('should prevent default, stop propagation, and toggle the controls on touchstart', () => {
+        test('should prevent default, stop propagation, and toggle the controls on touchstart', () => {
             const event = {
                 type: 'touchstart',
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
             };
 
             videoBase.pointerHandler(event);
-            expect(event.stopPropagation).to.be.called;
-            expect(event.preventDefault).to.be.called;
-            expect(videoBase.mediaControls.toggle).to.be.called;
+            expect(event.stopPropagation).toBeCalled();
+            expect(event.preventDefault).toBeCalled();
+            expect(videoBase.mediaControls.toggle).toBeCalled();
         });
 
-        it('should toggle play on click', () => {
-            const event = {
-                type: 'click',
-            };
-            const togglePlayStub = sandbox.stub(videoBase, 'togglePlay');
+        test('should toggle play on click', () => {
+            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
 
-            videoBase.pointerHandler(event);
-            expect(togglePlayStub).to.be.called;
+            videoBase.pointerHandler({ type: 'click' });
+            expect(videoBase.togglePlay).toBeCalled();
         });
     });
 
     describe('playingHandler()', () => {
-        it('should hide the play button', () => {
-            sandbox.stub(videoBase, 'hidePlayButton');
-            videoBase.loadUI(); // load media controls UI
+        test('should hide the play button', () => {
+            jest.spyOn(videoBase, 'handleRate').mockImplementation();
+            jest.spyOn(videoBase, 'hidePlayButton').mockImplementation();
 
+            videoBase.loadUI(); // load media controls UI
             videoBase.playingHandler();
 
-            expect(videoBase.hidePlayButton).to.be.called;
+            expect(videoBase.hidePlayButton).toBeCalled();
         });
     });
 
     describe('pauseHandler()', () => {
-        it('should show the play button', () => {
-            sandbox.stub(videoBase, 'showPlayButton');
+        test('should show the play button', () => {
+            jest.spyOn(videoBase, 'showPlayButton');
             videoBase.loadUI(); // load media controls UI
 
             videoBase.pauseHandler();
 
-            expect(videoBase.showPlayButton).to.be.called;
+            expect(videoBase.showPlayButton).toBeCalled();
         });
 
-        it('should hide the loading icon', () => {
-            sandbox.stub(videoBase, 'hideLoadingIcon');
+        test('should hide the loading icon', () => {
+            jest.spyOn(videoBase, 'hideLoadingIcon');
             videoBase.loadUI(); // load media controls UI
 
             videoBase.pauseHandler();
 
-            expect(videoBase.hideLoadingIcon).to.be.called;
+            expect(videoBase.hideLoadingIcon).toBeCalled();
         });
     });
 
     describe('waitingHandler()', () => {
-        it('should add the buffering class', () => {
+        test('should add the buffering class', () => {
             videoBase.waitingHandler();
-            expect(videoBase.containerEl.classList.contains('bp-is-buffering'));
+            expect(videoBase.containerEl).toHaveClass('bp-is-buffering');
         });
 
-        it('should hide the play button', () => {
-            sandbox.stub(videoBase, 'hidePlayButton');
+        test('should hide the play button', () => {
+            jest.spyOn(videoBase, 'hidePlayButton');
 
             videoBase.waitingHandler();
-            expect(videoBase.hidePlayButton).to.be.called;
+            expect(videoBase.hidePlayButton).toBeCalled();
         });
     });
 
     describe('addEventListenersForMediaControls()', () => {
-        it('should add a handler for toggling fullscreen', () => {
+        test('should add a handler for toggling fullscreen', () => {
             videoBase.addEventListenersForMediaControls();
-            expect(videoBase.mediaControls.on).to.be.calledWith('togglefullscreen', sinon.match.func);
+            expect(videoBase.mediaControls.on).toBeCalledWith('togglefullscreen', expect.any(Function));
         });
     });
 
     describe('addEventListenersForMediaElement()', () => {
-        it('should add a handler for toggling fullscreen', () => {
-            sandbox.stub(videoBase.mediaEl, 'addEventListener');
-            sandbox.stub(videoBase.playButtonEl, 'addEventListener');
+        test('should add a handler for toggling fullscreen', () => {
+            jest.spyOn(videoBase.mediaEl, 'addEventListener');
+            jest.spyOn(videoBase.playButtonEl, 'addEventListener');
 
+            videoBase.hasTouch = true;
             videoBase.addEventListenersForMediaElement();
 
-            expect(videoBase.mousemoveHandler).to.be.a.func;
-            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('mousemove', videoBase.mousemoveHandler);
-            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('click', videoBase.pointerHandler);
-            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('touchstart', videoBase.pointerHandler);
-            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('waiting', videoBase.waitingHandler);
-            expect(videoBase.playButtonEl.addEventListener).to.be.calledWith('click', videoBase.togglePlay);
+            expect(videoBase.mousemoveHandler).toBeInstanceOf(Function);
+            expect(videoBase.mediaEl.addEventListener).toBeCalledWith('mousemove', videoBase.mousemoveHandler);
+            expect(videoBase.mediaEl.addEventListener).toBeCalledWith('click', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.addEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.addEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
+            expect(videoBase.playButtonEl.addEventListener).toBeCalledWith('click', videoBase.togglePlay);
         });
     });
 
     describe('resize()', () => {
-        it('should resize the time scrubber', () => {
+        test('should resize the time scrubber', () => {
             videoBase.resize();
-            expect(videoBase.mediaControls.resizeTimeScrubber).to.be.called;
+            expect(videoBase.mediaControls.resizeTimeScrubber).toBeCalled();
         });
     });
 
     describe('allowNavigationArrows', () => {
-        it('should return true if media controls are undefined or media controls do not have settings visible', () => {
+        test('should return true if media controls are undefined or media controls do not have settings visible', () => {
             videoBase.mediaControls = undefined;
-            expect(videoBase.allowNavigationArrows()).to.be.true;
+            expect(videoBase.allowNavigationArrows()).toBe(true);
 
             videoBase.mediaControls = {
-                isSettingsVisible: sandbox.stub().returns(false),
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub(),
+                isSettingsVisible: jest.fn().mockReturnValue(false),
+                removeAllListeners: jest.fn(),
+                destroy: jest.fn(),
             };
-            expect(videoBase.allowNavigationArrows()).to.be.true;
+            expect(videoBase.allowNavigationArrows()).toBe(true);
 
-            videoBase.mediaControls.isSettingsVisible = sandbox.stub().returns(true);
-            expect(videoBase.allowNavigationArrows()).to.be.false;
+            videoBase.mediaControls.isSettingsVisible = jest.fn().mockReturnValue(true);
+            expect(videoBase.allowNavigationArrows()).toBe(false);
         });
     });
 
     describe('lowerLights', () => {
-        it('should add dark class to container', () => {
+        test('should add dark class to container', () => {
             videoBase.lowerLights();
-            expect(videoBase.rootEl.classList.contains('bp-dark')).to.be.true;
+            expect(videoBase.rootEl).toHaveClass('bp-dark');
         });
     });
 
     describe('handleAutoplayFail()', () => {
-        it('should mute and play again', () => {
-            sandbox.stub(videoBase, 'setVolume');
-            videoBase.play = sandbox.stub().returns(Promise.reject());
+        test('should mute and play again', () => {
+            jest.spyOn(videoBase, 'setVolume');
+            videoBase.play = jest.fn(() => Promise.reject());
 
             videoBase.handleAutoplayFail();
 
-            expect(videoBase.setVolume).to.be.calledWith(0);
-            expect(videoBase.play).to.be.called;
+            expect(videoBase.setVolume).toBeCalledWith(0);
+            expect(videoBase.play).toBeCalled();
         });
     });
 });

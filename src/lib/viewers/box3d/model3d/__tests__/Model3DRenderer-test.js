@@ -13,8 +13,8 @@ import {
     EVENT_SET_WIREFRAMES_VISIBLE,
 } from '../model3DConstants';
 
-describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
-    const sandbox = sinon.sandbox.create();
+describe.skip('lib/viewers/box3d/model3d/Model3DRenderer', () => {
+    const sandbox = sinon.createSandbox();
     let containerEl;
     let renderer;
     let stubs = {};
@@ -25,14 +25,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     let animation;
     let animationComp;
 
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/box3d/model3d/__tests__/Model3DRenderer-test.html');
         containerEl = document.querySelector('.container');
-        stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
+        stubs.BoxSDK = jest.spyOn(window, 'BoxSDK');
         renderer = new Model3DRenderer(containerEl, {});
         app = {
             getComponentByScriptId: () => {},
@@ -104,13 +100,13 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('destroy()', () => {
-        it('should remove event listener from the engine instance canvas', () => {
-            const removeListener = sandbox.stub(renderer.box3d.canvas, 'removeEventListener');
+        test('should remove event listener from the engine instance canvas', () => {
+            const removeListener = jest.spyOn(renderer.box3d.canvas, 'removeEventListener');
             renderer.destroy();
-            expect(removeListener).to.be.called;
+            expect(removeListener).toBeCalled();
         });
 
-        it('should do nothing if there is not box3d runtime instance', () => {
+        test('should do nothing if there is not box3d runtime instance', () => {
             renderMock.expects('cleanupScene').never();
             renderer.box3d = undefined;
             renderer.destroy();
@@ -118,12 +114,12 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('handleCanvasClick()', () => {
-        it('should emit a "canvas click" event', () => {
+        test('should emit a "canvas click" event', () => {
             renderMock.expects('emit').withArgs(EVENT_CANVAS_CLICK);
             renderer.handleCanvasClick();
         });
 
-        it('should emit a "canvas click event" with the DOM event', () => {
+        test('should emit a "canvas click event" with the DOM event', () => {
             const event = { type: 'an_event' };
             renderMock.expects('emit').withArgs(EVENT_CANVAS_CLICK, event);
             renderer.handleCanvasClick(event);
@@ -131,33 +127,33 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('load()', () => {
-        it('should do nothing with scene entities if location is not present in options', done => {
+        test('should do nothing with scene entities if location is not present in options', done => {
             const options = { file: { id: 'dummyId' } };
-            sandbox.stub(renderer, 'initBox3d').callsFake(opts => {
-                expect(opts.sceneEntities).to.not.exist;
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(opts => {
+                expect(opts.sceneEntities).not.toBeDefined();
                 done();
                 return Promise.resolve();
             });
-            sandbox.stub(renderer, 'loadBox3dFile');
+            jest.spyOn(renderer, 'loadBox3dFile').mockImplementation();
             renderer.load('', options);
         });
 
-        it('should assign sceneEntities to the passed in options object', done => {
+        test('should assign sceneEntities to the passed in options object', done => {
             const options = {
                 location: {
                     staticBaseURI: '',
                 },
             };
-            sandbox.stub(renderer, 'initBox3d').callsFake(opts => {
-                expect(opts.sceneEntities).to.exist;
+            jest.spyOn(renderer, 'initBox3d').mockImplementation(opts => {
+                expect(opts.sceneEntities).toBeDefined();
                 done();
                 return Promise.resolve();
             });
-            sandbox.stub(renderer, 'loadBox3dFile');
+            jest.spyOn(renderer, 'loadBox3dFile').mockImplementation();
             renderer.load('', options);
         });
 
-        it('should initialize the box3d runtime', () => {
+        test('should initialize the box3d runtime', () => {
             const options = {
                 location: {
                     staticBaseURI: '',
@@ -166,24 +162,24 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                     id: '',
                 },
             };
-            renderMock.expects('initBox3d').returns(Promise.resolve());
-            sandbox.stub(renderer, 'loadBox3dFile');
+            renderMock.expects('initBox3d').mockResolvedValue(undefined);
+            jest.spyOn(renderer, 'loadBox3dFile').mockImplementation();
             renderer.load('', options);
         });
 
-        it('should load the box3d file after initializing the runtime', done => {
+        test('should load the box3d file after initializing the runtime', done => {
             const options = { file: { id: '' } };
-            renderMock.expects('initBox3d').returns(Promise.resolve());
-            renderMock.expects('loadBox3dFile').returns(Promise.resolve());
+            renderMock.expects('initBox3d').mockResolvedValue(undefined);
+            renderMock.expects('loadBox3dFile').mockResolvedValue(undefined);
             renderer.load('http://derpy.net', options).then(() => {
                 done();
             });
         });
 
-        it('should setup the scene via onUnsupportedRepresentation() if it cannot load the model', done => {
+        test('should setup the scene via onUnsupportedRepresentation() if it cannot load the model', done => {
             const options = { file: { id: '' } };
             renderMock.expects('onUnsupportedRepresentation');
-            sandbox.stub(renderer, 'loadBox3dFile').callsFake(() => Promise.reject());
+            jest.spyOn(renderer, 'loadBox3dFile').mockImplementation(() => Promise.reject());
             renderer.load('', options).then(() => done());
         });
     });
@@ -201,7 +197,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 .returns(renderMode);
         });
 
-        it('should add event listener to the canvas for click events', () => {
+        test('should add event listener to the canvas for click events', () => {
             sandbox
                 .mock(renderer.box3d.canvas)
                 .expects('addEventListener')
@@ -209,7 +205,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.loadBox3dFile('');
         });
 
-        it('should set the shape texture ID for the Shape render mode', () => {
+        test('should set the shape texture ID for the Shape render mode', () => {
             sandbox
                 .mock(renderMode)
                 .expects('setAttribute')
@@ -217,7 +213,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.loadBox3dFile('');
         });
 
-        it('should setup the scene via setupScene() if it can successfully load the model', done => {
+        test('should setup the scene via setupScene() if it can successfully load the model', done => {
             sandbox.mock(renderer.box3d, 'setupScene', () => {});
             renderMock.expects('setupScene').called;
             renderer.loadBox3dFile('').then(() => done());
@@ -226,33 +222,33 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
     describe('setupScene()', () => {
         beforeEach(() => {
-            sandbox.stub(renderer.box3d, 'getAssetsByType').returns([]);
+            jest.spyOn(renderer.box3d, 'getAssetsByType').mockReturnValue([]);
         });
 
-        it('should do nothing if no scene instance is present', () => {
-            renderMock.expects('getScene').returns(undefined);
+        test('should do nothing if no scene instance is present', () => {
+            renderMock.expects('getScene').mockReturnValue(undefined);
             renderer.setupScene();
         });
 
-        it('should invoke addHelpersToScene() to add the scene grid and axis colour lines to the scene', () => {
+        test('should invoke addHelpersToScene() to add the scene grid and axis colour lines to the scene', () => {
             renderer.instance = instance;
-            sandbox.stub(renderer, 'getScene').returns(scene);
+            jest.spyOn(renderer, 'getScene').mockReturnValue(scene);
             renderMock.expects('addHelpersToScene').once();
             renderer.setupScene();
         });
 
-        it('should invoke onSceneLoad when the scene has been loaded', () => {
+        test('should invoke onSceneLoad when the scene has been loaded', () => {
             renderer.instance = instance;
-            sandbox.stub(renderer, 'getScene').returns(scene);
-            sandbox.stub(scene, 'when').callsFake((event, cb) => cb());
-            const stub = sandbox.stub(renderer, 'onSceneLoad');
+            jest.spyOn(renderer, 'getScene').mockReturnValue(scene);
+            jest.spyOn(scene, 'when').mockImplementation((event, cb) => cb());
+            const stub = jest.spyOn(renderer, 'onSceneLoad').mockImplementation();
             renderer.setupScene();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should add a listener on the scene instance for it to be loaded', () => {
+        test('should add a listener on the scene instance for it to be loaded', () => {
             renderer.instance = instance;
-            sandbox.stub(renderer, 'getScene').returns(scene);
+            jest.spyOn(renderer, 'getScene').mockReturnValue(scene);
             sandbox
                 .mock(scene)
                 .expects('when')
@@ -260,21 +256,21 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setupScene();
         });
 
-        it('should add the axis rotation component to the instance', () => {
+        test('should add the axis rotation component to the instance', () => {
             renderer.instance = instance;
-            sandbox.stub(instance, 'addComponent');
+            jest.spyOn(instance, 'addComponent').mockImplementation();
             renderer.setupScene();
-            expect(instance.addComponent).to.be.calledWith('axis_rotation', {}, 'axis_rotation_INSTANCE_ID');
+            expect(instance.addComponent).toBeCalledWith('axis_rotation', {}, 'axis_rotation_INSTANCE_ID');
         });
 
-        it('should add the animation component to the instance', () => {
+        test('should add the animation component to the instance', () => {
             renderer.instance = instance;
-            sandbox.stub(instance, 'addComponent');
+            jest.spyOn(instance, 'addComponent').mockImplementation();
             renderer.setupScene();
-            expect(instance.addComponent).to.be.calledWith('animation', {}, 'animation_INSTANCE_ID');
+            expect(instance.addComponent).toBeCalledWith('animation', {}, 'animation_INSTANCE_ID');
         });
 
-        it('should set the current animation to the first animation asset', () => {
+        test('should set the current animation to the first animation asset', () => {
             renderer.instance = instance;
             renderMock.expects('setAnimationAsset').withArgs(animation);
             renderer.setupScene();
@@ -282,18 +278,18 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('reset()', () => {
-        it('should invoke resetModel()', () => {
-            const stub = sandbox.stub(renderer, 'resetModel');
-            sandbox.stub(Box3DRenderer.prototype, 'reset');
+        test('should invoke resetModel()', () => {
+            const stub = jest.spyOn(renderer, 'resetModel').mockImplementation();
+            jest.spyOn(Box3DRenderer.prototype, 'reset');
             renderer.reset();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it("should invoke parent's reset()", () => {
-            sandbox.stub(renderer, 'resetModel');
-            const stub = sandbox.stub(Box3DRenderer.prototype, 'reset');
+        test("should invoke parent's reset()", () => {
+            jest.spyOn(renderer, 'resetModel').mockImplementation();
+            const stub = jest.spyOn(Box3DRenderer.prototype, 'reset').mockImplementation();
             renderer.reset();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
     });
 
@@ -311,7 +307,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             };
         });
 
-        it('should do nothing if there is no runtime data on the instanced model', () => {
+        test('should do nothing if there is no runtime data on the instanced model', () => {
             sandbox
                 .mock(renderer.instance)
                 .expects('getChildren')
@@ -320,14 +316,14 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetModel();
         });
 
-        it('should set the position of each child model instance to the origin', () => {
+        test('should set the position of each child model instance to the origin', () => {
             const child = {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
                 unsetProperty: () => {},
             };
-            sandbox.stub(renderer.instance, 'getChildren').returns([child]);
+            jest.spyOn(renderer.instance, 'getChildren').mockReturnValue([child]);
             sandbox
                 .mock(child)
                 .expects('setPosition')
@@ -335,14 +331,14 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetModel();
         });
 
-        it('should set the orientation of each child model to the identity transform', () => {
+        test('should set the orientation of each child model to the identity transform', () => {
             const child = {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
                 unsetProperty: () => {},
             };
-            sandbox.stub(renderer.instance, 'getChildren').returns([child]);
+            jest.spyOn(renderer.instance, 'getChildren').mockReturnValue([child]);
             sandbox
                 .mock(child)
                 .expects('setQuaternion')
@@ -350,14 +346,14 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetModel();
         });
 
-        it('should set the scale of each child model to unity', () => {
+        test('should set the scale of each child model to unity', () => {
             const child = {
                 setPosition: () => {},
                 setQuaternion: () => {},
                 setScale: () => {},
                 unsetProperty: () => {},
             };
-            sandbox.stub(renderer.instance, 'getChildren').returns([child]);
+            jest.spyOn(renderer.instance, 'getChildren').mockReturnValue([child]);
             sandbox
                 .mock(child)
                 .expects('setScale')
@@ -370,9 +366,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         let camera;
         let orbitComp;
         beforeEach(() => {
-            sandbox.stub(Box3DRenderer.prototype, 'resetView');
-            sandbox.stub(THREE.Vector3.prototype, 'subVectors');
-            sandbox.stub(THREE.Vector3.prototype, 'applyMatrix4');
+            jest.spyOn(Box3DRenderer.prototype, 'resetView').mockImplementation();
+            jest.spyOn(THREE.Vector3.prototype, 'subVectors').mockImplementation();
+            jest.spyOn(THREE.Vector3.prototype, 'applyMatrix4').mockImplementation();
             orbitComp = {
                 setPivotPosition: () => {},
                 setOrbitDistance: () => {},
@@ -395,10 +391,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                     updateMatrixWorld: () => {},
                 },
             };
-            sandbox.stub(renderer, 'getCamera').callsFake(() => camera);
+            jest.spyOn(renderer, 'getCamera').mockImplementation(() => camera);
         });
 
-        it('should do nothing if there is no camera', () => {
+        test('should do nothing if there is no camera', () => {
             sandbox
                 .mock(camera)
                 .expects('getComponentByScriptId')
@@ -407,21 +403,21 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetView();
         });
 
-        it('should get the orbit camera component on the camera', () => {
+        test('should get the orbit camera component on the camera', () => {
             sandbox.mock(camera).expects('getComponentByScriptId');
             renderer.resetView();
         });
 
-        it('should do nothing if the orbit camera component does not exist', () => {
+        test('should do nothing if the orbit camera component does not exist', () => {
             sandbox
                 .mock(renderer.instance)
                 .expects('computeBounds')
                 .never();
-            sandbox.stub(camera, 'getComponentByScriptId').returns(undefined);
+            jest.spyOn(camera, 'getComponentByScriptId').mockReturnValue(undefined);
             renderer.resetView();
         });
 
-        it('should set the origin point of the orbitController component to the center of the model', () => {
+        test('should set the origin point of the orbitController component to the center of the model', () => {
             const center = new THREE.Vector3(9, 9, 9);
             sandbox
                 .mock(camera)
@@ -435,7 +431,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetView();
         });
 
-        it('should call the reset method of the orbitController component', () => {
+        test('should call the reset method of the orbitController component', () => {
             sandbox
                 .mock(camera)
                 .expects('getComponentByScriptId')
@@ -444,7 +440,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetView();
         });
 
-        it('should set the orbit distance of the orbitController component', () => {
+        test('should set the orbit distance of the orbitController component', () => {
             const center = new THREE.Vector3(9, 9, 9);
             sandbox.mock(orbitComp).expects('setOrbitDistance');
             sandbox
@@ -464,7 +460,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         const videos = [];
 
         beforeEach(() => {
-            sandbox.stub(renderer.box3d, 'getEntitiesByType').callsFake(type => {
+            jest.spyOn(renderer.box3d, 'getEntitiesByType').mockImplementation(type => {
                 switch (type) {
                     case 'animation':
                         return animations;
@@ -481,22 +477,22 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             videos.length = 0;
         });
 
-        it('should play all videos once they are loaded', () => {
+        test('should play all videos once they are loaded', () => {
             const vid1 = {
                 isLoading: () => false,
                 when: () => {},
-                play: sandbox.stub(),
+                play: jest.fn(),
             };
             const vid2 = {
                 isLoading: () => false,
                 when: () => {},
-                play: sandbox.stub(),
+                play: jest.fn(),
             };
             videos.push(vid1, vid2);
             renderer.onSceneLoad();
 
-            expect(vid1.play).to.be.called;
-            expect(vid2.play).to.be.called;
+            expect(vid1.play).toBeCalled();
+            expect(vid2.play).toBeCalled();
         });
     });
 
@@ -527,7 +523,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         describe('setAnimationAsset()', () => {
-            it('should do nothing if no model instance is present', () => {
+            test('should do nothing if no model instance is present', () => {
                 renderer.instance = undefined;
                 sandbox
                     .mock(animComp)
@@ -536,15 +532,15 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.setAnimationAsset({});
             });
 
-            it('should get the animation component on the model instance', () => {
+            test('should get the animation component on the model instance', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
-                    .returns(animComp);
+                    .mockReturnValue(animComp);
                 renderer.setAnimationAsset({});
             });
 
-            it('should set the current animation being used by the component to the one passed in', () => {
+            test('should set the current animation being used by the component to the one passed in', () => {
                 const asset = {
                     id: 'my_animation',
                 };
@@ -555,7 +551,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.setAnimationAsset(asset);
             });
 
-            it('should enable animation looping on the component', () => {
+            test('should enable animation looping on the component', () => {
                 sandbox
                     .mock(animComp)
                     .expects('setLoop')
@@ -565,7 +561,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         describe('setAnimationClip()', () => {
-            it('should do nothing if no model instance is present', () => {
+            test('should do nothing if no model instance is present', () => {
                 renderer.instance = undefined;
                 sandbox
                     .mock(animComp)
@@ -574,7 +570,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.setAnimationClip('');
             });
 
-            it('should get the animation component on the model instance', () => {
+            test('should get the animation component on the model instance', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
@@ -582,7 +578,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.setAnimationClip('');
             });
 
-            it('should set the clip id of the component', () => {
+            test('should set the clip id of the component', () => {
                 const id = 'my_clip_id';
                 sandbox
                     .mock(animComp)
@@ -593,7 +589,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         describe('toggleAnimation()', () => {
-            it('should do nothing if no model instance is present', () => {
+            test('should do nothing if no model instance is present', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
@@ -602,12 +598,12 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.toggleAnimation();
             });
 
-            it('should get the animation component on the model', () => {
+            test('should get the animation component on the model', () => {
                 sandbox.mock(renderer.instance).expects('getComponentByScriptId');
                 renderer.toggleAnimation();
             });
 
-            it('should do nothing if the animation component is missing', () => {
+            test('should do nothing if the animation component is missing', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
@@ -619,7 +615,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.toggleAnimation();
             });
 
-            it('should do nothing if the animation component does not have an asset assigned to it', () => {
+            test('should do nothing if the animation component does not have an asset assigned to it', () => {
                 animComp.asset = undefined;
                 sandbox
                     .mock(animAsset)
@@ -628,7 +624,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.toggleAnimation();
             });
 
-            it('should add an event listener for the animation asset to load', () => {
+            test('should add an event listener for the animation asset to load', () => {
                 sandbox
                     .mock(animAsset)
                     .expects('when')
@@ -636,8 +632,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.toggleAnimation();
             });
 
-            it('should add an event listener for the instance to load, after animation asset loads', () => {
-                sandbox.stub(animAsset, 'when').callsFake((event, cb) => cb());
+            test('should add an event listener for the instance to load, after animation asset loads', () => {
+                jest.spyOn(animAsset, 'when').mockImplementation((event, cb) => cb());
                 sandbox
                     .mock(renderer.instance)
                     .expects('when')
@@ -647,16 +643,16 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
             describe('after instance and animation asset loaded', () => {
                 beforeEach(() => {
-                    sandbox.stub(animAsset, 'when').callsFake((event, cb) => cb());
-                    sandbox.stub(renderer.instance, 'when').callsFake((event, cb) => cb());
+                    jest.spyOn(animAsset, 'when').mockImplementation((event, cb) => cb());
+                    jest.spyOn(renderer.instance, 'when').mockImplementation((event, cb) => cb());
                 });
 
-                it('should pause the animation, by default', () => {
+                test('should pause the animation, by default', () => {
                     sandbox.mock(animComp).expects('pause');
                     renderer.toggleAnimation();
                 });
 
-                it('should invoke play() on the component, to start the animation', () => {
+                test('should invoke play() on the component, to start the animation', () => {
                     sandbox.mock(animComp).expects('play');
                     renderer.toggleAnimation(true);
                 });
@@ -664,7 +660,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         describe('stopAnimation()', () => {
-            it('should do nothing if no model instance is present', () => {
+            test('should do nothing if no model instance is present', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
@@ -673,7 +669,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.stopAnimation();
             });
 
-            it('should get the animation component on the model', () => {
+            test('should get the animation component on the model', () => {
                 sandbox
                     .mock(renderer.instance)
                     .expects('getComponentByScriptId')
@@ -681,7 +677,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 renderer.stopAnimation();
             });
 
-            it('should invoke stop() on the animation and stop it from playing', () => {
+            test('should invoke stop() on the animation and stop it from playing', () => {
                 sandbox.mock(animComp).expects('stop');
                 renderer.stopAnimation();
             });
@@ -689,7 +685,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('onUnsupportedRepresentation()', () => {
-        it('should emit an error event', () => {
+        test('should emit an error event', () => {
             sandbox
                 .mock(renderer)
                 .expects('emit')
@@ -699,26 +695,26 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('addHelpersToScene()', () => {
-        it('should do nothing if no scene present', () => {
+        test('should do nothing if no scene present', () => {
             sandbox
                 .mock(renderer)
                 .expects('getScene')
-                .returns(undefined);
+                .mockReturnValue(undefined);
             renderer.addHelpersToScene();
-            expect(renderer.grid).to.not.exist;
+            expect(renderer.grid).not.toBeDefined();
         });
 
-        it('should create a GridHelper object', () => {
+        test('should create a GridHelper object', () => {
             renderer.addHelpersToScene();
-            expect(renderer.grid).to.be.an.instanceof(THREE.GridHelper);
+            expect(renderer.grid).toBeInstanceOf(THREE.GridHelper);
         });
 
-        it('should create an AxisHelper object', () => {
+        test('should create an AxisHelper object', () => {
             renderer.addHelpersToScene();
-            expect(renderer.axisDisplay).to.be.an.instanceof(THREE.AxisHelper);
+            expect(renderer.axisDisplay).toBeInstanceOf(THREE.AxisHelper);
         });
 
-        it('should add the GridHelper object and axis helper to the scene', () => {
+        test('should add the GridHelper object and axis helper to the scene', () => {
             sandbox
                 .mock(scene.runtimeData)
                 .expects('add')
@@ -733,35 +729,35 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         beforeEach(() => {
             grid = {
                 material: {
-                    dispose: sandbox.stub(),
+                    dispose: jest.fn(),
                 },
                 geometry: {
-                    dispose: sandbox.stub(),
+                    dispose: jest.fn(),
                 },
             };
             renderer.grid = grid;
             axis = {
                 material: {
-                    dispose: sandbox.stub(),
+                    dispose: jest.fn(),
                 },
                 geometry: {
-                    dispose: sandbox.stub(),
+                    dispose: jest.fn(),
                 },
             };
             renderer.axisDisplay = axis;
         });
 
-        it('should do nothing if there is no scene present', () => {
+        test('should do nothing if there is no scene present', () => {
             sandbox
                 .mock(renderer)
                 .expects('getScene')
-                .returns(undefined);
+                .mockReturnValue(undefined);
             renderer.cleanupHelpers();
-            expect(renderer.grid.material.dispose).to.not.be.called;
+            expect(renderer.grid.material.dispose).not.toBeCalled();
         });
 
-        it('should not remove the grid if there is none', () => {
-            sandbox.stub(renderer, 'getScene').returns(scene);
+        test('should not remove the grid if there is none', () => {
+            jest.spyOn(renderer, 'getScene').mockReturnValue(scene);
             renderer.grid = undefined;
             renderer.axisDisplay = undefined;
             sandbox
@@ -772,8 +768,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.cleanupHelpers();
         });
 
-        it('should remove the grid from the scene', () => {
-            sandbox.stub(renderer, 'getScene').returns(scene);
+        test('should remove the grid from the scene', () => {
+            jest.spyOn(renderer, 'getScene').mockReturnValue(scene);
             renderer.axisDisplay = undefined;
             sandbox
                 .mock(scene.runtimeData)
@@ -782,13 +778,13 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.cleanupHelpers();
         });
 
-        it('should dispose of the grid geometry and material', () => {
+        test('should dispose of the grid geometry and material', () => {
             renderer.cleanupHelpers();
-            expect(grid.geometry.dispose).to.be.called;
-            expect(grid.material.dispose).to.be.called;
+            expect(grid.geometry.dispose).toBeCalled();
+            expect(grid.material.dispose).toBeCalled();
         });
 
-        it('should not remove the axis helper if there is none', () => {
+        test('should not remove the axis helper if there is none', () => {
             renderer.grid = undefined;
             renderer.axisDisplay = undefined;
             sandbox
@@ -799,7 +795,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.cleanupHelpers();
         });
 
-        it('should remove the axis helper from the scene', () => {
+        test('should remove the axis helper from the scene', () => {
             renderer.grid = undefined;
             sandbox
                 .mock(scene.runtimeData)
@@ -808,10 +804,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.cleanupHelpers();
         });
 
-        it('should dispose of the axis helper geometry and material', () => {
+        test('should dispose of the axis helper geometry and material', () => {
             renderer.cleanupHelpers();
-            expect(axis.geometry.dispose).to.be.called;
-            expect(axis.material.dispose).to.be.called;
+            expect(axis.geometry.dispose).toBeCalled();
+            expect(axis.material.dispose).toBeCalled();
         });
     });
 
@@ -821,45 +817,45 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.axisDisplay = undefined;
         });
 
-        it('should toggle axis display visiblity', () => {
+        test('should toggle axis display visiblity', () => {
             renderer.axisDisplay = {
                 visible: true,
             };
             renderer.toggleHelpers();
-            expect(renderer.axisDisplay.visible).to.be.false;
+            expect(renderer.axisDisplay.visible).toBe(false);
         });
 
-        it('should set the axis display to flag passed in', () => {
+        test('should set the axis display to flag passed in', () => {
             renderer.axisDisplay = {
                 visible: undefined,
             };
             renderer.toggleHelpers(true);
-            expect(renderer.axisDisplay.visible).to.be.true;
+            expect(renderer.axisDisplay.visible).toBe(true);
         });
 
-        it('should tell the runtime to re-render', () => {
+        test('should tell the runtime to re-render', () => {
             renderer.axisDisplay = {
                 visible: true,
             };
             renderer.toggleHelpers();
-            expect(renderer.box3d.needsRender).to.be.true;
+            expect(renderer.box3d.needsRender).toBe(true);
         });
     });
 
     describe('cleanupScene()', () => {
-        it('should invoke cleanupHelpers()', () => {
+        test('should invoke cleanupHelpers()', () => {
             sandbox.mock(renderer).expects('cleanupHelpers');
             renderer.cleanupScene();
         });
 
-        it('should invoke resetSkeletons()', () => {
+        test('should invoke resetSkeletons()', () => {
             sandbox.mock(renderer).expects('resetSkeletons');
             renderer.cleanupScene();
         });
     });
 
     describe('resetSkeletons()', () => {
-        it('should do nothing if no box3d reference', () => {
+        test('should do nothing if no box3d reference', () => {
             renderer.box3d = undefined;
             sandbox
                 .mock(Box3D.globalEvents)
@@ -869,7 +865,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetSkeletons();
         });
 
-        it('should fire a global render mode change event', () => {
+        test('should fire a global render mode change event', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -880,7 +876,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('setRenderMode()', () => {
-        it('should do nothing if no box3d reference', () => {
+        test('should do nothing if no box3d reference', () => {
             renderer.box3d = undefined;
             sandbox
                 .mock(Box3D.globalEvents)
@@ -890,7 +886,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setRenderMode('test');
         });
 
-        it('should fire a global render mode change event', () => {
+        test('should fire a global render mode change event', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -911,35 +907,35 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             };
         });
 
-        it('should not throw error if no camera is present', () => {
+        test('should not throw error if no camera is present', () => {
             const mock = sandbox.mock(renderer);
-            mock.expects('getCamera').returns(undefined);
-            expect(renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE)).to.not.throw;
+            mock.expects('getCamera').mockReturnValue(undefined);
+            expect(renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE)).not.toThrow();
         });
 
-        it('should set the perspective properties of the camera if perspective mode is selected', done => {
-            sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
-                expect(prop).to.equal('cameraType');
-                expect(value).to.equal('perspective');
+        test('should set the perspective properties of the camera if perspective mode is selected', done => {
+            jest.spyOn(renderer, 'getCamera').mockReturnValue(camera);
+            jest.spyOn(camera, 'setProperty').mockImplementation((prop, value) => {
+                expect(prop).toBe('cameraType');
+                expect(value).toBe('perspective');
                 done();
             });
             renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
         });
 
-        it('should set the orthographic properties of the camera if ortho mode is selected', done => {
-            sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
-                expect(prop).to.equal('cameraType');
-                expect(value).to.equal('orthographic');
+        test('should set the orthographic properties of the camera if ortho mode is selected', done => {
+            jest.spyOn(renderer, 'getCamera').mockReturnValue(camera);
+            jest.spyOn(camera, 'setProperty').mockImplementation((prop, value) => {
+                expect(prop).toBe('cameraType');
+                expect(value).toBe('orthographic');
                 done();
             });
             renderer.setCameraProjection(CAMERA_PROJECTION_ORTHOGRAPHIC);
         });
 
-        it('should do nothing for unrecognized projection type', () => {
-            sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(renderer, 'resetView');
+        test('should do nothing for unrecognized projection type', () => {
+            jest.spyOn(renderer, 'getCamera').mockReturnValue(camera);
+            jest.spyOn(renderer, 'resetView').mockImplementation();
             sandbox
                 .mock(camera)
                 .expects('setProperty')
@@ -954,12 +950,12 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             center = new THREE.Vector3();
             renderer.instance = {
                 trigger: () => {},
-                getCenter: sandbox.stub().returns(center),
+                getCenter: jest.fn().mockReturnValue(center),
                 destroy: () => {},
             };
         });
 
-        it('should do nothing if there is no model instance reference', () => {
+        test('should do nothing if there is no model instance reference', () => {
             sandbox
                 .mock(renderer.box3d)
                 .expects('trigger')
@@ -969,7 +965,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.rotateOnAxis({ x: -1 });
         });
 
-        it('should do nothing if there is no Box3D runtime reference', () => {
+        test('should do nothing if there is no Box3D runtime reference', () => {
             sandbox
                 .mock(renderer.instance)
                 .expects('trigger')
@@ -979,7 +975,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.rotateOnAxis({ x: -1 });
         });
 
-        it('should trigger a "rotate_on_axis" event on the runtime', () => {
+        test('should trigger a "rotate_on_axis" event on the runtime', () => {
             const axis = { x: -1, y: 0 };
             sandbox
                 .mock(renderer.instance)
@@ -990,13 +986,13 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('setAxisRotation()', () => {
-        it('should do nothing if no instance available', () => {
+        test('should do nothing if no instance available', () => {
             renderer.instance = undefined;
-            sandbox.stub(renderer.box3d, 'trigger');
-            expect(renderer.setAxisRotation('-x', '-y', false)).to.not.throw;
+            jest.spyOn(renderer.box3d, 'trigger').mockImplementation();
+            expect(renderer.setAxisRotation('-x', '-y', false)).not.toThrow();
         });
 
-        it('should trigger a "set_axes_orientation" event on the runtime instance', () => {
+        test('should trigger a "set_axes_orientation" event on the runtime instance', () => {
             renderer.instance = { trigger: () => {} };
             sandbox
                 .mock(renderer.instance)
@@ -1007,7 +1003,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('setSkeletonsVisible()', () => {
-        it('should do nothing if no box3d reference', () => {
+        test('should do nothing if no box3d reference', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -1016,7 +1012,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setSkeletonsVisible(false);
         });
 
-        it('should fire a global Box3D event for skeleton visibility', () => {
+        test('should fire a global Box3D event for skeleton visibility', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -1026,7 +1022,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('setWireframesVisible()', () => {
-        it('should do nothing if no box3d reference', () => {
+        test('should do nothing if no box3d reference', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -1035,7 +1031,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setWireframesVisible(false);
         });
 
-        it('should trigger a global Box3D event for wireframe visibility change', () => {
+        test('should trigger a global Box3D event for wireframe visibility change', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -1045,7 +1041,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     });
 
     describe('setGridVisible()', () => {
-        it('should do nothing if no box3d reference', () => {
+        test('should do nothing if no box3d reference', () => {
             sandbox
                 .mock(Box3D.globalEvents)
                 .expects('trigger')
@@ -1054,19 +1050,19 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.setGridVisible(false);
         });
 
-        it('should cause a change in grid visibility', () => {
+        test('should cause a change in grid visibility', () => {
             renderer.grid = {
                 visible: false,
             };
             renderer.setGridVisible(true);
-            expect(renderer.grid.visible).to.equal(true);
+            expect(renderer.grid.visible).toBe(true);
             // Get rid of grid to prevent dispose calls during shutdown.
             renderer.grid = undefined;
         });
     });
 
     describe('enableVr()', () => {
-        it('should do nothing if vr is already enabled', () => {
+        test('should do nothing if vr is already enabled', () => {
             sandbox
                 .mock(renderer.box3d)
                 .expects('getVrDisplay')
@@ -1076,7 +1072,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         // For devices like cardboard
-        it('should add listener to runtime update event, if no positional tracking capabilities on vr device', () => {
+        test('should add listener to runtime update event, if no positional tracking capabilities on vr device', () => {
             sandbox
                 .mock(renderer.box3d)
                 .expects('on')
@@ -1085,7 +1081,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         // For devices like Oculus Rift and HTC Vive
-        it('should enable the grid to be visible if the vr device has positional tracking capabilities', () => {
+        test('should enable the grid to be visible if the vr device has positional tracking capabilities', () => {
             const device = {
                 capabilities: {
                     hasPosition: true,
@@ -1094,19 +1090,19 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.grid = {
                 visible: false,
             };
-            sandbox.stub(renderer.box3d, 'getVrDisplay').returns(device);
+            jest.spyOn(renderer.box3d, 'getVrDisplay').mockReturnValue(device);
             renderer.enableVr();
-            expect(renderer.grid.visible).to.be.true;
+            expect(renderer.grid.visible).toBe(true);
             renderer.grid = undefined;
         });
     });
 
     describe('onDisableVr()', () => {
         beforeEach(() => {
-            sandbox.stub(Box3DRenderer.prototype, 'onDisableVr');
+            jest.spyOn(Box3DRenderer.prototype, 'onDisableVr');
         });
 
-        it('should stop listening to engine updates if no device position available', () => {
+        test('should stop listening to engine updates if no device position available', () => {
             renderer.vrDeviceHasPosition = false;
             sandbox
                 .mock(renderer.box3d)
@@ -1144,30 +1140,30 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             sandbox
                 .mock(renderer)
                 .expects('getCamera')
-                .returns(camera);
+                .mockReturnValue(camera);
         });
 
-        it('should do nothing if there is no orbit camera component available', () => {
-            sandbox.stub(camera, 'getComponentByScriptId').returns(undefined);
+        test('should do nothing if there is no orbit camera component available', () => {
+            jest.spyOn(camera, 'getComponentByScriptId').mockReturnValue(undefined);
             position.expects('set').never();
             renderer.updateNonPositionalVrControls();
         });
 
-        it('should set the position of the camera to slightly away from the origin', () => {
+        test('should set the position of the camera to slightly away from the origin', () => {
             position.expects('set').withArgs(0, 0, orbitDist);
             renderer.updateNonPositionalVrControls();
         });
 
-        it('should rotate the camera to match the camera orientation', () => {
+        test('should rotate the camera to match the camera orientation', () => {
             position.expects('applyQuaternion').withArgs(quaternion);
             renderer.updateNonPositionalVrControls();
         });
     });
 
     describe('initVrGamepadControls()', () => {
-        it('should create a new instance of Model3DVrControls', () => {
+        test('should create a new instance of Model3DVrControls', () => {
             renderer.initVrGamepadControls();
-            expect(renderer.vrControls).to.be.an.instanceof(Model3dVrControls);
+            expect(renderer.vrControls).toBeInstanceOf(Model3dVrControls);
         });
     });
 });

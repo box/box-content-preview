@@ -46,7 +46,7 @@ const SCROLL_END_TIMEOUT = 500;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let docBase;
 let containerEl;
 let rootEl;
@@ -67,24 +67,22 @@ const STANDARD_HEADERS = [
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
         containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         stubs = {};
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(global, 'pdfjsLib', { value: { GlobalWorkerOptions: {} }, configurable: true });
+        Object.defineProperty(global, 'pdfjsViewer', { value: {}, configurable: true });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
 
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
         stubs.api = new Api();
-        stubs.classListAdd = sandbox.stub(rootEl.classList, 'add');
-        stubs.classListRemove = sandbox.stub(rootEl.classList, 'remove');
-        stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-        stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => 'asset');
+        stubs.classListAdd = jest.spyOn(rootEl.classList, 'add').mockImplementation();
+        stubs.classListRemove = jest.spyOn(rootEl.classList, 'remove').mockImplementation();
+        stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockImplementation();
+        stubs.urlCreator = jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => 'asset');
     });
 
     afterEach(() => {
@@ -105,7 +103,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should correctly set a doc element, viewer element, thumbnails sidebar element, and a timeout', () => {
+        test('should correctly set a doc element, viewer element, thumbnails sidebar element, and a timeout', () => {
             docBase = new DocBaseViewer({
                 cache: {
                     set: () => {},
@@ -130,19 +128,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.rootEl = rootEl;
             docBase.setup();
 
-            expect(docBase.docEl.classList.contains('bp-doc')).to.be.true;
-            expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
+            expect(docBase.docEl.classList.contains('bp-doc')).toBe(true);
+            expect(docBase.docEl.parentNode).toBe(docBase.containerEl);
 
-            expect(docBase.viewerEl.classList.contains('pdfViewer')).to.be.true;
-            expect(docBase.viewerEl.parentNode).to.equal(docBase.docEl);
+            expect(docBase.viewerEl.classList.contains('pdfViewer')).toBe(true);
+            expect(docBase.viewerEl.parentNode).toBe(docBase.docEl);
 
-            expect(docBase.thumbnailsSidebarEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER)).to.be.true;
-            expect(docBase.thumbnailsSidebarEl.parentNode).to.equal(docBase.containerEl.parentNode);
+            expect(docBase.thumbnailsSidebarEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER)).toBe(true);
+            expect(docBase.thumbnailsSidebarEl.parentNode).toBe(docBase.containerEl.parentNode);
 
-            expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
+            expect(docBase.loadTimeout).toBe(LOAD_TIMEOUT_MS);
         });
 
-        it('should not set a thumbnails sidebar element if the option is not enabled', () => {
+        test('should not set a thumbnails sidebar element if the option is not enabled', () => {
             docBase = new DocBaseViewer({
                 cache: {
                     set: () => {},
@@ -166,10 +164,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.rootEl = rootEl;
             docBase.setup();
 
-            expect(docBase.thumbnailsSidebarEl).to.be.undefined;
+            expect(docBase.thumbnailsSidebarEl).toBeUndefined();
         });
 
-        it('should default the thumbnails open if thumbnails toggle state is open', () => {
+        test('should default the thumbnails open if thumbnails toggle state is open', () => {
             docBase = new DocBaseViewer({
                 cache: {
                     set: () => {},
@@ -189,13 +187,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 },
                 enableThumbnailsSidebar: true,
             });
-            sandbox.stub(docBase, 'getCachedThumbnailsToggledState').returns(true);
+            jest.spyOn(docBase, 'getCachedThumbnailsToggledState').mockReturnValue(true);
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
             docBase.setup();
         });
 
-        it('should default the thumbnails closed if thumbnails toggle state is closed', () => {
+        test('should default the thumbnails closed if thumbnails toggle state is closed', () => {
             docBase = new DocBaseViewer({
                 cache: {
                     set: () => {},
@@ -215,12 +213,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 },
                 enableThumbnailsSidebar: true,
             });
-            sandbox.stub(docBase, 'getCachedThumbnailsToggledState').returns(false);
+            jest.spyOn(docBase, 'getCachedThumbnailsToggledState').mockReturnValue(false);
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
             docBase.setup();
 
-            expect(stubs.classListAdd).not.to.have.been.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            expect(stubs.classListAdd).not.toBeCalledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
         });
     });
 
@@ -246,7 +244,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 },
                 enableThumbnailsSidebar: true,
             });
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
 
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
@@ -255,85 +253,85 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('destroy()', () => {
-            it('should unbind listeners and clear the print blob', () => {
-                const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
-                const unbindEventBusListenersStub = sandbox.stub(docBase, 'unbindEventBusListeners');
+            test('should unbind listeners and clear the print blob', () => {
+                const unbindDomStub = jest.spyOn(docBase, 'unbindDOMListeners').mockImplementation();
+                const unbindEventBusStub = jest.spyOn(docBase, 'unbindEventBusListeners').mockImplementation();
                 docBase.printURL = 'someblob';
-                sandbox.stub(URL, 'revokeObjectURL');
+                jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
 
                 docBase.destroy();
-                expect(unbindDOMListenersStub).to.be.called;
-                expect(unbindEventBusListenersStub).to.be.called;
-                expect(docBase.printBlob).to.equal(null);
-                expect(URL.revokeObjectURL).to.be.calledWith(docBase.printURL);
+                expect(unbindDomStub).toBeCalled();
+                expect(unbindEventBusStub).toBeCalled();
+                expect(docBase.printBlob).toBeNull();
+                expect(URL.revokeObjectURL).toBeCalledWith(docBase.printURL);
             });
 
-            it('should destroy the controls', () => {
+            test('should destroy the controls', () => {
                 docBase.controls = {
-                    destroy: sandbox.stub(),
+                    destroy: jest.fn(),
                 };
 
                 docBase.destroy();
-                expect(docBase.controls.destroy).to.be.called;
+                expect(docBase.controls.destroy).toBeCalled();
             });
 
-            it('should destroy the find bar', () => {
+            test('should destroy the find bar', () => {
                 docBase.findBar = {
-                    destroy: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    destroy: jest.fn(),
+                    removeListener: jest.fn(),
                 };
 
                 docBase.destroy();
-                expect(docBase.findBar.destroy).to.be.called;
+                expect(docBase.findBar.destroy).toBeCalled();
             });
 
-            it('should clean up the PDF network requests', () => {
+            test('should clean up the PDF network requests', () => {
                 docBase.pdfLoadingTask = {
-                    destroy: sandbox.stub(),
+                    destroy: jest.fn(),
                 };
 
                 docBase.destroy();
-                expect(docBase.pdfLoadingTask.destroy).to.be.called;
+                expect(docBase.pdfLoadingTask.destroy).toBeCalled();
             });
 
-            it('should clean up the viewer and the document object', () => {
+            test('should clean up the viewer and the document object', () => {
                 docBase.pdfViewer = {
-                    cleanup: sandbox.stub(),
+                    cleanup: jest.fn(),
                     pdfDocument: {
-                        destroy: sandbox.stub(),
+                        destroy: jest.fn(),
                     },
                 };
 
                 docBase.destroy();
-                expect(docBase.pdfViewer.cleanup).to.be.called;
-                expect(docBase.pdfViewer.pdfDocument.destroy).to.be.called;
+                expect(docBase.pdfViewer.cleanup).toBeCalled();
+                expect(docBase.pdfViewer.pdfDocument.destroy).toBeCalled();
             });
 
-            it('should clean up the thumbnails sidebar instance and DOM element', () => {
+            test('should clean up the thumbnails sidebar instance and DOM element', () => {
                 docBase.thumbnailsSidebar = {
-                    destroy: sandbox.stub(),
+                    destroy: jest.fn(),
                 };
                 const thumbnailsSidebarEl = {
-                    remove: sandbox.stub(),
+                    remove: jest.fn(),
                 };
                 docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
 
                 docBase.destroy();
-                expect(docBase.thumbnailsSidebar.destroy).to.be.called;
-                expect(thumbnailsSidebarEl.remove).to.be.called;
-                expect(stubs.classListRemove).to.be.called;
+                expect(docBase.thumbnailsSidebar.destroy).toBeCalled();
+                expect(thumbnailsSidebarEl.remove).toBeCalled();
+                expect(stubs.classListRemove).toBeCalled();
             });
         });
 
         describe('prefetch()', () => {
-            it('should prefetch assets if assets is true', () => {
-                sandbox.stub(docBase, 'prefetchAssets');
-                sandbox.stub(stubs.api, 'get');
+            test('should prefetch assets if assets is true', () => {
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+                jest.spyOn(stubs.api, 'get').mockImplementation();
                 docBase.prefetch({ assets: true, preload: false, content: false });
-                expect(docBase.prefetchAssets).to.be.called;
+                expect(docBase.prefetchAssets).toBeCalled();
             });
 
-            it('should prefetch preload if preload is true and representation is ready', () => {
+            test('should prefetch preload if preload is true and representation is ready', () => {
                 const template = 'someTemplate';
                 const preloadRep = {
                     content: {
@@ -343,16 +341,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         state: 'success',
                     },
                 };
-                sandbox.stub(stubs.api, 'get');
-                sandbox.stub(file, 'getRepresentation').returns(preloadRep);
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+                jest.spyOn(stubs.api, 'get').mockImplementation();
+                jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).to.be.calledWith(template);
+                expect(docBase.createContentUrlWithAuthParams).toBeCalledWith(template);
             });
 
-            it('should not prefetch preload if preload is true and representation is not ready', () => {
+            test('should not prefetch preload if preload is true and representation is not ready', () => {
                 const template = 'someTemplate';
                 const preloadRep = {
                     content: {
@@ -362,30 +360,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         state: 'pending',
                     },
                 };
-                sandbox.stub(stubs.api, 'get');
-                sandbox.stub(file, 'getRepresentation').returns(preloadRep);
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+                jest.spyOn(stubs.api, 'get');
+                jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams');
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).to.not.be.calledWith(template);
+                expect(docBase.createContentUrlWithAuthParams).not.toBeCalledWith(template);
             });
 
-            it('should not prefetch preload if file is watermarked', () => {
+            test('should not prefetch preload if file is watermarked', () => {
                 docBase.options.file.watermark_info = {
                     is_watermarked: true,
                 };
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).to.not.be.called;
+                expect(docBase.createContentUrlWithAuthParams).not.toBeCalled();
             });
 
-            it('should prefetch content if content is true and representation is ready', () => {
+            test('should prefetch content if content is true and representation is ready', () => {
                 const contentUrl = 'someContentUrl';
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(contentUrl);
-                sandbox.stub(docBase, 'isRepresentationReady').returns(true);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+                jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
                 sandbox
                     .mock(stubs.api)
                     .expects('get')
@@ -394,8 +392,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
 
-            it('should not prefetch content if content is true but representation is not ready', () => {
-                sandbox.stub(docBase, 'isRepresentationReady').returns(false);
+            test('should not prefetch content if content is true but representation is not ready', () => {
+                jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(false);
                 sandbox
                     .mock(stubs.api)
                     .expects('get')
@@ -403,7 +401,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
 
-            it('should not prefetch content if file is watermarked', () => {
+            test('should not prefetch content if file is watermarked', () => {
                 docBase.options.file.watermark_info = {
                     is_watermarked: true,
                 };
@@ -420,8 +418,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.preloader = new DocPreloader();
             });
 
-            it('should not do anything if there is a previously cached page', () => {
-                sandbox.stub(docBase, 'getCachedPage').returns(2);
+            test('should not do anything if there is a previously cached page', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(2);
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -430,8 +428,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if startAt is not page 1', () => {
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+            test('should not do anything if startAt is not page 1', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 docBase.startPageNum = 3;
                 sandbox
                     .mock(docBase.preloader)
@@ -441,18 +439,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if file is watermarked', () => {
+            test('should not do anything if file is watermarked', () => {
                 docBase.options.file = {
                     watermark_info: {
                         is_watermarked: true,
                     },
                 };
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(file, 'getRepresentation').returns({});
+                jest.spyOn(file, 'getRepresentation').mockReturnValue({});
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -461,14 +459,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if no preload rep is found', () => {
+            test('should not do anything if no preload rep is found', () => {
                 docBase.options.file = {};
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(file, 'getRepresentation').returns(null);
+                jest.spyOn(file, 'getRepresentation').mockReturnValue(null);
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -477,14 +475,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if preload option is not set', () => {
+            test('should not do anything if preload option is not set', () => {
                 docBase.options.file = {};
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(false);
-                sandbox.stub(file, 'getRepresentation').returns(null);
+                jest.spyOn(file, 'getRepresentation').mockReturnValue(null);
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -493,13 +491,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if preload rep has an error', () => {
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+            test('should not do anything if preload rep has an error', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(file, 'getRepresentation').returns({
+                jest.spyOn(file, 'getRepresentation').mockReturnValue({
                     status: {
                         state: STATUS_ERROR,
                     },
@@ -512,13 +510,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should not do anything if preload rep is pending', () => {
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
+            test('should not do anything if preload rep is pending', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(file, 'getRepresentation').returns({
+                jest.spyOn(file, 'getRepresentation').mockReturnValue({
                     status: {
                         state: STATUS_PENDING,
                     },
@@ -531,11 +529,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should show preload with correct authed URL', () => {
+            test('should show preload with correct authed URL', () => {
                 const preloadUrl = 'someUrl';
                 docBase.options.file = {};
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
-                sandbox.stub(file, 'getRepresentation').returns({
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
+                jest.spyOn(file, 'getRepresentation').mockReturnValue({
                     content: {
                         url_template: '',
                     },
@@ -547,7 +545,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(preloadUrl);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -556,11 +554,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            it('should start preload timer for metrics', () => {
+            test('should start preload timer for metrics', () => {
                 const preloadUrl = 'someUrl';
                 docBase.options.file = {};
-                sandbox.stub(docBase, 'getCachedPage').returns(1);
-                sandbox.stub(file, 'getRepresentation').returns({
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
+                jest.spyOn(file, 'getRepresentation').mockReturnValue({
                     content: {
                         url_template: '',
                     },
@@ -572,14 +570,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(preloadUrl);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
 
                 sandbox.mock(docBase.preloader).expects('showPreload');
-                const startPreloadTimerStub = sandbox.stub(docBase, 'startPreloadTimer');
+                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
 
                 docBase.showPreload();
 
-                expect(startPreloadTimerStub).to.be.called;
+                expect(startPreloadTimerStub).toBeCalled();
             });
         });
 
@@ -588,7 +586,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.preloader = new DocPreloader();
             });
 
-            it('should hide the preload', () => {
+            test('should hide the preload', () => {
                 sandbox.mock(docBase.preloader).expects('hidePreload');
                 docBase.hidePreload();
             });
@@ -601,196 +599,191 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
             });
 
-            it('should load a document', () => {
-                sandbox.stub(stubs.api, 'get');
-                sandbox.stub(docBase, 'setup');
+            test('should load a document', () => {
+                jest.spyOn(stubs.api, 'get').mockImplementation();
+                jest.spyOn(docBase, 'setup').mockImplementation();
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
-                sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-                sandbox.stub(docBase, 'handleAssetAndRepLoad');
-                sandbox.stub(docBase, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-                sandbox.stub(docBase, 'loadAssets');
-                sandbox.stub(docBase, 'loadBoxAnnotations');
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
+                jest.spyOn(docBase, 'handleAssetAndRepLoad').mockImplementation();
+                jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+                jest.spyOn(docBase, 'loadAssets').mockImplementation();
+                jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
 
                 return docBase.load().then(() => {
-                    expect(docBase.loadAssets).to.be.called;
-                    expect(docBase.setup).not.to.be.called;
-                    expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
-                    expect(docBase.handleAssetAndRepLoad).to.be.called;
+                    expect(docBase.loadAssets).toBeCalled();
+                    expect(docBase.setup).not.toBeCalled();
+                    expect(docBase.createContentUrlWithAuthParams).toBeCalledWith('foo');
+                    expect(docBase.handleAssetAndRepLoad).toBeCalled();
                 });
             });
         });
 
         describe('handleAssetAndRepLoad', () => {
-            it('should setup pdfjs, init viewer, print, and find', done => {
+            test('should setup pdfjs, init viewer, print, and find', () => {
                 const url = 'foo';
                 docBase.pdfUrl = url;
                 docBase.pdfViewer = {
                     currentScale: 1,
                 };
 
-                const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
-                const initViewerStub = sandbox.stub(docBase, 'initViewer');
-                const initPrintStub = sandbox.stub(docBase, 'initPrint');
-                const initFindStub = sandbox.stub(docBase, 'initFind');
-                const loadBoxAnnotations = sandbox.stub(docBase, 'loadBoxAnnotations').returns(Promise.resolve());
-                const createAnnotator = sandbox.stub(docBase, 'createAnnotator').returns(
-                    new Promise(resolve => {
-                        resolve();
-                        done();
-                    }),
-                );
+                const setupPdfjsStub = jest.spyOn(docBase, 'setupPdfjs').mockImplementation();
+                const initViewerStub = jest.spyOn(docBase, 'initViewer').mockImplementation();
+                const initPrintStub = jest.spyOn(docBase, 'initPrint').mockImplementation();
+                const initFindStub = jest.spyOn(docBase, 'initFind').mockImplementation();
+                const loadBoxAnnotations = jest.spyOn(docBase, 'loadBoxAnnotations').mockResolvedValue();
 
                 docBase.handleAssetAndRepLoad();
 
-                expect(setupPdfjsStub).to.be.called;
-                expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
-                expect(initPrintStub).to.be.called;
-                expect(initFindStub).to.be.called;
-                expect(loadBoxAnnotations).to.be.called;
-                expect(createAnnotator).to.be.called;
+                expect(setupPdfjsStub).toBeCalled();
+                expect(initViewerStub).toBeCalledWith(docBase.pdfUrl);
+                expect(initPrintStub).toBeCalled();
+                expect(initFindStub).toBeCalled();
+                expect(loadBoxAnnotations).toBeCalled();
             });
         });
 
         describe('initFind()', () => {
             beforeEach(() => {
                 docBase.pdfEventBus = {
-                    off: sandbox.stub(),
-                    on: sandbox.stub(),
+                    off: jest.fn(),
+                    on: jest.fn(),
                 };
                 docBase.pdfFindController = {
-                    execute: sandbox.stub(),
+                    execute: jest.fn(),
                 };
                 docBase.pdfViewer = {
-                    setFindController: sandbox.stub(),
+                    setFindController: jest.fn(),
                 };
             });
 
-            it('should not set find bar if viewer option disableFindBar is true', () => {
+            test('should not set find bar if viewer option disableFindBar is true', () => {
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('disableFindBar')
                     .returns(true);
                 docBase.initFind();
-                expect(docBase.findBar).to.be.undefined;
+                expect(docBase.findBar).toBeUndefined();
             });
 
-            it('should not set find bar if the user does not have download permissions', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+            test('should not set find bar if the user does not have download permissions', () => {
+                stubs.checkPermission.mockReturnValueOnce(false);
                 docBase.initFind();
-                expect(docBase.findBar).to.be.undefined;
+                expect(docBase.findBar).toBeUndefined();
             });
 
-            it('should set findBar to a function if viewer option disableFindBar is not set', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            test('should set findBar to a function if viewer option disableFindBar is not set', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
                 docBase.initFind();
-                expect(docBase.findBar).to.be.instanceof(DocFindBar);
+                expect(docBase.findBar).toBeInstanceOf(DocFindBar);
             });
         });
 
         describe('find()', () => {
             beforeEach(() => {
                 docBase.findBar = {
-                    setFindFieldElValue: sandbox.stub(),
-                    findFieldHandler: sandbox.stub(),
-                    open: sandbox.stub(),
-                    destroy: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    setFindFieldElValue: jest.fn(),
+                    findFieldHandler: jest.fn(),
+                    open: jest.fn(),
+                    destroy: jest.fn(),
+                    removeListener: jest.fn(),
                 };
 
-                sandbox.stub(docBase, 'setPage');
+                jest.spyOn(docBase, 'setPage').mockImplementation();
             });
 
-            it('should do nothing if there is no findbar', () => {
+            test('should do nothing if there is no findbar', () => {
                 docBase.findBar = undefined;
 
                 docBase.find('hi');
 
-                expect(docBase.setPage).to.not.be.called;
+                expect(docBase.setPage).not.toBeCalled();
             });
 
-            it('should set the search value and handle a find', () => {
+            test('should set the search value and handle a find', () => {
                 docBase.find('hi');
 
-                expect(docBase.setPage).to.be.calledWith(1);
-                expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
-                expect(docBase.findBar.findFieldHandler).to.be.called;
+                expect(docBase.setPage).toBeCalledWith(1);
+                expect(docBase.findBar.setFindFieldElValue).toBeCalledWith('hi');
+                expect(docBase.findBar.findFieldHandler).toBeCalled();
             });
 
-            it('should open the findbar if the openFindBar flag is true', () => {
+            test('should open the findbar if the openFindBar flag is true', () => {
                 docBase.find('hi', true);
 
-                expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
-                expect(docBase.findBar.findFieldHandler).to.be.called;
-                expect(docBase.findBar.open).to.be.called;
+                expect(docBase.findBar.setFindFieldElValue).toBeCalledWith('hi');
+                expect(docBase.findBar.findFieldHandler).toBeCalled();
+                expect(docBase.findBar.open).toBeCalled();
             });
         });
 
         describe('browserPrint()', () => {
             beforeEach(() => {
-                stubs.emit = sandbox.stub(docBase, 'emit');
-                stubs.createObject = sandbox.stub(URL, 'createObjectURL').returns('test');
-                stubs.open = sandbox.stub(window, 'open').returns(false);
-                stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-                stubs.printResult = { print: sandbox.stub(), addEventListener: sandbox.stub() };
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                stubs.createObject = jest.spyOn(URL, 'createObjectURL').mockReturnValue('test');
+                stubs.open = jest.spyOn(window, 'open').mockReturnValue(false);
+                stubs.browser = jest.spyOn(Browser, 'getName').mockReturnValue('Chrome');
+                stubs.printResult = { print: jest.fn(), addEventListener: jest.fn() };
                 docBase.printBlob = true;
-                window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
+                window.navigator.msSaveOrOpenBlob = jest.fn(() => true);
             });
 
-            it('should use the open or save dialog if on IE or Edge', () => {
+            test('should use the open or save dialog if on IE or Edge', () => {
                 docBase.browserPrint();
-                expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-                expect(stubs.emit).to.be.called;
+                expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+                expect(stubs.emit).toBeCalled();
             });
 
-            it('should use the open or save dialog if on IE or Edge and emit a message', () => {
+            test('should use the open or save dialog if on IE or Edge and emit a message', () => {
                 docBase.browserPrint();
-                expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-                expect(stubs.emit).to.be.called;
+                expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+                expect(stubs.emit).toBeCalled();
             });
 
-            it('should emit an error message if the print result fails on IE or Edge', () => {
-                window.navigator.msSaveOrOpenBlob.returns(false);
+            test('should emit an error message if the print result fails on IE or Edge', () => {
+                window.navigator.msSaveOrOpenBlob.mockReturnValue(false);
 
                 docBase.browserPrint();
-                expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-                expect(stubs.emit).to.be.calledWith('printerror');
+                expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+                expect(stubs.emit).toBeCalledWith('printerror');
             });
 
-            it('should open the pdf in a new tab if not on IE or Edge', () => {
+            test('should open the pdf in a new tab if not on IE or Edge', () => {
                 window.navigator.msSaveOrOpenBlob = undefined;
 
                 docBase.browserPrint();
-                expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-                expect(stubs.open).to.be.calledWith(docBase.printURL);
-                expect(stubs.emit).to.be.called;
+                expect(stubs.createObject).toBeCalledWith(docBase.printBlob);
+                expect(stubs.open).toBeCalledWith(docBase.printURL);
+                expect(stubs.emit).toBeCalled();
             });
 
-            it('should print on load in the chrome browser', () => {
+            test('should print on load in the chrome browser', () => {
                 window.navigator.msSaveOrOpenBlob = undefined;
-                stubs.open.returns(stubs.printResult);
+                stubs.open.mockReturnValue(stubs.printResult);
 
                 docBase.browserPrint();
-                expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-                expect(stubs.open).to.be.calledWith(docBase.printURL);
-                expect(stubs.browser).to.be.called;
-                expect(stubs.emit).to.be.called;
+                expect(stubs.createObject).toBeCalledWith(docBase.printBlob);
+                expect(stubs.open).toBeCalledWith(docBase.printURL);
+                expect(stubs.browser).toBeCalled();
+                expect(stubs.emit).toBeCalled();
             });
 
-            it('should use a timeout in safari', () => {
-                let clock = sinon.useFakeTimers();
+            test('should use a timeout in safari', () => {
+                jest.useFakeTimers();
+
                 window.navigator.msSaveOrOpenBlob = undefined;
-                stubs.open.returns(stubs.printResult);
-                stubs.browser.returns('Safari');
+                stubs.open.mockReturnValue(stubs.printResult);
+                stubs.browser.mockReturnValue('Safari');
 
                 docBase.browserPrint();
-                clock.tick(PRINT_TIMEOUT_MS + 1);
-                expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-                expect(stubs.open).to.be.called;
-                expect(stubs.browser).to.be.called;
-                expect(stubs.printResult.print).to.be.called;
-                expect(stubs.emit).to.be.called;
+                jest.advanceTimersByTime(PRINT_TIMEOUT_MS + 1);
 
-                clock = undefined;
+                expect(stubs.createObject).toBeCalledWith(docBase.printBlob);
+                expect(stubs.open).toBeCalled();
+                expect(stubs.browser).toBeCalled();
+                expect(stubs.printResult.print).toBeCalled();
+                expect(stubs.emit).toBeCalled();
+
+                jest.clearAllTimers();
             });
         });
 
@@ -799,32 +792,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentPageNumber: 1,
                 };
-                stubs.cachePage = sandbox.stub(docBase, 'cachePage');
+                stubs.cachePage = jest.spyOn(docBase, 'cachePage').mockImplementation();
+                stubs.setPage = jest.spyOn(docBase, 'setPage');
             });
 
             describe('previousPage()', () => {
-                it('should call setPage', () => {
-                    const setPageStub = sandbox.stub(docBase, 'setPage');
-
+                test('should call setPage', () => {
                     docBase.previousPage();
-                    expect(setPageStub).to.be.calledWith(0);
+                    expect(stubs.setPage).toBeCalledWith(0);
                 });
             });
 
             describe('nextPage()', () => {
-                it('should call setPage', () => {
+                test('should call setPage', () => {
                     docBase.pdfViewer = {
                         currentPageNumber: 0,
                     };
-                    const setPageStub = sandbox.stub(docBase, 'setPage');
 
                     docBase.nextPage();
-                    expect(setPageStub).to.be.calledWith(1);
+                    expect(stubs.setPage).toBeCalledWith(1);
                 });
             });
 
             describe('setPage()', () => {
-                it("should set the pdfViewer's page and cache it", () => {
+                test("should set the pdfViewer's page and cache it", () => {
                     docBase.pdfViewer = {
                         currentPageNumber: 1,
                         pagesCount: 3,
@@ -832,11 +823,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     docBase.setPage(2);
 
-                    expect(docBase.pdfViewer.currentPageNumber).to.equal(2);
-                    expect(stubs.cachePage).to.be.called;
+                    expect(docBase.pdfViewer.currentPageNumber).toBe(2);
+                    expect(stubs.cachePage).toBeCalled();
                 });
 
-                it('should not do anything if setting an invalid page', () => {
+                test('should not do anything if setting an invalid page', () => {
                     docBase.pdfViewer = {
                         currentPageNumber: 1,
                         pagesCount: 3,
@@ -845,24 +836,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     // Too low
                     docBase.setPage(0);
 
-                    expect(docBase.pdfViewer.currentPageNumber).to.equal(1);
-                    expect(stubs.cachePage).to.not.be.called;
+                    expect(docBase.pdfViewer.currentPageNumber).toBe(1);
+                    expect(stubs.cachePage).not.toBeCalled();
 
                     // Too high
                     docBase.setPage(4);
-                    expect(docBase.pdfViewer.currentPageNumber).to.equal(1);
-                    expect(stubs.cachePage).to.not.be.called;
+                    expect(docBase.pdfViewer.currentPageNumber).toBe(1);
+                    expect(stubs.cachePage).not.toBeCalled();
                 });
             });
         });
 
         describe('getCachedPage()', () => {
             beforeEach(() => {
-                stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
-                stubs.get = sandbox.stub(docBase.cache, 'get').returns({ 0: 10 });
+                stubs.has = jest.spyOn(docBase.cache, 'has').mockReturnValue(true);
+                stubs.get = jest.spyOn(docBase.cache, 'get').mockReturnValue({ 0: 10 });
             });
 
-            it('should return the cached current page if present', () => {
+            test('should return the cached current page if present', () => {
                 docBase.options = {
                     file: {
                         id: 0,
@@ -870,17 +861,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 const page = docBase.getCachedPage();
-                expect(stubs.has).to.be.called;
-                expect(stubs.get).to.be.called;
-                expect(page).to.equal(10);
+                expect(stubs.has).toBeCalled();
+                expect(stubs.get).toBeCalled();
+                expect(page).toBe(10);
             });
 
-            it('should return the first page if the current page is not cached', () => {
-                stubs.has.returns(false);
+            test('should return the first page if the current page is not cached', () => {
+                stubs.has.mockReturnValue(false);
 
                 const page = docBase.getCachedPage();
-                expect(stubs.has).to.be.called;
-                expect(page).to.equal(1);
+                expect(stubs.has).toBeCalled();
+                expect(page).toBe(1);
             });
         });
 
@@ -891,25 +882,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         id: 0,
                     },
                 };
-                stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
-                stubs.get = sandbox.stub(docBase.cache, 'get').returns({ 0: 10 });
-                stubs.set = sandbox.stub(docBase.cache, 'set').returns({ 0: 10 });
+                stubs.has = jest.spyOn(docBase.cache, 'has').mockReturnValue(true);
+                stubs.get = jest.spyOn(docBase.cache, 'get').mockReturnValue({ 0: 10 });
+                stubs.set = jest.spyOn(docBase.cache, 'set').mockReturnValue({ 0: 10 });
             });
 
-            it('should get the current page map if it does not exist and cache the given page', () => {
+            test('should get the current page map if it does not exist and cache the given page', () => {
                 docBase.cachePage(10);
-                expect(stubs.has).to.be.called;
-                expect(stubs.get).to.be.called;
-                expect(stubs.set).to.be.called;
+                expect(stubs.has).toBeCalled();
+                expect(stubs.get).toBeCalled();
+                expect(stubs.set).toBeCalled();
             });
 
-            it('should use the current page map if it exists', () => {
-                stubs.has.returns(false);
+            test('should use the current page map if it exists', () => {
+                stubs.has.mockReturnValue(false);
 
                 docBase.cachePage(10);
-                expect(stubs.has).to.be.called;
-                expect(stubs.get).to.not.be.called;
-                expect(stubs.set).to.be.called;
+                expect(stubs.has).toBeCalled();
+                expect(stubs.get).not.toBeCalled();
+                expect(stubs.set).toBeCalled();
             });
         });
 
@@ -918,7 +909,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScale: 8.9,
                 };
-                stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
             });
 
             afterEach(() => {
@@ -926,118 +917,118 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             describe('zoomIn()', () => {
-                it('should zoom in until it hits the number of ticks or the max scale', () => {
+                test('should zoom in until it hits the number of ticks or the max scale', () => {
                     docBase.zoomIn(12);
-                    expect(docBase.pdfViewer.currentScaleValue).to.equal(MAX_SCALE);
+                    expect(docBase.pdfViewer.currentScaleValue).toBe(MAX_SCALE);
 
                     docBase.pdfViewer.currentScale = 1;
                     docBase.zoomIn(1);
-                    expect(docBase.pdfViewer.currentScaleValue).to.equal(DEFAULT_SCALE_DELTA);
+                    expect(docBase.pdfViewer.currentScaleValue).toBe(DEFAULT_SCALE_DELTA);
                 });
 
-                it('should emit the zoom event', () => {
+                test('should emit the zoom event', () => {
                     docBase.zoomIn(1);
-                    expect(stubs.emit).to.be.calledWith('zoom');
+                    expect(stubs.emit).toBeCalledWith('zoom', { canZoomIn: true, canZoomOut: true, zoom: 9 });
                 });
 
-                it("should not emit the zoom event if we can't zoom in", () => {
+                test("should not emit the zoom event if we can't zoom in", () => {
                     docBase.pdfViewer.currentScale = MAX_SCALE;
 
                     docBase.zoomIn(1);
-                    expect(stubs.emit).to.not.be.calledWith('zoom');
+                    expect(stubs.emit).not.toBeCalledWith('zoom');
                 });
             });
 
             describe('zoomOut()', () => {
-                it('should zoom out until it hits the number of ticks or the min scale', () => {
+                test('should zoom out until it hits the number of ticks or the min scale', () => {
                     docBase.pdfViewer.currentScale = 0.2;
 
                     docBase.zoomOut(10);
-                    expect(docBase.pdfViewer.currentScaleValue).to.equal(MIN_SCALE);
+                    expect(docBase.pdfViewer.currentScaleValue).toBe(MIN_SCALE);
 
                     docBase.pdfViewer.currentScale = DEFAULT_SCALE_DELTA;
                     docBase.zoomOut(1);
-                    expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
+                    expect(docBase.pdfViewer.currentScaleValue).toBe(1);
                 });
 
-                it('should emit the zoom event', () => {
+                test('should emit the zoom event', () => {
                     docBase.zoomOut(1);
-                    expect(stubs.emit).to.be.calledWith('zoom');
+                    expect(stubs.emit).toBeCalledWith('zoom', { canZoomIn: true, canZoomOut: true, zoom: 8.8 });
                 });
 
-                it("should not emit the zoom event if we can't zoom out", () => {
+                test("should not emit the zoom event if we can't zoom out", () => {
                     docBase.pdfViewer.currentScale = MIN_SCALE;
 
                     docBase.zoomOut(1);
-                    expect(stubs.emit).to.not.be.calledWith('zoom');
+                    expect(stubs.emit).not.toBeCalledWith('zoom');
                 });
             });
         });
 
         describe('onKeydown()', () => {
             beforeEach(() => {
-                stubs.previousPage = sandbox.stub(docBase, 'previousPage');
-                stubs.nextPage = sandbox.stub(docBase, 'nextPage');
+                stubs.previousPage = jest.spyOn(docBase, 'previousPage').mockImplementation();
+                stubs.nextPage = jest.spyOn(docBase, 'nextPage').mockImplementation();
             });
 
-            it('should call the correct method and return true if the binding exists', () => {
+            test('should call the correct method and return true if the binding exists', () => {
                 const arrowLeft = docBase.onKeydown('ArrowLeft');
-                expect(stubs.previousPage).to.be.called.once;
-                expect(arrowLeft).to.equal(true);
+                expect(stubs.previousPage).toBeCalledTimes(1);
+                expect(arrowLeft).toBe(true);
 
                 const arrowRight = docBase.onKeydown('ArrowRight');
-                expect(stubs.nextPage).to.be.called.once;
-                expect(arrowRight).to.equal(true);
+                expect(stubs.nextPage).toBeCalledTimes(1);
+                expect(arrowRight).toBe(true);
 
                 const leftBracket = docBase.onKeydown('[');
-                expect(stubs.previousPage).to.be.called.once;
-                expect(leftBracket).to.equal(true);
+                expect(stubs.previousPage).toBeCalledTimes(2);
+                expect(leftBracket).toBe(true);
 
                 const rightBracket = docBase.onKeydown(']');
-                expect(stubs.nextPage).to.be.called.once;
-                expect(rightBracket).to.equal(true);
+                expect(stubs.nextPage).toBeCalledTimes(2);
+                expect(rightBracket).toBe(true);
             });
 
-            it('should call the findBar onKeydown if present', () => {
+            test('should call the findBar onKeydown if present', () => {
                 const keys = 'ctrl+f';
-                const mockEvent = sandbox.stub();
-                const onKeydownStub = sandbox.stub().withArgs(mockEvent);
+                const mockEvent = jest.fn();
+                const onKeydownStub = jest.fn();
                 docBase.findBar = {
                     onKeydown: onKeydownStub,
-                    destroy: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    destroy: jest.fn(),
+                    removeListener: jest.fn(),
                 };
                 docBase.onKeydown(keys, mockEvent);
-                expect(onKeydownStub).to.have.been.calledOnce;
+                expect(onKeydownStub).toBeCalledTimes(1);
             });
 
-            it('should return false if there is no match', () => {
+            test('should return false if there is no match', () => {
                 const arrowLeft = docBase.onKeydown('ArrowUp');
-                expect(stubs.previousPage).to.not.be.called;
-                expect(stubs.nextPage).to.not.be.called;
-                expect(arrowLeft).to.equal(false);
+                expect(stubs.previousPage).not.toBeCalled();
+                expect(stubs.nextPage).not.toBeCalled();
+                expect(arrowLeft).toBe(false);
             });
         });
 
         describe('initViewer()', () => {
             beforeEach(() => {
-                stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
-                stubs.emit = sandbox.stub(docBase, 'emit');
-                stubs.getDocument = sandbox.stub().returns({
-                    destroy: sandbox.stub(),
+                stubs.bindDOMListeners = jest.spyOn(docBase, 'bindDOMListeners').mockImplementation();
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                stubs.getDocument = jest.fn(() => ({
+                    destroy: jest.fn(),
                     promise: Promise.resolve(),
-                });
-                stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
+                }));
+                stubs.getViewerOption = jest.spyOn(docBase, 'getViewerOption').mockImplementation();
                 stubs.pdfEventBus = {
-                    off: sandbox.stub(),
-                    on: sandbox.stub(),
+                    off: jest.fn(),
+                    on: jest.fn(),
                 };
                 stubs.pdfViewer = {
-                    setDocument: sandbox.stub(),
+                    setDocument: jest.fn(),
                 };
-                stubs.pdfViewerClass = sandbox.stub().returns(stubs.pdfViewer);
-                stubs.shouldThumbnailsBeToggled = sandbox.stub(docBase, 'shouldThumbnailsBeToggled');
-                stubs.resize = sandbox.stub(docBase, 'resize');
+                stubs.pdfViewerClass = jest.fn(() => stubs.pdfViewer);
+                stubs.shouldThumbnailsBeToggled = jest.spyOn(docBase, 'shouldThumbnailsBeToggled').mockImplementation();
+                stubs.resize = jest.spyOn(docBase, 'resize').mockImplementation();
 
                 docBase.isMobile = false;
                 docBase.options.file = {
@@ -1053,75 +1044,80 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
                 };
                 docBase.pdfjsViewer = {
-                    EventBus: sandbox.stub().returns(stubs.pdfEventBus),
-                    PDFFindController: sandbox.stub().returns({
-                        setLinkService: sandbox.stub(),
-                    }),
-                    PDFLinkService: sandbox.stub().returns({
-                        setDocument: sandbox.stub(),
-                        setViewer: sandbox.stub(),
-                    }),
+                    EventBus: jest.fn(() => stubs.pdfEventBus),
+                    PDFFindController: jest.fn(() => ({
+                        setLinkService: jest.fn(),
+                    })),
+                    PDFLinkService: jest.fn(() => ({
+                        setDocument: jest.fn(),
+                        setViewer: jest.fn(),
+                    })),
                     PDFViewer: stubs.pdfViewerClass,
                 };
             });
 
-            it('should create an event bus and subscribe to relevant events', () => {
+            test('should create an event bus and subscribe to relevant events', () => {
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.called;
-                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagechanging', docBase.pagechangingHandler);
-                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-                    expect(stubs.pdfEventBus.on).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
+                    expect(stubs.pdfViewerClass).toBeCalled();
+                    expect(stubs.pdfEventBus.on).toBeCalledWith('pagechanging', docBase.pagechangingHandler);
+                    expect(stubs.pdfEventBus.on).toBeCalledWith('pagerendered', docBase.pagerenderedHandler);
+                    expect(stubs.pdfEventBus.on).toBeCalledWith('pagesinit', docBase.pagesinitHandler);
                 });
             });
 
-            it('should set maxCanvasPixels if on mobile', () => {
+            test('should set maxCanvasPixels if on mobile', () => {
                 docBase.isMobile = true;
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.calledWith(
-                        sinon.match({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
                     );
                 });
             });
 
-            it('should enable the text layer based on download permissions', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            test('should enable the text layer based on download permissions', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 2 }));
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 2 }));
                 });
             });
 
-            it('should simplify the text layer if the user is on mobile', () => {
+            test('should simplify the text layer if the user is on mobile', () => {
                 docBase.isMobile = true;
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+                stubs.checkPermission.mockReturnValueOnce(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 1 }));
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
 
-            it('should disable the text layer based on download permissions', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+            test('should disable the text layer based on download permissions', () => {
+                stubs.checkPermission.mockReturnValueOnce(false);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 0 }));
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
 
-            it('should disable the text layer if disableTextLayer viewer option is set', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
-                stubs.getViewerOption.withArgs('disableTextLayer').returns(true);
+            test('should disable the text layer if disableTextLayer viewer option is set', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                stubs.getViewerOption.mockReturnValue(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.calledWith(sinon.match({ textLayerMode: 0 }));
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
 
-            it('should setup the link controller settings correctly', () => {
+            test('should setup the link controller settings correctly', () => {
                 return docBase.initViewer('').then(() => {
-                    expect(docBase.pdfjsViewer.PDFLinkService).to.be.calledWith(
-                        sinon.match({
+                    expect(docBase.pdfjsViewer.PDFLinkService).toBeCalledWith(
+                        expect.objectContaining({
                             externalLinkRel: 'noopener noreferrer nofollow',
                             externalLinkTarget: 2, // window.pdfjsLib.LinkTarget.BLANK
                         }),
@@ -1129,113 +1125,123 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should test if browser has font rendering issue', () => {
-                sandbox.stub(Browser, 'hasFontIssue').returns(true);
+            test('should test if browser has font rendering issue', () => {
+                jest.spyOn(Browser, 'hasFontIssue').mockReturnValue(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableFontFace: true }));
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableFontFace: true }));
                 });
             });
 
-            it('should disable font face if supplied the option', () => {
-                stubs.getViewerOption.returns(true);
+            test('should disable font face if supplied the option', () => {
+                stubs.getViewerOption.mockReturnValue(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableFontFace: true }));
+                    expect(stubs.getViewerOption).toBeCalledWith('disableFontFace');
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableFontFace: true }));
                 });
             });
 
-            it('should disable streaming by default', () => {
+            test('should disable streaming by default', () => {
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: true }));
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableStream: true }));
                 });
             });
 
-            it('should enable streaming if the proper option is provided', () => {
-                stubs.getViewerOption.returns(false);
+            test('should enable streaming if the proper option is provided', () => {
+                stubs.getViewerOption.mockReturnValue(false);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: false }));
+                    expect(stubs.getViewerOption).toBeCalledWith('disableFontFace');
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableStream: false }));
                 });
             });
 
-            it('should enable range requests if the file is greater than 25MB', () => {
+            test('should enable range requests if the file is greater than 25MB', () => {
                 docBase.options.file.size = 26500000;
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableRange: false }));
                 });
             });
 
-            it('should disable range requests if the file is smaller than 25MB', () => {
+            test('should disable range requests if the file is smaller than 25MB', () => {
                 docBase.options.file.size = 26000000;
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableRange: true }));
                 });
             });
 
-            it('should disable range requests if the file is greater than 25MB but watermarked', () => {
+            test('should disable range requests if the file is greater than 25MB but watermarked', () => {
                 docBase.options.file.size = 26500000;
                 docBase.options.file.watermark_info.is_watermarked = true;
                 docBase.options.location.locale = 'ja-JP';
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableRange: true }));
                 });
             });
 
-            it('should enable range requests if the file is smaller than the provided minimum size', () => {
-                stubs.getViewerOption.returns(2097152); // 2 MB minimum
+            test('should enable range requests if the file is smaller than the provided minimum size', () => {
+                stubs.getViewerOption.mockReturnValue(2097152); // 2 MB minimum
 
                 docBase.options.file.size = 5242880; // 5 MB file size
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
+                    expect(stubs.getViewerOption).toBeCalledWith('rangeMinSize');
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ disableRange: false }));
                 });
             });
 
-            it('should set disableCreateObjectURL to false', () => {
+            test('should set disableCreateObjectURL to false', () => {
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableCreateObjectURL: false }));
+                    expect(stubs.getDocument).toBeCalledWith(
+                        expect.objectContaining({ disableCreateObjectURL: false }),
+                    );
                 });
             });
 
-            it('should set a chunk size based on viewer options if available', () => {
-                stubs.getViewerOption.returns(100);
+            test('should set a chunk size based on viewer options if available', () => {
+                stubs.getViewerOption.mockReturnValue(100);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ rangeChunkSize: 100 }));
+                    expect(stubs.getViewerOption).toBeCalledWith('rangeChunkSize');
+                    expect(stubs.getDocument).toBeCalledWith(expect.objectContaining({ rangeChunkSize: 100 }));
                 });
             });
 
-            it('should set a default chunk size if no viewer option set and locale is not en-US', () => {
+            test('should set a default chunk size if no viewer option set and locale is not en-US', () => {
                 const url = 'url';
                 const defaultChunkSize = 524288; // 512KB
 
                 docBase.options.location = {
                     locale: 'not-en-US',
                 };
-                stubs.getViewerOption.returns(null);
+                stubs.getViewerOption.mockReturnValue(null);
 
                 return docBase.initViewer(url).then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ rangeChunkSize: defaultChunkSize }));
+                    expect(stubs.getViewerOption).toBeCalledWith('rangeChunkSize');
+                    expect(stubs.getDocument).toBeCalledWith(
+                        expect.objectContaining({ rangeChunkSize: defaultChunkSize }),
+                    );
                 });
             });
 
-            it('should set a large chunk size if no viewer option set and locale is en-US', () => {
+            test('should set a large chunk size if no viewer option set and locale is en-US', () => {
                 const url = 'url';
-                const largeChunkSize = 1048576; // 1MB
+                const defaultChunkSize = 1048576; // 1024KB
 
                 docBase.options.location = {
                     locale: 'en-US',
                 };
-                stubs.getViewerOption.returns(null);
+                stubs.getViewerOption.mockReturnValue(null);
 
                 return docBase.initViewer(url).then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(
-                        sinon.match({
-                            rangeChunkSize: largeChunkSize,
+                    expect(stubs.getViewerOption).toBeCalledWith('rangeChunkSize');
+                    expect(stubs.getDocument).toBeCalledWith(
+                        expect.objectContaining({
+                            rangeChunkSize: defaultChunkSize,
                         }),
                     );
                 });
@@ -1245,8 +1251,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.location = {
                     locale: 'en-US',
                 };
-                stubs.getDocument.callsFake(docInitParams => {
-                    return new Promise(() => {
+                docBase.pdfjsLib.getDocument = jest.fn(docInitParams => ({
+                    promise: new Promise(() => {
                         const { httpHeaders = {} } = docInitParams;
                         const headerKeys = Object.keys(httpHeaders);
 
@@ -1254,10 +1260,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                             return !STANDARD_HEADERS.includes(header);
                         });
 
-                        expect(containsNonStandardHeader).to.be.false;
+                        expect(containsNonStandardHeader).toBe(false);
                         done();
-                    });
-                });
+                    }),
+                }));
 
                 return docBase.initViewer('');
             });
@@ -1276,8 +1282,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 return docBase.initViewer(url).then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(
-                        sinon.match({
+                    expect(stubs.getDocument).toBeCalledWith(
+                        expect.objectContaining({
                             rangeChunkSize: defaultChunkSize,
                             url: `${url}?${paramsList}`,
                         }),
@@ -1285,67 +1291,67 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should resolve the loading task and set the document/viewer', () => {
+            test('should resolve the loading task and set the document/viewer', () => {
                 const doc = {
                     url: 'url',
                 };
-                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
-                stubs.getViewerOption.returns(100);
+                stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
+                stubs.getViewerOption.mockReturnValue(100);
 
                 return docBase.initViewer('url').then(() => {
-                    expect(stubs.bindDOMListeners).to.be.called;
-                    expect(stubs.classListAdd).not.to.be.called;
-                    expect(stubs.getDocument).to.be.called;
-                    expect(stubs.pdfViewerClass).to.be.called;
-                    expect(stubs.pdfViewer.setDocument).to.be.called;
-                    expect(docBase.pdfLinkService.setDocument).to.be.called;
+                    expect(stubs.bindDOMListeners).toBeCalled();
+                    expect(stubs.classListAdd).not.toBeCalled();
+                    expect(stubs.getDocument).toBeCalled();
+                    expect(stubs.pdfViewerClass).toBeCalled();
+                    expect(stubs.pdfViewer.setDocument).toBeCalled();
+                    expect(docBase.pdfLinkService.setDocument).toBeCalled();
                 });
             });
 
-            it('should invoke startLoadTimer()', () => {
+            test('should invoke startLoadTimer()', () => {
                 const doc = {
                     url: 'url',
                 };
-                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
-                stubs.getViewerOption.returns(100);
-                sandbox.stub(docBase, 'startLoadTimer');
+                stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
+                stubs.getViewerOption.mockReturnValue(100);
+                jest.spyOn(docBase, 'startLoadTimer').mockImplementation();
                 docBase.initViewer('url');
 
-                expect(docBase.startLoadTimer).to.be.called;
+                expect(docBase.startLoadTimer).toBeCalled();
             });
 
-            it('should handle any download error', () => {
+            test('should handle any download error', () => {
                 const doc = {
                     url: 'url',
                 };
 
-                stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
-                stubs.getDocument.returns({ promise: Promise.reject(doc) });
+                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                stubs.getDocument.mockReturnValue({ promise: Promise.reject(doc) });
                 docBase.options.location = {
                     locale: 'en-US',
                 };
 
                 return docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).to.be.called;
+                    expect(stubs.handleDownloadError).toBeCalled();
                 });
             });
 
-            it('should adjust the layout if thumbnails should be toggled', () => {
+            test('should adjust the layout if thumbnails should be toggled', () => {
                 const doc = {
                     url: 'url',
                 };
-                stubs.getViewerOption.returns(100);
-                stubs.getDocument.returns({ promise: Promise.resolve(doc) });
-                stubs.shouldThumbnailsBeToggled.returns(true);
+                stubs.getViewerOption.mockReturnValue(100);
+                stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
+                stubs.shouldThumbnailsBeToggled.mockReturnValue(true);
 
                 return docBase.initViewer('url').then(() => {
-                    expect(stubs.pdfViewerClass).to.be.called;
-                    expect(stubs.getDocument).to.be.called;
-                    expect(stubs.bindDOMListeners).to.be.called;
-                    expect(stubs.pdfViewer.setDocument).to.be.called;
-                    expect(docBase.pdfLinkService.setDocument).to.be.called;
-                    expect(stubs.classListAdd).calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                    expect(stubs.resize).to.be.called;
+                    expect(stubs.pdfViewerClass).toBeCalled();
+                    expect(stubs.getDocument).toBeCalled();
+                    expect(stubs.bindDOMListeners).toBeCalled();
+                    expect(stubs.pdfViewer.setDocument).toBeCalled();
+                    expect(docBase.pdfLinkService.setDocument).toBeCalled();
+                    expect(stubs.classListAdd).toBeCalledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    expect(stubs.resize).toBeCalled();
                 });
             });
         });
@@ -1355,18 +1361,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             beforeEach(() => {
                 docBase.pdfViewer = {
-                    update: sandbox.stub(),
+                    update: jest.fn(),
                     currentScaleValue: 0,
                     currentPageNumber: 0,
                 };
 
                 docBase.somePageRendered = true;
 
-                stubs.setPage = sandbox.stub(docBase, 'setPage');
+                stubs.setPage = jest.spyOn(docBase, 'setPage').mockImplementation();
                 Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
-                    value: sandbox.stub(),
+                    value: jest.fn(),
                 });
-                stubs.thumbnailsResize = sandbox.stub();
+                stubs.thumbnailsResize = jest.fn();
                 docBase.thumbnailsSidebar = { resize: stubs.thumbnailsResize, destroy: () => {} };
             });
 
@@ -1376,37 +1382,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should do nothing if pdfViewer does not exist', () => {
+            test('should do nothing if pdfViewer does not exist', () => {
                 docBase.pdfViewer = null;
                 docBase.resize();
-                expect(BaseViewer.prototype.resize).to.not.be.called;
-                expect(stubs.thumbnailsResize).not.to.be.called;
+                expect(BaseViewer.prototype.resize).not.toBeCalled();
+                expect(stubs.thumbnailsResize).not.toBeCalled();
             });
 
-            it('should attempt to resize the preload if no PDF pages are ready ', () => {
+            test('should attempt to resize the preload if no PDF pages are ready ', () => {
                 docBase.somePageRendered = false;
                 docBase.resize();
-                expect(BaseViewer.prototype.resize).to.not.be.called;
-                expect(stubs.thumbnailsResize).not.to.be.called;
+                expect(BaseViewer.prototype.resize).not.toBeCalled();
+                expect(stubs.thumbnailsResize).not.toBeCalled();
             });
 
-            it('should resize the preload', () => {
+            test('should resize the preload', () => {
                 docBase.pdfViewer = null;
                 docBase.preloader = {
-                    resize: sandbox.stub(),
+                    resize: jest.fn(),
                 };
                 docBase.resize();
-                expect(docBase.preloader.resize).to.be.called;
-                expect(BaseViewer.prototype.resize).to.not.be.called;
-                expect(stubs.thumbnailsResize).not.to.be.called;
+                expect(docBase.preloader.resize).toBeCalled();
+                expect(BaseViewer.prototype.resize).not.toBeCalled();
+                expect(stubs.thumbnailsResize).not.toBeCalled();
             });
 
-            it('should update the pdfViewer and reset the page', () => {
+            test('should update the pdfViewer and reset the page', () => {
                 docBase.resize();
-                expect(docBase.pdfViewer.update).to.be.called;
-                expect(stubs.setPage).to.be.called;
-                expect(BaseViewer.prototype.resize).to.be.called;
-                expect(stubs.thumbnailsResize).to.be.called;
+                expect(docBase.pdfViewer.update).toBeCalled();
+                expect(stubs.setPage).toBeCalled();
+                expect(BaseViewer.prototype.resize).toBeCalled();
+                expect(stubs.thumbnailsResize).toBeCalled();
             });
         });
 
@@ -1415,17 +1421,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 Timer.reset();
             });
 
-            it('should create a tag and start a timer related to preload for the file being loaded', () => {
+            test('should create a tag and start a timer related to preload for the file being loaded', () => {
                 const id = '12345';
                 const tag = Timer.createTag(id, LOAD_METRIC.preloadTime);
                 docBase.options.file = {
                     id,
                 };
 
-                const startStub = sandbox.stub(Timer, 'start');
+                const startStub = jest.spyOn(Timer, 'start').mockImplementation();
                 docBase.startPreloadTimer();
 
-                expect(startStub).to.be.calledWith(tag);
+                expect(startStub).toBeCalledWith(tag);
             });
         });
 
@@ -1442,37 +1448,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 Timer.reset();
             });
 
-            it('should do nothing if preload timer was not started for that file', () => {
-                const stopStub = sandbox.stub(Timer, 'stop');
+            test('should do nothing if preload timer was not started for that file', () => {
+                const stopStub = jest.spyOn(Timer, 'stop').mockImplementation();
                 docBase.stopPreloadTimer();
 
-                expect(stopStub).to.not.be.called;
+                expect(stopStub).not.toBeCalled();
             });
 
-            it('should stop and reset the timer for the file preload event', () => {
-                const stopStub = sandbox.stub(Timer, 'stop');
-                const resetStub = sandbox.stub(Timer, 'reset');
+            test('should stop and reset the timer for the file preload event', () => {
+                const stopStub = jest.spyOn(Timer, 'stop').mockImplementation();
+                const resetStub = jest.spyOn(Timer, 'reset').mockImplementation();
                 Timer.start(tag);
 
                 docBase.stopPreloadTimer();
 
-                expect(stopStub).to.be.calledWith(tag);
-                expect(resetStub).to.be.calledWith(tag);
+                expect(stopStub).toBeCalledWith(tag);
+                expect(resetStub).toBeCalledWith(tag);
             });
 
-            it('should emit a preload event for metrics logging', () => {
+            test('should emit a preload event for metrics logging', () => {
                 const elapsed = 100;
                 const preloadTime = {
                     start: 1,
                     end: 101,
                     elapsed,
                 };
-                sandbox.stub(Timer, 'get').returns(preloadTime);
-                const metricStub = sandbox.stub(docBase, 'emitMetric');
+                jest.spyOn(Timer, 'get').mockReturnValue(preloadTime);
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
 
                 docBase.stopPreloadTimer();
 
-                expect(metricStub).to.be.calledWith({
+                expect(docBase.emitMetric).toBeCalledWith({
                     name: LOAD_METRIC.previewPreloadEvent,
                     data: elapsed,
                 });
@@ -1483,34 +1489,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let logger;
             beforeEach(() => {
                 logger = {
-                    setPreloaded: sandbox.stub(),
+                    setPreloaded: jest.fn(),
                 };
                 docBase.options.logger = logger;
             });
 
-            it('should invoke "setPreloaded" on logger for legacy metrics preload calculation', () => {
+            test('should invoke "setPreloaded" on logger for legacy metrics preload calculation', () => {
                 docBase.onPreload();
 
-                expect(logger.setPreloaded).to.be.called;
+                expect(logger.setPreloaded).toBeCalled();
             });
 
-            it('should stop preload timer for that file', () => {
-                const stopStub = sandbox.stub(docBase, 'stopPreloadTimer');
+            test('should stop preload timer for that file', () => {
+                jest.spyOn(docBase, 'stopPreloadTimer').mockImplementation();
+
                 docBase.onPreload();
 
-                expect(stopStub).to.be.called;
+                expect(docBase.stopPreloadTimer).toBeCalled();
             });
 
-            it('should reset load timeout to prevent preview timeout', () => {
-                const resetStub = sandbox.stub(docBase, 'resetLoadTimeout');
+            test('should reset load timeout to prevent preview timeout', () => {
+                jest.spyOn(docBase, 'resetLoadTimeout').mockImplementation();
+
                 docBase.onPreload();
 
-                expect(resetStub).to.be.called;
+                expect(docBase.resetLoadTimeout).toBeCalled();
             });
         });
 
         describe('setupPdfjs()', () => {
-            it('should set the worker source asset url', () => {
+            test('should set the worker source asset url', () => {
                 docBase.options = {
                     file: {},
                     location: {
@@ -1518,28 +1526,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         locale: 'en-US',
                     },
                 };
+
                 docBase.setupPdfjs();
 
-                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).to.equal('asset');
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('asset');
             });
         });
 
         describe('initPrint()', () => {
-            it('should add print checkmark', () => {
+            test('should add print checkmark', () => {
                 docBase.initPrint();
 
                 const mockCheckmark = document.createElement('div');
                 mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
-                expect(docBase.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
+                expect(docBase.printPopup.printCheckmark.innerHTML).toBe(mockCheckmark.innerHTML);
             });
 
-            it('should hide the print checkmark', () => {
+            test('should hide the print checkmark', () => {
                 docBase.initPrint();
 
                 expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
             });
 
-            it('should add the loading indicator', () => {
+            test('should add the loading indicator', () => {
                 docBase.initPrint();
 
                 const mockIndicator = document.createElement('div');
@@ -1548,80 +1557,80 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 <div></div>
                 <div></div>
                 `.trim();
-                expect(docBase.printPopup.loadingIndicator.innerHTML.replace(/\s/g, '')).to.equal(
+                expect(docBase.printPopup.loadingIndicator.innerHTML.replace(/\s/g, '')).toBe(
                     mockIndicator.innerHTML.replace(/\s/g, ''),
                 );
-                expect(docBase.printPopup.loadingIndicator.classList.contains('bp-crawler')).to.be.true;
+                expect(docBase.printPopup.loadingIndicator.classList.contains('bp-crawler')).toBe(true);
             });
         });
 
         describe('print()', () => {
-            let clock;
-
             beforeEach(() => {
-                clock = sinon.useFakeTimers();
+                jest.useFakeTimers();
+
                 docBase.printBlob = undefined;
-                stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({
-                    then: sandbox.stub(),
+                stubs.fetchPrintBlob = jest.spyOn(docBase, 'fetchPrintBlob').mockReturnValue({
+                    then: jest.fn(),
                 });
                 docBase.initPrint();
-                stubs.show = sandbox.stub(docBase.printPopup, 'show');
+                stubs.show = jest.spyOn(docBase.printPopup, 'show');
             });
 
             afterEach(() => {
-                clock.restore();
+                jest.clearAllTimers();
             });
 
-            it('should request the print blob if it is not ready', () => {
+            test('should request the print blob if it is not ready', () => {
                 docBase.print();
-                expect(stubs.fetchPrintBlob).to.be.called;
+                expect(stubs.fetchPrintBlob).toBeCalled();
             });
 
-            it('should show the print popup and disable the print button if the blob is not ready', () => {
-                sandbox.stub(docBase.printPopup, 'disableButton');
+            test('should show the print popup and disable the print button if the blob is not ready', () => {
+                jest.spyOn(docBase.printPopup, 'disableButton').mockImplementation();
 
                 docBase.print();
-                clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
 
-                expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
-                expect(docBase.printPopup.disableButton).to.be.called;
+                jest.advanceTimersByTime(PRINT_DIALOG_TIMEOUT_MS + 1);
+
+                expect(stubs.show).toBeCalledWith(__('print_loading'), __('print'), expect.any(Function));
+                expect(docBase.printPopup.disableButton).toBeCalled();
             });
 
-            it("should directly print if print blob is ready and the print dialog hasn't been shown yet", () => {
+            test("should directly print if print blob is ready and the print dialog hasn't been shown yet", () => {
                 docBase.printBlob = {};
                 docBase.printDialogTimeout = setTimeout(() => {});
-                sandbox.stub(docBase, 'browserPrint');
+                jest.spyOn(docBase, 'browserPrint').mockImplementation();
 
                 docBase.print();
-                expect(docBase.browserPrint).to.be.called;
+                expect(docBase.browserPrint).toBeCalled();
             });
 
-            it("should directly print if print blob is ready and the print dialog isn't visible", () => {
+            test("should directly print if print blob is ready and the print dialog isn't visible", () => {
                 docBase.printBlob = {};
                 docBase.printDialogTimeout = null;
-                sandbox.stub(docBase.printPopup, 'isVisible').returns(false);
-                sandbox.stub(docBase, 'browserPrint');
+                jest.spyOn(docBase.printPopup, 'isVisible').mockReturnValue(false);
+                jest.spyOn(docBase, 'browserPrint').mockImplementation();
 
                 docBase.print();
-                expect(docBase.browserPrint).to.be.called;
+                expect(docBase.browserPrint).toBeCalled();
             });
 
-            it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
+            test('should update the print popup UI if popup is visible and there is no current print timeout', () => {
                 docBase.printBlob = {};
 
-                sandbox.stub(docBase.printPopup, 'isVisible').returns(true);
+                jest.spyOn(docBase.printPopup, 'isVisible').mockReturnValue(true);
 
                 docBase.print();
 
-                expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
-                expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
-                expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
-                expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
+                expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).toBe(false);
+                expect(docBase.printPopup.messageEl.textContent).toBe(__('print_ready'));
+                expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).toBe(true);
+                expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).toBe(false);
             });
         });
 
         describe('setupPageIds()', () => {
-            it('should add page IDs', () => {
+            test('should add page IDs', () => {
                 const pageEl = document.createElement('div');
                 pageEl.classList.add('page');
                 pageEl.dataset.pageNumber = 2;
@@ -1629,148 +1638,148 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.setupPageIds();
 
-                expect(pageEl.id).to.equal('bp-page-2');
+                expect(pageEl.id).toBe('bp-page-2');
             });
         });
 
         describe('fetchPrintBlob()', () => {
             beforeEach(() => {
-                stubs.get = sandbox.stub(stubs.api, 'get').resolves('blob');
+                stubs.get = jest.spyOn(stubs.api, 'get').mockResolvedValue('blob');
             });
 
-            it('should get and set the blob', () => {
+            test('should get and set the blob', () => {
                 return docBase.fetchPrintBlob('url').then(() => {
-                    expect(docBase.printBlob).to.equal('blob');
+                    expect(docBase.printBlob).toBe('blob');
                 });
             });
         });
 
         describe('loadUI()', () => {
-            it('should set controls, bind listeners, and init the page number element', () => {
-                const bindControlListenersStub = sandbox.stub(docBase, 'bindControlListeners');
+            test('should set controls, bind listeners, and init the page number element', () => {
+                const bindControlListenersStub = jest.spyOn(docBase, 'bindControlListeners').mockImplementation();
 
                 docBase.loadUI();
-                expect(bindControlListenersStub).to.be.called;
-                expect(docBase.controls instanceof Controls).to.be.true;
-                expect(docBase.pageControls instanceof PageControls).to.be.true;
-                expect(docBase.zoomControls instanceof ZoomControls).to.be.true;
-                expect(docBase.pageControls.contentEl).to.equal(docBase.docEl);
+                expect(bindControlListenersStub).toBeCalled();
+                expect(docBase.controls instanceof Controls).toBe(true);
+                expect(docBase.pageControls instanceof PageControls).toBe(true);
+                expect(docBase.zoomControls instanceof ZoomControls).toBe(true);
+                expect(docBase.pageControls.contentEl).toBe(docBase.docEl);
             });
 
-            it('should add annotations controls', () => {
+            test('should add annotations controls', () => {
                 sandbox.stub(docBase, 'bindControlListeners');
                 sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
                 sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
 
                 docBase.loadUI();
-                expect(docBase.annotationControls instanceof AnnotationControls).to.be.true;
+                expect(docBase.annotationControls instanceof AnnotationControls).toBe(true);
             });
         });
 
         describe('bindDOMListeners()', () => {
             beforeEach(() => {
-                stubs.addEventListener = sandbox.stub(docBase.docEl, 'addEventListener');
-                stubs.addListener = sandbox.stub(fullscreen, 'addListener');
+                stubs.addEventListener = jest.spyOn(docBase.docEl, 'addEventListener').mockImplementation();
+                stubs.addListener = jest.spyOn(fullscreen, 'addListener').mockImplementation();
             });
 
-            it('should add the correct listeners', () => {
+            test('should add the correct listeners', () => {
                 docBase.hasTouch = false;
                 docBase.bindDOMListeners();
 
-                expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
-                expect(stubs.addEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
-                expect(stubs.addEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
-                expect(stubs.addEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
+                expect(stubs.addEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
+                expect(stubs.addEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
+                expect(stubs.addEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
+                expect(stubs.addEventListener).not.toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
 
-            it('should add the pinch to zoom handler if touch is detected', () => {
+            test('should add the pinch to zoom handler if touch is detected', () => {
                 docBase.hasTouch = true;
                 docBase.bindDOMListeners();
 
-                expect(stubs.addEventListener).to.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
-                expect(stubs.addEventListener).to.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
-                expect(stubs.addEventListener).to.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
+                expect(stubs.addEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
+                expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
+                expect(stubs.addEventListener).toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
         });
 
         describe('unbindDOMListeners()', () => {
             beforeEach(() => {
-                stubs.removeEventListener = sandbox.stub(docBase.docEl, 'removeEventListener');
-                stubs.removeFullscreenListener = sandbox.stub(fullscreen, 'removeListener');
+                stubs.removeEventListener = jest.spyOn(docBase.docEl, 'removeEventListener').mockImplementation();
+                stubs.removeFullscreenListener = jest.spyOn(fullscreen, 'removeListener').mockImplementation();
             });
 
-            it('should remove the docBase element listeners if the docBase element exists', () => {
+            test('should remove the docBase element listeners if the docBase element exists', () => {
                 docBase.unbindDOMListeners();
-                expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
             });
 
-            it('should not remove the doc element listeners if the doc element does not exist', () => {
+            test('should not remove the doc element listeners if the doc element does not exist', () => {
                 const docElTemp = docBase.docEl;
                 docBase.docEl = null;
 
                 docBase.unbindDOMListeners();
-                expect(stubs.removeEventListener).to.not.be.called;
+                expect(stubs.removeEventListener).not.toBeCalled();
 
                 docBase.docEl = docElTemp;
             });
 
-            it('should remove pinch to zoom listeners if the browser has touch', () => {
+            test('should remove pinch to zoom listeners if the browser has touch', () => {
                 docBase.hasTouch = true;
 
                 docBase.unbindDOMListeners();
-                expect(stubs.removeEventListener).to.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
-                expect(stubs.removeEventListener).to.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
-                expect(stubs.removeEventListener).to.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
 
-            it('should not remove the pinch to zoom listeners if the browser does not have touch', () => {
+            test('should not remove the pinch to zoom listeners if the browser does not have touch', () => {
                 docBase.hasTouch = false;
 
                 docBase.unbindDOMListeners();
-                expect(stubs.removeEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
-                expect(stubs.removeEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
-                expect(stubs.removeEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
+                expect(stubs.removeEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
+                expect(stubs.removeEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
+                expect(stubs.removeEventListener).not.toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
         });
 
         describe('unbindEventBusListeners', () => {
-            it('should remove all the event listeners on the internal PDFJS event bus', () => {
+            test('should remove all the event listeners on the internal PDFJS event bus', () => {
                 docBase.pdfEventBus = {
                     _listeners: {
                         event1: [() => {}],
                         event2: [() => {}, () => {}],
                     },
-                    off: sandbox.stub(),
+                    off: jest.fn(),
                 };
 
                 docBase.unbindEventBusListeners();
 
-                expect(docBase.pdfEventBus.off).to.have.callCount(3);
+                expect(docBase.pdfEventBus.off).toBeCalledTimes(3);
             });
         });
 
         describe('pagesinitHandler()', () => {
             beforeEach(() => {
-                stubs.loadUI = sandbox.stub(docBase, 'loadUI');
-                stubs.setPage = sandbox.stub(docBase, 'setPage');
-                stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
-                stubs.emit = sandbox.stub(docBase, 'emit');
-                stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
+                stubs.loadUI = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                stubs.setPage = jest.spyOn(docBase, 'setPage').mockImplementation();
+                stubs.getCachedPage = jest.spyOn(docBase, 'getCachedPage').mockImplementation();
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                stubs.setupPages = jest.spyOn(docBase, 'setupPageIds').mockImplementation();
             });
 
-            it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
+            test('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
                 docBase.pdfViewer = {
                     currentScale: 'unknown',
                 };
 
                 docBase.pagesinitHandler();
-                expect(stubs.loadUI).to.be.called;
-                expect(stubs.setPage).to.be.called;
-                expect(docBase.docEl).to.have.class('bp-is-scrollable');
-                expect(stubs.setupPages).to.be.called;
+                expect(stubs.loadUI).toBeCalled();
+                expect(stubs.setPage).toBeCalled();
+                expect(docBase.docEl).toHaveClass('bp-is-scrollable');
+                expect(stubs.setupPages).toBeCalled();
             });
 
-            it("should broadcast that the preview is loaded if it hasn't already", () => {
+            test("should broadcast that the preview is loaded if it hasn't already", () => {
                 docBase.pdfViewer = {
                     currentScale: 'unknown',
                 };
@@ -1779,16 +1788,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.encoding = 'gzip';
 
                 docBase.pagesinitHandler();
-                expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.load, {
+                expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
                     encoding: docBase.encoding,
                     endProgress: false,
                     numPages: 5,
-                    scale: sinon.match.any,
+                    scale: 'unknown',
                 });
-                expect(docBase.loaded).to.be.true;
+                expect(docBase.loaded).toBe(true);
             });
 
-            it('should set the start page based', () => {
+            test('should set the start page based', () => {
                 const START_PAGE_NUM = 2;
                 const PAGES_COUNT = 3;
                 docBase.startPageNum = START_PAGE_NUM;
@@ -1797,7 +1806,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.pagesinitHandler();
 
-                expect(stubs.setPage).to.have.been.calledWith(START_PAGE_NUM);
+                expect(stubs.setPage).toBeCalledWith(START_PAGE_NUM);
             });
         });
 
@@ -1808,8 +1817,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     currentScaleValue: 0.5,
                 };
                 docBase.zoomControls = {
-                    setCurrentScale: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    setCurrentScale: jest.fn(),
+                    removeListener: jest.fn(),
                 };
                 docBase.event = {
                     pageNumber: 1,
@@ -1817,30 +1826,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.somePageRendered = false;
                 docBase.startPageRendered = false;
-                stubs.emit = sandbox.stub(docBase, 'emit');
-                stubs.emitMetric = sandbox.stub(docBase, 'emitMetric');
-                stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
-                stubs.hidePreload = sandbox.stub(docBase, 'hidePreload');
-                stubs.resize = sandbox.stub(docBase, 'resize');
-                stubs.stop = sandbox.stub(Timer, 'stop').returns({ elapsed: 1000 });
-            });
 
-            it('should emit the pagerender event', () => {
-                docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.emit).to.be.calledWith('pagerender');
-                expect(stubs.emit).to.be.calledWith('scale', { pageNum: 1, scale: 0.5 });
-                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
-            });
-
-            it('should emit handleAssetAndRepLoad event if not already emitted', () => {
-                docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
-                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                stubs.emitMetric = jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                stubs.initThumbnails = jest.spyOn(docBase, 'initThumbnails').mockImplementation();
+                stubs.hidePreload = jest.spyOn(docBase, 'hidePreload').mockImplementation();
+                stubs.resize = jest.spyOn(docBase, 'resize').mockImplementation();
+                stubs.stop = jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 1000 });
             });
 
             it('should emit render metric event for start page if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.emitMetric).to.be.calledWith({
+                expect(stubs.emitMetric).toBeCalledWith({
                     name: RENDER_EVENT,
                     data: 1000,
                 });
@@ -1849,36 +1846,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             it('should not emit render metric event if it was already emitted', () => {
                 docBase.startPageRendered = true;
                 docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.emitMetric).not.to.be.called;
+                expect(stubs.emitMetric).not.toBeCalled();
             });
 
             it('should not emit render metric event if rendered page is not start page', () => {
                 docBase.pagerenderedHandler({ pageNumber: 5 });
-                expect(stubs.emitMetric).not.to.be.called;
+                expect(stubs.emitMetric).not.toBeCalled();
             });
 
-            it('should hide the preload and init thumbnails if no pages were previously rendered', () => {
+            test('should hide the preload and init thumbnails if no pages were previously rendered', () => {
                 docBase.options.enableThumbnailsSidebar = true;
                 docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.initThumbnails).to.be.called;
-                expect(stubs.hidePreload).to.be.called;
-                expect(docBase.somePageRendered).to.be.true;
-                expect(docBase.resize).to.be.called;
-                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
+                expect(stubs.initThumbnails).toBeCalled();
+                expect(stubs.hidePreload).toBeCalled();
+                expect(docBase.somePageRendered).toBe(true);
+                expect(docBase.resize).toBeCalled();
+                expect(docBase.zoomControls.setCurrentScale).toBeCalledWith(docBase.pdfViewer.currentScale);
             });
 
-            it('should not init thumbnails if not enabled', () => {
+            test('should not init thumbnails if not enabled', () => {
                 docBase.options.enableThumbnailsSidebar = false;
                 docBase.pagerenderedHandler(docBase.event);
-                expect(stubs.initThumbnails).not.to.be.called;
-                expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
+                expect(stubs.initThumbnails).not.toBeCalled();
+                expect(docBase.zoomControls.setCurrentScale).toBeCalledWith(docBase.pdfViewer.currentScale);
             });
         });
 
         describe('pagechangingHandler()', () => {
             beforeEach(() => {
-                stubs.cachePage = sandbox.stub(docBase, 'cachePage');
-                stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.cachePage = jest.spyOn(docBase, 'cachePage').mockImplementation();
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 docBase.event = {
                     pageNumber: 1,
                 };
@@ -1886,64 +1883,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageCount: 1,
                 };
                 docBase.pageControls = {
-                    updateCurrentPage: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    updateCurrentPage: jest.fn(),
+                    removeListener: jest.fn(),
                 };
                 stubs.updateCurrentPage = docBase.pageControls.updateCurrentPage;
             });
 
-            it('should emit the pagefocus event', () => {
+            test('should emit the pagefocus event', () => {
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.emit).to.be.calledWith('pagefocus');
+                expect(stubs.emit).toBeCalledWith('pagefocus', 1);
             });
 
-            it('should update the current page', () => {
+            test('should update the current page', () => {
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.updateCurrentPage).to.be.calledWith(docBase.event.pageNumber);
+                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.event.pageNumber);
             });
 
-            it('should cache the page if it is loaded', () => {
+            test('should cache the page if it is loaded', () => {
                 docBase.loaded = true;
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.cachePage).to.be.calledWith(docBase.event.pageNumber);
+                expect(stubs.cachePage).toBeCalledWith(docBase.event.pageNumber);
             });
 
-            it('should not cache the page if it is not loaded', () => {
+            test('should not cache the page if it is not loaded', () => {
                 docBase.loaded = false;
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.cachePage).to.not.be.called;
+                expect(stubs.cachePage).not.toBeCalled();
             });
         });
 
         describe('handleFullscreenEnter()', () => {
-            it('should update the scale value, and resize the page', () => {
+            test('should update the scale value, and resize the page', () => {
                 docBase.pdfViewer = {
                     presentationModeState: 'normal',
                     currentScaleValue: 'normal',
                 };
-                const resizeStub = sandbox.stub(docBase, 'resize');
+                const resizeStub = jest.spyOn(docBase, 'resize').mockImplementation();
 
                 docBase.handleFullscreenEnter();
-                expect(resizeStub).to.be.called;
-                expect(docBase.pdfViewer.currentScaleValue).to.equal('page-fit');
+                expect(resizeStub).toBeCalled();
+                expect(docBase.pdfViewer.currentScaleValue).toBe('page-fit');
             });
         });
 
         describe('handleFullscreenExit()', () => {
-            it('should update the scale value, and resize the page', () => {
+            test('should update the scale value, and resize the page', () => {
                 docBase.pdfViewer = {
                     presentationModeState: 'fullscreen',
                     currentScaleValue: 'pagefit',
                 };
-                const resizeStub = sandbox.stub(docBase, 'resize');
+                const resizeStub = jest.spyOn(docBase, 'resize').mockImplementation();
 
                 docBase.handleFullscreenExit();
-                expect(resizeStub).to.be.called;
-                expect(docBase.pdfViewer.currentScaleValue).to.equal('auto');
+                expect(resizeStub).toBeCalled();
+                expect(docBase.pdfViewer.currentScaleValue).toBe('auto');
             });
         });
 
@@ -1951,30 +1948,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let scrollHandler;
 
             beforeEach(() => {
-                stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 docBase.scrollStarted = false;
                 scrollHandler = docBase.getScrollHandler();
             });
 
-            it('should emit the scrollstart event on a new scroll', () => {
+            test('should emit the scrollstart event on a new scroll', () => {
                 scrollHandler();
-                expect(stubs.emit).to.be.calledWith('scrollstart');
+                expect(stubs.emit).toBeCalledWith('scrollstart', { scrollLeft: 0, scrollTop: 0 });
             });
 
-            it('should not emit the scrollstart event on a continued scroll', () => {
+            test('should not emit the scrollstart event on a continued scroll', () => {
                 docBase.scrollStarted = true;
                 scrollHandler();
-                expect(stubs.emit).to.not.be.calledWith('scrollstart');
+                expect(stubs.emit).not.toBeCalledWith('scrollstart');
             });
 
-            it('should emit a scrollend event after scroll timeout', () => {
-                const clock = sinon.useFakeTimers();
+            test('should emit a scrollend event after scroll timeout', () => {
+                jest.useFakeTimers();
 
                 scrollHandler();
-                expect(stubs.emit).to.be.calledWith('scrollstart');
+                expect(stubs.emit).toBeCalledWith('scrollstart', { scrollLeft: 0, scrollTop: 0 });
 
-                clock.tick(SCROLL_END_TIMEOUT + 1);
-                expect(stubs.emit).to.be.calledWith('scrollend');
+                jest.advanceTimersByTime(SCROLL_END_TIMEOUT + 1);
+                expect(stubs.emit).toBeCalledWith('scrollend', { scrollLeft: 0, scrollTop: 0 });
             });
         });
 
@@ -1983,8 +1980,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             beforeEach(() => {
                 event = {
-                    stopPropagation: sandbox.stub(),
-                    preventDefault: sandbox.stub(),
+                    stopPropagation: jest.fn(),
+                    preventDefault: jest.fn(),
                     pageX: 0,
                     pageY: 0,
                     touches: [
@@ -2000,17 +1997,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.isPinching = false;
                 docBase.pdfViewer = {
-                    _getVisiblePages: sandbox.stub(),
+                    _getVisiblePages: jest.fn(),
                 };
-                sandbox.stub(util, 'getClosestPageToPinch').returns(document.createElement('div'));
-                sandbox.stub(util, 'getDistance');
+                jest.spyOn(util, 'getClosestPageToPinch').mockReturnValue(document.createElement('div'));
+                jest.spyOn(util, 'getDistance').mockImplementation();
             });
 
-            it('should do nothing if we are already pinching or if the event does not use two finger', () => {
+            test('should do nothing if we are already pinching or if the event does not use two finger', () => {
                 event.touches.length = 1;
 
                 docBase.pinchToZoomStartHandler(event);
-                expect(event.stopPropagation).to.not.be.called;
+                expect(event.stopPropagation).not.toBeCalled();
 
                 event.touches = [
                     {
@@ -2024,30 +2021,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ];
 
                 docBase.pinchToZoomStartHandler(event);
-                expect(event.stopPropagation).to.be.called;
+                expect(event.stopPropagation).toBeCalled();
             });
 
-            it('should prevent default behavior and indicate that we are pinching', () => {
+            test('should prevent default behavior and indicate that we are pinching', () => {
                 docBase.pinchToZoomStartHandler(event);
 
-                expect(docBase.isPinching).to.be.true;
-                expect(event.stopPropagation).to.be.called;
-                expect(event.preventDefault).to.be.called;
+                expect(docBase.isPinching).toBe(true);
+                expect(event.stopPropagation).toBeCalled();
+                expect(event.preventDefault).toBeCalled();
             });
 
-            it('should get the closest page and setup the pinching clases', () => {
+            test('should get the closest page and setup the pinching clases', () => {
                 docBase.docEl = document.createElement('div');
                 const pdfViewer = document.createElement('div');
                 docBase.docEl.appendChild(pdfViewer);
                 docBase.pinchToZoomStartHandler(event);
 
-                expect(docBase.pdfViewer._getVisiblePages).to.be.called;
-                expect(util.getClosestPageToPinch).to.be.called;
+                expect(docBase.pdfViewer._getVisiblePages).toBeCalled();
+                expect(util.getClosestPageToPinch).toBeCalled();
             });
 
-            it('should save the original distance for later scale calculation', () => {
+            test('should save the original distance for later scale calculation', () => {
                 docBase.pinchToZoomStartHandler(event);
-                expect(util.getDistance).to.be.calledWith(
+                expect(util.getDistance).toBeCalledWith(
                     event.touches[0].pageX,
                     event.touches[0].pageY,
                     event.touches[1].pageX,
@@ -2085,54 +2082,54 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     currentScale: 1,
                 };
 
-                sandbox.stub(util, 'getDistance');
+                jest.spyOn(util, 'getDistance').mockImplementation();
             });
 
-            it('should do nothing if we are not pinching', () => {
+            test('should do nothing if we are not pinching', () => {
                 docBase.isPinching = false;
 
                 docBase.pinchToZoomChangeHandler(eventWithoutScale);
-                expect(util.getDistance).to.not.be.called;
+                expect(util.getDistance).not.toBeCalled();
 
                 docBase.isPinching = true;
 
                 docBase.pinchToZoomChangeHandler(eventWithoutScale);
-                expect(util.getDistance).to.be.called;
+                expect(util.getDistance).toBeCalled();
             });
 
             describe('ignored chages', () => {
-                it('should do nothing if the scale is 1', () => {
+                test('should do nothing if the scale is 1', () => {
                     eventWithScale.scale = 1;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
 
-                it('should do nothing if the scale change is less than 0.01', () => {
+                test('should do nothing if the scale change is less than 0.01', () => {
                     docBase.pinchScale = 1.5;
                     eventWithScale.scale = 1.501;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
 
-                it('should do nothing if the scale change bigger than 3', () => {
+                test('should do nothing if the scale change bigger than 3', () => {
                     docBase.pinchScale = 1;
                     eventWithScale.scale = 3.5;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
 
-                it('should do nothing if the scale change bigger than .25', () => {
+                test('should do nothing if the scale change bigger than .25', () => {
                     docBase.pinchScale = 1;
                     eventWithScale.scale = 0.1;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
 
-                it('should do nothing if the proposed scale is greater than the MAX_SCALE', () => {
+                test('should do nothing if the proposed scale is greater than the MAX_SCALE', () => {
                     docBase.pdfViewer = {
                         currentScale: 7,
                     };
@@ -2140,10 +2137,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     eventWithScale.scale = 2;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
 
-                it('should do nothing if the proposed scale is less than the MIN_SCALE', () => {
+                test('should do nothing if the proposed scale is less than the MIN_SCALE', () => {
                     docBase.pdfViewer = {
                         currentScale: 0.12,
                     };
@@ -2151,14 +2148,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     eventWithScale.scale = 0.25;
                     docBase.pinchToZoomChangeHandler(eventWithScale);
 
-                    expect(docBase.pinchPage.style.transform).to.equal(undefined);
+                    expect(docBase.pinchPage.style.transform).toBeFalsy();
                 });
             });
 
-            it('should transform the pinched page based on the new scale value', () => {
+            test('should transform the pinched page based on the new scale value', () => {
                 docBase.pinchToZoomChangeHandler(eventWithScale);
-                expect(docBase.pinchPage.style.transform).to.equal('scale(1.5)');
-                expect(docBase.pinchPage.classList.contains('pinch-page')).to.be.true;
+                expect(docBase.pinchPage.style.transform).toBe('scale(1.5)');
+                expect(docBase.pinchPage.classList.contains('pinch-page')).toBe(true);
             });
         });
 
@@ -2167,105 +2164,105 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScaleValue: 1,
                     currentScale: 1,
-                    update: sandbox.stub(),
+                    update: jest.fn(),
                 };
 
                 docBase.pinchScale = 1.5;
 
-                docBase.docEl.scroll = sandbox.stub();
+                docBase.docEl.scroll = jest.fn();
 
                 docBase.isPinching = true;
                 docBase.pinchPage = document.createElement('div');
             });
 
-            it('should do nothing if we are not pinching', () => {
+            test('should do nothing if we are not pinching', () => {
                 docBase.isPinching = false;
                 docBase.pinchToZoomEndHandler();
-                expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
+                expect(docBase.pdfViewer.currentScaleValue).toBe(1);
             });
 
-            it('should do nothing if no pinched page exists', () => {
+            test('should do nothing if no pinched page exists', () => {
                 docBase.pinchPage = null;
                 docBase.pinchToZoomEndHandler();
-                expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
+                expect(docBase.pdfViewer.currentScaleValue).toBe(1);
             });
 
-            it('should perform a pdf.js zoom', () => {
+            test('should perform a pdf.js zoom', () => {
                 docBase.pinchToZoomEndHandler();
-                expect(docBase.pdfViewer.currentScaleValue).to.equal(1.5);
+                expect(docBase.pdfViewer.currentScaleValue).toBe(1.5);
             });
 
-            it('should scroll to offset the zoom', () => {
+            test('should scroll to offset the zoom', () => {
                 docBase.pinchToZoomEndHandler();
-                expect(docBase.docEl.scroll).to.be.called;
+                expect(docBase.docEl.scroll).toBeCalled();
             });
 
-            it('should reset pinching state variables', () => {
+            test('should reset pinching state variables', () => {
                 docBase.pinchToZoomEndHandler();
 
-                expect(docBase.isPinching).to.be.false;
-                expect(docBase.originalDistance).to.equal(0);
-                expect(docBase.pinchScale).to.equal(1);
-                expect(docBase.pinchPage).to.equal(null);
+                expect(docBase.isPinching).toBe(false);
+                expect(docBase.originalDistance).toBe(0);
+                expect(docBase.pinchScale).toBe(1);
+                expect(docBase.pinchPage).toBeNull();
             });
         });
 
         describe('getStartPage()', () => {
-            it('should return the start page as a number', () => {
+            test('should return the start page as a number', () => {
                 const startAt = {
                     value: 3,
                     unit: PAGES_UNIT_NAME,
                 };
 
-                expect(docBase.getStartPage(startAt)).to.equal(3);
+                expect(docBase.getStartPage(startAt)).toBe(3);
             });
 
-            it('should return the floored number if a floating point number is passed', () => {
+            test('should return the floored number if a floating point number is passed', () => {
                 const startAt = {
                     value: 4.1,
                     unit: PAGES_UNIT_NAME,
                 };
 
-                expect(docBase.getStartPage(startAt)).to.equal(4);
+                expect(docBase.getStartPage(startAt)).toBe(4);
             });
 
-            it('should return undefined if a value < 1 is passed', () => {
+            test('should return undefined if a value < 1 is passed', () => {
                 let startAt = {
                     value: 0,
                     unit: PAGES_UNIT_NAME,
                 };
 
-                expect(docBase.getStartPage(startAt)).to.be.undefined;
+                expect(docBase.getStartPage(startAt)).toBeUndefined();
 
                 startAt = {
                     value: -100,
                     unit: PAGES_UNIT_NAME,
                 };
 
-                expect(docBase.getStartPage(startAt)).to.be.undefined;
+                expect(docBase.getStartPage(startAt)).toBeUndefined();
             });
 
-            it('should return undefined if an invalid unit is passed', () => {
+            test('should return undefined if an invalid unit is passed', () => {
                 const startAt = {
                     value: 3,
                     unit: 'foo',
                 };
 
-                expect(docBase.getStartPage(startAt)).to.be.undefined;
+                expect(docBase.getStartPage(startAt)).toBeUndefined();
             });
 
-            it('should return undefined if an invalid value is passed', () => {
+            test('should return undefined if an invalid value is passed', () => {
                 const startAt = {
                     value: 'foo',
                     unit: PAGES_UNIT_NAME,
                 };
 
-                expect(docBase.getStartPage(startAt)).to.be.undefined;
+                expect(docBase.getStartPage(startAt)).toBeUndefined();
             });
 
-            it('should return undefined if no unit and value is passed', () => {
+            test('should return undefined if no unit and value is passed', () => {
                 const startAt = {};
-                expect(docBase.getStartPage(startAt)).to.be.undefined;
+                expect(docBase.getStartPage(startAt)).toBeUndefined();
             });
         });
 
@@ -2277,52 +2274,51 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pagesCount: 4,
                     currentPageNumber: 1,
                     currentScale: 0.9,
-                    cleanup: sandbox.stub(),
+                    cleanup: jest.fn(),
                 };
 
                 docBase.controls = {
-                    add: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    add: jest.fn(),
+                    removeListener: jest.fn(),
                 };
 
                 docBase.zoomControls = {
-                    init: sandbox.stub(),
+                    init: jest.fn(),
                 };
 
                 docBase.pageControls = {
-                    add: sandbox.stub(),
-                    removeListener: sandbox.stub(),
+                    add: jest.fn(),
+                    removeListener: jest.fn(),
                 };
 
                 docBase.annotationControls = {
-                    init: sandbox.stub(),
-                    destroy: sandbox.stub(),
+                    init: jest.fn(),
+                    destroy: jest.fn(),
                 };
 
-                stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
-                stubs.areNewAnnotationsEnabled = sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
-                stubs.hasCreatePermission = sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+                stubs.areNewAnnotationsEnabled = jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                stubs.hasCreatePermission = jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(true);
+                stubs.checkPermission.mockReturnValue(true);
             });
 
-            it('should add the correct controls', () => {
+            test('should add the correct controls', () => {
                 docBase.bindControlListeners();
 
-                expect(docBase.controls.add).to.be.calledWith(
+                expect(docBase.controls.add).toBeCalledWith(
                     __('toggle_thumbnails'),
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
                     ICON_THUMBNAILS_TOGGLE,
                 );
 
-                expect(docBase.controls.add).to.be.calledWith(
+                expect(docBase.controls.add).toBeCalledWith(
                     __('toggle_findbar'),
-                    sinon.match.func,
+                    expect.any(Function),
                     'bp-toggle-findbar-icon',
                     ICON_SEARCH,
                 );
 
-                expect(docBase.zoomControls.init).to.be.calledWith(0.9, {
+                expect(docBase.zoomControls.init).toBeCalledWith(0.9, {
                     maxZoom: 10,
                     minZoom: 0.1,
                     zoomInClassName: 'bp-doc-zoom-in-icon',
@@ -2331,21 +2327,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     onZoomOut: docBase.zoomOut,
                 });
 
-                expect(docBase.pageControls.add).to.be.calledWith(1, 4);
+                expect(docBase.pageControls.add).toBeCalledWith(1, 4);
 
-                expect(docBase.controls.add).to.be.calledWith(
+                expect(docBase.controls.add).toBeCalledWith(
                     __('enter_fullscreen'),
                     docBase.toggleFullscreen,
                     'bp-enter-fullscreen-icon',
                     ICON_FULLSCREEN_IN,
                 );
-                expect(docBase.controls.add).to.be.calledWith(
+                expect(docBase.controls.add).toBeCalledWith(
                     __('exit_fullscreen'),
                     docBase.toggleFullscreen,
                     'bp-exit-fullscreen-icon',
                     ICON_FULLSCREEN_OUT,
                 );
-                expect(docBase.annotationControls.init).to.be.calledWith({
+                expect(docBase.annotationControls.init).toBeCalledWith({
                     fileId: docBase.options.file.id,
                     onClick: docBase.handleAnnotationControlsClick,
                     onEscape: docBase.handleAnnotationControlsEscape,
@@ -2353,18 +2349,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should not add annotationControls if no create permission', () => {
-                stubs.hasCreatePermission.returns(false);
+            test('should not add annotationControls if no create permission', () => {
+                stubs.hasCreatePermission.mockReturnValue(false);
 
                 docBase.bindControlListeners();
-                expect(docBase.annotationControls.init).not.to.be.called;
+                expect(docBase.annotationControls.init).not.toBeCalled();
             });
 
-            it('should not add annotationControls if new annotations is not enabled', () => {
-                stubs.areNewAnnotationsEnabled.returns(false);
+            test('should not add annotationControls if new annotations is not enabled', () => {
+                stubs.areNewAnnotationsEnabled.mockReturnValue(false);
 
                 docBase.bindControlListeners();
-                expect(docBase.annotationControls.init).not.to.be.called;
+                expect(docBase.annotationControls.init).not.toBeCalled();
             });
 
             [true, false].forEach(option =>
@@ -2373,27 +2369,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     docBase.bindControlListeners();
 
-                    expect(docBase.annotationControls.init).to.be.calledWith(
-                        sinon.match({
+                    expect(docBase.annotationControls.init).toBeCalledWith(
+                        expect.objectContaining({
                             showHighlightText: option,
                         }),
                     );
                 }),
             );
 
-            it('should not showHighlightText if file has no download permission', () => {
-                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+            test('should not showHighlightText if file has no download permission', () => {
+                stubs.checkPermission.mockReturnValue(false);
 
                 docBase.bindControlListeners();
 
-                expect(docBase.annotationControls.init).to.be.calledWith(
-                    sinon.match({
+                expect(docBase.annotationControls.init).toBeCalledWith(
+                    expect.objectContaining({
                         showHighlightText: false,
                     }),
                 );
             });
 
-            it('should not add the toggle thumbnails control if the option is not enabled', () => {
+            test('should not add the toggle thumbnails control if the option is not enabled', () => {
                 // Create a new instance that has enableThumbnailsSidebar as false
                 docBase.options.enableThumbnailsSidebar = false;
 
@@ -2401,7 +2397,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.bindControlListeners();
 
                 // Check expectations
-                expect(docBase.controls.add).to.not.be.calledWith(
+                expect(docBase.controls.add).not.toBeCalledWith(
                     __('toggle_thumbnails'),
                     docBase.toggleThumbnails,
                     'bp-toggle-thumbnails-icon',
@@ -2409,14 +2405,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            it('should not add the find controls if find is disabled', () => {
-                stubs.isFindDisabled.returns(true);
+            test('should not add the find controls if find is disabled', () => {
+                jest.spyOn(docBase, 'isFindDisabled').mockReturnValue(true);
 
                 docBase.bindControlListeners();
 
-                expect(docBase.controls.add).not.to.be.calledWith(
+                expect(docBase.controls.add).not.toBeCalledWith(
                     __('toggle_findbar'),
-                    sinon.match.func,
+                    expect.objectContaining.func,
                     'bp-toggle-findbar-icon',
                     ICON_SEARCH,
                 );
@@ -2425,17 +2421,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('toggleThumbnails()', () => {
             let thumbnailsSidebar;
-            let clock;
 
             beforeEach(() => {
-                sandbox.stub(docBase, 'resize');
-                sandbox.stub(docBase, 'emitMetric');
-                sandbox.stub(docBase, 'emit');
+                jest.useFakeTimers();
+                jest.spyOn(docBase, 'resize').mockImplementation();
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                jest.spyOn(docBase, 'emit').mockImplementation();
 
-                clock = sinon.useFakeTimers();
-
-                stubs.toggleSidebar = sandbox.stub();
-                stubs.isSidebarOpen = sandbox.stub();
+                stubs.toggleSidebar = jest.fn();
+                stubs.isSidebarOpen = jest.fn();
 
                 thumbnailsSidebar = {
                     toggle: stubs.toggleSidebar,
@@ -2445,134 +2439,128 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             afterEach(() => {
-                clock.restore();
+                jest.clearAllTimers();
             });
 
-            it('should do nothing if thumbnails sidebar does not exist', () => {
+            test('should do nothing if thumbnails sidebar does not exist', () => {
                 docBase.thumbnailsSidebar = undefined;
 
                 docBase.toggleThumbnails();
-                clock.tick(300);
+                jest.advanceTimersByTime(300);
 
-                expect(docBase.resize).not.to.be.called;
+                expect(docBase.resize).not.toBeCalled();
             });
 
-            it('should toggle open and resize the viewer', () => {
+            test('should toggle open and resize the viewer', () => {
                 docBase.thumbnailsSidebar = thumbnailsSidebar;
                 docBase.pdfViewer = { pagesCount: 10 };
                 thumbnailsSidebar.isOpen = true;
 
                 docBase.toggleThumbnails();
-                clock.tick(301);
+                jest.advanceTimersByTime(301);
 
-                expect(stubs.classListAdd).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                expect(stubs.toggleSidebar).to.be.called;
-                expect(docBase.resize).to.be.called;
-                expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
-                expect(docBase.emit).to.be.calledWith('thumbnailsOpen');
+                expect(stubs.classListAdd).toBeCalledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                expect(stubs.toggleSidebar).toBeCalled();
+                expect(docBase.resize).toBeCalled();
+                expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 10 });
+                expect(docBase.emit).toBeCalledWith('thumbnailsOpen');
             });
 
-            it('should toggle close and resize the viewer', () => {
+            test('should toggle close and resize the viewer', () => {
                 docBase.thumbnailsSidebar = thumbnailsSidebar;
                 docBase.pdfViewer = { pagesCount: 10 };
 
                 docBase.toggleThumbnails();
-                clock.tick(301);
+                jest.advanceTimersByTime(301);
 
-                expect(stubs.classListRemove).to.be.calledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                expect(stubs.toggleSidebar).to.be.called;
-                expect(docBase.resize).to.be.called;
-                expect(docBase.emitMetric).to.be.calledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
-                expect(docBase.emit).to.be.calledWith('thumbnailsClose');
+                expect(stubs.classListRemove).toBeCalledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                expect(stubs.toggleSidebar).toBeCalled();
+                expect(docBase.resize).toBeCalled();
+                expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
+                expect(docBase.emit).toBeCalledWith('thumbnailsClose');
             });
         });
 
         describe('getMetricsWhitelist()', () => {
-            it('should return the thumbnail sidebar events', () => {
+            test('should return the thumbnail sidebar events', () => {
                 const expWhitelist = [
                     USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE,
                     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
                     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
                 ];
 
-                expect(docBase.getMetricsWhitelist()).to.be.eql(expWhitelist);
+                expect(docBase.getMetricsWhitelist()).toEqual(expWhitelist);
             });
         });
 
         describe('handleAnnotatorEvents()', () => {
-            let thumbnailsSidebarEl;
-
             beforeEach(() => {
-                stubs.classListAdd = sandbox.stub();
-                stubs.classListRemove = sandbox.stub();
+                stubs.classListAdd = jest.fn();
+                stubs.classListRemove = jest.fn();
+                stubs.handleAnnotatorEvents = jest
+                    .spyOn(BaseViewer.prototype, 'handleAnnotatorEvents')
+                    .mockImplementation();
 
-                thumbnailsSidebarEl = {
+                docBase.thumbnailsSidebarEl = {
                     classList: {
                         add: stubs.classListAdd,
                         remove: stubs.classListRemove,
                     },
-                    remove: sandbox.stub(),
+                    remove: jest.fn(),
                 };
-
-                docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
-
-                stubs.handleAnnotatorEvents = sandbox.stub(BaseViewer.prototype, 'handleAnnotatorEvents');
             });
 
-            it('should do nothing if thumbnails sidebar element does not exist', () => {
+            test('should do nothing if thumbnails sidebar element does not exist', () => {
                 docBase.thumbnailsSidebarEl = null;
-
                 docBase.handleAnnotatorEvents();
 
-                expect(stubs.classListAdd).not.to.be.called;
-                expect(stubs.classListRemove).not.to.be.called;
-
-                docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+                expect(stubs.classListAdd).not.toBeCalled();
+                expect(stubs.classListRemove).not.toBeCalled();
             });
 
-            it('should add a class if annotator mode enter', () => {
+            test('should add a class if annotator mode enter', () => {
                 docBase.handleAnnotatorEvents({ event: 'annotationmodeenter' });
 
-                expect(stubs.classListAdd).to.be.called;
-                expect(stubs.classListRemove).not.to.be.called;
+                expect(stubs.classListAdd).toBeCalled();
+                expect(stubs.classListRemove).not.toBeCalled();
             });
 
-            it('should remove a class if annotator mode exit', () => {
+            test('should remove a class if annotator mode exit', () => {
                 docBase.handleAnnotatorEvents({ event: 'annotationmodeexit' });
 
-                expect(stubs.classListAdd).not.to.be.called;
-                expect(stubs.classListRemove).to.be.called;
+                expect(stubs.classListAdd).not.toBeCalled();
+                expect(stubs.classListRemove).toBeCalled();
             });
 
-            it('should do nothing if another annotator mode event', () => {
+            test('should do nothing if another annotator mode event', () => {
                 docBase.handleAnnotatorEvents({ event: 'annotationeventfoo' });
 
-                expect(stubs.classListAdd).not.to.be.called;
-                expect(stubs.classListRemove).not.to.be.called;
+                expect(stubs.classListAdd).not.toBeCalled();
+                expect(stubs.classListRemove).not.toBeCalled();
             });
         });
 
         describe('getCachedThumbnailsToggleState()', () => {
             beforeEach(() => {
-                stubs.get = sandbox.stub(docBase.cache, 'get');
+                stubs.get = jest.spyOn(docBase.cache, 'get').mockImplementation();
             });
 
-            it('should return undefined if there is no existing cache entry', () => {
-                stubs.get.returns(undefined);
+            test('should return undefined if there is no existing cache entry', () => {
+                stubs.get.mockReturnValue(undefined);
 
-                expect(docBase.getCachedThumbnailsToggledState()).to.be.undefined;
+                expect(docBase.getCachedThumbnailsToggledState()).toBeUndefined();
             });
 
-            it('should return undefined if there is no existing cache entry for the file', () => {
-                stubs.get.returns({ '123': true });
+            test('should return undefined if there is no existing cache entry for the file', () => {
+                stubs.get.mockReturnValue({ '123': true });
 
-                expect(docBase.getCachedThumbnailsToggledState()).to.be.undefined;
+                expect(docBase.getCachedThumbnailsToggledState()).toBeUndefined();
             });
 
-            it('should return the cached value if there is an existing cache entry for the file', () => {
-                stubs.get.returns({ '0': true });
+            test('should return the cached value if there is an existing cache entry for the file', () => {
+                stubs.get.mockReturnValue({ '0': true });
 
-                expect(docBase.getCachedThumbnailsToggledState()).to.be.true;
+                expect(docBase.getCachedThumbnailsToggledState()).toBe(true);
             });
         });
 
@@ -2580,36 +2568,32 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
             beforeEach(() => {
-                stubs.set = sandbox.stub(docBase.cache, 'set');
-                stubs.get = sandbox.stub(docBase.cache, 'get');
+                stubs.set = jest.spyOn(docBase.cache, 'set').mockImplementation();
+                stubs.get = jest.spyOn(docBase.cache, 'get').mockImplementation();
             });
 
-            it('should set toggled state to new object', () => {
-                stubs.get.returns(undefined);
+            test('should set toggled state to new object', () => {
+                stubs.get.mockReturnValue(undefined);
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).to.be.calledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
             });
 
-            it('should set toggled state to existing object', () => {
-                stubs.get.returns({ '123': false });
+            test('should set toggled state to existing object', () => {
+                stubs.get.mockReturnValue({ '123': false });
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).to.be.calledWith(
-                    THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY,
-                    { '0': true, '123': false },
-                    true,
-                );
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true, '123': false }, true);
             });
 
-            it('should update toggled state to existing object', () => {
-                stubs.get.returns({ '0': false });
+            test('should update toggled state to existing object', () => {
+                stubs.get.mockReturnValue({ '0': false });
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).to.be.calledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
             });
         });
 
@@ -2617,52 +2601,54 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let mockPdfViewer;
 
             beforeEach(() => {
-                stubs.getCachedThumbnailsToggledState = sandbox.stub(docBase, 'getCachedThumbnailsToggledState');
+                stubs.getCachedThumbnailsToggledState = jest
+                    .spyOn(docBase, 'getCachedThumbnailsToggledState')
+                    .mockImplementation();
                 mockPdfViewer = {
                     pdfDocument: { numPages: 5 },
                 };
                 docBase.pdfViewer = mockPdfViewer;
             });
 
-            it('should return true if cached value is true', () => {
-                stubs.getCachedThumbnailsToggledState.returns(true);
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+            test('should return true if cached value is true', () => {
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(true);
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(true);
             });
 
-            it('should return false if cached value is false', () => {
-                stubs.getCachedThumbnailsToggledState.returns(false);
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+            test('should return false if cached value is false', () => {
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(false);
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(false);
             });
 
-            it('should return true if cached value is anything other than false', () => {
-                stubs.getCachedThumbnailsToggledState.returns(undefined);
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+            test('should return true if cached value is anything other than false', () => {
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(undefined);
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(true);
 
-                stubs.getCachedThumbnailsToggledState.returns(null);
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(null);
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(true);
 
-                stubs.getCachedThumbnailsToggledState.returns('123');
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.true;
+                stubs.getCachedThumbnailsToggledState.mockReturnValue('123');
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(true);
             });
 
-            it('should return false if document only has 1 page, even if cached state is true', () => {
-                stubs.getCachedThumbnailsToggledState.returns(true);
+            test('should return false if document only has 1 page, even if cached state is true', () => {
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(true);
                 mockPdfViewer = {
                     pdfDocument: { numPages: 1 },
                 };
                 docBase.pdfViewer = mockPdfViewer;
 
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(false);
             });
 
-            it('should return false if pdfDocument is not found', () => {
-                stubs.getCachedThumbnailsToggledState.returns(true);
+            test('should return false if pdfDocument is not found', () => {
+                stubs.getCachedThumbnailsToggledState.mockReturnValue(true);
                 mockPdfViewer = {
                     pdfDocument: {},
                 };
                 docBase.pdfViewer = mockPdfViewer;
 
-                expect(docBase.shouldThumbnailsBeToggled()).to.be.false;
+                expect(docBase.shouldThumbnailsBeToggled()).toBe(false);
             });
         });
     });
