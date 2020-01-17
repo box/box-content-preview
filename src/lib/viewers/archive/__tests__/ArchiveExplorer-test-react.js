@@ -135,7 +135,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
     });
 
     describe('handleSearch()', () => {
-        it('should set correct state when search query is not empty', () => {
+        it('should set correct state when search query longer than 1 letter', () => {
             const component = getComponent({ filename, itemCollection: data });
 
             component.instance().handleSearch('test');
@@ -148,6 +148,10 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             component.instance().handleSearch(' ');
             expect(component.state().searchQuery).to.equal(' ');
+            expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
+
+            component.instance().handleSearch('a');
+            expect(component.state().searchQuery).to.equal('a');
             expect(component.state().view).to.equal(VIEWS.VIEW_FOLDER);
         });
     });

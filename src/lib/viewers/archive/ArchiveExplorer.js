@@ -130,7 +130,7 @@ class ArchiveExplorer extends React.Component {
     handleSearch = query =>
         this.setState({
             searchQuery: query,
-            view: query.trim() ? VIEW_SEARCH : VIEW_FOLDER,
+            view: query.trim().length >= 2 ? VIEW_SEARCH : VIEW_FOLDER,
         });
 
     /**
