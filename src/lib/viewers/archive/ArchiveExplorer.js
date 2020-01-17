@@ -30,7 +30,7 @@ class ArchiveExplorer extends React.Component {
                 type: PropTypes.string.isRequired,
                 absolute_path: PropTypes.string.isRequired,
                 name: PropTypes.string.isRequired,
-                modified_at: PropTypes.string.isRequired,
+                modified_at: PropTypes.string,
                 size: PropTypes.number.isRequired,
                 item_collection: PropTypes.arrayOf(PropTypes.string),
             }),
@@ -207,8 +207,8 @@ class ArchiveExplorer extends React.Component {
                         view={view}
                     />
                     <div className="bp-ArchiveExplorer-table">
-                        <AutoSizer disableWidth>
-                            {({ height }) => (
+                        <AutoSizer>
+                            {({ height, width }) => (
                                 <VirtualizedTable
                                     height={height}
                                     rowData={itemList}
@@ -216,6 +216,7 @@ class ArchiveExplorer extends React.Component {
                                     sort={this.handleSort}
                                     sortBy={sortBy}
                                     sortDirection={sortDirection}
+                                    width={width}
                                 >
                                     {intl => [
                                         <Column
