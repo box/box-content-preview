@@ -1,6 +1,7 @@
 Cypress.env({
     // NOTE: The token used is a readonly token accessing public data in a demo enterprise.
     ACCESS_TOKEN: 'S8wjvjOL9GEK5VtXsQNVMOwSrx1g55oC',
+    FILE_ID_ARCHIVE: '589625563707',
     FILE_ID_BAD: '433514141824',
     FILE_ID_DOC_LARGE: '420985736453',
     FILE_ID_DOC: '415542803939',
@@ -16,5 +17,5 @@ Cypress.env({
     FILE_ID_TXT: '420870357452',
     FILE_ID_VIDEO_SMALL: '415542846356',
     FILE_ID_VIDEO_SUBTITLES_TRACKS: '415542245854',
-    FILE_ID_VIDEO: '416047501580'
+    FILE_ID_VIDEO: '416047501580',
 });
