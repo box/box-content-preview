@@ -219,5 +219,20 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             expect(sortedList[0]).to.equal(itemList[0]);
         });
+
+        it('should sort item list with null values', () => {
+            data[1].modified_at = null;
+            data[2].modified_at = null;
+
+            const component = getComponent({ filename, itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'modified_at' });
+
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(itemList[0]);
+        });
     });
 });
