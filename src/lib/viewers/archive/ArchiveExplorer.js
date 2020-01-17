@@ -167,7 +167,11 @@ class ArchiveExplorer extends React.Component {
             return itemList;
         }
 
-        const sortedItems = itemList.sort((a, b) => {
+        const sortedItems = itemList.sort((a = {}, b = {}) => {
+            if (!a[sortBy] || !b[sortBy]) {
+                return -1;
+            }
+
             if (typeof a[sortBy] === 'number' && typeof b[sortBy] === 'number') {
                 return a[sortBy] - b[sortBy];
             }
