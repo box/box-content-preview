@@ -1,5 +1,5 @@
 // <reference types="Cypress" />
-describe('Archive Viewer', () => {
+describe.skip('Archive Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_ARCHIVE');
 
