@@ -50,8 +50,8 @@ class ArchiveExplorer extends React.Component {
         this.state = {
             fullPath: ROOT_FOLDER,
             searchQuery: '',
-            sortBy: '',
-            sortDirection: SortDirection.ASC,
+            sortBy: 'name',
+            sortDirection: SortDirection.DESC,
             view: VIEW_FOLDER,
         };
     }
@@ -168,8 +168,8 @@ class ArchiveExplorer extends React.Component {
         }
 
         const sortedItems = itemList.sort((a = {}, b = {}) => {
-            if (!a[sortBy] || !b[sortBy]) {
-                return -1;
+            if (a[sortBy] === null || b[sortBy] === null) {
+                return 1;
             }
 
             if (typeof a[sortBy] === 'number' && typeof b[sortBy] === 'number') {
@@ -179,7 +179,7 @@ class ArchiveExplorer extends React.Component {
             return a[sortBy].localeCompare(b[sortBy]);
         });
 
-        return sortDirection === SortDirection.ASC ? sortedItems : sortedItems.reverse();
+        return sortDirection === SortDirection.DESC ? sortedItems : sortedItems.reverse();
     }
 
     /**
