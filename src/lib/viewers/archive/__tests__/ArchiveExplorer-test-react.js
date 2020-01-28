@@ -181,23 +181,12 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
     });
 
     describe('sortItemList()', () => {
-        it('should sort itemList by size and be in ASC order', () => {
+        it('should sort itemList by size and be in DESC order', () => {
             const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
-            instance.handleSort({ sortBy: 'size', sortDirection: 'ASC' });
-            const sortedList = instance.sortItemList(itemList);
-
-            expect(sortedList[0]).to.equal(data[2]);
-        });
-
-        it('should sort itemList by name and be in DESC order', () => {
-            const component = getComponent({ filename, itemCollection: data });
-            const instance = component.instance();
-            const itemList = instance.getItemList(data, 'test/');
-
-            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
+            instance.handleSort({ sortBy: 'size', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
             expect(sortedList[0]).to.equal(data[2]);
@@ -209,6 +198,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const itemList = instance.getItemList(data, 'test/');
 
             instance.handleSort({ sortBy: 'name', sortDirection: 'ASC' });
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(data[2]);
+        });
+
+        it('should sort itemList by name and be in DESC order', () => {
+            const component = getComponent({ filename, itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
             expect(sortedList[0]).to.equal(data[1]);
@@ -224,7 +224,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(sortedList[0]).to.equal(itemList[0]);
         });
 
-        it('should sort item list with null values', () => {
+        it('should sort item list with string values and null', () => {
             data[1].modified_at = null;
             data[2].modified_at = null;
 
@@ -237,6 +237,35 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const sortedList = instance.sortItemList(itemList);
 
             expect(sortedList[0]).to.equal(itemList[0]);
+        });
+
+        it('should sort items with number values and null', () => {
+            const mockData = [
+                { size: 1 },
+                { size: 1 },
+                { size: 130 },
+                { size: null },
+                { size: 100 },
+                { size: undefined },
+            ];
+            const sortedMockData = [
+                { size: null },
+                { size: undefined },
+                { size: 130 },
+                { size: 100 },
+                { size: 1 },
+                { size: 1 },
+            ];
+            const component = getComponent({ filename, itemCollection: data });
+            const instance = component.instance();
+
+            instance.handleSort({ sortBy: 'size' });
+
+            expect(instance.sortItemList(mockData).toString()).to.equal(sortedMockData.toString());
+
+            instance.handleSort({ sortBy: 'size', sortDirection: 'ASC' });
+
+            expect(instance.sortItemList(mockData).toString()).to.equal(sortedMockData.reverse().toString());
         });
     });
 });
