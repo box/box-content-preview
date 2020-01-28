@@ -181,23 +181,12 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
     });
 
     describe('sortItemList()', () => {
-        it('should sort itemList by size and be in ASC order', () => {
+        it('should sort itemList by size and be in DESC order', () => {
             const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
             const itemList = instance.getItemList(data, 'test/');
 
-            instance.handleSort({ sortBy: 'size', sortDirection: 'ASC' });
-            const sortedList = instance.sortItemList(itemList);
-
-            expect(sortedList[0]).to.equal(data[2]);
-        });
-
-        it('should sort itemList by name and be in DESC order', () => {
-            const component = getComponent({ filename, itemCollection: data });
-            const instance = component.instance();
-            const itemList = instance.getItemList(data, 'test/');
-
-            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
+            instance.handleSort({ sortBy: 'size', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
             expect(sortedList[0]).to.equal(data[2]);
@@ -209,6 +198,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const itemList = instance.getItemList(data, 'test/');
 
             instance.handleSort({ sortBy: 'name', sortDirection: 'ASC' });
+            const sortedList = instance.sortItemList(itemList);
+
+            expect(sortedList[0]).to.equal(data[2]);
+        });
+
+        it('should sort itemList by name and be in DESC order', () => {
+            const component = getComponent({ filename, itemCollection: data });
+            const instance = component.instance();
+            const itemList = instance.getItemList(data, 'test/');
+
+            instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
             expect(sortedList[0]).to.equal(data[1]);
