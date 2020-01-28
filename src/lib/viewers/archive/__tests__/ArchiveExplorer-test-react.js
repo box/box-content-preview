@@ -240,8 +240,22 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
 
         it('should sort items with number values and null', () => {
-            const mockData = [{ size: 1 }, { size: 1 }, { size: 130 }, { size: null }, { size: 100 }];
-            const sortedMockData = [{ size: null }, { size: 130 }, { size: 100 }, { size: 1 }, { size: 1 }];
+            const mockData = [
+                { size: 1 },
+                { size: 1 },
+                { size: 130 },
+                { size: null },
+                { size: 100 },
+                { size: undefined },
+            ];
+            const sortedMockData = [
+                { size: null },
+                { size: undefined },
+                { size: 130 },
+                { size: 100 },
+                { size: 1 },
+                { size: 1 },
+            ];
             const component = getComponent({ filename, itemCollection: data });
             const instance = component.instance();
 

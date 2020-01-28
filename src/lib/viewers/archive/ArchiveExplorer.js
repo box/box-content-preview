@@ -171,11 +171,11 @@ class ArchiveExplorer extends React.Component {
             const aItem = a[sortBy];
             const bItem = b[sortBy];
 
-            if (aItem === null) {
+            if (aItem === null || aItem === undefined) {
                 return 1;
             }
 
-            if (bItem === null) {
+            if (bItem === null || bItem === undefined) {
                 return -1;
             }
 
