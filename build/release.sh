@@ -15,7 +15,7 @@ cmd() {
         return 0
     fi
 
-    return "$@"
+    "$@"
 }
 
 # Major, minor, or patch release
