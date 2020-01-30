@@ -647,7 +647,6 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
-        const httpHeaders = {};
         const queryParams = {};
 
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
@@ -669,12 +668,6 @@ class DocBaseViewer extends BaseViewer {
         const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
         const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
 
-        // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
-        // see: https://bugs.webkit.org/show_bug.cgi?id=82672
-        if (Browser.isIOS()) {
-            httpHeaders['If-None-Match'] = 'webkit-no-cache';
-        }
-
         // If range requests are disabled, request the gzip compressed version of the representation
         this.encoding = disableRange ? ENCODING_TYPES.GZIP : undefined;
 
@@ -690,7 +683,6 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            httpHeaders,
             rangeChunkSize,
             url: appendQueryParams(pdfUrl, queryParams),
         });

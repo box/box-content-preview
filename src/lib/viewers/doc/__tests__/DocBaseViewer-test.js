@@ -1216,26 +1216,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer(url).then(() => {
                     expect(stubs.getDocument).to.be.calledWith(
                         sinon.match({
-                            httpHeaders: sinon.match.object,
                             rangeChunkSize: largeChunkSize,
-                        }),
-                    );
-                });
-            });
-
-            it('should set a cache-busting header if on mobile', () => {
-                docBase.options.location = {
-                    locale: 'en-US',
-                };
-                sandbox.stub(Browser, 'isIOS').returns(true);
-
-                return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(
-                        sinon.match({
-                            httpHeaders: {
-                                'If-None-Match': 'webkit-no-cache',
-                            },
-                            rangeChunkSize: 1048576,
                         }),
                     );
                 });
@@ -1245,8 +1226,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.location = {
                     locale: 'en-US',
                 };
-                // Excluding IOS for If-None-Match cache busting
-                sandbox.stub(Browser, 'isIOS').returns(false);
                 stubs.getDocument.callsFake(docInitParams => {
                     return new Promise(() => {
                         const { httpHeaders = {} } = docInitParams;
@@ -1280,7 +1259,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer(url).then(() => {
                     expect(stubs.getDocument).to.be.calledWith(
                         sinon.match({
-                            httpHeaders: sinon.match.object,
                             rangeChunkSize: defaultChunkSize,
                             url: `${url}?${paramsList}`,
                         }),
@@ -1665,7 +1643,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 stubs.addEventListener = sandbox.stub(docBase.docEl, 'addEventListener');
                 stubs.addListener = sandbox.stub(fullscreen, 'addListener');
-                stubs.isIOS = sandbox.stub(Browser, 'isIOS');
             });
 
             it('should add the correct listeners', () => {
@@ -1692,7 +1669,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 stubs.removeEventListener = sandbox.stub(docBase.docEl, 'removeEventListener');
                 stubs.removeFullscreenListener = sandbox.stub(fullscreen, 'removeListener');
-                stubs.isIOS = sandbox.stub(Browser, 'isIOS');
             });
 
             it('should remove the docBase element listeners if the docBase element exists', () => {
