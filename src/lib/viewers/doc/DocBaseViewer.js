@@ -647,7 +647,6 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
-        const httpHeaders = {};
         const queryParams = {};
 
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
@@ -684,7 +683,6 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            httpHeaders,
             rangeChunkSize,
             url: appendQueryParams(pdfUrl, queryParams),
         });
