@@ -1223,24 +1223,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should set a cache-busting header if on mobile', () => {
-                docBase.options.location = {
-                    locale: 'en-US',
-                };
-                sandbox.stub(Browser, 'isIOS').returns(true);
-
-                return docBase.initViewer('').then(() => {
-                    expect(stubs.getDocument).to.be.calledWith(
-                        sinon.match({
-                            httpHeaders: {
-                                'If-None-Match': 'webkit-no-cache',
-                            },
-                            rangeChunkSize: 1048576,
-                        }),
-                    );
-                });
-            });
-
             it('should avoid preflight requests by not adding non-standard headers', done => {
                 docBase.options.location = {
                     locale: 'en-US',

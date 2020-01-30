@@ -669,12 +669,6 @@ class DocBaseViewer extends BaseViewer {
         const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
         const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
 
-        // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
-        // see: https://bugs.webkit.org/show_bug.cgi?id=82672
-        if (Browser.isIOS()) {
-            httpHeaders['If-None-Match'] = 'webkit-no-cache';
-        }
-
         // If range requests are disabled, request the gzip compressed version of the representation
         this.encoding = disableRange ? ENCODING_TYPES.GZIP : undefined;
 
