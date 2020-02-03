@@ -1,5 +1,5 @@
 // <reference types="Cypress" />
-describe.skip('Archive Viewer', () => {
+describe('Archive Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_ARCHIVE');
 
@@ -26,12 +26,16 @@ describe.skip('Archive Viewer', () => {
         cy.getByTitle('Preview SDK Sample Archive').within(() => {
             cy.get('button').click();
         });
-
-        cy.getByTitle('Name').click();
-
+        // default sort by name
         cy.get('.ReactVirtualized__Table__row')
             .first()
             .contains('Audio.mp3');
+
+        // reverse
+        cy.getByTitle('Name').click();
+        cy.get('.ReactVirtualized__Table__row')
+            .first()
+            .contains('Preview SDK Sample Excel.xlsx');
     });
 
     it('Should show matched item list based on search query', () => {
