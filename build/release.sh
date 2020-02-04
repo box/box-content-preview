@@ -142,7 +142,9 @@ update_readme() {
     # Replace 'preview/{VERSION}' string
     cmd sed -i -e "s@preview/$OLD_VERSION@preview/$VERSION@g" README.md
 
-    cmd rm README.md-e
+    if [ -f README.md-e ]; then
+        cmd rm README.md-e
+    fi
 }
 
 push_to_github() {
