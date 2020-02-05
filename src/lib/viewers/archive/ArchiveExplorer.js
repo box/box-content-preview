@@ -51,7 +51,7 @@ class ArchiveExplorer extends React.Component {
             fullPath: ROOT_FOLDER,
             searchQuery: '',
             sortBy: 'name',
-            sortDirection: SortDirection.DESC,
+            sortDirection: SortDirection.ASC,
             view: VIEW_FOLDER,
         };
     }
@@ -190,7 +190,19 @@ class ArchiveExplorer extends React.Component {
             return 0;
         });
 
-        return sortDirection === SortDirection.DESC ? sortedItems : sortedItems.reverse();
+        if (sortDirection === SortDirection.DESC) {
+            sortedItems.reverse();
+        }
+
+        // folders always come before files
+        sortedItems.sort((a, b) => {
+            if (a.type === 'folder' && b.type === 'folder') {
+                return 0;
+            }
+            return a.type === 'folder' ? -1 : 1;
+        });
+
+        return sortedItems;
     }
 
     /**
