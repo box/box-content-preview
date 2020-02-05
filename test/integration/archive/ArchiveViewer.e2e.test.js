@@ -2,7 +2,7 @@
 describe('Archive Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileId = Cypress.env('FILE_ID_ARCHIVE');
-    const fileIdLong = Cypress.env('FILE_ID_ARCHIVE_LONG');
+    const fileIdLarge = Cypress.env('FILE_ID_ARCHIVE_LARGE');
 
     beforeEach(() => {
         cy.visit('/');
@@ -58,7 +58,7 @@ describe('Archive Viewer', () => {
     });
 
     it('Should reset scroll when navigating folders', () => {
-        cy.showPreview(token, fileIdLong);
+        cy.showPreview(token, fileIdLarge);
 
         cy.getByTitle('Collection').within(() => {
             cy.get('button').click();
