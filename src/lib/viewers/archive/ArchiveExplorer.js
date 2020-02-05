@@ -224,6 +224,7 @@ class ArchiveExplorer extends React.Component {
                                     height={height}
                                     rowData={itemList}
                                     rowGetter={this.getRowData(itemList)}
+                                    scrollToIndex={0}
                                     sort={this.handleSort}
                                     sortBy={sortBy}
                                     sortDirection={sortDirection}
