@@ -173,8 +173,8 @@ class ArchiveExplorer extends React.Component {
                 return a.type === 'folder' ? -1 : 1;
             }
 
-            const aItem = a[sortBy];
-            const bItem = b[sortBy];
+            let aItem = a[sortBy];
+            let bItem = b[sortBy];
 
             if (aItem === null || aItem === undefined) {
                 return 1;
@@ -184,12 +184,16 @@ class ArchiveExplorer extends React.Component {
                 return -1;
             }
 
+            if (sortDirection === SortDirection.DESC) {
+                [aItem, bItem] = [bItem, aItem];
+            }
+
             if (typeof aItem === 'number' && typeof bItem === 'number') {
-                return sortDirection === SortDirection.ASC ? aItem - bItem : bItem - aItem;
+                return aItem - bItem;
             }
 
             if (typeof aItem === 'string' && typeof bItem === 'string') {
-                return sortDirection === SortDirection.ASC ? aItem.localeCompare(bItem) : bItem.localeCompare(aItem);
+                return aItem.localeCompare(bItem);
             }
 
             return 0;
