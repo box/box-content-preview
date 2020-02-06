@@ -28,15 +28,20 @@ describe('Archive Viewer', () => {
         cy.getByTitle('Preview SDK Sample Archive').within(() => {
             cy.get('button').click();
         });
-        // default sort by name
+        // folders are in front of files
         cy.get('.ReactVirtualized__Table__row')
             .first()
+            .contains('Level 1 Folder');
+
+        // default sort by name
+        cy.get('.ReactVirtualized__Table__row')
+            .eq(1)
             .contains('Audio.mp3');
 
         // reverse
         cy.getByTitle('Name').click();
         cy.get('.ReactVirtualized__Table__row')
-            .first()
+            .eq(1)
             .contains('Preview SDK Sample Excel.xlsx');
     });
 

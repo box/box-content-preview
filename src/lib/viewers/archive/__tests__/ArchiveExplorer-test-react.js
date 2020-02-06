@@ -20,7 +20,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'test',
                 modified_at: '19-Dec-02 16:43',
                 size: 0,
-                item_collection: ['test/csv-level-1.csv', 'test/subfolder/'],
+                item_collection: ['test/csv-level-1.csv', 'test/pdf-level-1.pdf', 'test/subfolder/'],
             },
             {
                 type: 'file',
@@ -36,11 +36,11 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'subfolder',
                 modified_at: '19-Dec-02 16:43',
                 size: 0,
-                item_collection: ['test/test-level-2.jpg'],
+                item_collection: ['test/subfolder/test-level-2.jpg'],
             },
             {
                 type: 'file',
-                absolute_path: 'test/test-level-2.jpg',
+                absolute_path: 'test/subfolder/test-level-2.jpg',
                 name: 'test-level-1.jpg',
                 modified_at: '19-Nov-08 15:08',
                 size: 57379,
@@ -52,6 +52,14 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 name: 'level-0.txt',
                 modified_at: '19-Nov-04 16:11',
                 size: 1,
+                item_collection: null,
+            },
+            {
+                type: 'file',
+                absolute_path: 'test/pdf-level-1.pdf',
+                name: 'pdf-level-1.pdf',
+                modified_at: '19-Nov-04 16:11',
+                size: 233,
                 item_collection: null,
             },
         ];
@@ -130,7 +138,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             itemList = component.instance().getItemList(data, 'test/');
 
-            expect(itemList).to.eql([data[1], data[2]]);
+            expect(itemList).to.eql([data[1], data[2], data[5]]);
         });
     });
 
@@ -163,8 +171,8 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             const itemList = component.instance().getSearchResult(data, 'level-1');
             const fuzzyList = component.instance().getSearchResult(data, 'leel1');
 
-            expect(itemList).to.eql([data[1], data[3]]);
-            expect(fuzzyList).to.eql([data[1], data[3]]);
+            expect(itemList).to.eql([data[1], data[3], data[5]]);
+            expect(fuzzyList).to.eql([data[1], data[3], data[5]]);
         });
     });
 
@@ -189,7 +197,9 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             instance.handleSort({ sortBy: 'size', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
+            // folders come before files
             expect(sortedList[0]).to.equal(data[2]);
+            expect(sortedList[1]).to.equal(data[5]);
         });
 
         it('should sort itemList by name and be in ASC order', () => {
@@ -200,7 +210,9 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             instance.handleSort({ sortBy: 'name', sortDirection: 'ASC' });
             const sortedList = instance.sortItemList(itemList);
 
+            // folders come before files
             expect(sortedList[0]).to.equal(data[2]);
+            expect(sortedList[1]).to.equal(data[1]);
         });
 
         it('should sort itemList by name and be in DESC order', () => {
@@ -211,7 +223,9 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             instance.handleSort({ sortBy: 'name', sortDirection: 'DESC' });
             const sortedList = instance.sortItemList(itemList);
 
-            expect(sortedList[0]).to.equal(data[1]);
+            // folders come before files
+            expect(sortedList[0]).to.equal(data[2]);
+            expect(sortedList[1]).to.equal(data[5]);
         });
 
         it('should not sort itemList', () => {
@@ -221,7 +235,7 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             const sortedList = instance.sortItemList(itemList);
 
-            expect(sortedList[0]).to.equal(itemList[0]);
+            expect(sortedList).to.eql(itemList);
         });
 
         it('should sort item list with string values and null', () => {
@@ -236,7 +250,10 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             const sortedList = instance.sortItemList(itemList);
 
-            expect(sortedList[0]).to.equal(itemList[0]);
+            // folders come before files
+            expect(sortedList[0]).to.equal(data[2]);
+            // item with not-null value comes first
+            expect(sortedList[1]).to.equal(data[5]);
         });
 
         it('should sort items with number values and null', () => {

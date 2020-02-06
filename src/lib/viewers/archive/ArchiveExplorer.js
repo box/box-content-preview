@@ -51,7 +51,7 @@ class ArchiveExplorer extends React.Component {
             fullPath: ROOT_FOLDER,
             searchQuery: '',
             sortBy: 'name',
-            sortDirection: SortDirection.DESC,
+            sortDirection: SortDirection.ASC,
             view: VIEW_FOLDER,
         };
     }
@@ -167,9 +167,14 @@ class ArchiveExplorer extends React.Component {
             return itemList;
         }
 
-        const sortedItems = itemList.sort((a = {}, b = {}) => {
-            const aItem = a[sortBy];
-            const bItem = b[sortBy];
+        return itemList.sort((a = {}, b = {}) => {
+            // folders are always in front of files
+            if (a.type !== b.type) {
+                return a.type === 'folder' ? -1 : 1;
+            }
+
+            let aItem = a[sortBy];
+            let bItem = b[sortBy];
 
             if (aItem === null || aItem === undefined) {
                 return 1;
@@ -177,6 +182,10 @@ class ArchiveExplorer extends React.Component {
 
             if (bItem === null || bItem === undefined) {
                 return -1;
+            }
+
+            if (sortDirection === SortDirection.DESC) {
+                [aItem, bItem] = [bItem, aItem];
             }
 
             if (typeof aItem === 'number' && typeof bItem === 'number') {
@@ -189,8 +198,6 @@ class ArchiveExplorer extends React.Component {
 
             return 0;
         });
-
-        return sortDirection === SortDirection.DESC ? sortedItems : sortedItems.reverse();
     }
 
     /**
