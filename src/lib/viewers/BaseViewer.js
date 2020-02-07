@@ -37,6 +37,7 @@ import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } 
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
+// TODO @mickryan remove after we upgrade the annotations version
 let annotationMessages;
 
 try {
