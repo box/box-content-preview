@@ -7,10 +7,10 @@ let annotationMessages;
 try {
     annotationMessages = require('box-annotations-messages'); // eslint-disable-line
 } catch (e) {
-    annotationMessages = [];
+    annotationMessages = {};
 }
 
-const language = __LANGUAGE__; // eslint-disable-line
+const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
 
 /**
  * Creates Intl object used by annotations
