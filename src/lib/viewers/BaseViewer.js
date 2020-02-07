@@ -3,7 +3,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
-import annotationMessages from 'box-annotations-messages';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import Browser from '../Browser';
@@ -38,6 +37,14 @@ import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } 
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
+let annotationMessages;
+
+try {
+    annotationMessages = require('box-annotations-messages'); // eslint-disable-line
+} catch (e) {
+    annotationMessages = [];
+}
+
 const VIEWER_STATUSES = {
     error: 'error',
     loaded: 'loaded',
@@ -55,9 +62,11 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const ANNOTATION_BUTTONS = {
     point: {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+        title: __('annotation_point_toggle'),
     },
     draw: {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
+        title: __('annotation_draw_toggle'),
     },
 };
 
@@ -1095,7 +1104,6 @@ class BaseViewer extends EventEmitter {
     createAnnotatorIntl() {
         addLocaleData(intlLocaleData);
         const locale = language && language.substr(0, language.indexOf('-'));
-
         const provider = new IntlProvider(
             {
                 locale,
@@ -1106,7 +1114,7 @@ class BaseViewer extends EventEmitter {
 
         return {
             intlLocaleData,
-            language: 'en-US',
+            language,
             provider,
         };
     }
@@ -1119,6 +1127,32 @@ class BaseViewer extends EventEmitter {
      * @return {Object} combined options
      */
     createAnnotatorOptions(moreOptions) {
+        const localizedStrings = {
+            loadError: __('annotations_load_error'),
+            createError: __('annotations_create_error'),
+            deleteError: __('annotations_delete_error'),
+            authError: __('annotations_authorization_error'),
+            doneButton: __('annotation_done'),
+            closeButton: __('annotation_close'),
+            cancelButton: __('annotation_cancel'),
+            saveButton: __('annotation_save'),
+            postButton: __('annotation_post'),
+            deleteButton: __('annotation_delete'),
+            addCommentPlaceholder: __('annotation_add_comment_placeholder'),
+            replyPlaceholder: __('annotation_reply_placeholder'),
+            deleteConfirmation: __('annotation_delete_confirmation_message'),
+            posting: __('annotation_posting_message'),
+            profileAlt: __('annotation_profile_alt'),
+            anonymousUserName: __('annotation_anonymous_user_name'),
+            pointToggle: __('annotation_point_toggle'),
+            highlightToggle: __('annotation_highlight_toggle'),
+            highlightComment: __('annotation_highlight_comment'),
+            whoHighlighted: __('annotation_who_highlighted'),
+            drawToggle: __('annotation_draw_toggle'),
+            drawSave: __('annotation_draw_save'),
+            drawDelete: __('annotation_draw_delete'),
+            whoDrew: __('annotation_who_drew'),
+        };
         return cloneDeep({
             ...this.options,
             ...moreOptions,
@@ -1126,6 +1160,7 @@ class BaseViewer extends EventEmitter {
             isMobile: this.isMobile,
             hasTouch: this.hasTouch,
             locale: this.options.location.locale,
+            localizedStrings,
         });
     }
 
