@@ -1122,10 +1122,10 @@ class BaseViewer extends EventEmitter {
         return cloneDeep({
             ...this.options,
             ...moreOptions,
+            intl: this.createAnnotatorIntl(),
             isMobile: this.isMobile,
             hasTouch: this.hasTouch,
             locale: this.options.location.locale,
-            intl: this.createAnnotatorIntl(),
         });
     }
 
