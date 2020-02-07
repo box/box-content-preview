@@ -1,9 +1,8 @@
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
-import { IntlProvider, addLocaleData } from 'react-intl';
-import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import fullscreen from '../Fullscreen';
+import intl from '../intl';
 import RepStatus from '../RepStatus';
 import Browser from '../Browser';
 import {
@@ -37,15 +36,6 @@ import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } 
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
-// TODO @mickryan remove after we upgrade the annotations version
-let annotationMessages;
-
-try {
-    annotationMessages = require('box-annotations-messages'); // eslint-disable-line
-} catch (e) {
-    annotationMessages = [];
-}
-
 const VIEWER_STATUSES = {
     error: 'error',
     loaded: 'loaded',
@@ -55,7 +45,6 @@ const VIEWER_STATUSES = {
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
 
-const language = __LANGUAGE__; // eslint-disable-line
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
@@ -1097,30 +1086,6 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Creates Intl object used by annotations
-     *
-     * @private
-     * @return {Object}
-     */
-    createAnnotatorIntl() {
-        addLocaleData(intlLocaleData);
-        const locale = language && language.substr(0, language.indexOf('-'));
-        const provider = new IntlProvider(
-            {
-                locale,
-                messages: annotationMessages,
-            },
-            {},
-        );
-
-        return {
-            intlLocaleData,
-            language,
-            provider,
-        };
-    }
-
-    /**
      * Creates combined options to give to the annotator
      *
      * @private
@@ -1129,37 +1094,37 @@ class BaseViewer extends EventEmitter {
      */
     createAnnotatorOptions(moreOptions) {
         const localizedStrings = {
-            loadError: __('annotations_load_error'),
-            createError: __('annotations_create_error'),
-            deleteError: __('annotations_delete_error'),
-            authError: __('annotations_authorization_error'),
-            doneButton: __('annotation_done'),
-            closeButton: __('annotation_close'),
-            cancelButton: __('annotation_cancel'),
-            saveButton: __('annotation_save'),
-            postButton: __('annotation_post'),
-            deleteButton: __('annotation_delete'),
             addCommentPlaceholder: __('annotation_add_comment_placeholder'),
-            replyPlaceholder: __('annotation_reply_placeholder'),
+            anonymousUserName: __('annotation_anonymous_user_name'),
+            authError: __('annotations_authorization_error'),
+            cancelButton: __('annotation_cancel'),
+            closeButton: __('annotation_close'),
+            createError: __('annotations_create_error'),
+            deleteButton: __('annotation_delete'),
             deleteConfirmation: __('annotation_delete_confirmation_message'),
+            deleteError: __('annotations_delete_error'),
+            doneButton: __('annotation_done'),
+            drawDelete: __('annotation_draw_delete'),
+            drawSave: __('annotation_draw_save'),
+            drawToggle: __('annotation_draw_toggle'),
+            highlightComment: __('annotation_highlight_comment'),
+            highlightToggle: __('annotation_highlight_toggle'),
+            loadError: __('annotations_load_error'),
+            pointToggle: __('annotation_point_toggle'),
+            postButton: __('annotation_post'),
             posting: __('annotation_posting_message'),
             profileAlt: __('annotation_profile_alt'),
-            anonymousUserName: __('annotation_anonymous_user_name'),
-            pointToggle: __('annotation_point_toggle'),
-            highlightToggle: __('annotation_highlight_toggle'),
-            highlightComment: __('annotation_highlight_comment'),
-            whoHighlighted: __('annotation_who_highlighted'),
-            drawToggle: __('annotation_draw_toggle'),
-            drawSave: __('annotation_draw_save'),
-            drawDelete: __('annotation_draw_delete'),
+            replyPlaceholder: __('annotation_reply_placeholder'),
+            saveButton: __('annotation_save'),
             whoDrew: __('annotation_who_drew'),
+            whoHighlighted: __('annotation_who_highlighted'),
         };
         return cloneDeep({
             ...this.options,
             ...moreOptions,
-            intl: this.createAnnotatorIntl(),
-            isMobile: this.isMobile,
             hasTouch: this.hasTouch,
+            intl: intl.createAnnotatorIntl(),
+            isMobile: this.isMobile,
             locale: this.options.location.locale,
             localizedStrings,
         });
