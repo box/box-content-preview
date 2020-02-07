@@ -1,4 +1,4 @@
-const { NODE_ENV } = process.env;
+const { NODE_ENV, LANGUAGE } = process.env;
 const isDev = NODE_ENV === 'dev';
 const isProd = NODE_ENV === 'production';
 
@@ -23,7 +23,7 @@ if (fs.existsSync('build/rsync.json')) {
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
 const staticFolder = path.resolve('dist');
-const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
+const languages = isProd ? locales : [LANGUAGE]; // Only 1 language needed for dev
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {

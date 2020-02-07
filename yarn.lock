@@ -2309,10 +2309,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@3.13.0:
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.13.0.tgz#053a34ef2ad7d5796beac811f481e2d1f4eee130"
+  integrity sha512-TRTrMprLfaBUwPJJ2bDpiLPv1/EopPhMCWmQPEhaiwrvfwYiI+uC6Aa0h0wREZpeqpcbxbc1AH8yMYSS7+vtwg==
 
 box-ui-elements@^12.0.0-beta.10:
   version "12.0.0-beta.10"
@@ -6963,6 +6963,11 @@ intl-relativeformat@^2.1.0:
   dependencies:
     intl-messageformat "^2.0.0"
 
+intl@^1.0.1:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/intl/-/intl-1.2.5.tgz#82244a2190c4e419f8371f5aa34daa3420e2abde"
+  integrity sha1-giRKIZDE5Bn4Nx9ao02qNCDiq94=
+
 into-stream@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/into-stream/-/into-stream-3.1.0.tgz#96fb0a936c12babd6ff1752a17d05616abd094c6"
@@ -7795,6 +7800,13 @@ karma-html2js-preprocessor@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/karma-html2js-preprocessor/-/karma-html2js-preprocessor-1.1.0.tgz#fc09edf04bbe2bb6eee9ba1968f826b7388020bd"
   integrity sha1-/Ant8Eu+K7bu6boZaPgmtziAIL0=
+
+karma-intl-shim@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/karma-intl-shim/-/karma-intl-shim-1.0.3.tgz#f07ab86b644a7c2c2a3299f38d40ed49af7ec0f0"
+  integrity sha1-8Hq4a2RKfCwqMpnzjUDtSa9+wPA=
+  dependencies:
+    intl "^1.0.1"
 
 karma-junit-reporter@^1.2.0:
   version "1.2.0"

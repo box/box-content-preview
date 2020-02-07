@@ -87,7 +87,7 @@ module.exports = config =>
             outputFile: 'junit.xml',
         },
 
-        frameworks: ['mocha', 'chai-dom', 'chai', 'sinon', 'sinon-chai', 'fixture'],
+        frameworks: ['mocha', 'chai-dom', 'chai', 'sinon', 'sinon-chai', 'fixture', 'intl-shim'],
 
         files: [
             'https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js',
