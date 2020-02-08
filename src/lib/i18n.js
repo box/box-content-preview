@@ -20,13 +20,12 @@ const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
  */
 const createAnnotatorIntl = () => {
     addLocaleData(intlLocaleData);
-    const locale = language && language.substr(0, language.indexOf('-'));
     return {
         intlLocaleData,
         language,
         provider: new IntlProvider(
             {
-                locale,
+                locale: language.substr(0, language.indexOf('-')),
                 messages: annotationMessages,
             },
             {},

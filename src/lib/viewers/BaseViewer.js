@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
-import intl from '../intl';
+import intl from '../i18n';
 import RepStatus from '../RepStatus';
 import Browser from '../Browser';
 import {
