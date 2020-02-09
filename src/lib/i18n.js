@@ -1,14 +1,9 @@
-import { IntlProvider, addLocaleData } from 'react-intl';
-import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
-
 // TODO @mickryan remove after we upgrade the annotations version
-let annotationMessages;
+let annotationMessages = {};
 
 try {
-    annotationMessages = require('box-annotations-messages'); // eslint-disable-line
-} catch (e) {
-    annotationMessages = {};
-}
+    annotationMessages = require('box-annotations-messages').default; // eslint-disable-line
+} catch (e) {} // eslint-disable-line
 
 const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
 
@@ -19,17 +14,9 @@ const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
  * @return {Object}
  */
 const createAnnotatorIntl = () => {
-    addLocaleData(intlLocaleData);
     return {
-        intlLocaleData,
+        messages: annotationMessages,
         language,
-        provider: new IntlProvider(
-            {
-                locale: language.substr(0, language.indexOf('-')),
-                messages: annotationMessages,
-            },
-            {},
-        ),
     };
 };
 

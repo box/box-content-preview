@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
-import { IntlProvider } from 'react-intl';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
@@ -1386,9 +1385,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
             expect(combinedOptions.randomOption).to.equal('derp');
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
-            expect(combinedOptions.intl.provider).to.be.an.instanceof(IntlProvider);
             expect(combinedOptions.intl.language).to.equal('en-US');
-            expect(combinedOptions.intl.intlLocaleData).to.be.an('array');
+            expect(combinedOptions.intl.messages).to.be.an('object');
         });
     });
 
