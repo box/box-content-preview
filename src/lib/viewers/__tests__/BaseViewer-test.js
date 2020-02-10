@@ -1385,6 +1385,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
             expect(combinedOptions.randomOption).to.equal('derp');
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
+            expect(combinedOptions.intl.language).to.equal('en-US');
+            expect(combinedOptions.intl.messages).to.be.an('object');
         });
     });
 

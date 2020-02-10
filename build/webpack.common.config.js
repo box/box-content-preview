@@ -63,6 +63,7 @@ module.exports = language => {
         ],
         resolve: {
             alias: {
+                'box-annotations-messages': path.resolve(`node_modules/box-annotations/i18n/${language}`),
                 'box-elements-messages': path.resolve(`node_modules/box-ui-elements/i18n/${language}`),
                 'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
             },
