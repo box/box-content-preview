@@ -1,3 +1,12 @@
+## 2.36.0 (2020-02-11)
+
+* chore(codeowners): Update codeowners to reflect new groups (#1175) ([03f2fc2](https://github.com/box/box-content-preview/commit/03f2fc2)), closes [#1175](https://github.com/box/box-content-preview/issues/1175)
+* feat(annotations): Send react-intl strings to annotations (#1174) ([715d77e](https://github.com/box/box-content-preview/commit/715d77e)), closes [#1174](https://github.com/box/box-content-preview/issues/1174)
+* fix(archive): Folders come before files when sorting (#1171) ([4a618fe](https://github.com/box/box-content-preview/commit/4a618fe)), closes [#1171](https://github.com/box/box-content-preview/issues/1171)
+* fix(archive): Reset vertical scroll when navigating folders (#1172) ([b072491](https://github.com/box/box-content-preview/commit/b072491)), closes [#1172](https://github.com/box/box-content-preview/issues/1172)
+
+
+
 ## 2.35.0 (2020-02-04)
 
 * fix(archive): Fix inconsistent search bar style on mobile devices (#1165) ([e058a8e](https://github.com/box/box-content-preview/commit/e058a8e)), closes [#1165](https://github.com/box/box-content-preview/issues/1165)
