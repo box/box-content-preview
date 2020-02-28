@@ -503,13 +503,23 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Checks if the file being previewed supports printing.
+     *
+     * @public
+     * @return {boolean}
+     */
+    canPrint() {
+        return !!canDownload(this.file, this.options) && checkFeature(this.viewer, 'print');
+    }
+
+    /**
      * Prints the file being previewed if the viewer supports printing.
      *
      * @public
      * @return {void}
      */
     print() {
-        if (canDownload(this.file, this.options) && checkFeature(this.viewer, 'print')) {
+        if (this.canPrint()) {
             this.viewer.print();
         }
     }
@@ -1299,7 +1309,7 @@ class Preview extends EventEmitter {
         if (canDownload(this.file, this.options)) {
             this.ui.showDownloadButton(this.download);
 
-            if (checkFeature(this.viewer, 'print')) {
+            if (this.canPrint()) {
                 this.ui.showPrintButton(this.print);
             }
         }

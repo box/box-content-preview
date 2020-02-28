@@ -795,6 +795,34 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('canPrint()', () => {
+        beforeEach(() => {
+            stubs.canDownload = sandbox.stub(file, 'canDownload');
+            stubs.checkFeature = sandbox.stub(file, 'checkFeature');
+        });
+
+        it('should return true is file is downloadable and has printing feature', () => {
+            stubs.canDownload.returns(true);
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+
+            expect(preview.canPrint()).to.equal(true);
+        });
+
+        it('should return false is file is not downloadable and has printing feature', () => {
+            stubs.canDownload.returns(false);
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+
+            expect(preview.canPrint()).to.equal(false);
+        });
+
+        it('should return false is file is downloadable and but does not have printing feature', () => {
+            stubs.canDownload.returns(true);
+            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(false);
+
+            expect(preview.canPrint()).to.equal(false);
+        });
+    });
+
     describe('download()', () => {
         beforeEach(() => {
             stubs.downloadReachability = new DownloadReachability({});
