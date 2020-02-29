@@ -1305,13 +1305,12 @@ class Preview extends EventEmitter {
         // Log now that loading is finished
         this.emitLoadMetrics(data);
 
-        // Show download and print buttons if user can download
         if (canDownload(this.file, this.options)) {
             this.ui.showDownloadButton(this.download);
+        }
 
-            if (this.canPrint()) {
-                this.ui.showPrintButton(this.print);
-            }
+        if (this.canPrint()) {
+            this.ui.showPrintButton(this.print);
         }
 
         const { error } = data;

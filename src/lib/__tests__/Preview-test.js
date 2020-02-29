@@ -817,7 +817,7 @@ describe('lib/Preview', () => {
 
         it('should return false is file is downloadable and but does not have printing feature', () => {
             stubs.canDownload.returns(true);
-            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(false);
+            stubs.checkFeature.returns(false);
 
             expect(preview.canPrint()).to.equal(false);
         });
