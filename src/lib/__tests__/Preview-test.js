@@ -803,14 +803,14 @@ describe('lib/Preview', () => {
 
         it('should return true is file is downloadable and has printing feature', () => {
             stubs.canDownload.returns(true);
-            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.checkFeature.returns(true);
 
             expect(preview.canPrint()).to.equal(true);
         });
 
         it('should return false is file is not downloadable and has printing feature', () => {
             stubs.canDownload.returns(false);
-            stubs.checkFeature.withArgs(sinon.match.any, 'print').returns(true);
+            stubs.checkFeature.returns(true);
 
             expect(preview.canPrint()).to.equal(false);
         });
