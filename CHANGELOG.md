@@ -1,3 +1,9 @@
+## 2.37.0 (2020-03-03)
+
+* feat(print): add check to see if printing is available (#1177) ([4a19c53](https://github.com/box/box-content-preview/commit/4a19c53)), closes [#1177](https://github.com/box/box-content-preview/issues/1177)
+
+
+
 ## 2.36.0 (2020-02-11)
 
 * chore(codeowners): Update codeowners to reflect new groups (#1175) ([03f2fc2](https://github.com/box/box-content-preview/commit/03f2fc2)), closes [#1175](https://github.com/box/box-content-preview/issues/1175)
