@@ -260,7 +260,6 @@ describe('Preview Document Thumbnails', () => {
     it('Should not show the thumbnails sidebar when a document preview errors', () => {
         cy.showPreview(token, badFileId, { enableThumbnailsSidebar: true });
 
-        cy.contains('We’re sorry, the preview didn’t load. Please re-upload the file or contact Box support.');
         cy.getByTestId('thumbnails-sidebar').should('not.exist');
     });
 
