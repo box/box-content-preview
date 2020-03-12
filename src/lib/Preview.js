@@ -204,10 +204,7 @@ class Preview extends EventEmitter {
 
                 this.emitLogEvent(PREVIEW_METRIC, {
                     event_name: PREVIEW_END_EVENT,
-                    value: {
-                        duration: previewDuration,
-                        viewer_status: this.viewer.getLoadStatus(),
-                    },
+                    value: previewDuration,
                 });
             }
 

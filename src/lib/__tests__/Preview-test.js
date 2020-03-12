@@ -105,7 +105,6 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: 1,
             };
-            stubs.viewer.getLoadStatus.returns('loaded');
             sandbox.stub(preview, 'emitLogEvent');
             sandbox.stub(Timer, 'createTag').returns('duration_tag');
             sandbox.stub(Timer, 'get').returns({ elapsed: 7 });
@@ -116,13 +115,9 @@ describe('lib/Preview', () => {
             preview.destroy();
             expect(Timer.createTag).to.be.called;
             expect(Timer.stop).to.be.calledWith('duration_tag');
-            expect(stubs.viewer.getLoadStatus).to.be.called;
             expect(preview.emitLogEvent).to.be.calledWith(PREVIEW_METRIC, {
                 event_name: 'preview_end',
-                value: {
-                    duration: 7,
-                    viewer_status: 'loaded',
-                },
+                value: 7,
             });
         });
 
