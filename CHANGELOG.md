@@ -1,3 +1,12 @@
+## 2.38.0 (2020-03-17)
+
+* chore(deps): Upgrade minimist to ^1.2.2 to address security issue (#1181) ([c9b05aa](https://github.com/box/box-content-preview/commit/c9b05aa)), closes [#1181](https://github.com/box/box-content-preview/issues/1181)
+* chore(i18n): Update Translations (#1178) ([31f65e5](https://github.com/box/box-content-preview/commit/31f65e5)), closes [#1178](https://github.com/box/box-content-preview/issues/1178)
+* fix(log): Fix log not getting serialized properly (#1180) ([e9b0c8e](https://github.com/box/box-content-preview/commit/e9b0c8e)), closes [#1180](https://github.com/box/box-content-preview/issues/1180)
+* test(e2e): Remove the line checking error message in Thumbnails e2e test (#1179) ([c3471f0](https://github.com/box/box-content-preview/commit/c3471f0)), closes [#1179](https://github.com/box/box-content-preview/issues/1179)
+
+
+
 ## 2.37.0 (2020-03-03)
 
 * feat(print): add check to see if printing is available (#1177) ([4a19c53](https://github.com/box/box-content-preview/commit/4a19c53)), closes [#1177](https://github.com/box/box-content-preview/issues/1177)
