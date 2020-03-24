@@ -1011,7 +1011,7 @@ class DocBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
-        if (this.options.enableAnnotations) {
+        if (this.options.showAnnotationsControls) {
             this.annotationControls = new AnnotationControls(this.controls);
         }
         this.pageControls.addListener('pagechange', this.setPage);
@@ -1077,8 +1077,6 @@ class DocBaseViewer extends BaseViewer {
             this.controls.add(__('toggle_findbar'), () => this.findBar.toggle(), 'bp-toggle-findbar-icon', ICON_SEARCH);
         }
 
-        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
-
         this.zoomControls.init(this.pdfViewer.currentScale, {
             maxZoom: MAX_SCALE,
             minZoom: MIN_SCALE,
@@ -1088,6 +1086,8 @@ class DocBaseViewer extends BaseViewer {
             onZoomOut: this.zoomOut,
         });
 
+        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,
@@ -1096,7 +1096,7 @@ class DocBaseViewer extends BaseViewer {
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
-        if (this.options.enableAnnotations) {
+        if (this.options.showAnnotationsControls) {
             this.annotationControls.init({
                 onRegionCommentClick: this.regionCommentClickHandler,
             });

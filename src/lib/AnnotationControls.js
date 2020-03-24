@@ -30,7 +30,7 @@ class AnnotationControls {
         this.controls = controls;
     }
 
-    regionCommentClickHandler = onRegionCommentClick => event => {
+    handleRegionCommentClick = onRegionCommentClick => event => {
         this.isRegionCommentActive = !this.isRegionCommentActive;
         if (this.isRegionCommentActive) {
             this.regionCommentButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
@@ -51,7 +51,7 @@ class AnnotationControls {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         this.regionCommentButtonElement = this.controls.add(
             __('region_comment'),
-            this.regionCommentClickHandler(onRegionCommentClick),
+            this.handleRegionCommentClick(onRegionCommentClick),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_COMMENT_BUTTON}`,
             ICON_REGION_COMMENT,
             'button',

@@ -285,12 +285,6 @@ class ImageViewer extends ImageBaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-
-        if (this.options.enableAnnotations) {
-            this.annotationControls.init({
-                onRegionCommentClick: this.regionCommentClickHandler,
-            });
-        }
     }
 
     /**

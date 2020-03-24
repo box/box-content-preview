@@ -921,8 +921,11 @@ class Preview extends EventEmitter {
         // Whether download button should be shown
         this.options.showDownload = !!options.showDownload;
 
-        // Whether annotations and annotation controls should be shown
+        // Whether annotations v2 should be shown
         this.options.showAnnotations = !!options.showAnnotations;
+
+        // Whether annotations v4 buttons should be shown in toolbar
+        this.options.showAnnotationsControls = !!options.showAnnotationsControls;
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
@@ -981,9 +984,6 @@ class Preview extends EventEmitter {
 
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
-
-        // Option to enable use of annotations v4
-        this.options.enableAnnotations = options.enableAnnotations || false;
 
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
