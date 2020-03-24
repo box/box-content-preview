@@ -1,4 +1,5 @@
 import throttle from 'lodash/throttle';
+import AnnotationControls from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -101,6 +102,7 @@ class DocBaseViewer extends BaseViewer {
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
+        this.regionCommentClickHandler = this.regionCommentClickHandler.bind(this);
     }
 
     /**
@@ -1009,6 +1011,9 @@ class DocBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
+        if (this.options.enableAnnotations) {
+            this.annotationControls = new AnnotationControls(this.controls);
+        }
         this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
     }
@@ -1072,6 +1077,8 @@ class DocBaseViewer extends BaseViewer {
             this.controls.add(__('toggle_findbar'), () => this.findBar.toggle(), 'bp-toggle-findbar-icon', ICON_SEARCH);
         }
 
+        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+
         this.zoomControls.init(this.pdfViewer.currentScale, {
             maxZoom: MAX_SCALE,
             minZoom: MIN_SCALE,
@@ -1081,8 +1088,6 @@ class DocBaseViewer extends BaseViewer {
             onZoomOut: this.zoomOut,
         });
 
-        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
-
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,
@@ -1090,7 +1095,21 @@ class DocBaseViewer extends BaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        if (this.options.enableAnnotations) {
+            this.annotationControls.init({
+                onRegionCommentClick: this.regionCommentClickHandler,
+            });
+        }
     }
+
+    /**
+     * Handler for annotation toolbar region comment button click event.
+     *
+     * @private
+     * @return {void}
+     */
+    regionCommentClickHandler() {}
 
     /**
      * Handler for 'pagesinit' event.

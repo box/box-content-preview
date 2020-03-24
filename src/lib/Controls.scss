@@ -11,7 +11,7 @@
     position: relative;
     left: -50%;
     display: flex;
-    background: fade-out($twos, .05);
+    background: fade-out($black, .2);
     border-radius: 3px;
     opacity: 0;
     transition: opacity .5s;
@@ -178,5 +178,28 @@
 
     & + .bp-controls-cell {
         margin-left: 4px;
+    }
+}
+
+.bp-annotations-group {
+    padding: 0 4px;
+    border-left: 1px solid $twos;
+}
+
+.bp-region-comment-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+
+    svg {
+        fill: $white;
+    }
+
+    &.active {
+        background-color: $white;
+
+        svg {
+            fill: $black;
+        }
     }
 }

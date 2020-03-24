@@ -1,3 +1,4 @@
+import AnnotationControls from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -31,6 +32,7 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.regionCommentClickHandler = this.regionCommentClickHandler.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -201,7 +203,18 @@ class ImageBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.zoomControls = new ZoomControls(this.controls);
         this.zoomControls.init(this.scale, { onZoomIn: this.zoomIn, onZoomOut: this.zoomOut });
+        if (this.options.enableAnnotations) {
+            this.annotationControls = new AnnotationControls(this.controls);
+        }
     }
+
+    /**
+     * Handler for annotation toolbar region comment button click event.
+     *
+     * @private
+     * @return {void}
+     */
+    regionCommentClickHandler() {}
 
     /**
      * Sets the original image width and height on the img element. Can be removed when

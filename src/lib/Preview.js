@@ -982,6 +982,9 @@ class Preview extends EventEmitter {
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
 
+        // Option to enable use of annotations v4
+        this.options.enableAnnotations = options.enableAnnotations || false;
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
