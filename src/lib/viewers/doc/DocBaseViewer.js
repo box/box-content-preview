@@ -102,7 +102,7 @@ class DocBaseViewer extends BaseViewer {
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
-        this.regionCommentClickHandler = this.regionCommentClickHandler.bind(this);
+        this.regionClickHandler = this.regionClickHandler.bind(this);
     }
 
     /**
@@ -1098,7 +1098,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.options.showAnnotationsControls) {
             this.annotationControls.init({
-                onRegionCommentClick: this.regionCommentClickHandler,
+                onRegionClick: this.regionClickHandler,
             });
         }
     }
@@ -1109,7 +1109,7 @@ class DocBaseViewer extends BaseViewer {
      * @private
      * @return {void}
      */
-    regionCommentClickHandler() {}
+    regionClickHandler() {}
 
     /**
      * Handler for 'pagesinit' event.

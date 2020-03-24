@@ -3,7 +3,7 @@ import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 const CLASS_ANNOTATIONS_GROUP = 'bp-annotations-group';
-const CLASS_REGION_COMMENT_BUTTON = 'bp-region-comment-btn';
+const CLASS_REGION_BUTTON = 'bp-region-btn';
 const CLASS_BUTTON_ACTIVE = 'active';
 
 class AnnotationControls {
@@ -11,10 +11,10 @@ class AnnotationControls {
     controls;
 
     /** @property {Boolean} - Region comment mode active state */
-    isRegionCommentActive = false;
+    isRegionActive = false;
 
     /** @property {HTMLElement} - Region comment button element */
-    regionCommentButtonElement;
+    regionButtonElement;
 
     /**
      * [constructor]
@@ -30,29 +30,29 @@ class AnnotationControls {
         this.controls = controls;
     }
 
-    handleRegionCommentClick = onRegionCommentClick => event => {
-        this.isRegionCommentActive = !this.isRegionCommentActive;
-        if (this.isRegionCommentActive) {
-            this.regionCommentButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+    handleRegionClick = onRegionClick => event => {
+        this.isRegionActive = !this.isRegionActive;
+        if (this.isRegionActive) {
+            this.regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
-            this.regionCommentButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+            this.regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
         }
 
-        onRegionCommentClick({ isRegionCommentActive: this.isRegionCommentActive, event });
+        onRegionClick({ isRegionActive: this.isRegionActive, event });
     };
 
     /**
      * Initialize the annotation controls with options.
      *
-     * @param {Function} [options.onRegionCommentClick] - Callback when region comment button is clicked
+     * @param {Function} [options.onRegionClick] - Callback when region comment button is clicked
      * @return {void}
      */
-    init({ onRegionCommentClick = noop } = {}) {
+    init({ onRegionClick = noop } = {}) {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
-        this.regionCommentButtonElement = this.controls.add(
+        this.regionButtonElement = this.controls.add(
             __('region_comment'),
-            this.handleRegionCommentClick(onRegionCommentClick),
-            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_COMMENT_BUTTON}`,
+            this.handleRegionClick(onRegionClick),
+            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
             ICON_REGION_COMMENT,
             'button',
             groupElement,
