@@ -1,0 +1,22 @@
+.bp-AnnotationControls-group {
+    padding: 0 4px 0 8px;
+    border-left: 1px solid $twos;
+
+    & .bp-AnnotationControls-regionBtn {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+
+        svg {
+            fill: $white;
+        }
+
+        &.is-active {
+            background-color: $white;
+
+            svg {
+                fill: $black;
+            }
+        }
+    }
+}

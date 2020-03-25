@@ -59,7 +59,7 @@ describe('lib/ZoomControls', () => {
             expect(stubs.add).to.be.calledWith(
                 __('zoom_current_scale'),
                 undefined,
-                'bp-zoom-current-scale',
+                'bp-ZoomControls-currentScale',
                 sinon.match.string,
                 'div',
                 sinon.match.any,
@@ -125,7 +125,7 @@ describe('lib/ZoomControls', () => {
             expect(stubs.add).to.be.calledWith(
                 __('zoom_current_scale'),
                 undefined,
-                'bp-zoom-current-scale',
+                'bp-ZoomControls-currentScale',
                 sinon.match.string,
                 'div',
                 sinon.match.any,

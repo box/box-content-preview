@@ -3,7 +3,7 @@ import noop from 'lodash/noop';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
-const CLASS_ZOOM_CURRENT_SCALE = 'bp-zoom-current-scale';
+const CLASS_ZOOM_CURRENT_SCALE = 'bp-ZoomControls-currentScale';
 const CLASS_ZOOM_CURRENT_SCALE_VALUE = 'bp-zoom-current-scale-value';
 const CLASS_ZOOM_IN_BUTTON = 'bp-zoom-in-btn';
 const CLASS_ZOOM_OUT_BUTTON = 'bp-zoom-out-btn';

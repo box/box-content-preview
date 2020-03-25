@@ -159,13 +159,6 @@
     }
 }
 
-.bp-zoom-current-scale {
-    min-width: 48px;
-    color: $white;
-    font-size: 14px;
-    text-align: center;
-}
-
 .bp-controls-group {
     display: flex;
     align-items: center;
@@ -178,28 +171,5 @@
 
     & + .bp-controls-cell {
         margin-left: 4px;
-    }
-}
-
-.bp-annotations-group {
-    padding: 0 4px 0 8px;
-    border-left: 1px solid $twos;
-}
-
-.bp-region-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-
-    svg {
-        fill: $white;
-    }
-
-    &.active {
-        background-color: $white;
-
-        svg {
-            fill: $black;
-        }
     }
 }

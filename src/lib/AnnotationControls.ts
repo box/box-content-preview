@@ -2,19 +2,23 @@ import noop from 'lodash/noop';
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
-const CLASS_ANNOTATIONS_GROUP = 'bp-annotations-group';
-const CLASS_REGION_BUTTON = 'bp-region-btn';
-const CLASS_BUTTON_ACTIVE = 'active';
+export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
+export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
+export const CLASS_BUTTON_ACTIVE = 'is-active';
 
-class AnnotationControls {
+export type Options = {
+    onRegionClick?: Function;
+};
+
+export default class AnnotationControls {
     /** @property {Controls} - Controls object */
-    controls;
+    private controls: Controls;
 
-    /** @property {Boolean} - Region comment mode active state */
-    isRegionActive = false;
+    /** @property {bool} - Region comment mode active state */
+    private isRegionActive = false;
 
     /** @property {HTMLElement} - Region comment button element */
-    regionButtonElement;
+    private regionButtonElement: HTMLElement = new HTMLButtonElement();
 
     /**
      * [constructor]
@@ -22,7 +26,7 @@ class AnnotationControls {
      * @param {Controls} controls - Viewer controls
      * @return {AnnotationControls} Instance of AnnotationControls
      */
-    constructor(controls) {
+    constructor(controls: Controls) {
         if (!controls || !(controls instanceof Controls)) {
             throw Error('controls must be an instance of Controls');
         }
@@ -30,7 +34,14 @@ class AnnotationControls {
         this.controls = controls;
     }
 
-    handleRegionClick = onRegionClick => event => {
+    /**
+     * Region comment button click handler
+     *
+     * @param {Function} onRegionClick - region click handler in options
+     * @param {MouseEvent} event - mouse event
+     * @return {void}
+     */
+    private handleRegionClick = (onRegionClick: Function) => (event: MouseEvent): void => {
         this.isRegionActive = !this.isRegionActive;
         if (this.isRegionActive) {
             this.regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
@@ -47,9 +58,11 @@ class AnnotationControls {
      * @param {Function} [options.onRegionClick] - Callback when region comment button is clicked
      * @return {void}
      */
-    init({ onRegionClick = noop } = {}) {
+    public init({ onRegionClick = noop }: Options = {}): void {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         this.regionButtonElement = this.controls.add(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             __('region_comment'),
             this.handleRegionClick(onRegionClick),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
@@ -59,5 +72,3 @@ class AnnotationControls {
         );
     }
 }
-
-export default AnnotationControls;
