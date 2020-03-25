@@ -6,8 +6,6 @@ const license = require('./license');
 const pkg = require('../package.json');
 
 const isLinked = process.env.IS_LINKED === '1';
-const getAnnotationsPath = () =>
-    isLinked ? /.*box-annotations\/dist\/.*/ : path.resolve('node_modules/box-annotations');
 
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
@@ -29,7 +27,7 @@ module.exports = language => {
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
                     include: [
                         path.resolve('src/lib'),
-                        getAnnotationsPath(),
+                        path.resolve('node_modules/box-annotations'),
                         path.resolve('node_modules/box-ui-elements'),
                     ],
                 },
@@ -72,6 +70,7 @@ module.exports = language => {
                 'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
             },
             extensions: ['.tsx', '.ts', '.js'],
+            symlinks: !isLinked,
         },
         stats: {
             assets: true,
