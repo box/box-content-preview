@@ -140,6 +140,7 @@
         "release:patch": "./build/release.sh -p",
         "setup": "yarn install",
         "start": "yarn setup && yarn build:dev --watch",
+        "start:linked": "f() { yarn link ${@:-box-annotations} && IS_LINKED=1 yarn start; }; f",
         "start:dev": "yarn build:i18n && LANGUAGE=en-US BABEL_ENV=dev NODE_ENV=dev yarn webpack-dev-server --config build/webpack.config.js",
         "start:dev:linked": "f() { yarn link ${@:-box-annotations} && IS_LINKED=1 yarn start:dev; }; f",
         "test": "yarn setup && yarn clean && yarn build:i18n && NODE_ENV=test yarn karma start build/karma.conf.js",
