@@ -5,6 +5,8 @@ const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('w
 const license = require('./license');
 const pkg = require('../package.json');
 
+const isLinked = process.env.IS_LINKED === '1';
+
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 module.exports = language => {
@@ -68,6 +70,7 @@ module.exports = language => {
                 'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
             },
             extensions: ['.tsx', '.ts', '.js'],
+            symlinks: !isLinked,
         },
         stats: {
             assets: true,
