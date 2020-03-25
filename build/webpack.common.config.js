@@ -5,6 +5,10 @@ const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('w
 const license = require('./license');
 const pkg = require('../package.json');
 
+const isLinked = process.env.IS_LINKED === '1';
+const getAnnotationsPath = () =>
+    isLinked ? /.*box-annotations\/dist\/.*/ : path.resolve('node_modules/box-annotations');
+
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 module.exports = language => {
@@ -25,7 +29,7 @@ module.exports = language => {
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
                     include: [
                         path.resolve('src/lib'),
-                        path.resolve('node_modules/box-annotations'),
+                        getAnnotationsPath(),
                         path.resolve('node_modules/box-ui-elements'),
                     ],
                 },

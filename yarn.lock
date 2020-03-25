@@ -2309,10 +2309,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@^3.13.0:
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-3.13.0.tgz#053a34ef2ad7d5796beac811f481e2d1f4eee130"
+  integrity sha512-TRTrMprLfaBUwPJJ2bDpiLPv1/EopPhMCWmQPEhaiwrvfwYiI+uC6Aa0h0wREZpeqpcbxbc1AH8yMYSS7+vtwg==
 
 box-ui-elements@^12.0.0-beta.10:
   version "12.0.0-beta.10"
