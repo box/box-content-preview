@@ -30,7 +30,7 @@
         "babel-plugin-istanbul": "^5.2.0",
         "babel-plugin-react-remove-properties": "^0.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
-        "box-annotations": "^3.13.0",
+        "box-annotations": "^2.3.0",
         "box-ui-elements": "^12.0.0-beta.10",
         "chai": "^4.2.0",
         "chai-dom": "^1.8.1",
