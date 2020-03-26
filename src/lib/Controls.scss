@@ -1,15 +1,6 @@
-.bp-controls-wrapper {
+.bp-controls {
     position: absolute;
     bottom: 25px;
-    left: 50%;
-    margin: 0;
-    padding: 0;
-    border: 0 none;
-}
-
-.bp-controls {
-    position: relative;
-    left: -50%;
     display: flex;
     background: fade-out($twos, .05);
     border-radius: 3px;

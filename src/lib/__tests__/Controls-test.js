@@ -35,11 +35,6 @@ describe('lib/Controls', () => {
         it('should create the correct DOM structure', () => {
             expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
 
-            const controlsWrapperEl = controls.controlsEl.parentNode;
-            expect(controlsWrapperEl.parentNode).to.equal(controls.containerEl);
-            expect(controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
-
-            expect(controls.controlsEl.parentNode).to.equal(controlsWrapperEl);
             expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
         });
     });
