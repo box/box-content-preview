@@ -6,8 +6,9 @@ export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 
+export type RegionHandlerType = ({ isRegionActive, event }: { isRegionActive: boolean; event: MouseEvent }) => void;
 export type Options = {
-    onRegionClick?: Function;
+    onRegionClick?: RegionHandlerType;
 };
 
 declare const __: (key: string) => string;
@@ -16,7 +17,7 @@ export default class AnnotationControls {
     /** @property {Controls} - Controls object */
     private controls: Controls;
 
-    /** @property {bool} - Region comment mode active state */
+    /** @property {boolean} - Region comment mode active state */
     private isRegionActive = false;
 
     /**
@@ -36,11 +37,11 @@ export default class AnnotationControls {
     /**
      * Region comment button click handler
      *
-     * @param {Function} onRegionClick - region click handler in options
+     * @param {RegionHandlerType} onRegionClick - region click handler in options
      * @param {MouseEvent} event - mouse event
      * @return {void}
      */
-    private handleRegionClick = (onRegionClick: Function) => (event: MouseEvent): void => {
+    private handleRegionClick = (onRegionClick: RegionHandlerType) => (event: MouseEvent): void => {
         const regionButtonElement = event.target as HTMLButtonElement;
 
         this.isRegionActive = !this.isRegionActive;
@@ -56,7 +57,7 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      *
-     * @param {Function} [options.onRegionClick] - Callback when region comment button is clicked
+     * @param {RegionHandlerType} [options.onRegionClick] - Callback when region comment button is clicked
      * @return {void}
      */
     public init({ onRegionClick = noop }: Options = {}): void {
