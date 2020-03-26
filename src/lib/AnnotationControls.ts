@@ -10,6 +10,8 @@ export type Options = {
     onRegionClick?: Function;
 };
 
+declare const __: (key: string) => string;
+
 export default class AnnotationControls {
     /** @property {Controls} - Controls object */
     private controls: Controls;
@@ -60,8 +62,6 @@ export default class AnnotationControls {
     public init({ onRegionClick = noop }: Options = {}): void {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         this.controls.add(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             __('region_comment'),
             this.handleRegionClick(onRegionClick),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,

@@ -97,12 +97,12 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
+        this.regionClickHandler = this.regionClickHandler.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
-        this.regionClickHandler = this.regionClickHandler.bind(this);
     }
 
     /**

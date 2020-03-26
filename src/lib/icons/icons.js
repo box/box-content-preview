@@ -6,7 +6,7 @@ import FULLSCREEN_OUT from './full_screen_out_24px.svg';
 import ROTATE_LEFT from './rotate_left_24px.svg';
 import ZOOM_IN from './zoom_in.svg';
 import ZOOM_OUT from './zoom_out.svg';
-import REGION_COMMENT from './annotation_region_comment.svg';
+import REGION_COMMENT from './region_comment.svg';
 import ARROW_LEFT from './arrow_left_24px.svg';
 import ARROW_RIGHT from './arrow_right_24px.svg';
 import CHECK_MARK from './checkmark_24px.svg';
