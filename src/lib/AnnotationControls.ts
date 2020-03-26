@@ -17,9 +17,6 @@ export default class AnnotationControls {
     /** @property {bool} - Region comment mode active state */
     private isRegionActive = false;
 
-    /** @property {HTMLElement} - Region comment button element */
-    private regionButtonElement: HTMLElement = new HTMLButtonElement();
-
     /**
      * [constructor]
      *
@@ -42,11 +39,13 @@ export default class AnnotationControls {
      * @return {void}
      */
     private handleRegionClick = (onRegionClick: Function) => (event: MouseEvent): void => {
+        const regionButtonElement = event.target as HTMLButtonElement;
+
         this.isRegionActive = !this.isRegionActive;
         if (this.isRegionActive) {
-            this.regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+            regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
-            this.regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+            regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
         }
 
         onRegionClick({ isRegionActive: this.isRegionActive, event });
@@ -60,7 +59,7 @@ export default class AnnotationControls {
      */
     public init({ onRegionClick = noop }: Options = {}): void {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
-        this.regionButtonElement = this.controls.add(
+        this.controls.add(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             __('region_comment'),

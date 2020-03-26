@@ -61,20 +61,19 @@ describe('lib/AnnotationControls', () => {
 
     describe('handleRegionClick()', () => {
         beforeEach(() => {
-            stubs.event = sandbox.stub({});
             stubs.classListAdd = sandbox.stub();
             stubs.classListRemove = sandbox.stub();
-            stubs.add = sandbox.stub(annotationControls.controls, 'add').returns({
-                classList: {
-                    add: stubs.classListAdd,
-                    remove: stubs.classListRemove,
+            stubs.event = sandbox.stub({
+                target: {
+                    classList: {
+                        add: stubs.classListAdd,
+                        remove: stubs.classListRemove,
+                    },
                 },
             });
         });
 
         it('should activate region button then deactivate', () => {
-            annotationControls.init({ onRegionClick: stubs.onRegionClick });
-
             expect(annotationControls.isRegionActive).to.be.false;
 
             annotationControls.handleRegionClick(stubs.onRegionClick)(stubs.event);
@@ -87,7 +86,6 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should call onRegionClick', () => {
-            annotationControls.init({ onRegionClick: stubs.onRegionClick });
             annotationControls.handleRegionClick(stubs.onRegionClick)(stubs.event);
 
             expect(stubs.onRegionClick).to.be.calledWith({
