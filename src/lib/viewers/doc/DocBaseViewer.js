@@ -1,4 +1,5 @@
 import throttle from 'lodash/throttle';
+import AnnotationControls from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -96,6 +97,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
+        this.regionClickHandler = this.regionClickHandler.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
@@ -1009,6 +1011,9 @@ class DocBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
+        if (this.options.showAnnotationsControls) {
+            this.annotationControls = new AnnotationControls(this.controls);
+        }
         this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
     }
@@ -1090,7 +1095,21 @@ class DocBaseViewer extends BaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        if (this.options.showAnnotationsControls) {
+            this.annotationControls.init({
+                onRegionClick: this.regionClickHandler,
+            });
+        }
     }
+
+    /**
+     * Handler for annotation toolbar region comment button click event.
+     *
+     * @private
+     * @return {void}
+     */
+    regionClickHandler() {}
 
     /**
      * Handler for 'pagesinit' event.

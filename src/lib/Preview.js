@@ -921,8 +921,11 @@ class Preview extends EventEmitter {
         // Whether download button should be shown
         this.options.showDownload = !!options.showDownload;
 
-        // Whether annotations and annotation controls should be shown
+        // Whether annotations v2 should be shown
         this.options.showAnnotations = !!options.showAnnotations;
+
+        // Whether annotations v4 buttons should be shown in toolbar
+        this.options.showAnnotationsControls = !!options.showAnnotationsControls;
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;

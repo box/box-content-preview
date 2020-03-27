@@ -1,9 +1,14 @@
+$controls-button-width: 32px;
+
+@import './AnnotationControls';
+@import './ZoomControls';
+
 .bp-controls {
     position: absolute;
     bottom: 25px;
     left: 50%;
     display: flex;
-    background: fade-out($twos, .05);
+    background: fade-out($black, .2);
     border-radius: 3px;
     transform: translateX(-50%);
     opacity: 0;
@@ -152,13 +157,6 @@
     }
 }
 
-.bp-zoom-current-scale {
-    min-width: 48px;
-    color: $white;
-    font-size: 14px;
-    text-align: center;
-}
-
 .bp-controls-group {
     display: flex;
     align-items: center;
@@ -166,7 +164,7 @@
     margin-left: 4px;
 
     .bp-controls-group-btn {
-        width: 32px;
+        width: $controls-button-width;
     }
 
     & + .bp-controls-cell {
