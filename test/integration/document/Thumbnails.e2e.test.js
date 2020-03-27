@@ -39,7 +39,7 @@ describe('Preview Document Thumbnails', () => {
      * @return {Element} The thumbnails sidebar subject
      */
     const toggleThumbnails = () => {
-        cy.showDocumentControls();
+        cy.showControls();
 
         cy.getByTitle('Toggle thumbnails')
             .should('be.visible')
@@ -58,14 +58,14 @@ describe('Preview Document Thumbnails', () => {
     it('Should not see the sidebar button if disabled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: false });
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
     });
 
     it('Should see the sidebar button if enabled', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Toggle thumbnails').should('be.visible');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
@@ -135,7 +135,7 @@ describe('Preview Document Thumbnails', () => {
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Click to enter page number').click();
         cy.getByTestId('page-num-input')
             .should('be.visible')
@@ -161,7 +161,7 @@ describe('Preview Document Thumbnails', () => {
 
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Click to enter page number').click();
         cy.getByTestId('page-num-input')
             .should('be.visible')
@@ -193,14 +193,14 @@ describe('Preview Document Thumbnails', () => {
 
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
     });
 
     it('Should hide the thumbnails when changing to small viewport', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Toggle thumbnails').should('be.visible');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
@@ -208,7 +208,7 @@ describe('Preview Document Thumbnails', () => {
         // Change to small viewport while thumbnails sidebar is open
         cy.viewport('iphone-6');
 
-        cy.showDocumentControls();
+        cy.showControls();
         cy.getByTitle('Toggle thumbnails').should('not.be.visible');
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
     });

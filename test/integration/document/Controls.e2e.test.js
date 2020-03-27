@@ -32,7 +32,7 @@ describe('Preview Document Controls', () => {
                 cy.wrap($page[0].scrollHeight).as('originalHeight');
             });
 
-            cy.showDocumentControls();
+            cy.showControls();
 
             zoom('out');
 
@@ -47,7 +47,7 @@ describe('Preview Document Controls', () => {
                 cy.wrap(zoomedOutHeight).as('zoomedOutHeight');
             });
 
-            cy.showDocumentControls();
+            cy.showControls();
 
             zoom('in');
 
@@ -69,7 +69,7 @@ describe('Preview Document Controls', () => {
                 .invoke('text')
                 .should('equal', '1');
 
-            cy.showDocumentControls();
+            cy.showControls();
             cy.getByTitle('Next page').click();
 
             cy.getPreviewPage(2).should('be.visible');
@@ -78,7 +78,7 @@ describe('Preview Document Controls', () => {
                 .invoke('text')
                 .should('equal', '2');
 
-            cy.showDocumentControls();
+            cy.showControls();
             cy.getByTitle('Previous page').click();
 
             cy.getPreviewPage(1).should('be.visible');
@@ -95,7 +95,7 @@ describe('Preview Document Controls', () => {
                 .invoke('text')
                 .should('equal', '1');
 
-            cy.showDocumentControls();
+            cy.showControls();
             cy.getByTitle('Click to enter page number').click();
             cy.getByTestId('page-num-input')
                 .should('be.visible')
@@ -117,11 +117,11 @@ describe('Preview Document Controls', () => {
 
             cy.getByTestId('document-findbar').should('not.be.visible');
 
-            cy.showDocumentControls();
+            cy.showControls();
             cy.getByTitle('Toggle findbar').click();
             cy.getByTestId('document-findbar').should('be.visible');
 
-            cy.showDocumentControls();
+            cy.showControls();
             cy.getByTitle('Toggle findbar').click();
             cy.getByTestId('document-findbar').should('not.be.visible');
         });
@@ -134,7 +134,7 @@ describe('Preview Document Controls', () => {
     // it('Should handle going fullscreen', () => {
     //     cy.getPreviewPage(1).should('be.visible');
     //     cy.contains('The Content Platform for Your Apps');
-    //     cy.showDocumentControls();
+    //     cy.showControls();
     //     cy.getByTitle('Enter fullscreen').should('be.visible').click();
     //     cy.getByTitle('Exit fullscreen').should('be.visible');
     // });
