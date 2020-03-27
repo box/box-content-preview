@@ -1,8 +1,7 @@
 Cypress.Commands.add('getByTestId', (testId, options = {}) => cy.get(`[data-testid="${testId}"]`, options));
 Cypress.Commands.add('getByTitle', (title, options = {}) => cy.get(`[title="${title}"]`, options));
-Cypress.Commands.add('getPreviewPage', (pageNum) => {
-    cy
-        .get(`.page[data-page-number=${pageNum}]`)
+Cypress.Commands.add('getPreviewPage', pageNum => {
+    cy.get(`.page[data-page-number=${pageNum}]`)
         .as('previewPage')
         // Adding timeout here because sometimes it takes more than the Cypress
         // default timeout to render the preview
@@ -10,10 +9,6 @@ Cypress.Commands.add('getPreviewPage', (pageNum) => {
         .should('not.exist');
 
     return cy.get('@previewPage');
-});
-Cypress.Commands.add('showDocumentControls', () => {
-    cy.getByTestId('bp').trigger('mousemove');
-    return cy.getByTestId('controls-wrapper').should('be.visible');
 });
 Cypress.Commands.add('showPreview', (token, fileId, options) => {
     cy.server();
@@ -24,7 +19,7 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     cy.getByTestId('fileid').type(fileId);
     cy.getByTestId('fileid-set').click();
 
-    cy.window().then((win) => {
+    cy.window().then(win => {
         win.loadPreview(options);
     });
 
@@ -34,8 +29,7 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
     return cy.getByTestId('bp', { timeout: 15000 }).should('have.class', 'bp-loaded');
 });
 
-
 Cypress.Commands.add('showControls', () => {
     cy.getByTestId('bp').trigger('mouseover');
-    cy.getByTestId('controls-wrapper').should('be.visible');
-})
+    cy.getByTestId('bp-controls').should('be.visible');
+});
