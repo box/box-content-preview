@@ -83,6 +83,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.getAttribute('playsinline')).to.equal('');
             expect(videoBase.playButtonEl.className).to.equal('bp-media-play-button bp-is-hidden');
             expect(videoBase.playButtonEl.innerHTML).contains('<path d="M0 0h24v24H0z" fill="none"');
+            expect(videoBase.playButtonEl.getAttribute('role')).to.equal('button');
+            expect(videoBase.playButtonEl.getAttribute('tabindex')).to.equal('0');
+            expect(videoBase.playButtonEl.getAttribute('aria-label')).to.equal(__('media_play'));
+            expect(videoBase.playButtonEl.getAttribute('title')).to.equal(__('media_play'));
             expect(VideoBaseViewer.prototype.lowerLights).to.be.called;
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {

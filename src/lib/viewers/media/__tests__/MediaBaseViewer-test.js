@@ -62,6 +62,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             decreaseSpeed: sandbox.stub(),
             isVolumeScrubberFocused: sandbox.stub(),
             isTimeScrubberFocused: sandbox.stub(),
+            disableHideAndShow: sandbox.stub(),
         };
     });
 
@@ -858,13 +859,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should add keyboard-focus class on tab and return false', () => {
             expect(media.onKeydown('Tab')).to.be.false;
             expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.mediaControls.disableHideAndShow).to.be.called;
         });
 
         it('should add keyboard-focus class on shift+tab and return false', () => {
             expect(media.onKeydown('Shift+Tab')).to.be.false;
             expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
-            expect(media.mediaControls.show).to.be.called;
+            expect(media.mediaControls.disableHideAndShow).to.be.called;
         });
 
         it('should toggle play and return true on Space', () => {

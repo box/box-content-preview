@@ -672,6 +672,16 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Prevents hiding of the controls and show media controls.
+     *
+     * @return {void}
+     */
+    disableHideAndShow() {
+        this.preventHiding = true;
+        this.show();
+    }
+
+    /**
      * Toggles the media controls
      *
      * @return {void}

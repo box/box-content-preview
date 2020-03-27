@@ -925,7 +925,7 @@ class MediaBaseViewer extends BaseViewer {
             case 'tab':
             case 'shift+tab':
                 this.mediaContainerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
-                this.mediaControls.show();
+                this.mediaControls.disableHideAndShow();
                 return false; // So that tab can proceed to do its default behavior of going to the next element
             case 'space':
             case 'k':

@@ -44,6 +44,10 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
+        this.playButtonEl.setAttribute('role', 'button');
+        this.playButtonEl.setAttribute('tabindex', '0');
+        this.playButtonEl.setAttribute('aria-label', __('media_play'));
+        this.playButtonEl.setAttribute('title', __('media_play'));
 
         this.lowerLights();
     }

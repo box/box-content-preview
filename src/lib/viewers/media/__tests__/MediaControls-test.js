@@ -680,6 +680,16 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
+    describe('disableHideAndShow()', () => {
+        it('should set preventHiding to true and show the controls', () => {
+            stubs.show = sandbox.stub(mediaControls, 'show');
+
+            mediaControls.disableHideAndShow();
+            expect(mediaControls.preventHiding).to.equal(true);
+            expect(stubs.show).to.be.called;
+        });
+    });
+
     describe('toggle()', () => {
         beforeEach(() => {
             stubs.isVisible = sandbox.stub(mediaControls, 'isVisible');
