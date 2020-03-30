@@ -4,7 +4,9 @@ import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
+
 export const CLASS_BUTTON_ACTIVE = 'is-active';
+export const CLASS_GROUP_HIDE = 'is-hidden';
 
 export type RegionHandler = ({ isRegionActive, event }: { isRegionActive: boolean; event: MouseEvent }) => void;
 export type Options = {
@@ -33,6 +35,22 @@ export default class AnnotationControls {
 
         this.controls = controls;
     }
+
+    /**
+     * Hide annotations control button group
+     *
+     * @param {boolean} isFullscreen - true if full screen will be active
+     * @return {void}
+     */
+    public toggleGroup = (isFullscreen: boolean): void => {
+        const groupElement = this.controls.controlsEl.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
+
+        if (isFullscreen) {
+            groupElement.classList.add(CLASS_GROUP_HIDE);
+        } else {
+            groupElement.classList.remove(CLASS_GROUP_HIDE);
+        }
+    };
 
     /**
      * Region comment button click handler

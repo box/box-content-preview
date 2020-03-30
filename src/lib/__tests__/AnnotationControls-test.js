@@ -1,5 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationControls, { CLASS_REGION_BUTTON, CLASS_BUTTON_ACTIVE } from '../AnnotationControls';
+import AnnotationControls, {
+    CLASS_ANNOTATIONS_GROUP,
+    CLASS_BUTTON_ACTIVE,
+    CLASS_GROUP_HIDE,
+    CLASS_REGION_BUTTON,
+} from '../AnnotationControls';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from '../Controls';
 import { ICON_REGION_COMMENT } from '../icons/icons';
 
@@ -92,6 +97,29 @@ describe('lib/AnnotationControls', () => {
                 isRegionActive: true,
                 event: stubs.event,
             });
+        });
+    });
+
+    describe('toggleGroup()', () => {
+        beforeEach(() => {
+            stubs.classListAdd = sandbox.stub();
+            stubs.classListRemove = sandbox.stub();
+            stubs.querySelector = sandbox.stub().returns({
+                classList: {
+                    add: stubs.classListAdd,
+                    remove: stubs.classListRemove,
+                },
+            });
+            annotationControls.controls.controlsEl.querySelector = stubs.querySelector;
+        });
+
+        it('should hide entire group if fullscreen is active', () => {
+            annotationControls.toggleGroup(true);
+            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
+            expect(stubs.classListAdd).to.be.calledWith(CLASS_GROUP_HIDE);
+
+            annotationControls.toggleGroup(false);
+            expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
         });
     });
 });
