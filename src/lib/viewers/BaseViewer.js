@@ -536,9 +536,6 @@ class BaseViewer extends EventEmitter {
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
-        if (this.options.showAnnotationsControls) {
-            this.annotationControls.toggleGroup(!fullscreen.isFullscreen()); // pass in the next state
-        }
     }
 
     /**

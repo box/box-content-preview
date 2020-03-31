@@ -1,6 +1,7 @@
 import noop from 'lodash/noop';
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
+import fullscreen from './Fullscreen';
 
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
@@ -34,7 +35,30 @@ export default class AnnotationControls {
         }
 
         this.controls = controls;
+
+        this.attachEventHandlers();
     }
+
+    /**
+     * [destructor]
+     *
+     * @return {void}
+     */
+    public destroy(): void {
+        if (fullscreen) {
+            fullscreen.removeAllListeners();
+        }
+    }
+
+    /**
+     * Attaches event handlers
+     *
+     * @return {void}
+     */
+    private attachEventHandlers = (): void => {
+        fullscreen.addListener('enter', () => this.handleFullscreenChange(true));
+        fullscreen.addListener('exit', () => this.handleFullscreenChange(false));
+    };
 
     /**
      * Hide annotations control button group
@@ -42,7 +66,7 @@ export default class AnnotationControls {
      * @param {boolean} isFullscreen - true if full screen will be active
      * @return {void}
      */
-    public toggleGroup = (isFullscreen: boolean): void => {
+    private handleFullscreenChange = (isFullscreen: boolean): void => {
         const groupElement = this.controls.controlsEl.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
 
         if (isFullscreen) {

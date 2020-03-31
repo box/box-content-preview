@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { ICON_REGION_COMMENT } from '../icons/icons';
 import AnnotationControls, {
     CLASS_ANNOTATIONS_GROUP,
     CLASS_BUTTON_ACTIVE,
@@ -6,7 +7,7 @@ import AnnotationControls, {
     CLASS_REGION_BUTTON,
 } from '../AnnotationControls';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from '../Controls';
-import { ICON_REGION_COMMENT } from '../icons/icons';
+import fullscreen from '../Fullscreen';
 
 let annotationControls;
 let stubs = {};
@@ -21,8 +22,9 @@ describe('lib/AnnotationControls', () => {
     beforeEach(() => {
         fixture.load('__tests__/AnnotationControls-test.html');
         const controls = new Controls(document.getElementById('test-annotation-controls-container'));
-        annotationControls = new AnnotationControls(controls);
+        stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
         stubs.onRegionClick = sandbox.stub();
+        annotationControls = new AnnotationControls(controls);
     });
 
     afterEach(() => {
@@ -38,8 +40,24 @@ describe('lib/AnnotationControls', () => {
             expect(annotationControls.controls).not.to.be.undefined;
         });
 
+        it('should attach event listeners', () => {
+            expect(stubs.fullscreenAddListener).to.be.calledTwice;
+        });
+
         it('should throw an exception if controls is not provided', () => {
             expect(() => new AnnotationControls()).to.throw(Error, 'controls must be an instance of Controls');
+        });
+    });
+
+    describe('destroy()', () => {
+        beforeEach(() => {
+            stubs.fullscreenRemoveAllListeners = sandbox.stub(fullscreen, 'removeAllListeners');
+        });
+
+        it('should remove all listeners', () => {
+            annotationControls.destroy();
+
+            expect(stubs.fullscreenRemoveAllListeners).to.be.called;
         });
     });
 
@@ -100,7 +118,7 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('toggleGroup()', () => {
+    describe('handleFullscreenChange()', () => {
         beforeEach(() => {
             stubs.classListAdd = sandbox.stub();
             stubs.classListRemove = sandbox.stub();
@@ -114,11 +132,11 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should hide entire group if fullscreen is active', () => {
-            annotationControls.toggleGroup(true);
+            annotationControls.handleFullscreenChange(true);
             expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
             expect(stubs.classListAdd).to.be.calledWith(CLASS_GROUP_HIDE);
 
-            annotationControls.toggleGroup(false);
+            annotationControls.handleFullscreenChange(false);
             expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
         });
     });
