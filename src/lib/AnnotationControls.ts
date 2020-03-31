@@ -20,6 +20,9 @@ export default class AnnotationControls {
     /** @property {Controls} - Controls object */
     private controls: Controls;
 
+    /** @property {HTMLElement} - Controls element */
+    private controlsElement: HTMLElement;
+
     /** @property {boolean} - Region comment mode active state */
     private isRegionActive = false;
 
@@ -35,6 +38,7 @@ export default class AnnotationControls {
         }
 
         this.controls = controls;
+        this.controlsElement = controls.controlsEl;
 
         this.attachEventHandlers();
     }
@@ -45,9 +49,8 @@ export default class AnnotationControls {
      * @return {void}
      */
     public destroy(): void {
-        if (fullscreen) {
-            fullscreen.removeAllListeners();
-        }
+        fullscreen.removeListener('enter', this.handleFullscreenEnter);
+        fullscreen.removeListener('exit', this.handleFullscreenExit);
     }
 
     /**
@@ -56,25 +59,41 @@ export default class AnnotationControls {
      * @return {void}
      */
     private attachEventHandlers(): void {
-        fullscreen.addListener('enter', () => this.handleFullscreenChange(true));
-        fullscreen.addListener('exit', () => this.handleFullscreenChange(false));
+        fullscreen.addListener('enter', this.handleFullscreenEnter);
+        fullscreen.addListener('exit', this.handleFullscreenExit);
     }
 
     /**
-     * Hide annotations control button group
+     * Handle fullscreen change
      *
      * @param {boolean} isFullscreen - true if full screen will be active
      * @return {void}
      */
     private handleFullscreenChange = (isFullscreen: boolean): void => {
-        const groupElement = this.controls.controlsEl.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
+        const groupElement = this.controlsElement.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
 
-        if (isFullscreen) {
-            groupElement.classList.add(CLASS_GROUP_HIDE);
-        } else {
-            groupElement.classList.remove(CLASS_GROUP_HIDE);
+        if (groupElement) {
+            if (isFullscreen) {
+                groupElement.classList.add(CLASS_GROUP_HIDE);
+            } else {
+                groupElement.classList.remove(CLASS_GROUP_HIDE);
+            }
         }
     };
+
+    /**
+     * Enter fullscreen handler
+     *
+     * @return {void}
+     */
+    private handleFullscreenEnter = (): void => this.handleFullscreenChange(true);
+
+    /**
+     * Exit fullscreen handler
+     *
+     * @return {void}
+     */
+    private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
      * Region comment button click handler
@@ -84,13 +103,15 @@ export default class AnnotationControls {
      * @return {void}
      */
     private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
-        const regionButtonElement = event.target as HTMLButtonElement;
+        const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
 
-        this.isRegionActive = !this.isRegionActive;
-        if (this.isRegionActive) {
-            regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
-        } else {
-            regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+        if (regionButtonElement) {
+            this.isRegionActive = !this.isRegionActive;
+            if (this.isRegionActive) {
+                regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+            } else {
+                regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+            }
         }
 
         onRegionClick({ isRegionActive: this.isRegionActive, event });
