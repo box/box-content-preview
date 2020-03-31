@@ -6,7 +6,7 @@ All contributions are welcome to this project.
 
 Before a contribution can be merged into this project, please fill out the Contributor License Agreement (CLA) located at:
 
-https://developer.box.com/docs/box-sdk-cla
+https://opensource.box.com/cla/
 
 To learn more about CLAs and why they are important to the UI Element projects, please see the [Wikipedia entry](http://en.wikipedia.org/wiki/Contributor_License_Agreement).
 
@@ -51,7 +51,7 @@ longer description here if necessary.
 include BREAKING CHANGE keyword for breaking changes.
 ```
 
-The message summary should be a one-sentence description of the change, and it must be 72 characters in length or shorter. For a list of tags, please see the conventional changelog [documentation](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum). 
+The message summary should be a one-sentence description of the change, and it must be 72 characters in length or shorter. For a list of tags, please see the conventional changelog [documentation](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum).
 
 ### Step 5: Rebase
 
