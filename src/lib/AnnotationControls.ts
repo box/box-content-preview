@@ -55,10 +55,10 @@ export default class AnnotationControls {
      *
      * @return {void}
      */
-    private attachEventHandlers = (): void => {
+    private attachEventHandlers(): void {
         fullscreen.addListener('enter', () => this.handleFullscreenChange(true));
         fullscreen.addListener('exit', () => this.handleFullscreenChange(false));
-    };
+    }
 
     /**
      * Hide annotations control button group
