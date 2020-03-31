@@ -164,6 +164,10 @@ class DocBaseViewer extends BaseViewer {
             URL.revokeObjectURL(this.printURL);
         }
 
+        if (this.annotationControls) {
+            this.annotationControls.destroy();
+        }
+
         if (this.pageControls) {
             this.pageControls.removeListener('pagechange', this.setPage);
         }
