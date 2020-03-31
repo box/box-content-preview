@@ -84,6 +84,21 @@ $controls-button-width: 32px;
         align-items: center;
         justify-content: center;
     }
+
+    .bp-controls-group {
+        display: flex;
+        align-items: center;
+        margin-right: 4px;
+        margin-left: 4px;
+
+        .bp-controls-group-btn {
+            width: $controls-button-width;
+        }
+
+        & + .bp-controls-cell {
+            margin-left: 4px;
+        }
+    }
 }
 
 .box-show-preview-controls .bp-controls {
@@ -154,20 +169,5 @@ $controls-button-width: 32px;
 
     .bp-exit-fullscreen-icon {
         display: block;
-    }
-}
-
-.bp-controls-group {
-    display: flex;
-    align-items: center;
-    margin-right: 4px;
-    margin-left: 4px;
-
-    .bp-controls-group-btn {
-        width: $controls-button-width;
-    }
-
-    & + .bp-controls-cell {
-        margin-left: 4px;
     }
 }
