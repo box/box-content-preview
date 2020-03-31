@@ -28,9 +28,6 @@ export default class AnnotationControls {
 
     /**
      * [constructor]
-     *
-     * @param {Controls} controls - Viewer controls
-     * @return {AnnotationControls} Instance of AnnotationControls
      */
     constructor(controls: Controls) {
         if (!controls || !(controls instanceof Controls)) {
@@ -45,8 +42,6 @@ export default class AnnotationControls {
 
     /**
      * [destructor]
-     *
-     * @return {void}
      */
     public destroy(): void {
         fullscreen.removeListener('enter', this.handleFullscreenEnter);
@@ -55,8 +50,6 @@ export default class AnnotationControls {
 
     /**
      * Attaches event handlers
-     *
-     * @return {void}
      */
     private attachEventHandlers(): void {
         fullscreen.addListener('enter', this.handleFullscreenEnter);
@@ -65,42 +58,33 @@ export default class AnnotationControls {
 
     /**
      * Handle fullscreen change
-     *
-     * @param {boolean} isFullscreen - true if full screen will be active
-     * @return {void}
      */
     private handleFullscreenChange = (isFullscreen: boolean): void => {
         const groupElement = this.controlsElement.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
 
-        if (groupElement) {
-            if (isFullscreen) {
-                groupElement.classList.add(CLASS_GROUP_HIDE);
-            } else {
-                groupElement.classList.remove(CLASS_GROUP_HIDE);
-            }
+        if (!groupElement) {
+            return;
+        }
+
+        if (isFullscreen) {
+            groupElement.classList.add(CLASS_GROUP_HIDE);
+        } else {
+            groupElement.classList.remove(CLASS_GROUP_HIDE);
         }
     };
 
     /**
      * Enter fullscreen handler
-     *
-     * @return {void}
      */
     private handleFullscreenEnter = (): void => this.handleFullscreenChange(true);
 
     /**
      * Exit fullscreen handler
-     *
-     * @return {void}
      */
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
      * Region comment button click handler
-     *
-     * @param {RegionHandler} onRegionClick - region click handler in options
-     * @param {MouseEvent} event - mouse event
-     * @return {void}
      */
     private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
         const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
@@ -119,9 +103,6 @@ export default class AnnotationControls {
 
     /**
      * Initialize the annotation controls with options.
-     *
-     * @param {RegionHandler} [options.onRegionClick] - Callback when region comment button is clicked
-     * @return {void}
      */
     public init({ onRegionClick = noop }: Options = {}): void {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
