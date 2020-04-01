@@ -22,11 +22,10 @@ describe('lib/AnnotationControls', () => {
 
     beforeEach(() => {
         fixture.load('__tests__/AnnotationControls-test.html');
-        stubs.annotatorAddListener = sandbox.stub();
-        stubs.annotatorRemoveListener = sandbox.stub();
         stubs.classListAdd = sandbox.stub();
         stubs.classListRemove = sandbox.stub();
         stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
+        stubs.fullscreenRemoveListener = sandbox.stub(fullscreen, 'removeListener');
         stubs.onRegionClick = sandbox.stub();
         stubs.querySelector = sandbox.stub().returns({
             classList: {
@@ -36,11 +35,7 @@ describe('lib/AnnotationControls', () => {
         });
 
         const controls = new Controls(document.getElementById('test-annotation-controls-container'));
-        const annotator = {
-            addListener: stubs.annotatorAddListener,
-            removeListener: stubs.annotatorRemoveListener,
-        };
-        annotationControls = new AnnotationControls(controls, annotator);
+        annotationControls = new AnnotationControls(controls);
         annotationControls.controlsElement.querySelector = stubs.querySelector;
     });
 
@@ -54,7 +49,6 @@ describe('lib/AnnotationControls', () => {
 
     describe('constructor()', () => {
         it('should create the correct DOM structure', () => {
-            expect(annotationControls.annotator).not.to.be.undefined;
             expect(annotationControls.controls).not.to.be.undefined;
             expect(annotationControls.controlsElement).not.to.be.undefined;
             expect(annotationControls.currentActiveControl).to.be.null;
@@ -62,7 +56,6 @@ describe('lib/AnnotationControls', () => {
 
         it('should attach event listeners', () => {
             expect(stubs.fullscreenAddListener).to.be.calledTwice;
-            expect(stubs.annotatorAddListener).to.be.called;
         });
 
         it('should throw an exception if controls is not provided', () => {
@@ -71,15 +64,10 @@ describe('lib/AnnotationControls', () => {
     });
 
     describe('destroy()', () => {
-        beforeEach(() => {
-            stubs.fullscreenRemoveListener = sandbox.stub(fullscreen, 'removeListener');
-        });
-
         it('should remove all listeners', () => {
             annotationControls.destroy();
 
             expect(stubs.fullscreenRemoveListener).to.be.calledTwice;
-            expect(stubs.annotatorRemoveListener).to.be.called;
         });
     });
 

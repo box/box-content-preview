@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import noop from 'lodash/noop';
 
 import { ANNOTATION_MODE } from './constants';
@@ -21,8 +20,6 @@ export type Options = {
 declare const __: (key: string) => string;
 
 export default class AnnotationControls {
-    private annotator: EventEmitter;
-
     private controls: Controls;
 
     private controlsElement: HTMLElement;
@@ -32,12 +29,11 @@ export default class AnnotationControls {
     /**
      * [constructor]
      */
-    constructor(controls: Controls, annotator: EventEmitter) {
+    constructor(controls: Controls) {
         if (!controls || !(controls instanceof Controls)) {
             throw Error('controls must be an instance of Controls');
         }
 
-        this.annotator = annotator;
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
 
@@ -50,7 +46,6 @@ export default class AnnotationControls {
     public destroy(): void {
         fullscreen.removeListener('enter', this.handleFullscreenEnter);
         fullscreen.removeListener('exit', this.handleFullscreenExit);
-        this.annotator.removeListener('annotationcreate', this.deactivateCurrentControl);
     }
 
     /**
@@ -59,7 +54,6 @@ export default class AnnotationControls {
     private attachEventHandlers(): void {
         fullscreen.addListener('enter', this.handleFullscreenEnter);
         fullscreen.addListener('exit', this.handleFullscreenExit);
-        this.annotator.addListener('annotationcreate', this.deactivateCurrentControl);
     }
 
     /**

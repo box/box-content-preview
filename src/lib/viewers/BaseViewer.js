@@ -963,6 +963,10 @@ class BaseViewer extends EventEmitter {
 
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
+
+        if (this.options.showAnnotationsControls && this.annotationControls) {
+            this.annotator.addListener('annotationcreate', this.annotationControls.deactivateCurrentControl);
+        }
     }
 
     /**

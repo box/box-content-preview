@@ -1016,7 +1016,7 @@ class DocBaseViewer extends BaseViewer {
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
         if (this.options.showAnnotationsControls) {
-            this.annotationControls = new AnnotationControls(this.controls, this.annotator);
+            this.annotationControls = new AnnotationControls(this.controls);
         }
         this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
