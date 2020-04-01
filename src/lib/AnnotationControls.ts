@@ -1,4 +1,7 @@
+import { EventEmitter } from 'events';
 import noop from 'lodash/noop';
+
+import { ANNOTATION_MODE } from './constants';
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 import fullscreen from './Fullscreen';
@@ -9,7 +12,8 @@ export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
-export type RegionHandler = ({ isRegionActive, event }: { isRegionActive: boolean; event: MouseEvent }) => void;
+export type AnnotationMode = 'draw' | 'highlight' | 'region' | null;
+export type RegionHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
 export type Options = {
     onRegionClick?: RegionHandler;
 };
@@ -17,23 +21,23 @@ export type Options = {
 declare const __: (key: string) => string;
 
 export default class AnnotationControls {
-    /** @property {Controls} - Controls object */
+    private annotator: EventEmitter;
+
     private controls: Controls;
 
-    /** @property {HTMLElement} - Controls element */
     private controlsElement: HTMLElement;
 
-    /** @property {boolean} - Region comment mode active state */
-    private isRegionActive = false;
+    private currentActiveControl: AnnotationMode = null;
 
     /**
      * [constructor]
      */
-    constructor(controls: Controls) {
+    constructor(controls: Controls, annotator: EventEmitter) {
         if (!controls || !(controls instanceof Controls)) {
             throw Error('controls must be an instance of Controls');
         }
 
+        this.annotator = annotator;
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
 
@@ -46,6 +50,7 @@ export default class AnnotationControls {
     public destroy(): void {
         fullscreen.removeListener('enter', this.handleFullscreenEnter);
         fullscreen.removeListener('exit', this.handleFullscreenExit);
+        this.annotator.removeListener('annotationcreate', this.deactivateCurrentControl);
     }
 
     /**
@@ -54,6 +59,7 @@ export default class AnnotationControls {
     private attachEventHandlers(): void {
         fullscreen.addListener('enter', this.handleFullscreenEnter);
         fullscreen.addListener('exit', this.handleFullscreenExit);
+        this.annotator.addListener('annotationcreate', this.deactivateCurrentControl);
     }
 
     /**
@@ -84,21 +90,53 @@ export default class AnnotationControls {
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
-     * Region comment button click handler
+     * Deactive current control button
      */
-    private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
+    public deactivateCurrentControl = (): void => {
+        if (!this.currentActiveControl) {
+            return;
+        }
+
+        switch (this.currentActiveControl) {
+            case ANNOTATION_MODE.region:
+                this.currentActiveControl = null;
+                this.updateRegionButton();
+                break;
+            default:
+                this.currentActiveControl = null;
+        }
+    };
+
+    /**
+     * Update region button UI
+     */
+    private updateRegionButton = (): void => {
         const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
 
         if (regionButtonElement) {
-            this.isRegionActive = !this.isRegionActive;
-            if (this.isRegionActive) {
+            if (this.currentActiveControl === ANNOTATION_MODE.region) {
                 regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
             } else {
                 regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
             }
         }
+    };
 
-        onRegionClick({ isRegionActive: this.isRegionActive, event });
+    /**
+     * Region comment button click handler
+     */
+    private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
+        if (this.currentActiveControl === ANNOTATION_MODE.region) {
+            this.deactivateCurrentControl();
+        } else {
+            if (this.currentActiveControl) {
+                this.deactivateCurrentControl();
+            }
+            this.currentActiveControl = ANNOTATION_MODE.region as AnnotationMode;
+            this.updateRegionButton();
+        }
+
+        onRegionClick({ activeControl: this.currentActiveControl, event });
     };
 
     /**

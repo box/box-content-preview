@@ -131,6 +131,12 @@ export const ANNOTATOR_EVENT = {
     scale: 'scaleannotations',
 };
 
+export const ANNOTATION_MODE = {
+    draw: 'draw',
+    highlight: 'highlight',
+    region: 'region',
+};
+
 export const BROWSERS = {
     CHROME: 'Chrome',
     EDGE: 'Edge',
