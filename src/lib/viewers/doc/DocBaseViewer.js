@@ -11,6 +11,7 @@ import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
+    ANNOTATION_MODE,
     ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1113,8 +1114,8 @@ class DocBaseViewer extends BaseViewer {
      * @private
      * @return {void}
      */
-    regionClickHandler({ activeControl }) {
-        this.annotator.toggleAnnotationMode(activeControl);
+    regionClickHandler() {
+        this.annotator.toggleAnnotationMode(ANNOTATION_MODE.region);
     }
 
     /**

@@ -93,7 +93,7 @@ export default class AnnotationControls {
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
-     * Deactive current control button
+     * Deactivate current control button
      */
     public deactivateCurrentControl = (): void => {
         if (!this.currentActiveControl) {
@@ -112,12 +112,14 @@ export default class AnnotationControls {
     private updateRegionButton = (): void => {
         const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
 
-        if (regionButtonElement) {
-            if (this.currentActiveControl === ANNOTATION_MODE.region) {
-                regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
-            } else {
-                regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
-            }
+        if (!regionButtonElement) {
+            return;
+        }
+
+        if (this.currentActiveControl === ANNOTATION_MODE.region) {
+            regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+        } else {
+            regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
         }
     };
 
