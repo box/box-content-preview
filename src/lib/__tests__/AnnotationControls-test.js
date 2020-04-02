@@ -51,6 +51,7 @@ describe('lib/AnnotationControls', () => {
         it('should create the correct DOM structure', () => {
             expect(annotationControls.controls).not.to.be.undefined;
             expect(annotationControls.controlsElement).not.to.be.undefined;
+            expect(annotationControls.controlsMap).not.to.be.undefined;
             expect(annotationControls.currentActiveControl).to.be.null;
         });
 
@@ -132,20 +133,27 @@ describe('lib/AnnotationControls', () => {
     });
 
     describe('deactivateCurrentControl()', () => {
+        beforeEach(() => {
+            stubs.updateRegionButton = sandbox.stub();
+            annotationControls.controlsMap = {
+                [ANNOTATION_MODE.region]: stubs.updateRegionButton,
+            };
+        });
+
         it('should not change if no current active control', () => {
             annotationControls.deactivateCurrentControl();
 
             expect(annotationControls.currentActiveControl).to.be.null;
+            expect(stubs.updateRegionButton).not.to.be.called;
         });
 
         it('should call updateRegionButton if current control is region', () => {
-            stubs.updateRegion = sandbox.stub(annotationControls, 'updateRegionButton');
             annotationControls.currentActiveControl = ANNOTATION_MODE.region;
 
             annotationControls.deactivateCurrentControl();
 
             expect(annotationControls.currentActiveControl).to.be.null;
-            expect(stubs.updateRegion).to.be.called;
+            expect(stubs.updateRegionButton).to.be.called;
         });
     });
 });
