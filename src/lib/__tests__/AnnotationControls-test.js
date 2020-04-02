@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import { ANNOTATION_MODE } from '../constants';
 import { ICON_REGION_COMMENT } from '../icons/icons';
 import AnnotationControls, {
+    AnnotationMode,
     CLASS_ANNOTATIONS_GROUP,
     CLASS_BUTTON_ACTIVE,
     CLASS_GROUP_HIDE,
@@ -52,7 +52,7 @@ describe('lib/AnnotationControls', () => {
             expect(annotationControls.controls).not.to.be.undefined;
             expect(annotationControls.controlsElement).not.to.be.undefined;
             expect(annotationControls.controlsMap).not.to.be.undefined;
-            expect(annotationControls.currentActiveControl).to.be.null;
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
         });
 
         it('should attach event listeners', () => {
@@ -76,7 +76,7 @@ describe('lib/AnnotationControls', () => {
         beforeEach(() => {
             stubs.add = sandbox.stub(annotationControls.controls, 'add');
             stubs.regionHandler = sandbox.stub();
-            sandbox.stub(annotationControls, 'handleRegionClick').returns(stubs.regionHandler);
+            sandbox.stub(annotationControls, 'handleClick').returns(stubs.regionHandler);
         });
 
         it('should add the controls', () => {
@@ -93,28 +93,28 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('handleRegionClick()', () => {
+    describe('handleClick()', () => {
         beforeEach(() => {
             stubs.event = sandbox.stub({});
         });
 
         it('should activate region button then deactivate', () => {
-            expect(annotationControls.currentActiveControl).to.be.null;
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
 
-            annotationControls.handleRegionClick(stubs.onRegionClick)(stubs.event);
-            expect(annotationControls.currentActiveControl).to.equal(ANNOTATION_MODE.region);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.REGION);
             expect(stubs.classListAdd).to.be.calledWith(CLASS_BUTTON_ACTIVE);
 
-            annotationControls.handleRegionClick(stubs.onRegionClick)(stubs.event);
-            expect(annotationControls.currentActiveControl).to.equal(null);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
             expect(stubs.classListRemove).to.be.calledWith(CLASS_BUTTON_ACTIVE);
         });
 
         it('should call onRegionClick', () => {
-            annotationControls.handleRegionClick(stubs.onRegionClick)(stubs.event);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
 
             expect(stubs.onRegionClick).to.be.calledWith({
-                activeControl: ANNOTATION_MODE.region,
+                activeControl: AnnotationMode.REGION,
                 event: stubs.event,
             });
         });
@@ -132,27 +132,27 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('deactivateCurrentControl()', () => {
+    describe('resetControls()', () => {
         beforeEach(() => {
             stubs.updateRegionButton = sandbox.stub();
             annotationControls.controlsMap = {
-                [ANNOTATION_MODE.region]: stubs.updateRegionButton,
+                [AnnotationMode.REGION]: stubs.updateRegionButton,
             };
         });
 
         it('should not change if no current active control', () => {
-            annotationControls.deactivateCurrentControl();
+            annotationControls.resetControls();
 
-            expect(annotationControls.currentActiveControl).to.be.null;
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
             expect(stubs.updateRegionButton).not.to.be.called;
         });
 
         it('should call updateRegionButton if current control is region', () => {
-            annotationControls.currentActiveControl = ANNOTATION_MODE.region;
+            annotationControls.currentActiveControl = AnnotationMode.REGION;
 
-            annotationControls.deactivateCurrentControl();
+            annotationControls.resetControls();
 
-            expect(annotationControls.currentActiveControl).to.be.null;
+            expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
             expect(stubs.updateRegionButton).to.be.called;
         });
     });

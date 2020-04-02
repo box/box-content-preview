@@ -1109,7 +1109,7 @@ describe('lib/viewers/BaseViewer', () => {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator),
             };
             base.annotationControls = {
-                deactivateCurrentControl: sandbox.stub(),
+                resetControls: sandbox.stub(),
             };
         });
 
@@ -1122,7 +1122,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotationcreate', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith(
+                'annotationcreate',
+                base.annotationControls.resetControls,
+            );
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });

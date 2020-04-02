@@ -1,5 +1,5 @@
 import throttle from 'lodash/throttle';
-import AnnotationControls from '../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -11,7 +11,6 @@ import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import {
-    ANNOTATION_MODE,
     ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1115,7 +1114,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     regionClickHandler() {
-        this.annotator.toggleAnnotationMode(ANNOTATION_MODE.region);
+        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
     }
 
     /**

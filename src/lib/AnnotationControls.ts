@@ -1,6 +1,5 @@
 import noop from 'lodash/noop';
 
-import { ANNOTATION_MODE } from './constants';
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 import fullscreen from './Fullscreen';
@@ -11,10 +10,13 @@ export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
-export type AnnotationMode = 'draw' | 'highlight' | 'region' | null;
-export type RegionHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
+export enum AnnotationMode {
+    NONE = 'none',
+    REGION = 'region',
+}
+export type ClickHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
 export type Options = {
-    onRegionClick?: RegionHandler;
+    onRegionClick?: ClickHandler;
 };
 
 declare const __: (key: string) => string;
@@ -30,7 +32,7 @@ export default class AnnotationControls {
 
     private controlsMap: ControlsMap;
 
-    private currentActiveControl: AnnotationMode = null;
+    private currentActiveControl: AnnotationMode = AnnotationMode.NONE;
 
     /**
      * [constructor]
@@ -43,7 +45,7 @@ export default class AnnotationControls {
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
         this.controlsMap = {
-            [ANNOTATION_MODE.region]: this.updateRegionButton,
+            [AnnotationMode.REGION]: this.updateRegionButton,
         };
 
         this.attachEventHandlers();
@@ -95,14 +97,14 @@ export default class AnnotationControls {
     /**
      * Deactivate current control button
      */
-    public deactivateCurrentControl = (): void => {
-        if (!this.currentActiveControl) {
+    public resetControls = (): void => {
+        if (this.currentActiveControl === AnnotationMode.NONE) {
             return;
         }
 
         const updateButton = this.controlsMap[this.currentActiveControl];
 
-        this.currentActiveControl = null;
+        this.currentActiveControl = AnnotationMode.NONE;
         updateButton();
     };
 
@@ -116,7 +118,7 @@ export default class AnnotationControls {
             return;
         }
 
-        if (this.currentActiveControl === ANNOTATION_MODE.region) {
+        if (this.currentActiveControl === AnnotationMode.REGION) {
             regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
             regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
@@ -126,17 +128,17 @@ export default class AnnotationControls {
     /**
      * Region comment button click handler
      */
-    private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
-        const activeControl = this.currentActiveControl;
+    private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
+        const prevActiveControl = this.currentActiveControl;
 
-        this.deactivateCurrentControl();
+        this.resetControls();
 
-        if (activeControl !== ANNOTATION_MODE.region) {
-            this.currentActiveControl = ANNOTATION_MODE.region as AnnotationMode;
-            this.updateRegionButton();
+        if (prevActiveControl !== mode) {
+            this.currentActiveControl = mode as AnnotationMode;
+            this.controlsMap[mode]();
         }
 
-        onRegionClick({ activeControl: this.currentActiveControl, event });
+        onClick({ activeControl: this.currentActiveControl, event });
     };
 
     /**
@@ -146,7 +148,7 @@ export default class AnnotationControls {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         this.controls.add(
             __('region_comment'),
-            this.handleRegionClick(onRegionClick),
+            this.handleClick(onRegionClick, AnnotationMode.REGION),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
             ICON_REGION_COMMENT,
             'button',
