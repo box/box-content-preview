@@ -19,10 +19,16 @@ export type Options = {
 
 declare const __: (key: string) => string;
 
+interface ControlsMap {
+    [key: string]: () => void;
+}
+
 export default class AnnotationControls {
     private controls: Controls;
 
     private controlsElement: HTMLElement;
+
+    private controlsMap: ControlsMap;
 
     private currentActiveControl: AnnotationMode = null;
 
@@ -36,6 +42,9 @@ export default class AnnotationControls {
 
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
+        this.controlsMap = {
+            [ANNOTATION_MODE.region]: this.updateRegionButton,
+        };
 
         this.attachEventHandlers();
     }
@@ -91,14 +100,10 @@ export default class AnnotationControls {
             return;
         }
 
-        switch (this.currentActiveControl) {
-            case ANNOTATION_MODE.region:
-                this.currentActiveControl = null;
-                this.updateRegionButton();
-                break;
-            default:
-                this.currentActiveControl = null;
-        }
+        const updateButton = this.controlsMap[this.currentActiveControl];
+
+        this.currentActiveControl = null;
+        updateButton();
     };
 
     /**
@@ -120,12 +125,11 @@ export default class AnnotationControls {
      * Region comment button click handler
      */
     private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
-        if (this.currentActiveControl === ANNOTATION_MODE.region) {
-            this.deactivateCurrentControl();
-        } else {
-            if (this.currentActiveControl) {
-                this.deactivateCurrentControl();
-            }
+        const activeControl = this.currentActiveControl;
+
+        this.deactivateCurrentControl();
+
+        if (activeControl !== ANNOTATION_MODE.region) {
             this.currentActiveControl = ANNOTATION_MODE.region as AnnotationMode;
             this.updateRegionButton();
         }
