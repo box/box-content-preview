@@ -1,4 +1,5 @@
 import noop from 'lodash/noop';
+
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
 import fullscreen from './Fullscreen';
@@ -9,22 +10,29 @@ export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
-export type RegionHandler = ({ isRegionActive, event }: { isRegionActive: boolean; event: MouseEvent }) => void;
+export enum AnnotationMode {
+    NONE = 'none',
+    REGION = 'region',
+}
+export type ClickHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
 export type Options = {
-    onRegionClick?: RegionHandler;
+    onRegionClick?: ClickHandler;
 };
 
 declare const __: (key: string) => string;
 
+interface ControlsMap {
+    [key: string]: () => void;
+}
+
 export default class AnnotationControls {
-    /** @property {Controls} - Controls object */
     private controls: Controls;
 
-    /** @property {HTMLElement} - Controls element */
     private controlsElement: HTMLElement;
 
-    /** @property {boolean} - Region comment mode active state */
-    private isRegionActive = false;
+    private controlsMap: ControlsMap;
+
+    private currentActiveControl: AnnotationMode = AnnotationMode.NONE;
 
     /**
      * [constructor]
@@ -36,6 +44,9 @@ export default class AnnotationControls {
 
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
+        this.controlsMap = {
+            [AnnotationMode.REGION]: this.updateRegionButton,
+        };
 
         this.attachEventHandlers();
     }
@@ -84,21 +95,50 @@ export default class AnnotationControls {
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
-     * Region comment button click handler
+     * Deactivate current control button
      */
-    private handleRegionClick = (onRegionClick: RegionHandler) => (event: MouseEvent): void => {
-        const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
-
-        if (regionButtonElement) {
-            this.isRegionActive = !this.isRegionActive;
-            if (this.isRegionActive) {
-                regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
-            } else {
-                regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
-            }
+    public resetControls = (): void => {
+        if (this.currentActiveControl === AnnotationMode.NONE) {
+            return;
         }
 
-        onRegionClick({ isRegionActive: this.isRegionActive, event });
+        const updateButton = this.controlsMap[this.currentActiveControl];
+
+        this.currentActiveControl = AnnotationMode.NONE;
+        updateButton();
+    };
+
+    /**
+     * Update region button UI
+     */
+    private updateRegionButton = (): void => {
+        const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
+
+        if (!regionButtonElement) {
+            return;
+        }
+
+        if (this.currentActiveControl === AnnotationMode.REGION) {
+            regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+        } else {
+            regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+        }
+    };
+
+    /**
+     * Region comment button click handler
+     */
+    private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
+        const prevActiveControl = this.currentActiveControl;
+
+        this.resetControls();
+
+        if (prevActiveControl !== mode) {
+            this.currentActiveControl = mode as AnnotationMode;
+            this.controlsMap[mode]();
+        }
+
+        onClick({ activeControl: this.currentActiveControl, event });
     };
 
     /**
@@ -108,7 +148,7 @@ export default class AnnotationControls {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         this.controls.add(
             __('region_comment'),
-            this.handleRegionClick(onRegionClick),
+            this.handleClick(onRegionClick, AnnotationMode.REGION),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
             ICON_REGION_COMMENT,
             'button',

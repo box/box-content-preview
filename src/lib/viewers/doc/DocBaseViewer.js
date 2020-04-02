@@ -1,5 +1,5 @@
 import throttle from 'lodash/throttle';
-import AnnotationControls from '../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -1113,7 +1113,9 @@ class DocBaseViewer extends BaseViewer {
      * @private
      * @return {void}
      */
-    regionClickHandler() {}
+    regionClickHandler() {
+        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+    }
 
     /**
      * Handler for 'pagesinit' event.
