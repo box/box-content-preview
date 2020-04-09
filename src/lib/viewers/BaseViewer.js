@@ -545,6 +545,9 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenEnter() {
         this.resize();
+        if (this.annotator) {
+            this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
+        }
     }
 
     /**
@@ -554,6 +557,9 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
+        if (this.annotator) {
+            this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
+        }
     }
 
     /**
