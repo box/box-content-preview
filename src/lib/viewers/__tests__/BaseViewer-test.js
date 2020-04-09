@@ -16,13 +16,7 @@ let base;
 let containerEl;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
-const ANNOTATOR_EVENT = {
-    modeEnter: 'annotationmodeenter',
-    modeExit: 'annotationmodeexit',
-    fetch: 'annotationsfetched',
-    error: 'annotationerror',
-    scale: 'scaleannotations',
-};
+const { ANNOTATOR_EVENT } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     before(() => {
@@ -532,20 +526,28 @@ describe('lib/viewers/BaseViewer', () => {
     describe('handleFullscreenEnter()', () => {
         it('should resize the viewer', () => {
             sandbox.stub(base, 'resize');
+            base.annotator = {
+                emit: sandbox.mock(),
+            };
 
             base.handleFullscreenEnter();
 
             expect(base.resize).to.be.called;
+            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
         });
     });
 
     describe('handleFullscreenExit()', () => {
         it('should resize the viewer', () => {
             sandbox.stub(base, 'resize');
+            base.annotator = {
+                emit: sandbox.mock(),
+            };
 
             base.handleFullscreenExit();
 
             expect(base.resize).to.be.called;
+            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
         });
     });
 

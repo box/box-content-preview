@@ -129,7 +129,7 @@ export const ANNOTATOR_EVENT = {
     fetch: 'annotationsfetched',
     error: 'annotationerror',
     scale: 'scaleannotations',
-    toggleVisibility: 'annotationtogglevisibility',
+    setVisibility: 'annotationsetvisibility',
 };
 
 export const BROWSERS = {
