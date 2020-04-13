@@ -9,6 +9,7 @@ import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
+import { AnnotationMode } from '../../AnnotationControls';
 import Timer from '../../Timer';
 import Api from '../../api';
 
@@ -526,14 +527,27 @@ describe('lib/viewers/BaseViewer', () => {
     describe('handleFullscreenEnter()', () => {
         it('should resize the viewer', () => {
             sandbox.stub(base, 'resize');
-            base.annotator = {
-                emit: sandbox.mock(),
-            };
 
             base.handleFullscreenEnter();
 
             expect(base.resize).to.be.called;
+        });
+
+        it('should hide annotations and toggle annotations mode', () => {
+            base.annotator = {
+                emit: sandbox.mock(),
+                toggleAnnotationMode: sandbox.mock(),
+            };
+            base.annotationControls = {
+                resetControls: sandbox.mock(),
+            };
+            base.options.showAnnotationsControls = true;
+
+            base.handleFullscreenEnter();
+
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotationControls.resetControls).to.be.called;
         });
     });
 
