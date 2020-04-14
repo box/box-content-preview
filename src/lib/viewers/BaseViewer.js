@@ -33,6 +33,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
+import { AnnotationMode } from '../AnnotationControls';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -545,8 +546,12 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenEnter() {
         this.resize();
-        if (this.annotator) {
+
+        if (this.annotator && this.options.showAnnotationsControls && this.annotationControls) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
+
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.annotationControls.resetControls();
         }
     }
 
@@ -557,7 +562,7 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
-        if (this.annotator) {
+        if (this.annotator && this.options.showAnnotationsControls) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
         }
     }
