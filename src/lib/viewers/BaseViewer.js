@@ -547,7 +547,7 @@ class BaseViewer extends EventEmitter {
     handleFullscreenEnter() {
         this.resize();
 
-        if (this.annotator && this.options.showAnontationsControls && this.annotationControls) {
+        if (this.annotator && this.options.showAnnotationsControls && this.annotationControls) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
 
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
@@ -562,7 +562,7 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
-        if (this.annotator) {
+        if (this.annotator && this.options.showAnnotationsControls) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
         }
     }

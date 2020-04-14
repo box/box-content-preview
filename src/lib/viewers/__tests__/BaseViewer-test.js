@@ -557,6 +557,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 emit: sandbox.mock(),
             };
+            base.options.showAnnotationsControls = true;
 
             base.handleFullscreenExit();
 
