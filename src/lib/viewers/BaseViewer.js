@@ -149,6 +149,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -976,7 +977,7 @@ class BaseViewer extends EventEmitter {
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
 
         if (this.options.showAnnotationsControls && this.annotationControls) {
-            this.annotator.addListener('annotationcreate', this.annotationControls.resetControls);
+            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
     }
 
@@ -1098,6 +1099,18 @@ class BaseViewer extends EventEmitter {
         // Emit all annotation events to Preview
         this.emit(data.event, data.data);
         this.emit('annotatorevent', data);
+    }
+
+    handleAnnotationCreateEvent({ annotation, meta: { status } = {} }) {
+        if (status !== 'pending') {
+            const activeMode = this.annotationControls.getActiveMode();
+            this.annotator.toggleAnnotationMode(activeMode);
+            this.annotationControls.resetControls();
+        }
+
+        if (status === 'success') {
+            this.annotator.emit('annotations_active_set', annotation.id);
+        }
     }
 
     /**
