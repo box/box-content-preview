@@ -16,16 +16,16 @@ const VIEWERS = [
     {
         NAME: 'MultiImage',
         CONSTRUCTOR: MultiImageViewer,
-        REP: 'jpg',
+        REP: 'png',
         EXT: ['tif', 'tiff'],
-        ASSET: '{page}.jpg',
+        ASSET: '{page}.png',
     },
     {
         NAME: 'MultiImage',
         CONSTRUCTOR: MultiImageViewer,
-        REP: 'png',
+        REP: 'jpg',
         EXT: ['tif', 'tiff'],
-        ASSET: '{page}.png',
+        ASSET: '{page}.jpg',
     },
     {
         NAME: 'Image',
@@ -70,31 +70,6 @@ class ImageLoader extends AssetLoader {
             }
 
             return viewer.REP === entry.representation;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    determineViewer(file, disabledViewers = []) {
-        return this.viewers.find(viewer => {
-            if (disabledViewers.indexOf(viewer.NAME) > -1 || viewer.EXT.indexOf(file.extension) === -1) {
-                return false;
-            }
-
-            const multiPageViewer = (viewer.ASSET || '').indexOf('{page}') !== -1;
-
-            return file.representations.entries.some(entry => {
-                if (viewer.REP !== entry.representation) {
-                    return false;
-                }
-
-                // If the viewer uses paged assets (e.g., image_2048_jpg), then
-                // ensure that there is a compatible paged representation.
-                const pagedRep = (entry.properties || {}).paged === 'true';
-
-                return !multiPageViewer || pagedRep;
-            });
         });
     }
 }
