@@ -39,7 +39,7 @@ module.exports = language => {
                 {
                     test: /\.(jpe?g|png|gif|woff2|woff)$/,
                     loader: 'file-loader',
-                    include: [path.resolve('src/lib')],
+                    include: [path.resolve('src/lib'), path.resolve('node_modules/box-annotations')],
                     options: {
                         name: '[name].[ext]',
                     },
