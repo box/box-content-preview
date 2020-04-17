@@ -1514,7 +1514,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         ['error', 'pending'].forEach(status => {
-            test(`should not do anything if status is ${status}`, () => {
+            it(`should not do anything if status is ${status}`, () => {
                 const event = createEvent(status);
                 base.handleAnnotationCreateEvent(event);
 
@@ -1525,7 +1525,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
         });
 
-        test('should reset controls if status is success', () => {
+        it('should reset controls if status is success', () => {
             base.annotationControls.getActiveMode.returns('region');
 
             const event = createEvent('success');
