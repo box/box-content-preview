@@ -1139,10 +1139,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith(
-                'annotationcreate',
-                base.annotationControls.resetControls,
-            );
+            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
@@ -1493,6 +1490,51 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.emittedMetrics.foo).to.be.true;
             expect(stubs.emit).not.to.be.called;
+        });
+    });
+
+    describe('handleAnnotationCreateEvent()', () => {
+        beforeEach(() => {
+            base.annotationControls = {
+                getActiveMode: sandbox.stub(),
+                resetControls: sandbox.stub(),
+            };
+
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+                emit: sandbox.stub(),
+            };
+        });
+
+        const createEvent = status => ({
+            annotation: { id: '123' },
+            meta: {
+                status,
+            },
+        });
+
+        ['error', 'pending'].forEach(status => {
+            test(`should not do anything if status is ${status}`, () => {
+                const event = createEvent(status);
+                base.handleAnnotationCreateEvent(event);
+
+                expect(base.annotationControls.getActiveMode).not.to.be.called;
+                expect(base.annotator.toggleAnnotationMode).not.to.be.called;
+                expect(base.annotationControls.resetControls).not.to.be.called;
+                expect(base.annotator.emit).not.to.be.called;
+            });
+        });
+
+        test('should reset controls if status is success', () => {
+            base.annotationControls.getActiveMode.returns('region');
+
+            const event = createEvent('success');
+            base.handleAnnotationCreateEvent(event);
+
+            expect(base.annotationControls.getActiveMode).to.be.called;
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith('region');
+            expect(base.annotationControls.resetControls).to.be.called;
+            expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
         });
     });
 });

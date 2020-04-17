@@ -1101,15 +1101,14 @@ class BaseViewer extends EventEmitter {
         this.emit('annotatorevent', data);
     }
 
-    handleAnnotationCreateEvent({ annotation, meta: { status } = {} }) {
-        if (status !== 'pending') {
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        // Only on success do we exit create annotation mode. If error occurs,
+        // we remain in create mode
+        if (status === 'success') {
             const activeMode = this.annotationControls.getActiveMode();
             this.annotator.toggleAnnotationMode(activeMode);
             this.annotationControls.resetControls();
-        }
-
-        if (status === 'success') {
-            this.annotator.emit('annotations_active_set', annotation.id);
+            this.annotator.emit('annotations_active_set', id);
         }
     }
 

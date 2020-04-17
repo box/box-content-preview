@@ -156,4 +156,11 @@ describe('lib/AnnotationControls', () => {
             expect(stubs.updateRegionButton).to.be.called;
         });
     });
+
+    describe('getActiveMode()', () => {
+        it('should return the current active mode', () => {
+            annotationControls.currentActiveControl = 'region';
+            expect(annotationControls.getActiveMode()).to.equal('region');
+        });
+    });
 });
