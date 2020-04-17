@@ -9,6 +9,7 @@ import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
+import { AnnotationMode } from '../../AnnotationControls';
 import Timer from '../../Timer';
 import Api from '../../api';
 
@@ -16,13 +17,7 @@ let base;
 let containerEl;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
-const ANNOTATOR_EVENT = {
-    modeEnter: 'annotationmodeenter',
-    modeExit: 'annotationmodeexit',
-    fetch: 'annotationsfetched',
-    error: 'annotationerror',
-    scale: 'scaleannotations',
-};
+const { ANNOTATOR_EVENT } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     before(() => {
@@ -537,15 +532,37 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.resize).to.be.called;
         });
+
+        it('should hide annotations and toggle annotations mode', () => {
+            base.annotator = {
+                emit: sandbox.mock(),
+                toggleAnnotationMode: sandbox.mock(),
+            };
+            base.annotationControls = {
+                resetControls: sandbox.mock(),
+            };
+            base.options.showAnnotationsControls = true;
+
+            base.handleFullscreenEnter();
+
+            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotationControls.resetControls).to.be.called;
+        });
     });
 
     describe('handleFullscreenExit()', () => {
         it('should resize the viewer', () => {
             sandbox.stub(base, 'resize');
+            base.annotator = {
+                emit: sandbox.mock(),
+            };
+            base.options.showAnnotationsControls = true;
 
             base.handleFullscreenExit();
 
             expect(base.resize).to.be.called;
+            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
         });
     });
 
@@ -1122,10 +1139,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith(
-                'annotationcreate',
-                base.annotationControls.resetControls,
-            );
+            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
@@ -1476,6 +1490,51 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.emittedMetrics.foo).to.be.true;
             expect(stubs.emit).not.to.be.called;
+        });
+    });
+
+    describe('handleAnnotationCreateEvent()', () => {
+        beforeEach(() => {
+            base.annotationControls = {
+                getActiveMode: sandbox.stub(),
+                resetControls: sandbox.stub(),
+            };
+
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+                emit: sandbox.stub(),
+            };
+        });
+
+        const createEvent = status => ({
+            annotation: { id: '123' },
+            meta: {
+                status,
+            },
+        });
+
+        ['error', 'pending'].forEach(status => {
+            it(`should not do anything if status is ${status}`, () => {
+                const event = createEvent(status);
+                base.handleAnnotationCreateEvent(event);
+
+                expect(base.annotationControls.getActiveMode).not.to.be.called;
+                expect(base.annotator.toggleAnnotationMode).not.to.be.called;
+                expect(base.annotationControls.resetControls).not.to.be.called;
+                expect(base.annotator.emit).not.to.be.called;
+            });
+        });
+
+        it('should reset controls if status is success', () => {
+            base.annotationControls.getActiveMode.returns('region');
+
+            const event = createEvent('success');
+            base.handleAnnotationCreateEvent(event);
+
+            expect(base.annotationControls.getActiveMode).to.be.called;
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith('region');
+            expect(base.annotationControls.resetControls).to.be.called;
+            expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
         });
     });
 });

@@ -868,10 +868,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@box/frontend@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@box/frontend/-/frontend-6.0.0.tgz#5ffca35f1bf49e073cf4dc9a52b76bd5afae948a"
-  integrity sha512-OKt4fCoW6OMlCw/oN9Qon3wAkqflaya+FvdI9ufX1rRBbNbeLT0pJqUYueJRMg8A/2qTFHZ/8RcTO/+XEKGpVA==
+"@box/frontend@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@box/frontend/-/frontend-6.4.0.tgz#4e809279895fced587c4dad0c17fb9a45ad3f50a"
+  integrity sha512-P/0HjF3Ly9aC4V9AQP3HLOa984z5fnF8MmveBEHXRfJiqAwbuVRmhNvmsx2Exn91RFq6hxwoM/aC6wkpbNuKyA==
   dependencies:
     properties-parser "^0.3.1"
     rimraf "^3.0.0"
@@ -2082,11 +2082,6 @@ babel-plugin-istanbul@^5.2.0:
     find-up "^3.0.0"
     istanbul-lib-instrument "^3.3.0"
     test-exclude "^5.2.3"
-
-babel-plugin-react-remove-properties@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-remove-properties/-/babel-plugin-react-remove-properties-0.3.0.tgz#7b623fb3c424b6efb4edc9b1ae4cc50e7154b87f"
-  integrity sha512-vbxegtXGyVcUkCvayLzftU95vuvpYFV85pRpeMpohMHeEY46Qe0VNWfkVVcCbaZ12CXHzDFOj0esumATcW83ng==
 
 babel-plugin-transform-require-ignore@^0.1.1:
   version "0.1.1"

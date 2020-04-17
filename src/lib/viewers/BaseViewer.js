@@ -33,6 +33,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
+import { AnnotationMode } from '../AnnotationControls';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -148,6 +149,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -545,6 +547,13 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenEnter() {
         this.resize();
+
+        if (this.annotator && this.options.showAnnotationsControls && this.annotationControls) {
+            this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
+
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.annotationControls.resetControls();
+        }
     }
 
     /**
@@ -554,6 +563,9 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
+        if (this.annotator && this.options.showAnnotationsControls) {
+            this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
+        }
     }
 
     /**
@@ -965,7 +977,7 @@ class BaseViewer extends EventEmitter {
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
 
         if (this.options.showAnnotationsControls && this.annotationControls) {
-            this.annotator.addListener('annotationcreate', this.annotationControls.resetControls);
+            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
     }
 
@@ -1087,6 +1099,17 @@ class BaseViewer extends EventEmitter {
         // Emit all annotation events to Preview
         this.emit(data.event, data.data);
         this.emit('annotatorevent', data);
+    }
+
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        // Only on success do we exit create annotation mode. If error occurs,
+        // we remain in create mode
+        if (status === 'success') {
+            const activeMode = this.annotationControls.getActiveMode();
+            this.annotator.toggleAnnotationMode(activeMode);
+            this.annotationControls.resetControls();
+            this.annotator.emit('annotations_active_set', id);
+        }
     }
 
     /**

@@ -94,6 +94,10 @@ export default class AnnotationControls {
      */
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
+    public getActiveMode = (): AnnotationMode => {
+        return this.currentActiveControl;
+    };
+
     /**
      * Deactivate current control button
      */

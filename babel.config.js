@@ -31,9 +31,6 @@ module.exports = api => {
             },
         ],
         env: {
-            production: {
-                plugins: [['react-remove-properties', { properties: ['data-testid'] }]],
-            },
             test: {
                 plugins: [
                     [
