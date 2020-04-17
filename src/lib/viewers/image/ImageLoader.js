@@ -21,6 +21,13 @@ const VIEWERS = [
         ASSET: '{page}.png',
     },
     {
+        NAME: 'MultiImage',
+        CONSTRUCTOR: MultiImageViewer,
+        REP: 'jpg',
+        EXT: ['tif', 'tiff'],
+        ASSET: '{page}.jpg',
+    },
+    {
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'jpg',
