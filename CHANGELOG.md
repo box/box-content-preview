@@ -1,3 +1,11 @@
+## 2.40.0 (2020-04-21)
+
+* feat(annotation): handle create event (#1199) ([888b4ae](https://github.com/box/box-content-preview/commit/888b4ae)), closes [#1199](https://github.com/box/box-content-preview/issues/1199)
+* feat(images): support multi-page jpg reps for tif files (#1197) ([206350e](https://github.com/box/box-content-preview/commit/206350e)), closes [#1197](https://github.com/box/box-content-preview/issues/1197)
+* chore(testing): allow data-testid in production (#1200) ([f9f2c6b](https://github.com/box/box-content-preview/commit/f9f2c6b)), closes [#1200](https://github.com/box/box-content-preview/issues/1200)
+
+
+
 ## 2.39.0 (2020-04-14)
 
 * feat(annotations): Add region comment button in toolbar (#1183) ([04ea830](https://github.com/box/box-content-preview/commit/04ea830)), closes [#1183](https://github.com/box/box-content-preview/issues/1183)
