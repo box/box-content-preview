@@ -1495,13 +1495,7 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('handleAnnotationCreateEvent()', () => {
         beforeEach(() => {
-            base.annotationControls = {
-                getActiveMode: sandbox.stub(),
-                resetControls: sandbox.stub(),
-            };
-
             base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
                 emit: sandbox.stub(),
             };
         });
@@ -1518,22 +1512,14 @@ describe('lib/viewers/BaseViewer', () => {
                 const event = createEvent(status);
                 base.handleAnnotationCreateEvent(event);
 
-                expect(base.annotationControls.getActiveMode).not.to.be.called;
-                expect(base.annotator.toggleAnnotationMode).not.to.be.called;
-                expect(base.annotationControls.resetControls).not.to.be.called;
                 expect(base.annotator.emit).not.to.be.called;
             });
         });
 
         it('should reset controls if status is success', () => {
-            base.annotationControls.getActiveMode.returns('region');
-
             const event = createEvent('success');
             base.handleAnnotationCreateEvent(event);
 
-            expect(base.annotationControls.getActiveMode).to.be.called;
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith('region');
-            expect(base.annotationControls.resetControls).to.be.called;
             expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
         });
     });
