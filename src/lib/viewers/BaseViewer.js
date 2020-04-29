@@ -1105,9 +1105,6 @@ class BaseViewer extends EventEmitter {
         // Only on success do we exit create annotation mode. If error occurs,
         // we remain in create mode
         if (status === 'success') {
-            const activeMode = this.annotationControls.getActiveMode();
-            this.annotator.toggleAnnotationMode(activeMode);
-            this.annotationControls.resetControls();
             this.annotator.emit('annotations_active_set', id);
         }
     }
