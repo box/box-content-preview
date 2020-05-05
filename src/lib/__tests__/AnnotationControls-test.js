@@ -74,15 +74,19 @@ describe('lib/AnnotationControls', () => {
 
     describe('init()', () => {
         beforeEach(() => {
-            stubs.add = sandbox.stub(annotationControls.controls, 'add');
+            stubs.regionButton = {
+                setAttribute: sandbox.stub(),
+            };
             stubs.regionHandler = sandbox.stub();
+
             sandbox.stub(annotationControls, 'handleClick').returns(stubs.regionHandler);
+            sandbox.stub(annotationControls.controls, 'add').returns(stubs.regionButton);
         });
 
         it('should add the controls', () => {
             annotationControls.init({ onRegionClick: stubs.onRegionClick });
 
-            expect(stubs.add).to.be.calledWith(
+            expect(annotationControls.controls.add).to.be.calledWith(
                 __('region_comment'),
                 stubs.regionHandler,
                 `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
