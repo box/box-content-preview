@@ -1,3 +1,9 @@
+## <small>2.41.1 (2020-05-06)</small>
+
+* fix(annotations): Fix annotations control shows if no permission (#1204) ([4a97878](https://github.com/box/box-content-preview/commit/4a97878)), closes [#1204](https://github.com/box/box-content-preview/issues/1204)
+
+
+
 ## 2.41.0 (2020-05-06)
 
 * feat(annotations): Disable annotations for excel and iWork formats (#1202) ([05d665e](https://github.com/box/box-content-preview/commit/05d665e)), closes [#1202](https://github.com/box/box-content-preview/issues/1202)
