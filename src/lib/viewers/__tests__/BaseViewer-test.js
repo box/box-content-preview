@@ -542,7 +542,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 resetControls: sandbox.mock(),
             };
-            base.options.showAnnotationsControls = true;
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenEnter();
 
@@ -558,7 +558,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 emit: sandbox.mock(),
             };
-            base.options.showAnnotationsControls = true;
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenExit();
 
@@ -1116,7 +1116,6 @@ describe('lib/viewers/BaseViewer', () => {
                 location: {
                     locale: 'en-US',
                 },
-                showAnnotationsControls: true,
             };
             base.scale = 1.5;
             base.annotator = {
@@ -1129,6 +1128,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 resetControls: sandbox.stub(),
             };
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
         });
 
         it('should initialize the annotator', () => {
