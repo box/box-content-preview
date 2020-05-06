@@ -33,6 +33,7 @@ import {
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
+import { EXCEL_EXTENSIONS, IWORK_EXTENSIONS } from '../extensions';
 import { AnnotationMode } from '../AnnotationControls';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
@@ -548,7 +549,7 @@ class BaseViewer extends EventEmitter {
     handleFullscreenEnter() {
         this.resize();
 
-        if (this.annotator && this.options.showAnnotationsControls && this.annotationControls) {
+        if (this.areNewAnnotationsEnabled() && this.annotator && this.annotationControls) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
 
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
@@ -563,7 +564,7 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
-        if (this.annotator && this.options.showAnnotationsControls) {
+        if (this.areNewAnnotationsEnabled() && this.annotator) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
         }
     }
@@ -976,7 +977,7 @@ class BaseViewer extends EventEmitter {
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
 
-        if (this.options.showAnnotationsControls && this.annotationControls) {
+        if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
     }
@@ -1011,6 +1012,13 @@ class BaseViewer extends EventEmitter {
             return false;
         }
 
+        const { showAnnotations, showAnnotationsControls } = this.options;
+
+        // If it's new annotations experience
+        if (showAnnotations && showAnnotationsControls && !this.areNewAnnotationsEnabled()) {
+            return false;
+        }
+
         // Respect viewer-specific annotation option if it is set
         if (
             window.BoxAnnotations &&
@@ -1032,7 +1040,25 @@ class BaseViewer extends EventEmitter {
 
         // Ignore viewer config if BoxAnnotations was pass into Preview as an option
         // Otherwise, use global preview annotation option
-        return !!this.options.showAnnotations;
+        return !!showAnnotations;
+    }
+
+    /**
+     * Returns whether or not new annotations are enabled for this viewer.
+     * If enabled, a new annotations button will show up in toolbar
+     *
+     * @return {boolean} Whether or not viewer enables new annotations
+     */
+    areNewAnnotationsEnabled() {
+        const { showAnnotationsControls, file } = this.options;
+        const { extension } = file || {};
+
+        // Disable new annotations for Excel and iWork formats
+        if (EXCEL_EXTENSIONS.includes(extension) || IWORK_EXTENSIONS.includes(extension)) {
+            return false;
+        }
+
+        return showAnnotationsControls;
     }
 
     /**
