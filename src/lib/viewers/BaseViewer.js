@@ -1051,7 +1051,11 @@ class BaseViewer extends EventEmitter {
      */
     areNewAnnotationsEnabled() {
         const { showAnnotationsControls, file } = this.options;
-        const { extension } = file || {};
+        const { permissions, extension } = file || {};
+
+        if (!this.hasAnnotationPermissions(permissions)) {
+            return false;
+        }
 
         // Disable new annotations for Excel and iWork formats
         if (EXCEL_EXTENSIONS.includes(extension) || IWORK_EXTENSIONS.includes(extension)) {

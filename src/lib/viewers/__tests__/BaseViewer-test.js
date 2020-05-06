@@ -1263,6 +1263,20 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('areNewAnnotationsEnabled()', () => {
+        beforeEach(() => {
+            stubs.hasPermissions = sandbox.stub(base, 'hasAnnotationPermissions').returns(true);
+            base.options.file = {
+                permissions: {
+                    can_annotate: true,
+                },
+            };
+        });
+
+        it('should return false if the user cannot create/view annotations', () => {
+            stubs.hasPermissions.returns(false);
+            expect(base.areNewAnnotationsEnabled()).to.be.false;
+        });
+
         EXCEL_EXTENSIONS.concat(IWORK_EXTENSIONS).forEach(extension => {
             it(`should return false if the file is ${extension} format`, () => {
                 base.options.file.extension = extension;
