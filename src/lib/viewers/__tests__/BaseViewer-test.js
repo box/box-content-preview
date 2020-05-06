@@ -9,6 +9,7 @@ import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
+import { EXCEL_EXTENSIONS, IWORK_EXTENSIONS } from '../../extensions';
 import { AnnotationMode } from '../../AnnotationControls';
 import Timer from '../../Timer';
 import Api from '../../api';
@@ -1199,6 +1200,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areAnnotationsEnabled()).to.be.false;
         });
 
+        it('should return false if new annotations is not enabled', () => {
+            base.options.showAnnotationsControls = true;
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(false);
+
+            expect(base.areAnnotationsEnabled()).to.be.false;
+        });
+
         it('should return true if viewer option is set to true', () => {
             expect(base.areAnnotationsEnabled()).to.be.false;
 
@@ -1251,6 +1259,25 @@ describe('lib/viewers/BaseViewer', () => {
             // No passed in version of BoxAnnotations
             window.BoxAnnotations = undefined;
             expect(base.areAnnotationsEnabled()).to.be.false;
+        });
+    });
+
+    describe('areNewAnnotationsEnabled()', () => {
+        EXCEL_EXTENSIONS.concat(IWORK_EXTENSIONS).forEach(extension => {
+            it(`should return false if the file is ${extension} format`, () => {
+                base.options.file.extension = extension;
+                base.options.showAnnotationsControls = true;
+                expect(base.areNewAnnotationsEnabled()).to.be.false;
+            });
+        });
+
+        it('should return showAnnotationsControls if file is not excel nor iWork formats', () => {
+            base.options.file.extension = 'pdf';
+            base.options.showAnnotationsControls = true;
+            expect(base.areNewAnnotationsEnabled()).to.be.true;
+
+            base.options.showAnnotationsControls = false;
+            expect(base.areNewAnnotationsEnabled()).to.be.false;
         });
     });
 
