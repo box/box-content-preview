@@ -542,7 +542,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 resetControls: sandbox.mock(),
             };
-            base.options.showAnnotationsControls = true;
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenEnter();
 
@@ -558,7 +558,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 emit: sandbox.mock(),
             };
-            base.options.showAnnotationsControls = true;
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenExit();
 
@@ -1116,7 +1116,6 @@ describe('lib/viewers/BaseViewer', () => {
                 location: {
                     locale: 'en-US',
                 },
-                showAnnotationsControls: true,
             };
             base.scale = 1.5;
             base.annotator = {
@@ -1129,6 +1128,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 resetControls: sandbox.stub(),
             };
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
         });
 
         it('should initialize the annotator', () => {
@@ -1263,6 +1263,20 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('areNewAnnotationsEnabled()', () => {
+        beforeEach(() => {
+            stubs.hasPermissions = sandbox.stub(base, 'hasAnnotationPermissions').returns(true);
+            base.options.file = {
+                permissions: {
+                    can_annotate: true,
+                },
+            };
+        });
+
+        it('should return false if the user cannot create/view annotations', () => {
+            stubs.hasPermissions.returns(false);
+            expect(base.areNewAnnotationsEnabled()).to.be.false;
+        });
+
         EXCEL_EXTENSIONS.concat(IWORK_EXTENSIONS).forEach(extension => {
             it(`should return false if the file is ${extension} format`, () => {
                 base.options.file.extension = extension;
