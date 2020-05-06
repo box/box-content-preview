@@ -150,7 +150,7 @@ export default class AnnotationControls {
      */
     public init({ onRegionClick = noop }: Options = {}): void {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
-        this.controls.add(
+        const regionButton = this.controls.add(
             __('region_comment'),
             this.handleClick(onRegionClick, AnnotationMode.REGION),
             `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
@@ -158,5 +158,7 @@ export default class AnnotationControls {
             'button',
             groupElement,
         );
+
+        regionButton.setAttribute('data-testid', 'bp-AnnotationsControls-regionBtn');
     }
 }
