@@ -931,17 +931,29 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
+        const boxAnnotations =
+            this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions, intl.createAnnotatorIntl());
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (!this.annotatorConf) {
             return;
         }
 
-        const annotatorOptions = this.createAnnotatorOptions({
+        const options = {
             annotator: this.annotatorConf,
             modeButtons: ANNOTATION_BUTTONS,
-        });
+        };
+
+        if (this.areNewAnnotationsEnabled() && boxAnnotations.getOptions) {
+            const annotationsOptions = boxAnnotations.getOptions();
+
+            if (annotationsOptions) {
+                const { locale, messages } = annotationsOptions;
+                options.intl = { locale, messages };
+            }
+        }
+
+        const annotatorOptions = this.createAnnotatorOptions(options);
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
 
         if (this.annotatorPromiseResolver) {
@@ -1177,7 +1189,6 @@ class BaseViewer extends EventEmitter {
             ...this.options,
             ...moreOptions,
             hasTouch: this.hasTouch,
-            intl: intl.createAnnotatorIntl(),
             isMobile: this.isMobile,
             locale: this.options.location.locale,
             localizedStrings,

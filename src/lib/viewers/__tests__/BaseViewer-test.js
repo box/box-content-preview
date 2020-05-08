@@ -1058,6 +1058,10 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('createAnnotator()', () => {
         const annotatorMock = {};
+        const annotationsOptions = {
+            messages: { test: 'Test Message' },
+            locale: 'en-US',
+        };
         const conf = {
             annotationsEnabled: true,
             types: {
@@ -1073,6 +1077,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.showAnnotations = true;
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
+                this.getAnnotationsOptions = sandbox.stub().returns(annotationsOptions);
             };
 
             sandbox.stub(base, 'initAnnotations');
@@ -1101,6 +1106,52 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.createAnnotator();
             expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
+        });
+
+        it('should call getOptions if new annotations enabled', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+
+            base.options.boxAnnotations = {
+                determineAnnotator: sandbox.stub().returns(conf),
+                getOptions: sandbox.stub().returns(annotationsOptions),
+            };
+
+            base.createAnnotator();
+
+            expect(base.options.boxAnnotations.getOptions).to.be.called;
+        });
+
+        it('should call createAnnotatorOptions with language and messages from options', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'createAnnotatorOptions');
+
+            base.options.boxAnnotations = {
+                determineAnnotator: sandbox.stub().returns(conf),
+                getOptions: sandbox.stub().returns(annotationsOptions),
+            };
+
+            base.createAnnotator();
+
+            expect(base.options.boxAnnotations.getOptions).to.be.called;
+            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match({ intl: annotationsOptions }));
+        });
+
+        it('should not have intl in annotator options if language and messages are not present ', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'createAnnotatorOptions');
+
+            base.options.boxAnnotations = {
+                determineAnnotator: sandbox.stub().returns(conf),
+                getOptions: sandbox.stub().returns(undefined),
+            };
+
+            base.createAnnotator();
+
+            expect(base.options.boxAnnotations.getOptions).to.be.called;
+            expect(base.createAnnotatorOptions).not.to.be.calledWith(sinon.match.has('intl'));
         });
     });
 
@@ -1448,8 +1499,6 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
             expect(combinedOptions.randomOption).to.equal('derp');
             expect(combinedOptions.localizedStrings).to.not.be.undefined;
-            expect(combinedOptions.intl.language).to.equal('en-US');
-            expect(combinedOptions.intl.messages).to.be.an('object');
         });
     });
 
