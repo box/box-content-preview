@@ -931,29 +931,22 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        const boxAnnotations =
-            this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions, intl.createAnnotatorIntl());
+        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (!this.annotatorConf) {
             return;
         }
 
-        const options = {
+        const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
+        const { messages, language, locale } = options || intl.createAnnotatorIntl();
+
+        const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
+            intl: { messages, language, locale },
             modeButtons: ANNOTATION_BUTTONS,
-        };
+        });
 
-        if (this.areNewAnnotationsEnabled() && boxAnnotations.getOptions) {
-            const annotationsOptions = boxAnnotations.getOptions();
-
-            if (annotationsOptions) {
-                const { locale, messages } = annotationsOptions;
-                options.intl = { locale, messages };
-            }
-        }
-
-        const annotatorOptions = this.createAnnotatorOptions(options);
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
 
         if (this.annotatorPromiseResolver) {

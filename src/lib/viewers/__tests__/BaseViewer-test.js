@@ -5,6 +5,7 @@ import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
+import intl from '../../i18n';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
@@ -1059,8 +1060,9 @@ describe('lib/viewers/BaseViewer', () => {
     describe('createAnnotator()', () => {
         const annotatorMock = {};
         const annotationsOptions = {
-            messages: { test: 'Test Message' },
+            language: 'en-US',
             locale: 'en-US',
+            messages: { test: 'Test Message' },
         };
         const conf = {
             annotationsEnabled: true,
@@ -1108,23 +1110,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
         });
 
-        it('should call getOptions if new annotations enabled', () => {
+        it('should call createAnnotatorOptions with locale, language, and messages from options', () => {
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-
-            base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf),
-                getOptions: sandbox.stub().returns(annotationsOptions),
-            };
-
-            base.createAnnotator();
-
-            expect(base.options.boxAnnotations.getOptions).to.be.called;
-        });
-
-        it('should call createAnnotatorOptions with language and messages from options', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'createAnnotatorOptions');
 
             base.options.boxAnnotations = {
@@ -1138,10 +1125,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match({ intl: annotationsOptions }));
         });
 
-        it('should not have intl in annotator options if language and messages are not present ', () => {
+        it('should use default intl lib if annotator options not present ', () => {
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'createAnnotatorOptions');
+            sandbox.stub(intl, 'createAnnotatorIntl').returns(annotationsOptions);
 
             base.options.boxAnnotations = {
                 determineAnnotator: sandbox.stub().returns(conf),
@@ -1151,7 +1138,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.createAnnotator();
 
             expect(base.options.boxAnnotations.getOptions).to.be.called;
-            expect(base.createAnnotatorOptions).not.to.be.calledWith(sinon.match.has('intl'));
+            expect(intl.createAnnotatorIntl).to.be.called;
         });
     });
 
