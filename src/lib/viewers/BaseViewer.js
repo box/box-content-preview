@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import fullscreen from '../Fullscreen';
-import intl from '../i18n';
+import intlUtil from '../i18n';
 import RepStatus from '../RepStatus';
 import Browser from '../Browser';
 import {
@@ -939,11 +939,11 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
-        const { messages, language, locale } = options || intl.createAnnotatorIntl();
+        const { intl } = options || intlUtil.createAnnotatorIntl();
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            intl: { messages, language, locale },
+            intl,
             modeButtons: ANNOTATION_BUTTONS,
         });
 

@@ -1060,9 +1060,11 @@ describe('lib/viewers/BaseViewer', () => {
     describe('createAnnotator()', () => {
         const annotatorMock = {};
         const annotationsOptions = {
-            language: 'en-US',
-            locale: 'en-US',
-            messages: { test: 'Test Message' },
+            intl: {
+                language: 'en-US',
+                locale: 'en-US',
+                messages: { test: 'Test Message' },
+            },
         };
         const conf = {
             annotationsEnabled: true,
@@ -1122,7 +1124,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.createAnnotator();
 
             expect(base.options.boxAnnotations.getOptions).to.be.called;
-            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match({ intl: annotationsOptions }));
+            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(annotationsOptions));
         });
 
         it('should use default intl lib if annotator options not present ', () => {
@@ -1139,6 +1141,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.options.boxAnnotations.getOptions).to.be.called;
             expect(intl.createAnnotatorIntl).to.be.called;
+            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(annotationsOptions));
         });
     });
 
