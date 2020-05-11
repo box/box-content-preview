@@ -1130,7 +1130,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should use default intl lib if annotator options not present ', () => {
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'createAnnotatorOptions');
-            sandbox.stub(intl, 'createAnnotatorIntl').returns(annotationsOptions);
+            sandbox.stub(intl, 'createAnnotatorIntl').returns(annotationsOptions.intl);
 
             base.options.boxAnnotations = {
                 determineAnnotator: sandbox.stub().returns(conf),

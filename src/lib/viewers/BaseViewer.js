@@ -939,11 +939,10 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
-        const { intl } = options || intlUtil.createAnnotatorIntl();
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            intl,
+            intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
             modeButtons: ANNOTATION_BUTTONS,
         });
 
