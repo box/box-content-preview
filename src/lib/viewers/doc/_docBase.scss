@@ -216,6 +216,7 @@ $thumbnail-sidebar-width: 226px;
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
         position: relative;
+        display: block;
         /* stylelint-disable declaration-no-important */
         box-sizing: content-box !important;
         /* stylelint-enable declaration-no-important */
@@ -223,6 +224,7 @@ $thumbnail-sidebar-width: 226px;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
         padding: 15px 0;
+        overflow: visible;
         border: 0;
         border-image: none;
 
