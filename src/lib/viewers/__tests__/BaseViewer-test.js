@@ -1197,9 +1197,11 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('hasAnnotationPermissions()', () => {
         const permissions = {
-            can_annotate: false,
-            can_view_annotations_all: false,
-            can_view_annotations_self: false,
+            can_annotate: false, // Old
+            can_create_annotations: false, // New
+            can_view_annotations: false, // New
+            can_view_annotations_all: false, // Old
+            can_view_annotations_self: false, // Old
         };
 
         it('does nothing if file permissions are undefined', () => {
@@ -1208,6 +1210,16 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should return false if the user can neither annotate nor view all or their own annotations', () => {
             expect(base.hasAnnotationPermissions(permissions)).to.be.false;
+        });
+
+        it('should return true if the user can at least create annotations', () => {
+            permissions.can_create_annotations = true;
+            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
+        });
+
+        it('should return true if the user can at least view annotations', () => {
+            permissions.can_view_annotations = true;
+            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
         });
 
         it('should return true if the user can at least view all annotations', () => {

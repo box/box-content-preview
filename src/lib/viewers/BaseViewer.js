@@ -999,6 +999,8 @@ class BaseViewer extends EventEmitter {
 
         return !!(
             permissions.can_annotate ||
+            permissions.can_create_annotations ||
+            permissions.can_view_annotations ||
             permissions.can_view_annotations_all ||
             permissions.can_view_annotations_self
         );
