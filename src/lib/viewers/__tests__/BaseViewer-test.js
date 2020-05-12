@@ -1195,6 +1195,30 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('hasAnnotationCreatePermission()', () => {
+        let permissions = {};
+        beforeEach(() => {
+            permissions = {
+                can_annotate: false,
+                can_create_annotations: false,
+            };
+        });
+
+        it('should return false if both create permissions are false', () => {
+            expect(base.hasAnnotationCreatePermission(permissions)).to.be.false;
+        });
+
+        it('should return true if it has old create permission', () => {
+            permissions.can_annotate = true;
+            expect(base.hasAnnotationCreatePermission(permissions)).to.be.true;
+        });
+
+        it('should return true if it has new create permission', () => {
+            permissions.can_create_annotations = true;
+            expect(base.hasAnnotationCreatePermission(permissions)).to.be.true;
+        });
+    });
+
     describe('hasAnnotationPermissions()', () => {
         const permissions = {
             can_annotate: false, // Old
