@@ -1015,7 +1015,7 @@ class DocBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.pageControls = new PageControls(this.controls, this.docEl);
         this.zoomControls = new ZoomControls(this.controls);
-        if (this.areNewAnnotationsEnabled()) {
+        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls = new AnnotationControls(this.controls);
         }
         this.pageControls.addListener('pagechange', this.setPage);
@@ -1100,7 +1100,7 @@ class DocBaseViewer extends BaseViewer {
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
-        if (this.areNewAnnotationsEnabled()) {
+        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls.init({
                 onRegionClick: this.regionClickHandler,
             });

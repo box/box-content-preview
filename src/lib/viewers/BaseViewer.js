@@ -1007,6 +1007,19 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Returns whether or not user has permissions to create annotations on the current file
+     *
+     * @param {Object} permissions Permissions on the current file
+     * @return {boolean} Whether or not user has create permission
+     */
+    hasAnnotationCreatePermission(permissions = this.options.file.permissions) {
+        if (!permissions) {
+            return false;
+        }
+        return permissions.can_annotate || permissions.can_create_annotations;
+    }
+
+    /**
      * Returns whether or not annotations are enabled for this viewer.
      *
      * @return {boolean} Whether or not viewer is annotatable

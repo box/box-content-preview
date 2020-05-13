@@ -5,6 +5,7 @@ import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
+import AnnotationControls from '../../../AnnotationControls';
 import PageControls from '../../../PageControls';
 import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
@@ -1637,6 +1638,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.zoomControls instanceof ZoomControls).to.be.true;
                 expect(docBase.pageControls.contentEl).to.equal(docBase.docEl);
             });
+
+            it('should add annotations controls', () => {
+                sandbox.stub(docBase, 'bindControlListeners');
+                sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
+                sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
+
+                docBase.loadUI();
+                expect(docBase.annotationControls instanceof AnnotationControls).to.be.true;
+            });
         });
 
         describe('bindDOMListeners()', () => {
@@ -2242,7 +2252,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     removeListener: sandbox.stub(),
                 };
 
+                docBase.annotationControls = {
+                    init: sandbox.stub(),
+                    destroy: sandbox.stub(),
+                };
+
                 stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
+                stubs.areNewAnnotationsEnabled = sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
+                stubs.hasCreatePermission = sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
             });
 
             it('should add the correct controls', () => {
@@ -2285,6 +2302,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     'bp-exit-fullscreen-icon',
                     ICON_FULLSCREEN_OUT,
                 );
+                expect(docBase.annotationControls.init).to.be.calledWith({
+                    onRegionClick: docBase.regionClickHandler,
+                });
+            });
+
+            it('should not add annotationControls if no create permission', () => {
+                stubs.hasCreatePermission.returns(false);
+
+                expect(docBase.annotationControls.init).not.to.be.called;
+            });
+
+            it('should not add annotationControls if new annotations is not enabled', () => {
+                stubs.areNewAnnotationsEnabled.returns(false);
+
+                expect(docBase.annotationControls.init).not.to.be.called;
             });
 
             it('should not add the toggle thumbnails control if the option is not enabled', () => {
