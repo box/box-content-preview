@@ -2258,8 +2258,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
-                sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
-                sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
+                stubs.areNewAnnotationsEnabled = sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
+                stubs.hasCreatePermission = sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
             });
 
             it('should add the correct controls', () => {
@@ -2305,6 +2305,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotationControls.init).to.be.calledWith({
                     onRegionClick: docBase.regionClickHandler,
                 });
+            });
+
+            it('should not add annotationControls if no create permission', () => {
+                stubs.hasCreatePermission.returns(false);
+
+                expect(docBase.annotationControls.init).not.to.be.called;
+            });
+
+            it('should not add annotationControls if new annotations is not enabled', () => {
+                stubs.areNewAnnotationsEnabled.returns(false);
+
+                expect(docBase.annotationControls.init).not.to.be.called;
             });
 
             it('should not add the toggle thumbnails control if the option is not enabled', () => {
