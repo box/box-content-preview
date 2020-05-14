@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import Browser from '../Browser';
 import Controls from '../Controls';
 import { CLASS_HIDDEN } from '../constants';
 
@@ -32,10 +33,47 @@ describe('lib/Controls', () => {
     });
 
     describe('constructor()', () => {
+        let container;
+        let containerElEventListener;
+        let controlsElEventListener;
+
+        beforeEach(() => {
+            container = document.getElementById('test-controls-container');
+            const controlElement = document.createElement('div');
+            controlsElEventListener = sandbox.stub(controlElement, 'addEventListener');
+            sandbox.stub(container, 'appendChild').returns(controlElement);
+            containerElEventListener = sandbox.stub(container, 'addEventListener');
+        });
+
+        afterEach(() => {
+            container = undefined;
+            containerElEventListener = undefined;
+            controlsElEventListener = undefined;
+        });
+
         it('should create the correct DOM structure', () => {
             expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
 
             expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
+        });
+
+        it('should add the correct event listeners', () => {
+            sandbox.stub(Browser, 'hasTouch').returns(false);
+            controls = new Controls(container);
+
+            expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
+            expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
+            expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
+            expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
+            expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
+            expect(controlsElEventListener).to.be.calledWith('click', controls.clickHandler);
+        });
+
+        it('should add the correct event listeners when browser has touch', () => {
+            sandbox.stub(Browser, 'hasTouch').returns(true);
+            controls = new Controls(container);
+
+            expect(containerElEventListener).to.be.calledWith('touchstart', controls.mousemoveHandler);
         });
     });
 
@@ -249,8 +287,18 @@ describe('lib/Controls', () => {
 
     describe('clickHandler()', () => {
         it('should stop block hiding', () => {
+            controls.hasTouch = true;
+
             controls.clickHandler();
             expect(controls.shouldHide).to.be.true;
+        });
+
+        it('should call stopPropagation on event when called', () => {
+            const stopPropagation = sandbox.stub();
+
+            controls.clickHandler({ stopPropagation });
+
+            expect(stopPropagation).to.be.called;
         });
     });
 

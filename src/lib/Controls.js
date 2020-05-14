@@ -44,10 +44,10 @@ class Controls {
         this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
         this.controlsEl.addEventListener('focusout', this.focusoutHandler);
+        this.controlsEl.addEventListener('click', this.clickHandler);
 
         if (this.hasTouch) {
             this.containerEl.addEventListener('touchstart', this.mousemoveHandler);
-            this.controlsEl.addEventListener('click', this.clickHandler);
         }
     }
 
@@ -175,9 +175,15 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    clickHandler = () => {
+    clickHandler = event => {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        if (this.hasTouch) {
+            this.shouldHide = true;
+        }
         // If we are not focused in on the page num input, allow hiding after timeout
-        this.shouldHide = true;
     };
 
     /**
