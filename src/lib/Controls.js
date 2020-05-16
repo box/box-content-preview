@@ -183,7 +183,6 @@ class Controls {
         if (this.hasTouch) {
             this.shouldHide = true;
         }
-        // If we are not focused in on the page num input, allow hiding after timeout
     };
 
     /**
