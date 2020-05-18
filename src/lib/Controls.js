@@ -61,10 +61,10 @@ class Controls {
         this.controlsEl.removeEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.removeEventListener('focusin', this.focusinHandler);
         this.controlsEl.removeEventListener('focusout', this.focusoutHandler);
+        this.controlsEl.removeEventListener('click', this.clickHandler);
 
         if (this.hasTouch) {
             this.containerEl.removeEventListener('touchstart', this.mousemoveHandler);
-            this.controlsEl.removeEventListener('click', this.clickHandler);
         }
 
         this.buttonRefs.forEach(ref => {
