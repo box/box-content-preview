@@ -1,7 +1,7 @@
 import noop from 'lodash/noop';
 
 import { ICON_REGION_COMMENT } from './icons/icons';
-import Controls, { CLASS_BOX_CONTROLS_GROUP_BUTTON } from './Controls';
+import Controls, { CONTROLS_BUTTON_CLASS } from './Controls';
 import fullscreen from './Fullscreen';
 
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
@@ -153,7 +153,7 @@ export default class AnnotationControls {
         const regionButton = this.controls.add(
             __('region_comment'),
             this.handleClick(onRegionClick, AnnotationMode.REGION),
-            `${CLASS_BOX_CONTROLS_GROUP_BUTTON} ${CLASS_REGION_BUTTON}`,
+            `${CONTROLS_BUTTON_CLASS} ${CLASS_REGION_BUTTON}`,
             ICON_REGION_COMMENT,
             'button',
             groupElement,
