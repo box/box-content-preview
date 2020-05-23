@@ -7,7 +7,7 @@ import AnnotationControls, {
     CLASS_GROUP_HIDE,
     CLASS_REGION_BUTTON,
 } from '../AnnotationControls';
-import Controls, { CONTROLS_BUTTON_CLASS } from '../Controls';
+import Controls from '../Controls';
 import fullscreen from '../Fullscreen';
 
 let annotationControls;
@@ -89,7 +89,7 @@ describe('lib/AnnotationControls', () => {
             expect(annotationControls.controls.add).to.be.calledWith(
                 __('region_comment'),
                 stubs.regionHandler,
-                `${CONTROLS_BUTTON_CLASS} ${CLASS_REGION_BUTTON}`,
+                CLASS_REGION_BUTTON,
                 ICON_REGION_COMMENT,
                 'button',
                 sinon.match.any,
