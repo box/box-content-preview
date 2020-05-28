@@ -313,6 +313,19 @@ class PresentationViewer extends DocBaseViewer {
             };
         };
     }
+
+    /**
+     * @override
+     * @param {Object} data
+     * @param {string}  data.id - location value of the annotation
+     * @param {Object} data.location - location value of the annotation
+     * @param {number} data.location.value - location value of the annotation
+     */
+    handleScrollToAnnotation({ id, location: { value = 1 } }) {
+        this.setPage(value);
+
+        this.annotator.scrollToAnnotation(id);
+    }
 }
 
 export default PresentationViewer;

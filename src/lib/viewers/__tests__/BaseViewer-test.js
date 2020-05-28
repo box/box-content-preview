@@ -1180,7 +1180,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.init).to.be.calledWith(1.5);
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
-            expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('scrolltoannotation', base.handleScrollToAnnotation);
             expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
@@ -1255,6 +1255,22 @@ describe('lib/viewers/BaseViewer', () => {
             permissions.can_view_annotations_all = false;
             permissions.can_view_annotations_self = true;
             expect(base.hasAnnotationPermissions(permissions)).to.be.true;
+        });
+    });
+
+    describe('handleScrollToAnnotation', () => {
+        it('should call the annotators scrollToAnnotation method', () => {
+            const scrollToAnnotationStub = sandbox.stub();
+
+            base.annotator = {
+                addListener: sandbox.stub(),
+                init: sandbox.stub(),
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            base.handleScrollToAnnotation({ id: '123' });
+
+            expect(scrollToAnnotationStub).to.be.calledWith('123');
         });
     });
 

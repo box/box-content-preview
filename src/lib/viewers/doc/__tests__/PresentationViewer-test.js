@@ -489,4 +489,20 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(result.last.id).to.equal(1);
         });
     });
+
+    describe('handleScrollToAnnotation', () => {
+        it('should call setPage is location value provided', () => {
+            const setPageStub = sandbox.stub(presentation, 'setPage');
+            const scrollToAnnotationStub = sandbox.stub();
+
+            presentation.annotator = {
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            presentation.handleScrollToAnnotation({ id: '123', location: { value: 5 } });
+
+            expect(setPageStub).to.be.calledWith(5);
+            expect(scrollToAnnotationStub).to.be.calledWith('123');
+        });
+    });
 });
