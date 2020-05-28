@@ -491,18 +491,38 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     describe('handleScrollToAnnotation', () => {
+        let setPageStub;
+        let scrollToAnnotationStub;
+
+        beforeEach(() => {
+            setPageStub = sandbox.stub(presentation, 'setPage');
+            scrollToAnnotationStub = sandbox.stub();
+        });
+
         it('should call setPage is location value provided', () => {
-            const setPageStub = sandbox.stub(presentation, 'setPage');
-            const scrollToAnnotationStub = sandbox.stub();
+            const mockPartialAnnotation = { id: '123', target: { location: { value: 5 } } };
 
             presentation.annotator = {
                 scrollToAnnotation: scrollToAnnotationStub,
             };
 
-            presentation.handleScrollToAnnotation({ id: '123', location: { value: 5 } });
+            presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
             expect(setPageStub).to.be.calledWith(5);
-            expect(scrollToAnnotationStub).to.be.calledWith('123');
+            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation);
+        });
+
+        it('should not call setPage if target is not provided', () => {
+            const mockPartialAnnotation = { id: '123' };
+
+            presentation.annotator = {
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            presentation.handleScrollToAnnotation(mockPartialAnnotation);
+
+            expect(setPageStub).not.to.be.called;
+            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation);
         });
     });
 });

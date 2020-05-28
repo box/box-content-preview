@@ -124,6 +124,19 @@ class PresentationViewer extends DocBaseViewer {
         return hasXOverflow || hasYOverflow;
     }
 
+    /**
+     * @override
+     */
+    handleScrollToAnnotation(data) {
+        const { target } = data;
+
+        if (target && target.location) {
+            this.setPage(target.location.value);
+        }
+
+        super.handleScrollToAnnotation(data);
+    }
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -312,19 +325,6 @@ class PresentationViewer extends DocBaseViewer {
                 views: visible,
             };
         };
-    }
-
-    /**
-     * @override
-     * @param {Object} data
-     * @param {string}  data.id - location value of the annotation
-     * @param {Object} data.location - location value of the annotation
-     * @param {number} data.location.value - location value of the annotation
-     */
-    handleScrollToAnnotation({ id, location: { value = 1 } }) {
-        this.setPage(value);
-
-        this.annotator.scrollToAnnotation(id);
     }
 }
 

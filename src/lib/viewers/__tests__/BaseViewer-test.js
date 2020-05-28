@@ -1270,7 +1270,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleScrollToAnnotation({ id: '123' });
 
-            expect(scrollToAnnotationStub).to.be.calledWith('123');
+            expect(scrollToAnnotationStub).to.be.calledWith({ id: '123' });
         });
     });
 
