@@ -254,8 +254,12 @@ class BaseViewer extends EventEmitter {
 
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
+            try {
+                this.annotator.removeAllListeners();
+                this.annotator.destroy();
+            } catch (error) {
+                // No-op, as annotator was likely never initialized in the first place
+            }
         }
 
         this.destroyed = true;
