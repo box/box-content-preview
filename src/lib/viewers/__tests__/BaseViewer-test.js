@@ -1259,7 +1259,7 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleScrollToAnnotation', () => {
-        it('should call the annotators scrollToAnnotation method', () => {
+        it('should call the annotators scrollToAnnotation method if object provided', () => {
             const scrollToAnnotationStub = sandbox.stub();
 
             base.annotator = {
@@ -1270,7 +1270,21 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleScrollToAnnotation({ id: '123' });
 
-            expect(scrollToAnnotationStub).to.be.calledWith({ id: '123' });
+            expect(scrollToAnnotationStub).to.be.calledWith('123');
+        });
+
+        it('should call the annotators scrollToAnnotation if string provided', () => {
+            const scrollToAnnotationStub = sandbox.stub();
+
+            base.annotator = {
+                addListener: sandbox.stub(),
+                init: sandbox.stub(),
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            base.handleScrollToAnnotation('123');
+
+            expect(scrollToAnnotationStub).to.be.calledWith('123');
         });
     });
 
