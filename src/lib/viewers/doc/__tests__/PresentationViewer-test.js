@@ -489,4 +489,40 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(result.last.id).to.equal(1);
         });
     });
+
+    describe('handleScrollToAnnotation', () => {
+        let setPageStub;
+        let scrollToAnnotationStub;
+
+        beforeEach(() => {
+            setPageStub = sandbox.stub(presentation, 'setPage');
+            scrollToAnnotationStub = sandbox.stub();
+        });
+
+        it('should call setPage is location value provided', () => {
+            const mockPartialAnnotation = { id: '123', target: { location: { value: 5 } } };
+
+            presentation.annotator = {
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            presentation.handleScrollToAnnotation(mockPartialAnnotation);
+
+            expect(setPageStub).to.be.calledWith(5);
+            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation.id);
+        });
+
+        it('should call setPage with 1 if location not provided', () => {
+            const mockPartialAnnotation = { id: '123' };
+
+            presentation.annotator = {
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            presentation.handleScrollToAnnotation(mockPartialAnnotation);
+
+            expect(setPageStub).to.be.calledWith(1);
+            expect(scrollToAnnotationStub).to.be.calledWith('123');
+        });
+    });
 });

@@ -2,6 +2,7 @@ import throttle from 'lodash/throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
+import { getProp } from '../../util';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -122,6 +123,15 @@ class PresentationViewer extends DocBaseViewer {
         }
 
         return hasXOverflow || hasYOverflow;
+    }
+
+    /**
+     * @override
+     */
+    handleScrollToAnnotation(data) {
+        this.setPage(getProp(data, 'target.location.value', 1));
+
+        super.handleScrollToAnnotation(data);
     }
 
     //--------------------------------------------------------------------------

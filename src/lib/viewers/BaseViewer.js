@@ -980,7 +980,7 @@ class BaseViewer extends EventEmitter {
         });
 
         // Add a custom listener to scroll to the specified annotation
-        this.addListener('scrolltoannotation', data => this.annotator.scrollToAnnotation(data));
+        this.addListener('scrolltoannotation', this.handleScrollToAnnotation);
 
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
@@ -1021,6 +1021,18 @@ class BaseViewer extends EventEmitter {
             return false;
         }
         return permissions.can_annotate || permissions.can_create_annotations;
+    }
+
+    /**
+     * Handles the 'scrolltoannotation' event and calls the annotator scroll method
+     * @param {string | Object} event - Annotation Event
+     * @param {string} event.id - Annotation Id
+     * @return {void}
+     */
+    handleScrollToAnnotation(event) {
+        const data = event && event.id ? event.id : event;
+
+        this.annotator.scrollToAnnotation(data);
     }
 
     /**
