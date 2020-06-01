@@ -1026,7 +1026,7 @@ class BaseViewer extends EventEmitter {
     /**
      * Handles the 'scrolltoannotation' event and calls the annotator scroll method
      * @param {string | Object} event - Annotation Event
-     * @param {Object} event.id - Annotation Id
+     * @param {string} event.id - Annotation Id
      * @return {void}
      */
     handleScrollToAnnotation(event) {
