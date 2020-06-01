@@ -512,7 +512,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation.id);
         });
 
-        it('should call setPage with 0 if location not provided', () => {
+        it('should call setPage with 1 if location not provided', () => {
             const mockPartialAnnotation = { id: '123' };
 
             presentation.annotator = {
@@ -521,7 +521,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
-            expect(setPageStub).to.be.calledWith(0);
+            expect(setPageStub).to.be.calledWith(1);
             expect(scrollToAnnotationStub).to.be.calledWith('123');
         });
     });
