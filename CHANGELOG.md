@@ -1,3 +1,13 @@
+## 2.43.0 (2020-06-02)
+
+* chore(i18n): Update Translations (#1216) ([d7a066e](https://github.com/box/box-content-preview/commit/d7a066e)), closes [#1216](https://github.com/box/box-content-preview/issues/1216)
+* fix(annotations): handle scrollToAnnotation in Preview (#1214) ([ea523ae](https://github.com/box/box-content-preview/commit/ea523ae)), closes [#1214](https://github.com/box/box-content-preview/issues/1214)
+* fix(annotator): Fail silently if annotator destroy call fails (#1215) ([841cd5a](https://github.com/box/box-content-preview/commit/841cd5a)), closes [#1215](https://github.com/box/box-content-preview/issues/1215)
+* fix(controls): stop event propagation from controls (#1210) ([bd51261](https://github.com/box/box-content-preview/commit/bd51261)), closes [#1210](https://github.com/box/box-content-preview/issues/1210)
+* fix(controls): update region annotation icon (#1212) ([699e859](https://github.com/box/box-content-preview/commit/699e859)), closes [#1212](https://github.com/box/box-content-preview/issues/1212)
+
+
+
 ## 2.42.0 (2020-05-13)
 
 * fix(annotations): Fix annotations control shows if no create permission (#1209) ([57d9bb4](https://github.com/box/box-content-preview/commit/57d9bb4)), closes [#1209](https://github.com/box/box-content-preview/issues/1209)
