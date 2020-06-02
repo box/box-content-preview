@@ -22,6 +22,7 @@ import {
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
+    NOTIFICATION_STATUS,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_CONTENT,
@@ -151,6 +152,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
+        this.handleAnnotationFetchErrorEvent = this.handleAnnotationFetchErrorEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -987,6 +989,7 @@ class BaseViewer extends EventEmitter {
 
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+            this.annotator.addListener('annotations_fetch_error', this.handleAnnotationFetchErrorEvent);
         }
     }
 
@@ -1160,6 +1163,15 @@ class BaseViewer extends EventEmitter {
         if (status === 'success') {
             this.annotator.emit('annotations_active_set', id);
         }
+    }
+
+    handleAnnotationFetchErrorEvent(error) {
+        this.previewUI.showNotification(
+            `${__('notification_file_activity_load_error')}: ${error.join(', ')}`,
+            null,
+            true,
+            NOTIFICATION_STATUS.ERROR,
+        );
     }
 
     /**

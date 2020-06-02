@@ -328,12 +328,12 @@ class PreviewUI {
      * @param {boolean} [persist] - Optional boolean to persist the notification
      * @return {void}
      */
-    showNotification(message, buttonText, persist) {
+    showNotification(message, buttonText, persist, status) {
         if (!this.notification) {
             return;
         }
 
-        this.notification.show(message, buttonText, persist);
+        this.notification.show(message, buttonText, persist, status);
     }
 
     /**

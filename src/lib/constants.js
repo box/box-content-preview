@@ -147,5 +147,11 @@ export const METADATA = {
     TEMPLATE_AUTOCAD: 'autocad',
 };
 
+export const NOTIFICATION_STATUS = {
+    ERROR: 'error',
+    INFO: 'info',
+    WARN: 'warn',
+};
+
 // Error Codes
 export const ERROR_CODE_403_FORBIDDEN_BY_POLICY = 'forbidden_by_policy';

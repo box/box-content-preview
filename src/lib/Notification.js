@@ -1,4 +1,9 @@
-import { CLASS_HIDDEN, CLASS_BOX_PREVIEW_NOTIFICATION, CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER } from './constants';
+import {
+    CLASS_HIDDEN,
+    CLASS_BOX_PREVIEW_NOTIFICATION,
+    CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER,
+    NOTIFICATION_STATUS,
+} from './constants';
 import { ICON_CLOSE } from './icons/icons';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
@@ -45,9 +50,10 @@ class Notification {
      * @param {string} message - Notification message
      * @param {string} [buttonText] - Optional text to show in button
      * @param {boolean} persist - Should the notification show until dismissal or respect the timeout
+     * @param {string} status - Notification status, should be one of NOTIFICATION_STATUS
      * @return {void}
      */
-    show(message, buttonText, persist = false) {
+    show(message, buttonText, persist = false, status) {
         this.messageEl.textContent = message;
 
         if (buttonText) {
@@ -58,6 +64,12 @@ class Notification {
             this.buttonEl.innerHTML = ICON_CLOSE;
             this.buttonEl.classList.add('default-close-btn');
             this.buttonEl.setAttribute('aria-label', __('notification_button_default_label'));
+        }
+
+        if (Object.values(NOTIFICATION_STATUS).includes(status)) {
+            this.notificationEl.classList.add(status);
+        } else {
+            this.notificationEl.classList.remove(...Object.values(NOTIFICATION_STATUS));
         }
 
         this.notificationEl.classList.remove(CLASS_HIDDEN);
