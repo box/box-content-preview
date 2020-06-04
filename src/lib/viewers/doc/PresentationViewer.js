@@ -2,7 +2,6 @@ import throttle from 'lodash/throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
-import { getProp } from '../../util';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -42,6 +41,9 @@ class PresentationViewer extends DocBaseViewer {
         // Set up preloader
         this.preloader = new PresentationPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
+
+        // listen for set page events
+        this.addListener('setpage', this.setPage);
     }
 
     /**
@@ -50,6 +52,8 @@ class PresentationViewer extends DocBaseViewer {
     destroy() {
         super.destroy();
         this.preloader.removeAllListeners('preload');
+
+        this.removeListener('setpage', this.setPage);
     }
 
     /**
@@ -123,15 +127,6 @@ class PresentationViewer extends DocBaseViewer {
         }
 
         return hasXOverflow || hasYOverflow;
-    }
-
-    /**
-     * @override
-     */
-    handleScrollToAnnotation(data) {
-        this.setPage(getProp(data, 'target.location.value', 1));
-
-        super.handleScrollToAnnotation(data);
     }
 
     //--------------------------------------------------------------------------

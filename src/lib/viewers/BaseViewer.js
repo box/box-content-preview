@@ -988,6 +988,9 @@ class BaseViewer extends EventEmitter {
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
+
+        // Signal that the annotator and listeners have been loaded.
+        this.emit('annotations_loaded');
     }
 
     /**
