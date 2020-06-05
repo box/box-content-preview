@@ -541,6 +541,7 @@ describe('lib/viewers/BaseViewer', () => {
                 toggleAnnotationMode: sandbox.mock(),
             };
             base.annotationControls = {
+                destroy: sandbox.mock(),
                 resetControls: sandbox.mock(),
             };
             sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
@@ -618,10 +619,18 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('destroy');
         });
 
+        it('should clean up the annotation controls', () => {
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+            };
+            base.destroy();
+            expect(base.annotationControls.destroy).to.be.called;
+        });
+
         it('should clean up annotator', () => {
             base.annotator = {
-                removeAllListeners: sandbox.mock(),
-                destroy: sandbox.mock(),
+                removeAllListeners: sandbox.stub(),
+                destroy: sandbox.stub(),
             };
             base.destroy();
             expect(base.annotator.removeAllListeners).to.be.called;
@@ -1175,6 +1184,7 @@ describe('lib/viewers/BaseViewer', () => {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator),
             };
             base.annotationControls = {
+                destroy: sandbox.stub(),
                 resetControls: sandbox.stub(),
             };
             sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
@@ -1207,23 +1217,45 @@ describe('lib/viewers/BaseViewer', () => {
         let permissions = {};
         beforeEach(() => {
             permissions = {
-                can_annotate: false,
                 can_create_annotations: false,
             };
         });
 
-        it('should return false if both create permissions are false', () => {
+        it('should return false if it does not receive permissions', () => {
+            expect(base.hasAnnotationCreatePermission(null)).to.be.false;
+            expect(base.hasAnnotationCreatePermission(undefined)).to.be.false;
+        });
+
+        it('should return false if it receives new create permissions that are false', () => {
             expect(base.hasAnnotationCreatePermission(permissions)).to.be.false;
         });
 
-        it('should return true if it has old create permission', () => {
-            permissions.can_annotate = true;
-            expect(base.hasAnnotationCreatePermission(permissions)).to.be.true;
-        });
-
-        it('should return true if it has new create permission', () => {
+        it('should return true if it receives new create permissions that are true', () => {
             permissions.can_create_annotations = true;
             expect(base.hasAnnotationCreatePermission(permissions)).to.be.true;
+        });
+    });
+
+    describe('hasAnnotationViewPermission()', () => {
+        let permissions = {};
+        beforeEach(() => {
+            permissions = {
+                can_view_annotations: false,
+            };
+        });
+
+        it('should return false if it does not receive permissions', () => {
+            expect(base.hasAnnotationViewPermission(null)).to.be.false;
+            expect(base.hasAnnotationViewPermission(undefined)).to.be.false;
+        });
+
+        it('should return false if it receives new view permissions that are false', () => {
+            expect(base.hasAnnotationViewPermission(permissions)).to.be.false;
+        });
+
+        it('should return true if it receives new view permissions that are true', () => {
+            permissions.can_view_annotations = true;
+            expect(base.hasAnnotationViewPermission(permissions)).to.be.true;
         });
     });
 
@@ -1379,16 +1411,13 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('areNewAnnotationsEnabled()', () => {
         beforeEach(() => {
-            stubs.hasPermissions = sandbox.stub(base, 'hasAnnotationPermissions').returns(true);
-            base.options.file = {
-                permissions: {
-                    can_annotate: true,
-                },
-            };
+            stubs.hasCreatePermissions = sandbox.stub(base, 'hasAnnotationCreatePermission').returns(true);
+            stubs.hasViewPermissions = sandbox.stub(base, 'hasAnnotationViewPermission').returns(true);
         });
 
         it('should return false if the user cannot create/view annotations', () => {
-            stubs.hasPermissions.returns(false);
+            stubs.hasCreatePermissions.returns(false);
+            stubs.hasViewPermissions.returns(false);
             expect(base.areNewAnnotationsEnabled()).to.be.false;
         });
 
