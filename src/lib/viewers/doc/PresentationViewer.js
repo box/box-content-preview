@@ -129,7 +129,11 @@ class PresentationViewer extends DocBaseViewer {
      * @override
      */
     handleScrollToAnnotation(data) {
-        this.setPage(getProp(data, 'target.location.value', 1));
+        const targetPage = getProp(data, 'target.location.value', 1);
+
+        if (this.pdfViewer.currentPageNumber !== targetPage) {
+            this.setPage(targetPage);
+        }
 
         super.handleScrollToAnnotation(data);
     }
