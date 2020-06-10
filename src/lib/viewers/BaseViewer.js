@@ -952,6 +952,8 @@ class BaseViewer extends EventEmitter {
 
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
 
+        this.emit('annotator_create', this.annotator);
+
         if (this.annotatorPromiseResolver) {
             this.annotatorPromiseResolver();
         }

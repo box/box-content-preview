@@ -1143,6 +1143,14 @@ describe('lib/viewers/BaseViewer', () => {
             expect(intl.createAnnotatorIntl).to.be.called;
             expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(annotationsOptions));
         });
+
+        it('should emit annotator_create event', () => {
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+
+            base.createAnnotator();
+
+            expect(base.emit).to.be.calledWith('annotator_create', annotatorMock);
+        });
     });
 
     describe('initAnnotations()', () => {
