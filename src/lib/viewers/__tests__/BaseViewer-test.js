@@ -1296,6 +1296,49 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('handleAnnotationsOnLoad()', () => {
+        let getAnnotationStub;
+        let scrollToAnnotationStub;
+
+        beforeEach(() => {
+            getAnnotationStub = sandbox.stub().returns({ id: 'ABC' });
+            scrollToAnnotationStub = sandbox.stub();
+
+            base.annotator = {
+                init: sandbox.stub(),
+                scrollToAnnotation: scrollToAnnotationStub,
+                getAnnotationById: getAnnotationStub,
+            };
+        });
+
+        it('should not call handleScrollToAnnotation if there is not an active annotation', () => {
+            base.options.fileOptions = {
+                '0': {
+                    annotations: {},
+                },
+            };
+
+            base.handleAnnotationsOnLoad();
+
+            expect(scrollToAnnotationStub).not.to.be.called;
+            expect(getAnnotationStub).not.to.be.called;
+        });
+        it('should call scroll to annotation if active annotation is set', () => {
+            base.options.fileOptions = {
+                '0': {
+                    annotations: {
+                        activeId: 'ABC',
+                    },
+                },
+            };
+
+            base.handleAnnotationsOnLoad();
+
+            expect(scrollToAnnotationStub).to.be.calledWith('ABC');
+            expect(getAnnotationStub).to.be.called;
+        });
+    });
+
     describe('areAnnotationsEnabled()', () => {
         beforeEach(() => {
             stubs.getViewerOption = sandbox

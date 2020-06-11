@@ -989,6 +989,7 @@ class BaseViewer extends EventEmitter {
 
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+            this.handleAnnotationsOnLoad();
         }
     }
 
@@ -1036,6 +1037,19 @@ class BaseViewer extends EventEmitter {
 
         this.annotator.scrollToAnnotation(data);
     }
+
+    handleAnnotationsOnLoad = () => {
+        const {
+            file: { id },
+        } = this.options;
+
+        const loadedAnnotationId = getProp(this.options, `fileOptions.${id}.annotations.activeId`, null);
+        const annotation = loadedAnnotationId ? this.annotator.getAnnotationById(loadedAnnotationId) : null;
+
+        if (annotation) {
+            this.handleScrollToAnnotation(annotation);
+        }
+    };
 
     /**
      * Returns whether or not annotations are enabled for this viewer.
