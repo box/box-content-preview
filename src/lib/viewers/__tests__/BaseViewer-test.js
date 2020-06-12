@@ -1191,7 +1191,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('scrolltoannotation', base.handleScrollToAnnotation);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
-            expect(base.annotator.addListener).to.be.calledWith('annotations_ready', base.handleAnnotationsOnLoad);
+            expect(base.annotator.addListener).to.be.calledWith(
+                'annotations_initialized',
+                base.handleAnnotationsOnLoad,
+            );
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
 
@@ -1316,7 +1319,7 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad([{ id: '123' }]);
+            base.handleAnnotationsOnLoad({ annotations: [{ id: '123' }] });
 
             expect(scrollToAnnotationStub).not.to.be.called;
         });
@@ -1329,7 +1332,7 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad([{ id: 'ABC' }]);
+            base.handleAnnotationsOnLoad({ annotations: [{ id: 'ABC' }] });
 
             expect(scrollToAnnotationStub).to.be.calledWith('ABC');
         });
