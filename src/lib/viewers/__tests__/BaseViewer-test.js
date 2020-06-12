@@ -1189,8 +1189,9 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', base.handleScrollToAnnotation);
-            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
+            expect(base.annotator.addListener).to.be.calledWith('annotations_ready', base.handleAnnotationsOnLoad);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
 
@@ -1297,17 +1298,14 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleAnnotationsOnLoad()', () => {
-        let getAnnotationStub;
         let scrollToAnnotationStub;
 
         beforeEach(() => {
-            getAnnotationStub = sandbox.stub().returns({ id: 'ABC' });
             scrollToAnnotationStub = sandbox.stub();
 
             base.annotator = {
                 init: sandbox.stub(),
                 scrollToAnnotation: scrollToAnnotationStub,
-                getAnnotationById: getAnnotationStub,
             };
         });
 
@@ -1318,10 +1316,9 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad();
+            base.handleAnnotationsOnLoad([{ id: '123' }]);
 
             expect(scrollToAnnotationStub).not.to.be.called;
-            expect(getAnnotationStub).not.to.be.called;
         });
         it('should call scroll to annotation if active annotation is set', () => {
             base.options.fileOptions = {
@@ -1332,10 +1329,9 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad();
+            base.handleAnnotationsOnLoad([{ id: 'ABC' }]);
 
             expect(scrollToAnnotationStub).to.be.calledWith('ABC');
-            expect(getAnnotationStub).to.be.called;
         });
     });
 
