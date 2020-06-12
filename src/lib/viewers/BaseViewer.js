@@ -967,7 +967,7 @@ class BaseViewer extends EventEmitter {
      */
     initAnnotations() {
         // Annotations must be loaded and ready before scrolling can occur on a deep-linked annotation.
-        this.annotator.addListener('annotations_ready', this.handleAnnotationsOnLoad);
+        this.annotator.addListener('annotations_initialized', this.handleAnnotationsOnLoad);
 
         this.annotator.init(this.scale);
 
@@ -1042,21 +1042,28 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Handles retrieving the active annotation id from a deep-linked annotation and scrolls to the annotation.
-     * @param {Object[]} data - annotations array from emitted from box-annotations.
+     * @param {Object} event - annotations array from emitted from box-annotations.
+     * @param {Array} event.annotations - annotations array from emitted from box-annotations.
      * @return {void}
      */
-    handleAnnotationsOnLoad = (data = []) => {
+    handleAnnotationsOnLoad = ({ annotations = [] }) => {
         const {
             file: { id },
         } = this.options;
 
-        const loadedAnnotationId = getProp(this.options, `fileOptions.${id}.annotations.activeId`, null);
+        const activeAnnotationId = getProp(this.options, `fileOptions.${id}.annotations.activeId`, null);
 
-        if (!loadedAnnotationId) {
+        if (!activeAnnotationId) {
             return;
         }
 
-        this.handleScrollToAnnotation(data.find(entry => entry.id === loadedAnnotationId));
+        const annotation = annotations.find(entry => entry.id === activeAnnotationId);
+
+        if (!annotation) {
+            return;
+        }
+
+        this.handleScrollToAnnotation(annotation);
     };
 
     /**
