@@ -967,7 +967,7 @@ class BaseViewer extends EventEmitter {
      */
     initAnnotations() {
         // Annotations must be loaded and ready before scrolling can occur on a deep-linked annotation.
-        this.annotator.addListener('annotations_initialized', this.handleAnnotationsOnLoad);
+        this.annotator.addListener('annotations_initialized', this.handleAnnotationsInitialized);
 
         this.annotator.init(this.scale);
 
@@ -1046,17 +1046,12 @@ class BaseViewer extends EventEmitter {
      * @param {Array} event.annotations - annotations array from emitted from box-annotations.
      * @return {void}
      */
-    handleAnnotationsOnLoad = ({ annotations = [] }) => {
+    handleAnnotationsInitialized = ({ annotations = [] }) => {
         const {
             file: { id },
         } = this.options;
 
         const activeAnnotationId = getProp(this.options, `fileOptions.${id}.annotations.activeId`, null);
-
-        if (!activeAnnotationId) {
-            return;
-        }
-
         const annotation = annotations.find(entry => entry.id === activeAnnotationId);
 
         if (!annotation) {

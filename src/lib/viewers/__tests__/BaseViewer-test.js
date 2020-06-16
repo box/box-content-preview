@@ -1193,7 +1193,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith(
                 'annotations_initialized',
-                base.handleAnnotationsOnLoad,
+                base.handleAnnotationsInitialized,
             );
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
@@ -1300,7 +1300,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleAnnotationsOnLoad()', () => {
+    describe('handleAnnotationsInitialized()', () => {
         let scrollToAnnotationStub;
 
         beforeEach(() => {
@@ -1319,7 +1319,7 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad({ annotations: [{ id: '123' }] });
+            base.handleAnnotationsInitialized({ annotations: [{ id: '123' }] });
 
             expect(scrollToAnnotationStub).not.to.be.called;
         });
@@ -1332,7 +1332,7 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
 
-            base.handleAnnotationsOnLoad({ annotations: [{ id: 'ABC' }] });
+            base.handleAnnotationsInitialized({ annotations: [{ id: 'ABC' }] });
 
             expect(scrollToAnnotationStub).to.be.calledWith('ABC');
         });
