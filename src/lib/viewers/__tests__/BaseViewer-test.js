@@ -1189,8 +1189,12 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', base.handleScrollToAnnotation);
-            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
+            expect(base.annotator.addListener).to.be.calledWith(
+                'annotations_initialized',
+                base.handleAnnotationsInitialized,
+            );
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
 
@@ -1293,6 +1297,44 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleScrollToAnnotation('123');
 
             expect(scrollToAnnotationStub).to.be.calledWith('123');
+        });
+    });
+
+    describe('handleAnnotationsInitialized()', () => {
+        let scrollToAnnotationStub;
+
+        beforeEach(() => {
+            scrollToAnnotationStub = sandbox.stub();
+
+            base.annotator = {
+                init: sandbox.stub(),
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+        });
+
+        it('should not call handleScrollToAnnotation if there is not an active annotation', () => {
+            base.options.fileOptions = {
+                '0': {
+                    annotations: {},
+                },
+            };
+
+            base.handleAnnotationsInitialized({ annotations: [{ id: '123' }] });
+
+            expect(scrollToAnnotationStub).not.to.be.called;
+        });
+        it('should call scroll to annotation if active annotation is set', () => {
+            base.options.fileOptions = {
+                '0': {
+                    annotations: {
+                        activeId: 'ABC',
+                    },
+                },
+            };
+
+            base.handleAnnotationsInitialized({ annotations: [{ id: 'ABC' }] });
+
+            expect(scrollToAnnotationStub).to.be.calledWith('ABC');
         });
     });
 
