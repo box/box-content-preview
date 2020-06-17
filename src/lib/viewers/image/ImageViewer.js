@@ -1,7 +1,7 @@
+import AnnotationControls from '../../AnnotationControls';
 import ImageBaseViewer from './ImageBaseViewer';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
-
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -285,6 +285,11 @@ class ImageViewer extends ImageBaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
+            this.annotationControls = new AnnotationControls(this.controls);
+            this.annotationControls.init({ onRegionClick: this.handleRegionClick });
+        }
     }
 
     /**
@@ -339,8 +344,8 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.style.top = `${topPadding}px`;
 
         // Fix the scroll position of the image to be centered
-        this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
-        this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
+        this.wrapperEl.scrollLeft = (this.imageEl.clientWidth - viewport.width) / 2;
+        this.wrapperEl.scrollTop = (this.imageEl.clientHeight - viewport.height) / 2;
     }
 
     //--------------------------------------------------------------------------

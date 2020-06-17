@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import AnnotationControls from '../../../AnnotationControls';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -351,6 +352,15 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
             expect(image.zoomControls.currentScale).to.equal(50);
+            expect(image.annotationControls).to.be.undefined; // Not enabled by default
+        });
+
+        it('should add annotations controls', () => {
+            sandbox.stub(image, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(image, 'hasAnnotationCreatePermission').returns(true);
+
+            image.loadUI();
+            expect(image.annotationControls instanceof AnnotationControls).to.be.true;
         });
     });
 

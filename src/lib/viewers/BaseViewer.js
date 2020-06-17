@@ -153,6 +153,7 @@ class BaseViewer extends EventEmitter {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
+        this.handleRegionClick = this.handleRegionClick.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
@@ -241,6 +242,10 @@ class BaseViewer extends EventEmitter {
                 repStatus.removeListener('conversionpending', this.resetLoadTimeout);
                 repStatus.destroy();
             });
+        }
+
+        if (this.annotationControls) {
+            this.annotationControls.destroy();
         }
 
         fullscreen.removeAllListeners();
@@ -1016,16 +1021,33 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Returns whether or not user has permissions to create annotations on the current file
+     * Returns whether or not user has permissions to create new annotations on the current file
      *
      * @param {Object} permissions Permissions on the current file
      * @return {boolean} Whether or not user has create permission
      */
     hasAnnotationCreatePermission(permissions = this.options.file.permissions) {
-        if (!permissions) {
-            return false;
-        }
-        return permissions.can_annotate || permissions.can_create_annotations;
+        return !!permissions && !!permissions.can_create_annotations;
+    }
+
+    /**
+     * Returns whether or not user has permissions to view new annotations on the current file
+     *
+     * @param {Object} permissions Permissions on the current file
+     * @return {boolean} Whether or not user has view permission
+     */
+    hasAnnotationViewPermission(permissions = this.options.file.permissions) {
+        return !!permissions && !!permissions.can_view_annotations;
+    }
+
+    /**
+     * Handler for annotation toolbar region comment button click event.
+     *
+     * @private
+     * @return {void}
+     */
+    handleRegionClick() {
+        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
     }
 
     /**
@@ -1114,7 +1136,7 @@ class BaseViewer extends EventEmitter {
         const { showAnnotationsControls, file } = this.options;
         const { permissions, extension } = file || {};
 
-        if (!this.hasAnnotationPermissions(permissions)) {
+        if (!this.hasAnnotationCreatePermission(permissions) && !this.hasAnnotationViewPermission(permissions)) {
             return false;
         }
 
