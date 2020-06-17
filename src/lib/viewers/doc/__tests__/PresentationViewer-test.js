@@ -518,11 +518,25 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.annotator = {
                 scrollToAnnotation: scrollToAnnotationStub,
             };
+            presentation.pdfViewer.currentPageNumber = 2;
 
             presentation.handleScrollToAnnotation(mockPartialAnnotation);
 
             expect(setPageStub).to.be.calledWith(1);
             expect(scrollToAnnotationStub).to.be.calledWith('123');
+        });
+
+        it('should defer to the base viewer if the location value provided matches the current page', () => {
+            const mockPartialAnnotation = { id: '123', target: { location: { value: 1 } } };
+
+            presentation.annotator = {
+                scrollToAnnotation: scrollToAnnotationStub,
+            };
+
+            presentation.handleScrollToAnnotation(mockPartialAnnotation);
+
+            expect(setPageStub).not.to.be.called;
+            expect(scrollToAnnotationStub).to.be.calledWith(mockPartialAnnotation.id);
         });
     });
 });

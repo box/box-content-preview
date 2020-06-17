@@ -1,3 +1,12 @@
+## 2.44.0 (2020-06-16)
+
+* feat(annotations): Add annotator create event (#1219) ([e9d21a0](https://github.com/box/box-content-preview/commit/e9d21a0)), closes [#1219](https://github.com/box/box-content-preview/issues/1219)
+* feat(annotations): scroll to annotation on load (#1224) ([dd4195f](https://github.com/box/box-content-preview/commit/dd4195f)), closes [#1224](https://github.com/box/box-content-preview/issues/1224)
+* fix(annotations): Scroll to presentation page only when necessary (#1223) ([4b6ef6a](https://github.com/box/box-content-preview/commit/4b6ef6a)), closes [#1223](https://github.com/box/box-content-preview/issues/1223)
+* chore(i18n): Update Translations (#1218) ([178f245](https://github.com/box/box-content-preview/commit/178f245)), closes [#1218](https://github.com/box/box-content-preview/issues/1218)
+
+
+
 ## 2.43.0 (2020-06-02)
 
 * chore(i18n): Update Translations (#1216) ([d7a066e](https://github.com/box/box-content-preview/commit/d7a066e)), closes [#1216](https://github.com/box/box-content-preview/issues/1216)
