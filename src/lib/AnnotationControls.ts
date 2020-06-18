@@ -66,6 +66,8 @@ export default class AnnotationControls {
         fullscreen.removeListener('enter', this.handleFullscreenEnter);
         fullscreen.removeListener('exit', this.handleFullscreenExit);
         document.removeEventListener('keydown', this.handleKeyDown);
+
+        this.hasInit = false;
     }
 
     /**

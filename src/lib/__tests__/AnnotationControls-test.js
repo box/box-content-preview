@@ -73,6 +73,16 @@ describe('lib/AnnotationControls', () => {
 
             expect(stubs.fullscreenRemoveListener).to.be.calledTwice;
             expect(document.removeEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
+            expect(annotationControls.hasInit).to.equal(false);
+        });
+
+        it('should early return if hasInit is false', () => {
+            sandbox.spy(document, 'removeEventListener');
+
+            annotationControls.destroy();
+
+            expect(stubs.fullscreenRemoveListener).not.to.be.called;
+            expect(document.removeEventListener).not.to.be.called;
         });
     });
 
