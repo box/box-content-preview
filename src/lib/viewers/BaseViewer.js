@@ -151,6 +151,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
+        this.handleAnnotationControlsReset = this.handleAnnotationControlsReset.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.handleRegionClick = this.handleRegionClick.bind(this);
@@ -1038,6 +1039,16 @@ class BaseViewer extends EventEmitter {
      */
     hasAnnotationViewPermission(permissions = this.options.file.permissions) {
         return !!permissions && !!permissions.can_view_annotations;
+    }
+
+    /**
+     * Handler for annotation toolbar button reset
+     *
+     * @private
+     * @return {void}
+     */
+    handleAnnotationControlsReset() {
+        this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
     }
 
     /**
