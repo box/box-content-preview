@@ -9,8 +9,8 @@ import intl from '../../i18n';
 import * as util from '../../util';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
+import { EXCLUDED_EXTENSIONS } from '../../extensions';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
-import { EXCEL_EXTENSIONS, IWORK_EXTENSIONS } from '../../extensions';
 import { AnnotationMode } from '../../AnnotationControls';
 import Timer from '../../Timer';
 import Api from '../../api';
@@ -1463,7 +1463,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areNewAnnotationsEnabled()).to.be.false;
         });
 
-        EXCEL_EXTENSIONS.concat(IWORK_EXTENSIONS).forEach(extension => {
+        EXCLUDED_EXTENSIONS.forEach(extension => {
             it(`should return false if the file is ${extension} format`, () => {
                 base.options.file.extension = extension;
                 base.options.showAnnotationsControls = true;

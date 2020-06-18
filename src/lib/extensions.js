@@ -48,16 +48,14 @@ export const CODE_EXTENSIONS = [
     'yaml',
 ];
 
-// Should not include 'xlsb' cause xlsb conversion to pdf is not supported
+// Should not include 'xlsb', since xlsb conversion to pdf is not supported
 // However, office viewer supports xlsb, xlsm, and xlsx (new formats), but not xls (old)
 export const EXCEL_EXTENSIONS = ['xls', 'xlsm', 'xlsx'];
-
-export const IWORK_EXTENSIONS = ['pages', 'numbers', 'key'];
+export const EXCLUDED_EXTENSIONS = EXCEL_EXTENSIONS.concat(['numbers']);
 
 export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
     .concat(HTML_EXTENSIONS)
     .concat(EXCEL_EXTENSIONS)
-    .concat(IWORK_EXTENSIONS)
     .concat([
         'doc',
         'docx',
@@ -66,10 +64,13 @@ export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
         'gsheet',
         'gslide',
         'gslides',
+        'key',
         'msg',
+        'numbers',
         'odp',
         'ods',
         'odt',
+        'pages',
         'pdf',
         'ppt',
         'pptx',
