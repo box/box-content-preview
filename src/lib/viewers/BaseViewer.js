@@ -31,9 +31,9 @@ import {
     STATUS_SUCCESS,
     STATUS_VIEWABLE,
 } from '../constants';
+import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
-import { EXCEL_EXTENSIONS, IWORK_EXTENSIONS } from '../extensions';
 import { AnnotationMode } from '../AnnotationControls';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
@@ -1151,8 +1151,8 @@ class BaseViewer extends EventEmitter {
             return false;
         }
 
-        // Disable new annotations for Excel and iWork formats
-        if (EXCEL_EXTENSIONS.includes(extension) || IWORK_EXTENSIONS.includes(extension)) {
+        // Disable new annotations for spreadsheet formats
+        if (EXCLUDED_EXTENSIONS.includes(extension)) {
             return false;
         }
 
