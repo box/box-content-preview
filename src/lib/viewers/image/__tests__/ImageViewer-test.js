@@ -362,6 +362,19 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.loadUI();
             expect(image.annotationControls instanceof AnnotationControls).to.be.true;
         });
+
+        it('should call annotations controls init with callbacks', () => {
+            sandbox.stub(image, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(image, 'hasAnnotationCreatePermission').returns(true);
+            sandbox.stub(AnnotationControls.prototype, 'init').callsFake();
+
+            image.loadUI();
+
+            expect(AnnotationControls.prototype.init).to.be.calledWith({
+                onRegionClick: image.handleRegionClick,
+                onReset: image.handleAnnotationControlsReset,
+            });
+        });
     });
 
     describe('isRotated()', () => {

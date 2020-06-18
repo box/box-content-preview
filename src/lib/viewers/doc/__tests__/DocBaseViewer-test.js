@@ -2304,6 +2304,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
                 expect(docBase.annotationControls.init).to.be.calledWith({
                     onRegionClick: docBase.handleRegionClick,
+                    onReset: docBase.handleAnnotationControlsReset,
                 });
             });
 

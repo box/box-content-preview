@@ -1748,4 +1748,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
         });
     });
+
+    describe('handleAnnotationControlsReset()', () => {
+        it('should call toggleAnnotationMode', () => {
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+
+            base.handleAnnotationControlsReset();
+
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith('none');
+        });
+    });
 });
