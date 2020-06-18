@@ -66,9 +66,13 @@ describe('lib/AnnotationControls', () => {
 
     describe('destroy()', () => {
         it('should remove all listeners', () => {
+            sandbox.spy(document, 'removeEventListener');
+            annotationControls.hasInit = true;
+
             annotationControls.destroy();
 
             expect(stubs.fullscreenRemoveListener).to.be.calledTwice;
+            expect(document.removeEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
         });
     });
 
@@ -94,6 +98,66 @@ describe('lib/AnnotationControls', () => {
                 'button',
                 sinon.match.any,
             );
+        });
+
+        it('should add keydown event listener', () => {
+            sandbox.spy(document, 'addEventListener');
+
+            annotationControls.init();
+
+            expect(document.addEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
+        });
+
+        it('should set onRest and hasInit', () => {
+            const onResetMock = sandbox.stub();
+
+            annotationControls.init({ onReset: onResetMock });
+
+            expect(annotationControls.onReset).to.equal(onResetMock);
+            expect(annotationControls.hasInit).to.equal(true);
+        });
+
+        it('should early return if hasInit is true', () => {
+            annotationControls.hasInit = true;
+
+            sandbox.spy(document, 'addEventListener');
+
+            annotationControls.init();
+
+            expect(annotationControls.controls.add).not.to.be.called;
+            expect(document.addEventListener).not.to.be.called;
+        });
+    });
+
+    describe('handleKeyDown', () => {
+        let eventMock;
+
+        beforeEach(() => {
+            annotationControls.resetControls = sandbox.stub();
+            annotationControls.currentActiveControl = 'region';
+            eventMock = {
+                key: 'Escape',
+                preventDefault: sandbox.stub(),
+                stopPropagation: sandbox.stub(),
+            };
+        });
+
+        it('should not call resetControls if key is not Escape or mode is none', () => {
+            annotationControls.handleKeyDown({ key: 'Enter' });
+
+            expect(annotationControls.resetControls).not.to.be.called;
+
+            annotationControls.currentActiveControl = 'none';
+            annotationControls.handleKeyDown({ key: 'Escape' });
+
+            expect(annotationControls.resetControls).not.to.be.called;
+        });
+
+        it('should call resetControls and prevent default event', () => {
+            annotationControls.handleKeyDown(eventMock);
+
+            expect(eventMock.preventDefault).to.be.called;
+            expect(eventMock.stopPropagation).to.be.called;
         });
     });
 
@@ -139,9 +203,11 @@ describe('lib/AnnotationControls', () => {
     describe('resetControls()', () => {
         beforeEach(() => {
             stubs.updateRegionButton = sandbox.stub();
+            stubs.onReset = sandbox.stub();
             annotationControls.controlsMap = {
                 [AnnotationMode.REGION]: stubs.updateRegionButton,
             };
+            annotationControls.onReset = stubs.onReset;
         });
 
         it('should not change if no current active control', () => {
@@ -158,6 +224,7 @@ describe('lib/AnnotationControls', () => {
 
             expect(annotationControls.currentActiveControl).to.equal(AnnotationMode.NONE);
             expect(stubs.updateRegionButton).to.be.called;
+            expect(stubs.onReset).to.be.called;
         });
     });
 

@@ -17,6 +17,7 @@ export enum AnnotationMode {
 export type ClickHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
 export type Options = {
     onRegionClick?: ClickHandler;
+    onReset?: () => void;
 };
 
 declare const __: (key: string) => string;
@@ -33,6 +34,10 @@ export default class AnnotationControls {
     private controlsMap: ControlsMap;
 
     private currentActiveControl: AnnotationMode = AnnotationMode.NONE;
+
+    private hasInit = false;
+
+    private onReset: () => void = noop;
 
     /**
      * [constructor]
@@ -55,8 +60,12 @@ export default class AnnotationControls {
      * [destructor]
      */
     public destroy(): void {
+        if (!this.hasInit) {
+            return;
+        }
         fullscreen.removeListener('enter', this.handleFullscreenEnter);
         fullscreen.removeListener('exit', this.handleFullscreenExit);
+        document.removeEventListener('keydown', this.handleKeyDown);
     }
 
     /**
@@ -110,6 +119,8 @@ export default class AnnotationControls {
 
         this.currentActiveControl = AnnotationMode.NONE;
         updateButton();
+
+        this.onReset();
     };
 
     /**
@@ -146,9 +157,27 @@ export default class AnnotationControls {
     };
 
     /**
+     * Escape key handler, reset all control buttons,
+     * and stop propagation to prevent preview modal from exiting
+     */
+    private handleKeyDown = (event: KeyboardEvent): void => {
+        if (event.key !== 'Escape' || this.currentActiveControl === AnnotationMode.NONE) {
+            return;
+        }
+
+        this.resetControls();
+
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    /**
      * Initialize the annotation controls with options.
      */
-    public init({ onRegionClick = noop }: Options = {}): void {
+    public init({ onRegionClick = noop, onReset = noop }: Options = {}): void {
+        if (this.hasInit) {
+            return;
+        }
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         const regionButton = this.controls.add(
             __('region_comment'),
@@ -160,5 +189,10 @@ export default class AnnotationControls {
         );
 
         regionButton.setAttribute('data-testid', 'bp-AnnotationsControls-regionBtn');
+
+        this.onReset = onReset;
+        document.addEventListener('keydown', this.handleKeyDown);
+
+        this.hasInit = true;
     }
 }
