@@ -1,3 +1,11 @@
+## 2.45.0 (2020-06-18)
+
+* feat(annotations): Add support for image annotations (#1221) ([94d52f5](https://github.com/box/box-content-preview/commit/94d52f5)), closes [#1221](https://github.com/box/box-content-preview/issues/1221)
+* feat(annotations): Enable annotations for non-spreadsheet iWork files (#1227) ([0b58d4d](https://github.com/box/box-content-preview/commit/0b58d4d)), closes [#1227](https://github.com/box/box-content-preview/issues/1227)
+* feat(annotations): Press Esc to exit annotations mode (#1226) ([96786d5](https://github.com/box/box-content-preview/commit/96786d5)), closes [#1226](https://github.com/box/box-content-preview/issues/1226)
+
+
+
 ## 2.44.0 (2020-06-16)
 
 * feat(annotations): Add annotator create event (#1219) ([e9d21a0](https://github.com/box/box-content-preview/commit/e9d21a0)), closes [#1219](https://github.com/box/box-content-preview/issues/1219)
