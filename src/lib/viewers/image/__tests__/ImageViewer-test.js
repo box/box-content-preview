@@ -371,8 +371,8 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.loadUI();
 
             expect(AnnotationControls.prototype.init).to.be.calledWith({
-                onRegionClick: image.handleRegionClick,
                 onEscape: image.handleAnnotationControlsEscape,
+                onRegionClick: image.handleRegionClick,
             });
         });
     });

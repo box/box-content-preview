@@ -2303,8 +2303,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     ICON_FULLSCREEN_OUT,
                 );
                 expect(docBase.annotationControls.init).to.be.calledWith({
-                    onRegionClick: docBase.handleRegionClick,
                     onEscape: docBase.handleAnnotationControlsEscape,
+                    onRegionClick: docBase.handleRegionClick,
                 });
             });
 

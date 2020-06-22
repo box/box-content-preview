@@ -192,7 +192,6 @@ describe('lib/AnnotationControls', () => {
             annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
 
             expect(stubs.onRegionClick).to.be.calledWith({
-                activeControl: AnnotationMode.REGION,
                 event: stubs.event,
             });
         });
@@ -233,13 +232,6 @@ describe('lib/AnnotationControls', () => {
 
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
             expect(stubs.updateRegionButton).to.be.called;
-        });
-    });
-
-    describe('getActiveMode()', () => {
-        it('should return the current active mode', () => {
-            annotationControls.currentMode = 'region';
-            expect(annotationControls.getActiveMode()).to.equal('region');
         });
     });
 });

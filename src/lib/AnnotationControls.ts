@@ -14,10 +14,10 @@ export enum AnnotationMode {
     NONE = 'none',
     REGION = 'region',
 }
-export type ClickHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
+export type ClickHandler = ({ event }: { event: MouseEvent }) => void;
 export type Options = {
-    onRegionClick?: ClickHandler;
     onEscape?: () => void;
+    onRegionClick?: ClickHandler;
 };
 
 declare const __: (key: string) => string;
@@ -105,10 +105,6 @@ export default class AnnotationControls {
      */
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
-    public getActiveMode = (): AnnotationMode => {
-        return this.currentMode;
-    };
-
     /**
      * Deactivate current control button
      */
@@ -144,16 +140,16 @@ export default class AnnotationControls {
      * Region comment button click handler
      */
     private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
-        const prevActiveControl = this.currentMode;
+        const prevMode = this.currentMode;
 
         this.resetControls();
 
-        if (prevActiveControl !== mode) {
+        if (prevMode !== mode) {
             this.currentMode = mode as AnnotationMode;
             this.controlsMap[mode]();
         }
 
-        onClick({ activeControl: this.currentMode, event });
+        onClick({ event });
     };
 
     /**
@@ -175,7 +171,7 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ onRegionClick = noop, onEscape = noop }: Options = {}): void {
+    public init({ onEscape = noop, onRegionClick = noop }: Options = {}): void {
         if (this.hasInit) {
             return;
         }
