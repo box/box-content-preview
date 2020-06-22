@@ -1,3 +1,9 @@
+## <small>2.45.1 (2020-06-22)</small>
+
+* fix(annotations): Fix region toggle button does not exit region mode (#1228) ([e8b3cbb](https://github.com/box/box-content-preview/commit/e8b3cbb)), closes [#1228](https://github.com/box/box-content-preview/issues/1228)
+
+
+
 ## 2.45.0 (2020-06-18)
 
 * feat(annotations): Add support for image annotations (#1221) ([94d52f5](https://github.com/box/box-content-preview/commit/94d52f5)), closes [#1221](https://github.com/box/box-content-preview/issues/1221)
