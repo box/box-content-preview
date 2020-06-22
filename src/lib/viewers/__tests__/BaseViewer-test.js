@@ -1749,15 +1749,27 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleAnnotationControlsReset()', () => {
+    describe('handleAnnotationControlsEscape()', () => {
         it('should call toggleAnnotationMode', () => {
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
 
-            base.handleAnnotationControlsReset();
+            base.handleAnnotationControlsEscape();
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith('none');
+        });
+    });
+
+    describe('handleRegionClick', () => {
+        it('should call toggleAnnotationMode', () => {
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+
+            base.handleRegionClick();
+
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith('region');
         });
     });
 });
