@@ -151,7 +151,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
-        this.handleAnnotationControlsReset = this.handleAnnotationControlsReset.bind(this);
+        this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.handleRegionClick = this.handleRegionClick.bind(this);
@@ -1047,7 +1047,7 @@ class BaseViewer extends EventEmitter {
      * @private
      * @return {void}
      */
-    handleAnnotationControlsReset() {
+    handleAnnotationControlsEscape() {
         this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
     }
 

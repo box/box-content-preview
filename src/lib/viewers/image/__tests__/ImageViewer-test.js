@@ -372,7 +372,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(AnnotationControls.prototype.init).to.be.calledWith({
                 onRegionClick: image.handleRegionClick,
-                onReset: image.handleAnnotationControlsReset,
+                onEscape: image.handleAnnotationControlsEscape,
             });
         });
     });

@@ -1100,7 +1100,7 @@ class DocBaseViewer extends BaseViewer {
         if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls.init({
                 onRegionClick: this.handleRegionClick,
-                onReset: this.handleAnnotationControlsReset,
+                onEscape: this.handleAnnotationControlsEscape,
             });
         }
     }

@@ -17,7 +17,7 @@ export enum AnnotationMode {
 export type ClickHandler = ({ activeControl, event }: { activeControl: AnnotationMode; event: MouseEvent }) => void;
 export type Options = {
     onRegionClick?: ClickHandler;
-    onReset?: () => void;
+    onEscape?: () => void;
 };
 
 declare const __: (key: string) => string;
@@ -33,11 +33,11 @@ export default class AnnotationControls {
 
     private controlsMap: ControlsMap;
 
-    private currentActiveControl: AnnotationMode = AnnotationMode.NONE;
+    private currentMode: AnnotationMode = AnnotationMode.NONE;
 
     private hasInit = false;
 
-    private onReset: () => void = noop;
+    private onEscape: () => void = noop;
 
     /**
      * [constructor]
@@ -106,23 +106,21 @@ export default class AnnotationControls {
     private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     public getActiveMode = (): AnnotationMode => {
-        return this.currentActiveControl;
+        return this.currentMode;
     };
 
     /**
      * Deactivate current control button
      */
     public resetControls = (): void => {
-        if (this.currentActiveControl === AnnotationMode.NONE) {
+        if (this.currentMode === AnnotationMode.NONE) {
             return;
         }
 
-        const updateButton = this.controlsMap[this.currentActiveControl];
+        const updateButton = this.controlsMap[this.currentMode];
 
-        this.currentActiveControl = AnnotationMode.NONE;
+        this.currentMode = AnnotationMode.NONE;
         updateButton();
-
-        this.onReset();
     };
 
     /**
@@ -135,7 +133,7 @@ export default class AnnotationControls {
             return;
         }
 
-        if (this.currentActiveControl === AnnotationMode.REGION) {
+        if (this.currentMode === AnnotationMode.REGION) {
             regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
             regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
@@ -146,16 +144,16 @@ export default class AnnotationControls {
      * Region comment button click handler
      */
     private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
-        const prevActiveControl = this.currentActiveControl;
+        const prevActiveControl = this.currentMode;
 
         this.resetControls();
 
         if (prevActiveControl !== mode) {
-            this.currentActiveControl = mode as AnnotationMode;
+            this.currentMode = mode as AnnotationMode;
             this.controlsMap[mode]();
         }
 
-        onClick({ activeControl: this.currentActiveControl, event });
+        onClick({ activeControl: this.currentMode, event });
     };
 
     /**
@@ -163,11 +161,12 @@ export default class AnnotationControls {
      * and stop propagation to prevent preview modal from exiting
      */
     private handleKeyDown = (event: KeyboardEvent): void => {
-        if (event.key !== 'Escape' || this.currentActiveControl === AnnotationMode.NONE) {
+        if (event.key !== 'Escape' || this.currentMode === AnnotationMode.NONE) {
             return;
         }
 
         this.resetControls();
+        this.onEscape();
 
         event.preventDefault();
         event.stopPropagation();
@@ -176,7 +175,7 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ onRegionClick = noop, onReset = noop }: Options = {}): void {
+    public init({ onRegionClick = noop, onEscape = noop }: Options = {}): void {
         if (this.hasInit) {
             return;
         }
@@ -192,7 +191,7 @@ export default class AnnotationControls {
 
         regionButton.setAttribute('data-testid', 'bp-AnnotationsControls-regionBtn');
 
-        this.onReset = onReset;
+        this.onEscape = onEscape;
         document.addEventListener('keydown', this.handleKeyDown);
 
         this.hasInit = true;
