@@ -3,29 +3,19 @@
     border-left: 1px solid $twos;
 
     .bp-AnnotationControls-regionBtn {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
         svg {
+            width: 34px;
+            height: 32px;
+            padding: 4px 5px;
+            border-radius: 4px;
             fill: $white;
         }
 
         &.is-active {
             svg {
+                background-color: $white;
                 fill: $black;
             }
-        }
-
-        &.is-active::before {
-            position: absolute;
-            z-index: -1;
-            width: 34px;
-            height: 32px;
-            background-color: $white;
-            border-radius: 4px;
-            content: '';
         }
     }
 
