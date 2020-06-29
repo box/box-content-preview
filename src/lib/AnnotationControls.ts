@@ -16,7 +16,7 @@ export enum AnnotationMode {
 }
 export type ClickHandler = ({ event }: { event: MouseEvent }) => void;
 export type Options = {
-    fileId?: string;
+    fileId: string;
     onEscape?: () => void;
     onRegionClick?: ClickHandler;
 };
@@ -172,7 +172,7 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ onEscape = noop, onRegionClick = noop, fileId = '' }: Options = {}): void {
+    public init({ fileId, onEscape = noop, onRegionClick = noop }: Options): void {
         if (this.hasInit) {
             return;
         }
@@ -188,7 +188,7 @@ export default class AnnotationControls {
 
         groupElement.setAttribute('data-resin-feature', 'annotations');
         regionButton.setAttribute('data-resin-target', 'highlightRegion');
-        regionButton.setAttribute('data-resin-file_id', fileId);
+        regionButton.setAttribute('data-resin-fileId', fileId);
         regionButton.setAttribute('data-testid', 'bp-AnnotationsControls-regionBtn');
 
         this.onEscape = onEscape;
