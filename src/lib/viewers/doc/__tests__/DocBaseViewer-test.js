@@ -2303,6 +2303,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     ICON_FULLSCREEN_OUT,
                 );
                 expect(docBase.annotationControls.init).to.be.calledWith({
+                    fileId: docBase.options.file.id,
                     onEscape: docBase.handleAnnotationControlsEscape,
                     onRegionClick: docBase.handleRegionClick,
                 });
