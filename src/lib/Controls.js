@@ -38,6 +38,7 @@ class Controls {
         this.controlsEl = this.containerEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'bp-controls';
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
+        this.controlsEl.setAttribute('data-resin-component', 'toolbar');
 
         this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
         this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);

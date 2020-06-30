@@ -371,6 +371,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.loadUI();
 
             expect(AnnotationControls.prototype.init).to.be.calledWith({
+                fileId: image.options.file.id,
                 onEscape: image.handleAnnotationControlsEscape,
                 onRegionClick: image.handleRegionClick,
             });

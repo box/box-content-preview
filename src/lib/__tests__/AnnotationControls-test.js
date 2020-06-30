@@ -98,7 +98,7 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should add the controls', () => {
-            annotationControls.init({ onRegionClick: stubs.onRegionClick });
+            annotationControls.init({ fileId: '0', onRegionClick: stubs.onRegionClick });
 
             expect(annotationControls.controls.add).to.be.calledWith(
                 __('region_comment'),
@@ -113,7 +113,7 @@ describe('lib/AnnotationControls', () => {
         it('should add keydown event listener', () => {
             sandbox.spy(document, 'addEventListener');
 
-            annotationControls.init();
+            annotationControls.init({ fileId: '0' });
 
             expect(document.addEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
         });
@@ -121,7 +121,7 @@ describe('lib/AnnotationControls', () => {
         it('should set onRest and hasInit', () => {
             const onEscapeMock = sandbox.stub();
 
-            annotationControls.init({ onEscape: onEscapeMock });
+            annotationControls.init({ fileId: '0', onEscape: onEscapeMock });
 
             expect(annotationControls.onEscape).to.equal(onEscapeMock);
             expect(annotationControls.hasInit).to.equal(true);
@@ -132,7 +132,7 @@ describe('lib/AnnotationControls', () => {
 
             sandbox.spy(document, 'addEventListener');
 
-            annotationControls.init();
+            annotationControls.init({ fileId: '0' });
 
             expect(annotationControls.controls.add).not.to.be.called;
             expect(document.addEventListener).not.to.be.called;
