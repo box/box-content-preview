@@ -1,3 +1,11 @@
+## 2.46.0 (2020-06-30)
+
+* chore(resin): Add annotations resin tags (#1230) ([6312e28](https://github.com/box/box-content-preview/commit/6312e28)), closes [#1230](https://github.com/box/box-content-preview/issues/1230)
+* fix(annotations): Fix region toggle button does not exit region mode (#1228) ([e8b3cbb](https://github.com/box/box-content-preview/commit/e8b3cbb)), closes [#1228](https://github.com/box/box-content-preview/issues/1228)
+* fix(controls): Fix background color position for region toggle button (#1229) ([70747eb](https://github.com/box/box-content-preview/commit/70747eb)), closes [#1229](https://github.com/box/box-content-preview/issues/1229)
+
+
+
 ## 2.45.0 (2020-06-18)
 
 * feat(annotations): Add support for image annotations (#1221) ([94d52f5](https://github.com/box/box-content-preview/commit/94d52f5)), closes [#1221](https://github.com/box/box-content-preview/issues/1221)
