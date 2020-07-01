@@ -8,7 +8,6 @@ import AnnotationControls, {
     CLASS_REGION_BUTTON,
 } from '../AnnotationControls';
 import Controls from '../Controls';
-import fullscreen from '../Fullscreen';
 
 let annotationControls;
 let stubs = {};
@@ -24,8 +23,6 @@ describe('lib/AnnotationControls', () => {
         fixture.load('__tests__/AnnotationControls-test.html');
         stubs.classListAdd = sandbox.stub();
         stubs.classListRemove = sandbox.stub();
-        stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
-        stubs.fullscreenRemoveListener = sandbox.stub(fullscreen, 'removeListener');
         stubs.onRegionClick = sandbox.stub();
         stubs.querySelector = sandbox.stub().returns({
             classList: {
@@ -55,10 +52,6 @@ describe('lib/AnnotationControls', () => {
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
         });
 
-        it('should attach event listeners', () => {
-            expect(stubs.fullscreenAddListener).to.be.calledTwice;
-        });
-
         it('should throw an exception if controls is not provided', () => {
             expect(() => new AnnotationControls()).to.throw(Error, 'controls must be an instance of Controls');
         });
@@ -71,7 +64,6 @@ describe('lib/AnnotationControls', () => {
 
             annotationControls.destroy();
 
-            expect(stubs.fullscreenRemoveListener).to.be.calledTwice;
             expect(document.removeEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
             expect(annotationControls.hasInit).to.equal(false);
         });
@@ -81,7 +73,6 @@ describe('lib/AnnotationControls', () => {
 
             annotationControls.destroy();
 
-            expect(stubs.fullscreenRemoveListener).not.to.be.called;
             expect(document.removeEventListener).not.to.be.called;
         });
     });
@@ -197,18 +188,6 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('handleFullscreenChange()', () => {
-        it('should hide entire group if fullscreen is active', () => {
-            annotationControls.handleFullscreenEnter();
-            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
-            expect(stubs.classListAdd).to.be.calledWith(CLASS_GROUP_HIDE);
-
-            annotationControls.handleFullscreenExit();
-            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
-            expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
-        });
-    });
-
     describe('resetControls()', () => {
         beforeEach(() => {
             stubs.updateRegionButton = sandbox.stub();
@@ -232,6 +211,18 @@ describe('lib/AnnotationControls', () => {
 
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
             expect(stubs.updateRegionButton).to.be.called;
+        });
+    });
+
+    describe('toggle()', () => {
+        it('should show or hide the entire button group', () => {
+            annotationControls.toggle(false);
+            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
+            expect(stubs.classListAdd).to.be.calledWith(CLASS_GROUP_HIDE);
+
+            annotationControls.toggle(true);
+            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
+            expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
         });
     });
 });

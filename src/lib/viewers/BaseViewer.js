@@ -559,11 +559,10 @@ class BaseViewer extends EventEmitter {
     handleFullscreenEnter() {
         this.resize();
 
-        if (this.areNewAnnotationsEnabled() && this.annotator && this.annotationControls) {
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
-
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
-            this.annotationControls.resetControls();
+            this.disableAnnotationControls();
         }
     }
 
@@ -574,8 +573,10 @@ class BaseViewer extends EventEmitter {
      */
     handleFullscreenExit() {
         this.resize();
-        if (this.areNewAnnotationsEnabled() && this.annotator) {
+
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
+            this.enableAnnotationControls();
         }
     }
 
@@ -900,6 +901,20 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
     // Annotations
     //--------------------------------------------------------------------------
+
+    disableAnnotationControls() {
+        if (this.annotator && this.annotationControls && this.areNewAnnotationsEnabled()) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.annotationControls.resetControls();
+            this.annotationControls.toggle(false);
+        }
+    }
+
+    enableAnnotationControls() {
+        if (this.annotationControls && this.areNewAnnotationsEnabled()) {
+            this.annotationControls.toggle(true);
+        }
+    }
 
     /**
      * Loads the BoxAnnotations static assets

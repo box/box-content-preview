@@ -2,7 +2,6 @@ import noop from 'lodash/noop';
 
 import { ICON_REGION_COMMENT } from './icons/icons';
 import Controls from './Controls';
-import fullscreen from './Fullscreen';
 
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
@@ -53,8 +52,6 @@ export default class AnnotationControls {
         this.controlsMap = {
             [AnnotationMode.REGION]: this.updateRegionButton,
         };
-
-        this.attachEventHandlers();
     }
 
     /**
@@ -64,47 +61,11 @@ export default class AnnotationControls {
         if (!this.hasInit) {
             return;
         }
-        fullscreen.removeListener('enter', this.handleFullscreenEnter);
-        fullscreen.removeListener('exit', this.handleFullscreenExit);
+
         document.removeEventListener('keydown', this.handleKeyDown);
 
         this.hasInit = false;
     }
-
-    /**
-     * Attaches event handlers
-     */
-    private attachEventHandlers(): void {
-        fullscreen.addListener('enter', this.handleFullscreenEnter);
-        fullscreen.addListener('exit', this.handleFullscreenExit);
-    }
-
-    /**
-     * Handle fullscreen change
-     */
-    private handleFullscreenChange = (isFullscreen: boolean): void => {
-        const groupElement = this.controlsElement.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
-
-        if (!groupElement) {
-            return;
-        }
-
-        if (isFullscreen) {
-            groupElement.classList.add(CLASS_GROUP_HIDE);
-        } else {
-            groupElement.classList.remove(CLASS_GROUP_HIDE);
-        }
-    };
-
-    /**
-     * Enter fullscreen handler
-     */
-    private handleFullscreenEnter = (): void => this.handleFullscreenChange(true);
-
-    /**
-     * Exit fullscreen handler
-     */
-    private handleFullscreenExit = (): void => this.handleFullscreenChange(false);
 
     /**
      * Deactivate current control button
@@ -119,6 +80,23 @@ export default class AnnotationControls {
         this.currentMode = AnnotationMode.NONE;
         updateButton();
     };
+
+    /**
+     * Show or hide the controls
+     */
+    public toggle(show: boolean): void {
+        const groupElement = this.controlsElement.querySelector(`.${CLASS_ANNOTATIONS_GROUP}`);
+
+        if (!groupElement) {
+            return;
+        }
+
+        if (show) {
+            groupElement.classList.remove(CLASS_GROUP_HIDE);
+        } else {
+            groupElement.classList.add(CLASS_GROUP_HIDE);
+        }
+    }
 
     /**
      * Update region button UI

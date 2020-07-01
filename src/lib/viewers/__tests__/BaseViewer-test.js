@@ -536,36 +536,47 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should hide annotations and toggle annotations mode', () => {
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'disableAnnotationControls');
             base.annotator = {
                 emit: sandbox.mock(),
                 toggleAnnotationMode: sandbox.mock(),
             };
             base.annotationControls = {
                 destroy: sandbox.mock(),
-                resetControls: sandbox.mock(),
             };
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenEnter();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
-            expect(base.annotationControls.resetControls).to.be.called;
+            expect(base.disableAnnotationControls).to.be.called;
         });
     });
 
     describe('handleFullscreenExit()', () => {
         it('should resize the viewer', () => {
             sandbox.stub(base, 'resize');
-            base.annotator = {
-                emit: sandbox.mock(),
-            };
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
 
             base.handleFullscreenExit();
 
             expect(base.resize).to.be.called;
+        });
+
+        it('should show annotations', () => {
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'enableAnnotationControls');
+            base.annotator = {
+                emit: sandbox.mock(),
+            };
+            base.annotationControls = {
+                destroy: sandbox.mock(),
+            };
+
+            base.handleFullscreenExit();
+
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
+            expect(base.enableAnnotationControls).to.be.called;
         });
     });
 
@@ -1027,6 +1038,39 @@ describe('lib/viewers/BaseViewer', () => {
         it('should return empty string if viewer does not have a special asset path', () => {
             base.options.viewer = {};
             expect(base.getAssetPath()).to.equal('');
+        });
+    });
+
+    describe('disableAnnotationControls()', () => {
+        it('should hide annotations and toggle annotations mode', () => {
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                resetControls: sandbox.stub(),
+                toggle: sandbox.stub(),
+            };
+
+            base.disableAnnotationControls();
+
+            expect(base.annotationControls.resetControls).to.be.called;
+            expect(base.annotationControls.toggle).to.be.calledWith(false);
+        });
+    });
+
+    describe('enableAnnotationControls()', () => {
+        it('should show annotations and the controls', () => {
+            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                toggle: sandbox.stub(),
+            };
+
+            base.enableAnnotationControls();
+
+            expect(base.annotationControls.toggle).to.be.calledWith(true);
         });
     });
 
