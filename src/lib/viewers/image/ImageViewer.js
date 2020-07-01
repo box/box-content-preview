@@ -324,6 +324,7 @@ class ImageViewer extends ImageBaseViewer {
         let topPadding = 0;
         let largerWidth = 0;
         let largerHeight = 0;
+        const imageDimensions = this.imageEl.getBoundingClientRect();
         const wrapperDimensions = this.wrapperEl.getBoundingClientRect();
         const viewport = {
             width: this.wrapperEl.clientWidth - IMAGE_PADDING,
@@ -355,8 +356,8 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.style.top = `${topPadding}px`;
 
         // Fix the scroll position of the image to be centered
-        this.wrapperEl.scrollLeft = (this.imageEl.clientWidth - viewport.width) / 2;
-        this.wrapperEl.scrollTop = (this.imageEl.clientHeight - viewport.height) / 2;
+        this.wrapperEl.scrollLeft = (imageDimensions.width - viewport.width) / 2;
+        this.wrapperEl.scrollTop = (imageDimensions.height - viewport.height) / 2;
     }
 
     //--------------------------------------------------------------------------
