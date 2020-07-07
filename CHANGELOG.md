@@ -1,3 +1,10 @@
+## 2.47.0 (2020-07-07)
+
+* fix(image): Disallow creation of annotations on rotated images (#1232) ([2e99220](https://github.com/box/box-content-preview/commit/2e99220)), closes [#1232](https://github.com/box/box-content-preview/issues/1232)
+* fix(image): Fix zoom for rotated image when annotations is enabled (#1231) ([a9edcd4](https://github.com/box/box-content-preview/commit/a9edcd4)), closes [#1231](https://github.com/box/box-content-preview/issues/1231)
+
+
+
 ## 2.46.0 (2020-06-30)
 
 * chore(resin): Add annotations resin tags (#1230) ([6312e28](https://github.com/box/box-content-preview/commit/6312e28)), closes [#1230](https://github.com/box/box-content-preview/issues/1230)
