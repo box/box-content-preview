@@ -373,10 +373,12 @@ class ImageBaseViewer extends BaseViewer {
             if (!this.isPannable && this.isZoomable) {
                 // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
                 this.zoom('in');
+                this.emitMetric(VIEWER_EVENT.imageZoomClick, 'in');
             } else if (!this.didPan) {
                 // If the mouse up was not due to ending of panning, then assume it was a regular
                 // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
                 this.zoom('reset');
+                this.emitMetric(VIEWER_EVENT.imageZoomClick, 'reset');
             }
         }
     }
