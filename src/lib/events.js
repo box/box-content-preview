@@ -3,7 +3,6 @@ export const VIEWER_EVENT = {
     default: 'viewerevent', // The default viewer event.
     download: 'download', // Begin downloading the file.
     error: 'error', // When an error occurs.
-    imageZoomClick: 'imagezoomclick', // When image is clicked directly to zoom/reset
     load: 'load', // Preview is finished loading.
     mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
     metric: 'viewermetric', // A viewer metric.

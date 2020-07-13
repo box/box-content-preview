@@ -351,7 +351,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.isZoomable = true;
             imageBase.handleMouseUp(event);
             expect(stubs.zoom).to.have.been.calledWith('in');
-            expect(stubs.emitMetric).to.be.calledWith('imagezoomclick', 'in');
+            expect(stubs.emitMetric).to.be.calledWith('zoom', 'inClick');
         });
 
         it('should reset zoom if mouseup was not due to end of panning', () => {
@@ -367,7 +367,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.didPan = false;
             imageBase.handleMouseUp(event);
             expect(stubs.zoom).to.have.been.calledWith('reset');
-            expect(stubs.emitMetric).to.be.calledWith('imagezoomclick', 'reset');
+            expect(stubs.emitMetric).to.be.calledWith('zoom', 'resetClick');
         });
 
         it('should not zoom if mouse up was due to end of panning', () => {
