@@ -1,3 +1,9 @@
+## <small>2.48.1 (2020-07-14)</small>
+
+* feat(office): Add viewer option for max file size (#1235) ([96942d6](https://github.com/box/box-content-preview/commit/96942d6)), closes [#1235](https://github.com/box/box-content-preview/issues/1235)
+
+
+
 ## 2.48.0 (2020-07-14)
 
 * chore(log): Add log for image zoom click (#1234) ([c29dddc](https://github.com/box/box-content-preview/commit/c29dddc)), closes [#1234](https://github.com/box/box-content-preview/issues/1234)
