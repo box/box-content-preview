@@ -89,7 +89,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
             it('should respect maxFileSize in viewerOptions', () => {
                 const viewerOptions = {
                     Office: {
-                        excelOnlinePreviewerMaxSize: FIVE_MB + 1,
+                        maxFileSize: FIVE_MB + 1,
                     },
                 };
                 const editedFakeFile = { ...fakeFile, size: FIVE_MB + 1 };
