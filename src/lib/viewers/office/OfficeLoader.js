@@ -34,7 +34,7 @@ class OfficeLoader extends AssetLoader {
         // The Office viewer is disabled when this is a password protected shared link
         const isDisabledDueToPasswordProtectedSharedLink = file.shared_link && file.shared_link.is_password_enabled;
         const maxFileSize = getProp(viewerOptions, 'Office.maxFileSize', FIVE_MB);
-        // If the user does not have permission to download the file, the file is larger than Appconf file size or 5MB,
+        // If the user does not have permission to download the file, the file is larger than max file size,
         // or isDisabledDueToSharedLink is true, then disable the Office viewer
         if (
             !checkPermission(file, PERMISSION_DOWNLOAD) ||
