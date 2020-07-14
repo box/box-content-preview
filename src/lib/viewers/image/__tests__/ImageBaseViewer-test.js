@@ -313,6 +313,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
     describe('handleMouseUp()', () => {
         beforeEach(() => {
+            stubs.emitMetric = sandbox.stub(imageBase, 'emitMetric');
             stubs.pan = sandbox.stub(imageBase, 'stopPanning');
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             imageBase.isPanning = false;
@@ -335,6 +336,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             event.metaKey = 'blah';
             imageBase.handleMouseUp(event);
             expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.emitMetric).to.not.have.been.called;
         });
 
         it('should zoom in if zoomable but not pannable', () => {
@@ -349,6 +351,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.isZoomable = true;
             imageBase.handleMouseUp(event);
             expect(stubs.zoom).to.have.been.calledWith('in');
+            expect(stubs.emitMetric).to.be.calledWith('zoom', 'inClick');
         });
 
         it('should reset zoom if mouseup was not due to end of panning', () => {
@@ -364,6 +367,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.didPan = false;
             imageBase.handleMouseUp(event);
             expect(stubs.zoom).to.have.been.calledWith('reset');
+            expect(stubs.emitMetric).to.be.calledWith('zoom', 'resetClick');
         });
 
         it('should not zoom if mouse up was due to end of panning', () => {
