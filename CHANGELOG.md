@@ -1,3 +1,9 @@
+## 2.48.0 (2020-07-14)
+
+* chore(log): Add log for image zoom click (#1234) ([c29dddc](https://github.com/box/box-content-preview/commit/c29dddc)), closes [#1234](https://github.com/box/box-content-preview/issues/1234)
+
+
+
 ## 2.47.0 (2020-07-07)
 
 * fix(image): Disallow creation of annotations on rotated images (#1232) ([2e99220](https://github.com/box/box-content-preview/commit/2e99220)), closes [#1232](https://github.com/box/box-content-preview/issues/1232)
