@@ -1,15 +1,17 @@
 import noop from 'lodash/noop';
 
-import { ICON_REGION_COMMENT } from './icons/icons';
+import { ICON_HIGHLIGHT_TEXT, ICON_REGION_COMMENT } from './icons/icons';
 import Controls from './Controls';
 
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
+export const CLASS_HIGHLIGHT_BUTTON = 'bp-AnnotationControls-highlightBtn';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
 export enum AnnotationMode {
+    HIGHLIGHT = 'highlight',
     NONE = 'none',
     REGION = 'region',
 }
@@ -17,21 +19,22 @@ export type ClickHandler = ({ event }: { event: MouseEvent }) => void;
 export type Options = {
     fileId: string;
     onEscape?: () => void;
+    onHighlightClick?: ClickHandler;
     onRegionClick?: ClickHandler;
+    showHighlightText: boolean;
 };
 
 declare const __: (key: string) => string;
 
-interface ControlsMap {
-    [key: string]: () => void;
-}
+const buttonClassMap: { [key: string]: string } = {
+    [AnnotationMode.HIGHLIGHT]: CLASS_HIGHLIGHT_BUTTON,
+    [AnnotationMode.REGION]: CLASS_REGION_BUTTON,
+};
 
 export default class AnnotationControls {
     private controls: Controls;
 
     private controlsElement: HTMLElement;
-
-    private controlsMap: ControlsMap;
 
     private currentMode: AnnotationMode = AnnotationMode.NONE;
 
@@ -49,9 +52,6 @@ export default class AnnotationControls {
 
         this.controls = controls;
         this.controlsElement = controls.controlsEl;
-        this.controlsMap = {
-            [AnnotationMode.REGION]: this.updateRegionButton,
-        };
     }
 
     /**
@@ -75,10 +75,10 @@ export default class AnnotationControls {
             return;
         }
 
-        const updateButton = this.controlsMap[this.currentMode];
+        const prevMode = this.currentMode;
 
         this.currentMode = AnnotationMode.NONE;
-        updateButton();
+        this.updateButton(prevMode);
     };
 
     /**
@@ -99,19 +99,19 @@ export default class AnnotationControls {
     }
 
     /**
-     * Update region button UI
+     * Update button UI
      */
-    private updateRegionButton = (): void => {
-        const regionButtonElement = this.controlsElement.querySelector(`.${CLASS_REGION_BUTTON}`);
+    private updateButton = (mode: AnnotationMode): void => {
+        const buttonElement = this.controlsElement.querySelector(`.${buttonClassMap[mode]}`);
 
-        if (!regionButtonElement) {
+        if (!buttonElement) {
             return;
         }
 
-        if (this.currentMode === AnnotationMode.REGION) {
-            regionButtonElement.classList.add(CLASS_BUTTON_ACTIVE);
+        if (this.currentMode === mode) {
+            buttonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
-            regionButtonElement.classList.remove(CLASS_BUTTON_ACTIVE);
+            buttonElement.classList.remove(CLASS_BUTTON_ACTIVE);
         }
     };
 
@@ -125,7 +125,7 @@ export default class AnnotationControls {
 
         if (prevMode !== mode) {
             this.currentMode = mode as AnnotationMode;
-            this.controlsMap[mode]();
+            this.updateButton(mode);
         }
 
         onClick({ event });
@@ -147,27 +147,60 @@ export default class AnnotationControls {
         event.stopPropagation();
     };
 
+    private addButton = (mode: AnnotationMode, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
+        let icon;
+        let resinTarget;
+        let testid;
+        let text;
+
+        if (mode === AnnotationMode.REGION) {
+            icon = ICON_REGION_COMMENT;
+            resinTarget = 'highlightRegion';
+            testid = 'bp-AnnotationsControls-regionBtn';
+            text = __('region_comment');
+        } else if (mode === AnnotationMode.HIGHLIGHT) {
+            icon = ICON_HIGHLIGHT_TEXT;
+            resinTarget = 'highlightText';
+            testid = 'bp-AnnotationsControls-highlightBtn';
+            text = __('highlight_text');
+        } else {
+            return;
+        }
+
+        const buttonElement = this.controls.add(
+            text,
+            this.handleClick(handler, mode),
+            buttonClassMap[mode],
+            icon,
+            'button',
+            parent,
+        );
+
+        buttonElement.setAttribute('data-resin-target', resinTarget);
+        buttonElement.setAttribute('data-resin-fileId', fileId);
+        buttonElement.setAttribute('data-testid', testid);
+    };
+
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ fileId, onEscape = noop, onRegionClick = noop }: Options): void {
+    public init({
+        fileId,
+        onEscape = noop,
+        onRegionClick = noop,
+        onHighlightClick = noop,
+        showHighlightText = false,
+    }: Options): void {
         if (this.hasInit) {
             return;
         }
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
-        const regionButton = this.controls.add(
-            __('region_comment'),
-            this.handleClick(onRegionClick, AnnotationMode.REGION),
-            CLASS_REGION_BUTTON,
-            ICON_REGION_COMMENT,
-            'button',
-            groupElement,
-        );
-
         groupElement.setAttribute('data-resin-feature', 'annotations');
-        regionButton.setAttribute('data-resin-target', 'highlightRegion');
-        regionButton.setAttribute('data-resin-fileId', fileId);
-        regionButton.setAttribute('data-testid', 'bp-AnnotationsControls-regionBtn');
+
+        this.addButton(AnnotationMode.REGION, onRegionClick, groupElement, fileId);
+        if (showHighlightText) {
+            this.addButton(AnnotationMode.HIGHLIGHT, onHighlightClick, groupElement, fileId);
+        }
 
         this.onEscape = onEscape;
         document.addEventListener('keydown', this.handleKeyDown);

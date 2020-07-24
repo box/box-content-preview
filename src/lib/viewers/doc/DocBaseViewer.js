@@ -1101,7 +1101,9 @@ class DocBaseViewer extends BaseViewer {
             this.annotationControls.init({
                 fileId: this.options.file.id,
                 onEscape: this.handleAnnotationControlsEscape,
+                onHighlightClick: this.handleHighlightClick,
                 onRegionClick: this.handleRegionClick,
+                showHighlightText: this.options.showAnnotationsHighlightText,
             });
         }
     }

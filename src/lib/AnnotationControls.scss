@@ -2,7 +2,8 @@
     padding-left: 4px;
     border-left: 1px solid $twos;
 
-    .bp-AnnotationControls-regionBtn {
+    .bp-AnnotationControls-regionBtn,
+    .bp-AnnotationControls-highlightBtn {
         svg {
             width: 34px;
             height: 32px;

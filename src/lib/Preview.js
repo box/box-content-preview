@@ -927,6 +927,8 @@ class Preview extends EventEmitter {
         // Whether annotations v4 buttons should be shown in toolbar
         this.options.showAnnotationsControls = !!options.showAnnotationsControls;
 
+        this.options.showAnnotationsHighlightText = !!options.showAnnotationsHighlightText;
+
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
