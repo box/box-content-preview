@@ -1,8 +1,10 @@
+import classnames from 'classnames';
 import noop from 'lodash/noop';
 
 import { ICON_HIGHLIGHT_TEXT, ICON_REGION_COMMENT } from './icons/icons';
 import Controls from './Controls';
 
+export const CLASS_ANNOTATIONS_BUTTON = 'bp-AnnotationControls-button';
 export const CLASS_ANNOTATIONS_GROUP = 'bp-AnnotationControls-group';
 export const CLASS_HIGHLIGHT_BUTTON = 'bp-AnnotationControls-highlightBtn';
 export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
@@ -24,11 +26,35 @@ export type Options = {
     showHighlightText: boolean;
 };
 
+type ButtonProps = {
+    classname: string;
+    icon: string;
+    resinTarget: string;
+    testid: string;
+    text: string;
+};
+
 declare const __: (key: string) => string;
 
 const buttonClassMap: { [key: string]: string } = {
     [AnnotationMode.HIGHLIGHT]: CLASS_HIGHLIGHT_BUTTON,
     [AnnotationMode.REGION]: CLASS_REGION_BUTTON,
+};
+const buttonPropsMap: { [key: string]: ButtonProps } = {
+    [AnnotationMode.HIGHLIGHT]: {
+        classname: classnames(CLASS_ANNOTATIONS_BUTTON, CLASS_HIGHLIGHT_BUTTON),
+        icon: ICON_HIGHLIGHT_TEXT,
+        resinTarget: 'highlightText',
+        testid: 'bp-AnnotationsControls-highlightBtn',
+        text: __('highlight_text'),
+    },
+    [AnnotationMode.REGION]: {
+        classname: classnames(CLASS_ANNOTATIONS_BUTTON, CLASS_REGION_BUTTON),
+        icon: ICON_REGION_COMMENT,
+        resinTarget: 'highlightRegion',
+        testid: 'bp-AnnotationsControls-regionBtn',
+        text: __('region_comment'),
+    },
 };
 
 export default class AnnotationControls {
@@ -148,37 +174,24 @@ export default class AnnotationControls {
     };
 
     private addButton = (mode: AnnotationMode, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
-        let icon;
-        let resinTarget;
-        let testid;
-        let text;
+        const buttonProps = buttonPropsMap[mode];
 
-        if (mode === AnnotationMode.REGION) {
-            icon = ICON_REGION_COMMENT;
-            resinTarget = 'highlightRegion';
-            testid = 'bp-AnnotationsControls-regionBtn';
-            text = __('region_comment');
-        } else if (mode === AnnotationMode.HIGHLIGHT) {
-            icon = ICON_HIGHLIGHT_TEXT;
-            resinTarget = 'highlightText';
-            testid = 'bp-AnnotationsControls-highlightBtn';
-            text = __('highlight_text');
-        } else {
+        if (!buttonProps) {
             return;
         }
 
         const buttonElement = this.controls.add(
-            text,
+            buttonProps.text,
             this.handleClick(handler, mode),
-            buttonClassMap[mode],
-            icon,
+            buttonProps.classname,
+            buttonProps.icon,
             'button',
             parent,
         );
 
-        buttonElement.setAttribute('data-resin-target', resinTarget);
+        buttonElement.setAttribute('data-resin-target', buttonProps.resinTarget);
         buttonElement.setAttribute('data-resin-fileId', fileId);
-        buttonElement.setAttribute('data-testid', testid);
+        buttonElement.setAttribute('data-testid', buttonProps.testid);
     };
 
     /**
