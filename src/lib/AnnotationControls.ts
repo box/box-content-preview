@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import noop from 'lodash/noop';
 
 import { ICON_HIGHLIGHT_TEXT, ICON_REGION_COMMENT } from './icons/icons';
@@ -42,14 +41,14 @@ const buttonClassMap: { [key: string]: string } = {
 };
 const buttonPropsMap: { [key: string]: ButtonProps } = {
     [AnnotationMode.HIGHLIGHT]: {
-        classname: classnames(CLASS_ANNOTATIONS_BUTTON, CLASS_HIGHLIGHT_BUTTON),
+        classname: `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_HIGHLIGHT_BUTTON}`,
         icon: ICON_HIGHLIGHT_TEXT,
         resinTarget: 'highlightText',
         testid: 'bp-AnnotationsControls-highlightBtn',
         text: __('highlight_text'),
     },
     [AnnotationMode.REGION]: {
-        classname: classnames(CLASS_ANNOTATIONS_BUTTON, CLASS_REGION_BUTTON),
+        classname: `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_REGION_BUTTON}`,
         icon: ICON_REGION_COMMENT,
         resinTarget: 'highlightRegion',
         testid: 'bp-AnnotationsControls-regionBtn',

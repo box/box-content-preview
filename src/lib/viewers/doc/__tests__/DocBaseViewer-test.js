@@ -2231,6 +2231,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('bindControlListeners()', () => {
             beforeEach(() => {
+                docBase.options.showAnnotationsHighlightText = true;
+
                 docBase.pdfViewer = {
                     pagesCount: 4,
                     currentPageNumber: 1,
@@ -2305,21 +2307,39 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotationControls.init).to.be.calledWith({
                     fileId: docBase.options.file.id,
                     onEscape: docBase.handleAnnotationControlsEscape,
+                    onHighlightClick: docBase.handleHighlightClick,
                     onRegionClick: docBase.handleRegionClick,
+                    showHighlightText: true,
                 });
             });
 
             it('should not add annotationControls if no create permission', () => {
                 stubs.hasCreatePermission.returns(false);
 
+                docBase.bindControlListeners();
                 expect(docBase.annotationControls.init).not.to.be.called;
             });
 
             it('should not add annotationControls if new annotations is not enabled', () => {
                 stubs.areNewAnnotationsEnabled.returns(false);
 
+                docBase.bindControlListeners();
                 expect(docBase.annotationControls.init).not.to.be.called;
             });
+
+            [true, false].forEach(option =>
+                it(`should init annotationControls with showHighlightText ${option}`, () => {
+                    docBase.options.showAnnotationsHighlightText = option;
+
+                    docBase.bindControlListeners();
+
+                    expect(docBase.annotationControls.init).to.be.calledWith(
+                        sinon.match({
+                            showHighlightText: option,
+                        }),
+                    );
+                }),
+            );
 
             it('should not add the toggle thumbnails control if the option is not enabled', () => {
                 // Create a new instance that has enableThumbnailsSidebar as false
