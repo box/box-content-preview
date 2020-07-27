@@ -154,6 +154,7 @@ class BaseViewer extends EventEmitter {
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
+        this.handleHighlightClick = this.handleHighlightClick.bind(this);
         this.handleRegionClick = this.handleRegionClick.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
@@ -1064,6 +1065,16 @@ class BaseViewer extends EventEmitter {
      */
     handleAnnotationControlsEscape() {
         this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+    }
+
+    /**
+     * Handler for annotation toolbar highlight text button click event.
+     *
+     * @private
+     * @return {void}
+     */
+    handleHighlightClick() {
+        this.annotator.toggleAnnotationMode(AnnotationMode.HIGHLIGHT);
     }
 
     /**

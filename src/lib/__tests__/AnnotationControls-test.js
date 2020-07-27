@@ -2,6 +2,7 @@
 import { ICON_REGION_COMMENT } from '../icons/icons';
 import AnnotationControls, {
     AnnotationMode,
+    CLASS_ANNOTATIONS_BUTTON,
     CLASS_ANNOTATIONS_GROUP,
     CLASS_BUTTON_ACTIVE,
     CLASS_GROUP_HIDE,
@@ -23,6 +24,7 @@ describe('lib/AnnotationControls', () => {
         fixture.load('__tests__/AnnotationControls-test.html');
         stubs.classListAdd = sandbox.stub();
         stubs.classListRemove = sandbox.stub();
+        stubs.onHighlightClick = sandbox.stub();
         stubs.onRegionClick = sandbox.stub();
         stubs.querySelector = sandbox.stub().returns({
             classList: {
@@ -48,7 +50,6 @@ describe('lib/AnnotationControls', () => {
         it('should create the correct DOM structure', () => {
             expect(annotationControls.controls).not.to.be.undefined;
             expect(annotationControls.controlsElement).not.to.be.undefined;
-            expect(annotationControls.controlsMap).not.to.be.undefined;
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
         });
 
@@ -79,25 +80,28 @@ describe('lib/AnnotationControls', () => {
 
     describe('init()', () => {
         beforeEach(() => {
-            stubs.regionButton = {
-                setAttribute: sandbox.stub(),
-            };
-            stubs.regionHandler = sandbox.stub();
-
-            sandbox.stub(annotationControls, 'handleClick').returns(stubs.regionHandler);
-            sandbox.stub(annotationControls.controls, 'add').returns(stubs.regionButton);
+            sandbox.stub(annotationControls, 'addButton');
         });
 
-        it('should add the controls', () => {
+        it('should only add region button', () => {
             annotationControls.init({ fileId: '0', onRegionClick: stubs.onRegionClick });
 
-            expect(annotationControls.controls.add).to.be.calledWith(
-                __('region_comment'),
-                stubs.regionHandler,
-                CLASS_REGION_BUTTON,
-                ICON_REGION_COMMENT,
-                'button',
+            expect(annotationControls.addButton).to.be.calledOnceWith(
+                AnnotationMode.REGION,
+                stubs.onRegionClick,
                 sinon.match.any,
+                '0',
+            );
+        });
+
+        it('should add highlight button', () => {
+            annotationControls.init({ fileId: '0', onHighlightClick: stubs.onHighlightClick, showHighlightText: true });
+
+            expect(annotationControls.addButton).to.be.calledWith(
+                AnnotationMode.HIGHLIGHT,
+                stubs.onHighlightClick,
+                sinon.match.any,
+                '0',
             );
         });
 
@@ -109,7 +113,7 @@ describe('lib/AnnotationControls', () => {
             expect(document.addEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
         });
 
-        it('should set onRest and hasInit', () => {
+        it('should set onEscape and hasInit', () => {
             const onEscapeMock = sandbox.stub();
 
             annotationControls.init({ fileId: '0', onEscape: onEscapeMock });
@@ -125,7 +129,7 @@ describe('lib/AnnotationControls', () => {
 
             annotationControls.init({ fileId: '0' });
 
-            expect(annotationControls.controls.add).not.to.be.called;
+            expect(annotationControls.addButton).not.to.be.called;
             expect(document.addEventListener).not.to.be.called;
         });
     });
@@ -190,27 +194,25 @@ describe('lib/AnnotationControls', () => {
 
     describe('resetControls()', () => {
         beforeEach(() => {
-            stubs.updateRegionButton = sandbox.stub();
+            sandbox.stub(annotationControls, 'updateButton');
+
             stubs.onEscape = sandbox.stub();
-            annotationControls.controlsMap = {
-                [AnnotationMode.REGION]: stubs.updateRegionButton,
-            };
         });
 
         it('should not change if no current active control', () => {
             annotationControls.resetControls();
 
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(stubs.updateRegionButton).not.to.be.called;
+            expect(annotationControls.updateButton).not.to.be.called;
         });
 
-        it('should call updateRegionButton if current control is region', () => {
+        it('should call updateButton if current control is region', () => {
             annotationControls.currentMode = AnnotationMode.REGION;
 
             annotationControls.resetControls();
 
             expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(stubs.updateRegionButton).to.be.called;
+            expect(annotationControls.updateButton).to.be.calledWith(AnnotationMode.REGION);
         });
     });
 
@@ -223,6 +225,40 @@ describe('lib/AnnotationControls', () => {
             annotationControls.toggle(true);
             expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
             expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
+        });
+    });
+
+    describe('addButton()', () => {
+        beforeEach(() => {
+            stubs.buttonElement = {
+                setAttribute: sandbox.stub(),
+            };
+            stubs.clickHandler = sandbox.stub();
+
+            sandbox.stub(annotationControls, 'handleClick').returns(stubs.clickHandler);
+            sandbox.stub(annotationControls.controls, 'add').returns(stubs.buttonElement);
+        });
+
+        it('should do nothing for unknown button', () => {
+            annotationControls.addButton('draw', sandbox.stub(), 'group', '0');
+
+            expect(annotationControls.controls.add).not.to.be.called;
+        });
+
+        it('should add controls and add resin tags', () => {
+            annotationControls.addButton(AnnotationMode.REGION, sandbox.stub(), 'group', '0');
+
+            expect(annotationControls.controls.add).to.be.calledWith(
+                __('region_comment'),
+                stubs.clickHandler,
+                `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_REGION_BUTTON}`,
+                ICON_REGION_COMMENT,
+                'button',
+                'group',
+            );
+
+            expect(stubs.buttonElement.setAttribute).to.be.calledWith('data-resin-target', 'highlightRegion');
+            expect(stubs.buttonElement.setAttribute).to.be.calledWith('data-resin-fileId', '0');
         });
     });
 });
