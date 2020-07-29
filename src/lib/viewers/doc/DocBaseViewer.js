@@ -1,3 +1,4 @@
+import getProp from 'lodash/get';
 import throttle from 'lodash/throttle';
 import AnnotationControls from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
@@ -1175,7 +1176,7 @@ class DocBaseViewer extends BaseViewer {
      * @param {Event} event - 'pagerendered' event
      * @return {void}
      */
-    pagerenderedHandler({ pageNumber }) {
+    pagerenderedHandler({ pageNumber, source }) {
         if (!pageNumber) {
             return;
         }
@@ -1201,6 +1202,11 @@ class DocBaseViewer extends BaseViewer {
                 this.initThumbnails();
                 this.resize();
             }
+        }
+
+        const textLayerEl = getProp(source, 'textLayer.textLayerDiv');
+        if (textLayerEl) {
+            textLayerEl.classList.add('ba-TextLayer');
         }
     }
 
