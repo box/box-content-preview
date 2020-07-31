@@ -284,7 +284,12 @@ class ImageViewer extends ImageBaseViewer {
     loadUI() {
         super.loadUI();
 
-        this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
+        const rotateButton = this.controls.add(
+            __('rotate_left'),
+            this.rotateLeft,
+            'bp-image-rotate-left-icon',
+            ICON_ROTATE_LEFT,
+        );
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,
@@ -292,6 +297,8 @@ class ImageViewer extends ImageBaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        rotateButton.setAttribute('data-testid', 'bp-Image-rotateBtn');
 
         if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls = new AnnotationControls(this.controls);
