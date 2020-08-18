@@ -26,10 +26,10 @@ git clone https://github.com/mozilla/pdfjs-dist.git --depth 1 --single-branch --
 echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to Preview third-party dir..."
 echo "-----------------------------------------------------------------------------------"
-\cp -rf pdfjs-dist/build/pdf.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
-\cp -rf pdfjs-dist/build/pdf.worker.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
-\cp -rf pdfjs-dist/web/pdf_viewer.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
-\cp -rf pdfjs-dist/web/pdf_viewer.css src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/es5/build/pdf.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/es5/build/pdf.worker.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/es5/web/pdf_viewer.js src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
+\cp -rf pdfjs-dist/es5/web/pdf_viewer.css src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/
 \cp -rf pdfjs-dist/cmaps/* src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/
 rm -rf ./pdfjs-dist/
 

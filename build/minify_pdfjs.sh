@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOC_COMPILER_BINARY="build/closure-compiler-v20190729.jar"
+DOC_COMPILER_BINARY="build/closure-compiler-v20200719.jar"
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 
 # Minify using Google Closure Compiler, options:

@@ -3,25 +3,19 @@ const webpackConfig = require('./webpack.karma.config');
 
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in constants.js, which is needed for main preview functionality
-const DOC_STATIC_ASSETS_VERSION = '2.16.0';
+const DOC_STATIC_ASSETS_VERSION = '2.48.0';
 const MEDIA_STATIC_ASSETS_VERSION = '2.14.0';
 const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 
-const getTestFile = (src) => {
+const getTestFile = src => {
     if (!src) {
-        return [
-            'src/lib/**/*-test.js',
-            'src/lib/**/*-test.html'
-        ];
+        return ['src/lib/**/*-test.js', 'src/lib/**/*-test.html'];
     }
 
     if (src.endsWith('/')) {
-        return [
-            `src/lib/${src}**/*-test.js`,
-            `src/lib/${src}**/*-test.html`
-        ];
+        return [`src/lib/${src}**/*-test.js`, `src/lib/${src}**/*-test.html`];
     }
 
     const frags = src.split('/');
@@ -32,10 +26,7 @@ const getTestFile = (src) => {
 
     const path = src.replace(fileName, '');
     const base = path ? `src/lib/${path}` : 'src/lib';
-    return [
-        `${base}/__tests__/${fileName}-test.js`,
-        `${base}/__tests__/${fileName}-test.html`
-    ];
+    return [`${base}/__tests__/${fileName}-test.js`, `${base}/__tests__/${fileName}-test.html`];
 };
 
 module.exports = config =>
@@ -92,7 +83,7 @@ module.exports = config =>
         files: [
             'https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js',
             `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/three.min.js`,
-            `src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/**/*.js`,
+            `src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}/**/*.min.js`,
             `src/third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/**/*.js`,
             `src/third-party/swf/${SWF_STATIC_ASSETS_VERSION}/**/*.js`,
