@@ -107,9 +107,7 @@ export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_
 export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
 export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
 
-// These should be updated to match the Preview version in package.json whenever a file in that third party directory
-// is updated. Also, update the matching configuration in the jest global, which is needed for tests
-export const DOC_STATIC_ASSETS_VERSION = '2.16.0';
+export const DOC_STATIC_ASSETS_VERSION = '2.53.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '2.14.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
