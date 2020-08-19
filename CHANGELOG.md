@@ -1,3 +1,13 @@
+## 2.49.0 (2020-08-19)
+
+* chore: get features from BoxAnnotations (#1241) ([033668b](https://github.com/box/box-content-preview/commit/033668b)), closes [#1241](https://github.com/box/box-content-preview/issues/1241)
+* chore(i18n): Update Translations (#1237) ([3b134b4](https://github.com/box/box-content-preview/commit/3b134b4)), closes [#1237](https://github.com/box/box-content-preview/issues/1237)
+* chore(i18n): Update Translations (#1238) ([c8f8ba2](https://github.com/box/box-content-preview/commit/c8f8ba2)), closes [#1238](https://github.com/box/box-content-preview/issues/1238)
+* feat(annotations): Add Highlight Text button in toolbar (#1236) ([c0869fe](https://github.com/box/box-content-preview/commit/c0869fe)), closes [#1236](https://github.com/box/box-content-preview/issues/1236)
+* feat(office): Add viewer option for max file size (#1235) ([96942d6](https://github.com/box/box-content-preview/commit/96942d6)), closes [#1235](https://github.com/box/box-content-preview/issues/1235)
+
+
+
 ## 2.48.0 (2020-07-14)
 
 * chore(log): Add log for image zoom click (#1234) ([c29dddc](https://github.com/box/box-content-preview/commit/c29dddc)), closes [#1234](https://github.com/box/box-content-preview/issues/1234)
