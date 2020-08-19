@@ -1166,18 +1166,24 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should call createAnnotatorOptions with locale, language, and messages from options', () => {
+            const createOptionsArg = {
+                ...annotationsOptions,
+                features: {
+                    enabledFeature: true,
+                },
+            };
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'createAnnotatorOptions');
 
             base.options.boxAnnotations = {
                 determineAnnotator: sandbox.stub().returns(conf),
-                getOptions: sandbox.stub().returns(annotationsOptions),
+                getOptions: sandbox.stub().returns(createOptionsArg),
             };
 
             base.createAnnotator();
 
             expect(base.options.boxAnnotations.getOptions).to.be.called;
-            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(annotationsOptions));
+            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(createOptionsArg));
         });
 
         it('should use default intl lib if annotator options not present ', () => {
