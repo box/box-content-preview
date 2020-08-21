@@ -1,3 +1,9 @@
+## <small>2.49.1 (2020-08-21)</small>
+
+* fix(office): Pass viewer options to loaders (#1243) ([1e63d6c](https://github.com/box/box-content-preview/commit/1e63d6c)), closes [#1243](https://github.com/box/box-content-preview/issues/1243)
+
+
+
 ## 2.49.0 (2020-08-19)
 
 * chore: get features from BoxAnnotations (#1241) ([033668b](https://github.com/box/box-content-preview/commit/033668b)), closes [#1241](https://github.com/box/box-content-preview/issues/1241)
