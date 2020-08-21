@@ -631,7 +631,9 @@ class Preview extends EventEmitter {
         try {
             file = getCachedFile(this.cache, { fileId, fileVersionId });
             loader = file ? this.getLoader(file) : null;
-            viewer = loader ? loader.determineViewer(file) : null;
+            viewer = loader
+                ? loader.determineViewer(file, Object.keys(this.disabledViewers), this.options.viewers)
+                : null;
             if (!viewer) {
                 return;
             }
@@ -1844,7 +1846,9 @@ class Preview extends EventEmitter {
      * @return {Object|null} Matching loader
      */
     getLoader(file) {
-        return this.loaders.find(loader => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        return this.loaders.find(loader =>
+            loader.canLoad(file, Object.keys(this.disabledViewers), this.options.viewers),
+        );
     }
 
     /**

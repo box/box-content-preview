@@ -6,8 +6,8 @@ class AssetLoader {
      * @param {Array} [disabledViewers] - List of disabled viewers
      * @return {boolean} Is file supported
      */
-    canLoad(file, disabledViewers = []) {
-        return !!this.determineViewer(file, disabledViewers);
+    canLoad(file, disabledViewers = [], viewerOptions = {}) {
+        return !!this.determineViewer(file, disabledViewers, viewerOptions);
     }
 
     /**

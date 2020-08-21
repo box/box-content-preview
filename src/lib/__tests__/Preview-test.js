@@ -542,8 +542,9 @@ describe('lib/Preview', () => {
             sandbox
                 .mock(loader)
                 .expects('determineViewer')
-                .withArgs(someFile)
+                .withArgs(someFile, ['Office'], 'viewerOptions')
                 .returns(viewer);
+            preview.options.viewers = 'viewerOptions';
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -2750,9 +2751,11 @@ describe('lib/Preview', () => {
                     canLoad: sandbox.stub().returns(true),
                 },
             ];
+            preview.options.viewers = 'viewerOptions';
 
             const loader = preview.getLoader('file');
             expect(loader.name).to.equal('csv');
+            expect(preview.loaders[0].canLoad).to.be.calledWith('file', ['Office'], 'viewerOptions');
         });
     });
 
