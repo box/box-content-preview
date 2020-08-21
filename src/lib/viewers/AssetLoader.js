@@ -4,10 +4,11 @@ class AssetLoader {
      *
      * @param {Object} file - Box file
      * @param {Array} [disabledViewers] - List of disabled viewers
+     * @param {Object} viewerOptions - Custom options for viewers
      * @return {boolean} Is file supported
      */
-    canLoad(file, disabledViewers = []) {
-        return !!this.determineViewer(file, disabledViewers);
+    canLoad(file, disabledViewers = [], viewerOptions = {}) {
+        return !!this.determineViewer(file, disabledViewers, viewerOptions);
     }
 
     /**
@@ -24,9 +25,11 @@ class AssetLoader {
      *
      * @param {Object} file - Box file
      * @param {Array} [disabledViewers] - List of disabled viewers
+     * @param {Object} viewerOptions - Custom options for viewers
      * @return {Object} The viewer to use
      */
-    determineViewer(file, disabledViewers = []) {
+    // eslint-disable-next-line no-unused-vars
+    determineViewer(file, disabledViewers = [], viewerOptions = {}) {
         return this.viewers.find(viewer => {
             if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
