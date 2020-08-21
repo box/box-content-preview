@@ -542,7 +542,7 @@ describe('lib/Preview', () => {
             sandbox
                 .mock(loader)
                 .expects('determineViewer')
-                .withArgs(someFile, ['Office'], 'viewerOptions')
+                .withArgs(someFile, undefined, 'viewerOptions')
                 .returns(viewer);
             preview.options.viewers = 'viewerOptions';
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });

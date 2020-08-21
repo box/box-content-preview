@@ -26,7 +26,8 @@ class AssetLoader {
      * @param {Array} [disabledViewers] - List of disabled viewers
      * @return {Object} The viewer to use
      */
-    determineViewer(file, disabledViewers = []) {
+    // eslint-disable-next-line no-unused-vars
+    determineViewer(file, disabledViewers = [], viewerOptions = {}) {
         return this.viewers.find(viewer => {
             if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
