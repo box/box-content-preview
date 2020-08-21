@@ -4,6 +4,7 @@ class AssetLoader {
      *
      * @param {Object} file - Box file
      * @param {Array} [disabledViewers] - List of disabled viewers
+     * @param {Object} viewerOptions - Custom options for viewers
      * @return {boolean} Is file supported
      */
     canLoad(file, disabledViewers = [], viewerOptions = {}) {
@@ -24,6 +25,7 @@ class AssetLoader {
      *
      * @param {Object} file - Box file
      * @param {Array} [disabledViewers] - List of disabled viewers
+     * @param {Object} viewerOptions - Custom options for viewers
      * @return {Object} The viewer to use
      */
     // eslint-disable-next-line no-unused-vars

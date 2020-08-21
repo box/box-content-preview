@@ -23,15 +23,15 @@ describe('lib/viewers/AssetLoader', () => {
         it('should return true if loader can find a viewer to match the file', () => {
             sandbox.stub(loader, 'determineViewer').returns({});
 
-            expect(loader.canLoad({}, [], 'viewerOptions')).to.be.true;
-            expect(loader.determineViewer).to.be.calledWith({}, [], 'viewerOptions');
+            expect(loader.canLoad({}, [], { viewer: {} })).to.be.true;
+            expect(loader.determineViewer).to.be.calledWith({}, [], { viewer: {} });
         });
 
         it("should return false if loader can't find a viewer to match the file", () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
 
-            expect(loader.canLoad({}, [], 'viewerOptions')).to.be.false;
-            expect(loader.determineViewer).to.be.calledWith({}, [], 'viewerOptions');
+            expect(loader.canLoad({}, [], { viewer: {} })).to.be.false;
+            expect(loader.determineViewer).to.be.calledWith({}, [], { viewer: {} });
         });
     });
 
