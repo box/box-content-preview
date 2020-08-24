@@ -261,4 +261,29 @@ describe('lib/AnnotationControls', () => {
             expect(stubs.buttonElement.setAttribute).to.be.calledWith('data-resin-fileId', '0');
         });
     });
+
+    describe('updateMode()', () => {
+        beforeEach(() => {
+            annotationControls.resetControls = sandbox.stub();
+            annotationControls.updateButton = sandbox.stub();
+        });
+
+        it('should do nothing if mode is the same', () => {
+            annotationControls.currentMode = 'region';
+
+            annotationControls.updateMode('region');
+
+            expect(annotationControls.resetControls).not.to.be.called;
+            expect(annotationControls.updateButton).not.to.be.called;
+        });
+
+        it('should update controls if mode is not the same', () => {
+            annotationControls.currentMode = 'region';
+
+            annotationControls.updateMode('highlight');
+
+            expect(annotationControls.resetControls).to.be.called;
+            expect(annotationControls.updateButton).to.be.calledWith('highlight');
+        });
+    });
 });
