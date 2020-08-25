@@ -141,11 +141,25 @@ export default class AnnotationControls {
     };
 
     /**
-     * Region comment button click handler
+     * Set the mode. If the mode is different from what is currently saved in state,
+     * then reset the current controls and apply the active state based on the provided mode.
+     */
+    public setMode(mode: AnnotationMode): void {
+        // Only update buttons if mode has changed
+        if (this.currentMode === mode) {
+            return;
+        }
+
+        this.resetControls();
+        this.currentMode = mode;
+        this.updateButton(mode);
+    }
+
+    /**
+     * Annotation control button click handler
      */
     private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
         const prevMode = this.currentMode;
-
         this.resetControls();
 
         if (prevMode !== mode) {
