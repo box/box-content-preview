@@ -145,12 +145,10 @@ export default class AnnotationControls {
      * then reset the current controls and apply the active state based on the provided mode.
      */
     public updateMode(mode: AnnotationMode): void {
-        const prevMode = this.currentMode;
-
         // Only update buttons if mode has changed
-        if (prevMode !== mode) {
+        if (this.currentMode !== mode) {
             this.resetControls();
-            this.currentMode = mode as AnnotationMode;
+            this.currentMode = mode;
             this.updateButton(mode);
         }
     }
