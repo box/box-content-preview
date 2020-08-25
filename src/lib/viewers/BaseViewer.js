@@ -1264,7 +1264,7 @@ class BaseViewer extends EventEmitter {
 
     handleAnnotationModeChangeEvent({ mode }) {
         if (this.annotationControls) {
-            this.annotationControls.updateMode(mode);
+            this.annotationControls.setMode(mode);
         }
     }
 

@@ -262,7 +262,7 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('updateMode()', () => {
+    describe('setMode()', () => {
         beforeEach(() => {
             annotationControls.resetControls = sandbox.stub();
             annotationControls.updateButton = sandbox.stub();
@@ -271,7 +271,7 @@ describe('lib/AnnotationControls', () => {
         it('should do nothing if mode is the same', () => {
             annotationControls.currentMode = 'region';
 
-            annotationControls.updateMode('region');
+            annotationControls.setMode('region');
 
             expect(annotationControls.resetControls).not.to.be.called;
             expect(annotationControls.updateButton).not.to.be.called;
@@ -280,7 +280,7 @@ describe('lib/AnnotationControls', () => {
         it('should update controls if mode is not the same', () => {
             annotationControls.currentMode = 'region';
 
-            annotationControls.updateMode('highlight');
+            annotationControls.setMode('highlight');
 
             expect(annotationControls.resetControls).to.be.called;
             expect(annotationControls.updateButton).to.be.calledWith('highlight');

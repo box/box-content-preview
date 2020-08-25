@@ -141,16 +141,18 @@ export default class AnnotationControls {
     };
 
     /**
-     * Update the mode. If the mode is different from what is currently saved in state,
+     * Set the mode. If the mode is different from what is currently saved in state,
      * then reset the current controls and apply the active state based on the provided mode.
      */
-    public updateMode(mode: AnnotationMode): void {
+    public setMode(mode: AnnotationMode): void {
         // Only update buttons if mode has changed
-        if (this.currentMode !== mode) {
-            this.resetControls();
-            this.currentMode = mode;
-            this.updateButton(mode);
+        if (this.currentMode === mode) {
+            return;
         }
+
+        this.resetControls();
+        this.currentMode = mode;
+        this.updateButton(mode);
     }
 
     /**
