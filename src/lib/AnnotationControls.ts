@@ -143,7 +143,6 @@ export default class AnnotationControls {
     /**
      * Update the mode. If the mode is different from what is currently saved in state,
      * then reset the current controls and apply the active state based on the provided mode.
-     * @param mode Annotation mode
      */
     public updateMode(mode: AnnotationMode): void {
         const prevMode = this.currentMode;
