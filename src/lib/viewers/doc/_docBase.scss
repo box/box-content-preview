@@ -259,6 +259,10 @@ $thumbnail-sidebar-width: 226px;
             user-select: text;
         }
 
+        .highlight {
+            display: inline-block;
+        }
+
         ::selection {
             background-color: fade-out($box-blue, .9);
         }
