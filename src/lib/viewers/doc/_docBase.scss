@@ -252,14 +252,15 @@ $thumbnail-sidebar-width: 226px;
     .textLayer {
         top: 15px; // Match 15px padding top on page
         bottom: auto;
+        opacity: 1;
 
         // Only allow text divs to be selected
         > div {
             user-select: text;
         }
 
-        .highlight {
-            display: inline-block;
+        ::selection {
+            background-color: fade-out($box-blue, .9);
         }
     }
 

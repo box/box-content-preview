@@ -1,6 +1,5 @@
-$medium-aquamarine: #5aeda8 !default;
-$moon-yellow: #ffba1a !default;
-$blue: #00f !default;
+$pdfjs-highlight: #b400aa !default;
+$pdfjs-highlight-selected: #006400 !default;
 
 .bp-find-bar {
     $bdlGray10: #e8e8e8;
@@ -122,19 +121,15 @@ $blue: #00f !default;
     }
 }
 
-.textLayer {
-    opacity: 1;
+.bp-doc {
+    .textLayer {
+        .highlight {
+            display: inline-block;
+            background-color: fade-out($pdfjs-highlight, .8);
 
-    .highlight {
-        background-color: fade-out($moon-yellow, .5);
-        border-radius: 0;
-
-        &.selected {
-            background-color: fade-out($medium-aquamarine, .5);
+            &.selected {
+                background-color: fade-out($pdfjs-highlight-selected, .8);
+            }
         }
-    }
-
-    ::selection {
-        background-color: fade-out($blue, .8);
     }
 }
