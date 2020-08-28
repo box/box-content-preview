@@ -1,6 +1,3 @@
-$pdfjs-highlight: #b400aa !default;
-$pdfjs-highlight-selected: #006400 !default;
-
 .bp-find-bar {
     $bdlGray10: #e8e8e8;
 
@@ -118,18 +115,5 @@ $pdfjs-highlight-selected: #006400 !default;
 
     .bp-doc-find-controls {
         display: flex;
-    }
-}
-
-.bp-doc {
-    .textLayer {
-        .highlight {
-            display: inline-block;
-            background-color: fade-out($pdfjs-highlight, .8);
-
-            &.selected {
-                background-color: fade-out($pdfjs-highlight-selected, .8);
-            }
-        }
     }
 }
