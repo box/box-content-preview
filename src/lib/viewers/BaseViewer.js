@@ -151,8 +151,8 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
-        this.handleAnnotationModeChangeEvent = this.handleAnnotationModeChangeEvent.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
+        this.handleAnnotationPromoteEvent = this.handleAnnotationPromoteEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.handleHighlightClick = this.handleHighlightClick.bind(this);
@@ -1016,7 +1016,7 @@ class BaseViewer extends EventEmitter {
 
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
-            this.annotator.addListener('annotations_mode_change', this.handleAnnotationModeChangeEvent);
+            this.annotator.addListener('annotations_promote', this.handleAnnotationPromoteEvent);
         }
     }
 
@@ -1254,17 +1254,21 @@ class BaseViewer extends EventEmitter {
         this.emit('annotatorevent', data);
     }
 
-    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status, isPromoting } = {} }) {
         // Only on success do we exit create annotation mode. If error occurs,
         // we remain in create mode
         if (status === 'success') {
             this.annotator.emit('annotations_active_set', id);
+
+            if (this.annotationControls && isPromoting) {
+                this.annotationControls.setMode(AnnotationMode.NONE);
+            }
         }
     }
 
-    handleAnnotationModeChangeEvent({ mode }) {
+    handleAnnotationPromoteEvent({ isPromoting }) {
         if (this.annotationControls) {
-            this.annotationControls.setMode(mode);
+            this.annotationControls.setMode(isPromoting ? AnnotationMode.HIGHLIGHT : AnnotationMode.NONE);
         }
     }
 
