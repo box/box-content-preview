@@ -1252,6 +1252,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
             expect(base.annotator.addListener).to.be.calledWith(
+                'annotations_promote',
+                base.handleAnnotationPromoteEvent,
+            );
+            expect(base.annotator.addListener).to.be.calledWith(
                 'annotations_initialized',
                 base.handleAnnotationsInitialized,
             );
@@ -1773,11 +1777,16 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 emit: sandbox.stub(),
             };
+            base.annotationControls = {
+                destroy: () => {},
+                setMode: sandbox.stub(),
+            };
         });
 
         const createEvent = status => ({
             annotation: { id: '123' },
             meta: {
+                isPromoting: true,
                 status,
             },
         });
@@ -1796,6 +1805,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationCreateEvent(event);
 
             expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
+            expect(base.annotationControls.setMode).to.be.calledWith('none');
         });
     });
 
@@ -1808,6 +1818,24 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationControlsEscape();
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith('none');
+        });
+    });
+
+    describe('handleAnnotationPromoteEvent', () => {
+        [
+            { isPromoting: true, mode: 'highlight' },
+            { isPromoting: false, mode: 'none' },
+        ].forEach(({ isPromoting, mode }) => {
+            it(`should set annotations controls mode ${mode}`, () => {
+                base.annotationControls = {
+                    destroy: () => {},
+                    setMode: sandbox.stub(),
+                };
+
+                base.handleAnnotationPromoteEvent({ isPromoting });
+
+                expect(base.annotationControls.setMode).to.be.calledWith(mode);
+            });
         });
     });
 
