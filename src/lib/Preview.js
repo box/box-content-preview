@@ -55,14 +55,15 @@ import {
     FILE_OPTION_FILE_VERSION_ID,
 } from './constants';
 import {
-    VIEWER_EVENT,
+    DURATION_METRIC,
     ERROR_CODE,
+    LOAD_METRIC,
+    PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
+    PREVIEW_END_EVENT,
     PREVIEW_ERROR,
     PREVIEW_METRIC,
-    LOAD_METRIC,
-    DURATION_METRIC,
-    PREVIEW_END_EVENT,
-    PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
+    RENDER_METRIC,
+    VIEWER_EVENT,
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
 import './Preview.scss';
@@ -774,9 +775,9 @@ class Preview extends EventEmitter {
             );
         }
 
-        // Start the preview duration timer when the user starts to perceive preview's load
-        const tag = Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime);
-        Timer.start(tag);
+        // Start the preview load and render timers when the user starts to perceive preview's load
+        Timer.start(Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime));
+        Timer.start(Timer.createTag(this.file.id, RENDER_METRIC));
 
         // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {

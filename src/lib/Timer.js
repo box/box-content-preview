@@ -34,18 +34,20 @@ class Timer {
      *
      * @public
      * @param {string} tag - Time structure to look up, at this string.
-     * @return {void}
+     * @return {Object} The time structure, or undefined if none with that tag
      */
     stop(tag) {
         const time = this.get(tag);
 
         // The timer has already been stopped, or hasn't started. Don't stop it again.
         if (!time || time.start === undefined || time.end !== undefined) {
-            return;
+            return undefined;
         }
 
         time.end = global.performance.now();
         time.elapsed = Math.round(time.end - time.start);
+
+        return time;
     }
 
     /**
