@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { ICON_REGION_COMMENT } from '../icons/icons';
 import AnnotationControls, {
-    AnnotationMode,
+    AnnotationType,
     CLASS_ANNOTATIONS_BUTTON,
     CLASS_ANNOTATIONS_GROUP,
     CLASS_BUTTON_ACTIVE,
@@ -50,7 +50,7 @@ describe('lib/AnnotationControls', () => {
         it('should create the correct DOM structure', () => {
             expect(annotationControls.controls).not.to.be.undefined;
             expect(annotationControls.controlsElement).not.to.be.undefined;
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
+            expect(annotationControls.activeType).to.equal(AnnotationType.NONE);
         });
 
         it('should throw an exception if controls is not provided', () => {
@@ -87,7 +87,7 @@ describe('lib/AnnotationControls', () => {
             annotationControls.init({ fileId: '0', onRegionClick: stubs.onRegionClick });
 
             expect(annotationControls.addButton).to.be.calledOnceWith(
-                AnnotationMode.REGION,
+                AnnotationType.REGION,
                 stubs.onRegionClick,
                 sinon.match.any,
                 '0',
@@ -98,7 +98,7 @@ describe('lib/AnnotationControls', () => {
             annotationControls.init({ fileId: '0', onHighlightClick: stubs.onHighlightClick, showHighlightText: true });
 
             expect(annotationControls.addButton).to.be.calledWith(
-                AnnotationMode.HIGHLIGHT,
+                AnnotationType.HIGHLIGHT,
                 stubs.onHighlightClick,
                 sinon.match.any,
                 '0',
@@ -139,7 +139,7 @@ describe('lib/AnnotationControls', () => {
 
         beforeEach(() => {
             annotationControls.resetControls = sandbox.stub();
-            annotationControls.currentMode = 'region';
+            annotationControls.activeType = 'region';
             eventMock = {
                 key: 'Escape',
                 preventDefault: sandbox.stub(),
@@ -147,12 +147,12 @@ describe('lib/AnnotationControls', () => {
             };
         });
 
-        it('should not call resetControls if key is not Escape or mode is none', () => {
+        it('should not call resetControls if key is not Escape or type is none', () => {
             annotationControls.handleKeyDown({ key: 'Enter' });
 
             expect(annotationControls.resetControls).not.to.be.called;
 
-            annotationControls.currentMode = 'none';
+            annotationControls.activeType = 'none';
             annotationControls.handleKeyDown({ key: 'Escape' });
 
             expect(annotationControls.resetControls).not.to.be.called;
@@ -172,19 +172,19 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should activate region button then deactivate', () => {
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
+            expect(annotationControls.activeType).to.equal(AnnotationType.NONE);
 
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.REGION);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationType.REGION)(stubs.event);
+            expect(annotationControls.activeType).to.equal(AnnotationType.REGION);
             expect(stubs.classListAdd).to.be.calledWith(CLASS_BUTTON_ACTIVE);
 
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationType.REGION)(stubs.event);
+            expect(annotationControls.activeType).to.equal(AnnotationType.NONE);
             expect(stubs.classListRemove).to.be.calledWith(CLASS_BUTTON_ACTIVE);
         });
 
         it('should call onRegionClick', () => {
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
+            annotationControls.handleClick(stubs.onRegionClick, AnnotationType.REGION)(stubs.event);
 
             expect(stubs.onRegionClick).to.be.calledWith({
                 event: stubs.event,
@@ -202,17 +202,17 @@ describe('lib/AnnotationControls', () => {
         it('should not change if no current active control', () => {
             annotationControls.resetControls();
 
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
+            expect(annotationControls.activeType).to.equal(AnnotationType.NONE);
             expect(annotationControls.updateButton).not.to.be.called;
         });
 
         it('should call updateButton if current control is region', () => {
-            annotationControls.currentMode = AnnotationMode.REGION;
+            annotationControls.activeType = AnnotationType.REGION;
 
             annotationControls.resetControls();
 
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(annotationControls.updateButton).to.be.calledWith(AnnotationMode.REGION);
+            expect(annotationControls.activeType).to.equal(AnnotationType.NONE);
+            expect(annotationControls.updateButton).to.be.calledWith(AnnotationType.REGION);
         });
     });
 
@@ -246,7 +246,7 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should add controls and add resin tags', () => {
-            annotationControls.addButton(AnnotationMode.REGION, sandbox.stub(), 'group', '0');
+            annotationControls.addButton(AnnotationType.REGION, sandbox.stub(), 'group', '0');
 
             expect(annotationControls.controls.add).to.be.calledWith(
                 __('region_comment'),
@@ -262,25 +262,25 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('setMode()', () => {
+    describe('setActive()', () => {
         beforeEach(() => {
             annotationControls.resetControls = sandbox.stub();
             annotationControls.updateButton = sandbox.stub();
         });
 
-        it('should do nothing if mode is the same', () => {
-            annotationControls.currentMode = 'region';
+        it('should do nothing if type is the same', () => {
+            annotationControls.activeType = 'region';
 
-            annotationControls.setMode('region');
+            annotationControls.setActive('region');
 
             expect(annotationControls.resetControls).not.to.be.called;
             expect(annotationControls.updateButton).not.to.be.called;
         });
 
-        it('should update controls if mode is not the same', () => {
-            annotationControls.currentMode = 'region';
+        it('should update controls if type is not the same', () => {
+            annotationControls.activeType = 'region';
 
-            annotationControls.setMode('highlight');
+            annotationControls.setActive('highlight');
 
             expect(annotationControls.resetControls).to.be.called;
             expect(annotationControls.updateButton).to.be.calledWith('highlight');

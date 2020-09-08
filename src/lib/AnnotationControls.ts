@@ -11,7 +11,7 @@ export const CLASS_REGION_BUTTON = 'bp-AnnotationControls-regionBtn';
 export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
-export enum AnnotationMode {
+export enum AnnotationType {
     HIGHLIGHT = 'highlight',
     NONE = 'none',
     REGION = 'region',
@@ -36,18 +36,18 @@ type ButtonProps = {
 declare const __: (key: string) => string;
 
 const buttonClassMap: { [key: string]: string } = {
-    [AnnotationMode.HIGHLIGHT]: CLASS_HIGHLIGHT_BUTTON,
-    [AnnotationMode.REGION]: CLASS_REGION_BUTTON,
+    [AnnotationType.HIGHLIGHT]: CLASS_HIGHLIGHT_BUTTON,
+    [AnnotationType.REGION]: CLASS_REGION_BUTTON,
 };
 const buttonPropsMap: { [key: string]: ButtonProps } = {
-    [AnnotationMode.HIGHLIGHT]: {
+    [AnnotationType.HIGHLIGHT]: {
         classname: `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_HIGHLIGHT_BUTTON}`,
         icon: ICON_HIGHLIGHT_TEXT,
         resinTarget: 'highlightText',
         testid: 'bp-AnnotationsControls-highlightBtn',
         text: __('highlight_text'),
     },
-    [AnnotationMode.REGION]: {
+    [AnnotationType.REGION]: {
         classname: `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_REGION_BUTTON}`,
         icon: ICON_REGION_COMMENT,
         resinTarget: 'highlightRegion',
@@ -61,7 +61,7 @@ export default class AnnotationControls {
 
     private controlsElement: HTMLElement;
 
-    private currentMode: AnnotationMode = AnnotationMode.NONE;
+    private activeType: AnnotationType = AnnotationType.NONE;
 
     private hasInit = false;
 
@@ -96,14 +96,14 @@ export default class AnnotationControls {
      * Deactivate current control button
      */
     public resetControls = (): void => {
-        if (this.currentMode === AnnotationMode.NONE) {
+        if (this.activeType === AnnotationType.NONE) {
             return;
         }
 
-        const prevMode = this.currentMode;
+        const prevType = this.activeType;
 
-        this.currentMode = AnnotationMode.NONE;
-        this.updateButton(prevMode);
+        this.activeType = AnnotationType.NONE;
+        this.updateButton(prevType);
     };
 
     /**
@@ -126,14 +126,14 @@ export default class AnnotationControls {
     /**
      * Update button UI
      */
-    private updateButton = (mode: AnnotationMode): void => {
-        const buttonElement = this.controlsElement.querySelector(`.${buttonClassMap[mode]}`);
+    private updateButton = (type: AnnotationType): void => {
+        const buttonElement = this.controlsElement.querySelector(`.${buttonClassMap[type]}`);
 
         if (!buttonElement) {
             return;
         }
 
-        if (this.currentMode === mode) {
+        if (this.activeType === type) {
             buttonElement.classList.add(CLASS_BUTTON_ACTIVE);
         } else {
             buttonElement.classList.remove(CLASS_BUTTON_ACTIVE);
@@ -141,30 +141,30 @@ export default class AnnotationControls {
     };
 
     /**
-     * Set the mode. If the mode is different from what is currently saved in state,
-     * then reset the current controls and apply the active state based on the provided mode.
+     * Set the type. If the type is different from what is currently saved in state,
+     * then reset the current controls and apply the active state based on the provided type.
      */
-    public setMode(mode: AnnotationMode): void {
-        // Only update buttons if mode has changed
-        if (this.currentMode === mode) {
+    public setActive(type: AnnotationType): void {
+        // Only update buttons if type has changed
+        if (this.activeType === type) {
             return;
         }
 
         this.resetControls();
-        this.currentMode = mode;
-        this.updateButton(mode);
+        this.activeType = type;
+        this.updateButton(type);
     }
 
     /**
      * Annotation control button click handler
      */
-    private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
-        const prevMode = this.currentMode;
+    private handleClick = (onClick: ClickHandler, type: AnnotationType) => (event: MouseEvent): void => {
+        const prevType = this.activeType;
         this.resetControls();
 
-        if (prevMode !== mode) {
-            this.currentMode = mode as AnnotationMode;
-            this.updateButton(mode);
+        if (prevType !== type) {
+            this.activeType = type as AnnotationType;
+            this.updateButton(type);
         }
 
         onClick({ event });
@@ -175,7 +175,7 @@ export default class AnnotationControls {
      * and stop propagation to prevent preview modal from exiting
      */
     private handleKeyDown = (event: KeyboardEvent): void => {
-        if (event.key !== 'Escape' || this.currentMode === AnnotationMode.NONE) {
+        if (event.key !== 'Escape' || this.activeType === AnnotationType.NONE) {
             return;
         }
 
@@ -186,8 +186,8 @@ export default class AnnotationControls {
         event.stopPropagation();
     };
 
-    private addButton = (mode: AnnotationMode, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
-        const buttonProps = buttonPropsMap[mode];
+    private addButton = (type: AnnotationType, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
+        const buttonProps = buttonPropsMap[type];
 
         if (!buttonProps) {
             return;
@@ -195,7 +195,7 @@ export default class AnnotationControls {
 
         const buttonElement = this.controls.add(
             buttonProps.text,
-            this.handleClick(handler, mode),
+            this.handleClick(handler, type),
             buttonProps.classname,
             buttonProps.icon,
             'button',
@@ -223,9 +223,9 @@ export default class AnnotationControls {
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         groupElement.setAttribute('data-resin-feature', 'annotations');
 
-        this.addButton(AnnotationMode.REGION, onRegionClick, groupElement, fileId);
+        this.addButton(AnnotationType.REGION, onRegionClick, groupElement, fileId);
         if (showHighlightText) {
-            this.addButton(AnnotationMode.HIGHLIGHT, onHighlightClick, groupElement, fileId);
+            this.addButton(AnnotationType.HIGHLIGHT, onHighlightClick, groupElement, fileId);
         }
 
         this.onEscape = onEscape;

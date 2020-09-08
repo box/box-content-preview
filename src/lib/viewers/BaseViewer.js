@@ -34,7 +34,7 @@ import {
 import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
-import { AnnotationMode } from '../AnnotationControls';
+import { AnnotationType } from '../AnnotationControls';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -563,7 +563,7 @@ class BaseViewer extends EventEmitter {
 
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
-            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.annotator.toggleAnnotationMode(AnnotationType.NONE);
             this.disableAnnotationControls();
         }
     }
@@ -906,7 +906,7 @@ class BaseViewer extends EventEmitter {
 
     disableAnnotationControls() {
         if (this.annotator && this.annotationControls && this.areNewAnnotationsEnabled()) {
-            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.annotator.toggleAnnotationMode(AnnotationType.NONE);
             this.annotationControls.resetControls();
             this.annotationControls.toggle(false);
         }
@@ -1067,7 +1067,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAnnotationControlsEscape() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        this.annotator.toggleAnnotationMode(AnnotationType.NONE);
     }
 
     /**
@@ -1077,7 +1077,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleHighlightClick() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.HIGHLIGHT);
+        this.annotator.toggleAnnotationMode(AnnotationType.HIGHLIGHT);
     }
 
     /**
@@ -1087,7 +1087,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleRegionClick() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+        this.annotator.toggleAnnotationMode(AnnotationType.REGION);
     }
 
     /**
@@ -1264,7 +1264,7 @@ class BaseViewer extends EventEmitter {
 
     handleAnnotationModeChangeEvent({ mode }) {
         if (this.annotationControls) {
-            this.annotationControls.setMode(mode);
+            this.annotationControls.setActive(mode);
         }
     }
 

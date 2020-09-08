@@ -11,7 +11,7 @@ import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
 import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
-import { AnnotationMode } from '../../AnnotationControls';
+import { AnnotationType } from '../../AnnotationControls';
 import Timer from '../../Timer';
 import Api from '../../api';
 
@@ -549,7 +549,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleFullscreenEnter();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationType.NONE);
             expect(base.disableAnnotationControls).to.be.called;
         });
     });
