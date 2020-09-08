@@ -1213,13 +1213,15 @@ class DocBaseViewer extends BaseViewer {
         // Fire rendered metric to indicate that the specific page of content the user requested has been shown
         if (!this.startPageRendered && (this.startPageNum === pageNumber || this.getCachedPage() === pageNumber)) {
             const pageRenderTag = Timer.createTag(this.options.file.id, RENDER_METRIC);
-            const pageRenderTimer = Timer.stop(pageRenderTag) || {};
+            const pageRenderTime = Timer.stop(pageRenderTag);
 
-            this.emitMetric({
-                name: RENDER_EVENT,
-                data: pageRenderTimer.elapsed,
-            });
-            this.startPageRendered = true;
+            if (pageRenderTime) {
+                this.emitMetric({
+                    name: RENDER_EVENT,
+                    data: pageRenderTime.elapsed,
+                });
+                this.startPageRendered = true;
+            }
         }
     }
 
