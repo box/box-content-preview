@@ -66,10 +66,14 @@ export const LOAD_METRIC = {
     previewLoadTime: 'preview_loading', // Total preview load time. Maps to "value" of load event
     previewPreloadEvent: 'preload', // Event name for preview_metrics based on preload times.
 };
+// Event fired from preview based on when the content was actually shown
+export const RENDER_EVENT = 'preview_render';
+export const RENDER_METRIC = 'preview_render_metric';
 
-export const DURATION_METRIC = 'preview_duration_metric';
 // Event fired from preview with preview duration metrics
+export const DURATION_METRIC = 'preview_duration_metric';
 export const PREVIEW_END_EVENT = 'preview_end';
+
 // Event fired when the user attempts to download the file
 export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
 // Events around download reachability

@@ -37,7 +37,14 @@ import {
     ICON_THUMBNAILS_TOGGLE,
 } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
-import { ERROR_CODE, VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../events';
+import {
+    ERROR_CODE,
+    LOAD_METRIC,
+    RENDER_EVENT,
+    RENDER_METRIC,
+    USER_DOCUMENT_THUMBNAIL_EVENTS,
+    VIEWER_EVENT,
+} from '../../events';
 import Timer from '../../Timer';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -657,11 +664,8 @@ class DocBaseViewer extends BaseViewer {
         // Disable font faces on IOS 10.3.X
         const disableFontFace = Browser.hasFontIssue() || this.getViewerOption('disableFontFace');
 
-        // Disable streaming via fetch until performance is improved
-        const disableStream = true;
-
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB)
-        const isRangeSupported = size >= RANGE_REQUEST_MINIMUM_SIZE;
+        // Disable range requests for files smaller than minimum range request size
+        const isRangeSupported = size >= (this.getViewerOption('rangeMinSize') || RANGE_REQUEST_MINIMUM_SIZE);
         const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
         const disableRange = isWatermarked || !isRangeSupported;
 
@@ -669,8 +673,11 @@ class DocBaseViewer extends BaseViewer {
         const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
         const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
 
-        // If range requests are disabled, request the gzip compressed version of the representation
-        this.encoding = disableRange ? ENCODING_TYPES.GZIP : undefined;
+        // Disable streaming by default unless it is explicitly enabled via options
+        const disableStream = this.getViewerOption('disableStream') !== false;
+
+        // If range requests and streaming are disabled, request the gzip compressed version of the representation
+        this.encoding = disableRange && disableStream ? ENCODING_TYPES.GZIP : undefined;
 
         if (this.encoding) {
             queryParams[QUERY_PARAM_ENCODING] = this.encoding;
@@ -1200,6 +1207,20 @@ class DocBaseViewer extends BaseViewer {
             if (this.options.enableThumbnailsSidebar) {
                 this.initThumbnails();
                 this.resize();
+            }
+        }
+
+        // Fire rendered metric to indicate that the specific page of content the user requested has been shown
+        if (!this.startPageRendered && (this.startPageNum === pageNumber || this.getCachedPage() === pageNumber)) {
+            const pageRenderTag = Timer.createTag(this.options.file.id, RENDER_METRIC);
+            const pageRenderTime = Timer.stop(pageRenderTag);
+
+            if (pageRenderTime) {
+                this.emitMetric({
+                    name: RENDER_EVENT,
+                    data: pageRenderTime.elapsed,
+                });
+                this.startPageRendered = true;
             }
         }
     }

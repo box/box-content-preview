@@ -76,6 +76,13 @@ describe('lib/Timer', () => {
             Timer.stop(tag);
             expect(Timer.get(tag).elapsed).to.equal(2); // 5 - 3.5 = 1.5, rounded = 2
         });
+
+        it('should stop and return the value at the given tag', () => {
+            sandbox.stub(global.performance, 'now').returns(5);
+            Timer.times[tag] = { start: 3.5 };
+
+            expect(Timer.stop(tag).elapsed).to.equal(2);
+        });
     });
 
     describe('get()', () => {
