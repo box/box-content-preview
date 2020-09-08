@@ -33,7 +33,7 @@ import {
     ICON_SEARCH,
     ICON_THUMBNAILS_TOGGLE,
 } from '../../../icons/icons';
-import { VIEWER_EVENT, LOAD_METRIC, USER_DOCUMENT_THUMBNAIL_EVENTS } from '../../../events';
+import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -1145,9 +1145,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should not disable streaming', () => {
+            it('should disable streaming by default', () => {
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: true }));
+                });
+            });
+
+            it('should enable streaming if the proper option is provided', () => {
+                stubs.getViewerOption.returns(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableStream: false }));
                 });
             });
 
@@ -1174,6 +1182,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: true }));
+                });
+            });
+
+            it('should enable range requests if the file is smaller than the provided minimum size', () => {
+                stubs.getViewerOption.returns(2097152); // 2 MB minimum
+
+                docBase.options.file.size = 5242880; // 5 MB file size
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getDocument).to.be.calledWith(sinon.match({ disableRange: false }));
                 });
             });
 
@@ -1798,10 +1816,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 docBase.somePageRendered = false;
+                docBase.startPageRendered = false;
                 stubs.emit = sandbox.stub(docBase, 'emit');
+                stubs.emitMetric = sandbox.stub(docBase, 'emitMetric');
                 stubs.initThumbnails = sandbox.stub(docBase, 'initThumbnails');
                 stubs.hidePreload = sandbox.stub(docBase, 'hidePreload');
                 stubs.resize = sandbox.stub(docBase, 'resize');
+                stubs.stop = sandbox.stub(Timer, 'stop').returns({ elapsed: 1000 });
             });
 
             it('should emit the pagerender event', () => {
@@ -1815,6 +1836,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
                 expect(docBase.zoomControls.setCurrentScale).to.be.calledWith(docBase.pdfViewer.currentScale);
+            });
+
+            it('should emit render metric event for start page if not already emitted', () => {
+                docBase.pagerenderedHandler(docBase.event);
+                expect(stubs.emitMetric).to.be.calledWith({
+                    name: RENDER_EVENT,
+                    data: 1000,
+                });
+            });
+
+            it('should not emit render metric event if it was already emitted', () => {
+                docBase.startPageRendered = true;
+                docBase.pagerenderedHandler(docBase.event);
+                expect(stubs.emitMetric).not.to.be.called;
+            });
+
+            it('should not emit render metric event if rendered page is not start page', () => {
+                docBase.pagerenderedHandler({ pageNumber: 5 });
+                expect(stubs.emitMetric).not.to.be.called;
             });
 
             it('should hide the preload and init thumbnails if no pages were previously rendered', () => {

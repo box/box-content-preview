@@ -665,16 +665,16 @@ class DocBaseViewer extends BaseViewer {
         const disableFontFace = Browser.hasFontIssue() || this.getViewerOption('disableFontFace');
 
         // Disable range requests for files smaller than minimum range request size
-        const isRangeSupported = size >= this.getViewerOption('rangeMinSize', RANGE_REQUEST_MINIMUM_SIZE);
+        const isRangeSupported = size >= (this.getViewerOption('rangeMinSize') || RANGE_REQUEST_MINIMUM_SIZE);
         const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
         const disableRange = isWatermarked || !isRangeSupported;
 
         // Use larger chunk sizes because we assume that en-US users have better connections to Box's servers
         const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
-        const rangeChunkSize = this.getViewerOption('rangeChunkSize', rangeChunkSizeDefault);
+        const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
 
         // Disable streaming by default unless it is explicitly enabled via options
-        const disableStream = this.getViewerOption('disableStream', true);
+        const disableStream = this.getViewerOption('disableStream') !== false;
 
         // If range requests and streaming are disabled, request the gzip compressed version of the representation
         this.encoding = disableRange && disableStream ? ENCODING_TYPES.GZIP : undefined;

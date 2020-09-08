@@ -755,13 +755,12 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @param {string} option - to get
-     * @param {any} [value] - to return if undefined
-     * @return {any} Value of a viewer option
+     * @return {Object|undefined} Value of a viewer option
      */
-    getViewerOption(option, value = undefined) {
+    getViewerOption(option) {
         const { viewers, viewer } = this.options;
         const viewerName = getProp(viewer, 'NAME');
-        return getProp(viewers, `${viewerName}.${option}`, value);
+        return getProp(viewers, `${viewerName}.${option}`);
     }
 
     /**
