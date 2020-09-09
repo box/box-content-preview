@@ -16,12 +16,11 @@ export enum AnnotationMode {
     NONE = 'none',
     REGION = 'region',
 }
-export type ClickHandler = ({ event }: { event: MouseEvent }) => void;
+export type ClickHandler = ({ event, mode }: { event: MouseEvent; mode: AnnotationMode }) => void;
 export type Options = {
     fileId: string;
+    onClick?: ClickHandler;
     onEscape?: () => void;
-    onHighlightClick?: ClickHandler;
-    onRegionClick?: ClickHandler;
     showHighlightText: boolean;
 };
 
@@ -156,21 +155,6 @@ export default class AnnotationControls {
     }
 
     /**
-     * Annotation control button click handler
-     */
-    private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
-        const prevMode = this.currentMode;
-        this.resetControls();
-
-        if (prevMode !== mode) {
-            this.currentMode = mode as AnnotationMode;
-            this.updateButton(mode);
-        }
-
-        onClick({ event });
-    };
-
-    /**
      * Escape key handler, reset all control buttons,
      * and stop propagation to prevent preview modal from exiting
      */
@@ -186,7 +170,7 @@ export default class AnnotationControls {
         event.stopPropagation();
     };
 
-    private addButton = (mode: AnnotationMode, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
+    private addButton = (mode: AnnotationMode, onClick: ClickHandler, parent: HTMLElement, fileId: string): void => {
         const buttonProps = buttonPropsMap[mode];
 
         if (!buttonProps) {
@@ -195,7 +179,7 @@ export default class AnnotationControls {
 
         const buttonElement = this.controls.add(
             buttonProps.text,
-            this.handleClick(handler, mode),
+            (event: MouseEvent) => onClick({ event, mode }),
             buttonProps.classname,
             buttonProps.icon,
             'button',
@@ -210,22 +194,16 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({
-        fileId,
-        onEscape = noop,
-        onRegionClick = noop,
-        onHighlightClick = noop,
-        showHighlightText = false,
-    }: Options): void {
+    public init({ fileId, onEscape = noop, onClick = noop, showHighlightText = false }: Options): void {
         if (this.hasInit) {
             return;
         }
         const groupElement = this.controls.addGroup(CLASS_ANNOTATIONS_GROUP);
         groupElement.setAttribute('data-resin-feature', 'annotations');
 
-        this.addButton(AnnotationMode.REGION, onRegionClick, groupElement, fileId);
+        this.addButton(AnnotationMode.REGION, onClick, groupElement, fileId);
         if (showHighlightText) {
-            this.addButton(AnnotationMode.HIGHLIGHT, onHighlightClick, groupElement, fileId);
+            this.addButton(AnnotationMode.HIGHLIGHT, onClick, groupElement, fileId);
         }
 
         this.onEscape = onEscape;
