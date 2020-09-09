@@ -1255,6 +1255,10 @@ describe('lib/viewers/BaseViewer', () => {
                 'annotations_initialized',
                 base.handleAnnotationsInitialized,
             );
+            expect(base.annotator.addListener).to.be.calledWith(
+                'creator_staged_change',
+                base.handleAnnotationStagedChangeEvent,
+            );
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
 
@@ -1773,6 +1777,10 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 emit: sandbox.stub(),
             };
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                setMode: sandbox.stub(),
+            };
         });
 
         const createEvent = status => ({
@@ -1796,6 +1804,19 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationCreateEvent(event);
 
             expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
+            expect(base.annotationControls.setMode).to.be.calledWith('none');
+        });
+    });
+
+    describe('handleAnnotationStagedChangeEvent()', () => {
+        it('should set mode', () => {
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                setMode: sandbox.stub(),
+            };
+            base.handleAnnotationStagedChangeEvent({ status: 'create', type: 'highlight' });
+
+            expect(base.annotationControls.setMode).to.be.calledWith('highlight');
         });
     });
 
@@ -1811,15 +1832,23 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleRegionClick', () => {
+    describe('handleAnnotationControlsClick', () => {
+        beforeEach(() => {
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                setMode: sandbox.stub(),
+            };
+        });
+
         it('should call toggleAnnotationMode', () => {
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
 
-            base.handleRegionClick();
+            base.handleAnnotationControlsClick({ mode: 'region' });
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith('region');
+            expect(base.annotationControls.setMode).to.be.calledWith('region');
         });
     });
 });

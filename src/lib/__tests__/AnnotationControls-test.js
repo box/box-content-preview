@@ -4,7 +4,6 @@ import AnnotationControls, {
     AnnotationMode,
     CLASS_ANNOTATIONS_BUTTON,
     CLASS_ANNOTATIONS_GROUP,
-    CLASS_BUTTON_ACTIVE,
     CLASS_GROUP_HIDE,
     CLASS_REGION_BUTTON,
 } from '../AnnotationControls';
@@ -24,8 +23,7 @@ describe('lib/AnnotationControls', () => {
         fixture.load('__tests__/AnnotationControls-test.html');
         stubs.classListAdd = sandbox.stub();
         stubs.classListRemove = sandbox.stub();
-        stubs.onHighlightClick = sandbox.stub();
-        stubs.onRegionClick = sandbox.stub();
+        stubs.onClick = sandbox.stub();
         stubs.querySelector = sandbox.stub().returns({
             classList: {
                 add: stubs.classListAdd,
@@ -84,22 +82,22 @@ describe('lib/AnnotationControls', () => {
         });
 
         it('should only add region button', () => {
-            annotationControls.init({ fileId: '0', onRegionClick: stubs.onRegionClick });
+            annotationControls.init({ fileId: '0', onClick: stubs.onClick });
 
             expect(annotationControls.addButton).to.be.calledOnceWith(
                 AnnotationMode.REGION,
-                stubs.onRegionClick,
+                stubs.onClick,
                 sinon.match.any,
                 '0',
             );
         });
 
         it('should add highlight button', () => {
-            annotationControls.init({ fileId: '0', onHighlightClick: stubs.onHighlightClick, showHighlightText: true });
+            annotationControls.init({ fileId: '0', onClick: stubs.onClick, showHighlightText: true });
 
             expect(annotationControls.addButton).to.be.calledWith(
                 AnnotationMode.HIGHLIGHT,
-                stubs.onHighlightClick,
+                stubs.onClick,
                 sinon.match.any,
                 '0',
             );
@@ -166,32 +164,6 @@ describe('lib/AnnotationControls', () => {
         });
     });
 
-    describe('handleClick()', () => {
-        beforeEach(() => {
-            stubs.event = sandbox.stub({});
-        });
-
-        it('should activate region button then deactivate', () => {
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.REGION);
-            expect(stubs.classListAdd).to.be.calledWith(CLASS_BUTTON_ACTIVE);
-
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(stubs.classListRemove).to.be.calledWith(CLASS_BUTTON_ACTIVE);
-        });
-
-        it('should call onRegionClick', () => {
-            annotationControls.handleClick(stubs.onRegionClick, AnnotationMode.REGION)(stubs.event);
-
-            expect(stubs.onRegionClick).to.be.calledWith({
-                event: stubs.event,
-            });
-        });
-    });
-
     describe('resetControls()', () => {
         beforeEach(() => {
             sandbox.stub(annotationControls, 'updateButton');
@@ -233,9 +205,7 @@ describe('lib/AnnotationControls', () => {
             stubs.buttonElement = {
                 setAttribute: sandbox.stub(),
             };
-            stubs.clickHandler = sandbox.stub();
 
-            sandbox.stub(annotationControls, 'handleClick').returns(stubs.clickHandler);
             sandbox.stub(annotationControls.controls, 'add').returns(stubs.buttonElement);
         });
 
@@ -250,7 +220,7 @@ describe('lib/AnnotationControls', () => {
 
             expect(annotationControls.controls.add).to.be.calledWith(
                 __('region_comment'),
-                stubs.clickHandler,
+                sinon.match.func,
                 `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_REGION_BUTTON}`,
                 ICON_REGION_COMMENT,
                 'button',

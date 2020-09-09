@@ -37,13 +37,13 @@ export const stateModeMap = {
 };
 
 export default class AnnotationControlsFSM {
-    private currentState = AnnotationState.NONE;
+    private currentState: AnnotationState;
+
+    constructor(initialState = AnnotationState.NONE) {
+        this.currentState = initialState;
+    }
 
     public getState = (): AnnotationState => this.currentState;
-
-    public setState = (state: AnnotationState): void => {
-        this.currentState = state;
-    };
 
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {

@@ -297,8 +297,8 @@ class ImageViewer extends ImageBaseViewer {
             this.annotationControls = new AnnotationControls(this.controls);
             this.annotationControls.init({
                 fileId: this.options.file.id,
+                onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
-                onRegionClick: this.handleRegionClick,
             });
         }
     }

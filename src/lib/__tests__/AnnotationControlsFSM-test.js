@@ -4,10 +4,6 @@ import { AnnotationMode } from '../AnnotationControls';
 let annotationControlsFSM;
 
 describe('lib/AnnotationControlsFSM', () => {
-    beforeEach(() => {
-        annotationControlsFSM = new AnnotationControlsFSM();
-    });
-
     [
         {
             state: AnnotationState.NONE,
@@ -81,7 +77,7 @@ describe('lib/AnnotationControlsFSM', () => {
         },
     ].forEach(({ state, input, mode, nextState, output }) => {
         it(`should go to state ${nextState} and output ${output}`, () => {
-            annotationControlsFSM.setState(state);
+            annotationControlsFSM = new AnnotationControlsFSM(state);
 
             expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
             expect(annotationControlsFSM.getState()).to.equal(nextState);

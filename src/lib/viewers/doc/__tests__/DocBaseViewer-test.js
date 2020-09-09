@@ -2346,9 +2346,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
                 expect(docBase.annotationControls.init).to.be.calledWith({
                     fileId: docBase.options.file.id,
+                    onClick: docBase.handleAnnotationControlsClick,
                     onEscape: docBase.handleAnnotationControlsEscape,
-                    onHighlightClick: docBase.handleHighlightClick,
-                    onRegionClick: docBase.handleRegionClick,
                     showHighlightText: true,
                 });
             });
