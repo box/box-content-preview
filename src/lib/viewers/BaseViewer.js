@@ -35,6 +35,7 @@ import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import { AnnotationMode } from '../AnnotationControls';
+import AnnotationFSM, { AnnotationInput } from '../AnnotationFSM';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -140,6 +141,8 @@ class BaseViewer extends EventEmitter {
 
         this.emittedMetrics = {};
 
+        this.annotationFSM = new AnnotationFSM();
+
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
         this.preventDefault = this.preventDefault.bind(this);
@@ -151,11 +154,11 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
+        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
+        this.handleAnnotationStagedChangeEvent = this.handleAnnotationStagedChangeEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
-        this.handleHighlightClick = this.handleHighlightClick.bind(this);
-        this.handleRegionClick = this.handleRegionClick.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
         this.initAnnotations = this.initAnnotations.bind(this);
@@ -1015,6 +1018,7 @@ class BaseViewer extends EventEmitter {
 
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+            this.annotator.addListener('creator_staged_change', this.handleAnnotationStagedChangeEvent);
         }
     }
 
@@ -1069,23 +1073,15 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handler for annotation toolbar highlight text button click event.
+     * Handler for annotation controls button click event.
      *
      * @private
+     * @param {AnnotationMode} mode one of annotation modes
      * @return {void}
      */
-    handleHighlightClick() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.HIGHLIGHT);
-    }
-
-    /**
-     * Handler for annotation toolbar region comment button click event.
-     *
-     * @private
-     * @return {void}
-     */
-    handleRegionClick() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+    handleAnnotationControlsClick({ mode }) {
+        this.annotator.toggleAnnotationMode(mode);
+        this.annotationFSM.send(AnnotationInput.CLICK, mode);
     }
 
     /**
@@ -1257,7 +1253,19 @@ class BaseViewer extends EventEmitter {
         // we remain in create mode
         if (status === 'success') {
             this.annotator.emit('annotations_active_set', id);
+
+            if (this.annotationControls) {
+                this.annotationControls.setMode(this.annotationFSM.send(AnnotationInput.SUCCESS, AnnotationMode.NONE));
+            }
         }
+    }
+
+    handleAnnotationStagedChangeEvent({ status, type }) {
+        if (!this.annotationControls) {
+            return;
+        }
+
+        this.annotationControls.setMode(this.annotationFSM.send(status, type));
     }
 
     /**
