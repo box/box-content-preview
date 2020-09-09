@@ -35,7 +35,7 @@ import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import { AnnotationMode } from '../AnnotationControls';
-import AnnotationFSM, { AnnotationInput } from '../AnnotationFSM';
+import AnnotationControlsFSM, { AnnotationInput } from '../AnnotationControlsFSM';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -141,7 +141,7 @@ class BaseViewer extends EventEmitter {
 
         this.emittedMetrics = {};
 
-        this.annotationFSM = new AnnotationFSM();
+        this.annotationControlsFSM = new AnnotationControlsFSM();
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
@@ -1080,8 +1080,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAnnotationControlsClick({ mode }) {
-        this.annotator.toggleAnnotationMode(mode);
-        this.annotationFSM.send(AnnotationInput.CLICK, mode);
+        const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
+        this.annotator.toggleAnnotationMode(nextMode);
+        this.annotationControls.setMode(nextMode);
     }
 
     /**
@@ -1255,7 +1256,9 @@ class BaseViewer extends EventEmitter {
             this.annotator.emit('annotations_active_set', id);
 
             if (this.annotationControls) {
-                this.annotationControls.setMode(this.annotationFSM.send(AnnotationInput.SUCCESS, AnnotationMode.NONE));
+                this.annotationControls.setMode(
+                    this.annotationControlsFSM.transition(AnnotationInput.SUCCESS, AnnotationMode.NONE),
+                );
             }
         }
     }
@@ -1265,7 +1268,7 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        this.annotationControls.setMode(this.annotationFSM.send(status, type));
+        this.annotationControls.setMode(this.annotationControlsFSM.transition(status, type));
     }
 
     /**

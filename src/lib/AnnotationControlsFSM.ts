@@ -30,13 +30,13 @@ export const stateModeMap = {
     [AnnotationState.REGION_TEMP]: AnnotationMode.REGION,
 };
 
-export default class AnnotationFSM {
+export default class AnnotationControlsFSM {
     private currentState = AnnotationState.NONE;
 
-    public send = (input: AnnotationInput, mode: AnnotationMode): AnnotationMode => {
+    public transition = (input: AnnotationInput, mode: AnnotationMode): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
-            this.currentState = modeStateMap[mode];
-            return mode;
+            this.currentState = mode === stateModeMap[this.currentState] ? AnnotationState.NONE : modeStateMap[mode];
+            return stateModeMap[this.currentState];
         }
 
         switch (this.currentState) {
@@ -46,7 +46,6 @@ export default class AnnotationFSM {
                         mode === AnnotationMode.HIGHLIGHT
                             ? AnnotationState.HIGHLIGHT_TEMP
                             : AnnotationState.REGION_TEMP;
-                    return mode;
                 }
                 break;
             case AnnotationState.HIGHLIGHT_TEMP:

@@ -91,8 +91,6 @@ export default class AnnotationControls {
         this.hasInit = false;
     }
 
-    public getMode = (): AnnotationMode => this.currentMode;
-
     /**
      * Deactivate current control button
      */
@@ -157,21 +155,6 @@ export default class AnnotationControls {
     }
 
     /**
-     * Annotation control button click handler
-     */
-    private handleClick = (onClick: ClickHandler, mode: AnnotationMode) => (event: MouseEvent): void => {
-        const prevMode = this.currentMode;
-        this.resetControls();
-
-        if (prevMode !== mode) {
-            this.currentMode = mode as AnnotationMode;
-            this.updateButton(mode);
-        }
-
-        onClick({ event, mode: this.currentMode });
-    };
-
-    /**
      * Escape key handler, reset all control buttons,
      * and stop propagation to prevent preview modal from exiting
      */
@@ -187,7 +170,7 @@ export default class AnnotationControls {
         event.stopPropagation();
     };
 
-    private addButton = (mode: AnnotationMode, handler: ClickHandler, parent: HTMLElement, fileId: string): void => {
+    private addButton = (mode: AnnotationMode, onClick: ClickHandler, parent: HTMLElement, fileId: string): void => {
         const buttonProps = buttonPropsMap[mode];
 
         if (!buttonProps) {
@@ -196,7 +179,7 @@ export default class AnnotationControls {
 
         const buttonElement = this.controls.add(
             buttonProps.text,
-            this.handleClick(handler, mode),
+            (event: MouseEvent) => onClick({ event, mode }),
             buttonProps.classname,
             buttonProps.icon,
             'button',
