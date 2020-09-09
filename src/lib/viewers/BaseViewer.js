@@ -1256,9 +1256,7 @@ class BaseViewer extends EventEmitter {
             this.annotator.emit('annotations_active_set', id);
 
             if (this.annotationControls) {
-                this.annotationControls.setMode(
-                    this.annotationControlsFSM.transition(AnnotationInput.SUCCESS, AnnotationMode.NONE),
-                );
+                this.annotationControls.setMode(this.annotationControlsFSM.transition(AnnotationInput.SUCCESS));
             }
         }
     }

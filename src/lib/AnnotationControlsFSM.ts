@@ -22,6 +22,12 @@ export const modeStateMap = {
     [AnnotationMode.REGION]: AnnotationState.REGION,
 };
 
+export const modeTempStateMap = {
+    [AnnotationMode.HIGHLIGHT]: AnnotationState.HIGHLIGHT_TEMP,
+    [AnnotationMode.NONE]: AnnotationState.NONE,
+    [AnnotationMode.REGION]: AnnotationState.REGION_TEMP,
+};
+
 export const stateModeMap = {
     [AnnotationState.HIGHLIGHT]: AnnotationMode.HIGHLIGHT,
     [AnnotationState.HIGHLIGHT_TEMP]: AnnotationMode.HIGHLIGHT,
@@ -33,7 +39,7 @@ export const stateModeMap = {
 export default class AnnotationControlsFSM {
     private currentState = AnnotationState.NONE;
 
-    public transition = (input: AnnotationInput, mode: AnnotationMode): AnnotationMode => {
+    public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
             this.currentState = mode === stateModeMap[this.currentState] ? AnnotationState.NONE : modeStateMap[mode];
             return stateModeMap[this.currentState];
@@ -42,10 +48,7 @@ export default class AnnotationControlsFSM {
         switch (this.currentState) {
             case AnnotationState.NONE:
                 if (input === AnnotationInput.CREATE) {
-                    this.currentState =
-                        mode === AnnotationMode.HIGHLIGHT
-                            ? AnnotationState.HIGHLIGHT_TEMP
-                            : AnnotationState.REGION_TEMP;
+                    this.currentState = modeTempStateMap[mode] || AnnotationState.NONE;
                 }
                 break;
             case AnnotationState.HIGHLIGHT_TEMP:
