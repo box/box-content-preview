@@ -1,3 +1,12 @@
+## 2.51.0 (2020-09-10)
+
+* feat(annotations): Handle annotations staged change event (#1247) ([37e7003](https://github.com/box/box-content-preview/commit/37e7003)), closes [#1247](https://github.com/box/box-content-preview/issues/1247)
+* feat(doc): Updated text selection color (#1245) ([6ab482e](https://github.com/box/box-content-preview/commit/6ab482e)), closes [#1245](https://github.com/box/box-content-preview/issues/1245)
+* feat(perf): Add support for document viewer performance options (#1249) ([4047402](https://github.com/box/box-content-preview/commit/4047402)), closes [#1249](https://github.com/box/box-content-preview/issues/1249)
+* chore(annotations): remove annotations_mode_change handling (#1251) ([aa7f6f6](https://github.com/box/box-content-preview/commit/aa7f6f6)), closes [#1251](https://github.com/box/box-content-preview/issues/1251)
+
+
+
 ## 2.50.0 (2020-08-25)
 
 * feat(annotations): Handle mode change events (#1244) ([bf74f86](https://github.com/box/box-content-preview/commit/bf74f86)), closes [#1244](https://github.com/box/box-content-preview/issues/1244)
