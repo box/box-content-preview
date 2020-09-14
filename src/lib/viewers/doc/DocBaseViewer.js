@@ -1105,11 +1105,13 @@ class DocBaseViewer extends BaseViewer {
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
+            const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+
             this.annotationControls.init({
                 fileId: this.options.file.id,
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
-                showHighlightText: this.options.showAnnotationsHighlightText,
+                showHighlightText: this.options.showAnnotationsHighlightText && canDownload,
             });
         }
     }

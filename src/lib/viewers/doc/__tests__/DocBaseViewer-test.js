@@ -2302,6 +2302,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.isFindDisabled = sandbox.stub(docBase, 'isFindDisabled');
                 stubs.areNewAnnotationsEnabled = sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
                 stubs.hasCreatePermission = sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             });
 
             it('should add the correct controls', () => {
@@ -2379,6 +2380,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     );
                 }),
             );
+
+            it('should not showHighlightText if file has no download permission', () => {
+                stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
+
+                docBase.bindControlListeners();
+
+                expect(docBase.annotationControls.init).to.be.calledWith(
+                    sinon.match({
+                        showHighlightText: false,
+                    }),
+                );
+            });
 
             it('should not add the toggle thumbnails control if the option is not enabled', () => {
                 // Create a new instance that has enableThumbnailsSidebar as false
