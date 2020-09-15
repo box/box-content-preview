@@ -972,6 +972,7 @@ class BaseViewer extends EventEmitter {
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             features: options && options.features,
+            initialMode: this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE,
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
             modeButtons: ANNOTATION_BUTTONS,
         });
@@ -1082,7 +1083,11 @@ class BaseViewer extends EventEmitter {
      */
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-        this.annotator.toggleAnnotationMode(nextMode);
+        this.annotator.toggleAnnotationMode(
+            this.options.enableAnnotationsDiscoverability && nextMode === AnnotationMode.NONE
+                ? AnnotationMode.REGION
+                : nextMode,
+        );
         this.annotationControls.setMode(nextMode);
     }
 
