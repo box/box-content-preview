@@ -126,6 +126,10 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.classList.add('bp-doc');
         this.docEl.tabIndex = '0';
 
+        if (this.options.enableAnnotationsDiscoverability) {
+            this.docEl.classList.add('ba-discoverability-enabled');
+        }
+
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
         }
