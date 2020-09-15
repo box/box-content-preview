@@ -930,6 +930,8 @@ class Preview extends EventEmitter {
 
         this.options.showAnnotationsHighlightText = !!options.showAnnotationsHighlightText;
 
+        this.options.enableAnnotationsDiscoverability = !!options.enableAnnotationsDiscoverability;
+
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
