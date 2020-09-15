@@ -156,7 +156,7 @@ class BaseViewer extends EventEmitter {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
-        this.handleAnnotationStagedChangeEvent = this.handleAnnotationStagedChangeEvent.bind(this);
+        this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -1018,7 +1018,8 @@ class BaseViewer extends EventEmitter {
 
         if (this.areNewAnnotationsEnabled() && this.annotationControls) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
-            this.annotator.addListener('creator_staged_change', this.handleAnnotationStagedChangeEvent);
+            this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
+            this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
         }
     }
 
@@ -1261,7 +1262,7 @@ class BaseViewer extends EventEmitter {
         }
     }
 
-    handleAnnotationStagedChangeEvent({ status, type }) {
+    handleAnnotationCreatorChangeEvent({ status, type }) {
         if (!this.annotationControls) {
             return;
         }

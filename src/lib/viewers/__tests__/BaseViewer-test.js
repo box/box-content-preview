@@ -1257,7 +1257,11 @@ describe('lib/viewers/BaseViewer', () => {
             );
             expect(base.annotator.addListener).to.be.calledWith(
                 'creator_staged_change',
-                base.handleAnnotationStagedChangeEvent,
+                base.handleAnnotationCreatorChangeEvent,
+            );
+            expect(base.annotator.addListener).to.be.calledWith(
+                'creator_status_change',
+                base.handleAnnotationCreatorChangeEvent,
             );
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
@@ -1808,13 +1812,13 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleAnnotationStagedChangeEvent()', () => {
+    describe('handleAnnotationCreatorChangeEvent()', () => {
         it('should set mode', () => {
             base.annotationControls = {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
-            base.handleAnnotationStagedChangeEvent({ status: 'create', type: 'highlight' });
+            base.handleAnnotationCreatorChangeEvent({ status: 'create', type: 'highlight' });
 
             expect(base.annotationControls.setMode).to.be.calledWith('highlight');
         });

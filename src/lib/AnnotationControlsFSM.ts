@@ -12,6 +12,7 @@ export enum AnnotationInput {
     CANCEL = 'cancel',
     CLICK = 'click',
     CREATE = 'create',
+    STARTED = 'started',
     SUCCESS = 'success',
     UPDATE = 'update',
 }
@@ -53,7 +54,7 @@ export default class AnnotationControlsFSM {
 
         switch (this.currentState) {
             case AnnotationState.NONE:
-                if (input === AnnotationInput.CREATE) {
+                if (input === AnnotationInput.CREATE || input === AnnotationInput.STARTED) {
                     this.currentState = modeTempStateMap[mode] || AnnotationState.NONE;
                 }
                 break;

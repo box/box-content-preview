@@ -29,6 +29,18 @@ describe('lib/AnnotationControlsFSM', () => {
                 nextState: AnnotationState.REGION_TEMP,
                 output: AnnotationMode.REGION,
             },
+            {
+                input: AnnotationInput.STARTED,
+                mode: AnnotationMode.HIGHLIGHT,
+                nextState: AnnotationState.HIGHLIGHT_TEMP,
+                output: AnnotationMode.HIGHLIGHT,
+            },
+            {
+                input: AnnotationInput.STARTED,
+                mode: AnnotationMode.REGION,
+                nextState: AnnotationState.REGION_TEMP,
+                output: AnnotationMode.REGION,
+            },
         ].forEach(({ input, mode, nextState, output }) => {
             it(`should go to state ${nextState} and output ${output} if input is ${input} and mode is ${mode}`, () => {
                 const annotationControlsFSM = new AnnotationControlsFSM();
@@ -52,16 +64,16 @@ describe('lib/AnnotationControlsFSM', () => {
     describe('AnnotationState.HIGHLIGHT/REGION', () => {
         // Stay in the same state
         [AnnotationState.HIGHLIGHT, AnnotationState.REGION].forEach(state => {
-            [AnnotationInput.CANCEL, AnnotationInput.CREATE, AnnotationInput.SUCCESS, AnnotationInput.SUCCESS].forEach(
-                input => {
+            Object.values(AnnotationInput)
+                .filter(input => input !== AnnotationInput.CLICK)
+                .forEach(input => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
 
                         expect(annotationControlsFSM.transition(input)).to.equal(state);
                         expect(annotationControlsFSM.getState()).to.equal(state);
                     });
-                },
-            );
+                });
         });
 
         // Go to different states
@@ -108,7 +120,6 @@ describe('lib/AnnotationControlsFSM', () => {
     });
 
     describe('AnnotationState.HIGHLIGHT_TEMP/REGION_TEMP', () => {
-        // Go to none state
         [
             {
                 state: AnnotationState.HIGHLIGHT_TEMP,
@@ -119,6 +130,7 @@ describe('lib/AnnotationControlsFSM', () => {
                 stateMode: AnnotationMode.REGION,
             },
         ].forEach(({ state, stateMode }) => {
+            // Go to none state
             [
                 {
                     input: AnnotationInput.CANCEL,
@@ -139,7 +151,8 @@ describe('lib/AnnotationControlsFSM', () => {
                 });
             });
 
-            [AnnotationInput.CREATE, AnnotationInput.UPDATE].forEach(input => {
+            // Stay in the same state
+            [AnnotationInput.CREATE, AnnotationInput.STARTED, AnnotationInput.UPDATE].forEach(input => {
                 it(`should stay in state ${state} if input is ${input}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(state);
 
