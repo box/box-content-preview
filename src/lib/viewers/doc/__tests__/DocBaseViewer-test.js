@@ -168,7 +168,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.setup();
 
-            expect(docBase.docEl.classList.contains('ba-discoverability-enabled')).to.be.true;
+            expect(docBase.docEl.classList.contains('ba-annotations-discoverable')).to.be.true;
         });
 
         it('should not set a thumbnails sidebar element if the option is not enabled', () => {

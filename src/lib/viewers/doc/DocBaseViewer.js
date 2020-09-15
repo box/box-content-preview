@@ -127,7 +127,7 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.tabIndex = '0';
 
         if (this.options.enableAnnotationsDiscoverability) {
-            this.docEl.classList.add('ba-discoverability-enabled');
+            this.docEl.classList.add('bp-annotations-discoverable');
         }
 
         if (Browser.getName() === 'Safari') {
