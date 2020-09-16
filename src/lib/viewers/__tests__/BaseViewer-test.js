@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
-import BaseViewer from '../BaseViewer';
+import BaseViewer, { CSS_ANNOTATIONS_DISCOVERABLE_CLASS } from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
@@ -86,7 +86,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
-            expect(base.containerEl).to.have.class('bp-annotations-discoverable');
+            expect(base.containerEl).to.have.class(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -631,7 +631,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
-            expect(base.containerEl).to.not.have.class('bp-annotations-discoverable');
+            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
         });
@@ -659,6 +659,9 @@ describe('lib/viewers/BaseViewer', () => {
             base.containerEl = {
                 addEventListener: sandbox.stub(),
                 removeEventListener: sandbox.stub(),
+                classList: {
+                    remove: sandbox.stub(),
+                },
             };
 
             base.destroy();
@@ -1903,7 +1906,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
 
-            expect(base.containerEl.classList.add).to.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl.classList.add).to.not.be.calledWith('bp-annotations-create--region');
         });
 
         it('should remove create region class if discoverability is enabled and mode is HIGHLIGHT', () => {
