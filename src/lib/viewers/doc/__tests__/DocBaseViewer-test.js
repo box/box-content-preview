@@ -142,35 +142,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
         });
 
-        it('should set discoverability classname if the enableAnnotationsDiscoverability option is enabled', () => {
-            docBase = new DocBaseViewer({
-                cache: {
-                    set: () => {},
-                    has: () => {},
-                    get: () => {},
-                    unset: () => {},
-                },
-                container: containerEl,
-                representation: {
-                    content: {
-                        url_template: 'foo',
-                    },
-                },
-                file: {
-                    id: '0',
-                    extension: 'ppt',
-                },
-                enableThumbnailsSidebar: false,
-            });
-            docBase.containerEl = containerEl;
-            docBase.rootEl = rootEl;
-            docBase.options.enableAnnotationsDiscoverability = true;
-
-            docBase.setup();
-
-            expect(docBase.docEl.classList.contains('ba-annotations-discoverable')).to.be.true;
-        });
-
         it('should not set a thumbnails sidebar element if the option is not enabled', () => {
             docBase = new DocBaseViewer({
                 cache: {

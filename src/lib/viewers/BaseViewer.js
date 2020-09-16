@@ -214,6 +214,10 @@ class BaseViewer extends EventEmitter {
             });
         }
 
+        if (this.options.enableAnnotationsDiscoverability) {
+            this.rootEl.classList.add('bp-annotations-discoverable');
+        }
+
         this.isSetup = true;
     }
 
@@ -1089,6 +1093,17 @@ class BaseViewer extends EventEmitter {
                 : nextMode,
         );
         this.annotationControls.setMode(nextMode);
+
+        if (this.options.enableAnnotationsDiscoverability) {
+            switch (mode) {
+                case AnnotationMode.REGION:
+                    this.rootEl.classList.add('bp-annotations-create--region');
+                    break;
+                default:
+                    this.rootEl.classList.remove('bp-annotations-create--region');
+                    break;
+            }
+        }
     }
 
     /**
