@@ -1861,18 +1861,14 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleAnnotationControlsClick', () => {
+        const CSS_ANNOTATIONS_CREATE_REGION = 'bp-annotations-create--region';
+
         beforeEach(() => {
             base.annotationControls = {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
-            base.containerEl = {
-                classList: {
-                    add: sandbox.stub(),
-                    remove: sandbox.stub(),
-                },
-                removeEventListener: sandbox.stub(),
-            };
+            base.containerEl = document.createElement('div');
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
@@ -1899,21 +1895,21 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(base.containerEl.classList.add).to.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl).to.have.class(CSS_ANNOTATIONS_CREATE_REGION);
         });
 
         it('should add create region class if discoverability is enabled and mode is NONE', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
 
-            expect(base.containerEl.classList.add).to.not.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_CREATE_REGION);
         });
 
         it('should remove create region class if discoverability is enabled and mode is HIGHLIGHT', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.HIGHLIGHT });
 
-            expect(base.containerEl.classList.remove).to.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_CREATE_REGION);
         });
     });
 });
