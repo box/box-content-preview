@@ -446,7 +446,13 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
-            base.containerEl = document;
+            base.containerEl = {
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub(),
+                classList: {
+                    remove: sandbox.stub(),
+                },
+            };
         });
 
         it('should append common event listeners', () => {
@@ -461,11 +467,6 @@ describe('lib/viewers/BaseViewer', () => {
         it('should prevent the context menu if preview only permissions', () => {
             base.options.file.permissions = {
                 can_download: false,
-            };
-
-            base.containerEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
             };
 
             base.addCommonListeners();
