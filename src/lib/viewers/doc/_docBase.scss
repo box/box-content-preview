@@ -332,11 +332,6 @@ $thumbnail-sidebar-width: 226px;
     }
 }
 
-// Hide the toggle thumbnails button when in fullscreen
-.bp-content.bp-is-fullscreen .bp-toggle-thumbnails-icon {
-    display: none;
-}
-
 .bp-content {
     &.bp-annotations-discoverable {
         .textLayer {
@@ -354,5 +349,10 @@ $thumbnail-sidebar-width: 226px;
                 }
             }
         }
+    }
+
+    // Hide the toggle thumbnails button when in fullscreen
+    &.bp-is-fullscreen .bp-toggle-thumbnails-icon {
+        display: none;
     }
 }
