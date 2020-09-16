@@ -86,7 +86,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
-            expect(base.rootEl).to.have.class('bp-annotations-discoverable');
+            expect(base.containerEl).to.have.class('bp-annotations-discoverable');
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -630,6 +630,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
+            expect(base.containerEl).to.not.have.class('bp-annotations-discoverable');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
         });
@@ -1861,11 +1862,12 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
-            base.rootEl = {
+            base.containerEl = {
                 classList: {
                     add: sandbox.stub(),
                     remove: sandbox.stub(),
                 },
+                removeEventListener: sandbox.stub(),
             };
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
@@ -1893,14 +1895,21 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(base.rootEl.classList.add).to.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl.classList.add).to.be.calledWith('bp-annotations-create--region');
         });
 
-        it('should remove create region class if discoverability is enabled and mode is not REGION', () => {
+        it('should add create region class if discoverability is enabled and mode is NONE', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
 
-            expect(base.rootEl.classList.remove).to.be.calledWith('bp-annotations-create--region');
+            expect(base.containerEl.classList.add).to.be.calledWith('bp-annotations-create--region');
+        });
+
+        it('should remove create region class if discoverability is enabled and mode is HIGHLIGHT', () => {
+            base.options.enableAnnotationsDiscoverability = true;
+            base.handleAnnotationControlsClick({ mode: AnnotationMode.HIGHLIGHT });
+
+            expect(base.containerEl.classList.remove).to.be.calledWith('bp-annotations-create--region');
         });
     });
 });

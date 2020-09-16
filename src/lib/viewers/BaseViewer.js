@@ -215,7 +215,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.options.enableAnnotationsDiscoverability) {
-            this.rootEl.classList.add('bp-annotations-discoverable');
+            this.containerEl.classList.add('bp-annotations-discoverable');
         }
 
         this.isSetup = true;
@@ -264,6 +264,10 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
+
+            if (this.options.enableAnnotationsDiscoverability) {
+                this.containerEl.classList.remove('bp-annotations-discoverable');
+            }
         }
 
         // Destroy the annotator
@@ -1095,12 +1099,13 @@ class BaseViewer extends EventEmitter {
         this.annotationControls.setMode(nextMode);
 
         if (this.options.enableAnnotationsDiscoverability) {
-            switch (mode) {
+            switch (nextMode) {
+                case AnnotationMode.NONE:
                 case AnnotationMode.REGION:
-                    this.rootEl.classList.add('bp-annotations-create--region');
+                    this.containerEl.classList.add('bp-annotations-create--region');
                     break;
                 default:
-                    this.rootEl.classList.remove('bp-annotations-create--region');
+                    this.containerEl.classList.remove('bp-annotations-create--region');
                     break;
             }
         }
