@@ -264,10 +264,7 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
-
-            if (this.options.enableAnnotationsDiscoverability) {
-                this.containerEl.classList.remove('bp-annotations-discoverable');
-            }
+            this.containerEl.classList.remove('bp-annotations-discoverable');
         }
 
         // Destroy the annotator
@@ -1100,7 +1097,6 @@ class BaseViewer extends EventEmitter {
 
         if (this.options.enableAnnotationsDiscoverability) {
             switch (nextMode) {
-                case AnnotationMode.NONE:
                 case AnnotationMode.REGION:
                     this.containerEl.classList.add('bp-annotations-create--region');
                     break;
