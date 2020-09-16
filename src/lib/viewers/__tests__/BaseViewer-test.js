@@ -1898,7 +1898,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl).to.have.class(CSS_ANNOTATIONS_CREATE_REGION);
         });
 
-        it('should add create region class if discoverability is enabled and mode is NONE', () => {
+        it('should remove create region class if discoverability is enabled and mode is NONE', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
 
