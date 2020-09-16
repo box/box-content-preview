@@ -19,6 +19,8 @@ import {
 } from '../util';
 import {
     ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_CREATE_REGION,
+    CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -44,8 +46,6 @@ const VIEWER_STATUSES = {
     loaded: 'loaded',
     loading: 'loading',
 };
-
-export const CSS_ANNOTATIONS_DISCOVERABLE_CLASS = 'bp-annotations-discoverable';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -217,7 +217,7 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.options.enableAnnotationsDiscoverability) {
-            this.containerEl.classList.add(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
         this.isSetup = true;
@@ -266,7 +266,7 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
-            this.containerEl.classList.remove(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
+            this.containerEl.classList.remove(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
         // Destroy the annotator
@@ -1100,10 +1100,10 @@ class BaseViewer extends EventEmitter {
         if (this.options.enableAnnotationsDiscoverability) {
             switch (nextMode) {
                 case AnnotationMode.REGION:
-                    this.containerEl.classList.add('bp-annotations-create--region');
+                    this.containerEl.classList.add(CLASS_ANNOTATIONS_CREATE_REGION);
                     break;
                 default:
-                    this.containerEl.classList.remove('bp-annotations-create--region');
+                    this.containerEl.classList.remove(CLASS_ANNOTATIONS_CREATE_REGION);
                     break;
             }
         }

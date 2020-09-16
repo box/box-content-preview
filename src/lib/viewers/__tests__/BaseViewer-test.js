@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
-import BaseViewer, { CSS_ANNOTATIONS_DISCOVERABLE_CLASS } from '../BaseViewer';
+import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
@@ -20,7 +20,7 @@ let base;
 let containerEl;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
-const { ANNOTATOR_EVENT } = constants;
+const { ANNOTATOR_EVENT, CLASS_ANNOTATIONS_CREATE_REGION, CLASS_ANNOTATIONS_DISCOVERABLE } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     before(() => {
@@ -86,7 +86,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
-            expect(base.containerEl).to.have.class(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
+            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -631,7 +631,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
-            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_DISCOVERABLE_CLASS);
+            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
         });
@@ -1861,8 +1861,6 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleAnnotationControlsClick', () => {
-        const CSS_ANNOTATIONS_CREATE_REGION = 'bp-annotations-create--region';
-
         beforeEach(() => {
             base.annotationControls = {
                 destroy: sandbox.stub(),
@@ -1895,21 +1893,21 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(base.containerEl).to.have.class(CSS_ANNOTATIONS_CREATE_REGION);
+            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
         });
 
         it('should remove create region class if discoverability is enabled and mode is NONE', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
 
-            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_CREATE_REGION);
+            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
         });
 
         it('should remove create region class if discoverability is enabled and mode is HIGHLIGHT', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.HIGHLIGHT });
 
-            expect(base.containerEl).to.not.have.class(CSS_ANNOTATIONS_CREATE_REGION);
+            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
         });
     });
 });
