@@ -20,7 +20,7 @@ let base;
 let containerEl;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
-const { ANNOTATOR_EVENT } = constants;
+const { ANNOTATOR_EVENT, CLASS_ANNOTATIONS_CREATE_REGION, CLASS_ANNOTATIONS_DISCOVERABLE } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     before(() => {
@@ -68,6 +68,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'finishLoadingSetup');
             sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
             base.options.showAnnotations = true;
+            base.options.enableAnnotationsDiscoverability = true;
 
             base.setup();
 
@@ -81,9 +82,11 @@ describe('lib/viewers/BaseViewer', () => {
                     },
                 },
                 showAnnotations: true,
+                enableAnnotationsDiscoverability: true,
             });
 
             expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
+            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
             expect(base.addCommonListeners).to.be.called;
             expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a('number');
@@ -443,7 +446,13 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
-            base.containerEl = document;
+            base.containerEl = {
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub(),
+                classList: {
+                    remove: sandbox.stub(),
+                },
+            };
         });
 
         it('should append common event listeners', () => {
@@ -458,11 +467,6 @@ describe('lib/viewers/BaseViewer', () => {
         it('should prevent the context menu if preview only permissions', () => {
             base.options.file.permissions = {
                 can_download: false,
-            };
-
-            base.containerEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
             };
 
             base.addCommonListeners();
@@ -627,6 +631,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
+            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
         });
@@ -654,6 +659,9 @@ describe('lib/viewers/BaseViewer', () => {
             base.containerEl = {
                 addEventListener: sandbox.stub(),
                 removeEventListener: sandbox.stub(),
+                classList: {
+                    remove: sandbox.stub(),
+                },
             };
 
             base.destroy();
@@ -1858,13 +1866,13 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
-        });
-
-        it('should call toggleAnnotationMode and setMode', () => {
+            base.containerEl = document.createElement('div');
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
+        });
 
+        it('should call toggleAnnotationMode and setMode', () => {
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
@@ -1872,10 +1880,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should call toggleAnnotationMode with appropriate mode if discoverability is enabled', () => {
-            base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
-            };
-
             base.options.enableAnnotationsDiscoverability = false;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
@@ -1883,6 +1887,22 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+        });
+
+        it('should add create region class if discoverability is enabled and mode is REGION', () => {
+            base.options.enableAnnotationsDiscoverability = true;
+            base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+        });
+
+        [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
+            it(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
+                base.options.enableAnnotationsDiscoverability = true;
+                base.handleAnnotationControlsClick({ mode });
+
+                expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+            });
         });
     });
 });

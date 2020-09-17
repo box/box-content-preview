@@ -19,6 +19,8 @@ import {
 } from '../util';
 import {
     ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_CREATE_REGION,
+    CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -214,6 +216,10 @@ class BaseViewer extends EventEmitter {
             });
         }
 
+        if (this.options.enableAnnotationsDiscoverability) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
+        }
+
         this.isSetup = true;
     }
 
@@ -260,6 +266,7 @@ class BaseViewer extends EventEmitter {
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
+            this.containerEl.classList.remove(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
         // Destroy the annotator
@@ -1089,6 +1096,17 @@ class BaseViewer extends EventEmitter {
                 : nextMode,
         );
         this.annotationControls.setMode(nextMode);
+
+        if (this.options.enableAnnotationsDiscoverability) {
+            switch (nextMode) {
+                case AnnotationMode.REGION:
+                    this.containerEl.classList.add(CLASS_ANNOTATIONS_CREATE_REGION);
+                    break;
+                default:
+                    this.containerEl.classList.remove(CLASS_ANNOTATIONS_CREATE_REGION);
+                    break;
+            }
+        }
     }
 
     /**

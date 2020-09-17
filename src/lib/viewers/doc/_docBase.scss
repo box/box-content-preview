@@ -332,7 +332,31 @@ $thumbnail-sidebar-width: 226px;
     }
 }
 
-// Hide the toggle thumbnails button when in fullscreen
-.bp-content.bp-is-fullscreen .bp-toggle-thumbnails-icon {
-    display: none;
+.bp-content {
+    &.bp-annotations-discoverable {
+        .textLayer {
+            pointer-events: none;
+
+            span {
+                pointer-events: auto;
+            }
+        }
+
+        &.bp-annotations-create--region {
+            .textLayer {
+                span {
+                    pointer-events: none;
+                }
+            }
+
+            .annotationLayer {
+                pointer-events: none;
+            }
+        }
+    }
+
+    // Hide the toggle thumbnails button when in fullscreen
+    &.bp-is-fullscreen .bp-toggle-thumbnails-icon {
+        display: none;
+    }
 }

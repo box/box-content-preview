@@ -1,4 +1,6 @@
 export const CLASS_ACTIVE = 'bp-is-active';
+export const CLASS_ANNOTATIONS_CREATE_REGION = 'bp-annotations-create--region';
+export const CLASS_ANNOTATIONS_DISCOVERABLE = 'bp-annotations-discoverable';
 export const CLASS_NAVIGATION_VISIBILITY = 'bp-is-navigation-visible';
 export const CLASS_HIDDEN = 'bp-is-hidden';
 export const CLASS_PREVIEW_LOADED = 'bp-loaded';
