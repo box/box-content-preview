@@ -1896,18 +1896,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
         });
 
-        it('should remove create region class if discoverability is enabled and mode is NONE', () => {
-            base.options.enableAnnotationsDiscoverability = true;
-            base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
+        [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
+            it(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
+                base.options.enableAnnotationsDiscoverability = true;
+                base.handleAnnotationControlsClick({ mode });
 
-            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
-        });
-
-        it('should remove create region class if discoverability is enabled and mode is HIGHLIGHT', () => {
-            base.options.enableAnnotationsDiscoverability = true;
-            base.handleAnnotationControlsClick({ mode: AnnotationMode.HIGHLIGHT });
-
-            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+                expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+            });
         });
     });
 });
