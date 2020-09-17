@@ -334,6 +334,11 @@ $thumbnail-sidebar-width: 226px;
 
 .bp-content {
     &.bp-annotations-discoverable {
+        // Elevate the region annotation targets' stacking context to be above the creation layer
+        .ba-RegionAnnotation {
+            z-index: 1;
+        }
+
         .textLayer {
             pointer-events: none;
 
@@ -343,6 +348,11 @@ $thumbnail-sidebar-width: 226px;
         }
 
         &.bp-annotations-create--region {
+            // Reset the region annotation targets to have the normal stacking context
+            .ba-RegionAnnotation {
+                z-index: auto;
+            }
+
             .textLayer {
                 span {
                     pointer-events: none;
