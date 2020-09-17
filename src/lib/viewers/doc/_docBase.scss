@@ -348,6 +348,12 @@ $thumbnail-sidebar-width: 226px;
                     pointer-events: none;
                 }
             }
+
+            .annotationLayer {
+                section {
+                    pointer-events: none;
+                }
+            }
         }
     }
 
