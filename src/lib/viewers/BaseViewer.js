@@ -587,9 +587,9 @@ class BaseViewer extends EventEmitter {
 
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
-            this.annotator.toggleAnnotationMode(
-                this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE,
-            );
+            if (this.options.enableAnnotationsDiscoverability) {
+                this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+            }
             this.enableAnnotationControls();
         }
     }
