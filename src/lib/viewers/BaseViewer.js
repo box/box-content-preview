@@ -1089,9 +1089,11 @@ class BaseViewer extends EventEmitter {
      * @param {AnnotationMode} mode Next annotation mode
      */
     processAnnotationModeChange = mode => {
-        if (this.annotationControls) {
-            this.annotationControls.setMode(mode);
+        if (!this.annotationControls) {
+            return;
         }
+
+        this.annotationControls.setMode(mode);
 
         if (this.options.enableAnnotationsDiscoverability && this.containerEl) {
             switch (mode) {

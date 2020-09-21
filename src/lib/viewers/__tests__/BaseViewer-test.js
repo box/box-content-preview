@@ -1897,6 +1897,16 @@ describe('lib/viewers/BaseViewer', () => {
             base.containerEl = document.createElement('div');
         });
 
+        it('should do nothing if no annotationControls', () => {
+            base.annotationControls = undefined;
+            sandbox.spy(base.containerEl.classList, 'add');
+            sandbox.spy(base.containerEl.classList, 'remove');
+            base.processAnnotationModeChange(AnnotationMode.REGION);
+
+            expect(base.containerEl.classList.add).to.not.be.called;
+            expect(base.containerEl.classList.remove).to.not.be.called;
+        });
+
         it('should call annotationControls setMode', () => {
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
