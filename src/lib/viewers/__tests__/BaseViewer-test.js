@@ -568,42 +568,28 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.resize).to.be.called;
         });
 
-        it('should show annotations and toggle annotations mode to NONE if discoverability FF is not enabled', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'enableAnnotationControls');
-            base.annotator = {
-                emit: sandbox.mock(),
-                toggleAnnotationMode: sandbox.mock(),
-            };
-            base.annotationControls = {
-                destroy: sandbox.mock(),
-            };
-            base.options.enableAnnotationsDiscoverability = false;
+        [
+            [AnnotationMode.NONE, false],
+            [AnnotationMode.REGION, true],
+        ].forEach(([mode, enableAnnotationsDiscoverability]) => {
+            it(`should show annotations and toggle annotations mode to ${mode} if enableAnnotationsDiscoverability is ${enableAnnotationsDiscoverability}`, () => {
+                sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+                sandbox.stub(base, 'enableAnnotationControls');
+                base.annotator = {
+                    emit: sandbox.mock(),
+                    toggleAnnotationMode: sandbox.mock(),
+                };
+                base.annotationControls = {
+                    destroy: sandbox.mock(),
+                };
+                base.options.enableAnnotationsDiscoverability = enableAnnotationsDiscoverability;
 
-            base.handleFullscreenExit();
+                base.handleFullscreenExit();
 
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.enableAnnotationControls).to.be.called;
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
-        });
-
-        it('should show annotations and toggle annotations mode to REGION if discoverability FF is enabled', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'enableAnnotationControls');
-            base.annotator = {
-                emit: sandbox.mock(),
-                toggleAnnotationMode: sandbox.mock(),
-            };
-            base.annotationControls = {
-                destroy: sandbox.mock(),
-            };
-            base.options.enableAnnotationsDiscoverability = true;
-
-            base.handleFullscreenExit();
-
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.enableAnnotationControls).to.be.called;
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+                expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
+                expect(base.enableAnnotationControls).to.be.called;
+                expect(base.annotator.toggleAnnotationMode).to.be.calledWith(mode);
+            });
         });
     });
 
