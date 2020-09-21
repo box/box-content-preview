@@ -540,7 +540,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.resize).to.be.called;
         });
 
-        it('should hide annotations and toggle annotations mode to NONE when discoverability FF is off', () => {
+        it('should hide annotations and toggle annotations mode', () => {
             sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'disableAnnotationControls');
             base.annotator = {
@@ -550,31 +550,11 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 destroy: sandbox.mock(),
             };
-            base.options.enableAnnotationsDiscoverability = false;
 
             base.handleFullscreenEnter();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
-            expect(base.disableAnnotationControls).to.be.called;
-        });
-
-        it('should hide annotations and toggle annotations mode to REGION  when discoverability FF is enabled', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'disableAnnotationControls');
-            base.annotator = {
-                emit: sandbox.mock(),
-                toggleAnnotationMode: sandbox.mock(),
-            };
-            base.annotationControls = {
-                destroy: sandbox.mock(),
-            };
-            base.options.enableAnnotationsDiscoverability = true;
-
-            base.handleFullscreenEnter();
-
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
             expect(base.disableAnnotationControls).to.be.called;
         });
     });
@@ -1071,7 +1051,7 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('disableAnnotationControls()', () => {
-        it('should hide annotations and toggle annotations mode to NONE if discoverability FF is off', () => {
+        it('should hide annotations and toggle annotations mode', () => {
             sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
@@ -1081,32 +1061,11 @@ describe('lib/viewers/BaseViewer', () => {
                 resetControls: sandbox.stub(),
                 toggle: sandbox.stub(),
             };
-            base.options.enableAnnotationsDiscoverability = false;
 
             base.disableAnnotationControls();
 
             expect(base.annotationControls.resetControls).to.be.called;
             expect(base.annotationControls.toggle).to.be.calledWith(false);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
-        });
-
-        it('should hide annotations and toggle annotations mode to REGION if discoverability FF is on', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
-            };
-            base.annotationControls = {
-                destroy: sandbox.stub(),
-                resetControls: sandbox.stub(),
-                toggle: sandbox.stub(),
-            };
-            base.options.enableAnnotationsDiscoverability = true;
-
-            base.disableAnnotationControls();
-
-            expect(base.annotationControls.resetControls).to.be.called;
-            expect(base.annotationControls.toggle).to.be.calledWith(false);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
         });
     });
 
