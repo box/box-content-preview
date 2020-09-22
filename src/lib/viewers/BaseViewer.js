@@ -19,6 +19,7 @@ import {
 } from '../util';
 import {
     ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_BOX_PREVIEW_MOBILE,
@@ -45,6 +46,11 @@ const VIEWER_STATUSES = {
     error: 'error',
     loaded: 'loaded',
     loading: 'loading',
+};
+
+const ANNOTATION_CLASSES = {
+    [AnnotationMode.HIGHLIGHT]: CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
+    [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
 const ANNOTATIONS_JS = 'annotations.js';
@@ -1098,14 +1104,14 @@ class BaseViewer extends EventEmitter {
 
         this.annotationControls.setMode(mode);
 
-        if (this.options.enableAnnotationsDiscoverability && this.containerEl) {
-            switch (mode) {
-                case AnnotationMode.REGION:
-                    this.containerEl.classList.add(CLASS_ANNOTATIONS_CREATE_REGION);
-                    break;
-                default:
-                    this.containerEl.classList.remove(CLASS_ANNOTATIONS_CREATE_REGION);
-                    break;
+        if (this.containerEl) {
+            // Remove all annotations create related classes
+            Object.values(ANNOTATION_CLASSES).forEach(createClass => this.containerEl.classList.remove(createClass));
+
+            // Apply the mode's related created class
+            const className = ANNOTATION_CLASSES[mode];
+            if (className) {
+                this.containerEl.classList.add(className);
             }
         }
     };
