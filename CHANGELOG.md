@@ -1,3 +1,17 @@
+## 2.52.0 (2020-09-22)
+
+* feat(annotations): Disable highlight button if no download permission (#1253) ([b3a72d6](https://github.com/box/box-content-preview/commit/b3a72d6)), closes [#1253](https://github.com/box/box-content-preview/issues/1253)
+* feat(annotations): Disable target pointer-events when explicit creation (#1262) ([b2dcd45](https://github.com/box/box-content-preview/commit/b2dcd45)), closes [#1262](https://github.com/box/box-content-preview/issues/1262)
+* feat(annotations): Handle annotations creator status change event (#1254) ([46aad4f](https://github.com/box/box-content-preview/commit/46aad4f)), closes [#1254](https://github.com/box/box-content-preview/issues/1254)
+* feat(annotations): Hide PopupCursor in discovery default mode (#1259) ([bf5bf17](https://github.com/box/box-content-preview/commit/bf5bf17)), closes [#1259](https://github.com/box/box-content-preview/issues/1259)
+* feat(annotations): Set region as default mode if discover FF is on (#1255) ([9311be8](https://github.com/box/box-content-preview/commit/9311be8)), closes [#1255](https://github.com/box/box-content-preview/issues/1255)
+* feat(discoverability): add class to bp-content if FF is enabled (#1256) ([c6e3379](https://github.com/box/box-content-preview/commit/c6e3379)), closes [#1256](https://github.com/box/box-content-preview/issues/1256)
+* fix(annotations): Fix cursor when drawing region in default mode (#1261) ([6b4f76d](https://github.com/box/box-content-preview/commit/6b4f76d)), closes [#1261](https://github.com/box/box-content-preview/issues/1261)
+* fix(discoverability): set mode to REGION instead of NONE (#1260) ([6ccbb55](https://github.com/box/box-content-preview/commit/6ccbb55)), closes [#1260](https://github.com/box/box-content-preview/issues/1260)
+* chore(i18n): Update Translations (#1257) ([b88eedc](https://github.com/box/box-content-preview/commit/b88eedc)), closes [#1257](https://github.com/box/box-content-preview/issues/1257)
+
+
+
 ## 2.51.0 (2020-09-10)
 
 * feat(annotations): Handle annotations staged change event (#1247) ([37e7003](https://github.com/box/box-content-preview/commit/37e7003)), closes [#1247](https://github.com/box/box-content-preview/issues/1247)
