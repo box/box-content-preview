@@ -20,7 +20,12 @@ let base;
 let containerEl;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
-const { ANNOTATOR_EVENT, CLASS_ANNOTATIONS_CREATE_REGION, CLASS_ANNOTATIONS_DISCOVERABLE } = constants;
+const {
+    ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
+    CLASS_ANNOTATIONS_CREATE_REGION,
+    CLASS_ANNOTATIONS_DISCOVERABLE,
+} = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     before(() => {
@@ -1932,16 +1937,15 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.REGION);
         });
 
-        it('should add create region class and mode is REGION', () => {
-            base.processAnnotationModeChange(AnnotationMode.REGION);
+        [
+            [AnnotationMode.REGION, CLASS_ANNOTATIONS_CREATE_REGION],
+            [AnnotationMode.HIGHLIGHT, CLASS_ANNOTATIONS_CREATE_HIGHLIGHT],
+        ].forEach(([mode, className]) => {
+            it(`should add the appropriate create class when mode is ${mode}`, () => {
+                base.processAnnotationModeChange(mode);
 
-            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
-        });
-
-        it('should add create highlight class and mode is HIGHLIGHT', () => {
-            base.processAnnotationModeChange(AnnotationMode.HIGHLIGHT);
-
-            expect(base.containerEl).to.have.class(constants.CLASS_ANNOTATIONS_CREATE_HIGHLIGHT);
+                expect(base.containerEl).to.have.class(className);
+            });
         });
 
         [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
