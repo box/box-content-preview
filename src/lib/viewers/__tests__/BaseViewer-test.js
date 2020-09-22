@@ -1809,6 +1809,7 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
+            base.processAnnotationModeChange = sandbox.stub();
         });
 
         const createEvent = status => ({
@@ -1832,7 +1833,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationCreateEvent(event);
 
             expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
-            expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
         });
     });
 
@@ -1842,9 +1843,10 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: sandbox.stub(),
                 setMode: sandbox.stub(),
             };
+            base.processAnnotationModeChange = sandbox.stub();
             base.handleAnnotationCreatorChangeEvent({ status: AnnotationInput.CREATE, type: AnnotationMode.HIGHLIGHT });
 
-            expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.HIGHLIGHT);
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.HIGHLIGHT);
         });
     });
 
@@ -1862,21 +1864,17 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
-            base.annotationControls = {
-                destroy: sandbox.stub(),
-                setMode: sandbox.stub(),
-            };
-            base.containerEl = document.createElement('div');
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
+            base.processAnnotationModeChange = sandbox.stub();
         });
 
-        it('should call toggleAnnotationMode and setMode', () => {
+        it('should call toggleAnnotationMode and processAnnotationModeChange', () => {
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.REGION);
         });
 
         it('should call toggleAnnotationMode with appropriate mode if discoverability is enabled', () => {
@@ -1888,10 +1886,36 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
         });
+    });
+
+    describe('processAnnotationModeChange()', () => {
+        beforeEach(() => {
+            base.annotationControls = {
+                destroy: sandbox.stub(),
+                setMode: sandbox.stub(),
+            };
+            base.containerEl = document.createElement('div');
+        });
+
+        it('should do nothing if no annotationControls', () => {
+            base.annotationControls = undefined;
+            sandbox.spy(base.containerEl.classList, 'add');
+            sandbox.spy(base.containerEl.classList, 'remove');
+            base.processAnnotationModeChange(AnnotationMode.REGION);
+
+            expect(base.containerEl.classList.add).to.not.be.called;
+            expect(base.containerEl.classList.remove).to.not.be.called;
+        });
+
+        it('should call annotationControls setMode', () => {
+            base.processAnnotationModeChange(AnnotationMode.REGION);
+
+            expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.REGION);
+        });
 
         it('should add create region class if discoverability is enabled and mode is REGION', () => {
             base.options.enableAnnotationsDiscoverability = true;
-            base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+            base.processAnnotationModeChange(AnnotationMode.REGION);
 
             expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
         });
@@ -1899,7 +1923,7 @@ describe('lib/viewers/BaseViewer', () => {
         [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
             it(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
                 base.options.enableAnnotationsDiscoverability = true;
-                base.handleAnnotationControlsClick({ mode });
+                base.processAnnotationModeChange(mode);
 
                 expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
             });
