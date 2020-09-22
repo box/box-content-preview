@@ -216,7 +216,7 @@ class BaseViewer extends EventEmitter {
             });
         }
 
-        if (this.options.enableAnnotationsDiscoverability) {
+        if (this.options.enableAnnotationsDiscoverability && this.containerEl) {
             this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
@@ -1085,6 +1085,32 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Handler for annotation mode change
+     * 1. Set annotationsControls mode
+     * 2. If discoverability FF is on, add mode classes to container
+     *
+     * @param {AnnotationMode} mode Next annotation mode
+     */
+    processAnnotationModeChange = mode => {
+        if (!this.annotationControls) {
+            return;
+        }
+
+        this.annotationControls.setMode(mode);
+
+        if (this.options.enableAnnotationsDiscoverability && this.containerEl) {
+            switch (mode) {
+                case AnnotationMode.REGION:
+                    this.containerEl.classList.add(CLASS_ANNOTATIONS_CREATE_REGION);
+                    break;
+                default:
+                    this.containerEl.classList.remove(CLASS_ANNOTATIONS_CREATE_REGION);
+                    break;
+            }
+        }
+    };
+
+    /**
      * Handler for annotation controls button click event.
      *
      * @private
@@ -1098,18 +1124,7 @@ class BaseViewer extends EventEmitter {
                 ? AnnotationMode.REGION
                 : nextMode,
         );
-        this.annotationControls.setMode(nextMode);
-
-        if (this.options.enableAnnotationsDiscoverability) {
-            switch (nextMode) {
-                case AnnotationMode.REGION:
-                    this.containerEl.classList.add(CLASS_ANNOTATIONS_CREATE_REGION);
-                    break;
-                default:
-                    this.containerEl.classList.remove(CLASS_ANNOTATIONS_CREATE_REGION);
-                    break;
-            }
-        }
+        this.processAnnotationModeChange(nextMode);
     }
 
     /**
@@ -1282,18 +1297,12 @@ class BaseViewer extends EventEmitter {
         if (status === 'success') {
             this.annotator.emit('annotations_active_set', id);
 
-            if (this.annotationControls) {
-                this.annotationControls.setMode(this.annotationControlsFSM.transition(AnnotationInput.SUCCESS));
-            }
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.SUCCESS));
         }
     }
 
     handleAnnotationCreatorChangeEvent({ status, type }) {
-        if (!this.annotationControls) {
-            return;
-        }
-
-        this.annotationControls.setMode(this.annotationControlsFSM.transition(status, type));
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(status, type));
     }
 
     /**

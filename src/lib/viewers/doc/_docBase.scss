@@ -334,6 +334,11 @@ $thumbnail-sidebar-width: 226px;
 
 .bp-content {
     &.bp-annotations-discoverable {
+        // Hide cursor popup in default mode
+        .ba-PopupCursor {
+            display: none;
+        }
+
         .textLayer {
             pointer-events: none;
 
@@ -343,6 +348,11 @@ $thumbnail-sidebar-width: 226px;
         }
 
         &.bp-annotations-create--region {
+            // Reset cursor popup in explicit region mode
+            .ba-PopupCursor {
+                display: block;
+            }
+
             .textLayer {
                 span {
                     pointer-events: none;
