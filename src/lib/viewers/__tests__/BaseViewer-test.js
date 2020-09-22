@@ -1932,11 +1932,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.REGION);
         });
 
-        it('should add create region class if discoverability is enabled and mode is REGION', () => {
-            base.options.enableAnnotationsDiscoverability = true;
+        it('should add create region class and mode is REGION', () => {
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
             expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+        });
+
+        it('should add create highlight class and mode is HIGHLIGHT', () => {
+            base.processAnnotationModeChange(AnnotationMode.HIGHLIGHT);
+
+            expect(base.containerEl).to.have.class(constants.CLASS_ANNOTATIONS_CREATE_HIGHLIGHT);
         });
 
         [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {

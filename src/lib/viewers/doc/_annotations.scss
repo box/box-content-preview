@@ -1,0 +1,22 @@
+@mixin bp-annotations-create-base {
+    // Reset cursor popup in explicit region mode
+    .ba-PopupCursor {
+        display: block;
+    }
+
+    .annotationLayer {
+        pointer-events: none;
+    }
+}
+
+@mixin bp-annotations-disable-highlight-targets {
+    .ba-HighlightList .ba-HighlightSvg.is-listening .ba-HighlightTarget-rect {
+        pointer-events: none;
+    }
+}
+
+@mixin bp-annotations-disable-region-targets {
+    .ba-RegionAnnotations-list.is-listening .ba-RegionAnnotation {
+        pointer-events: none;
+    }
+}

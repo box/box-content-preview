@@ -1,4 +1,5 @@
 @import '../../boxuiVariables';
+@import './annotations';
 
 $pdfjs-highlight: #b400aa !default;
 $pdfjs-highlight-selected: #006400 !default;
@@ -346,19 +347,21 @@ $thumbnail-sidebar-width: 226px;
                 pointer-events: auto;
             }
         }
+    }
 
-        &.bp-annotations-create--region {
-            // Reset cursor popup in explicit region mode
-            .ba-PopupCursor {
-                display: block;
-            }
+    &.bp-annotations-create--highlight {
+        @include bp-annotations-create-base;
+        @include bp-annotations-disable-highlight-targets;
+        @include bp-annotations-disable-region-targets;
+    }
 
-            .annotationLayer,
-            .ba-HighlightList .ba-HighlightSvg.is-listening .ba-HighlightTarget-rect,
-            .ba-RegionAnnotation,
-            .textLayer span {
-                pointer-events: none;
-            }
+    &.bp-annotations-create--region {
+        @include bp-annotations-create-base;
+        @include bp-annotations-disable-highlight-targets;
+        @include bp-annotations-disable-region-targets;
+
+        .textLayer span {
+            pointer-events: none;
         }
     }
 
