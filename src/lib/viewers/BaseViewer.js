@@ -1087,7 +1087,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAnnotationControlsEscape() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        this.annotator.toggleAnnotationMode(
+            this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE,
+        );
     }
 
     /**

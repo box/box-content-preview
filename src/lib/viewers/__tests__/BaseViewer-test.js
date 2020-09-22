@@ -1874,15 +1874,21 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleAnnotationControlsEscape()', () => {
-        it('should call toggleAnnotationMode', () => {
-            base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
-            };
+    describe.only('handleAnnotationControlsEscape()', () => {
+        [
+            [false, AnnotationMode.NONE],
+            [true, AnnotationMode.REGION],
+        ].forEach(([enableAnnotationsDiscoverability, mode]) => {
+            it(`should call toggleAnnotationMode with ${mode} if enableAnnotationsDiscoverability is ${enableAnnotationsDiscoverability}`, () => {
+                base.annotator = {
+                    toggleAnnotationMode: sandbox.stub(),
+                };
+                base.options.enableAnnotationsDiscoverability = enableAnnotationsDiscoverability;
 
-            base.handleAnnotationControlsEscape();
+                base.handleAnnotationControlsEscape();
 
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+                expect(base.annotator.toggleAnnotationMode).to.be.calledWith(mode);
+            });
         });
     });
 
