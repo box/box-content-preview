@@ -62,7 +62,7 @@ describe('lib/AnnotationControlsFSM', () => {
 
         // Should reset state
         it('should reset state if input is AnnotationInput.RESET', () => {
-            const annotationControlsFSM = new AnnotationControlsFSM(AnnotationMode.REGION);
+            const annotationControlsFSM = new AnnotationControlsFSM();
 
             expect(annotationControlsFSM.transition(AnnotationInput.RESET)).to.equal(AnnotationMode.NONE);
             expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
