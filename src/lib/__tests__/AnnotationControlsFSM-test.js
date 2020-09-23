@@ -203,5 +203,15 @@ describe('lib/AnnotationControlsFSM', () => {
                 });
             });
         });
+
+        // reset the currentState to be AnnotationState.NONE
+        describe('reset()', () => {
+            it('should set this.currentState to AnnotationState.NONE', () => {
+                const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
+
+                annotationControlsFSM.reset();
+                expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
+            });
+        });
     });
 });

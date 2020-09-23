@@ -46,6 +46,10 @@ export default class AnnotationControlsFSM {
 
     public getState = (): AnnotationState => this.currentState;
 
+    public reset = (): void => {
+        this.currentState = AnnotationState.NONE;
+    };
+
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
             this.currentState = mode === stateModeMap[this.currentState] ? AnnotationState.NONE : modeStateMap[mode];
