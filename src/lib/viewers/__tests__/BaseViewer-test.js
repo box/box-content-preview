@@ -599,13 +599,19 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 destroy: sandbox.mock(),
             };
+            base.annotationControlsFSM = {
+                reset: sandbox.mock(),
+            };
             base.options.enableAnnotationsDiscoverability = true;
+            base.processAnnotationModeChange = sandbox.mock();
 
             base.handleFullscreenExit();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
             expect(base.enableAnnotationControls).to.be.called;
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.annotationControlsFSM.reset).to.be.called;
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
         });
     });
 
@@ -1874,21 +1880,33 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe.only('handleAnnotationControlsEscape()', () => {
-        [
-            [false, AnnotationMode.NONE],
-            [true, AnnotationMode.REGION],
-        ].forEach(([enableAnnotationsDiscoverability, mode]) => {
-            it(`should call toggleAnnotationMode with ${mode} if enableAnnotationsDiscoverability is ${enableAnnotationsDiscoverability}`, () => {
-                base.annotator = {
-                    toggleAnnotationMode: sandbox.stub(),
-                };
-                base.options.enableAnnotationsDiscoverability = enableAnnotationsDiscoverability;
+    describe('handleAnnotationControlsEscape()', () => {
+        it('should call toggleAnnotationMode with AnnotationMode.NONE if enableAnnotationsDiscoverability is false', () => {
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+            base.options.enableAnnotationsDiscoverability = false;
 
-                base.handleAnnotationControlsEscape();
+            base.handleAnnotationControlsEscape();
 
-                expect(base.annotator.toggleAnnotationMode).to.be.calledWith(mode);
-            });
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+        });
+
+        it('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+            base.annotationControlsFSM = {
+                reset: sandbox.stub(),
+            };
+            base.options.enableAnnotationsDiscoverability = true;
+            base.processAnnotationModeChange = sandbox.stub();
+
+            base.handleAnnotationControlsEscape();
+
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.annotationControlsFSM.reset).to.be.called;
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
         });
     });
 
