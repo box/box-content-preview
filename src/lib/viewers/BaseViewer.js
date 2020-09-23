@@ -595,8 +595,7 @@ class BaseViewer extends EventEmitter {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
             if (this.options.enableAnnotationsDiscoverability) {
                 this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-                this.annotationControlsFSM.reset();
-                this.processAnnotationModeChange(AnnotationMode.NONE);
+                this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
             }
             this.enableAnnotationControls();
         }
@@ -1091,8 +1090,7 @@ class BaseViewer extends EventEmitter {
     handleAnnotationControlsEscape() {
         if (this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-            this.annotationControlsFSM.reset();
-            this.processAnnotationModeChange(AnnotationMode.NONE);
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
         } else {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }

@@ -599,19 +599,15 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 destroy: sandbox.mock(),
             };
-            base.annotationControlsFSM = {
-                reset: sandbox.mock(),
-            };
             base.options.enableAnnotationsDiscoverability = true;
             base.processAnnotationModeChange = sandbox.mock();
 
             base.handleFullscreenExit();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.enableAnnotationControls).to.be.called;
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.annotationControlsFSM.reset).to.be.called;
             expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.enableAnnotationControls).to.be.called;
         });
     });
 
@@ -1896,16 +1892,12 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
-            base.annotationControlsFSM = {
-                reset: sandbox.stub(),
-            };
             base.options.enableAnnotationsDiscoverability = true;
             base.processAnnotationModeChange = sandbox.stub();
 
             base.handleAnnotationControlsEscape();
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.annotationControlsFSM.reset).to.be.called;
             expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
         });
     });

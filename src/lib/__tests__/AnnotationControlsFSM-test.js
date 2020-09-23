@@ -59,13 +59,21 @@ describe('lib/AnnotationControlsFSM', () => {
                 expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
             });
         });
+
+        // Should reset state
+        it('should reset state if input is AnnotationInput.RESET', () => {
+            const annotationControlsFSM = new AnnotationControlsFSM(AnnotationMode.REGION);
+
+            expect(annotationControlsFSM.transition(AnnotationInput.RESET)).to.equal(AnnotationMode.NONE);
+            expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
+        });
     });
 
     describe('AnnotationState.HIGHLIGHT/REGION', () => {
         // Stay in the same state
         [AnnotationState.HIGHLIGHT, AnnotationState.REGION].forEach(state => {
             Object.values(AnnotationInput)
-                .filter(input => input !== AnnotationInput.CLICK)
+                .filter(input => input !== AnnotationInput.CLICK && input !== AnnotationInput.RESET)
                 .forEach(input => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
@@ -201,16 +209,6 @@ describe('lib/AnnotationControlsFSM', () => {
                     expect(annotationControlsFSM.transition(AnnotationInput.CLICK, mode)).to.equal(output);
                     expect(annotationControlsFSM.getState()).to.equal(output);
                 });
-            });
-        });
-
-        // reset the currentState to be AnnotationState.NONE
-        describe('reset()', () => {
-            it('should set this.currentState to AnnotationState.NONE', () => {
-                const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
-
-                annotationControlsFSM.reset();
-                expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
             });
         });
     });

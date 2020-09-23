@@ -12,6 +12,7 @@ export enum AnnotationInput {
     CANCEL = 'cancel',
     CLICK = 'click',
     CREATE = 'create',
+    RESET = 'reset',
     STARTED = 'started',
     SUCCESS = 'success',
     UPDATE = 'update',
@@ -46,13 +47,14 @@ export default class AnnotationControlsFSM {
 
     public getState = (): AnnotationState => this.currentState;
 
-    public reset = (): void => {
-        this.currentState = AnnotationState.NONE;
-    };
-
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
             this.currentState = mode === stateModeMap[this.currentState] ? AnnotationState.NONE : modeStateMap[mode];
+            return stateModeMap[this.currentState];
+        }
+
+        if (input === AnnotationInput.RESET) {
+            this.currentState = AnnotationState.NONE;
             return stateModeMap[this.currentState];
         }
 
