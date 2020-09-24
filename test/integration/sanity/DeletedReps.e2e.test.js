@@ -9,13 +9,13 @@ describe('Previewing a file with deleted representations', () => {
 
     const helpers = {
         checkDeletedRepError: () => {
-            cy.window().then((win) => {
-                win.preview.addListener('preview_error', (data) => {
+            cy.window().then(win => {
+                win.preview.addListener('preview_error', data => {
                     cy.expect(data.error.code).to.equal(REPS_ERROR);
-                })
+                });
             });
-        }
-    }
+        },
+    };
 
     beforeEach(() => {
         cy.server();
@@ -26,7 +26,7 @@ describe('Previewing a file with deleted representations', () => {
             method: 'GET',
             url: '**/internal_files/**',
             status: 202,
-            response: {}
+            response: {},
         });
 
         // Mocking requests for original reps
@@ -34,32 +34,32 @@ describe('Previewing a file with deleted representations', () => {
             method: 'GET',
             url: '**/content?**',
             status: 202,
-            response: {}
+            response: {},
         });
 
         cy.visit('/', {
-            onBeforeLoad (win) {
+            onBeforeLoad(win) {
                 // Workaround for fetch detection in cypress mocking. https://github.com/cypress-io/cypress/issues/95
                 delete win.fetch; // eslint-disable-line no-param-reassign
-            }
-        })
+            },
+        });
     });
 
     [
         {
             viewer: 'Document',
-            fileId: fileIdDoc
+            fileId: fileIdDoc,
         },
         {
             viewer: 'Presentation',
-            fileId: fileIdPresentation
-        }
-    ].forEach((test) => {
+            fileId: fileIdPresentation,
+        },
+    ].forEach(test => {
         it(test.viewer, () => {
             helpers.checkDeletedRepError();
-            
+
             // Temporarily disabling annotations due to a bug in 2.3
             cy.showPreview(token, test.fileId, { showAnnotations: false });
-        })
-    })
+        });
+    });
 });

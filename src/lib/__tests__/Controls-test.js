@@ -6,16 +6,10 @@ import { CLASS_HIDDEN } from '../constants';
 let controls;
 let clock;
 
-const sandbox = sinon.sandbox.create();
-
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const RESET_TIMEOUT_CLOCK_TICK = 2001;
 
 describe('lib/Controls', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('__tests__/Controls-test.html');
         controls = new Controls(document.getElementById('test-controls-container'));
@@ -23,7 +17,6 @@ describe('lib/Controls', () => {
 
     afterEach(() => {
         fixture.cleanup();
-        sandbox.verifyAndRestore();
 
         if (controls && typeof controls.destroy === 'function') {
             controls.destroy();
@@ -38,11 +31,12 @@ describe('lib/Controls', () => {
         let controlsElEventListener;
 
         beforeEach(() => {
-            container = document.getElementById('test-controls-container');
             const controlElement = document.createElement('div');
-            controlsElEventListener = sandbox.stub(controlElement, 'addEventListener');
-            sandbox.stub(container, 'appendChild').returns(controlElement);
-            containerElEventListener = sandbox.stub(container, 'addEventListener');
+            container = document.getElementById('test-controls-container');
+            containerElEventListener = jest.spyOn(container, 'addEventListener');
+            controlsElEventListener = jest.spyOn(controlElement, 'addEventListener');
+
+            jest.spyOn(container, 'appendChild').mockReturnValue(controlElement);
         });
 
         afterEach(() => {
@@ -52,82 +46,82 @@ describe('lib/Controls', () => {
         });
 
         it('should create the correct DOM structure', () => {
-            expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
+            expect(controls.containerEl).toEqual(document.getElementById('test-controls-container'));
 
-            expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
+            expect(controls.controlsEl.classList.contains('bp-controls')).toBe(true);
         });
 
         it('should add the correct event listeners', () => {
-            sandbox.stub(Browser, 'hasTouch').returns(false);
+            jest.spyOn(Browser, 'hasTouch').mockReturnValue(false);
             controls = new Controls(container);
 
-            expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
-            expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
-            expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
-            expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
-            expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
-            expect(controlsElEventListener).to.be.calledWith('click', controls.clickHandler);
+            expect(containerElEventListener).toBeCalledWith('mousemove', controls.mousemoveHandler);
+            expect(controlsElEventListener).toBeCalledWith('mouseenter', controls.mouseenterHandler);
+            expect(controlsElEventListener).toBeCalledWith('mouseleave', controls.mouseleaveHandler);
+            expect(controlsElEventListener).toBeCalledWith('focusin', controls.focusinHandler);
+            expect(controlsElEventListener).toBeCalledWith('focusout', controls.focusoutHandler);
+            expect(controlsElEventListener).toBeCalledWith('click', controls.clickHandler);
         });
 
         it('should add the correct event listeners when browser has touch', () => {
-            sandbox.stub(Browser, 'hasTouch').returns(true);
+            jest.spyOn(Browser, 'hasTouch').mockReturnValue(true);
             controls = new Controls(container);
 
-            expect(containerElEventListener).to.be.calledWith('touchstart', controls.mousemoveHandler);
+            expect(containerElEventListener).toBeCalledWith('touchstart', controls.mousemoveHandler);
         });
     });
 
     describe('destroy()', () => {
-        it('should remove the correct event listeners', () => {
-            const containerElEventListener = sandbox.stub(controls.containerEl, 'removeEventListener');
-            const controlsElEventListener = sandbox.stub(controls.controlsEl, 'removeEventListener');
+        test('should remove the correct event listeners', () => {
+            const containerElEventListener = jest.spyOn(controls.containerEl, 'removeEventListener');
+            const controlsElEventListener = jest.spyOn(controls.controlsEl, 'removeEventListener');
             controls.hasTouch = true;
 
             controls.destroy();
-            expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
-            expect(containerElEventListener).to.be.calledWith('touchstart', controls.mousemoveHandler);
-            expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
-            expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
-            expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
-            expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
-            expect(controlsElEventListener).to.be.calledWith('click', controls.clickHandler);
+            expect(containerElEventListener).toBeCalledWith('mousemove', controls.mousemoveHandler);
+            expect(containerElEventListener).toBeCalledWith('touchstart', controls.mousemoveHandler);
+            expect(controlsElEventListener).toBeCalledWith('mouseenter', controls.mouseenterHandler);
+            expect(controlsElEventListener).toBeCalledWith('mouseleave', controls.mouseleaveHandler);
+            expect(controlsElEventListener).toBeCalledWith('focusin', controls.focusinHandler);
+            expect(controlsElEventListener).toBeCalledWith('focusout', controls.focusoutHandler);
+            expect(controlsElEventListener).toBeCalledWith('click', controls.clickHandler);
         });
 
-        it('should remove click listeners for any button references', () => {
+        test('should remove click listeners for any button references', () => {
             const button1 = {
-                button: { removeEventListener: sandbox.stub() },
+                button: { removeEventListener: jest.fn() },
                 handler: 'handler',
             };
             const button2 = {
-                button: { removeEventListener: sandbox.stub() },
+                button: { removeEventListener: jest.fn() },
                 handler: 'handler',
             };
             controls.buttonRefs = [button1, button2];
 
             controls.destroy();
-            expect(button1.button.removeEventListener).to.be.calledWith('click', 'handler');
-            expect(button2.button.removeEventListener).to.be.calledWith('click', 'handler');
+            expect(button1.button.removeEventListener).toBeCalledWith('click', 'handler');
+            expect(button2.button.removeEventListener).toBeCalledWith('click', 'handler');
         });
     });
 
     describe('isPreviewControlButton()', () => {
-        it('should determine whether the element is a preview control button', () => {
+        test('should determine whether the element is a preview control button', () => {
             let parent = null;
             let element = null;
-            expect(controls.isPreviewControlButton(element)).to.be.false;
+            expect(controls.isPreviewControlButton(element)).toBe(false);
 
             parent = document.createElement('div');
             element = document.createElement('div');
             element.className = 'bp-controls-btn';
             parent.appendChild(element);
 
-            expect(controls.isPreviewControlButton(element)).to.be.true;
+            expect(controls.isPreviewControlButton(element)).toBe(true);
 
             element.className = '';
-            expect(controls.isPreviewControlButton(element)).to.be.false;
+            expect(controls.isPreviewControlButton(element)).toBe(false);
 
             parent.className = 'bp-page-num-wrapper';
-            expect(controls.isPreviewControlButton(element)).to.be.true;
+            expect(controls.isPreviewControlButton(element)).toBe(true);
         });
     });
 
@@ -140,235 +134,230 @@ describe('lib/Controls', () => {
             clock.restore();
         });
 
-        it('should clear the timeout of the control display timeout Id', () => {
-            const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
+        test('should clear the timeout of the control display timeout Id', () => {
+            const clearTimeoutStub = jest.spyOn(window, 'clearTimeout');
 
             controls.resetTimeout();
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(clearTimeoutStub).to.be.calledTwice;
+            expect(clearTimeoutStub).toBeCalledTimes(2);
         });
 
-        it('should call resetTimeout again if should hide is false', () => {
+        test('should call resetTimeout again if should hide is false', () => {
             controls.shouldHide = false;
             controls.resetTimeout();
 
-            const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
+            const resetTimeoutStub = jest.spyOn(controls, 'resetTimeout');
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(resetTimeoutStub).to.be.called;
+            expect(resetTimeoutStub).toBeCalled();
         });
 
-        it('should call resetTimeout again if the page number input is focused', () => {
+        test('should call resetTimeout again if the page number input is focused', () => {
             controls.shouldHide = true;
-            const isPageNumFocusedStub = sandbox.stub(controls, 'isPageNumFocused').returns(true);
+            const isPageNumFocusedStub = jest.spyOn(controls, 'isPageNumFocused').mockReturnValue(true);
             controls.resetTimeout();
 
-            const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
+            const resetTimeoutStub = jest.spyOn(controls, 'resetTimeout');
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(isPageNumFocusedStub).to.be.called;
-            expect(resetTimeoutStub).to.be.called;
+            expect(isPageNumFocusedStub).toBeCalled();
+            expect(resetTimeoutStub).toBeCalled();
         });
 
-        it('should not remove the preview controls class if should hide is false', () => {
+        test('should not remove the preview controls class if should hide is false', () => {
             controls.shouldHide = false;
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(true);
         });
 
-        it('should remove the preview controls class if should hide is true', () => {
+        test('should remove the preview controls class if should hide is true', () => {
             controls.shouldHide = true;
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.false;
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(false);
         });
 
-        it('should blur the controls if they are active', () => {
+        test('should blur the controls if they are active', () => {
             controls.shouldHide = true;
-            const containsStub = sandbox.stub(controls.controlsEl, 'contains').returns(true);
-            const blurStub = sandbox.stub(document.activeElement, 'blur');
+            const containsStub = jest.spyOn(controls.controlsEl, 'contains').mockReturnValue(true);
+            const blurStub = jest.spyOn(document.activeElement, 'blur');
 
             controls.resetTimeout();
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(containsStub).to.be.called;
-            expect(blurStub).to.be.called;
+            expect(containsStub).toBeCalled();
+            expect(blurStub).toBeCalled();
         });
     });
 
     describe('mouseenterHandler()', () => {
-        it('should make block hiding true', () => {
+        test('should make block hiding true', () => {
             controls.mouseenterHandler();
 
-            expect(controls.shouldHide).to.be.false;
+            expect(controls.shouldHide).toBe(false);
         });
     });
 
     describe('mouseleaveHandler()', () => {
-        it('should make block hiding false', () => {
+        test('should make block hiding false', () => {
             controls.mouseleaveHandler();
 
-            expect(controls.shouldHide).to.be.true;
+            expect(controls.shouldHide).toBe(true);
         });
     });
 
     describe('focusinHandler()', () => {
-        it('should add the controls class, block hiding if the element is a preview control button', () => {
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton').returns(true);
+        test('should add the controls class, block hiding if the element is a preview control button', () => {
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton').mockReturnValue(true);
 
             controls.focusinHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
-            expect(controls.shouldHide).to.be.false;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(true);
+            expect(controls.shouldHide).toBe(false);
         });
 
-        it('should not add the controls class if the element is not a preview control button', () => {
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton').returns(false);
+        test('should not add the controls class if the element is not a preview control button', () => {
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton').mockReturnValue(false);
 
             controls.focusinHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.false;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(false);
         });
     });
 
     describe('focusoutHandler()', () => {
-        it('should remove the controls class if the element is a preview control button and the related target is not', () => {
+        test('should remove the controls class if the element is a preview control button and the related target is not', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton');
-            isControlButtonStub.onCall(0).returns(true);
-            isControlButtonStub.onCall(1).returns(false);
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton');
+            isControlButtonStub.mockReturnValue(true).mockReturnValue(false);
 
             controls.focusoutHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.shouldHide).to.be.true;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.shouldHide).toBe(true);
         });
 
-        it('should not remove the controls class if the element is not a preview control button and the related target is not', () => {
+        test('should not remove the controls class if the element is not a preview control button and the related target is not', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton');
-            isControlButtonStub.onCall(0).returns(false);
-            isControlButtonStub.onCall(1).returns(false);
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton');
+            isControlButtonStub.mockReturnValue(false).mockReturnValue(false);
 
             controls.focusoutHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(true);
         });
 
-        it('should not remove the controls class if the element is a preview control button and the related target is', () => {
+        test('should not remove the controls class if the element is a preview control button and the related target is', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton');
-            isControlButtonStub.onCall(0).returns(true);
-            isControlButtonStub.onCall(1).returns(true);
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton');
+            isControlButtonStub.mockReturnValue(true).mockReturnValue(true);
 
             controls.focusoutHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(true);
         });
 
-        it('should not remove the controls class if the element is  a preview control button and the related target is', () => {
+        test('should not remove the controls class if the element is  a preview control button and the related target is', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
-            const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton');
-            isControlButtonStub.onCall(0).returns(false);
-            isControlButtonStub.onCall(1).returns(true);
+            const isControlButtonStub = jest.spyOn(controls, 'isPreviewControlButton');
+            isControlButtonStub.mockReturnValue(false).mockReturnValue(true);
 
             controls.focusoutHandler('event');
-            expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+            expect(isControlButtonStub).toBeCalled();
+            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).toBe(true);
         });
     });
 
     describe('clickHandler()', () => {
-        it('should stop block hiding', () => {
+        test('should stop block hiding', () => {
             controls.hasTouch = true;
-
             controls.clickHandler();
-            expect(controls.shouldHide).to.be.true;
+            expect(controls.shouldHide).toBe(true);
         });
 
         it('should call stopPropagation on event when called', () => {
-            const stopPropagation = sandbox.stub();
+            const stopPropagation = jest.fn();
 
             controls.clickHandler({ stopPropagation });
 
-            expect(stopPropagation).to.be.called;
+            expect(stopPropagation).toBeCalled();
         });
     });
 
     describe('add()', () => {
         beforeEach(() => {
-            sandbox.stub(controls.buttonRefs, 'push');
+            jest.spyOn(controls.buttonRefs, 'push');
         });
 
-        it('should create a button with the right attributes', () => {
-            const btn = controls.add('test button', sandbox.stub(), 'test1', 'test content');
-            expect(btn.attributes.title.value).to.equal('test button');
-            expect(btn.attributes['aria-label'].value).to.equal('test button');
-            expect(btn.classList.contains('test1')).to.be.true;
-            expect(btn.innerHTML).to.equal('test content');
-            expect(btn.parentNode.parentNode).to.equal(controls.controlsEl);
-            expect(controls.buttonRefs.push).to.be.called;
+        test('should create a button with the right attributes', () => {
+            const btn = controls.add('test button', jest.fn(), 'test1', 'test content');
+            expect(btn.attributes.title.value).toBe('test button');
+            expect(btn.attributes['aria-label'].value).toBe('test button');
+            expect(btn.classList.contains('test1')).toBe(true);
+            expect(btn.innerHTML).toBe('test content');
+            expect(btn.parentNode.parentNode).toBe(controls.controlsEl);
+            expect(controls.buttonRefs.push).toBeCalled();
         });
 
-        it('should create a span if specified', () => {
+        test('should create a span if specified', () => {
             const span = controls.add('test span', null, 'span1', 'test content', 'span');
-            expect(span.attributes.title.value).to.equal('test span');
-            expect(span.attributes['aria-label'].value).to.equal('test span');
-            expect(span.classList.contains('span1')).to.be.true;
-            expect(span.classList.contains('bp-controls-btn')).to.be.false;
-            expect(span.innerHTML).to.equal('test content');
-            expect(span.parentNode.parentNode).to.equal(controls.controlsEl);
-            expect(controls.buttonRefs.push).not.to.be.called;
+            expect(span.attributes.title.value).toBe('test span');
+            expect(span.attributes['aria-label'].value).toBe('test span');
+            expect(span.classList.contains('span1')).toBe(true);
+            expect(span.classList.contains('bp-controls-btn')).toBe(false);
+            expect(span.innerHTML).toBe('test content');
+            expect(span.parentNode.parentNode).toBe(controls.controlsEl);
+            expect(controls.buttonRefs.push).not.toBeCalled();
         });
 
-        it('should append the controls to the provided element', () => {
+        test('should append the controls to the provided element', () => {
             const div = controls.addGroup('test-group');
-            const btn = controls.add('test button', sandbox.stub(), 'test1', 'test content', undefined, div);
-            expect(btn.parentNode.parentNode).to.equal(div);
+            const btn = controls.add('test button', jest.fn(), 'test1', 'test content', undefined, div);
+            expect(btn.parentNode.parentNode).toBe(div);
         });
     });
 
     describe('addGroup()', () => {
-        it('should create a controls group within the controls element', () => {
+        test('should create a controls group within the controls element', () => {
             const div = controls.addGroup('test-group');
-            expect(div.parentNode).to.equal(controls.controlsEl);
+            expect(div.parentNode).toBe(controls.controlsEl);
             expect(div.classList.contains('test-group'));
         });
     });
 
     describe('enable()', () => {
-        it('should unhide the controls', () => {
+        test('should unhide the controls', () => {
             controls.controlsEl.className = CLASS_HIDDEN;
             controls.enable();
 
-            expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).toBe(false);
         });
     });
 
     describe('disable()', () => {
-        it('should hide the controls', () => {
+        test('should hide the controls', () => {
             controls.disable();
 
-            expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).toBe(true);
         });
     });
 
     describe('isPageNumFocused()', () => {
-        it('should return true if page num element is focused', () => {
+        test('should return true if page num element is focused', () => {
             document.activeElement.classList.add('bp-page-num-input');
-            expect(controls.isPageNumFocused()).to.be.true;
+            expect(controls.isPageNumFocused()).toBe(true);
         });
 
-        it('should return false if page num element is not', () => {
+        test('should return false if page num element is not', () => {
             document.activeElement.classList.remove('bp-page-num-input');
-            expect(controls.isPageNumFocused()).to.be.false;
+            expect(controls.isPageNumFocused()).toBe(false);
         });
     });
 });

@@ -1,120 +1,115 @@
 /* eslint-disable no-unused-expressions */
 import Logger from '../Logger';
 
-let logger;
-const sandbox = sinon.sandbox.create();
-
 describe('lib/Logger', () => {
-    const dateNowStub = sandbox.stub(Date, 'now');
+    const dateNowStub = jest.spyOn(Date, 'now');
+    let logger;
 
     beforeEach(() => {
-        dateNowStub.returns(0);
+        dateNowStub.mockReturnValue(0);
         logger = new Logger('FOO', {});
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         logger = null;
     });
 
-    it('should have correct defaults', () => {
-        dateNowStub.returns(1); // Took 1 ms to run
+    test('should have correct defaults', () => {
+        dateNowStub.mockReturnValue(1); // Took 1 ms to run
         const log = logger.done();
 
-        assert.ok(log.time.total < 5, 'Total time should be correct');
-        assert.ok(log.time.conversion < 5, 'Conversion time should be correct');
-        assert.ok(log.time.rendering < 5, 'Rendering time should be correct');
+        expect(log.time.total < 5).toBe(true);
+        expect(log.time.conversion < 5).toBe(true);
+        expect(log.time.rendering < 5).toBe(true);
 
-        assert.equal(undefined, log.type, 'Type should be correct');
-        assert.equal('FOO', log.locale, 'Locale should be correct');
-        assert.equal('preview', log.event, 'Event should be correct');
+        expect(undefined).toEqual(log.type);
+        expect('FOO').toEqual(log.locale);
+        expect('preview').toEqual(log.event);
 
-        assert.equal(undefined, log.file, 'File should be correct');
+        expect(undefined).toEqual(log.file);
 
-        assert.notOk(log.cache.hit, 'Cache should not be hit');
-        assert.notOk(log.cache.stale, 'Cache should not be stale');
+        expect(log.cache.hit).toBeFalsy();
+        expect(log.cache.stale).toBeFalsy();
 
-        /* eslint-disable no-undef */
-        expect(log.client.name).to.equal(__NAME__);
-        expect(log.client.version).to.equal(__VERSION__);
-        /* eslint-enable no-undef */
+        expect(log.client.name).toBe(__NAME__);
+        expect(log.client.version).toBe(__VERSION__);
     });
 
-    it('should set and get correctly', () => {
-        dateNowStub.returns(0);
+    test('should set and get correctly', () => {
+        dateNowStub.mockReturnValue(0);
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });
         logger.setType('BAR');
 
-        dateNowStub.returns(100);
+        dateNowStub.mockReturnValue(100);
         logger.setUnConverted();
 
         const log = logger.done();
 
-        assert.equal('number', typeof log.time.total, 'Total time should be a number');
-        assert.equal('number', typeof log.time.conversion, 'Conversion time should be a number');
-        assert.equal('number', typeof log.time.rendering, 'Conversion time should be a number');
-        assert.equal(log.time.total, log.time.conversion + log.time.rendering, 'Total time should add up');
+        expect('number').toEqual(typeof log.time.total);
+        expect('number').toEqual(typeof log.time.conversion);
+        expect('number').toEqual(typeof log.time.rendering);
+        expect(log.time.total).toEqual(log.time.conversion + log.time.rendering);
 
-        assert.equal('BAR', log.type, 'Type should be correct');
-        assert.equal('FOO', log.locale, 'Locale should be correct');
+        expect('BAR').toEqual(log.type);
+        expect('FOO').toEqual(log.locale);
 
-        assert.equal(1, log.file.id, 'File ID should be correct');
+        expect(1).toEqual(log.file.id);
 
-        assert.ok(log.cache.hit, 'Cache should be hit');
-        assert.ok(log.cache.stale, 'Cache should be stale');
+        expect(log.cache.hit).toBeTruthy();
+        expect(log.cache.stale).toBeTruthy();
     });
 
     describe('setCached()', () => {
-        it('should indicate a cache hit', () => {
+        test('should indicate a cache hit', () => {
             logger.setCached();
 
-            assert.ok(logger.log.cache.hit);
+            expect(logger.log.cache.hit).toBeTruthy();
         });
     });
 
     describe('setUnConverted()', () => {
-        it('should set converted to false', () => {
+        test('should set converted to false', () => {
             logger.setUnConverted();
 
-            assert.notOk(logger.log.converted);
+            expect(logger.log.converted).toBeFalsy();
         });
     });
 
     describe('setPreloaded()', () => {
-        it('should set preloaded time', () => {
+        test('should set preloaded time', () => {
             logger.start = 0;
-            sandbox.stub(Date, 'now').returns(100);
+            jest.spyOn(Date, 'now').mockReturnValue(100);
 
             logger.setPreloaded();
 
-            expect(logger.log.time.preload).to.equal(100);
+            expect(logger.log.time.preload).toBe(100);
         });
     });
 
     describe('setFile()', () => {
-        it('should set the file', () => {
+        test('should set the file', () => {
             logger.setFile('file');
 
-            assert.equal(logger.log.file, 'file');
+            expect(logger.log.file).toEqual('file');
         });
     });
 
     describe('setType()', () => {
-        it('should set the type', () => {
+        test('should set the type', () => {
             logger.setType('type');
 
-            assert.equal(logger.log.type, 'type');
+            expect(logger.log.type).toEqual('type');
         });
     });
 
     describe('done()', () => {
-        it('should set the count, rendering time, and return the log', () => {
+        test('should set the count, rendering time, and return the log', () => {
             const log = logger.done(0);
 
-            assert.equal(logger.log.count, 0);
-            assert.equal(log, logger.log);
+            expect(logger.log.count).toEqual(0);
+            expect(log).toEqual(logger.log);
         });
     });
 });

@@ -2,13 +2,7 @@
 import ImageLoader from '../ImageLoader';
 import ImageViewer from '../ImageViewer';
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/viewers/image/ImageLoader', () => {
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     describe('determineRepresentation()', () => {
         let file;
         let viewer;
@@ -43,9 +37,9 @@ describe('lib/viewers/image/ImageLoader', () => {
             };
         });
 
-        it('it should not return the paged 1024x1024 representation', () => {
+        test('it should not return the paged 1024x1024 representation', () => {
             const determinedRep = ImageLoader.determineRepresentation(file, viewer);
-            expect(determinedRep.properties.dimensions).to.equal('2048x2048');
+            expect(determinedRep.properties.dimensions).toBe('2048x2048');
         });
     });
 
@@ -74,8 +68,8 @@ describe('lib/viewers/image/ImageLoader', () => {
             };
 
             const determinedViewer = ImageLoader.determineViewer(file);
-            expect(determinedViewer.NAME).to.equal('MultiImage');
-            expect(determinedViewer.REP).to.equal('jpg');
+            expect(determinedViewer.NAME).toBe('MultiImage');
+            expect(determinedViewer.REP).toBe('jpg');
         });
 
         it('it should return the MultiImage viewer for a tif file with a png representation', () => {
@@ -102,8 +96,8 @@ describe('lib/viewers/image/ImageLoader', () => {
             };
 
             const determinedViewer = ImageLoader.determineViewer(file);
-            expect(determinedViewer.NAME).to.equal('MultiImage');
-            expect(determinedViewer.REP).to.equal('png');
+            expect(determinedViewer.NAME).toBe('MultiImage');
+            expect(determinedViewer.REP).toBe('png');
         });
     });
 });

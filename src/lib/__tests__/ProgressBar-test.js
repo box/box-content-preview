@@ -1,15 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import ProgressBar from '../ProgressBar';
 
+const sandbox = sinon.createSandbox();
 let mountEl;
 let progressBar;
-const sandbox = sinon.sandbox.create();
 
 describe('lib/ProgressBar', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('__tests__/ProgressBar-test.html');
         mountEl = document.querySelector('.mount');
@@ -28,22 +24,22 @@ describe('lib/ProgressBar', () => {
     });
 
     describe('ProgressBar()', () => {
-        it('should set up progress bar structure', () => {
-            expect(progressBar.containerEl).to.have.class('bp-progress-bar-container');
-            expect(progressBar.progressBarEl).to.have.class('bp-progress-bar');
-            expect(progressBar.containerEl).to.contain(progressBar.progressBarEl);
-            expect(progressBar.mountEl).to.contain(progressBar.containerEl);
+        test('should set up progress bar structure', () => {
+            expect(progressBar.containerEl).toHaveClass('bp-progress-bar-container');
+            expect(progressBar.progressBarEl).toHaveClass('bp-progress-bar');
+            expect(progressBar.containerEl.children).toContain(progressBar.progressBarEl);
+            expect(progressBar.mountEl.children).toContain(progressBar.containerEl);
         });
     });
 
     describe('destroy()', () => {
-        it('should clear progress interval and unmount the progress bar', () => {
+        test('should clear progress interval and unmount the progress bar', () => {
             sandbox
                 .mock(window)
                 .expects('clearInterval')
                 .withArgs(progressBar.progressInterval);
             progressBar.destroy();
-            expect(mountEl.querySelector('.bp-progress-bar-container')).to.equal(null);
+            expect(mountEl.querySelector('.bp-progress-bar-container')).toBeNull();
         });
     });
 
@@ -58,25 +54,25 @@ describe('lib/ProgressBar', () => {
             clock.restore();
         });
 
-        it('should show the progress bar and set progress to 0', () => {
+        test('should show the progress bar and set progress to 0', () => {
             sandbox.mock(progressBar).expects('showProgress');
-            sandbox.stub(window, 'setInterval');
+            jest.spyOn(window, 'setInterval');
 
             progressBar.start();
-            expect(progressBar.progress).to.equal(0);
+            expect(progressBar.progress).toBe(0);
         });
 
-        it('should set an interval to update progress', () => {
-            sandbox.stub(progressBar, 'showProgress');
+        test('should set an interval to update progress', () => {
+            jest.spyOn(progressBar, 'showProgress');
             progressBar.start();
 
             // Simulate one progress bar tick
             clock.tick(151);
-            expect(progressBar.progress).to.not.equal(0);
+            expect(progressBar.progress).not.toBe(0);
         });
 
-        it('should clear the interval when progress is >= 95', () => {
-            sandbox.stub(progressBar, 'showProgress');
+        test('should clear the interval when progress is >= 95', () => {
+            jest.spyOn(progressBar, 'showProgress');
             sandbox
                 .mock(window)
                 .expects('clearInterval')
@@ -91,7 +87,7 @@ describe('lib/ProgressBar', () => {
     });
 
     describe('finish()', () => {
-        it('should hide the progress bar, clear the interval, and update progress to 100', () => {
+        test('should hide the progress bar, clear the interval, and update progress to 100', () => {
             const mock = sandbox.mock(progressBar);
             mock.expects('hideProgress');
             mock.expects('updateProgress').withArgs(100);
@@ -104,25 +100,25 @@ describe('lib/ProgressBar', () => {
     });
 
     describe('updateProgress()', () => {
-        it("should update the progress bar element's width", () => {
+        test("should update the progress bar element's width", () => {
             const progress = 57;
             progressBar.updateProgress(progress);
-            expect(progressBar.progressBarEl.style.width).to.equal(`${progress}%`);
+            expect(progressBar.progressBarEl.style.width).toBe(`${progress}%`);
         });
     });
 
     describe('showProgress()', () => {
-        it('should show the progress bar', () => {
+        test('should show the progress bar', () => {
             progressBar.showProgress();
-            expect(progressBar.progressBarEl).to.have.class('bp-is-visible');
+            expect(progressBar.progressBarEl).toHaveClass('bp-is-visible');
         });
     });
 
     describe('hideProgress()', () => {
-        it('should hide the progress bar', () => {
+        test('should hide the progress bar', () => {
             progressBar.progressBarEl.classList.add('bp-is-visible');
             progressBar.hideProgress();
-            expect(progressBar.progressBarEl).to.not.have.class('bp-is-visible');
+            expect(progressBar.progressBarEl).not.toHaveClass('bp-is-visible');
         });
     });
 });

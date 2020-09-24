@@ -2,16 +2,16 @@
 import IFrameLoader from '../IFrameLoader';
 import IFrameViewer from '../IFrameViewer';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('lib/viewers/iframe/IFrameLoader', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
 
-    it('should have the correct viewer', () => {
+    test('should have the correct viewer', () => {
         const iframeViewer = IFrameLoader.viewers[0];
-        expect(iframeViewer).to.deep.equal({
+        expect(iframeViewer).toEqual({
             NAME: 'IFrame',
             CONSTRUCTOR: IFrameViewer,
             REP: 'ORIGINAL',

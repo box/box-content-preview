@@ -12,7 +12,6 @@ const PRINT_DIALOG_TIMEOUT_MS = 500;
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const EXCEL_ONLINE_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
 
-const sandbox = sinon.sandbox.create();
 let api;
 let office;
 let stubs = {};
@@ -20,14 +19,10 @@ let containerEl;
 let rootEl;
 
 describe('lib/viewers/office/OfficeViewer', () => {
-    let clock;
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
+        jest.useFakeTimers();
         fixture.load('viewers/office/__tests__/OfficeViewer-test.html');
         containerEl = document.querySelector('.container');
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
@@ -50,18 +45,15 @@ describe('lib/viewers/office/OfficeViewer', () => {
             apiHost: 'https://app.box.com',
             token: 'token',
         });
-        stubs = {
-            setupPDFUrl: sandbox.stub(office, 'setupPDFUrl'),
-        };
-        clock = sinon.useFakeTimers();
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        stubs = {};
+        Object.defineProperty(window, 'open', { value: jest.fn() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         office.containerEl = containerEl;
         office.rootEl = rootEl;
     });
 
     afterEach(() => {
-        clock.restore();
-        sandbox.verifyAndRestore();
+        jest.clearAllTimers();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -76,35 +68,36 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     describe('setup()', () => {
         beforeEach(() => {
-            stubs.setupIframe = sandbox.stub(office, 'setupIframe');
-            stubs.initPrint = sandbox.stub(office, 'initPrint');
+            stubs.initPrint = jest.spyOn(office, 'initPrint').mockImplementation();
+            stubs.setupIframe = jest.spyOn(office, 'setupIframe').mockImplementation();
+            stubs.setupPDFUrl = jest.spyOn(office, 'setupPDFUrl').mockImplementation();
         });
 
-        it('should set up the Office viewer', () => {
+        test('should set up the Office viewer', () => {
             office.setup();
-            expect(stubs.setupIframe).to.be.called;
-            expect(stubs.initPrint).to.be.called;
-            expect(stubs.setupPDFUrl).to.be.called;
+            expect(stubs.setupIframe).toBeCalled();
+            expect(stubs.setupPDFUrl).toBeCalled();
+            expect(stubs.initPrint).toBeCalled();
         });
 
-        it('should not use platform setup', () => {
+        test('should not use platform setup', () => {
             office.setup();
-            expect(office.platformSetup).to.be.false;
+            expect(office.platformSetup).toBe(false);
         });
     });
 
     describe('destroy()', () => {
-        it('should clear the print blob', () => {
+        test('should clear the print blob', () => {
             office.printBlob = {};
             office.destroy();
-            expect(office.printBlob).to.equal(null);
+            expect(office.printBlob).toBeNull();
         });
 
-        it('should revoke the printURL object', () => {
-            sandbox.stub(URL, 'revokeObjectURL');
+        test('should revoke the printURL object', () => {
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
             office.printURL = 'someblob';
             office.destroy();
-            expect(URL.revokeObjectURL).to.be.calledWith(office.printURL);
+            expect(URL.revokeObjectURL).toBeCalledWith(office.printURL);
         });
     });
 
@@ -115,127 +108,127 @@ describe('lib/viewers/office/OfficeViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should not call setup and load the Office viewer', () => {
-            const setupStub = sandbox.stub(office, 'setup');
-            Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.stub() });
+        test('should not call setup and load the Office viewer', () => {
+            const setupStub = jest.spyOn(office, 'setup');
+            Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
 
             office.load();
 
-            expect(setupStub).not.to.be.called;
-            expect(BaseViewer.prototype.load).to.be.called;
+            expect(setupStub).not.toBeCalled();
+            expect(BaseViewer.prototype.load).toBeCalled();
         });
 
-        it('should invoke startLoadTimer()', () => {
-            sandbox.stub(office, 'startLoadTimer');
+        test('should invoke startLoadTimer()', () => {
+            jest.spyOn(office, 'startLoadTimer');
 
             office.load();
-            expect(office.startLoadTimer).to.be.called;
+            expect(office.startLoadTimer).toBeCalled();
         });
     });
 
     describe('setupIframe()', () => {
         beforeEach(() => {
-            stubs.createIframeElement = sandbox.spy(office, 'createIframeElement');
+            stubs.createIframeElement = jest.spyOn(office, 'createIframeElement');
             stubs.form = {
-                submit: sandbox.stub(),
+                submit: jest.fn(),
             };
 
-            stubs.createFormElement = sandbox.stub(office, 'createFormElement').returns(stubs.form);
-            stubs.setupRunmodeURL = sandbox.stub(office, 'setupRunmodeURL').returns('src');
+            stubs.createFormElement = jest.spyOn(office, 'createFormElement').mockReturnValue(stubs.form);
+            stubs.setupRunmodeURL = jest.spyOn(office, 'setupRunmodeURL').mockReturnValue('src');
         });
 
-        it('should create the iframeEl', () => {
+        test('should create the iframeEl', () => {
             office.setupIframe();
 
-            expect(stubs.createIframeElement).to.be.called;
+            expect(stubs.createIframeElement).toBeCalled();
         });
 
-        it('should finish setting up the iframe if using platform setup', () => {
+        test('should finish setting up the iframe if using platform setup', () => {
             office.platformSetup = true;
             office.setupIframe();
 
             const iframeEl = office.containerEl.querySelector(`#${OFFICE_ONLINE_IFRAME_NAME}`);
-            expect(iframeEl.name).to.equal(OFFICE_ONLINE_IFRAME_NAME);
-            expect(iframeEl.id).to.equal(OFFICE_ONLINE_IFRAME_NAME);
+            expect(iframeEl.name).toBe(OFFICE_ONLINE_IFRAME_NAME);
+            expect(iframeEl.id).toBe(OFFICE_ONLINE_IFRAME_NAME);
         });
 
-        it('should setup and submit the form if using the platform setup', () => {
+        test('should setup and submit the form if using the platform setup', () => {
             office.platformSetup = true;
             office.setupIframe();
 
-            expect(stubs.createFormElement).to.be.calledWith(
+            expect(stubs.createFormElement).toBeCalledWith(
                 office.options.appHost,
                 office.options.file.id,
                 office.options.sharedLink,
                 office.options.location.locale,
             );
-            expect(stubs.form.submit).to.be.called;
+            expect(stubs.form.submit).toBeCalled();
         });
 
-        it('should set the iframe source and sandbox attribute if not using the platform setup', () => {
+        test('should set the iframe source and sandbox attribute if not using the platform setup', () => {
             office.setupIframe();
 
             const iframeEl = office.containerEl.querySelector('iframe');
-            expect(iframeEl.src.endsWith('src')).to.be.true;
+            expect(iframeEl.src.endsWith('src')).toBe(true);
         });
     });
     describe('setupRunmodeURL()', () => {
-        it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', () => {
+        test('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', () => {
             const src = office.setupRunmodeURL(
                 office.options.appHost,
                 office.options.file.id,
                 office.options.sharedLink,
             );
-            expect(src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
+            expect(src).toBe('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
         });
 
-        it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', () => {
+        test('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', () => {
             office.options.sharedLink = 'https://app.box.com/s/abcd';
             const src = office.setupRunmodeURL(
                 office.options.appHost,
                 office.options.file.id,
                 office.options.sharedLink,
             );
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123',
             );
         });
 
-        it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', () => {
+        test('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', () => {
             office.options.sharedLink = 'https://app.box.com/v/test';
             const src = office.setupRunmodeURL(
                 office.options.appHost,
                 office.options.file.id,
                 office.options.sharedLink,
             );
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123',
             );
         });
 
-        it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url with a subdomain', () => {
+        test('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url with a subdomain', () => {
             office.options.sharedLink = 'https://cloud.app.box.com/v/test';
             const src = office.setupRunmodeURL(
                 office.options.appHost,
                 office.options.file.id,
                 office.options.sharedLink,
             );
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://cloud.app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123',
             );
         });
 
-        it('should load a xlsx file with a runmode sourced to the original domain if the appHost differs', () => {
+        test('should load a xlsx file with a runmode sourced to the original domain if the appHost differs', () => {
             office.options.sharedLink = 'https://app.box.com/v/test';
             office.options.appHost = 'https://cloud.app.box.com';
             let src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123',
             );
 
             office.options.sharedLink = 'https://ibm.box.com/s/abcd';
             src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://ibm.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123',
             );
 
@@ -243,56 +236,54 @@ describe('lib/viewers/office/OfficeViewer', () => {
             office.options.appHost = 'https://app.app.box.com';
 
             src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal(
+            expect(src).toBe(
                 'https://cloud.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123',
             );
         });
     });
 
     describe('setupWOPISrc()', () => {
-        it('should append the file ID if there is no shared link', () => {
+        test('should append the file ID if there is no shared link', () => {
             const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('https://app.box.com/wopi/files/123');
+            expect(src).toBe('https://app.box.com/wopi/files/123');
         });
 
-        it('should append the shared name and file ID if there is a shared link', () => {
+        test('should append the shared name and file ID if there is a shared link', () => {
             office.options.sharedLink = 'https://app.box.com/s/abcd';
             const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('https://app.box.com/wopi/files/s_abcd_f_123');
+            expect(src).toBe('https://app.box.com/wopi/files/s_abcd_f_123');
         });
 
-        it('should not append the shared name if there is a vanity link', () => {
+        test('should not append the shared name if there is a vanity link', () => {
             office.options.sharedLink = 'https://app.box.com/v/abcd';
             const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
-            expect(src.includes('s_')).to.be.false;
+            expect(src.includes('s_')).toBe(false);
         });
     });
 
     describe('createIframeElement()', () => {
-        it('should initialize iframe element and set relevant attributes', () => {
+        test('should initialize iframe element and set relevant attributes', () => {
             const iframeEl = office.createIframeElement();
 
-            expect(iframeEl.width).to.equal('100%');
-            expect(iframeEl.height).to.equal('100%');
-            expect(iframeEl.frameBorder).to.equal('0');
-            expect(iframeEl.getAttribute('sandbox')).to.equal(
-                'allow-scripts allow-same-origin allow-forms allow-popups',
-            );
+            expect(iframeEl.width).toBe('100%');
+            expect(iframeEl.height).toBe('100%');
+            expect(iframeEl.frameBorder).toBe('0');
+            expect(iframeEl.getAttribute('sandbox')).toBe('allow-scripts allow-same-origin allow-forms allow-popups');
         });
 
-        it('should allow fullscreen if using the platform setup', () => {
+        test('should allow fullscreen if using the platform setup', () => {
             office.platformSetup = true;
             const iframeEl = office.createIframeElement();
 
-            expect(iframeEl.getAttribute('allowfullscreen')).to.equal('true');
+            expect(iframeEl.getAttribute('allowfullscreen')).toBe('true');
         });
     });
 
     describe('createFormElement()', () => {
         beforeEach(() => {
             const origin = 'someOrigin';
-            sandbox.stub(Location, 'getOrigin').returns(origin);
-            stubs.setupWOPISrc = sandbox.stub(office, 'setupWOPISrc').returns('src');
+            jest.spyOn(Location, 'getOrigin').mockReturnValue(origin);
+            stubs.setupWOPISrc = jest.spyOn(office, 'setupWOPISrc').mockReturnValue('src');
             stubs.sessionContext = JSON.stringify({ origin });
             stubs.formEl = office.createFormElement(
                 office.options.apiHost,
@@ -302,98 +293,96 @@ describe('lib/viewers/office/OfficeViewer', () => {
             );
         });
 
-        it('should correctly set the action URL', () => {
-            expect(stubs.formEl.getAttribute('action')).to.equal(
+        test('should correctly set the action URL', () => {
+            expect(stubs.formEl.getAttribute('action')).toBe(
                 `${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=${stubs.sessionContext}`,
             );
-            expect(stubs.formEl.getAttribute('method')).to.equal('POST');
-            expect(stubs.formEl.getAttribute('target')).to.equal(OFFICE_ONLINE_IFRAME_NAME);
+            expect(stubs.formEl.getAttribute('method')).toBe('POST');
+            expect(stubs.formEl.getAttribute('target')).toBe(OFFICE_ONLINE_IFRAME_NAME);
         });
 
-        it('should correctly set the token', () => {
+        test('should correctly set the token', () => {
             const tokenInputEl = stubs.formEl.querySelector('input[name="access_token"]');
-            expect(tokenInputEl.getAttribute('name')).to.equal('access_token');
-            expect(tokenInputEl.getAttribute('value')).to.equal('token');
-            expect(tokenInputEl.getAttribute('type')).to.equal('hidden');
+            expect(tokenInputEl.getAttribute('name')).toBe('access_token');
+            expect(tokenInputEl.getAttribute('value')).toBe('token');
+            expect(tokenInputEl.getAttribute('type')).toBe('hidden');
         });
 
-        it('should correctly set the token time to live', () => {
+        test('should correctly set the token time to live', () => {
             const tokenInputEl = stubs.formEl.querySelector('input[name="access_token_TTL"]');
-            expect(tokenInputEl.getAttribute('name')).to.equal('access_token_TTL');
-            expect(tokenInputEl.getAttribute('value')).to.not.equal(undefined);
-            expect(tokenInputEl.getAttribute('type')).to.equal('hidden');
+            expect(tokenInputEl.getAttribute('name')).toBe('access_token_TTL');
+            expect(tokenInputEl.getAttribute('value')).toBeDefined();
+            expect(tokenInputEl.getAttribute('type')).toBe('hidden');
         });
     });
 
     describe('print()', () => {
         beforeEach(() => {
             office.printBlob = undefined;
-            stubs.fetchPrintBlob = sandbox.stub(office, 'fetchPrintBlob').returns({
-                then: sandbox.stub(),
+            stubs.fetchPrintBlob = jest.spyOn(office, 'fetchPrintBlob').mockReturnValue({
+                then: jest.fn(),
             });
             office.initPrint();
-            stubs.show = sandbox.stub(office.printPopup, 'show');
+            stubs.show = jest.spyOn(office.printPopup, 'show');
         });
 
-        it('should request the print blob if it is not ready', () => {
+        test('should request the print blob if it is not ready', () => {
             office.print();
-            expect(stubs.fetchPrintBlob).to.be.called;
+            expect(stubs.fetchPrintBlob).toBeCalled();
         });
 
-        it("should directly print if print blob is ready and the print dialog hasn't been shown yet", () => {
+        test("should directly print if print blob is ready and the print dialog hasn't been shown yet", () => {
             office.printBlob = {};
             office.printDialogTimeout = setTimeout(() => {});
-            sandbox.stub(office, 'browserPrint');
+            jest.spyOn(office, 'browserPrint');
 
             office.print();
-            expect(office.browserPrint).to.be.called;
+            expect(office.browserPrint).toBeCalled();
         });
 
-        it("should directly print if print blob is ready and the print dialog isn't visible", () => {
+        test("should directly print if print blob is ready and the print dialog isn't visible", () => {
             office.printBlob = {};
             office.printDialogTimeout = null;
-            sandbox.stub(office.printPopup, 'isVisible').returns(false);
-            sandbox.stub(office, 'browserPrint');
+            jest.spyOn(office.printPopup, 'isVisible').mockReturnValue(false);
+            jest.spyOn(office, 'browserPrint');
 
             office.print();
-            expect(office.browserPrint).to.be.called;
+            expect(office.browserPrint).toBeCalled();
         });
 
-        it('should show the print popup and disable the print button if the blob is not ready', () => {
-            sandbox.stub(office.printPopup, 'disableButton');
+        test('should show the print popup and disable the print button if the blob is not ready', () => {
+            jest.spyOn(office.printPopup, 'disableButton');
 
             office.print();
-            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
+            jest.advanceTimersByTime(PRINT_DIALOG_TIMEOUT_MS + 1);
 
-            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
-            expect(office.printPopup.disableButton).to.be.called;
-
-            clock.restore();
+            expect(stubs.show).toBeCalledWith(__('print_loading'), __('print'), expect.any(Function));
+            expect(office.printPopup.disableButton).toBeCalled();
         });
 
-        it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
+        test('should update the print popup UI if popup is visible and there is no current print timeout', () => {
             office.printBlob = {};
 
-            sandbox.stub(office.printPopup, 'isVisible').returns(true);
+            jest.spyOn(office.printPopup, 'isVisible').mockReturnValue(true);
 
             office.print();
 
-            expect(office.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
-            expect(office.printPopup.messageEl.textContent).to.equal(__('print_ready'));
-            expect(office.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(office.printPopup.buttonEl.classList.contains('is-disabled')).toBe(false);
+            expect(office.printPopup.messageEl.textContent).toBe(__('print_ready'));
+            expect(office.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).toBe(true);
+            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).toBe(false);
         });
     });
 
     describe('initPrint()', () => {
-        it('should add print checkmark', () => {
+        test('should add print checkmark', () => {
             office.initPrint();
             const mockCheckmark = document.createElement('div');
             mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
-            expect(office.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
+            expect(office.printPopup.printCheckmark.innerHTML).toBe(mockCheckmark.innerHTML);
         });
 
-        it('should hide the print checkmark', () => {
+        test('should hide the print checkmark', () => {
             office.initPrint();
             expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
         });
@@ -401,132 +390,132 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     describe('browserPrint()', () => {
         beforeEach(() => {
-            stubs.emit = sandbox.stub(office, 'emit');
-            stubs.createObject = sandbox.stub(URL, 'createObjectURL');
-            stubs.open = sandbox.stub(window, 'open').returns(false);
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
+            stubs.emit = jest.spyOn(office, 'emit');
+            stubs.createObject = jest.spyOn(URL, 'createObjectURL');
+            stubs.open = jest.spyOn(window, 'open').mockReturnValue(false);
+            stubs.browser = jest.spyOn(Browser, 'getName').mockReturnValue('Chrome');
             stubs.printResult = {
-                print: sandbox.stub(),
-                addEventListener: sandbox.stub(),
+                print: jest.fn(),
+                addEventListener: jest.fn(),
             };
             office.printBlob = true;
-            window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
+            window.navigator.msSaveOrOpenBlob = jest.fn(() => true);
         });
 
-        it('should use the open or save dialog if on IE or Edge', () => {
+        test('should use the open or save dialog if on IE or Edge', () => {
             office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
+            expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should use the open or save dialog if on IE or Edge and emit a message', () => {
+        test('should use the open or save dialog if on IE or Edge and emit a message', () => {
             office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
+            expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should emit an error message if the print result fails on IE or Edge', () => {
-            window.navigator.msSaveOrOpenBlob.returns(false);
+        test('should emit an error message if the print result fails on IE or Edge', () => {
+            window.navigator.msSaveOrOpenBlob.mockReturnValue(false);
 
             office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.calledWith('printerror');
+            expect(window.navigator.msSaveOrOpenBlob).toBeCalled();
+            expect(stubs.emit).toBeCalledWith('printerror');
         });
 
-        it('should open the pdf in a new tab if not on IE or Edge', () => {
+        test('should open the pdf in a new tab if not on IE or Edge', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
 
             office.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.emit).to.be.called;
+            expect(stubs.createObject).toBeCalledWith(office.printBlob);
+            expect(stubs.open).toBeCalled();
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should print on load in the chrome browser', () => {
+        test('should print on load in the chrome browser', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
+            stubs.open.mockReturnValue(stubs.printResult);
 
             office.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.emit).to.be.called;
+            expect(stubs.createObject).toBeCalledWith(office.printBlob);
+            expect(stubs.open).toBeCalled();
+            expect(stubs.browser).toBeCalled();
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should use a timeout in safari', () => {
+        test('should use a timeout in safari', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
-            stubs.browser.returns('Safari');
+            stubs.open.mockReturnValue(stubs.printResult);
+            stubs.browser.mockReturnValue('Safari');
 
             office.browserPrint();
-            clock.tick(PRINT_TIMEOUT_MS + 1000);
+            jest.advanceTimersByTime(PRINT_TIMEOUT_MS + 1000);
 
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.printResult.print).to.be.called;
-            expect(stubs.emit).to.be.called;
+            expect(stubs.createObject).toBeCalledWith(office.printBlob);
+            expect(stubs.open).toBeCalled();
+            expect(stubs.browser).toBeCalled();
+            expect(stubs.printResult.print).toBeCalled();
+            expect(stubs.emit).toBeCalled();
         });
     });
 
     describe('fetchPrintBlob()', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve({ blob: 'blob' });
-            stubs.get = sandbox.stub(api, 'get').returns(stubs.promise);
-            stubs.appendAuthHeader = sandbox.stub(office, 'appendAuthHeader');
+            stubs.get = jest.spyOn(api, 'get').mockReturnValue(stubs.promise);
+            stubs.appendAuthHeader = jest.spyOn(office, 'appendAuthHeader');
             office.initPrint();
         });
 
-        it('should get and return the blob', () => {
+        test('should get and return the blob', () => {
             office.api = api;
 
             office.fetchPrintBlob('url');
 
             return stubs.promise.then(blob => {
-                expect(stubs.get).to.be.called;
-                expect(blob.blob).to.equal('blob');
+                expect(stubs.get).toBeCalled();
+                expect(blob.blob).toBe('blob');
             });
         });
     });
 
     describe('setupPDFUrl', () => {
         beforeEach(() => {
-            sandbox.restore();
-            stubs.createContentUrl = sandbox.stub(office, 'createContentUrlWithAuthParams');
+            stubs.createContentUrl = jest.spyOn(office, 'createContentUrlWithAuthParams');
         });
 
-        it('should not attempt to set pdfUrl if no pdf rep exist', () => {
+        test('should not attempt to set pdfUrl if no pdf rep exist', () => {
             office.options.file.representations = {
                 entries: [],
             };
 
             office.setupPDFUrl();
 
-            expect(office.pdfUrl).to.be.undefined;
-            expect(stubs.createContentUrl).not.to.have.been.called;
+            expect(office.pdfUrl).toBeUndefined();
+            expect(stubs.createContentUrl).not.toBeCalled();
         });
 
-        it('should not attempt to set pdfUrl if no content exists', () => {
+        test('should not attempt to set pdfUrl if no content exists', () => {
             office.options.file.representations = {
                 entries: [{ representation: 'pdf' }],
             };
 
             office.setupPDFUrl();
 
-            expect(office.pdfUrl).to.be.undefined;
-            expect(stubs.createContentUrl).not.to.have.been.called;
+            expect(office.pdfUrl).toBeUndefined();
+            expect(stubs.createContentUrl).not.toBeCalled();
         });
 
-        it('should set pdfUrl if pdf rep exists', () => {
-            stubs.createContentUrl.returns('url');
+        test('should set pdfUrl if pdf rep exists', () => {
+            stubs.createContentUrl.mockReturnValue('url');
+            stubs.setupPDFUrl;
             office.options.file.representations = {
                 entries: [{ representation: 'pdf', content: { url_template: 'template' } }],
             };
 
             office.setupPDFUrl();
 
-            expect(office.pdfUrl).to.equal('url');
-            expect(stubs.createContentUrl).to.have.been.called;
+            expect(office.pdfUrl).toBe('url');
+            expect(stubs.createContentUrl).toBeCalled();
         });
     });
 });

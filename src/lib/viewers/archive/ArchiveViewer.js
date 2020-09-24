@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import get from 'lodash/get';
-import './Archive.scss';
 import BaseViewer from '../BaseViewer';
 import PreviewError from '../../PreviewError';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
+import './Archive.scss';
 
 const JS = ['archive.js'];
 const CSS = ['archive.css'];

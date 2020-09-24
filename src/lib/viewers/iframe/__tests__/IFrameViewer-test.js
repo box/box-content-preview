@@ -1,16 +1,11 @@
 import IFrameViewer from '../IFrameViewer';
 import BaseViewer from '../../BaseViewer';
 
-const sandbox = sinon.sandbox.create();
 let containerEl;
 let iframe;
 
 describe('lib/viewers/iframe/IFrameViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/iframe/__tests__/IFrameViewer-test.html');
@@ -23,13 +18,12 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             },
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         iframe.containerEl = containerEl;
         iframe.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -41,12 +35,12 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should setup iframe element and load timeout', () => {
-            expect(iframe.iframeEl).to.be.instanceof(HTMLElement);
-            expect(iframe.iframeEl).to.have.attribute('width', '100%');
-            expect(iframe.iframeEl).to.have.attribute('height', '100%');
-            expect(iframe.iframeEl).to.have.attribute('frameborder', '0');
-            expect(iframe.loadTimeout).to.equal(120000);
+        test('should setup iframe element and load timeout', () => {
+            expect(iframe.iframeEl).toBeInstanceOf(HTMLElement);
+            expect(iframe.iframeEl).toHaveAttribute('width', '100%');
+            expect(iframe.iframeEl).toHaveAttribute('height', '100%');
+            expect(iframe.iframeEl).toHaveAttribute('frameborder', '0');
+            expect(iframe.loadTimeout).toBe(120000);
         });
     });
 
@@ -55,21 +49,20 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.options.appHost = 'https://app.box.com';
         });
 
-        it('should load a boxnote and fire load event', done => {
+        test('should load a boxnote and fire load event', done => {
             iframe.on('load', () => {
-                assert.equal(iframe.iframeEl.src, 'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1');
+                expect(iframe.iframeEl.src).toEqual('https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1');
                 done();
             });
 
             iframe.load();
         });
 
-        it('should load a boxnote with a shared name if a shared link exists and fire load event', done => {
+        test('should load a boxnote with a shared name if a shared link exists and fire load event', done => {
             iframe.options.sharedLink = 'https://app.box.com/s/foobar';
 
             iframe.on('load', () => {
-                assert.equal(
-                    iframe.iframeEl.src,
+                expect(iframe.iframeEl.src).toEqual(
                     'https://app.box.com/notes_embedded/123?isReadonly=1&is_preview=1&s=foobar',
                 );
                 done();
@@ -78,22 +71,22 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.load();
         });
 
-        it('should load a boxdicom and fire load event', done => {
+        test('should load a boxdicom and fire load event', done => {
             iframe.options.file.extension = 'boxdicom';
 
             iframe.on('load', () => {
-                assert.equal(iframe.iframeEl.src, 'https://app.box.com/dicom_viewer/123');
+                expect(iframe.iframeEl.src).toEqual('https://app.box.com/dicom_viewer/123');
                 done();
             });
 
             iframe.load();
         });
 
-        it('should invoke startLoadTimer()', () => {
-            const stub = sandbox.stub(iframe, 'startLoadTimer');
+        test('should invoke startLoadTimer()', () => {
+            const stub = jest.spyOn(iframe, 'startLoadTimer');
             iframe.load();
 
-            expect(stub).to.have.been.called; // eslint-disable-line no-unused-expressions
+            expect(stub).toBeCalled(); // eslint-disable-line no-unused-expressions
         });
     });
 });

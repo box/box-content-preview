@@ -4,7 +4,6 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
-import PreviewError from '../../../PreviewError';
 import { VIEWER_EVENT } from '../../../events';
 import * as util from '../../../util';
 
@@ -13,19 +12,13 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
 let stubs = {};
-
-const sandbox = sinon.sandbox.create();
 let imageBase;
 let containerEl;
 
 describe('lib/viewers/image/ImageBaseViewer', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
-        stubs.emit = sandbox.stub(fullscreen, 'addListener');
+        stubs.emit = jest.spyOn(fullscreen, 'addListener');
         containerEl = document.querySelector('.container');
         stubs.api = new Api();
         imageBase = new ImageBaseViewer({
@@ -39,7 +32,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         if (imageBase && typeof imageBase.destroy === 'function') {
@@ -51,91 +43,91 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('destroy()', () => {
-        it('should cleanup the image base viewer', () => {
+        test('should cleanup the image base viewer', () => {
             imageBase.loadUI();
             imageBase.imageEl.addEventListener('mouseup', imageBase.handleMouseUp);
 
-            sandbox.stub(imageBase.controls, 'destroy');
-            sandbox.stub(imageBase.imageEl, 'removeEventListener');
+            jest.spyOn(imageBase.controls, 'destroy');
+            jest.spyOn(imageBase.imageEl, 'removeEventListener');
 
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'destroy', {
-                value: sandbox.stub(),
+                value: jest.fn(),
             });
 
             imageBase.destroy();
 
-            expect(imageBase.controls.destroy).to.be.called;
-            expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
-            expect(BaseViewer.prototype.destroy).to.be.called;
+            expect(imageBase.controls.destroy).toBeCalled();
+            expect(imageBase.imageEl.removeEventListener).toBeCalledWith('mouseup', imageBase.handleMouseUp);
+            expect(BaseViewer.prototype.destroy).toBeCalled();
         });
 
-        it('should remove all the listeners', () => {
-            sandbox.stub(imageBase, 'unbindDOMListeners');
+        test('should remove all the listeners', () => {
+            jest.spyOn(imageBase, 'unbindDOMListeners');
 
             imageBase.destroy();
 
-            expect(imageBase.unbindDOMListeners).to.be.called;
+            expect(imageBase.unbindDOMListeners).toBeCalled();
         });
     });
 
     describe('zoomIn()', () => {
-        it('should zoom in image', () => {
-            sandbox.stub(imageBase, 'zoom');
+        test('should zoom in image', () => {
+            jest.spyOn(imageBase, 'zoom');
 
             imageBase.zoomIn();
 
-            expect(imageBase.zoom).to.be.calledWith('in');
+            expect(imageBase.zoom).toBeCalledWith('in');
         });
     });
 
     describe('zoomOut()', () => {
-        it('should zoom out image', () => {
-            sandbox.stub(imageBase, 'zoom');
+        test('should zoom out image', () => {
+            jest.spyOn(imageBase, 'zoom');
 
             imageBase.zoomOut();
 
-            expect(imageBase.zoom).to.be.calledWith('out');
+            expect(imageBase.zoom).toBeCalledWith('out');
         });
     });
 
     describe('resize()', () => {
-        it('should resize image', () => {
-            sandbox.stub(imageBase, 'zoom');
+        test('should resize image', () => {
+            jest.spyOn(imageBase, 'zoom');
 
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'resize', {
-                value: sandbox.stub(),
+                value: jest.fn(),
             });
 
             imageBase.resize();
 
-            expect(imageBase.zoom).to.be.called;
-            expect(BaseViewer.prototype.resize).to.be.called;
+            expect(imageBase.zoom).toBeCalled();
+            expect(BaseViewer.prototype.resize).toBeCalled();
         });
     });
 
     describe('updateCursor()', () => {
-        it('should make the image pannable', () => {
+        test('should make the image pannable', () => {
             imageBase.isZoomable = true;
             imageBase.isPannable = true;
             imageBase.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
 
             imageBase.updateCursor();
 
-            expect(imageBase.isZoomable).to.have.been.false;
-            expect(imageBase.imageEl).to.have.class(CSS_CLASS_PANNABLE);
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.isZoomable).toBe(false);
+            expect(imageBase.imageEl).toHaveClass(CSS_CLASS_PANNABLE);
+            expect(imageBase.imageEl).not.toHaveClass(CSS_CLASS_ZOOMABLE);
         });
 
-        it('should make the image zoomable', () => {
+        test('should make the image zoomable', () => {
             imageBase.isZoomable = false;
             imageBase.isPannable = false;
             imageBase.imageEl.classList.add(CSS_CLASS_PANNABLE);
 
             imageBase.updateCursor();
 
-            expect(imageBase.isZoomable).to.have.been.true;
-            expect(imageBase.imageEl).to.have.class(CSS_CLASS_ZOOMABLE);
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
+            expect(imageBase.isZoomable).toBe(true);
+            expect(imageBase.imageEl).toHaveClass(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.imageEl).not.toHaveClass(CSS_CLASS_PANNABLE);
         });
     });
 
@@ -145,82 +137,82 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
 
         beforeEach(() => {
-            stubs.emit = sandbox.stub(imageBase, 'emit');
-            stubs.pan = sandbox.stub(imageBase, 'pan');
-            stubs.stopPanning = sandbox.stub(imageBase, 'stopPanning');
+            stubs.emit = jest.spyOn(imageBase, 'emit');
+            stubs.pan = jest.spyOn(imageBase, 'pan');
+            stubs.stopPanning = jest.spyOn(imageBase, 'stopPanning');
         });
 
-        it('should not start panning if image is not pannable', () => {
+        test('should not start panning if image is not pannable', () => {
             imageBase.isPannable = false;
             imageBase.isPanning = false;
 
             imageBase.startPanning();
 
-            expect(imageBase.isPanning).to.be.false;
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNING);
-            expect(imageBase.emit).to.not.have.been.calledWith('panstart');
+            expect(imageBase.isPanning).toBe(false);
+            expect(imageBase.imageEl).not.toHaveClass(CSS_CLASS_PANNING);
+            expect(imageBase.emit).not.toBeCalledWith('panstart');
         });
 
-        it('should start panning, remove listeners, and fire "panstart" event', () => {
+        test('should start panning, remove listeners, and fire "panstart" event', () => {
             imageBase.isPannable = true;
             imageBase.isPanning = false;
 
             imageBase.startPanning();
 
-            expect(imageBase.isPanning).to.be.true;
-            expect(imageBase.imageEl).to.have.class(CSS_CLASS_PANNING);
-            expect(imageBase.emit).to.have.been.calledWith('panstart');
+            expect(imageBase.isPanning).toBe(true);
+            expect(imageBase.imageEl).toHaveClass(CSS_CLASS_PANNING);
+            expect(imageBase.emit).toBeCalledWith('panstart');
         });
     });
 
     describe('pan()', () => {
         beforeEach(() => {
-            stubs.emit = sandbox.stub(imageBase, 'emit');
+            stubs.emit = jest.spyOn(imageBase, 'emit');
             imageBase.wrapperEl = document.createElement('img');
             imageBase.didPan = false;
         });
 
-        it('should pan to the given position', () => {
+        test('should pan to the given position', () => {
             imageBase.isPanning = true;
 
             imageBase.pan({});
 
-            expect(imageBase.didPan).to.be.true;
-            expect(stubs.emit).to.have.been.calledWith('pan');
+            expect(imageBase.didPan).toBe(true);
+            expect(stubs.emit).toBeCalledWith('pan');
         });
 
-        it('should not pan if the viewer is not already panning', () => {
+        test('should not pan if the viewer is not already panning', () => {
             imageBase.isPanning = false;
 
             imageBase.pan({});
 
-            expect(imageBase.didPan).to.be.false;
-            expect(stubs.emit).to.not.have.been.calledWith('pan');
+            expect(imageBase.didPan).toBe(false);
+            expect(stubs.emit).not.toBeCalledWith('pan');
         });
     });
 
     describe('stopPanning()', () => {
-        it('should stop panning, remove listeners, and fire "panend" event', () => {
-            sandbox.stub(imageBase, 'emit');
+        test('should stop panning, remove listeners, and fire "panend" event', () => {
+            jest.spyOn(imageBase, 'emit');
             imageBase.isPanning = true;
 
             imageBase.stopPanning();
 
-            expect(imageBase.isPanning).to.be.false;
+            expect(imageBase.isPanning).toBe(false);
         });
     });
 
     describe('loadUI()', () => {
-        it('should create controls and add control buttons for zoom', () => {
+        test('should create controls and add control buttons for zoom', () => {
             imageBase.loadUI();
 
-            expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.zoomControls).to.not.be.undefined;
+            expect(imageBase.controls).toBeDefined();
+            expect(imageBase.zoomControls).toBeDefined();
         });
     });
 
     describe('setOriginalImageSize()', () => {
-        it('should use the naturalHeight and naturalWidth when available', done => {
+        test('should use the naturalHeight and naturalWidth when available', done => {
             const imageEl = {
                 naturalWidth: 100,
                 naturalHeight: 100,
@@ -230,19 +222,21 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 getAttribute: name => imageEl[name],
             };
 
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise
+            imageBase
+                .setOriginalImageSize(imageEl)
                 .then(() => {
-                    expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
-                    expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
+                    expect(imageEl.getAttribute('originalWidth')).toBe(imageEl.naturalWidth);
+                    expect(imageEl.getAttribute('originalHeight')).toBe(imageEl.naturalHeight);
                     done();
                 })
                 .catch(() => {
-                    Assert.fail();
+                    fail();
                 });
         });
 
-        it('should default to 300x150 when naturalHeight and naturalWidth are 0x0', done => {
+        test('should default to 300x150 when naturalHeight and naturalWidth are 0x0', done => {
+            jest.spyOn(stubs.api, 'get').mockResolvedValue('not real a image');
+
             const imageEl = {
                 naturalWidth: 0,
                 naturalHeight: 0,
@@ -252,40 +246,43 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 getAttribute: name => imageEl[name],
             };
 
-            sandbox.stub(stubs.api, 'get').resolves('not real a image');
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise
+            imageBase
+                .setOriginalImageSize(imageEl)
                 .then(() => {
-                    expect(imageEl.getAttribute('originalWidth')).to.equal(300);
-                    expect(imageEl.getAttribute('originalHeight')).to.equal(150);
+                    expect(imageEl.getAttribute('originalWidth')).toBe(300);
+                    expect(imageEl.getAttribute('originalHeight')).toBe(150);
                     done();
                 })
                 .catch(() => {
-                    Assert.fail();
+                    fail();
                 });
         });
 
-        it('should resolve when the get call fails', done => {
-            const imageEl = {};
-            sandbox.stub(stubs.api, 'get').returns(Promise.reject());
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.then(() => Assert.fail()).catch(() => done());
+        test('should resolve when the get call fails', done => {
+            jest.spyOn(stubs.api, 'get').mockRejectedValue(undefined);
+
+            imageBase
+                .setOriginalImageSize({})
+                .then(() => {
+                    throw new Error('failed');
+                })
+                .catch(() => done());
         });
     });
 
     describe('handleMouseDown()', () => {
         beforeEach(() => {
-            stubs.pan = sandbox.stub(imageBase, 'startPanning');
+            stubs.pan = jest.spyOn(imageBase, 'startPanning');
         });
 
-        it('should do nothing if incorrect click type', () => {
+        test('should do nothing if incorrect click type', () => {
             const event = {
                 button: 3,
                 ctrlKey: null,
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.handleMouseDown(event);
             event.button = 1;
@@ -294,28 +291,28 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             imageBase.handleMouseDown(event);
-            expect(stubs.pan).to.not.have.been.called;
+            expect(stubs.pan).not.toBeCalled();
         });
 
-        it('should start panning if correct click type', () => {
+        test('should start panning if correct click type', () => {
             const event = {
                 button: 1,
                 ctrlKey: null,
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.handleMouseDown(event);
-            expect(stubs.pan).to.have.been.called;
+            expect(stubs.pan).toBeCalled();
         });
     });
 
     describe('handleMouseUp()', () => {
         beforeEach(() => {
-            stubs.emitMetric = sandbox.stub(imageBase, 'emitMetric');
-            stubs.pan = sandbox.stub(imageBase, 'stopPanning');
-            stubs.zoom = sandbox.stub(imageBase, 'zoom');
+            stubs.emitMetric = jest.spyOn(imageBase, 'emitMetric');
+            stubs.pan = jest.spyOn(imageBase, 'stopPanning');
+            stubs.zoom = jest.spyOn(imageBase, 'zoom');
             imageBase.isPanning = false;
         });
 
@@ -326,7 +323,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.handleMouseUp(event);
             event.button = 1;
@@ -335,8 +332,8 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
-            expect(stubs.emitMetric).to.not.have.been.called;
+            expect(stubs.zoom).not.toBeCalled();
+            expect(stubs.emitMetric).not.toBeCalled();
         });
 
         it('should zoom in if zoomable but not pannable', () => {
@@ -346,12 +343,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.isZoomable = true;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('in');
-            expect(stubs.emitMetric).to.be.calledWith('zoom', 'inClick');
+            expect(stubs.zoom).toBeCalledWith('in');
+            expect(stubs.emitMetric).toBeCalledWith('zoom', 'inClick');
         });
 
         it('should reset zoom if mouseup was not due to end of panning', () => {
@@ -361,13 +358,13 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.isZoomable = false;
             imageBase.didPan = false;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('reset');
-            expect(stubs.emitMetric).to.be.calledWith('zoom', 'resetClick');
+            expect(stubs.zoom).toBeCalledWith('reset');
+            expect(stubs.emitMetric).toBeCalledWith('zoom', 'resetClick');
         });
 
         it('should not zoom if mouse up was due to end of panning', () => {
@@ -377,182 +374,155 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 metaKey: null,
                 clientX: 1,
                 clientY: 1,
-                preventDefault: sandbox.stub(),
+                preventDefault: jest.fn(),
             };
             imageBase.isZoomable = false;
             imageBase.didPan = true;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).not.toBeCalled();
         });
     });
 
     describe('cancelDragEvent()', () => {
-        it('should prevent drag events on the image', () => {
+        test('should prevent drag events on the image', () => {
             const event = {
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
             };
             imageBase.cancelDragEvent(event);
-            expect(event.preventDefault).to.be.called;
-            expect(event.stopPropagation).to.be.called;
+            expect(event.preventDefault).toBeCalled();
+            expect(event.stopPropagation).toBeCalled();
         });
     });
 
     describe('onKeydown', () => {
-        it('should return false when media controls are not ready or are focused', () => {
+        test('should return false when media controls are not ready or are focused', () => {
             const consumed = imageBase.onKeydown();
 
-            expect(consumed).to.be.false;
+            expect(consumed).toBe(false);
         });
 
-        it('should zoom in and return true when zoom in short cut is triggered', () => {
+        test('should zoom in and return true when zoom in short cut is triggered', () => {
             imageBase.loadUI();
 
-            sandbox.stub(imageBase, 'zoomIn');
+            jest.spyOn(imageBase, 'zoomIn');
 
             const consumed = imageBase.onKeydown('Shift++');
 
-            expect(imageBase.zoomIn).to.be.called;
-            expect(consumed).to.be.true;
+            expect(imageBase.zoomIn).toBeCalled();
+            expect(consumed).toBe(true);
         });
 
-        it('should zoom in and return true when zoom out short cut is triggered', () => {
+        test('should zoom in and return true when zoom out short cut is triggered', () => {
             imageBase.loadUI();
 
-            sandbox.stub(imageBase, 'zoomOut');
+            jest.spyOn(imageBase, 'zoomOut');
 
             const consumed = imageBase.onKeydown('Shift+_');
 
-            expect(imageBase.zoomOut).to.be.called;
-            expect(consumed).to.be.true;
+            expect(imageBase.zoomOut).toBeCalled();
+            expect(consumed).toBe(true);
         });
 
-        it('should return false if neither zoom keyboard short cuts are triggered', () => {
+        test('should return false if neither zoom keyboard short cuts are triggered', () => {
             imageBase.loadUI();
 
-            sandbox.stub(imageBase, 'zoomIn');
-            sandbox.stub(imageBase, 'zoomOut');
+            jest.spyOn(imageBase, 'zoomIn');
+            jest.spyOn(imageBase, 'zoomOut');
 
             const consumed = imageBase.onKeydown();
 
-            expect(imageBase.zoomIn).to.not.be.called;
-            expect(imageBase.zoomOut).to.not.be.called;
-            expect(consumed).to.be.false;
+            expect(imageBase.zoomIn).not.toBeCalled();
+            expect(imageBase.zoomOut).not.toBeCalled();
+            expect(consumed).toBe(false);
         });
     });
 
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
             imageBase.imageEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
 
-            sandbox.stub(document, 'addEventListener');
+            jest.spyOn(document, 'addEventListener');
             stubs.listeners = imageBase.imageEl.addEventListener;
             imageBase.isMobile = true;
         });
 
-        it('should bind all default image listeners', () => {
+        test('should bind all default image listeners', () => {
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('mousedown', imageBase.handleMouseDown);
-            expect(stubs.listeners).to.have.been.calledWith('mouseup', imageBase.handleMouseUp);
-            expect(stubs.listeners).to.have.been.calledWith('dragstart', imageBase.cancelDragEvent);
+            expect(stubs.listeners).toBeCalledWith('mousedown', imageBase.handleMouseDown);
+            expect(stubs.listeners).toBeCalledWith('mouseup', imageBase.handleMouseUp);
+            expect(stubs.listeners).toBeCalledWith('dragstart', imageBase.cancelDragEvent);
         });
 
-        it('should bind all iOS listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
+        test('should bind all iOS listeners', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('gesturestart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('gestureend', imageBase.mobileZoomEndHandler);
+            expect(stubs.listeners).toBeCalledWith('gesturestart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).toBeCalledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
-        it('should bind all mobile and non-iOS listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(false);
+        test('should bind all mobile and non-iOS listeners', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('touchstart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchmove', imageBase.mobileZoomChangeHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchend', imageBase.mobileZoomEndHandler);
+            expect(stubs.listeners).toBeCalledWith('touchstart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).toBeCalledWith('touchmove', imageBase.mobileZoomChangeHandler);
+            expect(stubs.listeners).toBeCalledWith('touchend', imageBase.mobileZoomEndHandler);
         });
     });
 
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
             imageBase.imageEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
 
-            imageBase.imageEl.removeEventListener = sandbox.stub();
+            imageBase.imageEl.removeEventListener = jest.fn();
             stubs.listeners = imageBase.imageEl.removeEventListener;
-            stubs.documentListener = sandbox.stub(document, 'removeEventListener');
+            stubs.documentListener = jest.spyOn(document, 'removeEventListener');
             imageBase.isMobile = true;
         });
 
-        it('should unbind all default image listeners if imageEl does not exist', () => {
+        test('should unbind all default image listeners if imageEl does not exist', () => {
             imageBase.imageEl = null;
 
             imageBase.unbindDOMListeners();
-            expect(stubs.listeners).to.not.be.calledWith('mousedown', imageBase.handleMouseDown);
-            expect(stubs.listeners).to.not.be.calledWith('mouseup', imageBase.handleMouseUp);
-            expect(stubs.listeners).to.not.be.calledWith('dragstart', imageBase.cancelDragEvent);
+            expect(stubs.listeners).not.toBeCalledWith('mousedown', imageBase.handleMouseDown);
+            expect(stubs.listeners).not.toBeCalledWith('mouseup', imageBase.handleMouseUp);
+            expect(stubs.listeners).not.toBeCalledWith('dragstart', imageBase.cancelDragEvent);
         });
 
-        it('should unbind all iOS listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
+        test('should unbind all iOS listeners', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             imageBase.unbindDOMListeners();
-            expect(stubs.listeners).to.be.calledWith('gesturestart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.be.calledWith('gestureend', imageBase.mobileZoomEndHandler);
+            expect(stubs.listeners).toBeCalledWith('gesturestart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).toBeCalledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
-        it('should unbind all document listeners', () => {
+        test('should unbind all document listeners', () => {
             imageBase.unbindDOMListeners();
-            expect(stubs.documentListener).to.be.calledWith('mousemove', imageBase.pan);
-            expect(stubs.documentListener).to.be.calledWith('mouseup', imageBase.stopPanning);
+            expect(stubs.documentListener).toBeCalledWith('mousemove', imageBase.pan);
+            expect(stubs.documentListener).toBeCalledWith('mouseup', imageBase.stopPanning);
         });
 
-        it('should unbind all non-iOS listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(false);
+        test('should unbind all non-iOS listeners', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
             imageBase.unbindDOMListeners();
-            expect(stubs.listeners).to.be.calledWith('touchstart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.be.calledWith('touchmove', imageBase.mobileZoomChangeHandler);
-            expect(stubs.listeners).to.be.calledWith('touchend', imageBase.mobileZoomEndHandler);
-        });
-    });
-
-    describe('handleDownloadError()', () => {
-        const handleDownloadErrorFunc = BaseViewer.prototype.handleDownloadError;
-
-        beforeEach(() => {
-            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: sandbox.stub(),
-            });
-        });
-
-        afterEach(() => {
-            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
-                value: handleDownloadErrorFunc,
-            });
-        });
-
-        it('should call the parent method with an error display message and the image URL', () => {
-            const err = new Error('downloadError');
-
-            imageBase.handleDownloadError(err, 'foo');
-
-            const [error, URL] = BaseViewer.prototype.handleDownloadError.getCall(0).args;
-            expect(URL).to.equal('foo');
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_content_download');
+            expect(stubs.listeners).toBeCalledWith('touchstart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).toBeCalledWith('touchmove', imageBase.mobileZoomChangeHandler);
+            expect(stubs.listeners).toBeCalledWith('touchend', imageBase.mobileZoomEndHandler);
         });
     });
 
     describe('finishLoading()', () => {
         beforeEach(() => {
             imageBase.loaded = false;
-            stubs.zoom = sandbox.stub(imageBase, 'zoom');
-            stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
-            stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
+            stubs.zoom = jest.spyOn(imageBase, 'zoom');
+            stubs.loadUI = jest.spyOn(imageBase, 'loadUI');
+            stubs.setOriginalImageSize = jest.spyOn(imageBase, 'setOriginalImageSize');
             imageBase.options = {
                 file: {
                     id: 1,
@@ -563,78 +533,78 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             };
         });
 
-        it('should do nothing if already destroyed', () => {
+        test('should do nothing if already destroyed', () => {
             imageBase.destroyed = true;
-            stubs.emit = sandbox.stub(imageBase, 'emit');
+            stubs.emit = jest.spyOn(imageBase, 'emit');
 
             imageBase.finishLoading();
-            expect(imageBase.loaded).to.be.false;
-            expect(stubs.emit).to.not.have.been.called;
-            expect(stubs.zoom).to.not.have.been.called;
-            expect(stubs.setOriginalImageSize).to.not.have.been.called;
-            expect(stubs.loadUI).to.not.have.been.called;
+            expect(imageBase.loaded).toBe(false);
+            expect(stubs.emit).not.toBeCalled();
+            expect(stubs.zoom).not.toBeCalled();
+            expect(stubs.setOriginalImageSize).not.toBeCalled();
+            expect(stubs.loadUI).not.toBeCalled();
         });
 
-        it('should load UI if not destroyed', done => {
+        test('should load UI if not destroyed', done => {
             imageBase.on(VIEWER_EVENT.load, () => {
-                expect(imageBase.loaded).to.be.true;
-                expect(stubs.zoom).to.have.been.called;
-                expect(stubs.loadUI).to.have.been.called;
+                expect(imageBase.loaded).toBe(true);
+                expect(stubs.zoom).toBeCalled();
+                expect(stubs.loadUI).toBeCalled();
                 done();
             });
-            stubs.setOriginalImageSize.returns(Promise.resolve());
+            stubs.setOriginalImageSize.mockResolvedValue(undefined);
             imageBase.destroyed = false;
 
             imageBase.finishLoading();
-            expect(stubs.setOriginalImageSize).to.have.been.called;
+            expect(stubs.setOriginalImageSize).toBeCalled();
         });
     });
 
     describe('disableViewerControls()', () => {
-        it('should disable viewer controls', () => {
+        test('should disable viewer controls', () => {
             imageBase.controls = {
-                disable: sandbox.stub(),
+                disable: jest.fn(),
             };
-            sandbox.stub(imageBase, 'unbindDOMListeners');
+            jest.spyOn(imageBase, 'unbindDOMListeners');
             imageBase.disableViewerControls();
-            expect(imageBase.controls.disable).to.be.called;
-            expect(imageBase.unbindDOMListeners).to.be.called;
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
+            expect(imageBase.controls.disable).toBeCalled();
+            expect(imageBase.unbindDOMListeners).toBeCalled();
+            expect(imageBase.imageEl).not.toHaveClass(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.imageEl).not.toHaveClass(CSS_CLASS_PANNABLE);
         });
     });
 
     describe('enableViewerControls()', () => {
-        it('should enable viewer controls', () => {
+        test('should enable viewer controls', () => {
             imageBase.controls = {
-                enable: sandbox.stub(),
+                enable: jest.fn(),
             };
             imageBase.isMobile = true;
-            sandbox.stub(imageBase, 'bindDOMListeners');
-            sandbox.stub(imageBase, 'updateCursor');
+            jest.spyOn(imageBase, 'bindDOMListeners');
+            jest.spyOn(imageBase, 'updateCursor');
             imageBase.enableViewerControls();
-            expect(imageBase.controls.enable).to.be.called;
-            expect(imageBase.bindDOMListeners).to.be.called;
-            expect(imageBase.updateCursor).to.not.be.called;
+            expect(imageBase.controls.enable).toBeCalled();
+            expect(imageBase.bindDOMListeners).toBeCalled();
+            expect(imageBase.updateCursor).not.toBeCalled();
         });
 
-        it('should update cursor if not on mobile', () => {
+        test('should update cursor if not on mobile', () => {
             imageBase.controls = {
-                enable: sandbox.stub(),
+                enable: jest.fn(),
             };
             imageBase.isMobile = false;
-            sandbox.stub(imageBase, 'bindDOMListeners');
-            sandbox.stub(imageBase, 'updateCursor');
+            jest.spyOn(imageBase, 'bindDOMListeners');
+            jest.spyOn(imageBase, 'updateCursor');
             imageBase.enableViewerControls();
-            expect(imageBase.updateCursor).to.be.called;
+            expect(imageBase.updateCursor).toBeCalled();
         });
     });
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.execCommand = sandbox.stub();
-            stubs.focus = sandbox.stub();
-            stubs.print = sandbox.stub();
+            stubs.execCommand = jest.fn();
+            stubs.focus = jest.fn();
+            stubs.print = jest.fn();
             stubs.mockIframe = {
                 addEventListener() {},
                 contentWindow: {
@@ -645,29 +615,29 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                     print: stubs.print,
                 },
                 contentDocument: {
-                    querySelectorAll: sandbox.stub().returns(containerEl.querySelectorAll('img')),
+                    querySelectorAll: jest.fn(() => containerEl.querySelectorAll('img')),
                 },
                 removeEventListener() {},
             };
 
-            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
-            stubs.getName = sandbox.stub(Browser, 'getName');
+            stubs.openContentInsideIframe = jest
+                .spyOn(util, 'openContentInsideIframe')
+                .mockReturnValue(stubs.mockIframe);
+            stubs.getName = jest.spyOn(Browser, 'getName');
         });
 
-        it('should open the content inside an iframe, center, and focus', () => {
+        test('should open the content inside an iframe, center, and focus', () => {
             imageBase.print();
-            expect(stubs.openContentInsideIframe).to.be.called;
-            expect(imageBase.printImages[0].getAttribute('style')).to.be.equal(
-                'display: block; margin: 0 auto; width: 100%',
-            );
-            expect(stubs.focus).to.be.called;
+            expect(stubs.openContentInsideIframe).toBeCalled();
+            expect(imageBase.printImages[0].getAttribute('style')).toBe('display: block; margin: 0 auto; width: 100%');
+            expect(stubs.focus).toBeCalled();
         });
 
-        it('should execute the print command if the browser is Explorer', done => {
-            stubs.getName.returns('Explorer');
+        test('should execute the print command if the browser is Explorer', done => {
+            stubs.getName.mockReturnValue('Explorer');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
-                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+                expect(stubs.execCommand).toBeCalledWith('print', false, null);
 
                 done();
             };
@@ -675,11 +645,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.print();
         });
 
-        it('should execute the print command if the browser is Edge', done => {
-            stubs.getName.returns('Edge');
+        test('should execute the print command if the browser is Edge', done => {
+            stubs.getName.mockReturnValue('Edge');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
-                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+                expect(stubs.execCommand).toBeCalledWith('print', false, null);
 
                 done();
             };
@@ -687,11 +657,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.print();
         });
 
-        it('should call the contentWindow print for other browsers', done => {
-            stubs.getName.returns('Chrome');
+        test('should call the contentWindow print for other browsers', done => {
+            stubs.getName.mockReturnValue('Chrome');
             stubs.mockIframe.addEventListener = (type, callback) => {
                 callback();
-                expect(stubs.print).to.be.called;
+                expect(stubs.print).toBeCalled();
 
                 done();
             };

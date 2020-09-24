@@ -7,7 +7,6 @@ import { MISSING_EXTERNAL_REFS } from '../../../events';
 
 const { FIELD_HASXREFS, TEMPLATE_AUTOCAD } = METADATA;
 const EXTENSION = 'dwg';
-const sandbox = sinon.sandbox.create();
 
 let containerEl;
 let autocad;
@@ -25,9 +24,9 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
             },
         });
 
-        stubs.getXrefsMetadata = sandbox.stub(stubs.api.metadata, 'getXrefsMetadata');
-        stubs.showNotification = sandbox.stub();
-        stubs.emitMetric = sandbox.stub(autocad, 'emitMetric');
+        stubs.getXrefsMetadata = jest.spyOn(stubs.api.metadata, 'getXrefsMetadata').mockImplementation();
+        stubs.showNotification = jest.fn();
+        stubs.emitMetric = jest.spyOn(autocad, 'emitMetric').mockImplementation();
 
         autocad.options = {
             file: {
@@ -41,49 +40,48 @@ describe('lib/viewers/doc/AutoCADViewer', () => {
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
         stubs = {};
     });
 
     describe('load()', () => {
-        it('Should call the super.load and checkForXrefs', () => {
-            stubs.docLoad = sandbox.stub(DocumentViewer.prototype, 'load');
-            stubs.checkForXrefs = sandbox.stub(autocad, 'checkForXrefs');
+        test('Should call the super.load and checkForXrefs', () => {
+            stubs.docLoad = jest.spyOn(DocumentViewer.prototype, 'load').mockImplementation();
+            stubs.checkForXrefs = jest.spyOn(autocad, 'checkForXrefs').mockImplementation();
 
             autocad.load();
 
-            expect(stubs.docLoad).to.have.been.called;
-            expect(stubs.checkForXrefs).to.have.been.called;
+            expect(stubs.docLoad).toBeCalled();
+            expect(stubs.checkForXrefs).toBeCalled();
         });
     });
 
     describe('checkForXrefs()', () => {
-        it('Should show notification if has external refs', () => {
+        test('Should show notification if has external refs', () => {
             const xrefsPromise = Promise.resolve({ [FIELD_HASXREFS]: true });
-            stubs.getXrefsMetadata.resolves(xrefsPromise);
+            stubs.getXrefsMetadata.mockReturnValue(xrefsPromise);
 
             autocad.checkForXrefs();
 
-            expect(stubs.getXrefsMetadata).to.have.been.calledWith('123', TEMPLATE_AUTOCAD, autocad.options);
+            expect(stubs.getXrefsMetadata).toBeCalledWith('123', TEMPLATE_AUTOCAD, autocad.options);
 
             return xrefsPromise.then(() => {
-                expect(stubs.showNotification).to.have.been.called;
-                expect(stubs.emitMetric).to.have.been.calledWith({ name: MISSING_EXTERNAL_REFS, data: EXTENSION });
+                expect(stubs.showNotification).toBeCalled();
+                expect(stubs.emitMetric).toBeCalledWith({ name: MISSING_EXTERNAL_REFS, data: EXTENSION });
             });
         });
 
-        it('Should not show notification if does not have external refs', () => {
+        test('Should not show notification if does not have external refs', () => {
             const xrefsPromise = Promise.resolve({ [FIELD_HASXREFS]: false });
-            stubs.getXrefsMetadata.resolves(xrefsPromise);
+            stubs.getXrefsMetadata.mockReturnValue(xrefsPromise);
 
             autocad.checkForXrefs();
 
-            expect(stubs.getXrefsMetadata).to.have.been.calledWith('123', TEMPLATE_AUTOCAD, autocad.options);
+            expect(stubs.getXrefsMetadata).toBeCalledWith('123', TEMPLATE_AUTOCAD, autocad.options);
 
             return xrefsPromise.then(() => {
-                expect(stubs.showNotification).not.to.have.been.called;
-                expect(stubs.emitMetric).not.to.have.been.called;
+                expect(stubs.showNotification).not.toBeCalled();
+                expect(stubs.emitMetric).not.toBeCalled();
             });
         });
     });

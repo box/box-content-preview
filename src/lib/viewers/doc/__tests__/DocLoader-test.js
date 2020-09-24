@@ -2,7 +2,7 @@
 import DocLoader from '../DocLoader';
 import DocumentViewer from '../DocumentViewer';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('lib/viewers/doc/DocLoader', () => {
     afterEach(() => {
@@ -42,26 +42,26 @@ describe('lib/viewers/doc/DocLoader', () => {
             };
         });
 
-        it('should return pdf rep if file is not a pdf', () => {
+        test('should return pdf rep if file is not a pdf', () => {
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
-            expect(determinedRep.representation).to.equal('pdf');
+            expect(determinedRep.representation).toBe('pdf');
         });
 
-        it('should return pdf rep if rep is not pending', () => {
+        test('should return pdf rep if rep is not pending', () => {
             file.extension = 'pdf';
             viewer.EXT = ['pdf'];
 
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
-            expect(determinedRep.representation).to.equal('pdf');
+            expect(determinedRep.representation).toBe('pdf');
         });
 
-        it('should return original rep if pdf rep is pending', () => {
+        test('should return original rep if pdf rep is pending', () => {
             file.extension = 'pdf';
             file.representations.entries[0].status.state = 'pending';
             viewer.EXT = ['pdf'];
 
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
-            expect(determinedRep.representation).to.equal('ORIGINAL');
+            expect(determinedRep.representation).toBe('ORIGINAL');
         });
     });
 });

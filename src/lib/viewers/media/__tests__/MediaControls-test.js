@@ -7,27 +7,20 @@ import * as util from '../../../util';
 
 let mediaControls;
 let stubs;
-let clock;
 
 const PLAYING_CLASS = 'bp-media-is-playing';
 const CRAWLER =
     '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/viewers/media/MediaControls', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
-        stubs = {};
+        jest.useFakeTimers();
         fixture.load('viewers/media/__tests__/MediaControls-test.html');
+        stubs = {};
     });
 
     afterEach(() => {
         fixture.cleanup();
-        sandbox.verifyAndRestore();
         stubs = null;
 
         if (typeof mediaControls.destroy() === 'function') {
@@ -39,7 +32,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
     describe('constructor()', () => {
         beforeEach(() => {
-            stubs.insertTemplate = sandbox.stub(util, 'insertTemplate');
+            stubs.insertTemplate = jest.spyOn(util, 'insertTemplate').mockImplementation();
             mediaControls = new MediaControls(
                 document.getElementById('test-controls-container'),
                 { duration: 1210 },
@@ -52,34 +45,34 @@ describe('lib/viewers/media/MediaControls', () => {
             );
         });
 
-        it('should insert the DOM template', () => {
-            expect(stubs.insertTemplate).to.be.called;
+        test('should insert the DOM template', () => {
+            expect(stubs.insertTemplate).toBeCalled();
         });
 
-        it('should set the duration', () => {
-            expect(mediaControls.durationEl.textContent).to.equal('20:10');
+        test('should set the duration', () => {
+            expect(mediaControls.durationEl.textContent).toBe('20:10');
         });
 
-        it('should set labels on the appropriate elements', () => {
-            expect(mediaControls.playButtonEl.getAttribute('title')).to.equal(__('media_play'));
-            expect(mediaControls.playButtonEl.getAttribute('aria-label')).to.equal(__('media_play'));
+        test('should set labels on the appropriate elements', () => {
+            expect(mediaControls.playButtonEl.getAttribute('title')).toBe(__('media_play'));
+            expect(mediaControls.playButtonEl.getAttribute('aria-label')).toBe(__('media_play'));
 
-            expect(mediaControls.volButtonEl.getAttribute('title')).to.equal(__('media_mute'));
-            expect(mediaControls.volButtonEl.getAttribute('aria-label')).to.equal(__('media_mute'));
+            expect(mediaControls.volButtonEl.getAttribute('title')).toBe(__('media_mute'));
+            expect(mediaControls.volButtonEl.getAttribute('aria-label')).toBe(__('media_mute'));
 
-            expect(mediaControls.fullscreenButtonEl.getAttribute('title')).to.equal(__('enter_fullscreen'));
-            expect(mediaControls.fullscreenButtonEl.getAttribute('aria-label')).to.equal(__('enter_fullscreen'));
+            expect(mediaControls.fullscreenButtonEl.getAttribute('title')).toBe(__('enter_fullscreen'));
+            expect(mediaControls.fullscreenButtonEl.getAttribute('aria-label')).toBe(__('enter_fullscreen'));
 
-            expect(mediaControls.settingsButtonEl.getAttribute('title')).to.equal(__('media_settings'));
-            expect(mediaControls.settingsButtonEl.getAttribute('aria-label')).to.equal(__('media_settings'));
+            expect(mediaControls.settingsButtonEl.getAttribute('title')).toBe(__('media_settings'));
+            expect(mediaControls.settingsButtonEl.getAttribute('aria-label')).toBe(__('media_settings'));
 
-            expect(mediaControls.subtitlesButtonEl.getAttribute('title')).to.equal(__('media_subtitles_cc'));
-            expect(mediaControls.subtitlesButtonEl.getAttribute('aria-label')).to.equal(__('media_subtitles_cc'));
+            expect(mediaControls.subtitlesButtonEl.getAttribute('title')).toBe(__('media_subtitles_cc'));
+            expect(mediaControls.subtitlesButtonEl.getAttribute('aria-label')).toBe(__('media_subtitles_cc'));
 
-            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('0');
-            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('0:00 of 20:10');
-            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('100');
-            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).to.equal('100% Volume');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).toBe('0');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).toBe('0:00 of 20:10');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).toBe('100');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).toBe('100% Volume');
         });
     });
 
@@ -98,46 +91,46 @@ describe('lib/viewers/media/MediaControls', () => {
 
     describe('destroy()', () => {
         beforeEach(() => {
-            stubs.removeAllListeners = sandbox.stub(mediaControls, 'removeAllListeners');
-            stubs.removeVolumeScrubberWrapperExpansionHandlers = sandbox.stub(
+            stubs.removeAllListeners = jest.spyOn(mediaControls, 'removeAllListeners');
+            stubs.removeVolumeScrubberWrapperExpansionHandlers = jest.spyOn(
                 mediaControls,
                 'removeVolumeScrubberWrapperExpansionHandlers',
             );
-            stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
-            stubs.removeActivationListener = sandbox.stub(util, 'removeActivationListener');
-            stubs.timeScrubberElShowHandler = sandbox.stub();
+            stubs.removeEventListener = jest.spyOn(document, 'removeEventListener');
+            stubs.removeActivationListener = jest.spyOn(util, 'removeActivationListener');
+            stubs.timeScrubberElShowHandler = jest.fn();
 
             stubs.genericEl = {
-                getHandleEl: sandbox.stub().returns({
-                    removeEventListener: sandbox.stub(),
+                getHandleEl: jest.fn().mockReturnValue({
+                    removeEventListener: jest.fn(),
                 }),
-                getConvertedEl: sandbox.stub().returns({
-                    removeEventListener: sandbox.stub(),
+                getConvertedEl: jest.fn().mockReturnValue({
+                    removeEventListener: jest.fn(),
                 }),
-                destroy: sandbox.stub(),
-                removeListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                destroy: jest.fn(),
+                removeListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
 
             stubs.timeScrubberEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
         });
 
-        it('should remove all listeners', () => {
+        test('should remove all listeners', () => {
             mediaControls.destroy();
 
-            expect(stubs.removeAllListeners).to.be.called;
-            expect(stubs.removeVolumeScrubberWrapperExpansionHandlers).to.be.called;
-            expect(stubs.removeEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
+            expect(stubs.removeAllListeners).toBeCalled();
+            expect(stubs.removeVolumeScrubberWrapperExpansionHandlers).toBeCalled();
+            expect(stubs.removeEventListener).toBeCalledWith('mouseup', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('mousemove', mediaControls.filmstripShowHandler);
         });
 
-        it('should remove time scrubber event listeners if it exists', () => {
+        test('should remove time scrubber event listeners if it exists', () => {
             mediaControls.timeScrubber = false;
             mediaControls.timeScrubberEl = null;
             mediaControls.destroy();
-            expect(mediaControls.timeScrubber).to.be.false;
+            expect(mediaControls.timeScrubber).toBe(false);
 
             mediaControls.timeScrubber = stubs.genericEl;
 
@@ -146,43 +139,43 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.destroy();
 
-            expect(stubs.genericEl.getHandleEl().removeEventListener).to.be.calledWith(
+            expect(stubs.genericEl.getHandleEl().removeEventListener).toBeCalledWith(
                 'mousedown',
                 mediaControls.timeScrubbingStartHandler,
             );
-            expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.removeEventListener).toBeCalledWith(
                 'mousemove',
                 stubs.timeScrubberElShowHandler,
             );
-            expect(stubs.timeScrubberEl.removeEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.removeEventListener).toBeCalledWith(
                 'mouseleave',
                 mediaControls.filmstripHideHandler,
             );
-            expect(stubs.genericEl.destroy).to.be.called;
-            expect(mediaControls.timeScrubber).to.equal(undefined);
+            expect(stubs.genericEl.destroy).toBeCalled();
+            expect(mediaControls.timeScrubber).toBeUndefined();
         });
 
-        it('should destroy the volume scrubber', () => {
+        test('should destroy the volume scrubber', () => {
             mediaControls.volScrubber = stubs.genericEl;
 
             mediaControls.destroy();
-            expect(stubs.genericEl.destroy).to.be.called;
-            expect(mediaControls.volScrubber).to.equal(undefined);
+            expect(stubs.genericEl.destroy).toBeCalled();
+            expect(mediaControls.volScrubber).toBeUndefined();
         });
 
-        it('should remove listeners and destroy the settings object', () => {
+        test('should remove listeners and destroy the settings object', () => {
             mediaControls.settings = stubs.genericEl;
 
             mediaControls.destroy();
-            expect(stubs.genericEl.removeListener).to.be.calledWith('quality', mediaControls.handleQuality);
-            expect(stubs.genericEl.removeListener).to.be.calledWith('speed', mediaControls.handleRate);
-            expect(stubs.genericEl.removeListener).to.be.calledWith('autoplay', mediaControls.handleAutoplay);
+            expect(stubs.genericEl.removeListener).toBeCalledWith('quality', mediaControls.handleQuality);
+            expect(stubs.genericEl.removeListener).toBeCalledWith('speed', mediaControls.handleRate);
+            expect(stubs.genericEl.removeListener).toBeCalledWith('autoplay', mediaControls.handleAutoplay);
 
             expect(stubs.genericEl.destroy);
-            expect(mediaControls.settings).to.equal(undefined);
+            expect(mediaControls.settings).toBeUndefined();
         });
 
-        it('should remove event listeners from the fullscreen, play, volume, scrubber, and settings button elements', () => {
+        test('should remove event listeners from the fullscreen, play, volume, scrubber, and settings button elements', () => {
             mediaControls.fullscreenButtonEl = stubs.genericEl;
             mediaControls.settingsButtonEl = stubs.genericEl;
             mediaControls.volButtonEl = stubs.genericEl;
@@ -192,17 +185,14 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.destroy();
 
-            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.togglePlayHandler);
-            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
-            expect(stubs.removeActivationListener).to.be.calledWith(
+            expect(stubs.removeActivationListener).toBeCalledWith(stubs.genericEl, mediaControls.togglePlayHandler);
+            expect(stubs.removeActivationListener).toBeCalledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
+            expect(stubs.removeActivationListener).toBeCalledWith(
                 stubs.genericEl,
                 mediaControls.toggleFullscreenHandler,
             );
-            expect(stubs.removeActivationListener).to.be.calledWith(
-                stubs.genericEl,
-                mediaControls.toggleSettingsHandler,
-            );
-            expect(stubs.removeActivationListener).to.be.calledWith(
+            expect(stubs.removeActivationListener).toBeCalledWith(stubs.genericEl, mediaControls.toggleSettingsHandler);
+            expect(stubs.removeActivationListener).toBeCalledWith(
                 stubs.genericEl,
                 mediaControls.toggleSubtitlesHandler,
             );
@@ -210,114 +200,114 @@ describe('lib/viewers/media/MediaControls', () => {
     });
 
     describe('handleRate()', () => {
-        it('should emit the ratechange event', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit the ratechange event', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.handleRate();
-            expect(stubs.emit).to.be.calledWith('ratechange');
+            expect(stubs.emit).toBeCalledWith('ratechange');
         });
     });
 
     describe('handleQuality()', () => {
-        it('should emit the qualitychange event', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit the qualitychange event', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.handleQuality();
-            expect(stubs.emit).to.be.calledWith('qualitychange');
+            expect(stubs.emit).toBeCalledWith('qualitychange');
         });
     });
 
     describe('handleAutoplay()', () => {
-        it('should emit the autoplay event', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit the autoplay event', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.handleAutoplay();
-            expect(stubs.emit).to.be.calledWith('autoplaychange');
+            expect(stubs.emit).toBeCalledWith('autoplaychange');
         });
     });
 
     describe('handleSubtitle()', () => {
-        it('should emit the subtitlechange event', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit the subtitlechange event', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.handleSubtitle();
-            expect(stubs.emit).to.be.calledWith('subtitlechange');
+            expect(stubs.emit).toBeCalledWith('subtitlechange');
         });
     });
 
     describe('setupSettings()', () => {
-        it('should create a settings obect and bind listeners', () => {
-            const settingsStub = sandbox.stub(Settings.prototype, 'addListener');
+        test('should create a settings obect and bind listeners', () => {
+            const settingsStub = jest.spyOn(Settings.prototype, 'addListener');
 
             mediaControls.setupSettings();
             expect(mediaControls.settings instanceof Settings);
-            expect(settingsStub).to.be.calledWith('quality', mediaControls.handleQuality);
-            expect(settingsStub).to.be.calledWith('speed', mediaControls.handleRate);
-            expect(settingsStub).to.be.calledWith('autoplay', mediaControls.handleAutoplay);
+            expect(settingsStub).toBeCalledWith('quality', mediaControls.handleQuality);
+            expect(settingsStub).toBeCalledWith('speed', mediaControls.handleRate);
+            expect(settingsStub).toBeCalledWith('autoplay', mediaControls.handleAutoplay);
         });
     });
 
     describe('setupScrubbers()', () => {
         beforeEach(() => {
-            stubs.on = sandbox.stub(Scrubber.prototype, 'on');
+            stubs.on = jest.spyOn(Scrubber.prototype, 'on');
         });
 
-        it('should create a new scrubber and value change handler for time', () => {
+        test('should create a new scrubber and value change handler for time', () => {
             mediaControls.setupScrubbers();
             expect(mediaControls.timeScrubber instanceof Scrubber);
-            expect(stubs.on).to.be.calledWith('valuechange');
+            expect(stubs.on).toBeCalledWith('valuechange', expect.any(Function));
         });
 
-        it('should create a new scrubber and value change handler for volume', () => {
+        test('should create a new scrubber and value change handler for volume', () => {
             mediaControls.setupScrubbers();
             expect(mediaControls.volumeScrubber instanceof Scrubber);
-            expect(stubs.on).to.be.calledWith('valuechange');
+            expect(stubs.on).toBeCalledWith('valuechange', expect.any(Function));
         });
     });
 
     describe('getTimeFromScrubber()', () => {
-        it('should compute the right time', () => {
+        test('should compute the right time', () => {
             mediaControls.mediaEl = {
                 duration: 100,
             };
             mediaControls.setupScrubbers();
-            sandbox.stub(mediaControls.timeScrubber, 'getValue').returns(0.3);
+            jest.spyOn(mediaControls.timeScrubber, 'getValue').mockReturnValue(0.3);
 
             const time = mediaControls.getTimeFromScrubber();
 
-            expect(time).to.equal(30);
+            expect(time).toBe(30);
         });
     });
 
     describe('formatTime()', () => {
-        it('should correctly format 3 hours', () => {
+        test('should correctly format 3 hours', () => {
             const result = mediaControls.formatTime(10800);
-            expect(result).to.equal('3:00:00');
+            expect(result).toBe('3:00:00');
         });
 
-        it('should correctly format the time', () => {
+        test('should correctly format the time', () => {
             const result = mediaControls.formatTime(11211);
-            expect(result).to.equal('3:06:51');
+            expect(result).toBe('3:06:51');
         });
 
-        it('should correctly format when double-digit minutes', () => {
+        test('should correctly format when double-digit minutes', () => {
             const result = mediaControls.formatTime(705);
-            expect(result).to.equal('11:45');
+            expect(result).toBe('11:45');
         });
 
-        it('should correctly format when single-digit minutes', () => {
+        test('should correctly format when single-digit minutes', () => {
             const result = mediaControls.formatTime(105);
-            expect(result).to.equal('1:45');
+            expect(result).toBe('1:45');
         });
 
-        it('should correctly format when 0 minutes', () => {
+        test('should correctly format when 0 minutes', () => {
             const result = mediaControls.formatTime(9);
-            expect(result).to.equal('0:09');
+            expect(result).toBe('0:09');
         });
 
-        it('should correctly format 0 seconds', () => {
+        test('should correctly format 0 seconds', () => {
             const result = mediaControls.formatTime(0);
-            expect(result).to.equal('0:00');
+            expect(result).toBe('0:00');
         });
     });
 
@@ -326,17 +316,17 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.durationEl = {
                 textContent: '',
             };
-            stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
+            stubs.formatTime = jest.spyOn(mediaControls, 'formatTime');
         });
 
-        it('should set the text content of the duration element', () => {
+        test('should set the text content of the duration element', () => {
             mediaControls.setDuration(10800);
-            expect(stubs.formatTime).to.be.calledWith(10800);
+            expect(stubs.formatTime).toBeCalledWith(10800);
         });
 
-        it('should set the text content to 0 if there is no time', () => {
+        test('should set the text content to 0 if there is no time', () => {
             mediaControls.setDuration(undefined);
-            expect(stubs.formatTime).to.be.calledWith(0);
+            expect(stubs.formatTime).toBeCalledWith(0);
         });
     });
 
@@ -350,263 +340,263 @@ describe('lib/viewers/media/MediaControls', () => {
                 textContent: '8:20',
             };
             mediaControls.setupScrubbers();
-            stubs.setValue = sandbox.stub(mediaControls.timeScrubber, 'setValue');
-            stubs.formatTime = sandbox.stub(mediaControls, 'formatTime').returns('4:10');
+            stubs.setValue = jest.spyOn(mediaControls.timeScrubber, 'setValue');
+            stubs.formatTime = jest.spyOn(mediaControls, 'formatTime').mockReturnValue('4:10');
         });
 
-        it('should set the value of the time scrubber and update the timecode El', () => {
+        test('should set the value of the time scrubber and update the timecode El', () => {
             mediaControls.setTimeCode(250);
-            expect(stubs.setValue).to.be.calledWith(0.5);
-            expect(stubs.formatTime).to.be.calledWith(250);
+            expect(stubs.setValue).toBeCalledWith(0.5);
+            expect(stubs.formatTime).toBeCalledWith(250);
         });
 
-        it('should set correct aria values', () => {
+        test('should set correct aria values', () => {
             mediaControls.setTimeCode(250);
-            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('250');
-            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('4:10 of 8:20');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).toBe('250');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).toBe('4:10 of 8:20');
         });
 
-        it('should set the value with 0 if no time is passed in', () => {
+        test('should set the value with 0 if no time is passed in', () => {
             mediaControls.setTimeCode(undefined);
-            expect(stubs.setValue).to.be.calledWith(0);
-            expect(stubs.formatTime).to.be.calledWith(0);
+            expect(stubs.setValue).toBeCalledWith(0);
+            expect(stubs.formatTime).toBeCalledWith(0);
         });
     });
 
     describe('updateProgress()', () => {
-        it('should correctly set the buffered value of the time scrubber', () => {
+        test('should correctly set the buffered value of the time scrubber', () => {
             mediaControls.mediaEl = {
                 buffered: {
                     length: 5,
-                    end: sandbox.stub().returns(1),
+                    end: jest.fn().mockReturnValue(1),
                 },
                 duration: 1,
             };
             mediaControls.setupScrubbers();
-            stubs.setBufferedValueStub = sandbox.stub(mediaControls.timeScrubber, 'setBufferedValue');
+            stubs.setBufferedValueStub = jest.spyOn(mediaControls.timeScrubber, 'setBufferedValue');
 
             mediaControls.updateProgress();
-            expect(stubs.setBufferedValueStub).to.be.calledWith(1);
+            expect(stubs.setBufferedValueStub).toBeCalledWith(1);
         });
     });
 
     describe('toggleMute()', () => {
-        it('should emit a togglemute message', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit a togglemute message', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.toggleMute();
-            expect(stubs.emit).to.be.calledWith('togglemute');
+            expect(stubs.emit).toBeCalledWith('togglemute');
         });
     });
 
     describe('togglePlay()', () => {
-        it('should emit a toggleplayback message', () => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit a toggleplayback message', () => {
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.togglePlay();
-            expect(stubs.emit).to.be.calledWith('toggleplayback');
+            expect(stubs.emit).toBeCalledWith('toggleplayback');
         });
     });
 
     describe('toggleSubtitles()', () => {
-        it('should emit a togglesubtitles message', () => {
-            sandbox.stub(mediaControls.settings, 'toggleSubtitles');
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+        test('should emit a togglesubtitles message', () => {
+            jest.spyOn(mediaControls.settings, 'toggleSubtitles').mockImplementation();
+            stubs.emit = jest.spyOn(mediaControls, 'emit');
 
             mediaControls.toggleSubtitles();
 
-            expect(stubs.emit).to.be.calledWith('togglesubtitles');
-            expect(mediaControls.settings.toggleSubtitles).to.be.called;
+            expect(stubs.emit).toBeCalledWith('togglesubtitles');
+            expect(mediaControls.settings.toggleSubtitles).toBeCalled();
         });
     });
 
     describe('toggleFullscreen()', () => {
         beforeEach(() => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
+            stubs.emit = jest.spyOn(mediaControls, 'emit').mockImplementation();
         });
 
-        it('should emit a togglefullscreen message', () => {
+        test('should emit a togglefullscreen message', () => {
             mediaControls.toggleFullscreen();
-            expect(stubs.emit).to.be.calledWith('togglefullscreen');
+            expect(stubs.emit).toBeCalledWith('togglefullscreen');
         });
     });
 
     describe('toggleFullscreenIcon()', () => {
         beforeEach(() => {
-            stubs.isFullscreen = sandbox.stub(fullscreen, 'isFullscreen');
-            stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
+            stubs.isFullscreen = jest.spyOn(fullscreen, 'isFullscreen');
+            stubs.setLabel = jest.spyOn(mediaControls, 'setLabel');
         });
 
-        it('should set the label to exit fullscreen if in fullscreen', () => {
-            stubs.isFullscreen.returns(true);
+        test('should set the label to exit fullscreen if in fullscreen', () => {
+            stubs.isFullscreen.mockReturnValue(true);
 
             mediaControls.handleFullscreenEnter();
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('exit_fullscreen'));
-            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.true;
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.fullscreenButtonEl, __('exit_fullscreen'));
+            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).toBe(true);
         });
 
-        it("should set the label to enter fullscreen if it's not fullscreen", () => {
-            stubs.isFullscreen.returns(false);
+        test("should set the label to enter fullscreen if it's not fullscreen", () => {
+            stubs.isFullscreen.mockReturnValue(false);
 
             mediaControls.handleFullscreenExit();
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('enter_fullscreen'));
-            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.false;
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.fullscreenButtonEl, __('enter_fullscreen'));
+            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).toBe(false);
         });
     });
 
     describe('toggleSettings()', () => {
         beforeEach(() => {
-            stubs.show = sandbox.stub(mediaControls.settings, 'show');
-            stubs.hide = sandbox.stub(mediaControls.settings, 'hide');
-            stubs.isVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
+            stubs.show = jest.spyOn(mediaControls.settings, 'show');
+            stubs.hide = jest.spyOn(mediaControls.settings, 'hide');
+            stubs.isVisible = jest.spyOn(mediaControls, 'isSettingsVisible');
         });
 
-        it('should hide the settings if they are visible', () => {
-            stubs.isVisible.returns(true);
+        test('should hide the settings if they are visible', () => {
+            stubs.isVisible.mockReturnValue(true);
 
             mediaControls.toggleSettings();
-            expect(mediaControls.settings.hide).to.be.called;
+            expect(mediaControls.settings.hide).toBeCalled();
         });
 
-        it('should show the settings if they are hidden', () => {
-            stubs.isVisible.returns(false);
+        test('should show the settings if they are hidden', () => {
+            stubs.isVisible.mockReturnValue(false);
 
             mediaControls.toggleSettings();
-            expect(mediaControls.settings.show).to.be.called;
+            expect(mediaControls.settings.show).toBeCalled();
         });
     });
 
     describe('setLabel()', () => {
-        it('should set the aria label and the title of the given label', () => {
+        test('should set the aria label and the title of the given label', () => {
             const el = document.createElement('button');
 
             mediaControls.setLabel(el, 'test');
-            expect(el.getAttribute('title')).to.equal('test');
-            expect(el.getAttribute('aria-label')).to.equal('test');
+            expect(el.getAttribute('title')).toBe('test');
+            expect(el.getAttribute('aria-label')).toBe('test');
         });
     });
 
     describe('isSettingsVisible()', () => {
-        it('should return true if the settings exist and are visible', () => {
-            stubs.isVisible = sandbox.stub(mediaControls.settings, 'isVisible').returns(true);
+        test('should return true if the settings exist and are visible', () => {
+            stubs.isVisible = jest.spyOn(mediaControls.settings, 'isVisible').mockReturnValue(true);
 
             const result = mediaControls.isSettingsVisible();
-            expect(stubs.isVisible).to.be.called;
-            expect(result).to.equal(true);
+            expect(stubs.isVisible).toBeCalled();
+            expect(result).toBe(true);
 
-            stubs.isVisible.returns(false);
+            stubs.isVisible.mockReturnValue(false);
             const falseResult = mediaControls.isSettingsVisible();
-            expect(falseResult).to.equal(false);
+            expect(falseResult).toBe(false);
         });
     });
 
     describe('showPauseIcon()', () => {
-        it('should add the playing class to the wrapper el and update the label', () => {
-            stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
+        test('should add the playing class to the wrapper el and update the label', () => {
+            stubs.setLabel = jest.spyOn(mediaControls, 'setLabel');
 
             mediaControls.showPauseIcon();
-            expect(mediaControls.wrapperEl.classList.contains(PLAYING_CLASS)).to.be.true;
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.playButtonEl, __('media_pause'));
+            expect(mediaControls.wrapperEl.classList.contains(PLAYING_CLASS)).toBe(true);
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.playButtonEl, __('media_pause'));
         });
     });
 
     describe('showPlayIcon()', () => {
-        it('should remove the playing class to the wrapper el and update the label', () => {
-            stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
+        test('should remove the playing class to the wrapper el and update the label', () => {
+            stubs.setLabel = jest.spyOn(mediaControls, 'setLabel');
 
             mediaControls.showPlayIcon();
-            expect(mediaControls.wrapperEl.classList.contains(PLAYING_CLASS)).to.be.false;
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.playButtonEl, __('media_play'));
+            expect(mediaControls.wrapperEl.classList.contains(PLAYING_CLASS)).toBe(false);
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.playButtonEl, __('media_play'));
         });
     });
 
     describe('updateVolumeIcon()', () => {
         beforeEach(() => {
             mediaControls.setupScrubbers();
-            stubs.setValue = sandbox.stub(mediaControls.volScrubber, 'setValue');
-            stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
+            stubs.setValue = jest.spyOn(mediaControls.volScrubber, 'setValue');
+            stubs.setLabel = jest.spyOn(mediaControls, 'setLabel');
         });
 
-        it('should remove all volume level classes and add the correct one', () => {
+        test('should remove all volume level classes and add the correct one', () => {
             mediaControls.className = 'bp-media-volume-icon-is-low';
 
             mediaControls.updateVolumeIcon(1);
-            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-low')).to.be.false;
-            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-high')).to.be.true;
+            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-low')).toBe(false);
+            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-high')).toBe(true);
         });
 
-        it('set the new value of the volume scrubber', () => {
+        test('set the new value of the volume scrubber', () => {
             mediaControls.updateVolumeIcon(1);
-            expect(stubs.setValue).to.be.calledWith(1);
+            expect(stubs.setValue).toBeCalledWith(1);
         });
 
-        it('should set the correct volume button level', () => {
+        test('should set the correct volume button level', () => {
             mediaControls.updateVolumeIcon(1);
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.volButtonEl, __('media_mute'));
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.volButtonEl, __('media_mute'));
 
             mediaControls.updateVolumeIcon(0);
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.volButtonEl, __('media_unmute'));
+            expect(stubs.setLabel).toBeCalledWith(mediaControls.volButtonEl, __('media_unmute'));
         });
 
-        it('set the correct aria values', () => {
+        test('set the correct aria values', () => {
             mediaControls.updateVolumeIcon(0.31);
-            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('31');
-            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).to.equal('31% Volume');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).toBe('31');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).toBe('31% Volume');
         });
     });
 
     describe('attachEventHandlers()', () => {
         beforeEach(() => {
-            stubs.wrapperAddEventListener = sandbox.stub(mediaControls.wrapperEl, 'addEventListener');
-            stubs.addActivationListener = sandbox.stub(util, 'addActivationListener');
-            stubs.addListener = sandbox.stub(fullscreen, 'addListener');
+            stubs.wrapperAddEventListener = jest.spyOn(mediaControls.wrapperEl, 'addEventListener');
+            stubs.addActivationListener = jest.spyOn(util, 'addActivationListener');
+            stubs.addListener = jest.spyOn(fullscreen, 'addListener');
         });
 
-        it('should add the correct event Liseners', () => {
+        test('should add the correct event Liseners', () => {
             mediaControls.attachEventHandlers();
-            expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseenter', mediaControls.mouseenterHandler);
-            expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseleave', mediaControls.mouseleaveHandler);
-            expect(stubs.addActivationListener).to.be.calledWith(
+            expect(stubs.wrapperAddEventListener).toBeCalledWith('mouseenter', mediaControls.mouseenterHandler);
+            expect(stubs.wrapperAddEventListener).toBeCalledWith('mouseleave', mediaControls.mouseleaveHandler);
+            expect(stubs.addActivationListener).toBeCalledWith(
                 mediaControls.playButtonEl,
                 mediaControls.togglePlayHandler,
             );
-            expect(stubs.addActivationListener).to.be.calledWith(
+            expect(stubs.addActivationListener).toBeCalledWith(
                 mediaControls.volButtonEl,
                 mediaControls.toggleMuteHandler,
             );
-            expect(stubs.addActivationListener).to.be.calledWith(
+            expect(stubs.addActivationListener).toBeCalledWith(
                 mediaControls.fullscreenButtonEl,
                 mediaControls.toggleFullscreenHandler,
             );
-            expect(stubs.addActivationListener).to.be.calledWith(
+            expect(stubs.addActivationListener).toBeCalledWith(
                 mediaControls.settingsButtonEl,
                 mediaControls.toggleSettingsHandler,
             );
-            expect(stubs.addActivationListener).to.be.calledWith(
+            expect(stubs.addActivationListener).toBeCalledWith(
                 mediaControls.subtitlesButtonEl,
                 mediaControls.toggleSubtitlesHandler,
             );
-            expect(stubs.addListener).to.be.called;
+            expect(stubs.addListener).toBeCalled();
         });
     });
 
     describe('mouseenterHandler()', () => {
-        it('should set preventHiding to true and show the controls', () => {
-            stubs.show = sandbox.stub(mediaControls, 'show');
+        test('should set preventHiding to true and show the controls', () => {
+            stubs.show = jest.spyOn(mediaControls, 'show');
 
             mediaControls.mouseenterHandler();
-            expect(mediaControls.preventHiding).to.equal(true);
-            expect(stubs.show).to.be.called;
+            expect(mediaControls.preventHiding).toBe(true);
+            expect(stubs.show).toBeCalled();
         });
     });
 
     describe('mouseleaveHandler()', () => {
-        it('should allow hiding via setHiding and show the controls', () => {
-            stubs.show = sandbox.stub(mediaControls, 'show');
+        test('should allow hiding via setHiding and show the controls', () => {
+            stubs.show = jest.spyOn(mediaControls, 'show');
 
             mediaControls.mouseleaveHandler();
-            expect(mediaControls.preventHiding).to.equal(false);
-            expect(stubs.show).to.be.called;
+            expect(mediaControls.preventHiding).toBe(false);
+            expect(stubs.show).toBeCalled();
         });
     });
 
@@ -614,92 +604,87 @@ describe('lib/viewers/media/MediaControls', () => {
         beforeEach(() => {
             stubs.showControlClass = 'bp-media-controls-is-visible';
             stubs.timeout = 2001;
-            stubs.hide = sandbox.stub(mediaControls, 'hide');
-            clock = sinon.useFakeTimers();
+            stubs.hide = jest.spyOn(mediaControls, 'hide');
         });
 
-        afterEach(() => {
-            clock.restore();
-        });
-
-        it('should add the controls class to the wrapper element', () => {
+        test('should add the controls class to the wrapper element', () => {
             mediaControls.show();
-            expect(mediaControls.wrapperEl.parentNode.classList.contains(stubs.showControlClass)).to.be.true;
+            expect(mediaControls.wrapperEl.parentNode.classList.contains(stubs.showControlClass)).toBe(true);
         });
 
-        it('should add the auto hide timeout', () => {
+        test('should add the auto hide timeout', () => {
             mediaControls.show();
-            expect(mediaControls.autoHideTimeout).to.not.equal(undefined);
+            expect(mediaControls.autoHideTimeout).toBeDefined();
         });
 
-        it('should hide the controls after a timeout', () => {
+        test('should hide the controls after a timeout', () => {
             mediaControls.show();
-            clock.tick(stubs.timeout);
-            expect(stubs.hide).to.be.called;
+            jest.advanceTimersByTime(stubs.timeout);
+            expect(stubs.hide).toBeCalled();
         });
     });
 
     describe('hide()', () => {
         beforeEach(() => {
-            stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
-            stubs.filmstripHideHandler = sandbox.stub(mediaControls, 'filmstripHideHandler');
-            stubs.show = sandbox.stub(mediaControls, 'show');
+            stubs.isSettingsVisible = jest.spyOn(mediaControls, 'isSettingsVisible').mockImplementation();
+            stubs.filmstripHideHandler = jest.spyOn(mediaControls, 'filmstripHideHandler').mockImplementation();
+            stubs.show = jest.spyOn(mediaControls, 'show').mockImplementation();
         });
 
-        it('should should call show and do nothing else if the prevent hiding is true', () => {
+        test('should should call show and do nothing else if the prevent hiding is true', () => {
             mediaControls.preventHiding = true;
 
             mediaControls.hide();
-            expect(stubs.show).to.be.called;
+            expect(stubs.show).toBeCalled();
         });
 
-        it('should should call show and do nothing else if the settings are visible', () => {
+        test('should should call show and do nothing else if the settings are visible', () => {
             mediaControls.preventHiding = false;
-            stubs.isSettingsVisible.returns(true);
+            stubs.isSettingsVisible.mockReturnValue(true);
 
             mediaControls.hide();
-            expect(stubs.show).to.be.called;
+            expect(stubs.show).toBeCalled();
         });
 
-        it('should remove the show controls class if the wrapper element and parent exist', () => {
+        test('should remove the show controls class if the wrapper element and parent exist', () => {
             mediaControls.preventHiding = false;
-            stubs.isSettingsVisible.returns(false);
+            stubs.isSettingsVisible.mockReturnValue(false);
 
             mediaControls.hide();
-            expect(stubs.show).to.not.be.called;
-            expect(mediaControls.wrapperEl.parentNode.classList.contains('bp-media-controls-is-visible')).to.be.false;
+            expect(stubs.show).not.toBeCalled();
+            expect(mediaControls.wrapperEl.parentNode.classList.contains('bp-media-controls-is-visible')).toBe(false);
         });
 
-        it('should hide the filmstrip', () => {
+        test('should hide the filmstrip', () => {
             mediaControls.preventHiding = false;
-            stubs.isSettingsVisible.returns(false);
+            stubs.isSettingsVisible.mockReturnValue(false);
             mediaControls.filmstripEl = document.createElement('div');
 
             mediaControls.hide();
-            expect(stubs.filmstripHideHandler).to.be.called;
+            expect(stubs.filmstripHideHandler).toBeCalled();
         });
     });
 
     describe('toggle()', () => {
         beforeEach(() => {
-            stubs.isVisible = sandbox.stub(mediaControls, 'isVisible');
-            stubs.hide = sandbox.stub(mediaControls, 'hide');
-            stubs.show = sandbox.stub(mediaControls, 'show');
+            stubs.isVisible = jest.spyOn(mediaControls, 'isVisible');
+            stubs.hide = jest.spyOn(mediaControls, 'hide');
+            stubs.show = jest.spyOn(mediaControls, 'show');
         });
 
-        it('should hide the settings and remove preventHiding if the controls are visible', () => {
-            stubs.isVisible.returns(true);
+        test('should hide the settings and remove preventHiding if the controls are visible', () => {
+            stubs.isVisible.mockReturnValue(true);
 
             mediaControls.toggle();
-            expect(stubs.hide).to.be.called;
-            expect(mediaControls.preventHiding).to.be.false;
+            expect(stubs.hide).toBeCalled();
+            expect(mediaControls.preventHiding).toBe(false);
         });
 
-        it('should show the controls if they are not visible', () => {
-            stubs.isVisible.returns(false);
+        test('should show the controls if they are not visible', () => {
+            stubs.isVisible.mockReturnValue(false);
 
             mediaControls.toggle();
-            expect(stubs.show).to.be.called;
+            expect(stubs.show).toBeCalled();
         });
     });
 
@@ -709,30 +694,30 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.wrapperEl = stubs.wrapperParent.appendChild(document.createElement('div'));
         });
 
-        it('should return false if the controls show class is missing', () => {
+        test('should return false if the controls show class is missing', () => {
             const result = mediaControls.isVisible();
-            expect(result).to.be.false;
+            expect(result).toBe(false);
         });
 
-        it('should return true if the controls show class is present', () => {
+        test('should return true if the controls show class is present', () => {
             stubs.wrapperParent.classList.add('bp-media-controls-is-visible');
             const result = mediaControls.isVisible();
-            expect(result).to.be.true;
+            expect(result).toBe(true);
         });
     });
 
     describe('resizeTimeScrubber()', () => {
-        it('should resize the time scrubber', () => {
+        test('should resize the time scrubber', () => {
             mediaControls.setupScrubbers();
-            stubs.resize = sandbox.stub(mediaControls.timeScrubber, 'resize');
+            stubs.resize = jest.spyOn(mediaControls.timeScrubber, 'resize');
 
             mediaControls.resizeTimeScrubber();
-            expect(stubs.resize).to.be.called;
+            expect(stubs.resize).toBeCalled();
         });
     });
 
     describe('setFilmstrip()', () => {
-        it('should set the filmstrip source to the provided URL', () => {
+        test('should set the filmstrip source to the provided URL', () => {
             mediaControls.filmstripEl = {
                 src: '',
             };
@@ -740,92 +725,89 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.filmstripUrl = 'testurl';
 
             mediaControls.setFilmstrip();
-            expect(mediaControls.filmstripEl.src).to.equal('testurl');
+            expect(mediaControls.filmstripEl.src).toBe('testurl');
         });
     });
 
     describe('initFilmstrip()', () => {
         beforeEach(() => {
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve()),
+                getPromise: jest.fn().mockResolvedValue(undefined),
             };
             mediaControls.setupScrubbers();
-            stubs.handleElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
+            stubs.handleElAddEventListener = jest.spyOn(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
             stubs.timeScrubberEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
             mediaControls.timeScrubberEl = stubs.timeScrubberEl;
-            stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
+            stubs.setFilmstrip = jest.spyOn(mediaControls, 'setFilmstrip');
         });
 
-        it('should give the correct class and content to the filmstrip container', () => {
+        test('should give the correct class and content to the filmstrip container', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(mediaControls.filmstripContainerEl.classList.contains('bp-media-filmstrip-container')).to.be.true;
-            expect(mediaControls.filmstripContainerEl.innerHTML.includes(CRAWLER)).to.be.true;
+            expect(mediaControls.filmstripContainerEl.classList.contains('bp-media-filmstrip-container')).toBe(true);
+            expect(mediaControls.filmstripContainerEl.innerHTML.includes(CRAWLER)).toBe(true);
         });
 
-        it('should give the correct class to the filmstrip', () => {
+        test('should give the correct class to the filmstrip', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(mediaControls.filmstripEl.classList.contains('bp-media-filmstrip')).to.be.true;
+            expect(mediaControls.filmstripEl.classList.contains('bp-media-filmstrip')).toBe(true);
         });
 
-        it('should give the correct class to the filmstrip time element', () => {
+        test('should give the correct class to the filmstrip time element', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(mediaControls.filmstripTimeEl.classList.contains('bp-media-filmstrip-timecode')).to.be.true;
+            expect(mediaControls.filmstripTimeEl.classList.contains('bp-media-filmstrip-timecode')).toBe(true);
         });
 
-        it('should add the correct eventListeners to the handle and converted time scrubber elements', () => {
-            const spy = sandbox.spy(mediaControls, 'timeScrubberHandler');
+        test('should add the correct eventListeners to the handle and converted time scrubber elements', () => {
+            const spy = jest.spyOn(mediaControls, 'timeScrubberHandler').mockImplementation();
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(stubs.handleElAddEventListener).to.be.calledWith(
-                'mousedown',
-                mediaControls.timeScrubbingStartHandler,
-            );
-            expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
+            expect(stubs.handleElAddEventListener).toBeCalledWith('mousedown', mediaControls.timeScrubbingStartHandler);
+            expect(stubs.timeScrubberEl.addEventListener).toBeCalledWith(
                 'mousemove',
                 mediaControls.timeScrubberElShowHandler,
             );
-            expect(stubs.timeScrubberEl.addEventListener).to.be.calledWith(
+            expect(stubs.timeScrubberEl.addEventListener).toBeCalledWith(
                 'mouseleave',
                 mediaControls.filmstripHideHandler,
             );
-            expect(spy).to.have.been.called.twice;
+            expect(spy).toBeCalled();
         });
 
-        it('should add the touchstart eventListener if touch is detected', () => {
+        test('should add the touchstart eventListener if touch is detected', () => {
             mediaControls.hasTouch = true;
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(mediaControls.timeScrubberEl.addEventListener).to.be.calledWith(
+            expect(mediaControls.timeScrubberEl.addEventListener).toBeCalledWith(
                 'touchstart',
                 mediaControls.timeScrubbingStartHandler,
             );
         });
 
-        it('should add the onload function to the filmstrip', () => {
+        test('should add the onload function to the filmstrip', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(typeof mediaControls.filmstripEl.onload === 'function');
         });
     });
 
     describe('timeScrubbingStartHandler()', () => {
-        it('should set isScrubbing to true, preventHiding to true, and add show and stop handlers', () => {
-            stubs.addEventListener = sandbox.stub(document, 'addEventListener');
+        test('should set isScrubbing to true, preventHiding to true, and add show and stop handlers', () => {
+            stubs.addEventListener = jest.spyOn(document, 'addEventListener');
 
             mediaControls.timeScrubbingStartHandler();
-            expect(mediaControls.isScrubbing).to.equal(true);
-            expect(mediaControls.preventHiding).to.equal(true);
-            expect(stubs.addEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
-            expect(stubs.addEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
+            expect(mediaControls.isScrubbing).toBe(true);
+            expect(mediaControls.preventHiding).toBe(true);
+            expect(stubs.addEventListener).toBeCalledWith('mouseup', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.addEventListener).toBeCalledWith('mousemove', mediaControls.filmstripShowHandler);
         });
 
-        it('should add show and stop touch events if touch is present', () => {
+        test('should add show and stop touch events if touch is present', () => {
             mediaControls.hasTouch = true;
-            stubs.addEventListener = sandbox.stub(document, 'addEventListener');
+            stubs.addEventListener = jest.spyOn(document, 'addEventListener');
 
             mediaControls.timeScrubbingStartHandler();
-            expect(stubs.addEventListener).to.be.calledWith('touchend', mediaControls.timeScrubbingStopHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchmove', mediaControls.show);
+            expect(stubs.addEventListener).toBeCalledWith('touchend', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.addEventListener).toBeCalledWith('touchmove', mediaControls.show);
         });
     });
 
@@ -835,54 +817,56 @@ describe('lib/viewers/media/MediaControls', () => {
             stubs.event = {
                 target: mediaControls.timeScrubberEl.firstChild,
             };
-            stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
+            stubs.removeEventListener = jest.spyOn(document, 'removeEventListener');
             mediaControls.filmstripContainerEl = document.createElement('div');
         });
 
-        it('should set isScrubbing to false, preventHiding to false, and remove show and stop handlers', () => {
+        test('should set isScrubbing to false, preventHiding to false, and remove show and stop handlers', () => {
             mediaControls.timeScrubbingStopHandler(stubs.event);
-            expect(mediaControls.isScrubbing).to.equal(false);
-            expect(mediaControls.preventHiding).to.equal(false);
-            expect(stubs.removeEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
+            expect(mediaControls.isScrubbing).toBe(false);
+            expect(mediaControls.preventHiding).toBe(false);
+            expect(stubs.removeEventListener).toBeCalledWith('mouseup', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('mousemove', mediaControls.filmstripShowHandler);
         });
 
-        it('should remove touch show and stop handlers if touch is present', () => {
+        test('should remove touch show and stop handlers if touch is present', () => {
             mediaControls.hasTouch = true;
             mediaControls.timeScrubbingStopHandler(stubs.event);
 
-            expect(stubs.removeEventListener).to.be.calledWith('touchend', mediaControls.timeScrubbingStopHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchmove', mediaControls.show);
+            expect(stubs.removeEventListener).toBeCalledWith('touchend', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.removeEventListener).toBeCalledWith('touchmove', mediaControls.show);
         });
 
-        it('should hide the filmstrip if it is not being hovered over', () => {
+        test('should hide the filmstrip if it is not being hovered over', () => {
             stubs.event.target = document.createElement('div');
 
             mediaControls.timeScrubbingStopHandler(stubs.event);
-            expect(mediaControls.filmstripContainerEl.style.display).equal('none');
+            expect(mediaControls.filmstripContainerEl.style.display).toBe('none');
         });
     });
 
     describe('filmstripShowHandler()', () => {
         beforeEach(() => {
-            stubs.getBoundingClientRect = sandbox.stub(mediaControls.containerEl, 'getBoundingClientRect').returns({
-                left: 0,
-                width: 260,
-            });
+            stubs.getBoundingClientRect = jest
+                .spyOn(mediaControls.containerEl, 'getBoundingClientRect')
+                .mockReturnValue({
+                    left: 0,
+                    width: 260,
+                });
             stubs.event = {
                 pageX: 100,
             };
-            stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
-            stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
+            stubs.isSettingsVisible = jest.spyOn(mediaControls, 'isSettingsVisible');
+            stubs.formatTime = jest.spyOn(mediaControls, 'formatTime');
             mediaControls.mediaEl = {
                 duration: 3600,
             };
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve()),
+                getPromise: jest.fn().mockResolvedValue(undefined),
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            sandbox.stub(mediaControls, 'computeFilmstripPositions').returns({
+            jest.spyOn(mediaControls, 'computeFilmstripPositions').mockReturnValue({
                 time: 10,
                 left: -100,
                 top: -180,
@@ -890,217 +874,218 @@ describe('lib/viewers/media/MediaControls', () => {
             });
         });
 
-        it('should do nothing if the settings are visible', () => {
-            stubs.isSettingsVisible.returns(true);
+        test('should do nothing if the settings are visible', () => {
+            stubs.isSettingsVisible.mockReturnValue(true);
 
             mediaControls.filmstripShowHandler(stubs.event);
-            expect(stubs.getBoundingClientRect).to.not.be.called;
+            expect(stubs.getBoundingClientRect).not.toBeCalled();
         });
 
-        it('should correctly style the filmstrip and format the time element', () => {
-            stubs.isSettingsVisible.returns(false);
+        test('should correctly style the filmstrip and format the time element', () => {
+            stubs.isSettingsVisible.mockReturnValue(false);
 
             mediaControls.filmstripShowHandler(stubs.event);
-            expect(mediaControls.filmstripEl.style.left).to.equal('-100px');
-            expect(mediaControls.filmstripEl.style.top).to.equal('-180px');
-            expect(mediaControls.filmstripContainerEl.style.display).to.equal('block');
-            expect(mediaControls.filmstripContainerEl.style.left).to.equal('20px');
-            expect(stubs.formatTime).to.be.calledWith(10);
+            expect(mediaControls.filmstripEl.style.left).toBe('-100px');
+            expect(mediaControls.filmstripEl.style.top).toBe('-180px');
+            expect(mediaControls.filmstripContainerEl.style.display).toBe('block');
+            expect(mediaControls.filmstripContainerEl.style.left).toBe('20px');
+            expect(stubs.formatTime).toBeCalledWith(10);
         });
     });
 
     describe('computeFilmstripPositions()', () => {
-        it('should compute correct positions when filmstrip not ready', () => {
+        test('should compute correct positions when filmstrip not ready', () => {
             mediaControls.mediaEl = {
                 duration: 100,
             };
             mediaControls.filmstripInterval = 1;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.25);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.25);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, null);
 
-            expect(positions.time).to.equal(25);
-            expect(positions.left).to.equal(0);
-            expect(positions.top).to.equal(0);
-            expect(positions.containerLeft).to.equal(120);
+            expect(positions.time).toBe(25);
+            expect(positions.left).toBe(0);
+            expect(positions.top === 0).toBe(true);
+            expect(positions.containerLeft).toBe(120);
         });
 
-        it('should compute correct horizontal offset into filmstrip', () => {
+        test('should compute correct horizontal offset into filmstrip', () => {
             mediaControls.mediaEl = {
                 duration: 100,
             };
             mediaControls.filmstripInterval = 1;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
-            expect(positions.time).to.equal(20);
-            expect(positions.left).to.equal(-3200);
-            expect(positions.top).to.equal(0);
-            expect(positions.containerLeft).to.equal(120);
+            expect(positions.time).toBe(20);
+            expect(positions.left).toBe(-3200);
+            expect(positions.top === 0).toBe(true);
+            expect(positions.containerLeft).toBe(120);
         });
 
-        it('should compute correct vertical offset into filmstrip', () => {
+        test('should compute correct vertical offset into filmstrip', () => {
             mediaControls.mediaEl = {
                 duration: 1100,
             };
             mediaControls.filmstripInterval = 1;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
-            expect(positions.time).to.equal(220);
-            expect(positions.left).to.equal(-3200);
-            expect(positions.top).to.equal(-180);
-            expect(positions.containerLeft).to.equal(120);
+            expect(positions.time).toBe(220);
+            expect(positions.left).toBe(-3200);
+            expect(positions.top).toBe(-180);
+            expect(positions.containerLeft).toBe(120);
         });
 
-        it('should compute correct offset into filmstrip with different interval', () => {
+        test('should compute correct offset into filmstrip with different interval', () => {
             mediaControls.mediaEl = {
                 duration: 2000,
             };
             mediaControls.filmstripInterval = 5;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.6);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.6);
 
             const positions = mediaControls.computeFilmstripPositions(800, 200, 1000, 16000);
 
-            expect(positions.time).to.equal(1200);
-            expect(positions.left).to.equal(-6400);
-            expect(positions.top).to.equal(-180);
-            expect(positions.containerLeft).to.equal(520);
+            expect(positions.time).toBe(1200);
+            expect(positions.left).toBe(-6400);
+            expect(positions.top).toBe(-180);
+            expect(positions.containerLeft).toBe(520);
         });
 
-        it('should compute correct container position when hovering near left boundary', () => {
+        test('should compute correct container position when hovering near left boundary', () => {
             mediaControls.mediaEl = {
                 duration: 100,
             };
             mediaControls.filmstripInterval = 1;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.01);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.01);
 
             const positions = mediaControls.computeFilmstripPositions(210, 200, 1000, 16000);
 
-            expect(positions.time).to.equal(1);
-            expect(positions.left).to.equal(-160);
-            expect(positions.top).to.equal(0);
-            expect(positions.containerLeft).to.equal(0);
+            expect(positions.time).toBe(1);
+            expect(positions.left).toBe(-160);
+            expect(positions.top === 0).toBe(true);
+            expect(positions.containerLeft === 0).toBe(true);
         });
 
-        it('should compute correct container position when hovering near right boundary', () => {
+        test('should compute correct container position when hovering near right boundary', () => {
             mediaControls.mediaEl = {
                 duration: 100,
             };
             mediaControls.filmstripInterval = 1;
-            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.99);
+            jest.spyOn(mediaControls.timeScrubber, 'computeScrubberPosition').mockReturnValue(0.99);
 
             const positions = mediaControls.computeFilmstripPositions(1190, 200, 1000, 16000);
 
-            expect(positions.time).to.equal(99);
-            expect(positions.left).to.equal(-15840);
-            expect(positions.top).to.equal(0);
-            expect(positions.containerLeft).to.equal(840);
+            expect(positions.time).toBe(99);
+            expect(positions.left).toBe(-15840);
+            expect(positions.top === 0).toBe(true);
+            expect(positions.containerLeft).toBe(840);
         });
     });
 
     describe('filmstripHideHandler()', () => {
         beforeEach(() => {
             stubs.status = {
-                getPromise: sandbox.stub().returns(Promise.resolve()),
+                getPromise: jest.fn().mockResolvedValue(undefined),
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             mediaControls.isScrubbing = false;
         });
 
-        it('should hide the filmstrip container if not scrubbing', () => {
+        test('should hide the filmstrip container if not scrubbing', () => {
             mediaControls.filmstripHideHandler();
-            expect(mediaControls.filmstripContainerEl.style.display).to.equal('none');
+            expect(mediaControls.filmstripContainerEl.style.display).toBe('none');
         });
 
-        it('should do nothing if scrubbing', () => {
+        test('should do nothing if scrubbing', () => {
             mediaControls.isScrubbing = true;
 
             mediaControls.filmstripHideHandler();
-            expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
+            expect(mediaControls.filmstripContainerEl.style.display).toBe('');
         });
 
-        it('should do nothing if there is no filmstrip', () => {
+        test('should do nothing if there is no filmstrip', () => {
             mediaControls.isScrubbing = false;
             mediaControls.filmstripEl = null;
 
             mediaControls.filmstripHideHandler();
-            expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
+            expect(mediaControls.filmstripContainerEl.style.display).toBe('');
         });
     });
 
     describe('initSubtitles()', () => {
-        it('should load subtitles', () => {
-            sandbox.stub(mediaControls.settings, 'loadSubtitles');
+        test('should load subtitles', () => {
+            jest.spyOn(mediaControls.settings, 'loadSubtitles');
+            const language = 'English';
             const subs = ['English', 'Russian'];
-            mediaControls.initSubtitles(subs);
-            expect(mediaControls.settings.loadSubtitles).to.be.calledWith(subs);
+            mediaControls.initSubtitles(subs, language);
+            expect(mediaControls.settings.loadSubtitles).toBeCalledWith(subs, language);
         });
     });
 
     describe('initAlternateAudio()', () => {
-        it('should load alternate audio', () => {
-            sandbox.stub(mediaControls.settings, 'loadAlternateAudio');
+        test('should load alternate audio', () => {
+            jest.spyOn(mediaControls.settings, 'loadAlternateAudio');
             const audios = [
                 { language: 'eng', role: 'audio0' },
                 { language: 'rus', role: 'audio1' },
             ];
             mediaControls.initAlternateAudio(audios);
-            expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
+            expect(mediaControls.settings.loadAlternateAudio).toBeCalledWith(audios);
         });
     });
 
     describe('enableHDSettings()', () => {
-        it('enable HD in the settings menu', () => {
-            sandbox.stub(mediaControls.settings, 'enableHD');
+        test('enable HD in the settings menu', () => {
+            jest.spyOn(mediaControls.settings, 'enableHD');
             mediaControls.enableHDSettings();
 
-            expect(mediaControls.settings.enableHD).to.be.called;
+            expect(mediaControls.settings.enableHD).toBeCalled();
         });
     });
 
     describe('timeScrubberHandler()', () => {
         let handler;
         beforeEach(() => {
-            stubs.timeScrubberCallbackSpy = sandbox.spy();
+            stubs.timeScrubberCallbackSpy = jest.fn();
             handler = mediaControls.timeScrubberHandler(stubs.timeScrubberCallbackSpy);
 
             stubs.playedEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
             stubs.convertedEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
 
             mediaControls.timeScrubber.playedEl = stubs.playedEl;
             mediaControls.timeScrubber.convertedEl = stubs.convertedEl;
         });
 
-        it('should execute the callback when target is playedEl', () => {
+        test('should execute the callback when target is playedEl', () => {
             const eventStub = {
                 target: stubs.playedEl,
             };
             handler(eventStub);
-            expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
+            expect(stubs.timeScrubberCallbackSpy).toBeCalled();
         });
 
-        it('should execute the callback when target is convertedEl', () => {
+        test('should execute the callback when target is convertedEl', () => {
             const eventStub = {
                 target: stubs.convertedEl,
             };
             handler(eventStub);
-            expect(stubs.timeScrubberCallbackSpy).to.have.been.called;
+            expect(stubs.timeScrubberCallbackSpy).toBeCalled();
         });
 
-        it('should not execute the callback when target is not playedEl or convertedEl', () => {
+        test('should not execute the callback when target is not playedEl or convertedEl', () => {
             const eventStub = {
-                target: sandbox.stub(),
+                target: jest.fn(),
             };
             handler(eventStub);
-            expect(stubs.timeScrubberCallbackSpy).to.have.not.been.called;
+            expect(stubs.timeScrubberCallbackSpy).not.toBeCalled();
         });
     });
 });

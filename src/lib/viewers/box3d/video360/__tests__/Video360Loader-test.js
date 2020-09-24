@@ -3,13 +3,7 @@ import Video360Loader from '../Video360Loader';
 import Browser from '../../../../Browser';
 import PreviewError from '../../../../PreviewError';
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/viewers/box3d/video360/Video360Loader', () => {
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     describe('determineViewer()', () => {
         const file = {
             extension: 'mp4',
@@ -23,40 +17,31 @@ describe('lib/viewers/box3d/video360/Video360Loader', () => {
             },
         };
 
-        it('should throw an error if browser is not supported', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(true);
-            sandbox.stub(Browser, 'getName').returns('IE11');
-            expect(() => Video360Loader.determineViewer(file)).to.throw(
-                PreviewError,
-                /support preview for 360-degree videos/,
-            );
+        test('should throw an error if browser is not supported', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(true);
+            jest.spyOn(Browser, 'getName').mockReturnValue('IE11');
+            expect(() => Video360Loader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it('should throw an error if on iOS', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(true);
-            sandbox.stub(Browser, 'getName').returns('Chrome');
-            sandbox.stub(Browser, 'isIOS').returns(true);
-            expect(() => Video360Loader.determineViewer(file)).to.throw(
-                PreviewError,
-                /support preview for 360-degree videos/,
-            );
+        test('should throw an error if on iOS', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(true);
+            jest.spyOn(Browser, 'getName').mockReturnValue('Chrome');
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            expect(() => Video360Loader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it('should throw an error if browser does not support WebGL', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(false);
-            sandbox.stub(Browser, 'getName').returns('Chrome');
-            sandbox.stub(Browser, 'isIOS').returns(true);
-            expect(() => Video360Loader.determineViewer(file)).to.throw(
-                PreviewError,
-                /support preview for 360-degree videos/,
-            );
+        test('should throw an error if browser does not support WebGL', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(false);
+            jest.spyOn(Browser, 'getName').mockReturnValue('Chrome');
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            expect(() => Video360Loader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it('should return viewer if 360 is properly supported', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(true);
-            sandbox.stub(Browser, 'getName').returns('Chrome');
-            sandbox.stub(Browser, 'isIOS').returns(false);
-            expect(Video360Loader.determineViewer(file)).to.equal(Video360Loader.viewers[0]);
+        test('should return viewer if 360 is properly supported', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(true);
+            jest.spyOn(Browser, 'getName').mockReturnValue('Chrome');
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
+            expect(Video360Loader.determineViewer(file)).toBe(Video360Loader.viewers[0]);
         });
     });
 });

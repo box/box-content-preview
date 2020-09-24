@@ -4,7 +4,7 @@ import AssetLoader from '../../AssetLoader';
 import Browser from '../../../Browser';
 import PreviewError from '../../../PreviewError';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let file;
 
 describe('lib/viewers/SWFLoader', () => {
@@ -26,22 +26,22 @@ describe('lib/viewers/SWFLoader', () => {
             };
         });
 
-        it('should throw a preview error if flash is not supported', () => {
-            sandbox.stub(Browser, 'hasFlash').returns(false);
-            expect(() => SWFLoader.determineViewer(file)).to.throw(PreviewError);
+        test('should throw a preview error if flash is not supported', () => {
+            jest.spyOn(Browser, 'hasFlash').mockReturnValue(false);
+            expect(() => SWFLoader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it('should call the superclass determineViewer if flash is suported', () => {
-            sandbox.stub(Browser, 'hasFlash').returns(true);
-            const stub = sandbox.stub(AssetLoader.prototype, 'determineViewer');
+        test('should call the superclass determineViewer if flash is suported', () => {
+            jest.spyOn(Browser, 'hasFlash').mockReturnValue(true);
+            const stub = jest.spyOn(AssetLoader.prototype, 'determineViewer');
             SWFLoader.determineViewer(file);
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
 
-        it('should not check Flash if file is not SWF', () => {
-            sandbox.stub(Browser, 'hasFlash');
+        test('should not check Flash if file is not SWF', () => {
+            jest.spyOn(Browser, 'hasFlash');
             file.extension = 'jpg';
-            expect(Browser.hasFlash).to.not.be.called;
+            expect(Browser.hasFlash).not.toBeCalled();
         });
     });
 });

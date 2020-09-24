@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import Remarkable from '../../../../third-party/text/0.114.0/remarkable.min.js';
 import MarkdownViewer from '../MarkdownViewer';
 import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
-const sandbox = sinon.sandbox.create();
 let containerEl;
 let markdown;
 let rootEl;
@@ -13,8 +13,8 @@ let rootEl;
 describe('lib/viewers/text/MarkdownViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
+    beforeAll(() => {
+        global.Remarkable = Remarkable;
     });
 
     beforeEach(() => {
@@ -28,14 +28,13 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             container: containerEl,
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         markdown.containerEl = containerEl;
         markdown.rootEl = rootEl;
         markdown.setup();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
@@ -47,45 +46,45 @@ describe('lib/viewers/text/MarkdownViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up the markdown container', () => {
-            expect(markdown.markdownEl).to.have.class('markdown-body');
+        test('should set up the markdown container', () => {
+            expect(markdown.markdownEl).toHaveClass('markdown-body');
         });
     });
 
     describe('print()', () => {
-        it('should print iframe if print is ready', () => {
-            sandbox.stub(markdown, 'printIframe');
+        test('should print iframe if print is ready', () => {
+            jest.spyOn(markdown, 'printIframe').mockImplementation();
             markdown.printReady = true;
 
             markdown.print();
-            expect(markdown.printIframe).to.be.called;
+            expect(markdown.printIframe).toBeCalled();
         });
 
-        it('should prepare printing and show print popup if print is not ready', () => {
-            sandbox.stub(markdown, 'preparePrint');
+        test('should prepare printing and show print popup if print is not ready', () => {
+            jest.spyOn(markdown, 'preparePrint').mockImplementation();
             markdown.printReady = false;
             markdown.printPopup = {
-                show: sandbox.stub(),
-                disableButton: sandbox.stub(),
+                show: jest.fn(),
+                disableButton: jest.fn(),
             };
 
             markdown.print();
 
-            expect(markdown.preparePrint).to.be.calledWith([
+            expect(markdown.preparePrint).toBeCalledWith([
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`,
                 'preview.css',
             ]);
-            expect(markdown.printPopup.show).to.be.calledWith('Preparing to print...', 'Print', sinon.match.func);
-            expect(markdown.printPopup.disableButton).to.be.called;
+            expect(markdown.printPopup.show).toBeCalledWith('Preparing to print...', 'Print', expect.any(Function));
+            expect(markdown.printPopup.disableButton).toBeCalled();
         });
 
-        it('should hide print popup and print iframe when print button is clicked', () => {
-            sandbox.stub(markdown, 'preparePrint');
+        test('should hide print popup and print iframe when print button is clicked', () => {
+            jest.spyOn(markdown, 'preparePrint').mockImplementation();
             markdown.printPopup = new Popup(containerEl);
-            sandbox.stub(markdown.printPopup, 'isButtonDisabled').returns(false);
-            sandbox.stub(markdown.printPopup, 'hide');
-            sandbox.stub(markdown, 'printIframe');
+            jest.spyOn(markdown.printPopup, 'isButtonDisabled').mockReturnValue(false);
+            jest.spyOn(markdown.printPopup, 'hide').mockImplementation();
+            jest.spyOn(markdown, 'printIframe').mockImplementation();
 
             markdown.print();
             const event = {
@@ -95,59 +94,59 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             };
             markdown.printPopup.popupClickHandler(event);
 
-            expect(markdown.printPopup.hide).to.be.called;
-            expect(markdown.printIframe).to.be.called;
+            expect(markdown.printPopup.hide).toBeCalled();
+            expect(markdown.printIframe).toBeCalled();
         });
     });
 
     describe('finishLoading()', () => {
-        it('should parse markdown and insert with innerHTML', () => {
+        test('should parse markdown and insert with innerHTML', () => {
             const content = '* sample markdown';
             const expectedMarkdown = '<ul>\n<li>sample markdown</li>\n</ul>';
             markdown.finishLoading(content);
 
-            expect(markdown.markdownEl.innerHTML).to.contain(expectedMarkdown);
+            expect(markdown.markdownEl.innerHTML).toContain(expectedMarkdown);
         });
 
-        it('should use custom renderer for links to add rel', () => {
+        test('should use custom renderer for links to add rel', () => {
             const content = 'https://sometestlink.com';
             const expectedMarkdown =
                 '<a href="https://sometestlink.com" target="_blank" rel="noopener noreferrer">https://sometestlink.com</a>';
 
             markdown.finishLoading(content);
-            expect(markdown.markdownEl.innerHTML).to.contain(expectedMarkdown);
+            expect(markdown.markdownEl.innerHTML).toContain(expectedMarkdown);
         });
 
-        it('should finish loading, init markdown renderer, show the markdown, and emit load', () => {
+        test('should finish loading, init markdown renderer, show the markdown, and emit load', () => {
             const md = {
-                render: sandbox.stub(),
+                render: jest.fn(),
             };
-            sandbox.stub(markdown, 'initRemarkable').returns(md);
-            sandbox.stub(markdown, 'loadUI');
-            sandbox.stub(markdown, 'emit');
+            jest.spyOn(markdown, 'initRemarkable').mockReturnValue(md);
+            jest.spyOn(markdown, 'loadUI');
+            jest.spyOn(markdown, 'emit');
 
             markdown.finishLoading('');
 
-            expect(markdown.initRemarkable).to.be.called;
-            expect(md.render).to.be.called;
-            expect(markdown.loadUI).to.be.called;
-            expect(markdown.emit).to.be.calledWith(VIEWER_EVENT.load);
-            expect(markdown.loaded).to.be.true;
-            expect(markdown.textEl.classList.contains('bp-is-hidden')).to.be.false;
+            expect(markdown.initRemarkable).toBeCalled();
+            expect(md.render).toBeCalled();
+            expect(markdown.loadUI).toBeCalled();
+            expect(markdown.emit).toBeCalledWith(VIEWER_EVENT.load);
+            expect(markdown.loaded).toBe(true);
+            expect(markdown.textEl.classList.contains('bp-is-hidden')).toBe(false);
         });
 
-        it('should show truncated download button if text is truncated', () => {
-            sandbox.stub(markdown, 'initRemarkable').returns({
+        test('should show truncated download button if text is truncated', () => {
+            jest.spyOn(markdown, 'initRemarkable').mockReturnValue({
                 render: () => {},
             });
-            sandbox.stub(markdown, 'loadUI');
-            sandbox.stub(markdown, 'emit');
-            sandbox.stub(markdown, 'showTruncatedDownloadButton');
+            jest.spyOn(markdown, 'loadUI');
+            jest.spyOn(markdown, 'emit');
+            jest.spyOn(markdown, 'showTruncatedDownloadButton');
             markdown.truncated = true;
 
             markdown.finishLoading('');
 
-            expect(markdown.showTruncatedDownloadButton).to.be.called;
+            expect(markdown.showTruncatedDownloadButton).toBeCalled();
         });
     });
 });

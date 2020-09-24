@@ -12,24 +12,18 @@ import Controls from '../Controls';
 let annotationControls;
 let stubs = {};
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/AnnotationControls', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('__tests__/AnnotationControls-test.html');
-        stubs.classListAdd = sandbox.stub();
-        stubs.classListRemove = sandbox.stub();
-        stubs.onClick = sandbox.stub();
-        stubs.querySelector = sandbox.stub().returns({
+        stubs.classListAdd = jest.fn();
+        stubs.classListRemove = jest.fn();
+        stubs.onClick = jest.fn();
+        stubs.querySelector = jest.fn(() => ({
             classList: {
                 add: stubs.classListAdd,
                 remove: stubs.classListRemove,
             },
-        });
+        }));
 
         const controls = new Controls(document.getElementById('test-annotation-controls-container'));
         annotationControls = new AnnotationControls(controls);
@@ -38,97 +32,96 @@ describe('lib/AnnotationControls', () => {
 
     afterEach(() => {
         fixture.cleanup();
-        sandbox.verifyAndRestore();
 
         annotationControls = null;
         stubs = {};
     });
 
     describe('constructor()', () => {
-        it('should create the correct DOM structure', () => {
-            expect(annotationControls.controls).not.to.be.undefined;
-            expect(annotationControls.controlsElement).not.to.be.undefined;
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
+        test('should create the correct DOM structure', () => {
+            expect(annotationControls.controls).toBeDefined();
+            expect(annotationControls.controlsElement).toBeDefined();
+            expect(annotationControls.currentMode).toBe(AnnotationMode.NONE);
         });
 
-        it('should throw an exception if controls is not provided', () => {
-            expect(() => new AnnotationControls()).to.throw(Error, 'controls must be an instance of Controls');
+        test('should throw an exception if controls is not provided', () => {
+            expect(() => new AnnotationControls()).toThrowError(Error);
         });
     });
 
     describe('destroy()', () => {
-        it('should remove all listeners', () => {
-            sandbox.spy(document, 'removeEventListener');
+        test('should remove all listeners', () => {
+            jest.spyOn(document, 'removeEventListener');
             annotationControls.hasInit = true;
 
             annotationControls.destroy();
 
-            expect(document.removeEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
-            expect(annotationControls.hasInit).to.equal(false);
+            expect(document.removeEventListener).toBeCalledWith('keydown', annotationControls.handleKeyDown);
+            expect(annotationControls.hasInit).toBe(false);
         });
 
-        it('should early return if hasInit is false', () => {
-            sandbox.spy(document, 'removeEventListener');
+        test('should early return if hasInit is false', () => {
+            jest.spyOn(document, 'removeEventListener');
 
             annotationControls.destroy();
 
-            expect(document.removeEventListener).not.to.be.called;
+            expect(document.removeEventListener).not.toBeCalled();
         });
     });
 
     describe('init()', () => {
         beforeEach(() => {
-            sandbox.stub(annotationControls, 'addButton');
+            jest.spyOn(annotationControls, 'addButton');
         });
 
-        it('should only add region button', () => {
+        test('should only add region button', () => {
             annotationControls.init({ fileId: '0', onClick: stubs.onClick });
 
-            expect(annotationControls.addButton).to.be.calledOnceWith(
+            expect(annotationControls.addButton).toBeCalledWith(
                 AnnotationMode.REGION,
                 stubs.onClick,
-                sinon.match.any,
+                expect.anything(),
                 '0',
             );
         });
 
-        it('should add highlight button', () => {
+        test('should add highlight button', () => {
             annotationControls.init({ fileId: '0', onClick: stubs.onClick, showHighlightText: true });
 
-            expect(annotationControls.addButton).to.be.calledWith(
+            expect(annotationControls.addButton).toBeCalledWith(
                 AnnotationMode.HIGHLIGHT,
                 stubs.onClick,
-                sinon.match.any,
+                expect.anything(),
                 '0',
             );
         });
 
-        it('should add keydown event listener', () => {
-            sandbox.spy(document, 'addEventListener');
+        test('should add keydown event listener', () => {
+            jest.spyOn(document, 'addEventListener');
 
             annotationControls.init({ fileId: '0' });
 
-            expect(document.addEventListener).to.be.calledWith('keydown', annotationControls.handleKeyDown);
+            expect(document.addEventListener).toBeCalledWith('keydown', annotationControls.handleKeyDown);
         });
 
-        it('should set onEscape and hasInit', () => {
-            const onEscapeMock = sandbox.stub();
+        test('should set onEscape and hasInit', () => {
+            const onEscapeMock = jest.fn();
 
             annotationControls.init({ fileId: '0', onEscape: onEscapeMock });
 
-            expect(annotationControls.onEscape).to.equal(onEscapeMock);
-            expect(annotationControls.hasInit).to.equal(true);
+            expect(annotationControls.onEscape).toBe(onEscapeMock);
+            expect(annotationControls.hasInit).toBe(true);
         });
 
-        it('should early return if hasInit is true', () => {
+        test('should early return if hasInit is true', () => {
             annotationControls.hasInit = true;
 
-            sandbox.spy(document, 'addEventListener');
+            jest.spyOn(document, 'addEventListener');
 
             annotationControls.init({ fileId: '0' });
 
-            expect(annotationControls.addButton).not.to.be.called;
-            expect(document.addEventListener).not.to.be.called;
+            expect(annotationControls.addButton).not.toBeCalled();
+            expect(document.addEventListener).not.toBeCalled();
         });
     });
 
@@ -136,124 +129,123 @@ describe('lib/AnnotationControls', () => {
         let eventMock;
 
         beforeEach(() => {
-            annotationControls.resetControls = sandbox.stub();
+            annotationControls.resetControls = jest.fn();
             annotationControls.currentMode = 'region';
             eventMock = {
                 key: 'Escape',
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
             };
         });
 
-        it('should not call resetControls if key is not Escape or mode is none', () => {
+        test('should not call resetControls if key is not Escape or mode is none', () => {
             annotationControls.handleKeyDown({ key: 'Enter' });
 
-            expect(annotationControls.resetControls).not.to.be.called;
+            expect(annotationControls.resetControls).not.toBeCalled();
 
             annotationControls.currentMode = 'none';
             annotationControls.handleKeyDown({ key: 'Escape' });
 
-            expect(annotationControls.resetControls).not.to.be.called;
+            expect(annotationControls.resetControls).not.toBeCalled();
         });
 
-        it('should call resetControls and prevent default event', () => {
+        test('should call resetControls and prevent default event', () => {
             annotationControls.handleKeyDown(eventMock);
 
-            expect(eventMock.preventDefault).to.be.called;
-            expect(eventMock.stopPropagation).to.be.called;
+            expect(eventMock.preventDefault).toBeCalled();
+            expect(eventMock.stopPropagation).toBeCalled();
         });
     });
 
     describe('resetControls()', () => {
         beforeEach(() => {
-            sandbox.stub(annotationControls, 'updateButton');
+            jest.spyOn(annotationControls, 'updateButton');
 
-            stubs.onEscape = sandbox.stub();
+            stubs.onEscape = jest.fn();
         });
 
-        it('should not change if no current active control', () => {
+        test('should not change if no current active control', () => {
             annotationControls.resetControls();
 
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(annotationControls.updateButton).not.to.be.called;
+            expect(annotationControls.currentMode).toBe(AnnotationMode.NONE);
+            expect(annotationControls.updateButton).not.toBeCalled();
         });
 
-        it('should call updateButton if current control is region', () => {
+        test('should call updateButton if current control is region', () => {
             annotationControls.currentMode = AnnotationMode.REGION;
 
             annotationControls.resetControls();
 
-            expect(annotationControls.currentMode).to.equal(AnnotationMode.NONE);
-            expect(annotationControls.updateButton).to.be.calledWith(AnnotationMode.REGION);
+            expect(annotationControls.currentMode).toBe(AnnotationMode.NONE);
+            expect(annotationControls.updateButton).toBeCalledWith(AnnotationMode.REGION);
         });
     });
 
     describe('toggle()', () => {
-        it('should show or hide the entire button group', () => {
+        test('should show or hide the entire button group', () => {
             annotationControls.toggle(false);
-            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
-            expect(stubs.classListAdd).to.be.calledWith(CLASS_GROUP_HIDE);
+            expect(stubs.querySelector).toBeCalledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
+            expect(stubs.classListAdd).toBeCalledWith(CLASS_GROUP_HIDE);
 
             annotationControls.toggle(true);
-            expect(stubs.querySelector).to.be.calledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
-            expect(stubs.classListRemove).to.be.calledWith(CLASS_GROUP_HIDE);
+            expect(stubs.querySelector).toBeCalledWith(`.${CLASS_ANNOTATIONS_GROUP}`);
+            expect(stubs.classListRemove).toBeCalledWith(CLASS_GROUP_HIDE);
         });
     });
 
     describe('addButton()', () => {
         beforeEach(() => {
             stubs.buttonElement = {
-                setAttribute: sandbox.stub(),
+                setAttribute: jest.fn(),
             };
 
-            sandbox.stub(annotationControls.controls, 'add').returns(stubs.buttonElement);
+            jest.spyOn(annotationControls.controls, 'add').mockReturnValue(stubs.buttonElement);
         });
 
-        it('should do nothing for unknown button', () => {
-            annotationControls.addButton('draw', sandbox.stub(), 'group', '0');
+        test('should do nothing for unknown button', () => {
+            annotationControls.addButton('draw', jest.fn(), 'group', '0');
 
-            expect(annotationControls.controls.add).not.to.be.called;
+            expect(annotationControls.controls.add).not.toBeCalled();
         });
 
-        it('should add controls and add resin tags', () => {
-            annotationControls.addButton(AnnotationMode.REGION, sandbox.stub(), 'group', '0');
+        test('should add controls and add resin tags', () => {
+            annotationControls.addButton(AnnotationMode.REGION, jest.fn(), 'group', '0');
 
-            expect(annotationControls.controls.add).to.be.calledWith(
+            expect(annotationControls.controls.add).toBeCalledWith(
                 __('region_comment'),
-                sinon.match.func,
+                expect.any(Function),
                 `${CLASS_ANNOTATIONS_BUTTON} ${CLASS_REGION_BUTTON}`,
                 ICON_REGION_COMMENT,
                 'button',
                 'group',
             );
 
-            expect(stubs.buttonElement.setAttribute).to.be.calledWith('data-resin-target', 'highlightRegion');
-            expect(stubs.buttonElement.setAttribute).to.be.calledWith('data-resin-fileId', '0');
+            expect(stubs.buttonElement.setAttribute).toBeCalledWith('data-resin-target', 'highlightRegion');
+            expect(stubs.buttonElement.setAttribute).toBeCalledWith('data-resin-fileId', '0');
         });
     });
 
     describe('setMode()', () => {
         beforeEach(() => {
-            annotationControls.resetControls = sandbox.stub();
-            annotationControls.updateButton = sandbox.stub();
+            annotationControls.resetControls = jest.fn();
+            annotationControls.updateButton = jest.fn();
         });
 
-        it('should do nothing if mode is the same', () => {
+        test('should do nothing if mode is the same', () => {
             annotationControls.currentMode = 'region';
-
             annotationControls.setMode('region');
 
-            expect(annotationControls.resetControls).not.to.be.called;
-            expect(annotationControls.updateButton).not.to.be.called;
+            expect(annotationControls.resetControls).not.toBeCalled();
+            expect(annotationControls.updateButton).not.toBeCalled();
         });
 
-        it('should update controls if mode is not the same', () => {
+        test('should update controls if mode is not the same', () => {
             annotationControls.currentMode = 'region';
 
             annotationControls.setMode('highlight');
 
-            expect(annotationControls.resetControls).to.be.called;
-            expect(annotationControls.updateButton).to.be.calledWith('highlight');
+            expect(annotationControls.resetControls).toBeCalled();
+            expect(annotationControls.updateButton).toBeCalledWith('highlight');
         });
     });
 });

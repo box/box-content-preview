@@ -19,24 +19,14 @@ import Api from '../../api';
 let base;
 let containerEl;
 let stubs = {};
-const sandbox = sinon.sandbox.create();
-const {
-    ANNOTATOR_EVENT,
-    CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
-    CLASS_ANNOTATIONS_CREATE_REGION,
-    CLASS_ANNOTATIONS_DISCOVERABLE,
-} = constants;
+const { ANNOTATOR_EVENT } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/__tests__/BaseViewer-test.html');
 
         containerEl = document.querySelector('.bp-container');
-        stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
+        stubs.browser = jest.spyOn(Browser, 'isMobile').mockReturnValue(false);
         stubs.api = new Api();
         base = new BaseViewer({
             api: stubs.api,
@@ -49,10 +39,10 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            replaceHeader: sandbox.stub(),
+            replaceHeader: jest.fn(),
             notification: {
-                show: sandbox.stub(),
-                hide: sandbox.stub(),
+                show: jest.fn(),
+                hide: jest.fn(),
             },
         };
     });
@@ -61,23 +51,21 @@ describe('lib/viewers/BaseViewer', () => {
         if (base && typeof base.destroy === 'function' && !base.destroyed) {
             base.destroy();
         }
-
-        sandbox.verifyAndRestore();
     });
 
     describe('setup()', () => {
-        it('should set options, a container, bind event listeners, and set timeout', () => {
-            const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
-            sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'finishLoadingSetup');
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
+        test('should set options, a container, bind event listeners, and set timeout', () => {
+            const getIconFromExtensionStub = jest.spyOn(icons, 'getIconFromExtension');
+            jest.spyOn(base, 'addCommonListeners');
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'finishLoadingSetup');
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
             base.options.showAnnotations = true;
             base.options.enableAnnotationsDiscoverability = true;
 
             base.setup();
 
-            expect(base.options).to.deep.equal({
+            expect(base.options).toEqual({
                 api: stubs.api,
                 container: containerEl,
                 file: {
@@ -90,114 +78,114 @@ describe('lib/viewers/BaseViewer', () => {
                 enableAnnotationsDiscoverability: true,
             });
 
-            expect(base.containerEl).to.have.class(constants.CLASS_BOX_PREVIEW_CONTENT);
-            expect(base.containerEl).to.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
-            expect(base.addCommonListeners).to.be.called;
-            expect(getIconFromExtensionStub).to.be.called;
-            expect(base.loadTimeout).to.be.a('number');
-            expect(base.annotatorPromise).to.not.be.undefined;
-            expect(base.annotatorPromiseResolver).to.not.be.undefined;
+            expect(base.containerEl).toHaveClass(constants.CLASS_BOX_PREVIEW_CONTENT);
+            expect(base.containerEl).toHaveClass(constants.CLASS_ANNOTATIONS_DISCOVERABLE);
+            expect(base.addCommonListeners).toBeCalled();
+            expect(getIconFromExtensionStub).toBeCalled();
+            expect(typeof base.loadTimeout).toBe('number');
+            expect(base.annotatorPromise).toBeDefined();
+            expect(base.annotatorPromiseResolver).toBeDefined();
         });
 
-        it('should add a mobile class to the container if on mobile', () => {
+        test('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'finishLoadingSetup');
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'finishLoadingSetup');
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
 
             base.setup();
 
             const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
-            expect(container).to.have.class('bp-is-mobile');
+            expect(container).toHaveClass('bp-is-mobile');
         });
 
-        it('should not load annotations assets if global preview showAnnotations option is false', () => {
-            sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'finishLoadingSetup');
+        test('should not load annotations assets if global preview showAnnotations option is false', () => {
+            jest.spyOn(base, 'addCommonListeners');
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'finishLoadingSetup');
             base.options.showAnnotations = false;
 
             base.setup();
 
-            expect(base.loadBoxAnnotations).to.not.be.called;
+            expect(base.loadBoxAnnotations).not.toBeCalled();
         });
 
-        it('should not load annotations assets if expiring embed is a shared link', () => {
-            sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'finishLoadingSetup');
+        test('should not load annotations assets if expiring embed is a shared link', () => {
+            jest.spyOn(base, 'addCommonListeners');
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'finishLoadingSetup');
             base.options.sharedLink = 'url';
 
             base.setup();
 
-            expect(base.loadBoxAnnotations).to.not.be.called;
+            expect(base.loadBoxAnnotations).not.toBeCalled();
         });
     });
 
     describe('finishLoadingSetup()', () => {
-        it('should hide the crawler and set the file icon into the icon element', () => {
+        test('should hide the crawler and set the file icon into the icon element', () => {
             const container = {
                 classList: {
-                    add: sandbox.stub(),
+                    add: jest.fn(),
                 },
                 innerHTML: '',
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
             base.fileLoadingIcon = 'icon';
 
-            sandbox.stub(containerEl, 'querySelector').returns(container);
+            jest.spyOn(containerEl, 'querySelector').mockReturnValue(container);
 
             base.finishLoadingSetup();
-            expect(container.innerHTML).to.equal('icon');
-            expect(container.classList.add).to.be.called;
+            expect(container.innerHTML).toBe('icon');
+            expect(container.classList.add).toBeCalled();
             base.options.container = null;
         });
     });
 
     describe('getResizeHandler()', () => {
-        it('should return a resize handler', () => {
-            expect(base.getResizeHandler()).to.be.a('function');
+        test('should return a resize handler', () => {
+            expect(typeof base.getResizeHandler()).toBe('function');
         });
     });
 
     describe('load()', () => {
-        it('should call resetLoadTimeout', () => {
-            sandbox.stub(base, 'resetLoadTimeout');
+        test('should call resetLoadTimeout', () => {
+            jest.spyOn(base, 'resetLoadTimeout');
 
             base.load();
-            expect(base.resetLoadTimeout).to.be.called;
+            expect(base.resetLoadTimeout).toBeCalled();
         });
     });
 
     describe('resetLoadTimeout()', () => {
-        it('should clear timeout and set a new timeout handler', () => {
-            sandbox.stub(window, 'clearTimeout');
-            sandbox.spy(window, 'setTimeout');
+        test('should clear timeout and set a new timeout handler', () => {
+            jest.spyOn(window, 'clearTimeout');
+            jest.spyOn(window, 'setTimeout');
 
             base.resetLoadTimeout();
             base.loaded = true;
 
-            expect(window.clearTimeout).to.be.called;
-            expect(window.setTimeout).to.be.called;
-            expect(base.loadTimeoutId).to.be.a('number');
+            expect(window.clearTimeout).toBeCalled();
+            expect(window.setTimeout).toBeCalled();
+            expect(typeof base.loadTimeoutId).toBe('number');
 
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
         });
 
-        it('should trigger an error if the viewer times out', () => {
-            const triggerStub = sandbox.stub(base, 'triggerError');
-            sandbox.stub(window, 'setTimeout').callsFake(func => func());
+        test('should trigger an error if the viewer times out', () => {
+            const triggerStub = jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(window, 'setTimeout').mockImplementation(func => func());
 
             base.loaded = false;
             base.destroyed = false;
 
             base.resetLoadTimeout();
-            const [error] = triggerStub.getCall(0).args;
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
+            const [error] = triggerStub.mock.calls[0];
+            expect(error).toBeInstanceOf(PreviewError);
+            expect(error.code).toBe(ERROR_CODE.VIEWER_LOAD_TIMEOUT);
 
             // Test cleanup
             clearTimeout(base.loadTimeoutId);
@@ -205,59 +193,59 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('startLoadTimer()', () => {
-        it('should start a timer for the contentLoadTime metric', () => {
+        test('should start a timer for the contentLoadTime metric', () => {
             base.options.file.id = '1234';
             base.startLoadTimer();
 
             const tag = Timer.createTag(base.options.file.id, LOAD_METRIC.contentLoadTime);
-            expect(Timer.get(tag)).to.exist;
+            expect(Timer.get(tag)).toBeDefined();
         });
     });
 
     describe('handleAssetError()', () => {
-        it('should trigger error and set destroyed to true', () => {
-            sandbox.stub(base, 'triggerError');
+        test('should trigger error and set destroyed to true', () => {
+            jest.spyOn(base, 'triggerError').mockImplementation();
             base.handleAssetError(new Error('test'));
-            expect(base.triggerError).to.be.called;
-            expect(base.destroyed).to.be.true;
+            expect(base.triggerError).toBeCalled();
+            expect(base.destroyed).toBe(true);
         });
 
-        it('should use the original error if it is a PreviewError', () => {
-            sandbox.stub(base, 'triggerError');
+        test('should use the original error if it is a PreviewError', () => {
+            jest.spyOn(base, 'triggerError').mockImplementation();
             const originalError = new PreviewError('foo', 'bar');
             base.handleAssetError(originalError);
-            expect(base.triggerError).to.be.calledWith(originalError);
+            expect(base.triggerError).toBeCalledWith(originalError);
         });
 
-        it('should pass along the error if provided', () => {
-            const stub = sandbox.stub(base, 'triggerError');
+        test('should pass along the error if provided', () => {
+            const stub = jest.spyOn(base, 'triggerError').mockImplementation();
 
             base.handleAssetError(new Error('test'));
 
-            const error = stub.getCall(0).args[0];
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_load_asset');
-            expect(error.message).to.equal('test');
+            const error = stub.mock.calls[0][0];
+            expect(error).toBeInstanceOf(PreviewError);
+            expect(error.code).toBe('error_load_asset');
+            expect(error.message).toBe('test');
         });
     });
 
     describe('handleDownloadError()', () => {
         beforeEach(() => {
-            sandbox.stub(base, 'triggerError');
-            sandbox.stub(stubs.api.reachability.constructor, 'isCustomDownloadHost');
-            sandbox.stub(stubs.api.reachability, 'setDownloadReachability');
-            sandbox.stub(base, 'load');
-            sandbox.stub(base, 'emitMetric');
+            jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(stubs.api.reachability.constructor, 'isCustomDownloadHost').mockImplementation();
+            jest.spyOn(stubs.api.reachability, 'setDownloadReachability').mockImplementation();
+            jest.spyOn(base, 'load').mockImplementation();
+            jest.spyOn(base, 'emitMetric').mockImplementation();
         });
 
-        it('should trigger an error if we have already retried', () => {
+        test('should trigger an error if we have already retried', () => {
             base.hasRetriedContentDownload = true;
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
-            expect(base.triggerError).to.be.called;
-            expect(base.load).to.not.be.called;
+            expect(base.triggerError).toBeCalled();
+            expect(base.load).not.toBeCalled();
         });
 
-        it('should trigger an error if the rep was deleted', () => {
+        test('should trigger an error if the rep was deleted', () => {
             base.hasRetriedContentDownload = false;
             base.handleDownloadError(
                 {
@@ -268,55 +256,55 @@ describe('lib/viewers/BaseViewer', () => {
                 'https://dl.boxcloud.com',
             );
 
-            expect(base.triggerError).to.be.called;
-            expect(base.load).to.not.be.called;
+            expect(base.triggerError).toBeCalled();
+            expect(base.load).not.toBeCalled();
         });
 
-        it('should retry load, and check download reachability if we are on a custom host', () => {
+        test('should retry load, and check download reachability if we are on a custom host', () => {
             base.hasRetriedContentDownload = false;
-            stubs.api.reachability.constructor.isCustomDownloadHost.returns(false);
+            stubs.api.reachability.constructor.isCustomDownloadHost.mockReturnValue(false);
             base.api = stubs.api;
             base.handleDownloadError('error', 'https://dl.boxcloud.com');
-            expect(base.load).to.be.called;
-            expect(stubs.api.reachability.setDownloadReachability).to.be.not.called;
+            expect(base.load).toBeCalled();
+            expect(stubs.api.reachability.setDownloadReachability).not.toBeCalled();
 
             base.hasRetriedContentDownload = false;
             // Now try on a custom host
-            stubs.api.reachability.constructor.isCustomDownloadHost.returns(true);
-            stubs.api.reachability.setDownloadReachability.returns(Promise.resolve(true));
+            stubs.api.reachability.constructor.isCustomDownloadHost.mockReturnValue(true);
+            stubs.api.reachability.setDownloadReachability.mockReturnValue(Promise.resolve(true));
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
-            expect(stubs.api.reachability.setDownloadReachability).to.be.called;
+            expect(stubs.api.reachability.setDownloadReachability).toBeCalled();
         });
     });
 
     describe('triggerError()', () => {
-        it('should emit PreviewError event', () => {
-            const stub = sandbox.stub(base, 'emit');
+        test('should emit PreviewError event', () => {
+            const stub = jest.spyOn(base, 'emit').mockImplementation();
 
             const err = new Error('blah');
             base.triggerError(err);
 
-            expect(base.emit).to.be.called;
-            const [event, error] = stub.getCall(0).args;
-            expect(event).to.equal('error');
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_load_viewer');
-            expect(error.message).to.equal('blah');
-            expect(base.emit).to.be.calledWith('error', error);
+            expect(base.emit).toBeCalled();
+            const [event, error] = stub.mock.calls[0];
+            expect(event).toBe('error');
+            expect(error).toBeInstanceOf(PreviewError);
+            expect(error.code).toBe('error_load_viewer');
+            expect(error.message).toBe('blah');
+            expect(base.emit).toBeCalledWith('error', error);
         });
 
-        it('should emit a load viewer error if no error provided', () => {
-            const stub = sandbox.stub(base, 'emit');
+        test('should emit a load viewer error if no error provided', () => {
+            const stub = jest.spyOn(base, 'emit').mockImplementation();
             base.triggerError();
 
-            expect(base.emit).to.be.called;
-            const [event, error] = stub.getCall(0).args;
-            expect(event).to.equal('error');
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal('error_load_viewer');
+            expect(base.emit).toBeCalled();
+            const [event, error] = stub.mock.calls[0];
+            expect(event).toBe('error');
+            expect(error).toBeInstanceOf(PreviewError);
+            expect(error.code).toBe('error_load_viewer');
         });
 
-        it('should pass through the error if it is a PreviewError', () => {
+        test('should pass through the error if it is a PreviewError', () => {
             const code = 'my_special_error';
             const displayMessage = 'Such a special error!';
             const message = 'Bad things have happened';
@@ -324,34 +312,34 @@ describe('lib/viewers/BaseViewer', () => {
                 what: 'what?!',
             };
             const err = new PreviewError(code, displayMessage, details, message);
-            const stub = sandbox.stub(base, 'emit');
+            const stub = jest.spyOn(base, 'emit').mockImplementation();
             base.triggerError(err);
 
-            expect(base.emit).to.be.called;
-            const [event, error] = stub.getCall(0).args;
-            expect(event).to.equal('error');
-            expect(error).to.be.instanceof(PreviewError);
-            expect(error.code).to.equal(code);
-            expect(error.displayMessage).to.equal(displayMessage);
-            expect(error.details).to.equal(details);
-            expect(error.message).to.equal(message);
+            expect(base.emit).toBeCalled();
+            const [event, error] = stub.mock.calls[0];
+            expect(event).toBe('error');
+            expect(error).toBeInstanceOf(PreviewError);
+            expect(error.code).toBe(code);
+            expect(error.displayMessage).toBe(displayMessage);
+            expect(error.details).toBe(details);
+            expect(error.message).toBe(message);
         });
     });
 
     describe('isLoaded()', () => {
-        it('should return loaded property', () => {
-            expect(base.isLoaded()).to.equal(base.loaded);
+        test('should return loaded property', () => {
+            expect(base.isLoaded()).toBe(base.loaded);
         });
     });
 
     describe('isDestroyed()', () => {
-        it('should return loaded property', () => {
-            expect(base.isDestroyed()).to.equal(base.destroyed);
+        test('should return loaded property', () => {
+            expect(base.isDestroyed()).toBe(base.destroyed);
         });
     });
 
     describe('appendAuthParams()', () => {
-        it('should return content url with auth options appended', () => {
+        test('should return content url with auth options appended', () => {
             const token = 'TOKEN';
             const sharedLink = 'https://app.box.com/s/HASH';
             const sharedLinkPassword = 'pass';
@@ -366,25 +354,25 @@ describe('lib/viewers/BaseViewer', () => {
                     id: '0',
                 },
             });
-            sandbox.stub(util, 'appendAuthParams').returns(url);
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue(url);
 
             const result = base.appendAuthParams('');
-            expect(result).to.equal(url);
-            expect(util.appendAuthParams).to.be.calledWith('', token, sharedLink, sharedLinkPassword);
+            expect(result).toBe(url);
+            expect(util.appendAuthParams).toBeCalledWith('', token, sharedLink, sharedLinkPassword);
         });
     });
 
     describe('createContentUrl()', () => {
-        it('should return content url with no asset path', () => {
+        test('should return content url with no asset path', () => {
             const url = 'url{+asset_path}';
-            sandbox.spy(util, 'createContentUrl');
+            jest.spyOn(util, 'createContentUrl');
 
             const result = base.createContentUrl(url, '');
-            expect(result).to.equal('url');
-            expect(util.createContentUrl).to.be.calledWith(url, '');
+            expect(result).toBe('url');
+            expect(util.createContentUrl).toBeCalledWith(url, '');
         });
 
-        it('should return content url with asset path from args', () => {
+        test('should return content url with asset path from args', () => {
             const url = 'url{+asset_path}';
 
             base = new BaseViewer({
@@ -395,35 +383,35 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             });
 
-            sandbox.spy(util, 'createContentUrl');
+            jest.spyOn(util, 'createContentUrl');
             const result = base.createContentUrl(url, 'bar');
-            expect(result).to.equal('urlbar');
-            expect(util.createContentUrl).to.be.calledWith(url, 'bar');
+            expect(result).toBe('urlbar');
+            expect(util.createContentUrl).toBeCalledWith(url, 'bar');
         });
 
-        it('should fallback to the default host if we have retried', () => {
+        test('should fallback to the default host if we have retried', () => {
             base.hasRetriedContentDownload = true;
-            sandbox.stub(stubs.api.reachability.constructor, 'replaceDownloadHostWithDefault');
-            sandbox.stub(util, 'createContentUrl');
+            jest.spyOn(stubs.api.reachability.constructor, 'replaceDownloadHostWithDefault');
+            jest.spyOn(util, 'createContentUrl');
             base.api = stubs.api;
             base.createContentUrl('https://dl3.boxcloud.com', '');
-            expect(stubs.api.reachability.constructor.replaceDownloadHostWithDefault).to.be.called;
+            expect(stubs.api.reachability.constructor.replaceDownloadHostWithDefault).toBeCalled();
         });
     });
 
     describe('createContentUrlWithAuthParams()', () => {
-        it('should return content url with no asset path', () => {
-            sandbox.stub(util, 'createContentUrl').returns('foo');
-            sandbox.stub(base, 'appendAuthParams').returns('bar');
+        test('should return content url with no asset path', () => {
+            jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
-            expect(result).to.equal('bar');
-            expect(util.createContentUrl).to.be.calledWith('boo', 'hoo');
-            expect(base.appendAuthParams).to.be.calledWith('foo');
+            expect(result).toBe('bar');
+            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
+            expect(base.appendAuthParams).toBeCalledWith('foo');
         });
     });
 
     describe('appendAuthHeader()', () => {
-        it('should return fetch headers', () => {
+        test('should return fetch headers', () => {
             const token = 'TOKEN';
             const sharedLink = 'https://app.box.com/s/HASH';
             const sharedLinkPassword = 'pass';
@@ -438,50 +426,51 @@ describe('lib/viewers/BaseViewer', () => {
                     id: '0',
                 },
             });
-            sandbox.stub(util, 'getHeaders').returns(headers);
+            jest.spyOn(util, 'getHeaders').mockReturnValue(headers);
 
             const result = base.appendAuthHeader(headers);
-            expect(result).to.equal(headers);
-            expect(util.getHeaders).to.be.calledWith(headers, token, sharedLink, sharedLinkPassword);
+            expect(result).toBe(headers);
+            expect(util.getHeaders).toBeCalledWith(headers, token, sharedLink, sharedLinkPassword);
         });
     });
 
     describe('addCommonListeners()', () => {
         beforeEach(() => {
-            stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
-            stubs.baseAddListener = sandbox.spy(base, 'addListener');
-            stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
+            stubs.fullscreenAddListener = jest.spyOn(fullscreen, 'addListener');
+            stubs.baseAddListener = jest.spyOn(base, 'addListener');
+            stubs.documentAddEventListener = jest.spyOn(document.defaultView, 'addEventListener');
             base.containerEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
                 classList: {
-                    remove: sandbox.stub(),
+                    add: jest.fn(),
+                    remove: jest.fn(),
                 },
             };
         });
 
-        it('should append common event listeners', () => {
+        test('should append common event listeners', () => {
             base.addCommonListeners();
 
-            expect(stubs.fullscreenAddListener).to.be.calledWith('enter', sinon.match.func);
-            expect(stubs.fullscreenAddListener).to.be.calledWith('exit', sinon.match.func);
-            expect(stubs.documentAddEventListener).to.be.calledWith('resize', sinon.match.func);
-            expect(stubs.baseAddListener).to.be.calledWith(VIEWER_EVENT.load, sinon.match.func);
+            expect(stubs.fullscreenAddListener).toBeCalledWith('enter', expect.any(Function));
+            expect(stubs.fullscreenAddListener).toBeCalledWith('exit', expect.any(Function));
+            expect(stubs.documentAddEventListener).toBeCalledWith('resize', expect.any(Function));
+            expect(stubs.baseAddListener).toBeCalledWith(VIEWER_EVENT.load, expect.any(Function));
         });
 
-        it('should prevent the context menu if preview only permissions', () => {
+        test('should prevent the context menu if preview only permissions', () => {
             base.options.file.permissions = {
                 can_download: false,
             };
 
             base.addCommonListeners();
 
-            expect(base.containerEl.addEventListener).to.be.calledWith('contextmenu', sinon.match.func);
+            expect(base.containerEl.addEventListener).toBeCalledWith('contextmenu', expect.any(Function));
         });
 
-        it('should handle annotations load', () => {
+        test('should handle annotations load', () => {
             base.addCommonListeners();
-            expect(stubs.baseAddListener).to.be.calledWith(VIEWER_EVENT.load, sinon.match.func);
+            expect(stubs.baseAddListener).toBeCalledWith(VIEWER_EVENT.load, expect.any(Function));
         });
     });
 
@@ -493,206 +482,208 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
             base.api = stubs.api;
-            stubs.getDownloadNotificationToShow = sandbox
-                .stub(stubs.api.reachability.constructor, 'getDownloadNotificationToShow')
-                .returns(undefined);
-            sandbox.stub(base, 'initAnnotations');
+            stubs.getDownloadNotificationToShow = jest
+                .spyOn(stubs.api.reachability.constructor, 'getDownloadNotificationToShow')
+                .mockReturnValue(undefined);
+            jest.spyOn(base, 'initAnnotations');
         });
 
-        it('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
-            stubs.getDownloadNotificationToShow.returns('dl3.boxcloud.com');
-            sandbox.stub(stubs.api.reachability.constructor, 'setDownloadHostNotificationShown');
+        test('should show the notification if downloads are degraded and we have not shown the notification yet', () => {
+            stubs.getDownloadNotificationToShow.mockReturnValueOnce('dl3.boxcloud.com');
+            jest.spyOn(stubs.api.reachability.constructor, 'setDownloadHostNotificationShown');
             base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.previewUI.notification.show).to.be.called;
-            expect(stubs.api.reachability.constructor.setDownloadHostNotificationShown).to.be.called;
+            expect(base.previewUI.notification.show).toBeCalled();
+            expect(stubs.api.reachability.constructor.setDownloadHostNotificationShown).toBeCalled();
         });
 
-        it('should set the scale if it exists', () => {
+        test('should set the scale if it exists', () => {
             base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.scale).to.equal(1.5);
+            expect(base.scale).toBe(1.5);
         });
 
-        it('should show annotations if annotatorPromise exists', done => {
-            base.annotatorPromise = new Promise(resolve => {
-                resolve();
-                done();
-            });
-            base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.initAnnotations).to.be.called;
-        });
-
-        it('should show annotations if annotatorPromise does not exist', () => {
+        test('should show annotations if annotatorPromise does not exist', () => {
             base.annotatorPromise = null;
             base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.initAnnotations).to.not.be.called;
+            expect(base.initAnnotations).not.toBeCalled();
         });
     });
 
     describe('toggleFullscreen()', () => {
-        it('should toggle fullscreen', () => {
-            sandbox.stub(fullscreen, 'toggle');
+        test('should toggle fullscreen', () => {
+            jest.spyOn(fullscreen, 'toggle');
             base.toggleFullscreen();
-            expect(fullscreen.toggle).to.be.calledWith(base.containerEl);
+            expect(fullscreen.toggle).toBeCalledWith(base.containerEl);
         });
     });
 
     describe('handleFullscreenEnter()', () => {
-        it('should resize the viewer', () => {
-            sandbox.stub(base, 'resize');
+        test('should resize the viewer', () => {
+            jest.spyOn(base, 'resize');
 
             base.handleFullscreenEnter();
 
-            expect(base.resize).to.be.called;
+            expect(base.resize).toBeCalled();
         });
 
-        it('should hide annotations and toggle annotations mode', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'disableAnnotationControls');
+        test('should hide annotations and toggle annotations mode', () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'disableAnnotationControls');
+
             base.annotator = {
-                emit: sandbox.mock(),
-                toggleAnnotationMode: sandbox.mock(),
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
             };
             base.annotationControls = {
-                destroy: sandbox.mock(),
+                destroy: jest.fn(),
+                resetControls: jest.fn(),
+                toggle: jest.fn(),
             };
 
             base.handleFullscreenEnter();
 
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, false);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
-            expect(base.disableAnnotationControls).to.be.called;
+            expect(base.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, false);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+            expect(base.disableAnnotationControls).toBeCalled();
         });
     });
 
     describe('handleFullscreenExit()', () => {
-        it('should resize the viewer', () => {
-            sandbox.stub(base, 'resize');
+        test('should resize the viewer', () => {
+            jest.spyOn(base, 'resize');
 
             base.handleFullscreenExit();
 
-            expect(base.resize).to.be.called;
+            expect(base.resize).toBeCalled();
         });
 
-        it('should show annotations', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'enableAnnotationControls');
+        test('should show annotations', () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'enableAnnotationControls').mockImplementation();
+
             base.annotator = {
-                emit: sandbox.mock(),
+                emit: jest.fn(),
             };
             base.annotationControls = {
-                destroy: sandbox.mock(),
+                destroy: jest.fn(),
+                resetControls: jest.fn(),
+                toggle: jest.fn(),
             };
 
             base.handleFullscreenExit();
 
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.enableAnnotationControls).to.be.called;
+            expect(base.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, true);
+            expect(base.enableAnnotationControls).toBeCalled();
         });
 
-        it(`should show annotations and toggle annotations mode to REGION if enableAnnotationsDiscoverability is true`, () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'enableAnnotationControls');
+        test(`should show annotations and toggle annotations mode to REGION if enableAnnotationsDiscoverability is true`, () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'enableAnnotationControls').mockImplementation();
+
             base.annotator = {
-                emit: sandbox.mock(),
-                toggleAnnotationMode: sandbox.mock(),
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
             };
             base.annotationControls = {
-                destroy: sandbox.mock(),
+                destroy: jest.fn(),
             };
             base.options.enableAnnotationsDiscoverability = true;
-            base.processAnnotationModeChange = sandbox.mock();
+            base.processAnnotationModeChange = jest.fn();
 
             base.handleFullscreenExit();
 
-            expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
-            expect(base.enableAnnotationControls).to.be.called;
+            expect(base.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, true);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+            expect(base.enableAnnotationControls).toBeCalled();
         });
     });
 
     describe('resize()', () => {
-        it('should broadcast resize event', () => {
-            sandbox.stub(base, 'emit');
+        test('should broadcast resize event', () => {
+            jest.spyOn(base, 'emit');
             base.resize();
-            expect(base.emit).to.be.calledWith('resize');
+            expect(base.emit).toBeCalledWith('resize', { height: 0, width: 0 });
         });
     });
 
     describe('allowNavigationArrows()', () => {
-        it('should return true for base viewer', () => {
-            expect(base.allowNavigationArrows()).to.be.true;
+        test('should return true for base viewer', () => {
+            expect(base.allowNavigationArrows()).toBe(true);
         });
     });
 
     describe('destroy()', () => {
-        it('should clean up rep statuses', () => {
-            const destroyMock = sandbox.mock().twice();
-            const removeListenerMock = sandbox.mock().twice();
+        test('should clean up rep statuses', () => {
+            const destroyMock = jest.fn();
+            const removeListenerMock = jest.fn();
+
             base.repStatuses = [
                 {
-                    removeListener: removeListenerMock,
                     destroy: destroyMock,
+                    removeListener: removeListenerMock,
                 },
                 {
-                    removeListener: removeListenerMock,
                     destroy: destroyMock,
+                    removeListener: removeListenerMock,
                 },
             ];
 
             base.destroy();
+
+            expect(destroyMock).toBeCalledTimes(2);
+            expect(removeListenerMock).toBeCalledTimes(2);
         });
 
-        it('should cleanup the base viewer', () => {
-            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'finishLoadingSetup');
+        test('should cleanup the base viewer', () => {
+            jest.spyOn(base, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'finishLoadingSetup');
             base.setup();
 
-            sandbox.mock(fullscreen).expects('removeAllListeners');
-            sandbox.stub(base, 'removeAllListeners');
-            sandbox.stub(base, 'emit');
+            jest.spyOn(fullscreen, 'removeAllListeners').mockImplementation();
+            jest.spyOn(base, 'removeAllListeners');
+            jest.spyOn(base, 'emit');
 
             base.destroy();
 
-            expect(base.removeAllListeners).to.be.called;
-            expect(base.containerEl.innerHTML).to.equal('');
-            expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_DISCOVERABLE);
-            expect(base.destroyed).to.be.true;
-            expect(base.emit).to.be.calledWith('destroy');
+            expect(fullscreen.removeAllListeners).toBeCalled();
+            expect(base.removeAllListeners).toBeCalled();
+            expect(base.containerEl.innerHTML).toBe('');
+            expect(base.destroyed).toBe(true);
+            expect(base.emit).toBeCalledWith('destroy');
         });
 
-        it('should clean up the annotation controls', () => {
+        test('should clean up the annotation controls', () => {
             base.annotationControls = {
-                destroy: sandbox.stub(),
+                destroy: jest.fn(),
             };
             base.destroy();
-            expect(base.annotationControls.destroy).to.be.called;
+            expect(base.annotationControls.destroy).toBeCalled();
         });
 
-        it('should clean up annotator', () => {
+        test('should clean up annotator', () => {
             base.annotator = {
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub(),
+                removeAllListeners: jest.fn(),
+                destroy: jest.fn(),
             };
             base.destroy();
-            expect(base.annotator.removeAllListeners).to.be.called;
-            expect(base.annotator.destroy).to.be.called;
+            expect(base.annotator.removeAllListeners).toBeCalled();
+            expect(base.annotator.destroy).toBeCalled();
         });
 
-        it('should remove the context listener if its callback exists', () => {
-            base.preventDefault = sandbox.stub();
+        test('should remove the context listener if its callback exists', () => {
+            base.preventDefault = jest.fn();
             base.containerEl = {
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
                 classList: {
-                    remove: sandbox.stub(),
+                    remove: jest.fn(),
                 },
             };
 
             base.destroy();
 
-            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func);
+            expect(base.containerEl.removeEventListener).toBeCalledWith('contextmenu', expect.any(Function));
         });
     });
 
@@ -703,7 +694,7 @@ describe('lib/viewers/BaseViewer', () => {
             Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitFunc });
         });
 
-        it('should pass through the event as well as broadcast it as a viewer event', () => {
+        test('should pass through the event as well as broadcast it as a viewer event', () => {
             const fileId = '1';
             const event = 'someEvent';
             const data = {};
@@ -717,18 +708,21 @@ describe('lib/viewers/BaseViewer', () => {
                 container: containerEl,
             });
 
-            const emitStub = sandbox.stub();
+            const emitStub = jest.fn();
             Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitStub });
 
             base.emit(event, data);
 
-            expect(emitStub).to.be.calledWith(event, data);
-            expect(emitStub).to.be.calledWithMatch(VIEWER_EVENT.default, {
-                event,
-                data,
-                viewerName,
-                fileId,
-            });
+            expect(emitStub).toBeCalledWith(event, data);
+            expect(emitStub).toBeCalledWith(
+                VIEWER_EVENT.default,
+                expect.objectContaining({
+                    event,
+                    data,
+                    viewerName,
+                    fileId,
+                }),
+            );
         });
     });
 
@@ -742,20 +736,20 @@ describe('lib/viewers/BaseViewer', () => {
                     id: '123',
                 },
             });
-            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'finishLoadingSetup');
+            jest.spyOn(base, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'finishLoadingSetup');
             base.setup();
             event = {
-                preventDefault: sandbox.stub(),
-                stopPropagation: sandbox.stub(),
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
                 touches: [0, 0],
             };
-            stubs.isIOS = sandbox.stub(Browser, 'isIOS');
-            stubs.sqrt = sandbox.stub(Math, 'sqrt');
-            base.zoomIn = sandbox.stub();
-            base.zoomOut = sandbox.stub();
+            stubs.isIOS = jest.spyOn(Browser, 'isIOS');
+            stubs.sqrt = jest.spyOn(Math, 'sqrt');
+            base.zoomIn = jest.fn();
+            base.zoomOut = jest.fn();
         });
 
         afterEach(() => {
@@ -767,90 +761,86 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         describe('mobileZoomStartHandler', () => {
-            it('should turn on scaling and prevent default behavior if on iOS', () => {
-                stubs.isIOS.returns(true);
+            test('should turn on scaling and prevent default behavior if on iOS', () => {
+                stubs.isIOS.mockReturnValue(true);
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.be.true;
-                expect(event.stopPropagation).to.be.called;
-                expect(event.preventDefault).to.be.called;
+                expect(base._scaling).toBe(true);
+                expect(event.stopPropagation).toBeCalled();
+                expect(event.preventDefault).toBeCalled();
             });
 
-            it('should store the event details if two touches are detected and not on iOS', () => {
-                stubs.isIOS.returns(false);
+            test('should store the event details if two touches are detected and not on iOS', () => {
+                stubs.isIOS.mockReturnValue(false);
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.be.true;
-                expect(base._pinchScale).to.not.equal(undefined);
-                expect(event.stopPropagation).to.be.called;
-                expect(event.preventDefault).to.be.called;
+                expect(base._scaling).toBe(true);
+                expect(base._pinchScale).toBeDefined();
+                expect(event.stopPropagation).toBeCalled();
+                expect(event.preventDefault).toBeCalled();
             });
 
-            it('should do nothing if event did not record two touches and not on iOS', () => {
-                stubs.isIOS.returns(false);
+            test('should do nothing if event did not record two touches and not on iOS', () => {
+                stubs.isIOS.mockReturnValue(false);
                 event.touches = [0];
 
                 base.mobileZoomStartHandler(event);
-                expect(base._scaling).to.be.false;
-                expect(base._pinchScale).to.equal(undefined);
-                expect(event.stopPropagation).to.not.be.called;
-                expect(event.preventDefault).to.not.be.called;
+                expect(base._scaling).toBe(false);
+                expect(base._pinchScale).toBeUndefined();
+                expect(event.stopPropagation).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
             });
         });
 
         describe('mobileZoomChangeHandler', () => {
-            it('should update the end touch and prevent default if two touches are detected', () => {
+            test('should update the end touch and prevent default if two touches are detected', () => {
                 base.mobileZoomStartHandler(event);
 
                 base.mobileZoomChangeHandler(event);
-                expect(base._pinchScale.end).to.not.equal(undefined);
+                expect(base._pinchScale.end).toBeDefined();
             });
 
-            it('should not do anything if two touches are not recorded', () => {
+            test('should not do anything if two touches are not recorded', () => {
                 event.touches = [0];
                 base.mobileZoomStartHandler(event);
 
                 base.mobileZoomChangeHandler(event);
-                expect(base._pinchScale).to.equal(undefined);
+                expect(base._pinchScale).toBeUndefined();
             });
 
-            it('should not do anything if scaling is not happening', () => {
+            test('should not do anything if scaling is not happening', () => {
                 event.touches = [0];
                 base.mobileZoomStartHandler(event);
 
                 event.touches = [0, 0];
 
                 base.mobileZoomChangeHandler(event);
-                expect(base._pinchScale).to.equal(undefined);
+                expect(base._pinchScale).toBeUndefined();
             });
         });
 
         describe('mobileZoomEndHandler', () => {
-            it('should zoom in if on iOS and event scale is > 1', () => {
+            test('should zoom in if on iOS and event scale is > 1', () => {
                 event.scale = 1.5;
-                stubs.isIOS.returns(true);
+                stubs.isIOS.mockReturnValue(true);
                 base.mobileZoomStartHandler(event);
 
                 base.mobileZoomEndHandler(event);
-                expect(base.zoomIn).to.be.called;
+                expect(base.zoomIn).toBeCalled();
             });
 
-            it('should zoom out if on iOS and event scale is < 1', () => {
+            test('should zoom out if on iOS and event scale is < 1', () => {
                 event.scale = 0.75;
-                stubs.isIOS.returns(true);
+                stubs.isIOS.mockReturnValue(true);
                 base.mobileZoomStartHandler(event);
 
                 base.mobileZoomEndHandler(event);
-                expect(base.zoomOut).to.be.called;
+                expect(base.zoomOut).toBeCalled();
             });
 
-            it('should zoom in if not on iOS and the scale is > 0', () => {
-                stubs.sqrt
-                    .onCall(0)
-                    .returns(0)
-                    .onCall(1)
-                    .returns(0.5);
-                stubs.isIOS.returns(false);
+            test('should zoom in if not on iOS and the scale is > 0', () => {
+                stubs.sqrt.mockReturnValueOnce(0).mockReturnValueOnce(0.5);
+                stubs.isIOS.mockReturnValue(false);
                 base.mobileZoomStartHandler(event);
 
                 event.touches = [
@@ -866,18 +856,14 @@ describe('lib/viewers/BaseViewer', () => {
                 base.mobileZoomChangeHandler(event);
 
                 base.mobileZoomEndHandler(event);
-                expect(base.zoomIn).to.be.called;
-                expect(base._scaling).to.be.false;
-                expect(base._pincScale).to.equal(undefined);
+                expect(base.zoomIn).toBeCalled();
+                expect(base._scaling).toBe(false);
+                expect(base._pincScale).toBeUndefined();
             });
 
-            it('should zoom out if not on iOS and the scale is < 0', () => {
-                stubs.sqrt
-                    .onCall(0)
-                    .returns(0.5)
-                    .onCall(1)
-                    .returns(0);
-                stubs.isIOS.returns(false);
+            test('should zoom out if not on iOS and the scale is < 0', () => {
+                stubs.sqrt.mockReturnValueOnce(0.5).mockReturnValueOnce(0);
+                stubs.isIOS.mockReturnValue(false);
                 base.mobileZoomStartHandler(event);
 
                 event.touches = [
@@ -893,16 +879,16 @@ describe('lib/viewers/BaseViewer', () => {
                 base.mobileZoomChangeHandler(event);
 
                 base.mobileZoomEndHandler(event);
-                expect(base.zoomOut).to.be.called;
-                expect(base.zoomIn).to.not.be.called;
-                expect(base._scaling).to.be.false;
-                expect(base._pincScale).to.equal(undefined);
+                expect(base.zoomOut).toBeCalled();
+                expect(base.zoomIn).not.toBeCalled();
+                expect(base._scaling).toBe(false);
+                expect(base._pincScale).toBeUndefined();
             });
         });
     });
 
     describe('getViewerOption', () => {
-        it('should return the user-defined viewer option with the specified key if it exists', () => {
+        test('should return the user-defined viewer option with the specified key if it exists', () => {
             const baz = 'captain-america';
             base.options.viewers = {
                 Base: {
@@ -911,67 +897,67 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.options.viewer = { NAME: 'Base' };
 
-            expect(base.getViewerOption('fooBar')).to.equal(baz);
+            expect(base.getViewerOption('fooBar')).toBe(baz);
         });
 
-        it('should return undefined if no matching user-defined viewer option is found', () => {
-            expect(base.getViewerOption('fooBar')).to.equal(undefined);
+        test('should return undefined if no matching user-defined viewer option is found', () => {
+            expect(base.getViewerOption('fooBar')).toBeUndefined();
         });
     });
 
     describe('loadAssets()', () => {
         beforeEach(() => {
-            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
-            sandbox.stub(util, 'loadStylesheets');
-            sandbox.stub(util, 'loadScripts').returns(Promise.resolve());
-            sandbox.stub(base, 'emit');
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => {});
+            jest.spyOn(util, 'loadStylesheets');
+            jest.spyOn(util, 'loadScripts').mockResolvedValue(undefined);
+            jest.spyOn(base, 'emit');
             base.options.location = {};
             base.options.viewer = {
                 pauseRequireJS: true,
             };
         });
 
-        it('should create an asset URL and load the relevant stylesheets and scripts', () => {
+        test('should create an asset URL and load the relevant stylesheets and scripts', () => {
             base.loadAssets();
 
-            expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
-            expect(util.loadStylesheets).to.be.called;
-            expect(util.loadScripts).to.be.called;
+            expect(util.createAssetUrlCreator).toBeCalledWith(base.options.location);
+            expect(util.loadStylesheets).toBeCalled();
+            expect(util.loadScripts).toBeCalled();
         });
 
-        it('should emit "assetsloaded" if requireJS is paused and the asset is third party', () => {
+        test('should emit "assetsloaded" if requireJS is paused and the asset is third party', () => {
             return base.loadAssets().then(() => {
-                expect(base.emit).to.be.calledWith('assetsloaded');
+                expect(base.emit).toBeCalledWith('assetsloaded');
             });
         });
 
-        it('should not emit "assetsloaded" if we load one of our own assets', () => {
+        test('should not emit "assetsloaded" if we load one of our own assets', () => {
             return base.loadAssets([], [], false).then(() => {
-                expect(base.emit).to.not.be.called;
+                expect(base.emit).not.toBeCalled();
             });
         });
     });
 
     describe('prefetchAssets()', () => {
-        it('should create an asset URL and prefetch the relevant stylesheets and scripts', () => {
+        test('should create an asset URL and prefetch the relevant stylesheets and scripts', () => {
             base.options.location = {};
 
-            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
-            sandbox.stub(util, 'prefetchAssets');
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => {});
+            jest.spyOn(util, 'prefetchAssets');
 
             base.prefetchAssets();
-            expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
-            expect(util.prefetchAssets).to.be.calledTwice;
+            expect(util.createAssetUrlCreator).toBeCalledWith(base.options.location);
+            expect(util.prefetchAssets).toBeCalledTimes(2);
         });
 
-        it('should create an asset URL and preload the relevant stylesheets and scripts if preload is true', () => {
+        test('should create an asset URL and preload the relevant stylesheets and scripts if preload is true', () => {
             base.options.location = {};
 
-            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
-            sandbox.stub(util, 'prefetchAssets');
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => {});
+            jest.spyOn(util, 'prefetchAssets');
 
             base.prefetchAssets([], [], true);
-            expect(util.prefetchAssets).to.be.calledWith(sinon.match.any, true);
+            expect(util.prefetchAssets).toBeCalledWith(expect.anything(), true);
         });
     });
 
@@ -984,128 +970,130 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should create a new rep status, save, and return it', () => {
+        test('should create a new rep status, save, and return it', () => {
             const repStatus = base.getRepStatus();
-            expect(base.repStatuses.find(status => status === repStatus)).to.not.be.undefined;
-            expect(repStatus).to.be.instanceof(RepStatus);
+            expect(base.repStatuses.find(status => status === repStatus)).toBeDefined();
+            expect(repStatus).toBeInstanceOf(RepStatus);
         });
 
-        it('should use the passed in representation', () => {
+        test('should use the passed in representation', () => {
             const representation = {
                 info: {
                     url: 'someOtherUrl',
                 },
             };
             const repStatus = base.getRepStatus(representation);
-            expect(repStatus.representation).to.equal(representation);
+            expect(repStatus.representation).toBe(representation);
         });
     });
 
     describe('getLoadStatus()', () => {
-        it('should return the correct string based on load status and viewer type', () => {
+        test('should return the correct string based on load status and viewer type', () => {
             base.loaded = false;
-            expect(base.getLoadStatus()).to.equal('loading');
+            expect(base.getLoadStatus()).toBe('loading');
 
             base.loaded = true;
             base.options.viewer = {
                 NAME: 'Error',
             };
 
-            expect(base.getLoadStatus()).to.equal('error');
+            expect(base.getLoadStatus()).toBe('error');
 
             base.options.viewer.NAME = 'Dash';
-            expect(base.getLoadStatus()).to.equal('loaded');
+            expect(base.getLoadStatus()).toBe('loaded');
         });
     });
 
     describe('isRepresentationReady()', () => {
-        it('should return whether the representation has a successful status', () => {
+        test('should return whether the representation has a successful status', () => {
             const representation = {
                 status: {
                     state: 'success',
                 },
             };
-            expect(base.isRepresentationReady(representation)).to.be.true;
+            expect(base.isRepresentationReady(representation)).toBe(true);
 
             representation.status.state = 'viewable';
-            expect(base.isRepresentationReady(representation)).to.be.true;
+            expect(base.isRepresentationReady(representation)).toBe(true);
 
             representation.status.state = 'error';
-            expect(base.isRepresentationReady(representation)).to.be.false;
+            expect(base.isRepresentationReady(representation)).toBe(false);
         });
     });
 
     describe('disableViewerControls()', () => {
-        it('should disable viewer controls', () => {
+        test('should disable viewer controls', () => {
             base.controls = {
-                disable: sandbox.stub(),
+                disable: jest.fn(),
             };
             base.disableViewerControls();
-            expect(base.controls.disable).to.be.called;
+            expect(base.controls.disable).toBeCalled();
         });
     });
 
     describe('enableViewerControls()', () => {
-        it('should enable viewer controls', () => {
+        test('should enable viewer controls', () => {
             base.controls = {
-                enable: sandbox.stub(),
+                enable: jest.fn(),
             };
             base.enableViewerControls();
-            expect(base.controls.enable).to.be.called;
+            expect(base.controls.enable).toBeCalled();
         });
     });
 
     describe('getRepresentation()', () => {
-        it('should return the representation the viewer is/will use to preview', () => {
+        test('should return the representation the viewer is/will use to preview', () => {
             base.options.representation = { some: 'stuff' };
-            expect(base.getRepresentation()).to.equal(base.options.representation);
+            expect(base.getRepresentation()).toBe(base.options.representation);
         });
     });
 
     describe('getAssetPath()', () => {
-        it('should return the asset path the viewer is/will use for preview representation content', () => {
+        test('should return the asset path the viewer is/will use for preview representation content', () => {
             base.options.viewer = {
                 ASSET: '1.jpg',
             };
-            expect(base.getAssetPath()).to.equal(base.options.viewer.ASSET);
+            expect(base.getAssetPath()).toBe(base.options.viewer.ASSET);
         });
 
-        it('should return empty string if viewer does not have a special asset path', () => {
+        test('should return empty string if viewer does not have a special asset path', () => {
             base.options.viewer = {};
-            expect(base.getAssetPath()).to.equal('');
+            expect(base.getAssetPath()).toBe('');
         });
     });
 
     describe('disableAnnotationControls()', () => {
-        it('should hide annotations and toggle annotations mode', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+        test('should hide annotations and toggle annotations mode', () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+
             base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
+                toggleAnnotationMode: jest.fn(),
             };
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                resetControls: sandbox.stub(),
-                toggle: sandbox.stub(),
+                destroy: jest.fn(),
+                resetControls: jest.fn(),
+                toggle: jest.fn(),
             };
 
             base.disableAnnotationControls();
 
-            expect(base.annotationControls.resetControls).to.be.called;
-            expect(base.annotationControls.toggle).to.be.calledWith(false);
+            expect(base.annotationControls.resetControls).toBeCalled();
+            expect(base.annotationControls.toggle).toBeCalledWith(false);
         });
     });
 
     describe('enableAnnotationControls()', () => {
-        it('should show annotations and the controls', () => {
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+        test('should show annotations and the controls', () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                toggle: sandbox.stub(),
+                destroy: jest.fn(),
+                toggle: jest.fn(),
             };
 
             base.enableAnnotationControls();
 
-            expect(base.annotationControls.toggle).to.be.calledWith(true);
+            expect(base.annotationControls.toggle).toBeCalledWith(true);
         });
     });
 
@@ -1119,29 +1107,29 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
-            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            jest.spyOn(base, 'loadAssets').mockResolvedValue(undefined);
             window.BoxAnnotations = function BoxAnnotations() {
-                this.determineAnnotator = sandbox.stub().returns(conf);
+                this.determineAnnotator = jest.fn(() => conf);
             };
         });
 
-        it('should resolve the promise if a BoxAnnotations instance was passed into Preview', () => {
+        test('should resolve the promise if a BoxAnnotations instance was passed into Preview', () => {
             base.options.boxAnnotations = new window.BoxAnnotations({});
 
             base.loadBoxAnnotations();
-            expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
+            expect(base.loadAssets).not.toBeCalledWith(['annotations.js']);
         });
 
-        it('should load the annotations assets if annotations are enabled true', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+        test('should load the annotations assets if annotations are enabled true', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             base.loadBoxAnnotations();
-            expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
+            expect(base.loadAssets).toBeCalledWith(['annotations.js'], ['annotations.css'], false);
         });
 
-        it('should not load the annotations assets if annotations are not enabled', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
+        test('should not load the annotations assets if annotations are not enabled', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
             base.loadBoxAnnotations();
-            expect(base.loadAssets).to.not.be.called;
+            expect(base.loadAssets).not.toBeCalled();
         });
     });
 
@@ -1161,7 +1149,7 @@ describe('lib/viewers/BaseViewer', () => {
                 point: true,
                 highlight: false,
             },
-            CONSTRUCTOR: sandbox.stub().returns(annotatorMock),
+            CONSTRUCTOR: jest.fn(() => annotatorMock),
         };
 
         beforeEach(() => {
@@ -1169,96 +1157,98 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.location = { locale: 'en-US' };
             base.options.showAnnotations = true;
             window.BoxAnnotations = function BoxAnnotations() {
-                this.determineAnnotator = sandbox.stub().returns(conf);
-                this.getAnnotationsOptions = sandbox.stub().returns(annotationsOptions);
+                this.determineAnnotator = jest.fn(() => conf);
+                this.getAnnotationsOptions = jest.fn(() => annotationsOptions);
             };
 
-            sandbox.stub(base, 'initAnnotations');
-            sandbox.stub(base, 'emit');
-            sandbox.stub(base, 'triggerError');
+            jest.spyOn(base, 'initAnnotations');
+            jest.spyOn(base, 'emit');
+            jest.spyOn(base, 'triggerError');
         });
 
-        it('should not create the annotator if annotations are not enabled', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
+        test('should not create the annotator if annotations are not enabled', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
             base.createAnnotator();
-            expect(base.annotatorConf).to.be.undefined;
-            expect(base.annotator).to.be.undefined;
+            expect(base.annotatorConf).toBeUndefined();
+            expect(base.annotator).toBeUndefined();
         });
 
-        it('should determine and instantiate the annotator', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+        test('should determine and instantiate the annotator', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             base.createAnnotator();
-            expect(base.annotatorConf).to.equal(conf);
-            expect(base.annotator).to.equal(annotatorMock);
+            expect(base.annotatorConf).toBe(conf);
+            expect(base.annotator).toBe(annotatorMock);
         });
 
-        it('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+        test('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf),
+                determineAnnotator: jest.fn(() => conf),
             };
             base.createAnnotator();
-            expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
+            expect(base.options.boxAnnotations.determineAnnotator).toBeCalled();
         });
 
-        it('should call createAnnotatorOptions with locale, language, and messages from options', () => {
+        test('should call createAnnotatorOptions with locale, language, and messages from options', () => {
             const createOptionsArg = {
                 ...annotationsOptions,
                 features: {
                     enabledFeature: true,
                 },
             };
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'createAnnotatorOptions');
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions');
 
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf),
-                getOptions: sandbox.stub().returns(createOptionsArg),
+                determineAnnotator: jest.fn().mockReturnValue(conf),
+                getOptions: jest.fn().mockReturnValue(createOptionsArg),
             };
 
             base.createAnnotator();
 
-            expect(base.options.boxAnnotations.getOptions).to.be.called;
-            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(createOptionsArg));
+            expect(base.options.boxAnnotations.getOptions).toBeCalled();
+            expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining(createOptionsArg));
         });
 
-        it('should use default intl lib if annotator options not present ', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'createAnnotatorOptions');
-            sandbox.stub(intl, 'createAnnotatorIntl').returns(annotationsOptions.intl);
+        test('should use default intl lib if annotator options not present ', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions');
+            jest.spyOn(intl, 'createAnnotatorIntl').mockReturnValue(annotationsOptions.intl);
 
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf),
-                getOptions: sandbox.stub().returns(undefined),
+                determineAnnotator: jest.fn().mockReturnValue(conf),
+                getOptions: jest.fn().mockReturnValue(undefined),
             };
 
             base.createAnnotator();
 
-            expect(base.options.boxAnnotations.getOptions).to.be.called;
-            expect(intl.createAnnotatorIntl).to.be.called;
-            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match(annotationsOptions));
+            expect(base.options.boxAnnotations.getOptions).toBeCalled();
+            expect(intl.createAnnotatorIntl).toBeCalled();
+            expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining(annotationsOptions));
         });
 
-        it('should create annotator with initial mode region if discoverability is enabled', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'createAnnotatorOptions');
+        test('should create annotator with initial mode region if discoverability is enabled', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions').mockImplementation();
 
             base.options.boxAnnotations = {
-                determineAnnotator: sandbox.stub().returns(conf),
+                determineAnnotator: jest.fn().mockReturnValue(conf),
             };
             base.options.enableAnnotationsDiscoverability = true;
 
             base.createAnnotator();
 
-            expect(base.createAnnotatorOptions).to.be.calledWith(sinon.match({ initialMode: AnnotationMode.REGION }));
+            expect(base.createAnnotatorOptions).toBeCalledWith(
+                expect.objectContaining({ initialMode: AnnotationMode.REGION }),
+            );
         });
 
-        it('should emit annotator_create event', () => {
-            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+        test('should emit annotator_create event', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
 
             base.createAnnotator();
 
-            expect(base.emit).to.be.calledWith('annotator_create', annotatorMock);
+            expect(base.emit).toBeCalledWith('annotator_create', annotatorMock);
         });
     });
 
@@ -1277,51 +1267,52 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.scale = 1.5;
             base.annotator = {
-                init: sandbox.stub(),
-                addListener: sandbox.stub(),
+                init: jest.fn(),
+                addListener: jest.fn(),
             };
             base.annotatorConf = {
-                CONSTRUCTOR: sandbox.stub().returns(base.annotator),
+                CONSTRUCTOR: jest.fn(() => base.annotator),
             };
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                resetControls: sandbox.stub(),
+                destroy: jest.fn(),
+                resetControls: jest.fn(),
             };
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(true);
+
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
         });
 
-        it('should initialize the annotator', () => {
-            sandbox.stub(base, 'emit');
-            base.addListener = sandbox.stub();
+        test('should initialize the annotator', () => {
+            jest.spyOn(base, 'emit');
+            base.addListener = jest.fn();
             base.initAnnotations();
 
-            expect(base.annotator.init).to.be.calledWith(1.5);
-            expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
-            expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
-            expect(base.addListener).to.be.calledWith('scrolltoannotation', base.handleScrollToAnnotation);
-            expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotations_create', base.handleAnnotationCreateEvent);
-            expect(base.annotator.addListener).to.be.calledWith(
+            expect(base.annotator.init).toBeCalledWith(1.5);
+            expect(base.addListener).toBeCalledWith('toggleannotationmode', expect.any(Function));
+            expect(base.addListener).toBeCalledWith('scale', expect.any(Function));
+            expect(base.addListener).toBeCalledWith('scrolltoannotation', base.handleScrollToAnnotation);
+            expect(base.annotator.addListener).toBeCalledWith('annotatorevent', expect.any(Function));
+            expect(base.annotator.addListener).toBeCalledWith('annotations_create', base.handleAnnotationCreateEvent);
+            expect(base.annotator.addListener).toBeCalledWith(
                 'annotations_initialized',
                 base.handleAnnotationsInitialized,
             );
-            expect(base.annotator.addListener).to.be.calledWith(
+            expect(base.annotator.addListener).toBeCalledWith(
                 'creator_staged_change',
                 base.handleAnnotationCreatorChangeEvent,
             );
-            expect(base.annotator.addListener).to.be.calledWith(
+            expect(base.annotator.addListener).toBeCalledWith(
                 'creator_status_change',
                 base.handleAnnotationCreatorChangeEvent,
             );
-            expect(base.emit).to.be.calledWith('annotator', base.annotator);
+            expect(base.emit).toBeCalledWith('annotator', base.annotator);
         });
 
-        it('should call the correct handler to toggle annotation modes', () => {
+        test('should call the correct handler to toggle annotation modes', () => {
             base.initAnnotations();
-            base.annotator.toggleAnnotationMode = sandbox.stub();
+            base.annotator.toggleAnnotationMode = jest.fn();
 
             base.emit('toggleannotationmode', 'mode');
-            expect(base.annotator.toggleAnnotationMode).to.be.called;
+            expect(base.annotator.toggleAnnotationMode).toBeCalled();
         });
     });
 
@@ -1333,18 +1324,18 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should return false if it does not receive permissions', () => {
-            expect(base.hasAnnotationCreatePermission(null)).to.be.false;
-            expect(base.hasAnnotationCreatePermission(undefined)).to.be.false;
+        test('should return false if it does not receive permissions', () => {
+            expect(base.hasAnnotationCreatePermission(null)).toBe(false);
+            expect(base.hasAnnotationCreatePermission(undefined)).toBe(false);
         });
 
-        it('should return false if it receives new create permissions that are false', () => {
-            expect(base.hasAnnotationCreatePermission(permissions)).to.be.false;
+        test('should return false if it receives new create permissions that are false', () => {
+            expect(base.hasAnnotationCreatePermission(permissions)).toBe(false);
         });
 
-        it('should return true if it receives new create permissions that are true', () => {
+        test('should return true if it receives new create permissions that are true', () => {
             permissions.can_create_annotations = true;
-            expect(base.hasAnnotationCreatePermission(permissions)).to.be.true;
+            expect(base.hasAnnotationCreatePermission(permissions)).toBe(true);
         });
     });
 
@@ -1356,18 +1347,18 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should return false if it does not receive permissions', () => {
-            expect(base.hasAnnotationViewPermission(null)).to.be.false;
-            expect(base.hasAnnotationViewPermission(undefined)).to.be.false;
+        test('should return false if it does not receive permissions', () => {
+            expect(base.hasAnnotationViewPermission(null)).toBe(false);
+            expect(base.hasAnnotationViewPermission(undefined)).toBe(false);
         });
 
-        it('should return false if it receives new view permissions that are false', () => {
-            expect(base.hasAnnotationViewPermission(permissions)).to.be.false;
+        test('should return false if it receives new view permissions that are false', () => {
+            expect(base.hasAnnotationViewPermission(permissions)).toBe(false);
         });
 
-        it('should return true if it receives new view permissions that are true', () => {
+        test('should return true if it receives new view permissions that are true', () => {
             permissions.can_view_annotations = true;
-            expect(base.hasAnnotationViewPermission(permissions)).to.be.true;
+            expect(base.hasAnnotationViewPermission(permissions)).toBe(true);
         });
     });
 
@@ -1380,63 +1371,52 @@ describe('lib/viewers/BaseViewer', () => {
             can_view_annotations_self: false, // Old
         };
 
-        it('does nothing if file permissions are undefined', () => {
-            expect(base.hasAnnotationPermissions()).to.be.false;
+        test('does nothing if file permissions are undefined', () => {
+            expect(base.hasAnnotationPermissions()).toBe(false);
         });
 
-        it('should return false if the user can neither annotate nor view all or their own annotations', () => {
-            expect(base.hasAnnotationPermissions(permissions)).to.be.false;
+        test('should return false if the user can neither annotate nor view all or their own annotations', () => {
+            expect(base.hasAnnotationPermissions(permissions)).toBe(false);
         });
 
-        it('should return true if the user can at least create annotations', () => {
+        test('should return true if the user can at least create annotations', () => {
             permissions.can_create_annotations = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
+            expect(base.hasAnnotationPermissions(permissions)).toBe(true);
         });
 
-        it('should return true if the user can at least view annotations', () => {
+        test('should return true if the user can at least view annotations', () => {
             permissions.can_view_annotations = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
-        });
-
-        it('should return true if the user can at least view all annotations', () => {
-            permissions.can_view_annotations_all = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
-        });
-
-        it('should return true if the user can at least view their own annotations', () => {
-            permissions.can_view_annotations_all = false;
-            permissions.can_view_annotations_self = true;
-            expect(base.hasAnnotationPermissions(permissions)).to.be.true;
+            expect(base.hasAnnotationPermissions(permissions)).toBe(true);
         });
     });
 
     describe('handleScrollToAnnotation', () => {
-        it('should call the annotators scrollToAnnotation method if object provided', () => {
-            const scrollToAnnotationStub = sandbox.stub();
+        test('should call the annotators scrollToAnnotation method if object provided', () => {
+            const scrollToAnnotationStub = jest.fn();
 
             base.annotator = {
-                addListener: sandbox.stub(),
-                init: sandbox.stub(),
+                addListener: jest.fn(),
+                init: jest.fn(),
                 scrollToAnnotation: scrollToAnnotationStub,
             };
 
             base.handleScrollToAnnotation({ id: '123' });
 
-            expect(scrollToAnnotationStub).to.be.calledWith('123');
+            expect(scrollToAnnotationStub).toBeCalledWith('123');
         });
 
-        it('should call the annotators scrollToAnnotation if string provided', () => {
-            const scrollToAnnotationStub = sandbox.stub();
+        test('should call the annotators scrollToAnnotation if string provided', () => {
+            const scrollToAnnotationStub = jest.fn();
 
             base.annotator = {
-                addListener: sandbox.stub(),
-                init: sandbox.stub(),
+                addListener: jest.fn(),
+                init: jest.fn(),
                 scrollToAnnotation: scrollToAnnotationStub,
             };
 
             base.handleScrollToAnnotation('123');
 
-            expect(scrollToAnnotationStub).to.be.calledWith('123');
+            expect(scrollToAnnotationStub).toBeCalledWith('123');
         });
     });
 
@@ -1444,15 +1424,15 @@ describe('lib/viewers/BaseViewer', () => {
         let scrollToAnnotationStub;
 
         beforeEach(() => {
-            scrollToAnnotationStub = sandbox.stub();
+            scrollToAnnotationStub = jest.fn();
 
             base.annotator = {
-                init: sandbox.stub(),
+                init: jest.fn(),
                 scrollToAnnotation: scrollToAnnotationStub,
             };
         });
 
-        it('should not call handleScrollToAnnotation if there is not an active annotation', () => {
+        test('should not call handleScrollToAnnotation if there is not an active annotation', () => {
             base.options.fileOptions = {
                 '0': {
                     annotations: {},
@@ -1461,9 +1441,9 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleAnnotationsInitialized({ annotations: [{ id: '123' }] });
 
-            expect(scrollToAnnotationStub).not.to.be.called;
+            expect(scrollToAnnotationStub).not.toBeCalled();
         });
-        it('should call scroll to annotation if active annotation is set', () => {
+        test('should call scroll to annotation if active annotation is set', () => {
             base.options.fileOptions = {
                 '0': {
                     annotations: {
@@ -1474,17 +1454,15 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleAnnotationsInitialized({ annotations: [{ id: 'ABC' }] });
 
-            expect(scrollToAnnotationStub).to.be.calledWith('ABC');
+            expect(scrollToAnnotationStub).toBeCalledWith('ABC');
         });
     });
 
     describe('areAnnotationsEnabled()', () => {
         beforeEach(() => {
-            stubs.getViewerOption = sandbox
-                .stub(base, 'getViewerOption')
-                .withArgs('annotations')
-                .returns(false);
-            stubs.hasPermissions = sandbox.stub(base, 'hasAnnotationPermissions').returns(true);
+            stubs.getViewerOption = jest.spyOn(base, 'getViewerOption').mockReturnValue(false);
+            stubs.hasPermissions = jest.spyOn(base, 'hasAnnotationPermissions').mockReturnValue(true);
+
             base.options.file = {
                 permissions: {
                     can_annotate: true,
@@ -1492,124 +1470,129 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should return false if the user cannot create/view annotations', () => {
-            stubs.hasPermissions.returns(false);
-            expect(base.areAnnotationsEnabled()).to.be.false;
+        test('should return false if the user cannot create/view annotations', () => {
+            stubs.hasPermissions.mockReturnValue(false);
+            expect(base.areAnnotationsEnabled()).toBe(false);
         });
 
-        it('should return false if new annotations is not enabled', () => {
+        test('should return false if new annotations is not enabled', () => {
             base.options.showAnnotationsControls = true;
-            sandbox.stub(base, 'areNewAnnotationsEnabled').returns(false);
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(false);
 
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
         });
 
-        it('should return true if viewer option is set to true', () => {
-            expect(base.areAnnotationsEnabled()).to.be.false;
+        test('should return true if viewer option is set to true', () => {
+            expect(base.areAnnotationsEnabled()).toBe(false);
 
-            stubs.getViewerOption.returns(true);
-            expect(base.areAnnotationsEnabled()).to.be.true;
+            stubs.getViewerOption.mockReturnValue(true);
+            expect(base.areAnnotationsEnabled()).toBe(true);
         });
 
-        it('should use the global showAnnotations boolean if the viewer param is not specified', () => {
-            stubs.getViewerOption.withArgs('annotations').returns(null);
+        test('should use the global showAnnotations boolean if the viewer param is not specified', () => {
+            stubs.getViewerOption.mockReturnValue(null);
             base.options.showAnnotations = true;
-            expect(base.areAnnotationsEnabled()).to.be.true;
+            expect(base.areAnnotationsEnabled()).toBe(true);
 
             base.options.showAnnotations = false;
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
         });
 
-        it('should use BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
-            stubs.getViewerOption.withArgs('annotations').returns(null);
+        test('should use BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
+            window.BoxAnnotations = function BoxAnnotations() {
+                this.determineAnnotator = jest.fn();
+                this.getAnnotationsOptions = jest.fn();
+            };
+
+            stubs.getViewerOption.mockReturnValue(null);
             base.options.showAnnotations = false;
             base.options.boxAnnotations = undefined;
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
 
             base.options.viewer = { NAME: 'viewerName' };
-            base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
+            base.options.boxAnnotations = new window.BoxAnnotations();
             const { boxAnnotations } = base.options;
 
             // No enabled annotators in options
             boxAnnotations.options = { nope: 'wrong options type' };
             boxAnnotations.viewerOptions = undefined;
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
 
             // All default types enabled
             boxAnnotations.viewerOptions = {
                 viewerName: { enabled: true },
             };
-            expect(base.areAnnotationsEnabled()).to.be.true;
+            expect(base.areAnnotationsEnabled()).toBe(true);
 
             // No specified enabled types
             boxAnnotations.viewerOptions = {
                 viewerName: { enabledTypes: [] },
             };
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
 
             // Specified types enabled
             boxAnnotations.viewerOptions = {
                 viewerName: { enabledTypes: ['point'] },
             };
-            expect(base.areAnnotationsEnabled()).to.be.true;
+            expect(base.areAnnotationsEnabled()).toBe(true);
 
             // No passed in version of BoxAnnotations
             window.BoxAnnotations = undefined;
-            expect(base.areAnnotationsEnabled()).to.be.false;
+            expect(base.areAnnotationsEnabled()).toBe(false);
         });
     });
 
     describe('areNewAnnotationsEnabled()', () => {
         beforeEach(() => {
-            stubs.hasCreatePermissions = sandbox.stub(base, 'hasAnnotationCreatePermission').returns(true);
-            stubs.hasViewPermissions = sandbox.stub(base, 'hasAnnotationViewPermission').returns(true);
+            stubs.hasCreatePermissions = jest.spyOn(base, 'hasAnnotationCreatePermission').mockReturnValue(true);
+            stubs.hasViewPermissions = jest.spyOn(base, 'hasAnnotationViewPermission').mockReturnValue(true);
         });
 
-        it('should return false if the user cannot create/view annotations', () => {
-            stubs.hasCreatePermissions.returns(false);
-            stubs.hasViewPermissions.returns(false);
-            expect(base.areNewAnnotationsEnabled()).to.be.false;
+        test('should return false if the user cannot create/view annotations', () => {
+            stubs.hasCreatePermissions.mockReturnValue(false);
+            stubs.hasViewPermissions.mockReturnValue(false);
+            expect(base.areNewAnnotationsEnabled()).toBe(false);
         });
 
         EXCLUDED_EXTENSIONS.forEach(extension => {
-            it(`should return false if the file is ${extension} format`, () => {
+            test(`should return false if the file is ${extension} format`, () => {
                 base.options.file.extension = extension;
                 base.options.showAnnotationsControls = true;
-                expect(base.areNewAnnotationsEnabled()).to.be.false;
+                expect(base.areNewAnnotationsEnabled()).toBe(false);
             });
         });
 
-        it('should return showAnnotationsControls if file is not excel nor iWork formats', () => {
+        test('should return showAnnotationsControls if file is not excel nor iWork formats', () => {
             base.options.file.extension = 'pdf';
             base.options.showAnnotationsControls = true;
-            expect(base.areNewAnnotationsEnabled()).to.be.true;
+            expect(base.areNewAnnotationsEnabled()).toBe(true);
 
             base.options.showAnnotationsControls = false;
-            expect(base.areNewAnnotationsEnabled()).to.be.false;
+            expect(base.areNewAnnotationsEnabled()).toBe(false);
         });
     });
 
     describe('getViewerAnnotationsConfig()', () => {
-        it('should return an empty object if none options available', () => {
-            sandbox.stub(base, 'getViewerOption').returns(undefined);
+        test('should return an empty object if none options available', () => {
+            jest.spyOn(base, 'getViewerOption').mockReturnValue(undefined);
             const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal({});
+            expect(config).toEqual({});
         });
 
-        it('should create an object with an "enabled" flag if using legacy boolean value', () => {
-            sandbox.stub(base, 'getViewerOption').returns(false);
+        test('should create an object with an "enabled" flag if using legacy boolean value', () => {
+            jest.spyOn(base, 'getViewerOption').mockReturnValue(false);
             const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal({ enabled: false });
+            expect(config).toEqual({ enabled: false });
         });
 
-        it('should pass through the annotations object if an object', () => {
+        test('should pass through the annotations object if an object', () => {
             const annConfig = {
                 enabled: true,
                 disabledTypes: ['drawing'],
             };
-            sandbox.stub(base, 'getViewerOption').returns(annConfig);
+            jest.spyOn(base, 'getViewerOption').mockReturnValue(annConfig);
             const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal(annConfig);
+            expect(config).toEqual(annConfig);
         });
     });
 
@@ -1618,27 +1601,27 @@ describe('lib/viewers/BaseViewer', () => {
         const ANNOTATION_TYPE_POINT = 'point';
 
         beforeEach(() => {
-            sandbox.stub(base, 'emit');
+            jest.spyOn(base, 'emit');
             base.annotator = {
-                isInAnnotationMode: sandbox.stub(),
+                isInAnnotationMode: jest.fn(),
             };
-            sandbox.stub(base, 'disableViewerControls');
-            sandbox.stub(base, 'enableViewerControls');
+            jest.spyOn(base, 'disableViewerControls');
+            jest.spyOn(base, 'enableViewerControls');
         });
 
-        it('should disable controls and show point mode notification on annotationmodeenter', () => {
+        test('should disable controls and show point mode notification on annotationmodeenter', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeEnter,
                 data: { mode: ANNOTATION_TYPE_POINT },
             };
             base.handleAnnotatorEvents(data);
-            expect(base.disableViewerControls).to.be.called;
-            expect(base.previewUI.notification.show).to.be.called;
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.disableViewerControls).toBeCalled();
+            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should disable controls and enter drawing anontation mode with notification', () => {
+        test('should disable controls and enter drawing anontation mode with notification', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeEnter,
                 data: {
@@ -1647,13 +1630,13 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
             base.handleAnnotatorEvents(data);
-            expect(base.disableViewerControls).to.be.called;
-            expect(base.previewUI.notification.show).to.be.called;
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.disableViewerControls).toBeCalled();
+            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should enable controls and hide notification on annotationmodeexit', () => {
+        test('should enable controls and hide notification on annotationmodeexit', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {
@@ -1661,13 +1644,13 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
             base.handleAnnotatorEvents(data);
-            expect(base.enableViewerControls).to.be.called;
-            expect(base.previewUI.notification.hide).to.be.called;
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.enableViewerControls).toBeCalled();
+            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should enable controls and exit draw annotation mode', () => {
+        test('should enable controls and exit draw annotation mode', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {
@@ -1675,58 +1658,58 @@ describe('lib/viewers/BaseViewer', () => {
                 },
             };
             base.handleAnnotatorEvents(data);
-            expect(base.enableViewerControls).to.be.called;
-            expect(base.previewUI.notification.hide).to.be.called;
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.enableViewerControls).toBeCalled();
+            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should show a notification on annotationerror', () => {
+        test('should show a notification on annotationerror', () => {
             const data = {
                 event: ANNOTATOR_EVENT.error,
                 data: 'message',
             };
             base.handleAnnotatorEvents(data);
-            expect(base.previewUI.notification.show).to.be.called;
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should scale annotations on annotationsfetched', () => {
+        test('should scale annotations on annotationsfetched', () => {
             base.scale = 1;
             base.rotationAngle = 90;
             const data = {
                 event: ANNOTATOR_EVENT.fetch,
             };
             base.handleAnnotatorEvents(data);
-            expect(base.emit).to.be.calledWith('scale', {
+            expect(base.emit).toBeCalledWith('scale', {
                 scale: base.scale,
                 rotationAngle: base.rotationAngle,
             });
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
 
-        it('should only emit annotatorevent when event does not match', () => {
+        test('should only emit annotatorevent when event does not match', () => {
             const data = {
                 event: 'no match',
                 data: 'message',
             };
             base.handleAnnotatorEvents(data);
-            expect(base.disableViewerControls).to.not.be.called;
-            expect(base.enableViewerControls).to.not.be.called;
-            expect(base.emit).to.not.be.calledWith(VIEWER_EVENT.notificationShow, data.data);
-            expect(base.emit).to.not.be.calledWith('scale', {
+            expect(base.disableViewerControls).not.toBeCalled();
+            expect(base.enableViewerControls).not.toBeCalled();
+            expect(base.emit).not.toBeCalledWith(VIEWER_EVENT.notificationShow, data.data);
+            expect(base.emit).not.toBeCalledWith('scale', {
                 scale: base.scale,
                 rotationAngle: base.rotationAngle,
             });
-            expect(base.emit).to.be.calledWith(data.event, data.data);
-            expect(base.emit).to.be.calledWith('annotatorevent', data);
+            expect(base.emit).toBeCalledWith(data.event, data.data);
+            expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
     });
 
     describe('createAnnotatorOptions()', () => {
-        it('should return combined options to give to the annotator', () => {
+        test('should return combined options to give to the annotator', () => {
             base.options = {
                 file: { id: 1 },
                 location: { locale: 'en-US' },
@@ -1735,107 +1718,103 @@ describe('lib/viewers/BaseViewer', () => {
             base.hasTouch = false;
 
             const combinedOptions = base.createAnnotatorOptions({ randomOption: 'derp' });
-            expect(combinedOptions.file).to.deep.equal({ id: 1 });
-            expect(combinedOptions.isMobile).to.be.true;
-            expect(combinedOptions.hasTouch).to.be.false;
-            expect(combinedOptions.locale).to.equal('en-US');
-            expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
-            expect(combinedOptions.randomOption).to.equal('derp');
-            expect(combinedOptions.localizedStrings).to.not.be.undefined;
+            expect(combinedOptions.file).toEqual({ id: 1 });
+            expect(combinedOptions.isMobile).toBe(true);
+            expect(combinedOptions.hasTouch).toBe(false);
+            expect(combinedOptions.locale).toBe('en-US');
+            expect(combinedOptions.location).toEqual({ locale: 'en-US' });
+            expect(combinedOptions.randomOption).toBe('derp');
+            expect(combinedOptions.localizedStrings).toBeDefined();
         });
     });
 
     describe('handleAssetAndRepLoad()', () => {
-        it('should load annotations and create the annotator', done => {
-            sandbox.stub(base, 'loadBoxAnnotations').returns(Promise.resolve());
-            sandbox.stub(base, 'createAnnotator').returns(
-                new Promise(resolve => {
-                    resolve();
-                    done();
-                }),
-            );
+        test('should load annotations and create the annotator', done => {
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue();
+            jest.spyOn(base, 'createAnnotator').mockImplementation(() => {
+                expect(base.loadBoxAnnotations).toBeCalled();
+                expect(base.createAnnotator).toBeCalled();
+                done();
+            });
 
             base.handleAssetAndRepLoad();
-
-            expect(base.loadBoxAnnotations).to.be.called;
-            expect(base.createAnnotator).to.be.called;
         });
     });
 
     describe('createViewer()', () => {
-        it('should return null if no element is provided', () => {
-            expect(base.createViewer()).to.be.null;
+        test('should return null if no element is provided', () => {
+            expect(base.createViewer()).toBeNull();
         });
 
-        it('should append the element if containerEl has no first child', () => {
+        test('should append the element if containerEl has no first child', () => {
             base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
             const newDiv = document.createElement('div');
-            sandbox.stub(base.containerEl, 'appendChild');
+            jest.spyOn(base.containerEl, 'appendChild');
             base.createViewer(newDiv);
-            expect(base.containerEl.appendChild).to.be.called;
+            expect(base.containerEl.appendChild).toBeCalled();
         });
 
-        it('should insert the provided element before the other children', () => {
+        test('should insert the provided element before the other children', () => {
             base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
             const existingChild = document.createElement('div');
             existingChild.className = 'existing-child';
             base.containerEl.appendChild(existingChild);
 
-            sandbox.stub(base.containerEl, 'insertBefore');
+            jest.spyOn(base.containerEl, 'insertBefore');
             const newDiv = document.createElement('div');
             newDiv.className = 'new-div';
             base.createViewer(newDiv);
-            expect(base.containerEl.insertBefore).to.be.called;
+            expect(base.containerEl.insertBefore).toBeCalled();
         });
     });
 
     describe('emitMetric()', () => {
         beforeEach(() => {
-            stubs.emit = sandbox.stub(EventEmitter.prototype, 'emit');
-            stubs.getMetricsWhitelist = sandbox.stub(base, 'getMetricsWhitelist');
+            stubs.emit = jest.spyOn(EventEmitter.prototype, 'emit');
+            stubs.getMetricsWhitelist = jest.spyOn(base, 'getMetricsWhitelist');
         });
 
-        it('should update the emittedMetrics object when called the first time', () => {
+        test('should update the emittedMetrics object when called the first time', () => {
             base.emittedMetrics = {};
-            stubs.getMetricsWhitelist.returns([]);
+            stubs.getMetricsWhitelist.mockReturnValue([]);
 
             base.emitMetric('foo', 'bar');
 
-            expect(base.emittedMetrics.foo).to.be.true;
-            expect(stubs.emit).to.be.called;
+            expect(base.emittedMetrics.foo).toBe(true);
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should be emitted even if not the first time and not whitelisted', () => {
+        test('should be emitted even if not the first time and not whitelisted', () => {
             base.emittedMetrics = { foo: true };
-            stubs.getMetricsWhitelist.returns([]);
+            stubs.getMetricsWhitelist.mockReturnValue([]);
 
             base.emitMetric('foo', 'bar');
 
-            expect(base.emittedMetrics.foo).to.be.true;
-            expect(stubs.emit).to.be.called;
+            expect(base.emittedMetrics.foo).toBe(true);
+            expect(stubs.emit).toBeCalled();
         });
 
-        it('should not do anything if it has been emitted before and is whitelisted', () => {
+        test('should not do anything if it has been emitted before and is whitelisted', () => {
             base.emittedMetrics = { foo: true };
-            stubs.getMetricsWhitelist.returns(['foo']);
+            stubs.getMetricsWhitelist.mockReturnValue(['foo']);
 
             base.emitMetric('foo', 'bar');
 
-            expect(base.emittedMetrics.foo).to.be.true;
-            expect(stubs.emit).not.to.be.called;
+            expect(base.emittedMetrics.foo).toBe(true);
+            expect(stubs.emit).not.toBeCalled();
         });
     });
 
     describe('handleAnnotationCreateEvent()', () => {
         beforeEach(() => {
             base.annotator = {
-                emit: sandbox.stub(),
+                emit: jest.fn(),
             };
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                setMode: sandbox.stub(),
+                destroy: jest.fn(),
+                setMode: jest.fn(),
             };
-            base.processAnnotationModeChange = sandbox.stub();
+            base.processAnnotationModeChange = jest.fn();
         });
 
         const createEvent = status => ({
@@ -1846,11 +1825,11 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         ['error', 'pending'].forEach(status => {
-            it(`should not do anything if status is ${status}`, () => {
+            test(`should not do anything if status is ${status}`, () => {
                 const event = createEvent(status);
                 base.handleAnnotationCreateEvent(event);
 
-                expect(base.annotator.emit).not.to.be.called;
+                expect(base.annotator.emit).not.toBeCalled();
             });
         });
 
@@ -1858,118 +1837,120 @@ describe('lib/viewers/BaseViewer', () => {
             const event = createEvent('success');
             base.handleAnnotationCreateEvent(event);
 
-            expect(base.annotator.emit).to.be.calledWith('annotations_active_set', '123');
-            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
     });
 
     describe('handleAnnotationCreatorChangeEvent()', () => {
-        it('should set mode', () => {
+        test('should set mode', () => {
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                setMode: sandbox.stub(),
+                destroy: jest.fn(),
+                setMode: jest.fn(),
             };
-            base.processAnnotationModeChange = sandbox.stub();
+
+            base.processAnnotationModeChange = jest.fn();
             base.handleAnnotationCreatorChangeEvent({ status: AnnotationInput.CREATE, type: AnnotationMode.HIGHLIGHT });
 
-            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.HIGHLIGHT);
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.HIGHLIGHT);
         });
     });
 
     describe('handleAnnotationControlsEscape()', () => {
-        it('should call toggleAnnotationMode with AnnotationMode.NONE if enableAnnotationsDiscoverability is false', () => {
+        test('should call toggleAnnotationMode with AnnotationMode.NONE if enableAnnotationsDiscoverability is false', () => {
             base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
+                toggleAnnotationMode: jest.fn(),
             };
             base.options.enableAnnotationsDiscoverability = false;
 
             base.handleAnnotationControlsEscape();
 
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
         });
 
-        it('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {
+        test('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {
             base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
+                toggleAnnotationMode: jest.fn(),
             };
             base.options.enableAnnotationsDiscoverability = true;
-            base.processAnnotationModeChange = sandbox.stub();
+            base.processAnnotationModeChange = jest.fn();
 
             base.handleAnnotationControlsEscape();
 
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
     });
 
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
             base.annotator = {
-                toggleAnnotationMode: sandbox.stub(),
+                toggleAnnotationMode: jest.fn(),
             };
-            base.processAnnotationModeChange = sandbox.stub();
+            base.processAnnotationModeChange = jest.fn();
         });
 
-        it('should call toggleAnnotationMode and processAnnotationModeChange', () => {
+        test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
             base.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
-            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.REGION);
         });
 
-        it('should call toggleAnnotationMode with appropriate mode if discoverability is enabled', () => {
+        test('should call toggleAnnotationMode with appropriate mode if discoverability is enabled', () => {
             base.options.enableAnnotationsDiscoverability = false;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
 
             base.options.enableAnnotationsDiscoverability = true;
             base.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
-            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
         });
     });
 
     describe('processAnnotationModeChange()', () => {
         beforeEach(() => {
             base.annotationControls = {
-                destroy: sandbox.stub(),
-                setMode: sandbox.stub(),
+                destroy: jest.fn(),
+                setMode: jest.fn(),
             };
             base.containerEl = document.createElement('div');
         });
 
-        it('should do nothing if no annotationControls', () => {
+        test('should do nothing if no annotationControls', () => {
+            jest.spyOn(base.containerEl.classList, 'add');
+            jest.spyOn(base.containerEl.classList, 'remove');
+
             base.annotationControls = undefined;
-            sandbox.spy(base.containerEl.classList, 'add');
-            sandbox.spy(base.containerEl.classList, 'remove');
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
-            expect(base.containerEl.classList.add).to.not.be.called;
-            expect(base.containerEl.classList.remove).to.not.be.called;
+            expect(base.containerEl.classList.add).not.toBeCalled();
+            expect(base.containerEl.classList.remove).not.toBeCalled();
         });
 
         it('should call annotationControls setMode', () => {
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
-            expect(base.annotationControls.setMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.annotationControls.setMode).toBeCalledWith(AnnotationMode.REGION);
         });
 
         [
-            [AnnotationMode.REGION, CLASS_ANNOTATIONS_CREATE_REGION],
-            [AnnotationMode.HIGHLIGHT, CLASS_ANNOTATIONS_CREATE_HIGHLIGHT],
+            [AnnotationMode.REGION, constants.CLASS_ANNOTATIONS_CREATE_REGION],
+            [AnnotationMode.HIGHLIGHT, constants.CLASS_ANNOTATIONS_CREATE_HIGHLIGHT],
         ].forEach(([mode, className]) => {
-            it(`should add the appropriate create class when mode is ${mode}`, () => {
+            test(`should add the appropriate create class when mode is ${mode}`, () => {
                 base.processAnnotationModeChange(mode);
 
-                expect(base.containerEl).to.have.class(className);
+                expect(base.containerEl).toHaveClass(className);
             });
         });
 
         [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
-            it(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
+            test(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
                 base.options.enableAnnotationsDiscoverability = true;
                 base.processAnnotationModeChange(mode);
 
-                expect(base.containerEl).to.not.have.class(CLASS_ANNOTATIONS_CREATE_REGION);
+                expect(base.containerEl).not.toHaveClass(constants.CLASS_ANNOTATIONS_CREATE_REGION);
             });
         });
     });

@@ -3,7 +3,7 @@ import TextLoader from '../TextLoader';
 import * as file from '../../../file';
 
 let stubFile;
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('lib/viewers/text/TextLoader', () => {
     beforeEach(() => {
@@ -31,14 +31,14 @@ describe('lib/viewers/text/TextLoader', () => {
     });
 
     describe('determineViewer()', () => {
-        it('should return viewer if file is not a Vera-protected file', () => {
-            sandbox.stub(file, 'isVeraProtectedFile').returns(false);
-            expect(TextLoader.determineViewer(stubFile)).to.equal(TextLoader.viewers[0]);
+        test('should return viewer if file is not a Vera-protected file', () => {
+            jest.spyOn(file, 'isVeraProtectedFile').mockReturnValue(false);
+            expect(TextLoader.determineViewer(stubFile)).toBe(TextLoader.viewers[0]);
         });
 
-        it('should return undefined if file is a Vera-protected file', () => {
-            sandbox.stub(file, 'isVeraProtectedFile').returns(true);
-            expect(TextLoader.determineViewer(stubFile)).to.equal(undefined);
+        test('should return undefined if file is a Vera-protected file', () => {
+            jest.spyOn(file, 'isVeraProtectedFile').mockReturnValue(true);
+            expect(TextLoader.determineViewer(stubFile)).toBeUndefined();
         });
     });
 });

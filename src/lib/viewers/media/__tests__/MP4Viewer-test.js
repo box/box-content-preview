@@ -2,15 +2,11 @@
 import MP4Viewer from '../MP4Viewer';
 import BaseViewer from '../../BaseViewer';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let mp4;
 
 describe('lib/viewers/media/MP4Viewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/MP4Viewer-test.html');
@@ -22,7 +18,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             },
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         mp4.containerEl = containerEl;
     });
 
@@ -40,9 +36,9 @@ describe('lib/viewers/media/MP4Viewer', () => {
     });
 
     describe('setup()', () => {
-        it('should have proper class added to wrapper', () => {
+        test('should have proper class added to wrapper', () => {
             mp4.setup();
-            expect(mp4.wrapperEl).to.have.class('bp-media-mp4');
+            expect(mp4.wrapperEl).toHaveClass('bp-media-mp4');
         });
     });
 });

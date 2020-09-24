@@ -12,16 +12,11 @@ import {
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
 
-const sandbox = sinon.sandbox.create();
 let containerEl;
 let stubs;
 let docPreloader;
 
 describe('lib/viewers/doc/DocPreloader', () => {
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocPreloader-test.html');
         containerEl = document.querySelector('.container');
@@ -30,65 +25,64 @@ describe('lib/viewers/doc/DocPreloader', () => {
         docPreloader = new DocPreloader({ hideLoadingIndicator: () => {} }, { api: stubs.api });
 
         docPreloader.previewUI = {
-            hideLoadingIndicator: sandbox.stub(),
+            hideLoadingIndicator: jest.fn(),
             previewContainer: document.createElement('div'),
         };
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
         fixture.cleanup();
     });
 
     describe('showPreload()', () => {
-        it('should not do anything if document is loaded', () => {
-            sandbox.stub(docPreloader, 'checkDocumentLoaded').returns(true);
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve({}));
-            sandbox.stub(docPreloader, 'bindDOMListeners');
+        test('should not do anything if document is loaded', () => {
+            jest.spyOn(docPreloader, 'checkDocumentLoaded').mockReturnValue(true);
+            jest.spyOn(stubs.api, 'get').mockResolvedValue({});
+            jest.spyOn(docPreloader, 'bindDOMListeners').mockImplementation();
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
-                expect(docPreloader.wrapperEl).to.be.undefined;
-                expect(docPreloader.bindDOMListeners).to.not.be.called;
+                expect(docPreloader.wrapperEl).toBeUndefined();
+                expect(docPreloader.bindDOMListeners).not.toBeCalled();
             });
         });
 
-        it('should set up preload DOM structure and bind image load handler', () => {
+        test('should set up preload DOM structure and bind image load handler', () => {
             const imgSrc = 'https://someblobimgsrc/';
-            sandbox.stub(URL, 'createObjectURL').returns(imgSrc);
-            sandbox.stub(docPreloader, 'bindDOMListeners');
-            sandbox.stub(stubs.api, 'get').returns(Promise.resolve({}));
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue(imgSrc);
+            jest.spyOn(docPreloader, 'bindDOMListeners').mockImplementation();
+            jest.spyOn(stubs.api, 'get').mockResolvedValue({});
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
-                expect(docPreloader.wrapperEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-                expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-                expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
-                expect(docPreloader.imageEl.src).to.equal(imgSrc);
-                expect(containerEl).to.contain(docPreloader.wrapperEl);
-                expect(docPreloader.bindDOMListeners).to.be.called;
+                expect(docPreloader.wrapperEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
+                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
+                expect(docPreloader.imageEl.src).toBe(imgSrc);
+                expect(containerEl).toContainElement(docPreloader.wrapperEl);
+                expect(docPreloader.bindDOMListeners).toBeCalled();
             });
         });
     });
 
     describe('scaleAndShowPreload()', () => {
         beforeEach(() => {
-            stubs.checkDocumentLoaded = sandbox.stub(docPreloader, 'checkDocumentLoaded');
-            stubs.emit = sandbox.stub(docPreloader, 'emit');
-            stubs.setDimensions = sandbox.stub(util, 'setDimensions');
+            stubs.checkDocumentLoaded = jest.spyOn(docPreloader, 'checkDocumentLoaded').mockImplementation();
+            stubs.emit = jest.spyOn(docPreloader, 'emit').mockImplementation();
+            stubs.setDimensions = jest.spyOn(util, 'setDimensions').mockImplementation();
             stubs.hideLoadingIndicator = docPreloader.previewUI.hideLoadingIndicator;
             docPreloader.imageEl = {};
             docPreloader.preloadEl = document.createElement('div');
         });
 
-        it('should not do anything if document is loaded', () => {
-            stubs.checkDocumentLoaded.returns(true);
+        test('should not do anything if document is loaded', () => {
+            stubs.checkDocumentLoaded.mockReturnValue(true);
 
             docPreloader.scaleAndShowPreload(1, 1, 1);
 
-            expect(stubs.setDimensions).to.not.be.called;
-            expect(stubs.hideLoadingIndicator).to.not.be.called;
+            expect(stubs.setDimensions).not.toBeCalled();
+            expect(stubs.hideLoadingIndicator).not.toBeCalled();
         });
 
-        it('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
+        test('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
             docPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
 
             const width = 100;
@@ -96,120 +90,116 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             docPreloader.scaleAndShowPreload(width, height, 1);
 
-            expect(stubs.setDimensions).to.be.calledWith(docPreloader.imageEl, width, height);
-            expect(stubs.setDimensions).to.be.calledWith(docPreloader.overlayEl, width, height);
-            expect(stubs.hideLoadingIndicator).to.be.called;
-            expect(stubs.emit).to.be.calledWith('preload');
-            expect(docPreloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);
+            expect(stubs.setDimensions).toBeCalledWith(docPreloader.imageEl, width, height);
+            expect(stubs.setDimensions).toBeCalledWith(docPreloader.overlayEl, width, height);
+            expect(stubs.hideLoadingIndicator).toBeCalled();
+            expect(stubs.emit).toBeCalledWith('preload');
+            expect(docPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
         });
 
         [5, 10, 11, 100].forEach(numPages => {
-            it('should create and set dimensions for numPages - 1 placeholders', () => {
+            test('should create and set dimensions for numPages - 1 placeholders', () => {
                 docPreloader.scaleAndShowPreload(100, 100, numPages);
 
                 // Should scale 1 preload image, one overlay, and numPages - 1 placeholders
-                expect(stubs.setDimensions).to.have.callCount(numPages + 1);
+                expect(stubs.setDimensions).toBeCalledTimes(numPages + 1);
 
-                // Should have numPages - 1 placeholder elements
-                expect(docPreloader.preloadEl).to.have.length(numPages - 1);
+                expect(docPreloader.preloadEl.children.length).toBe(numPages - 1);
             });
         });
     });
 
     describe('hidePreload()', () => {
         beforeEach(() => {
-            stubs.restoreScrollPosition = sandbox.stub(docPreloader, 'restoreScrollPosition');
-            stubs.unbindDOMListeners = sandbox.stub(docPreloader, 'unbindDOMListeners');
-            stubs.cleanupPreload = sandbox.stub(docPreloader, 'cleanupPreload');
+            stubs.restoreScrollPosition = jest.spyOn(docPreloader, 'restoreScrollPosition').mockImplementation();
+            stubs.unbindDOMListeners = jest.spyOn(docPreloader, 'unbindDOMListeners').mockImplementation();
+            stubs.cleanupPreload = jest.spyOn(docPreloader, 'cleanupPreload').mockImplementation();
         });
 
-        it('should not do anything if preload wrapper element is not present', () => {
+        test('should not do anything if preload wrapper element is not present', () => {
             docPreloader.wrapperEl = null;
             docPreloader.hidePreload();
 
-            expect(stubs.restoreScrollPosition).to.not.be.called;
-            expect(stubs.unbindDOMListeners).to.not.be.called;
+            expect(stubs.restoreScrollPosition).not.toBeCalled();
+            expect(stubs.unbindDOMListeners).not.toBeCalled();
         });
 
-        it('should restore scroll position, unbind DOM listeners, and add a transparent class to the wrapper', () => {
+        test('should restore scroll position, unbind DOM listeners, and add a transparent class to the wrapper', () => {
             docPreloader.wrapperEl = document.createElement('div');
             docPreloader.srcUrl = 'blah';
 
             docPreloader.hidePreload();
 
-            expect(docPreloader.wrapperEl).to.have.class('bp-is-transparent');
-            expect(stubs.restoreScrollPosition).to.be.called;
-            expect(stubs.unbindDOMListeners).to.be.called;
+            expect(docPreloader.wrapperEl).toHaveClass('bp-is-transparent');
+            expect(stubs.restoreScrollPosition).toBeCalled();
+            expect(stubs.unbindDOMListeners).toBeCalled();
         });
 
-        it('should clean up preload after transition ends', () => {
+        test('should clean up preload after transition ends', () => {
             docPreloader.wrapperEl = document.createElement('div');
-            sandbox.stub();
+            jest.fn();
 
             docPreloader.hidePreload();
             docPreloader.wrapperEl.dispatchEvent(new Event('transitionend'));
 
-            expect(stubs.cleanupPreload).to.be.called;
+            expect(stubs.cleanupPreload).toBeCalled();
         });
 
-        it('should clean up preload after scroll event', () => {
+        test('should clean up preload after scroll event', () => {
             docPreloader.wrapperEl = document.createElement('div');
-            sandbox.stub();
+            jest.fn();
 
             docPreloader.hidePreload();
             docPreloader.wrapperEl.dispatchEvent(new Event('scroll'));
 
-            expect(stubs.cleanupPreload).to.be.called;
+            expect(stubs.cleanupPreload).toBeCalled();
         });
     });
 
     describe('cleanupPreload()', () => {
-        it('should remove wrapper, clear out preload and image element, and revoke object URL', () => {
+        test('should remove wrapper, clear out preload and image element, and revoke object URL', () => {
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+
             docPreloader.wrapperEl = document.createElement('div');
             docPreloader.preloadEl = document.createElement('div');
             docPreloader.imageEl = document.createElement('img');
             docPreloader.srcUrl = 'blah';
             containerEl.appendChild(docPreloader.wrapperEl);
 
-            sandbox
-                .mock(URL)
-                .expects('revokeObjectURL')
-                .withArgs(docPreloader.srcUrl);
-
             docPreloader.cleanupPreload();
 
-            expect(docPreloader.preloadEl).to.be.undefined;
-            expect(docPreloader.imageEl).to.be.undefined;
-            expect(containerEl).to.not.contain(docPreloader.wrapperEl);
+            expect(docPreloader.preloadEl).toBeUndefined();
+            expect(docPreloader.imageEl).toBeUndefined();
+            expect(containerEl).not.toContain(docPreloader.wrapperEl);
         });
     });
 
     describe('bindDOMListeners()', () => {
-        it('should bind load event listener to image element', () => {
+        test('should bind load event listener to image element', () => {
             docPreloader.imageEl = {
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             };
 
             docPreloader.bindDOMListeners();
 
-            expect(docPreloader.imageEl.addEventListener).to.be.calledWith('load', docPreloader.loadHandler);
+            expect(docPreloader.imageEl.addEventListener).toBeCalledWith('load', docPreloader.loadHandler);
         });
     });
 
     describe('unbindDOMListeners()', () => {
-        it('should unbind load event listener to image element', () => {
+        test('should unbind load event listener to image element', () => {
             docPreloader.imageEl = {
-                removeEventListener: sandbox.stub(),
+                removeEventListener: jest.fn(),
             };
 
             docPreloader.unbindDOMListeners();
 
-            expect(docPreloader.imageEl.removeEventListener).to.be.calledWith('load', docPreloader.loadHandler);
+            expect(docPreloader.imageEl.removeEventListener).toBeCalledWith('load', docPreloader.loadHandler);
         });
     });
 
     describe('restoreScrollPosition()', () => {
-        it('should set the document scrollTop to be the same as the preload wrapper scrollTop', () => {
+        test('should set the document scrollTop to be the same as the preload wrapper scrollTop', () => {
             const longDiv = document.createElement('div');
             longDiv.style.height = '200px';
 
@@ -237,37 +227,36 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             docPreloader.restoreScrollPosition();
 
-            // Check that fake pdf.js document is scrolled to same position
-            expect(docEl.scrollTop).to.equal(50);
+            expect(docEl.scrollTop).toBe(50);
         });
     });
 
     describe('loadHandler()', () => {
         beforeEach(() => {
-            stubs.readEXIF = sandbox.stub(docPreloader, 'readEXIF');
-            stubs.getScaledDimensions = sandbox.stub(docPreloader, 'getScaledDimensions');
-            stubs.scaleAndShowPreload = sandbox.stub(docPreloader, 'scaleAndShowPreload');
+            stubs.readEXIF = jest.spyOn(docPreloader, 'readEXIF').mockImplementation();
+            stubs.getScaledDimensions = jest.spyOn(docPreloader, 'getScaledDimensions').mockImplementation();
+            stubs.scaleAndShowPreload = jest.spyOn(docPreloader, 'scaleAndShowPreload').mockImplementation();
         });
 
-        it('should not do anything if preload element or image element do not exist', () => {
+        test('should not do anything if preload element or image element do not exist', () => {
             docPreloader.preloadEl = null;
             docPreloader.imageEl = {};
             docPreloader.loadHandler();
 
-            expect(stubs.readEXIF).to.not.be.called;
+            expect(stubs.readEXIF).not.toBeCalled();
 
             docPreloader.preloadEl = {};
             docPreloader.imageEl = null;
             docPreloader.loadHandler();
 
-            expect(stubs.readEXIF).to.not.be.called;
+            expect(stubs.readEXIF).not.toBeCalled();
         });
 
-        it('should read EXIF, calculate scaled dimensions, and show preload', () => {
+        test('should read EXIF, calculate scaled dimensions, and show preload', () => {
             const pdfWidth = 100;
             const pdfHeight = 100;
             const numPages = 10;
-            stubs.readEXIF.returns(
+            stubs.readEXIF.mockReturnValue(
                 Promise.resolve({
                     pdfWidth,
                     pdfHeight,
@@ -277,7 +266,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             const scaledWidth = 200;
             const scaledHeight = 200;
-            stubs.getScaledDimensions.returns({
+            stubs.getScaledDimensions.mockReturnValue({
                 scaledWidth,
                 scaledHeight,
             });
@@ -285,14 +274,14 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.preloadEl = {};
             docPreloader.imageEl = {};
             return docPreloader.loadHandler().then(() => {
-                expect(stubs.getScaledDimensions).to.be.calledWith(pdfWidth, pdfHeight);
-                expect(stubs.scaleAndShowPreload).to.be.calledWith(scaledWidth, scaledHeight, numPages);
+                expect(stubs.getScaledDimensions).toBeCalledWith(pdfWidth, pdfHeight);
+                expect(stubs.scaleAndShowPreload).toBeCalledWith(scaledWidth, scaledHeight, numPages);
             });
         });
 
-        it('should only show up to NUM_PAGES_MAX pages', () => {
+        test('should only show up to NUM_PAGES_MAX pages', () => {
             const NUM_PAGES_MAX = 500;
-            stubs.readEXIF.returns(
+            stubs.readEXIF.mockReturnValue(
                 Promise.resolve({
                     pdfWidth: 100,
                     pdfHeight: 100,
@@ -300,7 +289,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 }),
             );
 
-            stubs.getScaledDimensions.returns({
+            stubs.getScaledDimensions.mockReturnValue({
                 scaledWidth: 200,
                 scaledHeight: 200,
             });
@@ -308,13 +297,13 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.preloadEl = {};
             docPreloader.imageEl = {};
             return docPreloader.loadHandler().then(() => {
-                expect(stubs.scaleAndShowPreload).to.be.calledWith(sinon.match.any, sinon.match.any, NUM_PAGES_MAX);
+                expect(stubs.scaleAndShowPreload).toBeCalledWith(200, 200, NUM_PAGES_MAX);
             });
         });
 
-        it('should fall back to naturalWidth and naturalHeight if reading EXIF fails', () => {
-            stubs.readEXIF.returns(Promise.reject());
-            stubs.getScaledDimensions.returns({
+        test('should fall back to naturalWidth and naturalHeight if reading EXIF fails', () => {
+            stubs.readEXIF.mockReturnValue(Promise.reject());
+            stubs.getScaledDimensions.mockReturnValue({
                 scaledWidth: 200,
                 scaledHeight: 200,
             });
@@ -329,7 +318,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             };
 
             return docPreloader.loadHandler().then(() => {
-                expect(stubs.getScaledDimensions).to.be.calledWith(naturalWidth, naturalHeight);
+                expect(stubs.getScaledDimensions).toBeCalledWith(naturalWidth, naturalHeight);
             });
         });
     });
@@ -337,29 +326,33 @@ describe('lib/viewers/doc/DocPreloader', () => {
     describe('getScaledDimensions()', () => {
         beforeEach(() => {
             docPreloader.wrapperEl = document.createElement('div');
+
+            Object.defineProperty(docPreloader.wrapperEl, 'clientHeight', { value: 0, writable: true });
+            Object.defineProperty(docPreloader.wrapperEl, 'clientWidth', { value: 0, writable: true });
+
             containerEl.appendChild(docPreloader.wrapperEl);
         });
 
-        it('should scale up to a max defined by maxZoomScale', () => {
+        test('should scale up to a max defined by maxZoomScale', () => {
             const clientWidth = 500;
             const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+            docPreloader.wrapperEl.clientWidth = clientWidth;
+            docPreloader.wrapperEl.clientHeight = clientHeight;
             const expectedScale = 1.25;
             docPreloader.maxZoomScale = expectedScale;
 
             const scaledDimensions = docPreloader.getScaledDimensions(100, 100);
-            expect(scaledDimensions).to.deep.equal({
+            expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * 100),
                 scaledHeight: Math.floor(expectedScale * 100),
             });
         });
 
-        it('should scale with height scale if in landscape and height scale is less than width scale', () => {
+        test('should scale with height scale if in landscape and height scale is less than width scale', () => {
             const clientWidth = 1000;
             const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+            docPreloader.wrapperEl.clientWidth = clientWidth;
+            docPreloader.wrapperEl.clientHeight = clientHeight;
 
             const pdfWidth = 1000;
             const pdfHeight = 600;
@@ -367,17 +360,17 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             // Expect height scale to be used
             const expectedScale = (clientHeight - 5) / pdfHeight;
-            expect(scaledDimensions).to.deep.equal({
+            expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
             });
         });
 
-        it('should scale with width scale if in landscape and width scale is less than height scale', () => {
+        test('should scale with width scale if in landscape and width scale is less than height scale', () => {
             const clientWidth = 1000;
             const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+            docPreloader.wrapperEl.clientWidth = clientWidth;
+            docPreloader.wrapperEl.clientHeight = clientHeight;
 
             const pdfWidth = 1000;
             const pdfHeight = 500;
@@ -385,17 +378,17 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             // Expect width scale to be used
             const expectedScale = (clientWidth - 40) / pdfWidth;
-            expect(scaledDimensions).to.deep.equal({
+            expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
             });
         });
 
-        it('should scale with width scale if not in landscape', () => {
+        test('should scale with width scale if not in landscape', () => {
             const clientWidth = 600;
             const clientHeight = 1100;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+            docPreloader.wrapperEl.clientWidth = clientWidth;
+            docPreloader.wrapperEl.clientHeight = clientHeight;
 
             const pdfWidth = 500;
             const pdfHeight = 1000;
@@ -403,7 +396,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             // Expect width scale to be used
             const expectedScale = (clientWidth - 40) / pdfWidth;
-            expect(scaledDimensions).to.deep.equal({
+            expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
             });
@@ -420,32 +413,32 @@ describe('lib/viewers/doc/DocPreloader', () => {
             };
         });
 
-        it('should return a promise that eventually rejects if there is an error reading EXIF', () => {
+        test('should return a promise that eventually rejects if there is an error reading EXIF', () => {
             window.EXIF = {
                 getData: (imageEl, func) => {
                     func();
                 },
-                getTag: sandbox.stub().returns(''),
+                getTag: jest.fn().mockReturnValue(''),
             };
             docPreloader
                 .readEXIF(fakeImageEl)
-                .then(() => Assert.fail())
+                .then(() => fail())
                 .catch(err => {
-                    expect(err).to.be.an('error');
+                    expect(err).toBeInstanceOf(Error);
                 });
         });
 
-        it('should return a promise that eventually rejects if EXIF parser is not available', () => {
+        test('should return a promise that eventually rejects if EXIF parser is not available', () => {
             window.EXIF = null;
             return docPreloader
                 .readEXIF(fakeImageEl)
-                .then(() => Assert.fail())
+                .then(() => fail())
                 .catch(err => {
-                    expect(err).to.be.an('error');
+                    expect(err).toBeInstanceOf(Error);
                 });
         });
 
-        it('should return a promise that eventually rejects if num pages is not valid', () => {
+        test('should return a promise that eventually rejects if num pages is not valid', () => {
             const pdfWidth = 100;
             const pdfHeight = 200;
             const numPages = 0;
@@ -457,18 +450,18 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getData: (imageEl, func) => {
                     func();
                 },
-                getTag: sandbox.stub().returns(exifRawArray),
+                getTag: jest.fn().mockReturnValue(exifRawArray),
             };
 
             return docPreloader
                 .readEXIF(fakeImageEl)
-                .then(() => Assert.fail())
+                .then(() => fail())
                 .catch(err => {
-                    expect(err).to.be.an('error');
+                    expect(err).toBeInstanceOf(Error);
                 });
         });
 
-        it('should return a promise that eventually rejects if image dimensions are invalid', () => {
+        test('should return a promise that eventually rejects if image dimensions are invalid', () => {
             const pdfWidth = 100;
             const pdfHeight = 1000;
             const numPages = 30;
@@ -480,18 +473,18 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getData: (imageEl, func) => {
                     func();
                 },
-                getTag: sandbox.stub().returns(exifRawArray),
+                getTag: jest.fn().mockReturnValue(exifRawArray),
             };
 
             return docPreloader
                 .readEXIF(fakeImageEl)
-                .then(() => Assert.fail())
+                .then(() => fail())
                 .catch(err => {
-                    expect(err).to.be.an('error');
+                    expect(err).toBeInstanceOf(Error);
                 });
         });
 
-        it('should return a promise that eventually resolves with pdf width, height, and number of pages if EXIF is successfully read', () => {
+        test('should return a promise that eventually resolves with pdf width, height, and number of pages if EXIF is successfully read', () => {
             const pdfWidth = 100;
             const pdfHeight = 200;
             const numPages = 30;
@@ -503,22 +496,22 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getData: (imageEl, func) => {
                     func();
                 },
-                getTag: sandbox.stub().returns(exifRawArray),
+                getTag: jest.fn().mockReturnValue(exifRawArray),
             };
 
             return docPreloader
                 .readEXIF(fakeImageEl)
                 .then(response => {
-                    response.should.deep.equal({
+                    expect(response).toEqual({
                         pdfWidth: pdfWidth * PDFJS_CSS_UNITS,
                         pdfHeight: pdfHeight * PDFJS_CSS_UNITS,
                         numPages,
                     });
                 })
-                .catch(() => Assert.fail());
+                .catch(() => fail());
         });
 
-        it('should return a promise that eventually resolves with swapped pdf width and height if PDF data is rotated', () => {
+        test('should return a promise that eventually resolves with swapped pdf width and height if PDF data is rotated', () => {
             const pdfWidth = 200;
             const pdfHeight = 100;
             const numPages = 30;
@@ -530,19 +523,19 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getData: (imageEl, func) => {
                     func();
                 },
-                getTag: sandbox.stub().returns(exifRawArray),
+                getTag: jest.fn().mockReturnValue(exifRawArray),
             };
 
             return docPreloader
                 .readEXIF(fakeImageEl)
                 .then(response => {
-                    response.should.deep.equal({
+                    expect(response).toEqual({
                         pdfWidth: pdfHeight * PDFJS_CSS_UNITS,
                         pdfHeight: pdfWidth * PDFJS_CSS_UNITS,
                         numPages,
                     });
                 })
-                .catch(() => Assert.fail());
+                .catch(() => fail());
         });
     });
 
@@ -551,57 +544,57 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.previewUI.previewContainer = document.createElement('div');
         });
 
-        it('should hide preload and return true if container element does have loaded class', () => {
+        test('should hide preload and return true if container element does have loaded class', () => {
+            jest.spyOn(docPreloader, 'hidePreload').mockImplementation();
             docPreloader.previewUI.previewContainer.classList.add(CLASS_PREVIEW_LOADED);
-            sandbox.mock(docPreloader).expects('hidePreload');
-            expect(docPreloader.checkDocumentLoaded()).to.be.true;
+            expect(docPreloader.checkDocumentLoaded()).toBe(true);
         });
 
-        it('should return false if container element does not have loaded class', () => {
-            expect(docPreloader.checkDocumentLoaded()).to.be.false;
+        test('should return false if container element does not have loaded class', () => {
+            expect(docPreloader.checkDocumentLoaded()).toBe(false);
         });
     });
 
     describe('resize()', () => {
         beforeEach(() => {
-            sandbox.stub(docPreloader, 'getScaledWidthAndHeight').returns({
+            jest.spyOn(docPreloader, 'getScaledWidthAndHeight').mockReturnValue({
                 scaledWidth: 1000,
                 scaledHeight: 800,
             });
-            sandbox.stub(docPreloader, 'getScaledDimensions').returns({
+            jest.spyOn(docPreloader, 'getScaledDimensions').mockReturnValue({
                 scaledWidth: 1000,
                 scaledHeight: 800,
             });
-            sandbox.stub(util, 'setDimensions');
+            jest.spyOn(util, 'setDimensions').mockImplementation();
             docPreloader.preloadEl = document.createElement('div');
             docPreloader.preloadEl.innerHTML = `<img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" /><div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" />`;
         });
 
-        it('should short circuit if there is no preload element to resize', () => {
+        test('should short circuit if there is no preload element to resize', () => {
             docPreloader.preloadEl = null;
             docPreloader.resize();
-            expect(docPreloader.getScaledWidthAndHeight).to.not.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).not.toBeCalled();
         });
 
-        it('should short circuit if there is no pdf data or image element', () => {
+        test('should short circuit if there is no pdf data or image element', () => {
             docPreloader.pdfData = null;
             docPreloader.imageEl = null;
             docPreloader.resize();
-            expect(docPreloader.getScaledWidthAndHeight).to.not.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).not.toBeCalled();
         });
 
-        it('should prefer to resize using the pdfData', () => {
+        test('should prefer to resize using the pdfData', () => {
             docPreloader.pdfData = {
                 pdfWidth: 800,
                 pdfHeight: 600,
             };
 
             docPreloader.resize();
-            expect(docPreloader.getScaledWidthAndHeight).to.be.called;
-            expect(docPreloader.getScaledDimensions).not.to.be.called;
+            expect(docPreloader.getScaledWidthAndHeight).toBeCalled();
+            expect(docPreloader.getScaledDimensions).not.toBeCalled();
         });
 
-        it('should resize using image element dimensions if available', () => {
+        test('should resize using image element dimensions if available', () => {
             docPreloader.pdfData = null;
             docPreloader.imageEl = {
                 naturalWidth: 800,
@@ -609,18 +602,18 @@ describe('lib/viewers/doc/DocPreloader', () => {
             };
 
             docPreloader.resize();
-            expect(docPreloader.getScaledDimensions).to.be.called;
-            expect(docPreloader.getScaledWidthAndHeight).not.to.be.called;
+            expect(docPreloader.getScaledDimensions).toBeCalled();
+            expect(docPreloader.getScaledWidthAndHeight).not.toBeCalled();
         });
 
-        it('should resize all the elements', () => {
+        test('should resize all the elements', () => {
             docPreloader.pdfData = {
                 pdfWidth: 800,
                 pdfHeight: 600,
             };
             docPreloader.resize();
-            expect(docPreloader.getScaledWidthAndHeight).to.be.called;
-            expect(util.setDimensions).to.be.calledTwice;
+            expect(docPreloader.getScaledWidthAndHeight).toBeCalled();
+            expect(util.setDimensions).toBeCalledTimes(2);
         });
     });
 
@@ -634,13 +627,13 @@ describe('lib/viewers/doc/DocPreloader', () => {
             pdfHeight: 600,
         };
         beforeEach(() => {
-            sandbox.stub(docPreloader, 'getScaledDimensions').returns(scaledDimensions);
+            jest.spyOn(docPreloader, 'getScaledDimensions').mockReturnValue(scaledDimensions);
         });
 
-        it('should return the scaled width and height', () => {
+        test('should return the scaled width and height', () => {
             const scaledWidthAndHeight = docPreloader.getScaledWidthAndHeight(pdfData);
-            expect(docPreloader.getScaledDimensions).to.be.calledWith(pdfData.pdfWidth, pdfData.pdfHeight);
-            expect(scaledWidthAndHeight).to.deep.equal(scaledDimensions);
+            expect(docPreloader.getScaledDimensions).toBeCalledWith(pdfData.pdfWidth, pdfData.pdfHeight);
+            expect(scaledWidthAndHeight).toEqual(scaledDimensions);
         });
     });
 });

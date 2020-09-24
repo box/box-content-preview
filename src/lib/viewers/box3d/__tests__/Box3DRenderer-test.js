@@ -2,22 +2,24 @@
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../Box3DRenderer';
 import { EVENT_SHOW_VR_BUTTON, EVENT_WEBGL_CONTEXT_RESTORED } from '../box3DConstants';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
 
-const sandbox = sinon.sandbox.create();
+// eslint-disable-next-line import/no-dynamic-require
+const Box3DRuntime = require(`../../../../third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/box3d-runtime.min.js`);
+
+const sandbox = sinon.createSandbox();
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
 
 let containerEl;
 let renderer;
-let stubs = {};
 
 describe('lib/viewers/box3d/Box3DRenderer', () => {
-    before(() => {
-        fixture.setBase('src/lib');
+    beforeAll(() => {
+        global.Box3D = Box3DRuntime;
     });
 
     beforeEach(() => {
         fixture.load('viewers/box3d/__tests__/Box3DRenderer-test.html');
-        stubs.THREE = sandbox.stub(window, 'THREE');
         containerEl = document.querySelector('.container');
         renderer = new Box3DRenderer(containerEl, {});
     });
@@ -26,7 +28,6 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         renderer = null;
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        stubs = {};
 
         if (renderer && typeof renderer.destroy === 'function') {
             renderer.destroy();
@@ -36,51 +37,55 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     });
 
     describe('constructor()', () => {
-        it('should correctly set container element, BoxSDK and add a render event listener', () => {
-            expect(renderer.containerEl).to.equal(containerEl);
-            expect(renderer.boxSdk).to.exist;
-            expect(renderer._events).to.exist;
+        test('should correctly set container element, BoxSDK and add a render event listener', () => {
+            expect(renderer.containerEl).toEqual(containerEl);
+            expect(renderer.boxSdk).toBeDefined();
+            expect(renderer._events).toBeDefined();
         });
     });
 
     describe('destroy()', () => {
+        const stubs = {};
+
         beforeEach(() => {
-            renderer.box3d = {
-                destroy: () => {},
+            stubs.box3d = {
+                destroy: jest.fn(),
             };
+            renderer.box3d = stubs.box3d;
+            renderer.disableVr = jest.fn();
         });
 
-        it('should call destroy on the engine', () => {
-            sandbox.mock(renderer.box3d).expects('destroy');
+        test('should call destroy on the engine', () => {
             renderer.destroy();
+
+            expect(stubs.box3d.destroy).toBeCalled();
         });
 
-        it('should fully shutdown by disabling vr and unbinding events ', () => {
-            sandbox.mock(renderer).expects('disableVr');
+        test('should fully shutdown by disabling vr and unbinding events ', () => {
             renderer.destroy();
+
+            expect(renderer.disableVr).toBeCalled();
         });
 
-        it('should not call Box3D cleanup path if no Box3D engine', () => {
-            sandbox
-                .mock(renderer)
-                .expects('disableVr')
-                .never();
+        test('should not call Box3D cleanup path if no Box3D engine', () => {
             renderer.box3d = null;
             renderer.destroy();
+
+            expect(renderer.disableVr).not.toBeCalled();
         });
 
-        it('should remove the reference to box3d', () => {
+        test('should remove the reference to box3d', () => {
             renderer.destroy();
 
-            expect(renderer.box3d).to.not.exist;
+            expect(renderer.box3d).toBeNull();
         });
     });
 
     describe('load()', () => {
-        it('should return a promise', () => {
+        test('should return a promise', () => {
             // We don't care about the error, but we'll catch it
-            const loadPromise = renderer.load().catch(() => {});
-            expect(loadPromise).to.be.a('promise');
+            const loadPromise = renderer.load().catch(jest.fn());
+            expect(loadPromise).toBeInstanceOf(Promise);
         });
     });
 
@@ -89,19 +94,19 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         let cameraMock;
         beforeEach(() => {
             camera = {
-                setPosition: () => {},
-                setQuaternion: () => {},
-                trigger: () => {},
+                setPosition: jest.fn(),
+                setQuaternion: jest.fn(),
+                trigger: jest.fn(),
             };
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns(camera),
+                getObjectByClass: jest.fn().mockReturnValue(camera),
             };
             renderer.savedCameraPosition = { x: 0, y: 0, z: 0 };
             renderer.savedCameraQuaternion = { x: 0, y: 0, z: 0, w: 1 };
             cameraMock = sandbox.mock(camera);
         });
 
-        it('should set camera position and orientation to default values', () => {
+        test('should set camera position and orientation to default values', () => {
             cameraMock.expects('setPosition');
             cameraMock.expects('setQuaternion');
 
@@ -110,106 +115,106 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     });
 
     describe('getCamera()', () => {
-        it('should return a camera object if one exists in the scene', () => {
+        test('should return a camera object if one exists in the scene', () => {
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns({}),
+                getObjectByClass: jest.fn().mockReturnValue({}),
             };
 
             const camera = renderer.getCamera();
-            expect(camera).to.exist;
+            expect(camera).toBeDefined();
         });
 
-        it('should return null if no scene present', () => {
+        test('should return null if no scene present', () => {
             const camera = renderer.getCamera();
-            expect(camera).to.not.exist;
+            expect(camera).toBeNull();
         });
     });
 
     describe('getScene()', () => {
-        it('should return the scene prefab that exists in the Box3D runtime', () => {
+        test('should return the scene prefab that exists in the Box3D runtime', () => {
             renderer.box3d = {
-                getObjectByClass: sandbox.stub().returns({}),
+                getObjectByClass: jest.fn().mockReturnValue({}),
             };
 
             const scene = renderer.getScene();
-            expect(scene).to.exist;
+            expect(scene).toBeDefined();
         });
 
-        it('should return null if the Box3D runtime is missing', () => {
+        test('should return null if the Box3D runtime is missing', () => {
             const scene = renderer.getScene();
-            expect(scene).to.not.exist;
+            expect(scene).toBeNull();
         });
     });
 
     describe('getBox3D()', () => {
-        it('should return whatever exists in the box3d reference', () => {
-            expect(renderer.getBox3D()).to.not.exist;
+        test('should return whatever exists in the box3d reference', () => {
+            expect(renderer.getBox3D()).not.toBeDefined();
 
             renderer.box3d = {};
-            expect(renderer.getBox3D()).to.be.an('object');
+            expect(typeof renderer.getBox3D()).toBe('object');
 
             renderer.box3d = 'foo';
-            expect(renderer.getBox3D()).to.be.a('string');
+            expect(typeof renderer.getBox3D()).toBe('string');
         });
     });
 
     describe('configureXHR()', () => {
-        it('should return a Promise', () => {
+        test('should return a Promise', () => {
             const promise = renderer.configureXHR({}, 'path/to/stuff.jpg', { isExternal: true });
-            expect(promise).to.be.a('promise');
+            expect(promise).toBeInstanceOf(Promise);
         });
 
-        it('should return a Promise that resolves in an XMLHttpRequest object', done => {
+        test('should return a Promise that resolves in an XMLHttpRequest object', done => {
             const promise = renderer.configureXHR({}, 'path/to/stuff.wav', { isExternal: true });
             promise.then(xhr => {
-                expect(xhr).to.be.an('XMLHttpRequest');
+                expect(xhr).toBeInstanceOf(XMLHttpRequest);
                 done();
             });
         });
 
-        it('should invoke .open() on the XMLHttpRequest object, with "GET" and the provided path', () => {
-            const openSpy = sandbox.spy(XMLHttpRequest.prototype, 'open');
+        test('should invoke .open() on the XMLHttpRequest object, with "GET" and the provided path', () => {
+            const openSpy = jest.spyOn(XMLHttpRequest.prototype, 'open');
             const path = 'path/to/resource.psd';
             renderer.configureXHR({}, path, { isExternal: true });
 
-            expect(openSpy).to.be.calledWith('GET', path);
+            expect(openSpy).toBeCalledWith('GET', path);
         });
 
-        it('should append "Authorization" request header to the XHR with the provided auth token', () => {
-            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+        test('should append "Authorization" request header to the XHR with the provided auth token', () => {
+            const setReqHeaderSpy = jest.spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
             const token = 'ABCDEFG';
             const expectedAuthHeaderValue = `Bearer ${token}`;
 
             renderer.configureXHR({ token }, 'a/path/tp/stuff.gif', { isExternal: false });
 
-            expect(setReqHeaderSpy).to.be.calledWith('Authorization', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).toBeCalledWith('Authorization', expectedAuthHeaderValue);
         });
 
-        it('should append "boxapi" request header to the XHR with the provided shared link', () => {
-            sandbox.stub(window, 'encodeURI').callsFake(uri => {
+        test('should append "boxapi" request header to the XHR with the provided shared link', () => {
+            jest.spyOn(window, 'encodeURI').mockImplementation(uri => {
                 return uri;
             });
-            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+            const setReqHeaderSpy = jest.spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
             const sharedLink = 'abcde';
             const expectedAuthHeaderValue = `shared_link=${sharedLink}`;
 
             renderer.configureXHR({ sharedLink, token: 'asdf' }, 'some/path.png');
 
-            expect(setReqHeaderSpy).to.be.calledWith('boxapi', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).toBeCalledWith('boxapi', expectedAuthHeaderValue);
         });
 
-        it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
-            sandbox.stub(window, 'encodeURI').callsFake(uri => {
+        test('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
+            jest.spyOn(window, 'encodeURI').mockImplementation(uri => {
                 return uri;
             });
-            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+            const setReqHeaderSpy = jest.spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
             const sharedLink = 'abcde';
             const sharedLinkPassword = '!!myP455w0rD';
             const expectedAuthHeaderValue = `shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}`;
 
             renderer.configureXHR({ sharedLink, sharedLinkPassword, token: 'asdf' }, 'some/path.png');
 
-            expect(setReqHeaderSpy).to.be.calledWith('boxapi', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).toBeCalledWith('boxapi', expectedAuthHeaderValue);
         });
     });
 
@@ -225,53 +230,53 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 window.Box3D = box3D;
             });
 
-            it('should fail when no global Box3D present', done => {
+            test('should fail when no global Box3D present', done => {
                 window.Box3D = undefined;
                 const rejected = renderer.initBox3d();
 
-                expect(rejected).to.be.a('promise');
+                expect(rejected).toBeInstanceOf(Promise);
 
                 rejected.catch(err => {
-                    expect(err).to.be.an('error');
-                    expect(err.message).to.equal('Missing Box3D');
+                    expect(err).toBeInstanceOf(Error);
+                    expect(err.message).toBe('Missing Box3D');
                     done();
                 });
             });
         });
 
         describe('with global Box3D', () => {
-            it('should fail when missing file property on option', done => {
+            test('should fail when missing file property on option', done => {
                 const rejected = renderer.initBox3d({});
 
-                expect(rejected).to.be.a('promise');
+                expect(rejected).toBeInstanceOf(Promise);
 
                 rejected.catch(err => {
-                    expect(err).to.be.an('error');
-                    expect(err.message).to.equal('Missing file version');
+                    expect(err).toBeInstanceOf(Error);
+                    expect(err.message).toBe('Missing file version');
                     done();
                 });
             });
 
-            it('should fail when file option is missing version property', done => {
+            test('should fail when file option is missing version property', done => {
                 const rejected = renderer.initBox3d({ file: {} });
 
-                expect(rejected).to.be.a('promise');
+                expect(rejected).toBeInstanceOf(Promise);
 
                 rejected.catch(err => {
-                    expect(err).to.be.an('error');
-                    expect(err.message).to.equal('Missing file version');
+                    expect(err).toBeInstanceOf(Error);
+                    expect(err.message).toBe('Missing file version');
                     done();
                 });
             });
 
-            it('should create a new box3d instance', done => {
+            test('should create a new box3d instance', done => {
                 const expectedEntities = {
                     one: 'a',
                     two: 'b',
                 };
 
-                sandbox.stub(renderer, 'createBox3d').callsFake((loader, entities) => {
-                    expect(entities).to.deep.equal(expectedEntities);
+                jest.spyOn(renderer, 'createBox3d').mockImplementation((loader, entities) => {
+                    expect(entities).toBe(expectedEntities);
                     done();
                 });
 
@@ -281,17 +286,17 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 });
             });
 
-            it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', done => {
-                const createBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake(loader => {
-                    sandbox.stub(loader.queue, 'add').callsFake(fn => fn());
+            test('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', done => {
+                const createBox3DStub = jest.spyOn(renderer, 'createBox3d').mockImplementation(loader => {
+                    jest.spyOn(loader.queue, 'add').mockImplementation(fn => fn());
                     const resource = {
                         once: (event, cb) => cb(),
                     };
-                    sandbox.stub(loader, 'load').callsFake(() => resource);
+                    jest.spyOn(loader, 'load').mockImplementation(() => resource);
 
                     loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
-                    expect(createBox3DStub).to.be.called;
+                    expect(createBox3DStub).toBeCalled();
                     done();
                 });
 
@@ -317,7 +322,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = box3D;
         });
 
-        it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new Box3D', done => {
+        test('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new Box3D', done => {
             const loader = { name: 'loader' };
             const entities = { name: 'entities' };
             const expectedInitProps = {
@@ -330,8 +335,8 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             const Box3DFake = {
                 Engine: function contructor(props) {
                     initProps = props;
-                    this.addEntities = sandbox.stub();
-                    this.getAssetByClass = sandbox.stub().returns({
+                    this.addEntities = jest.fn();
+                    this.getAssetByClass = jest.fn().mockReturnValue({
                         load: function load() {},
                     });
                 },
@@ -339,18 +344,18 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = Box3DFake;
 
             const callPromise = renderer.createBox3d(loader, entities, [], 'dummyBase').then(b3d => {
-                expect(b3d).to.be.an.instanceof(window.Box3D.Engine);
-                expect(initProps).to.deep.equal(expectedInitProps);
-                expect(callPromise).to.be.a('promise');
+                expect(b3d).toBeInstanceOf(window.Box3D.Engine);
+                expect(initProps).toEqual(expectedInitProps);
+                expect(callPromise).toBeInstanceOf(Promise);
                 done();
             });
         });
 
-        it('should return a promise', () => {
+        test('should return a promise', () => {
             const Box3DFake = {
                 Engine: function constructor() {
-                    this.addEntities = sandbox.stub();
-                    this.getAssetById = sandbox.stub().returns({
+                    this.addEntities = jest.fn();
+                    this.getAssetById = jest.fn().mockReturnValue({
                         load: function load() {},
                     });
                 },
@@ -358,33 +363,33 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = Box3DFake;
 
             // We don't care about the error
-            const shouldBePromise = renderer.createBox3d({}, {}).catch(() => {});
-            expect(shouldBePromise).to.be.a('promise');
+            const shouldBePromise = renderer.createBox3d({}, {}).catch(jest.fn());
+            expect(shouldBePromise).toBeInstanceOf(Promise);
         });
 
-        it('should bind to context loss and restore events', done => {
-            sandbox.stub(renderer, 'handleContextRestored');
+        test('should bind to context loss and restore events', done => {
+            jest.spyOn(renderer, 'handleContextRestored');
             const Box3DFake = {
                 Engine: function constructor() {
-                    this.addEntities = sandbox.stub();
-                    this.getAssetByClass = sandbox.stub().returns({
+                    this.addEntities = jest.fn();
+                    this.getAssetByClass = jest.fn().mockReturnValue({
                         load: function load() {},
                     });
-                    this.canvas = { addEventListener: () => {} };
-                    sandbox.stub(this.canvas, 'addEventListener').callsFake(() => {
+                    this.canvas = { addEventListener: jest.fn() };
+                    jest.spyOn(this.canvas, 'addEventListener').mockImplementation(() => {
                         renderer.handleContextRestored();
                     });
                 },
             };
             window.Box3D = Box3DFake;
             renderer.createBox3d({}, {}).then(() => {
-                expect(renderer.box3d.canvas.addEventListener).to.be.called.twice;
-                expect(renderer.handleContextRestored).to.be.called;
+                expect(renderer.box3d.canvas.addEventListener).toBeCalledTimes(2);
+                expect(renderer.handleContextRestored).toBeCalled();
                 done();
             });
         });
 
-        it('should not set reference if error occurs initializing engine', done => {
+        test('should not set reference if error occurs initializing engine', done => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.addEntities = function addEntities() {
@@ -395,12 +400,12 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = Box3DFake;
 
             renderer.createBox3d({}, {}).catch(() => {
-                expect(renderer.box3d).to.not.exist;
+                expect(renderer.box3d).not.toBeDefined();
                 done();
             });
         });
 
-        it('should not set reference if error loading app', done => {
+        test('should not set reference if error loading app', done => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.initialize = function initialize(props, callback) {
@@ -419,14 +424,14 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             window.Box3D = Box3DFake;
 
             renderer.createBox3d({}, {}).catch(() => {
-                expect(renderer.box3d).to.not.exist;
+                expect(renderer.box3d).not.toBeDefined();
                 done();
             });
         });
     });
 
     describe('onSceneLoad()', () => {
-        it('should emit a scene loaded event and init VR mode if present', () => {
+        test('should emit a scene loaded event and init VR mode if present', () => {
             const mock = sandbox.mock(renderer);
             mock.expects('emit').withArgs('sceneLoaded');
             mock.expects('initVr');
@@ -435,33 +440,33 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     });
 
     describe('handleContextRestored()', () => {
-        it('should fire event to be picked up by the viewer', () => {
-            const emitStub = sandbox.stub(renderer, 'emit').callsFake(eventName => {
-                expect(eventName).to.equal(EVENT_WEBGL_CONTEXT_RESTORED);
+        test('should fire event to be picked up by the viewer', () => {
+            const emitStub = jest.spyOn(renderer, 'emit').mockImplementation(eventName => {
+                expect(eventName).toBe(EVENT_WEBGL_CONTEXT_RESTORED);
             });
             renderer.handleContextRestored();
-            expect(emitStub).to.be.called;
+            expect(emitStub).toBeCalled();
         });
     });
 
     describe('toggleVr()', () => {
-        it("should enable vr if it's currently disabled", () => {
+        test("should enable vr if it's currently disabled", () => {
             let called = false;
-            sandbox.stub(renderer, 'enableVr').callsFake(() => {
+            jest.spyOn(renderer, 'enableVr').mockImplementation(() => {
                 called = true;
             });
             renderer.toggleVr();
-            expect(called).to.be.true;
+            expect(called).toBe(true);
         });
 
-        it("should disable vr if it's currently enabled", () => {
+        test("should disable vr if it's currently enabled", () => {
             let called = false;
-            sandbox.stub(renderer, 'disableVr').callsFake(() => {
+            jest.spyOn(renderer, 'disableVr').mockImplementation(() => {
                 called = true;
             });
             renderer.vrEnabled = true;
             renderer.toggleVr();
-            expect(called).to.be.true;
+            expect(called).toBe(true);
         });
     });
 
@@ -470,49 +475,47 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         let setAttribStub;
 
         beforeEach(() => {
-            disableCameraStub = sandbox.stub(renderer, 'disableCameraControls');
-            setAttribStub = sandbox.stub();
+            disableCameraStub = jest.spyOn(renderer, 'disableCameraControls').mockImplementation();
+            setAttribStub = jest.fn();
             const box3dRenderer = { setAttribute: setAttribStub };
             renderer.box3d = {
-                getRenderer: sandbox.stub().returns(box3dRenderer),
-                getVrDisplay: sandbox.stub().returns({ isPresenting: true }),
+                getRenderer: jest.fn().mockReturnValue(box3dRenderer),
+                getVrDisplay: jest.fn().mockReturnValue({ isPresenting: true }),
             };
             renderer.onEnableVr();
         });
 
-        it('should disable all camera components', () => {
-            expect(disableCameraStub).to.be.called;
+        test('should disable all camera components', () => {
+            expect(disableCameraStub).toBeCalled();
         });
 
-        it('should disable render on demand for the renderer', () => {
-            expect(setAttribStub).to.be.calledWith('renderOnDemand', false);
+        test('should disable render on demand for the renderer', () => {
+            expect(setAttribStub).toBeCalledWith('renderOnDemand', false);
         });
 
-        it('should set the vrEnabled flag to true', () => {
-            expect(renderer.vrEnabled).to.be.true;
+        test('should set the vrEnabled flag to true', () => {
+            expect(renderer.vrEnabled).toBe(true);
         });
     });
 
     describe('enableVr()', () => {
-        let b3dMock;
-
         beforeEach(() => {
             renderer.box3d = {
-                trigger: () => {},
+                trigger: jest.fn(),
             };
-
-            b3dMock = sandbox.mock(renderer.box3d);
         });
 
-        it('should do nothing if vr is already enabled', () => {
+        test('should do nothing if vr is already enabled', () => {
             renderer.vrEnabled = true;
-            b3dMock.expects('trigger').never();
             renderer.enableVr();
+
+            expect(renderer.box3d.trigger).not.toBeCalled();
         });
 
-        it('should trigger the "enableVrRendering" event the Box3DRuntime instance', () => {
-            b3dMock.expects('trigger').withArgs('enableVrRendering');
+        test('should trigger the "enableVrRendering" event the Box3DRuntime instance', () => {
             renderer.enableVr();
+
+            expect(renderer.box3d.trigger).toBeCalledWith('enableVrRendering');
         });
     });
 
@@ -522,77 +525,73 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         let setAttribStub;
 
         beforeEach(() => {
-            enableCameraStub = sandbox.stub(renderer, 'enableCameraControls');
-            resetStub = sandbox.stub(renderer, 'resetView');
-            setAttribStub = sandbox.stub();
+            enableCameraStub = jest.spyOn(renderer, 'enableCameraControls').mockImplementation();
+            resetStub = jest.spyOn(renderer, 'resetView').mockImplementation();
+            setAttribStub = jest.fn();
             const box3dRenderer = { setAttribute: setAttribStub };
             renderer.box3d = {
-                getRenderer: sandbox.stub().returns(box3dRenderer),
-                getVrDisplay: sandbox.stub().returns({ isPresenting: false }),
-                trigger: sandbox.stub(),
+                getRenderer: jest.fn().mockReturnValue(box3dRenderer),
+                getVrDisplay: jest.fn().mockReturnValue({ isPresenting: false }),
+                trigger: jest.fn(),
             };
             renderer.onDisableVr();
         });
 
-        it('should re-enable all camera components', () => {
-            expect(enableCameraStub).to.be.called;
+        test('should re-enable all camera components', () => {
+            expect(enableCameraStub).toBeCalled();
         });
 
-        it('should reset the state of camera view', () => {
-            expect(resetStub).to.be.called;
+        test('should reset the state of camera view', () => {
+            expect(resetStub).toBeCalled();
         });
 
-        it('should notify Box3D Runtime instance to trigger a resize event', () => {
-            expect(renderer.box3d.trigger).to.be.calledWith('resize');
+        test('should notify Box3D Runtime instance to trigger a resize event', () => {
+            expect(renderer.box3d.trigger).toBeCalledWith('resize');
         });
 
-        it('should re-enable render on demand for the renderer', () => {
-            expect(setAttribStub).to.be.calledWith('renderOnDemand', true);
+        test('should re-enable render on demand for the renderer', () => {
+            expect(setAttribStub).toBeCalledWith('renderOnDemand', true);
         });
 
-        it('should set the vrEnabled flag to false', () => {
-            expect(renderer.vrEnabled).to.be.false;
+        test('should set the vrEnabled flag to false', () => {
+            expect(renderer.vrEnabled).toBe(false);
         });
     });
 
     describe('disableVr()', () => {
-        let b3dMock;
-
         beforeEach(() => {
             renderer.box3d = {
-                trigger: () => {},
+                trigger: jest.fn(),
             };
-
-            b3dMock = sandbox.mock(renderer.box3d);
         });
 
-        it('should do nothing if vr is already disabled', () => {
+        test('should do nothing if vr is already disabled', () => {
             renderer.vrEnabled = false;
-            b3dMock.expects('trigger').never();
             renderer.disableVr();
+
+            expect(renderer.box3d.trigger).not.toBeCalled();
         });
 
-        it('should trigger the "disableVrRendering" event on the Box3DRuntime instance', () => {
+        test('should trigger the "disableVrRendering" event on the Box3DRuntime instance', () => {
             renderer.vrEnabled = true;
-            b3dMock.expects('trigger').withArgs('disableVrRendering');
             renderer.disableVr();
+
+            expect(renderer.box3d.trigger).toBeCalledWith('disableVrRendering');
         });
     });
 
     describe('resize()', () => {
-        it("should do nothing if Box3D doesn't exist", () => {
+        test("should do nothing if Box3D doesn't exist", () => {
             /* eslint-disable require-jsdoc */
             const shouldNotThrow = () => {
                 renderer.resize();
             };
-            /* eslint-enable require-jsdoc */
-
-            expect(shouldNotThrow).to.not.throw(Error);
+            expect(shouldNotThrow).not.toThrowError(Error);
         });
 
-        it('should trigger resize on Box3D', () => {
+        test('should trigger resize on Box3D', () => {
             renderer.box3d = {
-                trigger: () => {},
+                trigger: jest.fn(),
             };
             sandbox
                 .mock(renderer.box3d)
@@ -607,20 +606,20 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             const camera = {
-                getComponentByScriptId: () => {},
+                getComponentByScriptId: jest.fn(),
             };
             cameraMock = sandbox.mock(camera);
-            sandbox.stub(renderer, 'getCamera').returns(camera);
+            jest.spyOn(renderer, 'getCamera').mockReturnValue(camera);
         });
 
-        it('should enable the component if it available on the camera', () => {
-            const component = { enable: sandbox.stub() };
+        test('should enable the component if it available on the camera', () => {
+            const component = { enable: jest.fn() };
             cameraMock
                 .expects('getComponentByScriptId')
                 .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
                 .returns(component);
             renderer.enableCameraControls();
-            expect(component.enable).to.be.called;
+            expect(component.enable).toBeCalled();
         });
     });
 
@@ -629,82 +628,81 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         beforeEach(() => {
             const camera = {
-                getComponentByScriptId: () => {},
+                getComponentByScriptId: jest.fn(),
             };
             cameraMock = sandbox.mock(camera);
-            sandbox.stub(renderer, 'getCamera').returns(camera);
+            jest.spyOn(renderer, 'getCamera').mockReturnValue(camera);
         });
 
-        it('should disable the component if it available on the camera', () => {
-            const component = { disable: sandbox.stub() };
+        test('should disable the component if it available on the camera', () => {
+            const component = { disable: jest.fn() };
             cameraMock
                 .expects('getComponentByScriptId')
                 .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
                 .returns(component);
             renderer.disableCameraControls();
-            expect(component.disable).to.be.called;
+            expect(component.disable).toBeCalled();
         });
     });
 
     describe('initVr()', () => {
-        let box3dMock;
         let vrPresenter;
         let emitStub;
-        let globalBox3DMock;
 
         beforeEach(() => {
             vrPresenter = {
-                whenDisplaysAvailable: () => {},
+                whenDisplaysAvailable: jest.fn(),
             };
             renderer.box3d = {
-                getApplication: () => {},
-                listenTo: () => {},
+                getApplication: jest.fn(),
+                listenTo: jest.fn(),
             };
-            emitStub = sandbox.stub(renderer, 'emit');
-            box3dMock = sandbox.mock(renderer.box3d);
-            globalBox3DMock = sandbox.mock(Box3D);
+            emitStub = jest.spyOn(renderer, 'emit');
         });
 
         describe('With a valid device', () => {
             beforeEach(() => {
-                box3dMock.expects('getApplication').returns({ getComponentByScriptId: () => vrPresenter });
-                globalBox3DMock.expects('isTablet').returns(false);
+                jest.spyOn(Box3D, 'isTablet').mockReturnValue(false);
+                renderer.box3d.getApplication.mockReturnValue({ getComponentByScriptId: () => vrPresenter });
             });
 
-            it('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', done => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
+            test('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', done => {
+                jest.spyOn(vrPresenter, 'whenDisplaysAvailable').mockImplementation(callback => {
                     callback([{}, {}]);
                     done();
                 });
-                sandbox.stub(renderer, 'createVrGamepads').callsFake(() => {});
+                jest.spyOn(renderer, 'createVrGamepads').mockImplementation();
                 renderer.initVr();
-                expect(emitStub).to.be.calledWith(EVENT_SHOW_VR_BUTTON);
+                expect(emitStub).toBeCalledWith(EVENT_SHOW_VR_BUTTON);
             });
 
-            it('should add an event listeners for vr enabled/disabled events via listenTo', done => {
-                box3dMock.expects('listenTo').twice();
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
+            test('should add an event listeners for vr enabled/disabled events via listenTo', done => {
+                jest.spyOn(vrPresenter, 'whenDisplaysAvailable').mockImplementation(callback => {
                     callback([{}, {}]);
                     done();
                 });
-                sandbox.stub(renderer, 'createVrGamepads').callsFake(() => {});
+                jest.spyOn(renderer, 'createVrGamepads').mockImplementation();
                 renderer.initVr();
+
+                expect(renderer.box3d.listenTo).toBeCalledTimes(2);
             });
 
-            it('should do nothing if no displays are available', done => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake(callback => {
+            test('should do nothing if no displays are available', done => {
+                jest.spyOn(vrPresenter, 'whenDisplaysAvailable').mockImplementation(callback => {
                     callback([]);
                     done();
                 });
                 renderer.initVr();
-                expect(emitStub).to.not.be.called;
+                expect(emitStub).not.toBeCalled();
             });
         });
 
-        it("should do nothing if the device we're using is a Tablet device", () => {
-            globalBox3DMock.expects('isTablet').returns(true);
-            box3dMock.expects('getApplication').never();
+        test("should do nothing if the device we're using is a Tablet device", () => {
+            jest.spyOn(Box3D, 'isTablet').mockReturnValue(true);
+
             renderer.initVr();
+
+            expect(renderer.box3d.getApplication).not.toBeCalled();
         });
     });
 });

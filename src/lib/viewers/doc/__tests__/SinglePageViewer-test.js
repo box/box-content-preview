@@ -3,16 +3,12 @@ import SinglePageViewer from '../SinglePageViewer';
 import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 let containerEl;
 let doc;
 
 describe('lib/viewers/doc/SinglePageViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
-
-    before(() => {
-        fixture.setBase('src/lib');
-    });
 
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/SinglePageViewer-test.html');
@@ -50,21 +46,21 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
             stubs.pdfViewer = {
                 enhanceTextSelection: true,
                 linkService: {},
-                setDocument: sandbox.stub(),
+                setDocument: jest.fn(),
             };
-            stubs.pdfViewerClass = sandbox.stub().returns(stubs.pdfViewer);
-            stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => 'asset');
+            stubs.pdfViewerClass = jest.fn(() => stubs.pdfViewer);
+            stubs.urlCreator = jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => 'asset');
 
             doc.pdfjsViewer = {
                 PDFSinglePageViewer: stubs.pdfViewerClass,
             };
         });
 
-        it('should return the default pdfViewer', () => {
+        test('should return the default pdfViewer', () => {
             const result = doc.initPdfViewer();
 
-            expect(doc.pdfjsViewer.PDFSinglePageViewer).to.be.called;
-            expect(result).to.equal(stubs.pdfViewer);
+            expect(doc.pdfjsViewer.PDFSinglePageViewer).toBeCalled();
+            expect(result).toBe(stubs.pdfViewer);
         });
     });
 });

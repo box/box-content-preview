@@ -18,102 +18,94 @@ import {
     shouldDownloadWM,
 } from '../file';
 
-const sandbox = sinon.sandbox.create();
-
 describe('lib/file', () => {
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     describe('getURL()', () => {
-        it('should return the correct api url', () => {
-            assert.equal(
-                getURL('id', '', 'api'),
+        test('should return the correct api url', () => {
+            expect(getURL('id', '', 'api')).toEqual(
                 'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
             );
         });
 
-        it('should return the correct API url for file version', () => {
-            assert.equal(
-                getURL('id', 'versionId', 'api'),
+        test('should return the correct API url for file version', () => {
+            expect(getURL('id', 'versionId', 'api')).toEqual(
                 'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
             );
         });
     });
 
     describe('getDownloadURL()', () => {
-        it('should return the correct api download url', () => {
-            assert.equal(getDownloadURL('id', 'api'), 'api/2.0/files/id?fields=download_url');
+        test('should return the correct api download url', () => {
+            expect(getDownloadURL('id', 'api')).toEqual('api/2.0/files/id?fields=download_url');
         });
     });
 
     describe('isWatermarked()', () => {
-        it('should return the correct values with null', () => {
-            assert.notOk(isWatermarked());
+        test('should return the correct values with null', () => {
+            expect(isWatermarked()).toBeFalsy();
         });
-        it('should return the correct values with empty object', () => {
-            assert.notOk(isWatermarked({}));
+        test('should return the correct values with empty object', () => {
+            expect(isWatermarked({})).toBeFalsy();
         });
-        it('should return the correct values with no watermark info', () => {
-            assert.notOk(isWatermarked({ watermark_info: {} }));
+        test('should return the correct values with no watermark info', () => {
+            expect(isWatermarked({ watermark_info: {} })).toBeFalsy();
         });
-        it('should return the correct values when not watermarked', () => {
-            assert.notOk(isWatermarked({ watermark_info: { is_watermarked: false } }));
+        test('should return the correct values when not watermarked', () => {
+            expect(isWatermarked({ watermark_info: { is_watermarked: false } })).toBeFalsy();
         });
-        it('should return the correct values when watermarked', () => {
-            assert.ok(isWatermarked({ watermark_info: { is_watermarked: true } }));
+        test('should return the correct values when watermarked', () => {
+            expect(isWatermarked({ watermark_info: { is_watermarked: true } })).toBeTruthy();
         });
     });
 
     describe('checkPermission()', () => {
-        it('should return the correct values with nulls', () => {
-            assert.notOk(checkPermission());
+        test('should return the correct values with nulls', () => {
+            expect(checkPermission()).toBeFalsy();
         });
-        it('should return the correct values with empty objects', () => {
-            assert.notOk(checkPermission({}, 'foo'));
+        test('should return the correct values with empty objects', () => {
+            expect(checkPermission({}, 'foo')).toBeFalsy();
         });
-        it('should return the correct values with empty permissions', () => {
-            assert.notOk(checkPermission({ permissions: {} }, 'foo'));
+        test('should return the correct values with empty permissions', () => {
+            expect(checkPermission({ permissions: {} }, 'foo')).toBeFalsy();
         });
-        it('should return the correct values when not allowed', () => {
-            assert.notOk(checkPermission({ permissions: { foo: false } }, 'foo'));
+        test('should return the correct values when not allowed', () => {
+            expect(checkPermission({ permissions: { foo: false } }, 'foo')).toBeFalsy();
         });
-        it('should return the correct values when allowed', () => {
-            assert.ok(checkPermission({ permissions: { foo: true } }, 'foo'));
+        test('should return the correct values when allowed', () => {
+            expect(checkPermission({ permissions: { foo: true } }, 'foo')).toBeTruthy();
         });
     });
 
     describe('checkFeature()', () => {
-        it('should return the correct values with nulls', () => {
-            assert.notOk(checkFeature());
+        test('should return the correct values with nulls', () => {
+            expect(checkFeature()).toBeFalsy();
         });
-        it('should return the correct values with empty object', () => {
-            assert.notOk(checkFeature({}, 'foo'));
+        test('should return the correct values with empty object', () => {
+            expect(checkFeature({}, 'foo')).toBeFalsy();
         });
-        it('should return the correct values when feature exists', () => {
-            assert.ok(checkFeature({ foo: sandbox.stub() }, 'foo'));
+        test('should return the correct values when feature exists', () => {
+            expect(checkFeature({ foo: jest.fn() }, 'foo')).toBeTruthy();
         });
-        it('should return the correct values when feature exists and sub feature doesnt', () => {
-            assert.notOk(checkFeature({ foo: sandbox.stub().returns(false) }, 'foo', 'bar'));
+        test('should return the correct values when feature exists and sub feature doesnt', () => {
+            expect(checkFeature({ foo: jest.fn(() => false) }, 'foo', 'bar')).toBeFalsy();
         });
-        it('should return the correct values when feature and sub feature exist', () => {
-            assert.ok(checkFeature({ foo: sandbox.stub().returns(true) }, 'foo', 'bar'));
+        test('should return the correct values when feature and sub feature exist', () => {
+            expect(checkFeature({ foo: jest.fn(() => true) }, 'foo', 'bar')).toBeTruthy();
         });
     });
 
     describe('checkFileValid()', () => {
-        it('should return false if file is null or undefined or not an object', () => {
+        test('should return false if file is null or undefined or not an object', () => {
             let file = null;
-            assert.notOk(checkFileValid(file));
+            expect(checkFileValid(file)).toBeFalsy();
 
             file = undefined;
-            assert.notOk(checkFileValid(file));
+            expect(checkFileValid(file)).toBeFalsy();
 
             file = 'string';
-            assert.notOk(checkFileValid(file));
+            expect(checkFileValid(file)).toBeFalsy();
         });
 
-        it('should return true if file has all the appropratie properties', () => {
+        test('should return true if file has all the appropratie properties', () => {
             const file = {
                 id: '123',
                 permissions: {},
@@ -128,12 +120,12 @@ describe('lib/file', () => {
                 authenticated_download_url: 'blah',
                 is_download_available: true,
             };
-            assert.ok(checkFileValid(file));
+            expect(checkFileValid(file)).toBeTruthy();
         });
     });
 
     describe('normalizeFileVersion', () => {
-        it('should return a well-formed file object', () => {
+        test('should return a well-formed file object', () => {
             const fileId = '123';
             const fileVersion = {
                 id: 'file_version_123',
@@ -149,10 +141,10 @@ describe('lib/file', () => {
             };
 
             const file = normalizeFileVersion(fileVersion, fileId);
-            assert.ok(checkFileValid(file));
+            expect(checkFileValid(file)).toBeTruthy();
 
-            expect(file.id).to.equal(fileId);
-            expect(file.file_version.id).to.equal(fileVersion.id);
+            expect(file.id).toBe(fileId);
+            expect(file.file_version.id).toBe(fileVersion.id);
         });
     });
 
@@ -161,11 +153,11 @@ describe('lib/file', () => {
 
         beforeEach(() => {
             cache = {
-                set: sandbox.stub(),
+                set: jest.fn(),
             };
         });
 
-        it('should not cache file if it is watermarked', () => {
+        test('should not cache file if it is watermarked', () => {
             const file = {
                 watermark_info: {
                     is_watermarked: true,
@@ -174,20 +166,20 @@ describe('lib/file', () => {
 
             cacheFile(cache, file);
 
-            expect(cache.set).to.not.be.called;
+            expect(cache.set).not.toBeCalled();
         });
 
-        it('should not add original representation if file object doesnt have any to start with', () => {
+        test('should not add original representation if file object doesnt have any to start with', () => {
             const file = {
                 id: '0',
             };
 
             cacheFile(cache, file);
 
-            expect(file.representations).to.be.undefined;
+            expect(file.representations).toBeUndefined();
         });
 
-        it('should add an original rep and cache the file', () => {
+        test('should add an original rep and cache the file', () => {
             const file = {
                 id: '0',
                 representations: {
@@ -197,11 +189,11 @@ describe('lib/file', () => {
 
             cacheFile(cache, file);
 
-            expect(file.representations.entries[0].representation).to.equal('ORIGINAL');
-            expect(cache.set).to.be.calledWith(`file_${file.id}`, file);
+            expect(file.representations.entries[0].representation).toBe('ORIGINAL');
+            expect(cache.set).toBeCalledWith(`file_${file.id}`, file);
         });
 
-        it('should not add an original rep if original rep already exists', () => {
+        test('should not add an original rep if original rep already exists', () => {
             const file = {
                 id: '0',
                 representations: {
@@ -214,12 +206,12 @@ describe('lib/file', () => {
             };
 
             cacheFile(cache, file);
-            expect(file.representations.entries.length).to.equal(1);
+            expect(file.representations.entries.length).toBe(1);
         });
 
-        it('should append file version to original rep content URL', () => {
+        test('should append file version to original rep content URL', () => {
             cache = {
-                set: sandbox.stub(),
+                set: jest.fn(),
             };
 
             const file = {
@@ -233,10 +225,10 @@ describe('lib/file', () => {
             };
 
             cacheFile(cache, file);
-            expect(file.representations.entries[0].content.url_template).to.have.string('version=123');
+            expect(file.representations.entries[0].content.url_template).toContain('version=123');
         });
 
-        it('should additionally cache file by file version ID if file version exists on file', () => {
+        test('should additionally cache file by file version ID if file version exists on file', () => {
             const file = {
                 id: '123',
                 file_version: {
@@ -245,13 +237,13 @@ describe('lib/file', () => {
             };
 
             cacheFile(cache, file);
-            expect(cache.set).to.be.calledWith(`file_${file.id}`, file);
-            expect(cache.set).to.be.calledWith(`file_version_${file.file_version.id}`, file);
+            expect(cache.set).toBeCalledWith(`file_${file.id}`, file);
+            expect(cache.set).toBeCalledWith(`file_version_${file.file_version.id}`, file);
         });
     });
 
     describe('uncacheFile', () => {
-        it('should uncache a file', () => {
+        test('should uncache a file', () => {
             const cache = new Cache();
             const file = {
                 id: '0',
@@ -263,13 +255,13 @@ describe('lib/file', () => {
 
             uncacheFile(cache, file);
 
-            expect(cache.get(`file_${file.id}`)).to.be.undefined;
-            expect(cache.get(`file_version_${file.file_version.id}`)).to.be.undefined;
+            expect(cache.get(`file_${file.id}`)).toBeUndefined();
+            expect(cache.get(`file_version_${file.file_version.id}`)).toBeUndefined();
         });
     });
 
     describe('getRepresentation', () => {
-        it('should return null if no matching representation is found', () => {
+        test('should return null if no matching representation is found', () => {
             const file = {
                 id: '0',
                 representations: {
@@ -277,10 +269,10 @@ describe('lib/file', () => {
                 },
             };
 
-            expect(getRepresentation(file, 'ORIGINAL')).to.be.null;
+            expect(getRepresentation(file, 'ORIGINAL')).toBeNull();
         });
 
-        it('should return matching representation if found', () => {
+        test('should return matching representation if found', () => {
             const originalRep = {
                 representation: 'ORIGINAL',
             };
@@ -291,7 +283,7 @@ describe('lib/file', () => {
                 },
             };
 
-            expect(getRepresentation(file, 'ORIGINAL')).to.be.equal(originalRep);
+            expect(getRepresentation(file, 'ORIGINAL')).toBe(originalRep);
         });
     });
 
@@ -300,47 +292,47 @@ describe('lib/file', () => {
 
         beforeEach(() => {
             cache = {
-                get: sandbox.stub(),
+                get: jest.fn(),
             };
         });
 
-        it('should return cached file using file ID as the key if file ID is provided', () => {
+        test('should return cached file using file ID as the key if file ID is provided', () => {
             const fileId = '123';
             getCachedFile(cache, { fileId });
-            expect(cache.get).to.be.calledWith(`file_${fileId}`);
+            expect(cache.get).toBeCalledWith(`file_${fileId}`);
         });
 
-        it('should return cached file using file version ID as the key if both file ID and file version ID are provided', () => {
+        test('should return cached file using file version ID as the key if both file ID and file version ID are provided', () => {
             const fileId = '123';
             const fileVersionId = '1234';
             getCachedFile(cache, { fileId, fileVersionId });
-            expect(cache.get).to.be.calledWith(`file_version_${fileVersionId}`);
+            expect(cache.get).toBeCalledWith(`file_version_${fileVersionId}`);
         });
 
-        it('should return cached file using file version ID as the key if file version ID is provided', () => {
+        test('should return cached file using file version ID as the key if file version ID is provided', () => {
             const fileVersionId = '1234';
             getCachedFile(cache, { fileVersionId });
-            expect(cache.get).to.be.calledWith(`file_version_${fileVersionId}`);
+            expect(cache.get).toBeCalledWith(`file_version_${fileVersionId}`);
         });
 
-        it('should null if neither file ID nor file version ID is provided', () => {
+        test('should null if neither file ID nor file version ID is provided', () => {
             getCachedFile(cache, {});
-            expect(cache.get).to.not.be.called;
+            expect(cache.get).not.toBeCalled();
         });
     });
 
     describe('isVeraProtectedFile()', () => {
         ['some.vera.pdf.html', '.vera.test.html', 'blah.vera..html', 'another.vera.3.html', 'test.vera.html'].forEach(
             fileName => {
-                it('should return true if file is named like a Vera-protected file', () => {
-                    expect(isVeraProtectedFile({ name: fileName })).to.be.true;
+                test('should return true if file is named like a Vera-protected file', () => {
+                    expect(isVeraProtectedFile({ name: fileName })).toBe(true);
                 });
             },
         );
 
         ['vera.pdf.html', 'test.vera1.pdf.html', 'blah.vera..htm', 'another.verahtml'].forEach(fileName => {
-            it('should return false if file is not named like a Vera-protected file', () => {
-                expect(isVeraProtectedFile({ name: fileName })).to.be.false;
+            test('should return false if file is not named like a Vera-protected file', () => {
+                expect(isVeraProtectedFile({ name: fileName })).toBe(false);
             });
         });
     });
@@ -352,7 +344,7 @@ describe('lib/file', () => {
             [true, true, true],
             [true, false, false],
         ].forEach(([downloadWM, isFileWatermarked, expected]) => {
-            it('should return whether we should download the watermarked representation or original file', () => {
+            test('should return whether we should download the watermarked representation or original file', () => {
                 const previewOptions = { downloadWM };
                 const file = {
                     watermark_info: {
@@ -360,7 +352,7 @@ describe('lib/file', () => {
                     },
                 };
 
-                expect(shouldDownloadWM(file, previewOptions)).to.equal(expected);
+                expect(shouldDownloadWM(file, previewOptions)).toBe(expected);
             });
         });
     });
@@ -409,16 +401,16 @@ describe('lib/file', () => {
                 downloadWM,
                 expectedResult,
             ]) => {
-                it('should return true if original or watermarked file can be downloaded', () => {
+                test('should return true if original or watermarked file can be downloaded', () => {
                     file.permissions.can_download = hasDownloadPermission;
                     file.permissions.can_preview = hasPreviewPermission;
                     file.is_download_available = isDownloadable;
                     file.watermark_info.is_watermarked = isFileWatermarked;
                     options.showDownload = isDownloadable;
                     options.downloadWM = downloadWM;
-                    sandbox.stub(Browser, 'canDownload').returns(isBrowserSupported);
+                    jest.spyOn(Browser, 'canDownload').mockReturnValue(isBrowserSupported);
 
-                    expect(canDownload(file, options)).to.equal(expectedResult);
+                    expect(canDownload(file, options)).toBe(expectedResult);
                 });
             },
         );

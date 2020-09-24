@@ -19,7 +19,7 @@ import {
 import { VIEWER_EVENT } from '../../../events';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 let containerEl;
 let box3d;
@@ -28,14 +28,10 @@ let stubs = {};
 describe('lib/viewers/box3d/Box3DViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
-    before(() => {
-        fixture.setBase('src/lib');
-    });
-
     beforeEach(() => {
         fixture.load('viewers/box3d/__tests__/Box3DViewer-test.html');
         containerEl = document.querySelector('.container');
-        stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
+        stubs.BoxSDK = jest.spyOn(window, 'BoxSDK');
         stubs.api = new Api();
         box3d = new Box3DViewer({
             api: stubs.api,
@@ -60,7 +56,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         box3d.setup();
 
-        sandbox.stub(box3d, 'createSubModules');
+        jest.spyOn(box3d, 'createSubModules').mockImplementation();
         box3d.controls = {
             on: () => {},
             removeListener: () => {},
@@ -91,7 +87,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('createSubModules()', () => {
-        it('should create and save references to 3d controls and 3d renderer', () => {
+        test('should create and save references to 3d controls and 3d renderer', () => {
             box3d = new Box3DViewer({
                 file: {
                     id: 0,
@@ -112,189 +108,167 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             box3d.createSubModules();
 
-            expect(box3d.controls).to.be.instanceof(Box3DControls);
-            expect(box3d.renderer).to.be.instanceof(Box3DRenderer);
+            expect(box3d.controls).toBeInstanceOf(Box3DControls);
+            expect(box3d.renderer).toBeInstanceOf(Box3DRenderer);
         });
     });
 
     describe('attachEventHandlers()', () => {
         describe('with box3d.controls defined', () => {
-            it('should invoke box3d.controls.on() with EVENT_TOGGLE_FULLSCREEN', () => {
-                const onSpy = sandbox.spy(box3d.controls, 'on');
-                onSpy.withArgs(EVENT_TOGGLE_FULLSCREEN);
+            test('should invoke box3d.controls.on() with EVENT_TOGGLE_FULLSCREEN', () => {
+                const onSpy = jest.spyOn(box3d.controls, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_TOGGLE_FULLSCREEN).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_TOGGLE_FULLSCREEN, expect.any(Function));
             });
 
-            it('should invoke box3d.controls.on() with EVENT_TOGGLE_VR', () => {
-                const onSpy = sandbox.spy(box3d.controls, 'on');
-                onSpy.withArgs(EVENT_TOGGLE_VR);
+            test('should invoke box3d.controls.on() with EVENT_TOGGLE_VR', () => {
+                const onSpy = jest.spyOn(box3d.controls, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_TOGGLE_VR).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_TOGGLE_VR, expect.any(Function));
             });
 
-            it('should invoke box3d.controls.on() with EVENT_RESET', () => {
-                const onSpy = sandbox.spy(box3d.controls, 'on');
-                onSpy.withArgs(EVENT_RESET);
+            test('should invoke box3d.controls.on() with EVENT_RESET', () => {
+                const onSpy = jest.spyOn(box3d.controls, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_RESET).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_RESET, expect.any(Function));
             });
         });
 
-        it("should not attach handlers to controls if controls instance doesn't exist", () => {
-            const onSpy = sandbox.spy(box3d.controls, 'on');
-            // Only checking first method call in block
-            onSpy.withArgs(EVENT_TOGGLE_FULLSCREEN);
+        test("should not attach handlers to controls if controls instance doesn't exist", () => {
+            const onSpy = jest.spyOn(box3d.controls, 'on');
 
             box3d.controls = undefined;
             box3d.attachEventHandlers();
 
-            expect(onSpy.withArgs(EVENT_TOGGLE_FULLSCREEN).called).to.be.false;
+            expect(onSpy).not.toBeCalledWith(EVENT_TOGGLE_FULLSCREEN, expect.any(Function));
         });
 
         describe('with box3d.renderer defined', () => {
-            it('should invoke box3d.renderer.on() with EVENT_SCENE_LOADED', () => {
-                const onSpy = sandbox.spy(box3d.renderer, 'on');
-                onSpy.withArgs(EVENT_SCENE_LOADED);
+            test('should invoke box3d.renderer.on() with EVENT_SCENE_LOADED', () => {
+                const onSpy = jest.spyOn(box3d.renderer, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_SCENE_LOADED).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_SCENE_LOADED, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.on() with EVENT_SHOW_VR_BUTTON', () => {
-                const onSpy = sandbox.spy(box3d.renderer, 'on');
-                onSpy.withArgs(EVENT_SHOW_VR_BUTTON);
+            test('should invoke box3d.renderer.on() with EVENT_SHOW_VR_BUTTON', () => {
+                const onSpy = jest.spyOn(box3d.renderer, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_SHOW_VR_BUTTON).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_SHOW_VR_BUTTON, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.on() with EVENT_ERROR', () => {
-                const onSpy = sandbox.spy(box3d.renderer, 'on');
-                onSpy.withArgs(EVENT_ERROR);
+            test('should invoke box3d.renderer.on() with EVENT_ERROR', () => {
+                const onSpy = jest.spyOn(box3d.renderer, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_ERROR).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_ERROR, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.on() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
-                const onSpy = sandbox.spy(box3d.renderer, 'on');
-                onSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED);
+            test('should invoke box3d.renderer.on() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
+                const onSpy = jest.spyOn(box3d.renderer, 'on');
 
                 box3d.attachEventHandlers();
 
-                expect(onSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED).called).to.be.true;
+                expect(onSpy).toBeCalledWith(EVENT_WEBGL_CONTEXT_RESTORED, expect.any(Function));
             });
         });
 
-        it("should not attach handlers to renderer if renderer instance doesn't exist", () => {
-            const onSpy = sandbox.spy(box3d.renderer, 'on');
-            // Only checking first method call in block
-            onSpy.withArgs(EVENT_SCENE_LOADED);
+        test("should not attach handlers to renderer if renderer instance doesn't exist", () => {
+            const onSpy = jest.spyOn(box3d.renderer, 'on');
 
             box3d.renderer = undefined;
             box3d.attachEventHandlers();
 
-            expect(onSpy.withArgs(EVENT_SCENE_LOADED).called).to.be.false;
+            expect(onSpy).not.toBeCalledWith(EVENT_SCENE_LOADED, expect.any(Function));
         });
     });
 
     describe('detachEventHandlers()', () => {
         describe('with box3d.controls defined', () => {
-            it('should invoke box3d.controls.removeListener() with EVENT_TOGGLE_FULLSCREEN', () => {
-                const detachSpy = sandbox.spy(box3d.controls, 'removeListener');
-                detachSpy.withArgs(EVENT_TOGGLE_FULLSCREEN);
+            test('should invoke box3d.controls.removeListener() with EVENT_TOGGLE_FULLSCREEN', () => {
+                const detachSpy = jest.spyOn(box3d.controls, 'removeListener');
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_TOGGLE_FULLSCREEN).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_TOGGLE_FULLSCREEN, expect.any(Function));
             });
 
-            it('should invoke box3d.controls.removeListener() with EVENT_TOGGLE_VR', () => {
-                const detachSpy = sandbox.spy(box3d.controls, 'removeListener');
-                detachSpy.withArgs(EVENT_TOGGLE_VR);
+            test('should invoke box3d.controls.removeListener() with EVENT_TOGGLE_VR', () => {
+                const detachSpy = jest.spyOn(box3d.controls, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_TOGGLE_VR).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_TOGGLE_VR, expect.any(Function));
             });
 
-            it('should invoke box3d.controls.removeListener() with EVENT_RESET', () => {
-                const detachSpy = sandbox.spy(box3d.controls, 'removeListener');
-                detachSpy.withArgs(EVENT_RESET);
+            test('should invoke box3d.controls.removeListener() with EVENT_RESET', () => {
+                const detachSpy = jest.spyOn(box3d.controls, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_RESET).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_RESET, expect.any(Function));
             });
         });
 
-        it('should not invoke controls.removeListener() when controls is undefined', () => {
-            const detachSpy = sandbox.spy(box3d.controls, 'removeListener');
-            // Only checking first method call in block
-            detachSpy.withArgs(EVENT_TOGGLE_FULLSCREEN);
+        test('should not invoke controls.removeListener() when controls is undefined', () => {
+            const detachSpy = jest.spyOn(box3d.controls, 'removeListener');
 
             box3d.controls = undefined;
             box3d.detachEventHandlers();
 
-            expect(detachSpy.withArgs(EVENT_TOGGLE_FULLSCREEN).called).to.be.false;
+            expect(detachSpy).not.toBeCalledWith(EVENT_TOGGLE_FULLSCREEN, expect.any(Function));
         });
 
         describe('with box3d.renderer defined', () => {
-            it('should invoke box3d.renderer.removeListener() with EVENT_SCENE_LOADED', () => {
-                const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
-                detachSpy.withArgs(EVENT_SCENE_LOADED);
+            test('should invoke box3d.renderer.removeListener() with EVENT_SCENE_LOADED', () => {
+                const detachSpy = jest.spyOn(box3d.renderer, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_SCENE_LOADED).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_SCENE_LOADED, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.removeListener() with EVENT_SHOW_VR_BUTTON', () => {
-                const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
-                detachSpy.withArgs(EVENT_SHOW_VR_BUTTON);
+            test('should invoke box3d.renderer.removeListener() with EVENT_SHOW_VR_BUTTON', () => {
+                const detachSpy = jest.spyOn(box3d.renderer, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_SHOW_VR_BUTTON).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_SHOW_VR_BUTTON, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.removeListener() with EVENT_ERROR', () => {
-                const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
-                detachSpy.withArgs(EVENT_ERROR);
+            test('should invoke box3d.renderer.removeListener() with EVENT_ERROR', () => {
+                const detachSpy = jest.spyOn(box3d.renderer, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_ERROR).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_ERROR, expect.any(Function));
             });
 
-            it('should invoke box3d.renderer.removeListener() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
-                const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
-                detachSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED);
+            test('should invoke box3d.renderer.removeListener() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
+                const detachSpy = jest.spyOn(box3d.renderer, 'removeListener');
 
                 box3d.detachEventHandlers();
 
-                expect(detachSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED).called).to.be.true;
+                expect(detachSpy).toBeCalledWith(EVENT_WEBGL_CONTEXT_RESTORED, expect.any(Function));
             });
         });
 
-        it('should not invoke renderer.removeListener() when renderer is undefined', () => {
-            const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
-            // Only checking first method call in block
-            detachSpy.withArgs(EVENT_SCENE_LOADED);
+        test('should not invoke renderer.removeListener() when renderer is undefined', () => {
+            const detachSpy = jest.spyOn(box3d.renderer, 'removeListener');
 
             box3d.renderer = undefined;
             box3d.detachEventHandlers();
 
-            expect(detachSpy.withArgs(EVENT_SCENE_LOADED).called).to.be.false;
+            expect(detachSpy).not.toBeCalledWith(EVENT_SCENE_LOADED, expect.any(Function));
         });
     });
 
@@ -302,53 +276,53 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         const resizeFunc = BaseViewer.prototype.resize;
 
         beforeEach(() => {
-            box3d.renderer.resize = sandbox.stub();
+            box3d.renderer.resize = jest.fn();
         });
 
         afterEach(() => {
             Object.defineProperty(BaseViewer.prototype, 'resize', { value: resizeFunc });
         });
 
-        it('should call super.resize()', () => {
+        test('should call super.resize()', () => {
             Object.defineProperty(BaseViewer.prototype, 'resize', { value: sandbox.mock() });
             box3d.resize();
         });
 
-        it('should call renderer.resize() when it exists', () => {
-            Object.defineProperty(BaseViewer.prototype, 'resize', { value: sandbox.stub() });
+        test('should call renderer.resize() when it exists', () => {
+            Object.defineProperty(BaseViewer.prototype, 'resize', { value: jest.fn() });
             box3d.resize();
-            expect(box3d.renderer.resize).to.be.called;
+            expect(box3d.renderer.resize).toBeCalled();
         });
     });
 
     describe('destroy()', () => {
-        it('should detach event handlers', () => {
-            sandbox.stub(box3d, 'detachEventHandlers');
+        test('should detach event handlers', () => {
+            jest.spyOn(box3d, 'detachEventHandlers');
 
             box3d.destroy();
 
-            expect(box3d.detachEventHandlers).to.be.called;
+            expect(box3d.detachEventHandlers).toBeCalled();
         });
 
-        it('should call controls.destroy() if it exists', () => {
-            sandbox.stub(box3d.controls, 'destroy');
+        test('should call controls.destroy() if it exists', () => {
+            jest.spyOn(box3d.controls, 'destroy');
 
             box3d.destroy();
 
-            expect(box3d.controls.destroy).to.be.called;
+            expect(box3d.controls.destroy).toBeCalled();
         });
 
-        it('should call renderer.destroy() if it exists', () => {
-            sandbox.stub(box3d.renderer, 'destroy');
+        test('should call renderer.destroy() if it exists', () => {
+            jest.spyOn(box3d.renderer, 'destroy');
 
             box3d.destroy();
 
-            expect(box3d.renderer.destroy).to.be.called;
+            expect(box3d.renderer.destroy).toBeCalled();
         });
 
-        it('should set .destroyed to true', () => {
+        test('should set .destroyed to true', () => {
             box3d.destroy();
-            expect(box3d.destroyed).to.be.true;
+            expect(box3d.destroyed).toBe(true);
         });
     });
 
@@ -359,32 +333,32 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should call renderer.load()', () => {
+        test('should call renderer.load()', () => {
             box3d.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
-            sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(box3d, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(box3d, 'postLoad');
+            jest.spyOn(box3d, 'loadAssets').mockResolvedValue(undefined);
+            jest.spyOn(box3d, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(box3d, 'postLoad');
             return box3d.load().then(() => {
-                expect(box3d.postLoad).to.be.called;
+                expect(box3d.postLoad).toBeCalled();
             });
         });
     });
 
     describe('postLoad()', () => {
-        it('should setup a Box SDK, create sub modules, and attach event handlers', () => {
-            sandbox.stub(box3d, 'attachEventHandlers');
+        test('should setup a Box SDK, create sub modules, and attach event handlers', () => {
+            jest.spyOn(box3d, 'attachEventHandlers');
 
             box3d.postLoad();
 
-            expect(box3d.createSubModules).to.be.called;
-            expect(box3d.attachEventHandlers).to.be.called;
-            expect(box3d.boxSdk).to.be.a('object');
+            expect(box3d.createSubModules).toBeCalled();
+            expect(box3d.attachEventHandlers).toBeCalled();
+            expect(typeof box3d.boxSdk).toBe('object');
         });
 
-        it('should call renderer.load() with the entities.json file and options', () => {
+        test('should call renderer.load() with the entities.json file and options', () => {
             const contentUrl = 'someEntitiesJsonUrl';
-            sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
+            jest.spyOn(box3d, 'createContentUrl').mockReturnValue(contentUrl);
             sandbox
                 .mock(box3d.renderer)
                 .expects('load')
@@ -394,27 +368,27 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             box3d.postLoad();
         });
 
-        it('should invoke startLoadTimer()', () => {
-            sandbox.stub(box3d, 'startLoadTimer');
+        test('should invoke startLoadTimer()', () => {
+            jest.spyOn(box3d, 'startLoadTimer');
             box3d.postLoad();
 
-            expect(box3d.startLoadTimer).to.be.called;
+            expect(box3d.startLoadTimer).toBeCalled();
         });
     });
 
     describe('prefetch()', () => {
-        it('should prefetch assets if assets is true', () => {
-            sandbox.stub(box3d, 'prefetchAssets');
+        test('should prefetch assets if assets is true', () => {
+            jest.spyOn(box3d, 'prefetchAssets').mockImplementation();
             box3d.prefetch({ assets: true, content: false });
-            expect(box3d.prefetchAssets).to.be.called;
+            expect(box3d.prefetchAssets).toBeCalled();
         });
 
-        it('should prefetch content if content is true and representation is ready', () => {
+        test('should prefetch content if content is true and representation is ready', () => {
             const headers = {};
             const contentUrl = 'someContentUrl';
-            sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
-            sandbox.stub(box3d, 'appendAuthHeader').returns(headers);
-            sandbox.stub(box3d, 'isRepresentationReady').returns(true);
+            jest.spyOn(box3d, 'createContentUrl').mockReturnValue(contentUrl);
+            jest.spyOn(box3d, 'appendAuthHeader').mockReturnValue(headers);
+            jest.spyOn(box3d, 'isRepresentationReady').mockReturnValue(true);
             sandbox
                 .mock(stubs.api)
                 .expects('get')
@@ -422,8 +396,8 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             box3d.prefetch({ assets: false, content: true });
         });
 
-        it('should not prefetch content if content is true but representation is not ready', () => {
-            sandbox.stub(box3d, 'isRepresentationReady').returns(false);
+        test('should not prefetch content if content is true but representation is not ready', () => {
+            jest.spyOn(box3d, 'isRepresentationReady').mockReturnValue(false);
             sandbox
                 .mock(stubs.api)
                 .expects('get')
@@ -433,32 +407,31 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('toggleFullscreen()', () => {
-        it('should call fullscreen.toggle()', () => {
+        test('should call fullscreen.toggle()', () => {
             Object.defineProperty(Object.getPrototypeOf(fullscreen), 'toggle', {
-                value: sandbox.spy(),
+                value: jest.fn(),
             });
 
             box3d.toggleFullscreen();
 
-            expect(fullscreen.toggle.called).to.be.true;
+            expect(fullscreen.toggle).toBeCalled();
         });
 
-        it('should call fullsceen.toggle() with parent container element', () => {
-            const toggleSpy = sandbox.spy();
-            toggleSpy.withArgs(box3d.containerEl);
+        test('should call fullsceen.toggle() with parent container element', () => {
+            const toggleSpy = jest.fn();
             Object.defineProperty(Object.getPrototypeOf(fullscreen), 'toggle', {
                 value: toggleSpy,
             });
 
             box3d.toggleFullscreen();
 
-            expect(toggleSpy.withArgs(box3d.containerEl).called).to.be.true;
+            expect(toggleSpy).toBeCalledWith(box3d.containerEl);
         });
     });
 
     describe('handleToggleVr()', () => {
-        it('should call renderer.toggleVr()', () => {
-            box3d.renderer.toggleVr = sandbox.mock();
+        test('should call renderer.toggleVr()', () => {
+            box3d.renderer.toggleVr = jest.fn();
             box3d.handleToggleVr();
         });
     });
@@ -466,124 +439,119 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     describe('onVrPresentChange()', () => {
         beforeEach(() => {
             box3d.renderer.box3d = {
-                getVrDisplay: sandbox.stub().returns({
+                getVrDisplay: jest.fn().mockReturnValue({
                     isPresenting: true,
                 }),
             };
             box3d.controls.vrEnabled = false;
         });
 
-        it('should not do anything on desktop', () => {
-            sandbox.stub(Browser, 'isMobile').returns(false);
+        test('should not do anything on desktop', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(false);
 
             box3d.onVrPresentChange();
 
-            expect(box3d.wrapperEl).to.not.have.class('vr-enabled');
-            expect(box3d.controls.vrEnabled).to.be.false;
+            expect(box3d.wrapperEl).not.toHaveClass('vr-enabled');
+            expect(box3d.controls.vrEnabled).toBe(false);
         });
 
-        it('should add vr-enabled class to wrapper and set controls property if VR is presenting on mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+        test('should add vr-enabled class to wrapper and set controls property if VR is presenting on mobile', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
 
             box3d.onVrPresentChange();
 
-            expect(box3d.wrapperEl).to.have.class('vr-enabled');
-            expect(box3d.controls.vrEnabled).to.be.true;
+            expect(box3d.wrapperEl).toHaveClass('vr-enabled');
+            expect(box3d.controls.vrEnabled).toBe(true);
         });
 
-        it('should not add vr-enabled class to wrapper and not set controls property if on mobile, but VR is not presenting', () => {
-            box3d.renderer.box3d.getVrDisplay = sandbox.stub().returns({
+        test('should not add vr-enabled class to wrapper and not set controls property if on mobile, but VR is not presenting', () => {
+            box3d.renderer.box3d.getVrDisplay = jest.fn().mockReturnValue({
                 isPresenting: false,
             });
-            sandbox.stub(Browser, 'isMobile').returns(true);
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
 
             box3d.onVrPresentChange();
 
-            expect(box3d.wrapperEl).to.not.have.class('vr-enabled');
-            expect(box3d.controls.vrEnabled).to.not.be.true;
+            expect(box3d.wrapperEl).not.toHaveClass('vr-enabled');
+            expect(box3d.controls.vrEnabled).not.toBe(true);
         });
     });
 
     describe('handleSceneLoaded()', () => {
         let eventNameUsed;
         beforeEach(() => {
-            sandbox.stub(box3d, 'emit').callsFake(eventName => {
+            jest.spyOn(box3d, 'emit').mockImplementation(eventName => {
                 eventNameUsed = eventName;
             });
-            box3d.controls.addUi = sandbox.stub();
+            box3d.controls.addUi = jest.fn();
         });
 
         afterEach(() => {
-            expect(eventNameUsed).to.equal(EVENT_LOAD);
+            expect(eventNameUsed).toBe(EVENT_LOAD);
         });
 
-        it('should set .loaded to true', () => {
+        test('should set .loaded to true', () => {
             box3d.handleSceneLoaded();
-            expect(box3d.loaded).to.be.true;
+            expect(box3d.loaded).toBe(true);
         });
-        it('should call controls.addUi() if it exists', () => {
+        test('should call controls.addUi() if it exists', () => {
             box3d.handleSceneLoaded();
-            expect(box3d.controls.addUi).to.be.called;
+            expect(box3d.controls.addUi).toBeCalled();
         });
     });
 
     describe('handleShowVrButton()', () => {
-        it('should call controls.showVrButton()', () => {
-            box3d.controls.showVrButton = sandbox.mock();
+        test('should call controls.showVrButton()', () => {
+            box3d.controls.showVrButton = jest.fn();
             box3d.handleShowVrButton();
         });
     });
 
     describe('handleReset()', () => {
-        it('should call renderer.reset()', () => {
-            box3d.renderer.reset = sandbox.mock();
+        test('should call renderer.reset()', () => {
+            box3d.renderer.reset = jest.fn();
             box3d.handleReset();
         });
     });
 
     describe('handleError()', () => {
-        it('should call emit() with params ["error", error_object]', () => {
+        test('should call emit() with params ["error", error_object]', () => {
             const error = {};
-            const emitStub = sandbox.stub(box3d, 'emit').callsFake((eventName, errorObj) => {
-                expect(eventName).to.equal(EVENT_ERROR);
-                expect(errorObj).to.equal(error);
-            });
+            jest.spyOn(box3d, 'emit').mockImplementation();
 
             box3d.handleError(error);
 
-            expect(emitStub).to.be.called;
+            expect(box3d.emit).toBeCalledWith(EVENT_ERROR, error);
         });
     });
 
     describe('handleContextLost()', () => {
-        it('should call destroySubModules', () => {
-            const destroySubModules = sandbox.stub(box3d, 'destroySubModules').callsFake(() => {});
+        test('should call destroySubModules', () => {
+            const destroySubModules = jest.spyOn(box3d, 'destroySubModules').mockImplementation();
             box3d.handleContextLost();
-            expect(destroySubModules).to.be.called;
+            expect(destroySubModules).toBeCalled();
         });
     });
 
     describe('handleContextRestored()', () => {
-        it('should call emit() with params ["progressstart"]', () => {
-            const emitStub = sandbox.stub(box3d, 'emit').callsFake(eventName => {
-                expect(eventName).to.equal(VIEWER_EVENT.progressStart);
-            });
+        test('should call emit() with params ["progressstart"]', () => {
+            jest.spyOn(box3d, 'emit').mockImplementation();
 
             box3d.handleContextRestored();
 
-            expect(emitStub).to.be.called;
+            expect(box3d.emit).toBeCalledWith(VIEWER_EVENT.progressStart);
         });
 
-        it('should call detachEventHandlers', () => {
-            const detachHandlers = sandbox.stub(box3d, 'detachEventHandlers');
+        test('should call detachEventHandlers', () => {
+            const detachHandlers = jest.spyOn(box3d, 'detachEventHandlers');
             box3d.handleContextRestored();
-            expect(detachHandlers).to.be.called;
+            expect(detachHandlers).toBeCalled();
         });
 
-        it('should call postLoad', () => {
-            box3d.postLoad = sandbox.stub();
+        test('should call postLoad', () => {
+            box3d.postLoad = jest.fn();
             box3d.handleContextRestored();
-            expect(box3d.postLoad).to.be.called;
+            expect(box3d.postLoad).toBeCalled();
         });
     });
 });

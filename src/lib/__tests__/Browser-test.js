@@ -6,39 +6,39 @@ const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_LOSE_CONTEXT = 'WEBGL_lose_context';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
+const USER_AGENT = navigator.userAgent;
 
 describe('lib/Browser', () => {
-    const USER_AGENT = navigator.userAgent;
     afterEach(() => {
         Browser.overrideUserAgent(USER_AGENT);
         sandbox.verifyAndRestore();
     });
 
     describe('overrideUserAgent()', () => {
-        it('should override the user agent that we cached on startup', () => {
+        test('should override the user agent that we cached on startup', () => {
             Browser.overrideUserAgent('my_browser is Opera/09234.2345.22');
             const name = Browser.getName();
-            expect(name).to.equal('Opera');
+            expect(name).toBe('Opera');
         });
 
-        it('should reset the cached browser name, allowing it to refresh on next getName() call', () => {
+        test('should reset the cached browser name, allowing it to refresh on next getName() call', () => {
             const oldName = Browser.getName();
             Browser.overrideUserAgent('my_browser is OPR/09234.2345.22');
             const newName = Browser.getName();
-            expect(newName).to.not.equal(oldName);
+            expect(newName).not.toBe(oldName);
         });
     });
 
     describe('getName()', () => {
-        it('should return the browser name without checking user agent, if it has already been cached', () => {
-            const userAgentFake = { indexOf: sandbox.stub().returns(1) };
+        test('should return the browser name without checking user agent, if it has already been cached', () => {
+            const userAgentFake = { indexOf: jest.fn(() => 1) };
             Browser.overrideUserAgent(userAgentFake);
             Browser.getName();
             Browser.getName();
             Browser.getName();
             Browser.getName();
-            expect(userAgentFake.indexOf.callCount).to.equal(1);
+            expect(userAgentFake.indexOf).toBeCalledTimes(1);
         });
 
         describe('different user agents', () => {
@@ -54,155 +54,154 @@ describe('lib/Browser', () => {
 
             dp.forEach(browser => {
                 const expected = Object.keys(browser)[0];
-                it(`should get ${expected} as name for user agent`, () => {
+                test(`should get ${expected} as name for user agent`, () => {
                     Browser.overrideUserAgent(browser[expected]);
                     const name = Browser.getName();
-                    expect(name).to.equal(expected);
+                    expect(name).toBe(expected);
                 });
             });
         });
     });
 
     describe('canPlayType()', () => {
-        it('should return false if the type is not "audio" or "video"', () => {
+        test('should return false if the type is not "audio" or "video"', () => {
             const canPlay = Browser.canPlayType('image/jpeg');
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
 
-        it('should create an audio tag to test against if the type is "audio"', () => {
-            const createStub = sandbox.stub(document, 'createElement').returns({});
+        test('should create an audio tag to test against if the type is "audio"', () => {
+            const createStub = jest.spyOn(document, 'createElement').mockReturnValue({});
             Browser.canPlayType('audio/mp3;');
-            expect(createStub).to.be.calledWith('audio');
+            expect(createStub).toBeCalledWith('audio');
         });
 
-        it('should create a video tag to test against if the type is "video"', () => {
-            const createStub = sandbox.stub(document, 'createElement').returns({});
+        test('should create a video tag to test against if the type is "video"', () => {
+            const createStub = jest.spyOn(document, 'createElement').mockReturnValue({});
             Browser.canPlayType('video/avi;');
-            expect(createStub).to.be.calledWith('video');
+            expect(createStub).toBeCalledWith('video');
         });
 
-        it('should return true if the media can "maybe" be played', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => 'maybe' });
+        test('should return true if the media can "maybe" be played', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => 'maybe' });
             const canPlay = Browser.canPlayType('video/avi', 'maybe');
-            expect(canPlay).to.be.true;
+            expect(canPlay).toBe(true);
         });
 
-        it('should return false if the media can not "maybe" be played', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => '' });
+        test('should return false if the media can not "maybe" be played', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => '' });
             const canPlay = Browser.canPlayType('video/avi', 'maybe');
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
 
-        it('should return true if the media can "probably" be played', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => 'probably' });
+        test('should return true if the media can "probably" be played', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => 'probably' });
             const canPlay = Browser.canPlayType('video/avi', 'probably');
-            expect(canPlay).to.be.true;
+            expect(canPlay).toBe(true);
         });
 
-        it('should return false if the media can not "probably" be played', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => '' });
+        test('should return false if the media can not "probably" be played', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => '' });
             const canPlay = Browser.canPlayType('video/avi', 'probably');
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
 
-        it('should return false if the media mime type contains "no"', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => 'no' });
+        test('should return false if the media mime type contains "no"', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => 'no' });
             const canPlay = Browser.canPlayType('video/avi', 'maybe');
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
     });
 
     describe('canPlayH264()', () => {
-        it('should return true if we can "maybe" play file type', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => 'maybe' });
+        test('should return true if we can "maybe" play file type', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => 'maybe' });
             const canPlay = Browser.canPlayH264('video/avi');
-            expect(canPlay).to.be.true;
+            expect(canPlay).toBe(true);
         });
 
-        it('should return true if we cannot "maybe" play the file type, but can "probably" play it', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => 'probably' });
+        test('should return true if we cannot "maybe" play the file type, but can "probably" play it', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => 'probably' });
             const canPlay = Browser.canPlayH264('video/avi');
-            expect(canPlay).to.be.true;
+            expect(canPlay).toBe(true);
         });
 
-        it('should return false if we cannot play the file type', () => {
-            sandbox.stub(document, 'createElement').returns({ canPlayType: () => '' });
+        test('should return false if we cannot play the file type', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({ canPlayType: () => '' });
             const canPlay = Browser.canPlayH264('video/avi');
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
     });
 
     describe('canPlayH264Baseline()', () => {
-        it('should call "canPlayH264" with the MIME_H264_BASELINE mime type', () => {
-            const stub = sandbox.stub(Browser, 'canPlayH264');
+        test('should call "canPlayH264" with the MIME_H264_BASELINE mime type', () => {
+            const stub = jest.spyOn(Browser, 'canPlayH264');
             Browser.canPlayH264Baseline();
-            expect(stub).to.be.calledWith(MIME_H264_BASELINE);
+            expect(stub).toBeCalledWith(MIME_H264_BASELINE);
         });
     });
 
     describe('canPlayH264Main()', () => {
-        it('should call "canPlayH264" with the MIME_H264_MAIN mime type', () => {
-            const stub = sandbox.stub(Browser, 'canPlayH264');
+        test('should call "canPlayH264" with the MIME_H264_MAIN mime type', () => {
+            const stub = jest.spyOn(Browser, 'canPlayH264');
             Browser.canPlayH264Main();
-            expect(stub).to.be.calledWith(MIME_H264_MAIN);
+            expect(stub).toBeCalledWith(MIME_H264_MAIN);
         });
     });
 
     describe('canPlayH264High()', () => {
-        it('should call "canPlayH264" with the MIME_H264_HIGH mime type', () => {
-            const stub = sandbox.stub(Browser, 'canPlayH264');
+        test('should call "canPlayH264" with the MIME_H264_HIGH mime type', () => {
+            const stub = jest.spyOn(Browser, 'canPlayH264');
             Browser.canPlayH264High();
-            expect(stub).to.be.calledWith(MIME_H264_HIGH);
+            expect(stub).toBeCalledWith(MIME_H264_HIGH);
         });
     });
 
     describe('canPlayMP3()', () => {
-        it('should invoke "canPlayType" with "audio/mpeg" to check if it can "maybe" play', () => {
-            const stub = sandbox.stub(Browser, 'canPlayType');
+        test('should invoke "canPlayType" with "audio/mpeg" to check if it can "maybe" play', () => {
+            const stub = jest.spyOn(Browser, 'canPlayType');
             Browser.canPlayMP3();
-            expect(stub).to.be.calledWith('audio/mpeg', 'maybe');
+            expect(stub).toBeCalledWith('audio/mpeg', 'maybe');
         });
 
-        it('should invoke "canPlayType" to see if it can "probably" play, and cannot "maybe" play', () => {
-            const stub = sandbox.stub(Browser, 'canPlayType');
-            stub.withArgs('audio/mpeg', 'maybe').returns(false);
+        test('should invoke "canPlayType" to see if it can "probably" play, and cannot "maybe" play', () => {
+            const stub = jest.spyOn(Browser, 'canPlayType').mockReturnValue(false);
             Browser.canPlayMP3();
-            expect(stub).to.be.calledWith('audio/mpeg', 'probably');
+            expect(stub).toBeCalledWith('audio/mpeg', 'probably');
         });
     });
 
     describe('canPlayDash()', () => {
-        it('should return false if there is no global Media Source', () => {
+        test('should return false if there is no global Media Source', () => {
             global.MediaSource = undefined;
             const canPlay = Browser.canPlayDash();
-            expect(canPlay).to.be.false;
+            expect(canPlay).toBe(false);
         });
 
-        it('should invoke "isTypeSupported" on the media source if there is a Media Source, and can check type', () => {
+        test('should invoke "isTypeSupported" on the media source if there is a Media Source, and can check type', () => {
             global.MediaSource = {
-                isTypeSupported: sandbox.stub(),
+                isTypeSupported: jest.fn(),
             };
             Browser.canPlayDash();
-            expect(global.MediaSource.isTypeSupported).to.be.called;
+            expect(global.MediaSource.isTypeSupported).toBeCalled();
         });
 
-        it('should invoke "canPlayH264High()" if there is a Media Source, but cannot check type', () => {
+        test('should invoke "canPlayH264High()" if there is a Media Source, but cannot check type', () => {
             global.MediaSource = {};
-            const stub = sandbox.stub(Browser, 'canPlayH264High');
+            const stub = jest.spyOn(Browser, 'canPlayH264High');
             Browser.canPlayDash();
-            expect(stub).to.be.called;
+            expect(stub).toBeCalled();
         });
     });
 
     describe('hasMSE()', () => {
-        it('should return true if there is Media Source Extensions support', () => {
+        test('should return true if there is Media Source Extensions support', () => {
             global.MediaSource = {};
-            expect(Browser.hasMSE()).to.be.true;
+            expect(Browser.hasMSE()).toBe(true);
         });
 
-        it('should return false if there is not Media Source Extensions support', () => {
+        test('should return false if there is not Media Source Extensions support', () => {
             global.MediaSource = undefined;
-            expect(Browser.hasMSE()).to.be.false;
+            expect(Browser.hasMSE()).toBe(false);
         });
     });
 
@@ -214,54 +213,54 @@ describe('lib/Browser', () => {
             Browser.clearGLContext();
         });
 
-        it('should return false if the webgl context cannot be created', () => {
-            sandbox.stub(document, 'createElement').returns({
+        test('should return false if the webgl context cannot be created', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => null,
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             });
-            expect(Browser.hasWebGL()).to.be.false;
+            expect(Browser.hasWebGL()).toBe(false);
         });
 
-        it('should return false if the experimental-webgl context cannot be created', () => {
+        test('should return false if the experimental-webgl context cannot be created', () => {
             const getContextStub = sandbox.stub();
             getContextStub.withArgs('webgl').returns(null);
             getContextStub.withArgs('experimental-webgl').returns(undefined);
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: getContextStub,
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             });
-            expect(Browser.hasWebGL()).to.be.false;
+            expect(Browser.hasWebGL()).toBe(false);
         });
 
-        it('should return true if a webgl context can be created', () => {
-            sandbox.stub(document, 'createElement').returns({
+        test('should return true if a webgl context can be created', () => {
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             });
-            expect(Browser.hasWebGL()).to.be.true;
+            expect(Browser.hasWebGL()).toBe(true);
             sandbox.restore();
         });
 
-        it('should only create DOM content on the first call to hasWebGL()', () => {
-            const create = sandbox.stub(document, 'createElement').returns({
+        test('should only create DOM content on the first call to hasWebGL()', () => {
+            const create = jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
-                addEventListener: sandbox.stub(),
+                addEventListener: jest.fn(),
             });
             Browser.hasWebGL();
             Browser.hasWebGL();
             Browser.hasWebGL();
             Browser.hasWebGL();
-            expect(create.callCount).to.equal(1);
+            expect(create).toBeCalledTimes(1);
         });
     });
 
     describe('clearGLContext()', () => {
-        it('should do nothing if a gl context does not exist', () => {
+        test('should do nothing if a gl context does not exist', () => {
             const gl = {
-                getExtension: sandbox.stub(),
+                getExtension: jest.fn(),
             };
 
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
                 addEventListener: () => {},
             });
@@ -272,15 +271,15 @@ describe('lib/Browser', () => {
             // And the call to a null gl context
             Browser.clearGLContext();
 
-            expect(gl.getExtension.callCount).to.equal(1);
+            expect(gl.getExtension).toBeCalledTimes(1);
         });
 
-        it('should invoke "getExtension()" on the gl context to get the WEBGL_lose_context extension', () => {
+        test('should invoke "getExtension()" on the gl context to get the WEBGL_lose_context extension', () => {
             const gl = {
-                getExtension: sandbox.stub(),
+                getExtension: jest.fn(),
             };
 
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
                 addEventListener: () => {},
             });
@@ -289,19 +288,19 @@ describe('lib/Browser', () => {
             Browser.hasWebGL();
             Browser.clearGLContext();
 
-            expect(gl.getExtension).to.be.calledWith(EXT_LOSE_CONTEXT);
+            expect(gl.getExtension).toBeCalledWith(EXT_LOSE_CONTEXT);
         });
 
-        it('should invoke "loseContext()" to clean up the webgl context', () => {
+        test('should invoke "loseContext()" to clean up the webgl context', () => {
             const loseExt = {
-                loseContext: sandbox.stub(),
+                loseContext: jest.fn(),
             };
 
             const gl = {
                 getExtension: () => loseExt,
             };
 
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
                 addEventListener: () => {},
             });
@@ -310,7 +309,7 @@ describe('lib/Browser', () => {
             Browser.hasWebGL();
             Browser.clearGLContext();
 
-            expect(loseExt.loseContext).to.be.called;
+            expect(loseExt.loseContext).toBeCalled();
         });
     });
 
@@ -319,174 +318,174 @@ describe('lib/Browser', () => {
             Browser.clearGLContext();
         });
 
-        it('should return false if WebGL is not supported by the browser', () => {
-            sandbox.stub(Browser, 'hasWebGL').returns(false);
+        test('should return false if WebGL is not supported by the browser', () => {
+            jest.spyOn(Browser, 'hasWebGL').mockReturnValue(false);
             const supports = Browser.supportsModel3D();
-            expect(supports).to.be.false;
+            expect(supports).toBe(false);
         });
 
-        it('should return true if Standard Derivatives is supported', () => {
+        test('should return true if Standard Derivatives is supported', () => {
             const gl = {
-                getExtension: sandbox.stub().returns({}),
+                getExtension: jest.fn(() => ({})),
             };
 
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
                 addEventListener: () => {},
             });
 
             const supports = Browser.supportsModel3D();
-            expect(supports).to.be.true;
+            expect(supports).toBe(true);
         });
 
-        it('should return false if Standard Derivatives is unsupported', () => {
+        test('should return false if Standard Derivatives is unsupported', () => {
             const gl = {
-                getExtension: sandbox.stub().returns(null),
+                getExtension: jest.fn(() => null),
             };
 
-            sandbox.stub(document, 'createElement').returns({
+            jest.spyOn(document, 'createElement').mockReturnValue({
                 getContext: () => gl,
                 addEventListener: () => {},
             });
 
             const supports = Browser.supportsModel3D();
-            expect(supports).to.be.false;
+            expect(supports).toBe(false);
         });
     });
 
     describe('hasFlash()', () => {
-        it('should return false if creation of Flash object errors out and no Flash mime type is supported', () => {
+        test('should return false if creation of Flash object errors out and no Flash mime type is supported', () => {
             global.ActiveXObject = undefined;
             global.navigator.mimeTypes = [];
 
             const hasFlash = Browser.hasFlash();
-            expect(hasFlash).to.be.false;
+            expect(hasFlash).toBe(false);
         });
 
-        it('should return return true if creation of Flash object fails and Flash mime type is supported', () => {
+        test('should return return true if creation of Flash object fails and Flash mime type is supported', () => {
             global.ActiveXObject = undefined;
             global.navigator.mimeTypes['application/x-shockwave-flash'] = {};
 
             const hasFlash = Browser.hasFlash();
-            expect(hasFlash).to.be.true;
+            expect(hasFlash).toBe(true);
         });
 
-        it('should return true if we can successfully create a Flash Object', () => {
+        test('should return true if we can successfully create a Flash Object', () => {
             global.ActiveXObject = function ActiveXObject() {};
 
             const hasFlash = Browser.hasFlash();
-            expect(hasFlash).to.be.true;
+            expect(hasFlash).toBe(true);
         });
     });
 
     describe('hasSVG()', () => {
-        it('should proxy a call to document implementation to check for svg basic structure support', () => {
-            const featureCheck = sandbox.stub(document.implementation, 'hasFeature');
+        test('should proxy a call to document implementation to check for svg basic structure support', () => {
+            const featureCheck = jest.spyOn(document.implementation, 'hasFeature');
             Browser.hasSVG();
-            expect(featureCheck).to.be.calledWith('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
+            expect(featureCheck).toBeCalledWith('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
         });
     });
 
     describe('isMobile()', () => {
-        it('should return true if a mobile device', () => {
+        test('should return true if a mobile device', () => {
             Browser.overrideUserAgent('iphone and ipad and iphone');
             const isMobile = Browser.isMobile();
-            expect(isMobile).to.be.true;
+            expect(isMobile).toBe(true);
         });
 
-        it('should return false if not a mobile device', () => {
+        test('should return false if not a mobile device', () => {
             Browser.overrideUserAgent('super browser');
             const isMobile = Browser.isMobile();
-            expect(isMobile).to.be.false;
+            expect(isMobile).toBe(false);
         });
     });
 
     describe('canDownload()', () => {
-        it('should return true if the browser is not mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(false);
+        test('should return true if the browser is not mobile', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(false);
             const canDownload = Browser.canDownload();
-            expect(canDownload).to.be.true;
+            expect(canDownload).toBe(true);
         });
 
-        it('should return false if externalHost is present, and mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+        test('should return false if externalHost is present, and mobile', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
             window.externalHost = {};
             const canDownload = Browser.canDownload();
-            expect(canDownload).to.be.false;
+            expect(canDownload).toBe(false);
             window.externalHost = undefined;
         });
 
-        it("should return false if the browser doesn't support downloads, and mobile", () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+        test("should return false if the browser doesn't support downloads, and mobile", () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
             window.externalHost = undefined;
             sandbox
                 .stub(document, 'createElement')
                 .withArgs('a')
                 .returns({});
             const canDownload = Browser.canDownload();
-            expect(canDownload).to.be.false;
+            expect(canDownload).toBe(false);
         });
 
-        it('should return true if the browser does support downloads, and mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+        test('should return true if the browser does support downloads, and mobile', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
             window.externalHost = undefined;
             sandbox
                 .stub(document, 'createElement')
                 .withArgs('a')
                 .returns({ download: true });
             const canDownload = Browser.canDownload();
-            expect(canDownload).to.be.true;
+            expect(canDownload).toBe(true);
         });
     });
 
     describe('isIOS()', () => {
-        it('should return true if device is on ios', () => {
+        test('should return true if device is on ios', () => {
             Browser.overrideUserAgent('iPhone');
             const ios = Browser.isIOS();
-            expect(ios).to.be.true;
+            expect(ios).toBe(true);
         });
 
-        it('should return false if device is not on ios', () => {
+        test('should return false if device is not on ios', () => {
             Browser.overrideUserAgent('iPhooney');
             const ios = Browser.isIOS();
-            expect(ios).to.be.false;
+            expect(ios).toBe(false);
         });
     });
 
     describe('isAndroid()', () => {
-        it('should return true if device is on android', () => {
+        test('should return true if device is on android', () => {
             Browser.overrideUserAgent('Android');
             const android = Browser.isAndroid();
-            expect(android).to.be.true;
+            expect(android).toBe(true);
         });
 
-        it('should return false if device is not on android', () => {
+        test('should return false if device is not on android', () => {
             Browser.overrideUserAgent('Anger-oid');
             const android = Browser.isAndroid();
-            expect(android).to.be.false;
+            expect(android).toBe(false);
         });
     });
 
     describe('hasFontIssue()', () => {
-        it('should return true if device is on ios and is OS 10.3.XX', () => {
+        test('should return true if device is on ios and is OS 10.3.XX', () => {
             Browser.overrideUserAgent('iPhone OS 10_3_90 safari/2');
             const hasIssue = Browser.hasFontIssue();
-            expect(hasIssue).to.be.true;
+            expect(hasIssue).toBe(true);
         });
 
-        it('should return false if device is on ios and is not OS 10.3.XX', () => {
+        test('should return false if device is on ios and is not OS 10.3.XX', () => {
             Browser.overrideUserAgent('iPhone OS 10_5_90 safari/2');
             const hasIssue = Browser.hasFontIssue();
-            expect(hasIssue).to.be.false;
+            expect(hasIssue).toBe(false);
         });
     });
 
     describe('getBrowserInfo()', () => {
-        it('should return browser capabilities', () => {
+        test('should return browser capabilities', () => {
             const browserInfo = Browser.getBrowserInfo();
             const expectedFields = ['name', 'swf', 'svg', 'mse', 'mp3', 'dash', 'h264'];
 
-            expect(expectedFields.every(field => typeof browserInfo[field] !== 'undefined')).to.be.true;
+            expect(expectedFields.every(field => typeof browserInfo[field] !== 'undefined')).toBe(true);
         });
     });
 });

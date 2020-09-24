@@ -3,8 +3,8 @@ import Model3DLoader from '../Model3DLoader';
 import Browser from '../../../../Browser';
 import PreviewError from '../../../../PreviewError';
 
-const sandbox = sinon.sandbox.create();
 let file;
+
 describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
     beforeEach(() => {
         file = {
@@ -20,21 +20,13 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
         };
     });
 
-    afterEach(() => {
-        file = undefined;
-        sandbox.verifyAndRestore();
-    });
-
     describe('determineViewer()', () => {
-        it("should throw an error if browser doesn't support 3D and it is a 3d file", () => {
-            sandbox.stub(Browser, 'supportsModel3D').returns(false);
-            expect(() => Model3DLoader.determineViewer(file)).to.throw(
-                PreviewError,
-                /browser doesn’t support preview for 3D models/,
-            );
+        test("should throw an error if browser doesn't support 3D and it is a 3d file", () => {
+            jest.spyOn(Browser, 'supportsModel3D').mockReturnValue(false);
+            expect(() => Model3DLoader.determineViewer(file)).toThrowError(PreviewError);
         });
 
-        it("should not throw an error if browser doesn't support 3D and it is a non 3d file", () => {
+        test("should not throw an error if browser doesn't support 3D and it is a non 3d file", () => {
             file = {
                 extension: 'pdf',
                 name: 'blah.pdf',
@@ -47,16 +39,13 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
                 },
             };
 
-            sandbox.stub(Browser, 'supportsModel3D').returns(false);
-            expect(() => Model3DLoader.determineViewer(file)).to.not.throw(
-                PreviewError,
-                /browser doesn't support preview for 3D models/,
-            );
+            jest.spyOn(Browser, 'supportsModel3D').mockReturnValue(false);
+            expect(() => Model3DLoader.determineViewer(file)).not.toThrowError(PreviewError);
         });
 
-        it('should return viewer if browser supports 3D', () => {
-            sandbox.stub(Browser, 'supportsModel3D').returns(true);
-            expect(Model3DLoader.determineViewer(file)).to.equal(Model3DLoader.viewers[0]);
+        test('should return viewer if browser supports 3D', () => {
+            jest.spyOn(Browser, 'supportsModel3D').mockReturnValue(true);
+            expect(Model3DLoader.determineViewer(file)).toBe(Model3DLoader.viewers[0]);
         });
     });
 });

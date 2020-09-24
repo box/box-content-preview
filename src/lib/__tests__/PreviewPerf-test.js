@@ -8,21 +8,18 @@ describe('lib/PreviewPerf', () => {
             getEntriesByType: type => entries.filter(entry => entry.type === type),
         };
     };
-    const sandbox = sinon.sandbox.create();
     let previewPerf;
 
     beforeEach(() => {
-        sandbox.stub(window, 'PerformanceObserver').returns({
-            disconnect: sandbox.stub(),
-            observe: sandbox.stub(),
-        });
+        window.PerformanceObserver = jest.fn(() => ({
+            disconnect: jest.fn(),
+            observe: jest.fn(),
+        }));
 
         previewPerf = new PreviewPerf();
     });
 
     afterEach(() => {
-        sandbox.verifyAndRestore();
-
         if (previewPerf) {
             previewPerf.destroy();
             previewPerf = null;
@@ -30,20 +27,20 @@ describe('lib/PreviewPerf', () => {
     });
 
     describe('constructor', () => {
-        it('should create performance observers for applicable metrics', () => {
-            expect(window.PerformanceObserver).to.be.calledWith(previewPerf.handleFcp);
-            expect(window.PerformanceObserver).to.be.calledWith(previewPerf.handleLcp);
+        test('should create performance observers for applicable metrics', () => {
+            expect(window.PerformanceObserver).toBeCalledWith(previewPerf.handleFcp);
+            expect(window.PerformanceObserver).toBeCalledWith(previewPerf.handleLcp);
         });
     });
 
     describe('report', () => {
-        it('should return the current performance report', () => {
-            expect(previewPerf.report()).to.deep.equal(previewPerf.performanceReport);
+        test('should return the current performance report', () => {
+            expect(previewPerf.report()).toBe(previewPerf.performanceReport);
         });
     });
 
     describe('handleFcp', () => {
-        it('should update the performance report the first rounded FCP metric', () => {
+        test('should update the performance report the first rounded FCP metric', () => {
             previewPerf.handleFcp(
                 getPerfEntries([
                     {
@@ -53,10 +50,10 @@ describe('lib/PreviewPerf', () => {
                 ]),
             );
 
-            expect(previewPerf.report()).to.include({ fcp: 501 });
+            expect(previewPerf.report()).toEqual({ fcp: 501 });
         });
 
-        it('should update the performance report with a zero value if the metric is not present', () => {
+        test('should update the performance report with a zero value if the metric is not present', () => {
             previewPerf.handleFcp(
                 getPerfEntries([
                     {
@@ -66,12 +63,12 @@ describe('lib/PreviewPerf', () => {
                 ]),
             );
 
-            expect(previewPerf.report()).to.include({ fcp: 0 });
+            expect(previewPerf.report()).toEqual({ fcp: 0 });
         });
     });
 
     describe('handleLcp', () => {
-        it('should update the performance report with the last rounded LCP metric', () => {
+        test('should update the performance report with the last rounded LCP metric', () => {
             previewPerf.handleLcp(
                 getPerfEntries([
                     {
@@ -89,10 +86,10 @@ describe('lib/PreviewPerf', () => {
                 ]),
             );
 
-            expect(previewPerf.report()).to.include({ lcp: 3001 });
+            expect(previewPerf.report()).toEqual({ lcp: 3001 });
         });
 
-        it('should update the performance report with a zero value if the metric is not present', () => {
+        test('should update the performance report with a zero value if the metric is not present', () => {
             previewPerf.handleLcp(
                 getPerfEntries([
                     {
@@ -102,7 +99,7 @@ describe('lib/PreviewPerf', () => {
                 ]),
             );
 
-            expect(previewPerf.report()).to.include({ lcp: 0 });
+            expect(previewPerf.report()).toEqual({ lcp: 0 });
         });
     });
 });

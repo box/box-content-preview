@@ -2,7 +2,7 @@
 import ArchiveLoader from '../ArchiveLoader';
 
 let stubFile;
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('lib/viewers/archive/ArchiveLoader', () => {
     beforeEach(() => {
@@ -30,8 +30,8 @@ describe('lib/viewers/archive/ArchiveLoader', () => {
     });
 
     describe('determineViewer()', () => {
-        it('should return archive viewer', () => {
-            expect(ArchiveLoader.determineViewer(stubFile)).to.equal(ArchiveLoader.viewers[0]);
+        test('should return archive viewer', () => {
+            expect(ArchiveLoader.determineViewer(stubFile)).toBe(ArchiveLoader.viewers[0]);
         });
     });
 });

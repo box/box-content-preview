@@ -4,11 +4,9 @@ import VirtualScroller from '../VirtualScroller';
 let virtualScroller;
 let stubs = {};
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('VirtualScroller', () => {
-    before(() => fixture.setBase('src/lib'));
-
     beforeEach(() => {
         fixture.load('__tests__/VirtualScroller-test.html');
         virtualScroller = new VirtualScroller(document.getElementById('test-virtual-scroller'));
@@ -27,37 +25,37 @@ describe('VirtualScroller', () => {
     });
 
     describe('constructor()', () => {
-        it('should initialize anchorEl and previousScrollTop', () => {
-            expect(virtualScroller.anchorEl.id).to.be.equal('test-virtual-scroller');
-            expect(virtualScroller.previousScrollTop).to.be.equal(0);
+        test('should initialize anchorEl and previousScrollTop', () => {
+            expect(virtualScroller.anchorEl.id).toBe('test-virtual-scroller');
+            expect(virtualScroller.previousScrollTop).toBe(0);
         });
     });
 
     describe('destroy()', () => {
-        it('should remove the HTML element references', () => {
+        test('should remove the HTML element references', () => {
             const scrollingEl = { remove: () => {} };
-            sandbox.stub(scrollingEl, 'remove');
+            jest.spyOn(scrollingEl, 'remove').mockImplementation();
 
             virtualScroller.scrollingEl = scrollingEl;
             virtualScroller.listEl = {};
 
             virtualScroller.destroy();
 
-            expect(scrollingEl.remove).to.be.called;
-            expect(virtualScroller.scrollingEl).to.be.null;
-            expect(virtualScroller.listEl).to.be.null;
+            expect(scrollingEl.remove).toBeCalled();
+            expect(virtualScroller.scrollingEl).toBeNull();
+            expect(virtualScroller.listEl).toBeNull();
         });
     });
 
     describe('init()', () => {
         beforeEach(() => {
-            stubs.validateRequiredConfig = sandbox.stub(virtualScroller, 'validateRequiredConfig');
-            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+            stubs.validateRequiredConfig = jest.spyOn(virtualScroller, 'validateRequiredConfig').mockImplementation();
+            stubs.renderItems = jest.spyOn(virtualScroller, 'renderItems').mockImplementation();
         });
 
-        it('should parse the config object', () => {
-            stubs.renderItemFn = sandbox.stub();
-            stubs.bindDOMListeners = sandbox.stub(virtualScroller, 'bindDOMListeners');
+        test('should parse the config object', () => {
+            stubs.renderItemFn = jest.fn();
+            stubs.bindDOMListeners = jest.spyOn(virtualScroller, 'bindDOMListeners').mockImplementation();
 
             virtualScroller.init({
                 totalItems: 10,
@@ -66,26 +64,27 @@ describe('VirtualScroller', () => {
                 renderItemFn: stubs.renderItemFn,
             });
 
-            expect(virtualScroller.totalItems).to.be.equal(10);
-            expect(virtualScroller.itemHeight).to.be.equal(100);
-            expect(virtualScroller.containerHeight).to.be.equal(500);
-            expect(virtualScroller.renderItemFn).to.be.equal(stubs.renderItemFn);
-            expect(virtualScroller.margin).to.be.equal(0);
-            expect(virtualScroller.totalViewItems).to.be.equal(5);
-            expect(virtualScroller.maxBufferHeight).to.be.equal(500);
-            expect(virtualScroller.maxRenderedItems).to.be.equal(18);
+            expect(virtualScroller.totalItems).toBe(10);
+            expect(virtualScroller.itemHeight).toBe(100);
+            expect(virtualScroller.containerHeight).toBe(500);
+            expect(virtualScroller.renderItemFn).toBe(stubs.renderItemFn);
+            expect(virtualScroller.margin).toBe(0);
+            expect(virtualScroller.totalViewItems).toBe(5);
+            expect(virtualScroller.maxBufferHeight).toBe(500);
+            expect(virtualScroller.maxRenderedItems).toBe(18);
 
-            expect(virtualScroller.scrollingEl.classList.contains('bp-vs')).to.be.true;
-            expect(virtualScroller.listEl.classList.contains('bp-vs-list')).to.be.true;
+            expect(virtualScroller.scrollingEl.classList.contains('bp-vs')).toBe(true);
+            expect(virtualScroller.listEl.classList.contains('bp-vs-list')).toBe(true);
 
-            expect(stubs.renderItems).to.be.called;
-            expect(stubs.bindDOMListeners).to.be.called;
+            expect(stubs.renderItems).toBeCalled();
+            expect(stubs.bindDOMListeners).toBeCalled();
         });
 
-        it('should call onInit if provided', () => {
+        test('should call onInit if provided', () => {
             const mockListInfo = {};
-            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo').returns(mockListInfo);
-            stubs.onInitHandler = sandbox.stub();
+            stubs.getCurrentListInfo = jest.spyOn(virtualScroller, 'getCurrentListInfo').mockReturnValue(mockListInfo);
+            stubs.onInitHandler = jest.fn();
+            stubs.renderItemFn = jest.fn();
 
             virtualScroller.init({
                 totalItems: 10,
@@ -95,11 +94,11 @@ describe('VirtualScroller', () => {
                 onInit: stubs.onInitHandler,
             });
 
-            expect(stubs.onInitHandler).to.be.calledWith(mockListInfo);
+            expect(stubs.onInitHandler).toBeCalledWith(mockListInfo);
         });
 
-        it('should call renderItems with the provided initialRowIndex', () => {
-            stubs.renderItemFn = sandbox.stub();
+        test('should call renderItems with the provided initialRowIndex', () => {
+            stubs.renderItemFn = jest.fn();
 
             virtualScroller.init({
                 totalItems: 10,
@@ -109,11 +108,11 @@ describe('VirtualScroller', () => {
                 initialRowIndex: 50,
             });
 
-            expect(stubs.renderItems).to.be.calledWith(50);
+            expect(stubs.renderItems).toBeCalledWith(50);
         });
 
-        it('should call renderItems with 0 if initialRowIndex falls within first window', () => {
-            stubs.renderItemFn = sandbox.stub();
+        test('should call renderItems with 0 if initialRowIndex falls within first window', () => {
+            stubs.renderItemFn = jest.fn();
 
             virtualScroller.init({
                 totalItems: 10,
@@ -123,12 +122,12 @@ describe('VirtualScroller', () => {
                 initialRowIndex: 2,
             });
 
-            expect(stubs.renderItems).to.be.calledWith(0);
+            expect(stubs.renderItems).toBeCalledWith(0);
         });
     });
 
     describe('validateRequiredConfig()', () => {
-        it('should not throw an error if config is good', () => {
+        test('should not throw an error if config is good', () => {
             expect(() =>
                 virtualScroller.validateRequiredConfig({
                     totalItems: 10,
@@ -136,7 +135,7 @@ describe('VirtualScroller', () => {
                     renderItemFn: () => {},
                     containerHeight: 500,
                 }),
-            ).to.not.throw();
+            ).not.toThrow();
         });
 
         [
@@ -152,39 +151,39 @@ describe('VirtualScroller', () => {
                 config: { totalItems: 10, itemHeight: 100, renderItemFn: () => {}, containerHeight: '500' },
             },
         ].forEach(data => {
-            it(`should throw an error if config is bad: ${data.name}`, () => {
-                expect(() => virtualScroller.validateRequiredConfig(data.config)).to.throw();
+            test(`should throw an error if config is bad: ${data.name}`, () => {
+                expect(() => virtualScroller.validateRequiredConfig(data.config)).toThrow();
             });
         });
     });
 
     describe('onScrollHandler()', () => {
         beforeEach(() => {
-            stubs.renderItems = sandbox.stub(virtualScroller, 'renderItems');
+            stubs.renderItems = jest.spyOn(virtualScroller, 'renderItems').mockImplementation();
             virtualScroller.maxBufferHeight = 100;
         });
 
-        it('should not proceed if the scroll movement < maxBufferHeight', () => {
+        test('should not proceed if the scroll movement < maxBufferHeight', () => {
             virtualScroller.previousScrollTop = 0;
             virtualScroller.onScrollHandler({ target: { scrollTop: 10 } });
 
-            expect(stubs.renderItems).to.not.be.called;
+            expect(stubs.renderItems).not.toBeCalled();
         });
 
-        it('should proceed if positive scroll movement > maxBufferHeight', () => {
+        test('should proceed if positive scroll movement > maxBufferHeight', () => {
             virtualScroller.previousScrollTop = 0;
             virtualScroller.onScrollHandler({ target: { scrollTop: 101 } });
 
-            expect(stubs.renderItems).to.be.called;
-            expect(virtualScroller.previousScrollTop).to.be.equal(101);
+            expect(stubs.renderItems).toBeCalled();
+            expect(virtualScroller.previousScrollTop).toBe(101);
         });
 
-        it('should proceed if negative scroll movement > maxBufferHeight', () => {
+        test('should proceed if negative scroll movement > maxBufferHeight', () => {
             virtualScroller.previousScrollTop = 102;
             virtualScroller.onScrollHandler({ target: { scrollTop: 1 } });
 
-            expect(stubs.renderItems).to.be.called;
-            expect(virtualScroller.previousScrollTop).to.be.equal(1);
+            expect(stubs.renderItems).toBeCalled();
+            expect(virtualScroller.previousScrollTop).toBe(1);
         });
     });
 
@@ -193,122 +192,126 @@ describe('VirtualScroller', () => {
         let curListEl;
 
         beforeEach(() => {
-            stubs.appendChild = sandbox.stub();
-            stubs.insertBefore = sandbox.stub();
+            stubs.appendChild = jest.fn();
+            stubs.insertBefore = jest.fn();
             curListEl = { appendChild: stubs.appendChild, insertBefore: stubs.insertBefore };
             newListEl = {};
             virtualScroller.listEl = curListEl;
             virtualScroller.maxRenderedItems = 10;
             virtualScroller.totalItems = 100;
 
-            stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
-            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
-            stubs.createItems = sandbox.stub(virtualScroller, 'createItems');
-            stubs.deleteItems = sandbox.stub(virtualScroller, 'deleteItems');
-            stubs.createDocumentFragment = sandbox.stub(document, 'createDocumentFragment').returns(newListEl);
+            stubs.renderItem = jest.spyOn(virtualScroller, 'renderItem').mockImplementation();
+            stubs.getCurrentListInfo = jest.spyOn(virtualScroller, 'getCurrentListInfo').mockImplementation();
+            stubs.createItems = jest.spyOn(virtualScroller, 'createItems').mockImplementation();
+            stubs.deleteItems = jest.spyOn(virtualScroller, 'deleteItems').mockImplementation();
+            stubs.createDocumentFragment = jest.spyOn(document, 'createDocumentFragment').mockReturnValue(newListEl);
         });
 
-        it('should render the whole range of items (no reuse)', () => {
-            stubs.getCurrentListInfo.returns({
+        test('should render the whole range of items (no reuse)', () => {
+            stubs.getCurrentListInfo.mockReturnValue({
                 startOffset: -1,
                 endOffset: -1,
             });
             virtualScroller.renderItems();
 
-            expect(stubs.deleteItems).to.be.calledWith(curListEl);
-            expect(stubs.createItems).to.be.calledWith(newListEl, 0, 10);
-            expect(stubs.appendChild).to.be.called;
-            expect(stubs.insertBefore).not.to.be.called;
+            expect(stubs.deleteItems).toBeCalledWith(curListEl);
+            expect(stubs.createItems).toBeCalledWith(newListEl, 0, 10);
+            expect(stubs.appendChild).toBeCalled();
+            expect(stubs.insertBefore).not.toBeCalled();
         });
 
-        it('should render the last window into the list', () => {
-            stubs.getCurrentListInfo.returns({
+        test('should render the last window into the list', () => {
+            stubs.getCurrentListInfo.mockReturnValue({
                 startOffset: -1,
                 endOffset: -1,
             });
             virtualScroller.renderItems(95);
 
-            expect(stubs.deleteItems).to.be.calledWith(curListEl);
-            expect(stubs.createItems).to.be.calledWith(newListEl, 90, 99);
-            expect(stubs.appendChild).to.be.called;
-            expect(stubs.insertBefore).not.to.be.called;
+            expect(stubs.deleteItems).toBeCalledWith(curListEl);
+            expect(stubs.createItems).toBeCalledWith(newListEl, 90, 99);
+            expect(stubs.appendChild).toBeCalled();
+            expect(stubs.insertBefore).not.toBeCalled();
         });
 
-        it('should render items above the current list', () => {
-            stubs.getCurrentListInfo.returns({
+        test('should render items above the current list', () => {
+            stubs.getCurrentListInfo.mockReturnValue({
                 startOffset: 20,
                 endOffset: 30,
             });
             virtualScroller.renderItems(15);
 
-            expect(stubs.deleteItems).to.be.called;
-            expect(stubs.createItems).to.be.calledWith(newListEl, 15, 19);
-            expect(stubs.appendChild).not.to.be.called;
-            expect(stubs.insertBefore).to.be.called;
+            expect(stubs.deleteItems).toBeCalled();
+            expect(stubs.createItems).toBeCalledWith(newListEl, 15, 19);
+            expect(stubs.appendChild).not.toBeCalled();
+            expect(stubs.insertBefore).toBeCalled();
         });
     });
 
     describe('renderItem()', () => {
-        it('should render an item absolutely positioned with arbitrary content', () => {
+        test('should render an item absolutely positioned with arbitrary content', () => {
             const renderedThumbnail = document.createElement('button');
             renderedThumbnail.className = 'rendered-thumbnail';
-            stubs.renderItemFn = sandbox.stub().returns(renderedThumbnail);
+            stubs.renderItemFn = jest.fn().mockReturnValue(renderedThumbnail);
 
             virtualScroller.itemHeight = 100;
             virtualScroller.margin = 0;
             virtualScroller.renderItemFn = stubs.renderItemFn;
 
             const item = virtualScroller.renderItem(0);
-            expect(stubs.renderItemFn).to.be.called;
-            expect(item.classList.contains('bp-vs-list-item')).to.be.true;
-            expect(item.firstChild.classList.contains('rendered-thumbnail')).to.be.true;
+            expect(stubs.renderItemFn).toBeCalled();
+            expect(item.classList.contains('bp-vs-list-item')).toBe(true);
+            expect(item.firstChild.classList.contains('rendered-thumbnail')).toBe(true);
         });
 
-        it('should still render the item even if renderItemFn throws an error', () => {
+        test('should still render the item even if renderItemFn throws an error', () => {
             const renderedThumbnail = document.createElement('button');
             renderedThumbnail.className = 'rendered-thumbnail';
-            stubs.renderItemFn = sandbox.stub().throws();
+
+            stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+            stubs.renderItemFn = jest.fn(() => {
+                throw new Error();
+            });
 
             virtualScroller.itemHeight = 100;
             virtualScroller.margin = 0;
             virtualScroller.renderItemFn = stubs.renderItemFn;
 
             const item = virtualScroller.renderItem(0);
-            expect(stubs.renderItemFn).to.be.called;
-            expect(item.classList.contains('bp-vs-list-item')).to.be.true;
-            expect(item.firstChild).to.be.null;
+            expect(stubs.renderItemFn).toBeCalled();
+            expect(item.classList.contains('bp-vs-list-item')).toBe(true);
+            expect(item.firstChild).toBeNull();
         });
     });
 
     describe('createListElement()', () => {
-        it('should return the list element', () => {
+        test('should return the list element', () => {
             virtualScroller.totalItems = 10;
             virtualScroller.itemHeight = 100;
             virtualScroller.margin = 0;
 
-            expect(virtualScroller.createListElement().classList.contains('bp-vs-list')).to.be.true;
+            expect(virtualScroller.createListElement().classList.contains('bp-vs-list')).toBe(true);
         });
     });
 
     describe('onScrollEndHandler()', () => {
         beforeEach(() => {
-            stubs.getCurrentListInfo = sandbox.stub(virtualScroller, 'getCurrentListInfo');
+            stubs.getCurrentListInfo = jest.spyOn(virtualScroller, 'getCurrentListInfo').mockImplementation();
         });
 
-        it('should do nothing if onScrollEnd is not set', () => {
+        test('should do nothing if onScrollEnd is not set', () => {
             virtualScroller.onScrollEndHandler();
 
-            expect(stubs.getCurrentListInfo).not.to.be.called;
+            expect(stubs.getCurrentListInfo).not.toBeCalled();
         });
 
-        it('should call onScrollEnd with listInfo object', () => {
-            stubs.onScrollEnd = sandbox.stub();
+        test('should call onScrollEnd with listInfo object', () => {
+            stubs.onScrollEnd = jest.fn();
             virtualScroller.onScrollEnd = stubs.onScrollEnd;
 
             virtualScroller.onScrollEndHandler();
 
-            expect(stubs.getCurrentListInfo).to.be.called;
-            expect(stubs.onScrollEnd).to.be.called;
+            expect(stubs.getCurrentListInfo).toBeCalled();
+            expect(stubs.onScrollEnd).toBeCalled();
         });
     });
 
@@ -321,18 +324,18 @@ describe('VirtualScroller', () => {
             item2 = { data: 'bye' };
         });
 
-        it('should return -1 for offsets if elements do not exist', () => {
+        test('should return -1 for offsets if elements do not exist', () => {
             virtualScroller.listEl = {
                 children: [{ children: [item1] }, { children: [item2] }],
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
-            expect(retObj.startOffset).to.be.equal(-1);
-            expect(retObj.endOffset).to.be.equal(-1);
-            expect(retObj.items).to.be.eql([item1, item2]);
+            expect(retObj.startOffset).toBe(-1);
+            expect(retObj.endOffset).toBe(-1);
+            expect(retObj.items).toEqual([item1, item2]);
         });
 
-        it('should return -1 for offsets if data attribute is not a number', () => {
+        test('should return -1 for offsets if data attribute is not a number', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: {} },
                 lastElementChild: { children: [item2], dataset: {} },
@@ -340,12 +343,12 @@ describe('VirtualScroller', () => {
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
-            expect(retObj.startOffset).to.be.equal(-1);
-            expect(retObj.endOffset).to.be.equal(-1);
-            expect(retObj.items).to.be.eql([item1, item2]);
+            expect(retObj.startOffset).toBe(-1);
+            expect(retObj.endOffset).toBe(-1);
+            expect(retObj.items).toEqual([item1, item2]);
         });
 
-        it('should retrieve the correct data attributes for start and end offsets', () => {
+        test('should retrieve the correct data attributes for start and end offsets', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: { bpVsRowIndex: '0' } },
                 lastElementChild: { children: [item2], dataset: { bpVsRowIndex: '10' } },
@@ -353,21 +356,21 @@ describe('VirtualScroller', () => {
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
-            expect(retObj.startOffset).to.be.equal(0);
-            expect(retObj.endOffset).to.be.equal(10);
-            expect(retObj.items).to.be.eql([item1, item2]);
+            expect(retObj.startOffset).toBe(0);
+            expect(retObj.endOffset).toBe(10);
+            expect(retObj.items).toEqual([item1, item2]);
         });
 
-        it('should return [] for items if no children', () => {
+        test('should return [] for items if no children', () => {
             virtualScroller.listEl = {
                 firstElementChild: { children: [item1], dataset: {} },
                 lastElementChild: { children: [item2], dataset: {} },
             };
 
             const retObj = virtualScroller.getCurrentListInfo();
-            expect(retObj.startOffset).to.be.equal(-1);
-            expect(retObj.endOffset).to.be.equal(-1);
-            expect(retObj.items).to.be.empty;
+            expect(retObj.startOffset).toBe(-1);
+            expect(retObj.endOffset).toBe(-1);
+            expect(retObj.items).toEqual([]);
         });
     });
 
@@ -375,7 +378,7 @@ describe('VirtualScroller', () => {
         let listEl;
 
         beforeEach(() => {
-            stubs.removeChild = sandbox.stub();
+            stubs.removeChild = jest.fn();
             listEl = { removeChild: stubs.removeChild };
         });
 
@@ -388,16 +391,16 @@ describe('VirtualScroller', () => {
         ];
 
         paramaterizedTests.forEach(testData => {
-            it(`should do nothing if ${testData.name}`, () => {
+            test(`should do nothing if ${testData.name}`, () => {
                 const { listEl: list, start, end } = testData;
 
                 virtualScroller.deleteItems(list, start, end);
 
-                expect(stubs.removeChild).not.to.be.called;
+                expect(stubs.removeChild).not.toBeCalled();
             });
         });
 
-        it('should remove the items specified', () => {
+        test('should remove the items specified', () => {
             const list = {
                 children: [{}, {}, {}, {}],
                 removeChild: stubs.removeChild,
@@ -405,10 +408,10 @@ describe('VirtualScroller', () => {
 
             virtualScroller.deleteItems(list, 0, 1);
 
-            expect(stubs.removeChild).to.be.calledOnce;
+            expect(stubs.removeChild).toBeCalledTimes(1);
         });
 
-        it('should remove the items specified from start to the end when end is not provided', () => {
+        test('should remove the items specified from start to the end when end is not provided', () => {
             const list = {
                 children: [{}, {}, {}, {}],
                 removeChild: stubs.removeChild,
@@ -416,7 +419,7 @@ describe('VirtualScroller', () => {
 
             virtualScroller.deleteItems(list, 2);
 
-            expect(stubs.removeChild).to.be.calledTwice;
+            expect(stubs.removeChild).toBeCalledTimes(2);
         });
     });
 
@@ -424,8 +427,8 @@ describe('VirtualScroller', () => {
         let newListEl;
 
         beforeEach(() => {
-            stubs.appendChild = sandbox.stub();
-            stubs.renderItem = sandbox.stub(virtualScroller, 'renderItem');
+            stubs.appendChild = jest.fn();
+            stubs.renderItem = jest.spyOn(virtualScroller, 'renderItem').mockImplementation();
             newListEl = { appendChild: stubs.appendChild };
         });
 
@@ -438,20 +441,20 @@ describe('VirtualScroller', () => {
         ];
 
         paramaterizedTests.forEach(testData => {
-            it(`should do nothing if ${testData.name}`, () => {
+            test(`should do nothing if ${testData.name}`, () => {
                 const { newListEl: newList, start, end } = testData;
 
                 virtualScroller.createItems(newList, start, end);
 
-                expect(stubs.appendChild).not.to.be.called;
+                expect(stubs.appendChild).not.toBeCalled();
             });
         });
 
-        it('should create the new items specified', () => {
+        test('should create the new items specified', () => {
             virtualScroller.createItems(newListEl, 0, 2);
 
-            expect(stubs.renderItem).to.be.calledThrice;
-            expect(stubs.appendChild).to.be.calledThrice;
+            expect(stubs.renderItem).toBeCalledTimes(3);
+            expect(stubs.appendChild).toBeCalledTimes(3);
         });
     });
 
@@ -460,7 +463,7 @@ describe('VirtualScroller', () => {
         let listEl;
 
         beforeEach(() => {
-            stubs.dispatchEvent = sandbox.stub();
+            stubs.dispatchEvent = jest.fn();
             scrollingEl = { remove: () => {}, dispatchEvent: stubs.dispatchEvent };
 
             virtualScroller.totalItems = 10;
@@ -468,8 +471,8 @@ describe('VirtualScroller', () => {
             virtualScroller.margin = 0;
             virtualScroller.scrollingEl = scrollingEl;
 
-            stubs.isVisible = sandbox.stub(virtualScroller, 'isVisible');
-            stubs.scrollIntoView = sandbox.stub();
+            stubs.isVisible = jest.spyOn(virtualScroller, 'isVisible').mockImplementation();
+            stubs.scrollIntoView = jest.fn();
 
             listEl = {
                 children: [
@@ -480,73 +483,73 @@ describe('VirtualScroller', () => {
             };
         });
 
-        it('should do nothing if scrollingEl is falsy', () => {
+        test('should do nothing if scrollingEl is falsy', () => {
             virtualScroller.scrollingEl = undefined;
 
             virtualScroller.scrollIntoView(1);
 
-            expect(stubs.isVisible).not.to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
 
-        it('should do nothing if rowIndex is < 0', () => {
+        test('should do nothing if rowIndex is < 0', () => {
             virtualScroller.scrollIntoView(-1);
 
-            expect(stubs.isVisible).not.to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
 
-        it('should do nothing if rowIndex is = totalItems', () => {
+        test('should do nothing if rowIndex is = totalItems', () => {
             virtualScroller.scrollIntoView(10);
 
-            expect(stubs.isVisible).not.to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
 
-        it('should do nothing if rowIndex is > totalItems', () => {
+        test('should do nothing if rowIndex is > totalItems', () => {
             virtualScroller.scrollIntoView(11);
 
-            expect(stubs.isVisible).not.to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
 
-        it('should set the scroll top if item is not found', () => {
+        test('should set the scroll top if item is not found', () => {
             virtualScroller.listEl = listEl;
 
             virtualScroller.scrollIntoView(8);
 
-            expect(stubs.isVisible).not.to.be.called;
-            expect(stubs.scrollIntoView).not.to.be.called;
-            expect(scrollingEl.scrollTop).not.to.be.undefined;
-            expect(stubs.dispatchEvent).to.be.called;
+            expect(stubs.isVisible).not.toBeCalled();
+            expect(stubs.scrollIntoView).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeDefined();
+            expect(stubs.dispatchEvent).toBeCalled();
         });
 
-        it('should scroll item into view if found but not visible', () => {
+        test('should scroll item into view if found but not visible', () => {
             virtualScroller.listEl = listEl;
-            stubs.isVisible.returns(false);
+            stubs.isVisible.mockReturnValue(false);
 
             virtualScroller.scrollIntoView(1);
 
-            expect(stubs.isVisible).to.be.called;
-            expect(stubs.scrollIntoView).to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).toBeCalled();
+            expect(stubs.scrollIntoView).toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
 
-        it('should not scroll if item is found and visible', () => {
+        test('should not scroll if item is found and visible', () => {
             virtualScroller.listEl = listEl;
-            stubs.isVisible.returns(true);
+            stubs.isVisible.mockReturnValue(true);
 
             virtualScroller.scrollIntoView(1);
 
-            expect(stubs.isVisible).to.be.called;
-            expect(stubs.scrollIntoView).not.to.be.called;
-            expect(scrollingEl.scrollTop).to.be.undefined;
-            expect(stubs.dispatchEvent).not.to.be.called;
+            expect(stubs.isVisible).toBeCalled();
+            expect(stubs.scrollIntoView).not.toBeCalled();
+            expect(scrollingEl.scrollTop).toBeUndefined();
+            expect(stubs.dispatchEvent).not.toBeCalled();
         });
     });
 
@@ -558,61 +561,62 @@ describe('VirtualScroller', () => {
             virtualScroller.itemHeight = 20;
         });
 
-        it('should return false if scrollingEl is falsy', () => {
+        test('should return false if scrollingEl is falsy', () => {
             virtualScroller.scrollingEl = false;
 
-            expect(virtualScroller.isVisible({})).to.be.false;
+            expect(virtualScroller.isVisible({})).toBe(false);
         });
 
-        it('should return false if listItemEl is falsy', () => {
-            expect(virtualScroller.isVisible()).to.be.false;
+        test('should return false if listItemEl is falsy', () => {
+            expect(virtualScroller.isVisible()).toBe(false);
         });
 
-        it('should return false if the offsetTop of listItemEl is < scrollTop', () => {
-            expect(virtualScroller.isVisible({ offsetTop: 50 })).to.be.false;
+        test('should return false if the offsetTop of listItemEl is < scrollTop', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 50 })).toBe(false);
         });
 
-        it('should return false if the offsetTop of listItemEl is > scrollTop + containerHeight', () => {
-            expect(virtualScroller.isVisible({ offsetTop: 201 })).to.be.false;
+        test('should return false if the offsetTop of listItemEl is > scrollTop + containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 201 })).toBe(false);
         });
 
-        it('should return true if the offsetTop + itemHeight of listItemEl is fully within the containerHeight', () => {
-            expect(virtualScroller.isVisible({ offsetTop: 120 })).to.be.true;
+        test('should return true if the offsetTop + itemHeight of listItemEl is fully within the containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 120 })).toBe(true);
         });
 
-        it('should return false if the offsetTop + itemHeight of listItemEl is not fully within the containerHeight', () => {
-            expect(virtualScroller.isVisible({ offsetTop: 190 })).to.be.false;
+        test('should return false if the offsetTop + itemHeight of listItemEl is not fully within the containerHeight', () => {
+            expect(virtualScroller.isVisible({ offsetTop: 190 })).toBe(false);
         });
     });
 
     describe('getVisibleItems()', () => {
-        it('should return empty list if listEl is falsy', () => {
+        test('should return empty list if listEl is falsy', () => {
             virtualScroller.listEl = false;
 
-            expect(virtualScroller.getVisibleItems()).to.be.empty;
+            expect(virtualScroller.getVisibleItems()).toEqual([]);
         });
 
-        it('should return only visible list items', () => {
+        test('should return only visible list items', () => {
             const listEl = {
                 children: [{ children: [{ val: 1 }] }, { children: [{ val: 2 }] }, { children: [{ val: 3 }] }],
             };
 
             const expectedItems = [{ val: 1 }, { val: 3 }];
 
-            stubs.isVisible = sandbox.stub(virtualScroller, 'isVisible');
             // Only the first and third children are visible
-            stubs.isVisible.onFirstCall().returns(true);
-            stubs.isVisible.onSecondCall().returns(false);
-            stubs.isVisible.onThirdCall().returns(true);
+            stubs.isVisible = jest
+                .spyOn(virtualScroller, 'isVisible')
+                .mockImplementationOnce(() => true)
+                .mockImplementationOnce(() => false)
+                .mockImplementationOnce(() => true);
 
             virtualScroller.listEl = listEl;
 
-            expect(virtualScroller.getVisibleItems()).to.be.eql(expectedItems);
+            expect(virtualScroller.getVisibleItems()).toEqual(expectedItems);
         });
     });
 
     describe('resize()', () => {
-        it('should do nothing if containerHeight is not provided', () => {
+        test('should do nothing if containerHeight is not provided', () => {
             virtualScroller.containerHeight = 1;
             virtualScroller.totalViewItems = 2;
             virtualScroller.maxBufferHeight = 3;
@@ -620,13 +624,13 @@ describe('VirtualScroller', () => {
 
             virtualScroller.resize();
 
-            expect(virtualScroller.containerHeight).to.be.equal(1);
-            expect(virtualScroller.totalViewItems).to.be.equal(2);
-            expect(virtualScroller.maxBufferHeight).to.be.equal(3);
-            expect(virtualScroller.maxRenderedItems).to.be.equal(4);
+            expect(virtualScroller.containerHeight).toBe(1);
+            expect(virtualScroller.totalViewItems).toBe(2);
+            expect(virtualScroller.maxBufferHeight).toBe(3);
+            expect(virtualScroller.maxRenderedItems).toBe(4);
         });
 
-        it('should do nothing if containerHeight is not a number', () => {
+        test('should do nothing if containerHeight is not a number', () => {
             virtualScroller.containerHeight = 1;
             virtualScroller.totalViewItems = 2;
             virtualScroller.maxBufferHeight = 3;
@@ -634,13 +638,13 @@ describe('VirtualScroller', () => {
 
             virtualScroller.resize('123');
 
-            expect(virtualScroller.containerHeight).to.be.equal(1);
-            expect(virtualScroller.totalViewItems).to.be.equal(2);
-            expect(virtualScroller.maxBufferHeight).to.be.equal(3);
-            expect(virtualScroller.maxRenderedItems).to.be.equal(4);
+            expect(virtualScroller.containerHeight).toBe(1);
+            expect(virtualScroller.totalViewItems).toBe(2);
+            expect(virtualScroller.maxBufferHeight).toBe(3);
+            expect(virtualScroller.maxRenderedItems).toBe(4);
         });
 
-        it('should update the virtual window properties', () => {
+        test('should update the virtual window properties', () => {
             virtualScroller.itemHeight = 10;
             virtualScroller.margin = 0;
             virtualScroller.containerHeight = 1;
@@ -650,10 +654,10 @@ describe('VirtualScroller', () => {
 
             virtualScroller.resize(100);
 
-            expect(virtualScroller.containerHeight).to.be.equal(100);
-            expect(virtualScroller.totalViewItems).to.be.equal(10);
-            expect(virtualScroller.maxBufferHeight).to.be.equal(100);
-            expect(virtualScroller.maxRenderedItems).to.be.equal(33);
+            expect(virtualScroller.containerHeight).toBe(100);
+            expect(virtualScroller.totalViewItems).toBe(10);
+            expect(virtualScroller.maxBufferHeight).toBe(100);
+            expect(virtualScroller.maxRenderedItems).toBe(33);
         });
     });
 });

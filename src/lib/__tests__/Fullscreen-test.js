@@ -3,147 +3,146 @@ import fscreen from 'fscreen';
 import fullscreen from '../Fullscreen';
 import { CLASS_FULLSCREEN } from '../constants';
 
-const sandbox = sinon.sandbox.create();
+jest.mock('fscreen', () => ({
+    addEventListener: jest.fn(),
+    exitFullscreen: jest.fn(),
+    fullscreenElement: null,
+    removeEventListener: jest.fn(),
+    requestFullscreenFunction: jest.fn(),
+}));
 
 describe('lib/Fullscreen', () => {
     beforeEach(() => {
-        sandbox.stub(fscreen, 'fullscreenElement').value(document.createElement('div'));
-    });
-
-    afterEach(() => {
-        sandbox.verifyAndRestore();
+        fscreen.fullscreenElement = document.createElement('div');
     });
 
     describe('isFullscreen()', () => {
-        it('should return whether document is in fullscreen if true fullscreen is supported', () => {
-            sandbox.stub(fullscreen, 'isSupported').returns(true);
+        test('should return whether document is in fullscreen if true fullscreen is supported', () => {
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(true);
 
-            expect(fullscreen.isFullscreen()).to.be.true;
+            expect(fullscreen.isFullscreen()).toBe(true);
 
-            sandbox.stub(fscreen, 'fullscreenElement').value(null);
+            fscreen.fullscreenElement = null;
 
-            expect(fullscreen.isFullscreen()).to.be.false;
+            expect(fullscreen.isFullscreen()).toBe(false);
         });
 
-        it('should return whether element has fullscreen class if true fullscreen is not supported', () => {
-            sandbox.stub(fullscreen, 'isSupported').returns(false);
-            sandbox.stub(fscreen, 'fullscreenElement').value(null);
+        test('should return whether element has fullscreen class if true fullscreen is not supported', () => {
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(false);
+            fscreen.fullscreenElement = null;
 
             const element = document.createElement('div');
             element.classList.add(CLASS_FULLSCREEN);
 
-            expect(fullscreen.isFullscreen(element)).to.be.true;
+            expect(fullscreen.isFullscreen(element)).toBe(true);
 
             element.classList.remove(CLASS_FULLSCREEN);
-            expect(fullscreen.isFullscreen(element)).to.be.false;
+            expect(fullscreen.isFullscreen(element)).toBe(false);
         });
     });
 
     describe('fullscreenEnterHandler()', () => {
-        it('should add the fullscreen class and focus the element', () => {
+        test('should add the fullscreen class and focus the element', () => {
             const element = document.createElement('div');
-            sandbox.stub(element, 'focus');
-            sandbox.stub(fullscreen, 'emit');
+            jest.spyOn(element, 'focus');
+            jest.spyOn(fullscreen, 'emit');
 
             fullscreen.fullscreenEnterHandler(element);
 
-            expect(element.classList.contains(CLASS_FULLSCREEN)).to.be.true;
-            expect(element.focus).to.have.been.called;
-            expect(fullscreen.emit).to.have.been.calledWith('enter');
+            expect(element.classList.contains(CLASS_FULLSCREEN)).toBe(true);
+            expect(element.focus).toBeCalled();
+            expect(fullscreen.emit).toBeCalledWith('enter');
         });
     });
 
     describe('fullscreenExitHandler()', () => {
-        it('should remove the fullscreen class and not focus the element', () => {
+        test('should remove the fullscreen class and not focus the element', () => {
             const element = document.createElement('div');
             element.classList.add(CLASS_FULLSCREEN);
-            sandbox.stub(element, 'focus');
-            sandbox.stub(fullscreen, 'emit');
-            sandbox.stub(fullscreen, 'fullscreenElement').value(element);
+            jest.spyOn(element, 'focus');
+            jest.spyOn(fullscreen, 'emit');
 
+            fullscreen.fullscreenElement = element;
             fullscreen.fullscreenExitHandler();
 
-            expect(element.classList.contains(CLASS_FULLSCREEN)).to.be.false;
-            expect(element.focus).not.to.have.been.called;
-            expect(fullscreen.emit).to.have.been.calledWith('exit');
+            expect(element.classList.contains(CLASS_FULLSCREEN)).toBe(false);
+            expect(element.focus).not.toBeCalled();
+            expect(fullscreen.emit).toBeCalledWith('exit');
         });
     });
 
     describe('enter()', () => {
         beforeEach(() => {
-            sandbox.stub(fullscreen, 'fullscreenEnterHandler');
-            sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+            jest.spyOn(fullscreen, 'fullscreenEnterHandler');
+            jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
         });
 
-        it('should trigger native requestFullscreen handler if not in fullscreen and true fullscreen is supported', () => {
-            const fullscreenStub = sandbox.stub();
-            sandbox.stub(fscreen, 'requestFullscreenFunction').returns(fullscreenStub);
-            sandbox.stub(fullscreen, 'isSupported').returns(true);
+        test('should trigger native requestFullscreen handler if not in fullscreen and true fullscreen is supported', () => {
+            const fullscreenStub = jest.fn();
+            jest.spyOn(fscreen, 'requestFullscreenFunction').mockReturnValue(fullscreenStub);
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(true);
 
             const element = document.createElement('div');
             fullscreen.enter(element);
 
-            expect(fullscreenStub).to.have.been.calledWith(Element.ALLOW_KEYBOARD_INPUT);
+            expect(fullscreenStub).toBeCalledWith(Element.ALLOW_KEYBOARD_INPUT);
         });
 
-        it('should trigger the fullscreenEnterHandler immediately if true fullscreen is not supported', () => {
-            sandbox.stub(fullscreen, 'isSupported').returns(false);
+        test('should trigger the fullscreenEnterHandler immediately if true fullscreen is not supported', () => {
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(false);
 
             const element = document.createElement('div');
             fullscreen.enter(element);
 
-            expect(fullscreen.fullscreenEnterHandler).to.have.been.called;
+            expect(fullscreen.fullscreenEnterHandler).toBeCalled();
         });
     });
 
     describe('exit()', () => {
         beforeEach(() => {
-            sandbox.stub(fullscreen, 'fullscreenElement').value(document.createElement('div'));
-            sandbox.stub(fullscreen, 'fullscreenExitHandler');
-            sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+            jest.spyOn(fullscreen, 'fullscreenExitHandler');
+            jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
         });
 
-        it('should trigger native exitFullscreen handler if in fullscreen and true fullscreen is supported', () => {
-            const exitFullscreen = sinon.stub();
-            sandbox.stub(fscreen, 'exitFullscreen').value(exitFullscreen);
-            sandbox.stub(fullscreen, 'isSupported').returns(true);
+        test('should trigger native exitFullscreen handler if in fullscreen and true fullscreen is supported', () => {
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(true);
 
             fullscreen.exit();
 
-            expect(exitFullscreen).to.have.been.called;
+            expect(fscreen.exitFullscreen).toBeCalled();
         });
 
-        it('should trigger the fullscreenExitHandler immediately if true fullscreen is not supported', () => {
-            sandbox.stub(fullscreen, 'isSupported').returns(false);
+        test('should trigger the fullscreenExitHandler immediately if true fullscreen is not supported', () => {
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(false);
 
             fullscreen.exit();
 
-            expect(fullscreen.fullscreenExitHandler).to.have.been.called;
+            expect(fullscreen.fullscreenExitHandler).toBeCalled();
         });
     });
 
     describe('toggle()', () => {
         beforeEach(() => {
-            sandbox.stub(fullscreen, 'enter');
-            sandbox.stub(fullscreen, 'exit');
-            sandbox.stub(fullscreen, 'isSupported').returns(false);
+            jest.spyOn(fullscreen, 'enter');
+            jest.spyOn(fullscreen, 'exit');
+            jest.spyOn(fullscreen, 'isSupported').mockReturnValue(false);
         });
 
-        it('should call enter if not already in fullscreen', () => {
+        test('should call enter if not already in fullscreen', () => {
             const element = document.createElement('div');
 
             fullscreen.toggle(element);
 
-            expect(fullscreen.enter).to.have.been.called;
+            expect(fullscreen.enter).toBeCalled();
         });
 
-        it('should call exit if already in fullscreen', () => {
+        test('should call exit if already in fullscreen', () => {
             const element = document.createElement('div');
             element.classList.add(CLASS_FULLSCREEN);
 
             fullscreen.toggle(element);
 
-            expect(fullscreen.exit).to.have.been.called;
+            expect(fullscreen.exit).toBeCalled();
         });
     });
 });
