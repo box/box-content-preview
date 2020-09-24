@@ -283,14 +283,24 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    // TODO: Fix height/width mocks
-    describe.skip('zoom()', () => {
+    describe('zoom()', () => {
+        const clientWidth = {
+            get() {
+                return parseInt(this.style.width, 10);
+            },
+        };
+
         beforeEach(() => {
-            stubs.zoomEmit = jest.spyOn(multiImage, 'emit');
-            stubs.setScale = jest.spyOn(multiImage, 'setScale');
-            stubs.scroll = jest.spyOn(multiImage, 'setPage');
-            stubs.updatePannability = jest.spyOn(multiImage, 'updatePannability');
+            stubs.zoomEmit = jest.spyOn(multiImage, 'emit').mockImplementation();
+            stubs.setScale = jest.spyOn(multiImage, 'setScale').mockImplementation();
+            stubs.scroll = jest.spyOn(multiImage, 'setPage').mockImplementation();
+            stubs.updatePannability = jest.spyOn(multiImage, 'updatePannability').mockImplementation();
+
             multiImage.setup();
+            multiImage.imageEl.style.width = '100px';
+
+            Object.defineProperty(multiImage.imageEl, 'clientWidth', clientWidth);
+            Object.defineProperty(multiImage.imageEl.parentNode, 'clientWidth', clientWidth);
         });
 
         test('should increase the width by 100px on zoom in', () => {

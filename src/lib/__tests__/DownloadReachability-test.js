@@ -11,7 +11,7 @@ jest.mock('../util', () => ({
     openUrlInsideIframe: jest.fn(),
 }));
 
-describe.only('lib/DownloadReachability', () => {
+describe('lib/DownloadReachability', () => {
     beforeEach(() => {
         jest.spyOn(DownloadReachability, 'isStorageAvailable').mockReturnValue(true);
 

@@ -212,74 +212,70 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-    // TODO: Fix height/width mocks
-    describe.skip('zoom()', () => {
+    describe('zoom()', () => {
+        const getValue = val => parseInt(val, 10);
+        const clientHeight = {
+            get() {
+                return getValue(this.style.height);
+            },
+        };
+        const clientWidth = {
+            get() {
+                return getValue(this.style.width);
+            },
+        };
+
         beforeEach(() => {
             jest.spyOn(image, 'appendAuthParams').mockReturnValue(imageUrl);
-            jest.spyOn(image, 'finishLoading');
+            jest.spyOn(image, 'finishLoading').mockImplementation();
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
 
             // Stub out methods called in zoom()
-            stubs.adjustZoom = jest.spyOn(image, 'adjustImageZoomPadding');
+            stubs.adjustZoom = jest.spyOn(image, 'adjustImageZoomPadding').mockImplementation();
 
-            // Set image height & width
-            image.imageEl.style.width = '100px';
-            image.imageEl.style.height = '100px';
-            image.wrapperEl.style.width = '50px';
-            image.wrapperEl.style.height = '50px';
-
-            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             image.setup();
             image.load(imageUrl).catch(() => {});
+
+            // Set image height & width
+            Object.defineProperty(image.imageEl, 'offsetHeight', clientHeight);
+            Object.defineProperty(image.imageEl, 'offsetWidth', clientWidth);
+            Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 50, writable: true });
+            Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 50, writable: true });
         });
 
-        describe('should zoom in by modifying', () => {
-            test('width', () => {
-                image.imageEl.style.width = '200px';
+        test('should zoom in by modifying width', () => {
+            const origImageSize = 200;
 
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoom('in');
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).toBeGreaterThan(origImageSize.width);
-            });
+            image.imageEl.style.width = `${origImageSize}px`;
+            image.zoom('in');
+
+            expect(getValue(image.imageEl.style.width)).toBeGreaterThan(origImageSize);
         });
 
-        describe('should zoom out by modifying', () => {
-            test('width', () => {
-                image.imageEl.style.width = '200px';
+        test('should zoom out by modifying width', () => {
+            const origImageSize = 200;
 
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomOut();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).toBeLessThan(origImageSize.width);
-                expect(stubs.adjustZoom).toBeCalled();
-            });
+            image.imageEl.style.width = `${origImageSize}px`;
+            image.zoom('out');
 
-            test('height', () => {
-                image.imageEl.style.height = '200px';
-
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomOut();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.height).toBeLessThan(origImageSize.height);
-                expect(stubs.adjustZoom).toBeCalled();
-            });
+            expect(getValue(image.imageEl.style.width)).toBeLessThan(origImageSize);
+            expect(stubs.adjustZoom).toBeCalled();
         });
 
-        test('should zoom the width & height when the image rotated', () => {
+        test('should zoom the height when the image rotated', () => {
             jest.spyOn(image, 'isRotated').mockReturnValue(true);
 
+            const origImageHeight = 150;
+            const origImageWidth = 200;
+
             image.imageEl.style.transform = 'rotate(90deg)';
-            image.imageEl.style.width = '200px';
-            image.imageEl.setAttribute('originalWidth', '150');
-            image.imageEl.setAttribute('originalHeight', '100');
-            image.imageEl.src = imageUrl;
-            const origImageSize = image.imageEl.getBoundingClientRect();
-            image.zoomIn();
-            const newImageSize = image.imageEl.getBoundingClientRect();
-            expect(newImageSize.width).toBeGreaterThan(origImageSize.width);
-            expect(newImageSize.height).toBeGreaterThan(origImageSize.height);
+            image.imageEl.style.height = `${origImageHeight}px`;
+            image.imageEl.style.width = `${origImageWidth}px`;
+
+            image.zoom('in');
+
+            expect(getValue(image.imageEl.style.height)).toBeGreaterThan(origImageHeight);
             expect(stubs.adjustZoom).toBeCalled();
-            image.imageEl.style.transform = '';
         });
 
         test('should reset dimensions and adjust padding when called with reset', () => {

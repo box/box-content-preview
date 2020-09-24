@@ -8,17 +8,22 @@ import Timer from '../../../Timer';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
-let dash;
-let stubs = {};
+// eslint-disable-next-line import/no-dynamic-require
+const shaka = require(`../../../../third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/shaka-player.compiled.js`);
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
-
 const sandbox = sinon.createSandbox();
 
-// TODO: Fix the stubs mess in here
-describe.skip('lib/viewers/media/DashViewer', () => {
+let dash;
+let stubs = {};
+
+describe('lib/viewers/media/DashViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
+
+    beforeAll(() => {
+        global.shaka = shaka;
+    });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/DashViewer-test.html');
@@ -93,7 +98,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         };
         stubs.mockControls = sandbox.mock(dash.mediaControls);
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         dash.containerEl = containerEl;
         dash.setup();
     });
@@ -140,13 +145,13 @@ describe.skip('lib/viewers/media/DashViewer', () => {
     describe('load()', () => {
         test('should load a media source', () => {
             stubs.promise = Promise.resolve();
-            jest.spyOn(dash, 'setup');
-            jest.spyOn(dash, 'loadDashPlayer');
-            jest.spyOn(dash, 'resetLoadTimeout');
-            jest.spyOn(dash, 'loadAssets');
+            jest.spyOn(dash, 'setup').mockImplementation();
+            jest.spyOn(dash, 'loadDashPlayer').mockImplementation();
+            jest.spyOn(dash, 'resetLoadTimeout').mockImplementation();
+            jest.spyOn(dash, 'loadAssets').mockImplementation();
             jest.spyOn(dash, 'isAutoplayEnabled').mockReturnValue(true);
-            jest.spyOn(dash, 'autoplay');
-            jest.spyOn(dash, 'loadUI');
+            jest.spyOn(dash, 'autoplay').mockImplementation();
+            jest.spyOn(dash, 'loadUI').mockImplementation();
 
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             jest.spyOn(Promise, 'all').mockReturnValue(stubs.promise);
@@ -166,8 +171,8 @@ describe.skip('lib/viewers/media/DashViewer', () => {
 
     describe('prefetch()', () => {
         beforeEach(() => {
-            stubs.prefetchAssets = jest.spyOn(dash, 'prefetchAssets');
-            stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams');
+            stubs.prefetchAssets = jest.spyOn(dash, 'prefetchAssets').mockImplementation();
+            stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams').mockImplementation();
             stubs.repReady = jest.spyOn(dash, 'isRepresentationReady').mockReturnValue(true);
         });
 
@@ -213,13 +218,12 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should return shaka player assets', () => {
             const assets = [`third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/shaka-player.compiled.js`];
             const returnedAssets = dash.getJSAssets();
-            expect(returnedAssets).toBe(assets);
+            expect(returnedAssets).toEqual(assets);
         });
     });
 
     describe('loadDashPlayer()', () => {
         test('should create a new shaka player', () => {
-            /* global shaka */
             dash.mediaUrl = 'url';
             jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
             stubs.mockPlayer.expects('addEventListener').withArgs('adaptation', sinon.match.func);
@@ -237,9 +241,9 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should invoke startLoadTimer()', () => {
-            jest.spyOn(dash, 'startLoadTimer');
+            jest.spyOn(dash, 'startLoadTimer').mockImplementation();
             jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
-            stubs.mockPlayer.expects('load').mockResolvedValue(undefined);
+            stubs.mockPlayer.expects('load').returns(new Promise(() => {}));
 
             dash.loadDashPlayer();
 
@@ -309,7 +313,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should get active track', () => {
             stubs.inactive = { active: false };
             stubs.active = { active: true };
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([stubs.inactive, stubs.active]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([stubs.inactive, stubs.active]);
             expect(dash.getActiveTrack()).toBe(stubs.active);
         });
     });
@@ -336,7 +340,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const variant6 = { id: 6, videoId: 2, audioId: 7, active: false };
             stubs.mockPlayer
                 .expects('getVariantTracks')
-                .mockReturnValue([variant1, variant2, variant3, variant4, variant5, variant6]);
+                .returns([variant1, variant2, variant3, variant4, variant5, variant6]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant4);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').withArgs(variant3, true);
@@ -349,7 +353,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should do nothing if enabling a videoId which is already active', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
             const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([variant1, variant2]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant2);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -362,7 +366,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should do nothing if enabling an invalid videoId', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
             const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([variant1, variant2]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant2);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -383,7 +387,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const variant6 = { id: 6, videoId: 2, audioId: 7, active: false, roles: ['3'] };
             stubs.mockPlayer
                 .expects('getVariantTracks')
-                .mockReturnValue([variant1, variant2, variant3, variant4, variant5, variant6]);
+                .returns([variant1, variant2, variant3, variant4, variant5, variant6]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant4);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').withArgs(variant6, true);
@@ -396,7 +400,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should do nothing if enabling a audioId which is already active', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false, roles: ['1'] };
             const variant2 = { id: 2, videoId: 2, audioId: 6, active: true, roles: ['2'] };
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([variant1, variant2]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant2);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -409,7 +413,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         test('should do nothing if enabling an invalid audioId', () => {
             const variant1 = { id: 1, videoId: 1, audioId: 5, active: false, roles: ['1'] };
             const variant2 = { id: 2, videoId: 2, audioId: 6, active: true, roles: ['2'] };
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([variant1, variant2]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([variant1, variant2]);
             jest.spyOn(dash, 'getActiveTrack').mockReturnValue(variant2);
             jest.spyOn(dash, 'showLoadingIcon');
             stubs.mockPlayer.expects('selectVariantTrack').never();
@@ -436,10 +440,10 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         beforeEach(() => {
             dash.hdVideoId = 1;
             dash.sdVideoId = -1;
-            stubs.enableVideoId = jest.spyOn(dash, 'enableVideoId');
-            stubs.adapt = jest.spyOn(dash, 'enableAdaptation');
-            stubs.showGearHdIcon = jest.spyOn(dash, 'showGearHdIcon');
-            stubs.getActiveTrack = jest.spyOn(dash, 'getActiveTrack');
+            stubs.enableVideoId = jest.spyOn(dash, 'enableVideoId').mockImplementation();
+            stubs.adapt = jest.spyOn(dash, 'enableAdaptation').mockImplementation();
+            stubs.showGearHdIcon = jest.spyOn(dash, 'showGearHdIcon').mockImplementation();
+            stubs.getActiveTrack = jest.spyOn(dash, 'getActiveTrack').mockImplementation();
         });
 
         test('should enforce SD if there is no HD video ID', () => {
@@ -536,6 +540,10 @@ describe.skip('lib/viewers/media/DashViewer', () => {
     });
 
     describe('shakaErrorHandler()', () => {
+        beforeEach(() => {
+            jest.spyOn(dash, 'triggerError').mockImplementation();
+        });
+
         test('should emit error on critical shaka errors', () => {
             const shakaError = {
                 detail: {
@@ -548,8 +556,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
 
             dash.shakaErrorHandler(shakaError);
 
-            const [event, error] = dash.emit.getCall(0).args;
-            expect(event).toBe('error');
+            const [error] = dash.triggerError.mock.calls[0];
             expect(error).toBeInstanceOf(PreviewError);
             expect(error.details.code).toBe(shakaError.detail.code);
             expect(error.details.severity).toBe(shakaError.detail.severity);
@@ -580,8 +587,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             };
             dash.shakaErrorHandler(shakaError);
 
-            const [event, error] = dash.emit.getCall(0).args;
-            expect(event).toBe('error');
+            const [error] = dash.triggerError.mock.calls[0];
             expect(error).toBeInstanceOf(PreviewError);
             expect(error.code).toBe('error_shaka');
         });
@@ -630,19 +636,19 @@ describe.skip('lib/viewers/media/DashViewer', () => {
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus', () => {
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
-            jest.spyOn(dash, 'showMedia');
+            jest.spyOn(dash, 'showMedia').mockImplementation();
             jest.spyOn(dash, 'isAutoplayEnabled').mockReturnValue(true);
-            jest.spyOn(dash, 'autoplay');
-            jest.spyOn(dash, 'loadFilmStrip');
-            jest.spyOn(dash, 'resize');
-            jest.spyOn(dash, 'handleVolume');
-            jest.spyOn(dash, 'startBandwidthTracking');
-            jest.spyOn(dash, 'handleQuality');
-            jest.spyOn(dash, 'showPlayButton');
-            jest.spyOn(dash, 'calculateVideoDimensions');
-            jest.spyOn(dash, 'loadSubtitles');
-            jest.spyOn(dash, 'loadAlternateAudio');
-            jest.spyOn(dash, 'loadUI');
+            jest.spyOn(dash, 'autoplay').mockImplementation();
+            jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
+            jest.spyOn(dash, 'resize').mockImplementation();
+            jest.spyOn(dash, 'handleVolume').mockImplementation();
+            jest.spyOn(dash, 'startBandwidthTracking').mockImplementation();
+            jest.spyOn(dash, 'handleQuality').mockImplementation();
+            jest.spyOn(dash, 'showPlayButton').mockImplementation();
+            jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
+            jest.spyOn(dash, 'loadSubtitles').mockImplementation();
+            jest.spyOn(dash, 'loadAlternateAudio').mockImplementation();
+            jest.spyOn(dash, 'loadUI').mockImplementation();
 
             dash.options.autoFocus = true;
             dash.loadeddataHandler();
@@ -758,7 +764,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const korean = { language: 'kor', id: 3 };
             const chinese = { language: 'zho', id: 7 };
             const subs = [english, russian, spanish, korean, chinese];
-            stubs.mockPlayer.expects('getTextTracks').mockReturnValue(subs);
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
             stubs.mockControls
                 .expects('initSubtitles')
                 .withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese'], 'English');
@@ -774,7 +780,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const korean = { language: 'KoR', id: 5 };
             const chinese = { language: 'zHO', id: 6 };
             const subs = [russian, spanish, korean, chinese];
-            stubs.mockPlayer.expects('getTextTracks').mockReturnValue(subs);
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
             stubs.mockControls
                 .expects('initSubtitles')
                 .withArgs(['Russian', 'Spanish', 'Korean', 'Chinese'], 'English');
@@ -792,7 +798,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const doesntmatter = { language: 'doesntmatter', id: 6 };
             const zero = { language: '0', id: 7 };
             const subs = [russian, foo, und, empty, doesntmatter, zero];
-            stubs.mockPlayer.expects('getTextTracks').mockReturnValue(subs);
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
             stubs.mockControls
                 .expects('initSubtitles')
                 .withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
@@ -900,7 +906,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const variant4 = { videoId: 1, audioId: 1, language: 'rus', roles: ['audio1'] };
             const variant5 = { videoId: 2, audioId: 1, language: 'rus', roles: ['audio1'] };
             const allVariants = [variant1, variant2, variant3, variant4, variant5];
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue(allVariants);
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls.expects('initAlternateAudio');
 
             dash.loadAlternateAudio();
@@ -918,7 +924,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const variant4 = { videoId: 0, audioId: 3, language: 'kor', roles: ['audio0'] };
             const variant5 = { videoId: 0, audioId: 4, language: 'fra', roles: ['audio0'] };
             const allVariants = [variant3, variant1, variant4, variant2, variant5];
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue(allVariants);
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls
                 .expects('initAlternateAudio')
                 .withArgs(['English', 'Russian', 'Spanish', 'Korean', 'French']);
@@ -930,7 +936,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
             const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0'] };
             const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0'] };
             const allVariants = [variant1, variant2];
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue(allVariants);
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
             stubs.mockControls.expects('initAlternateAudio').never();
 
             dash.loadAlternateAudio();
@@ -1019,7 +1025,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
 
     describe('handleAudioTrack()', () => {
         beforeEach(() => {
-            jest.spyOn(dash, 'enableAudioId');
+            jest.spyOn(dash, 'enableAudioId').mockImplementation();
         });
 
         test('should select correct audio', () => {
@@ -1049,8 +1055,8 @@ describe.skip('lib/viewers/media/DashViewer', () => {
 
     describe('calculateVideoDimensions()', () => {
         test('should calculate the video dimensions based on the reps', () => {
-            stubs.mockPlayer.expects('isAudioOnly').mockReturnValue(false);
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([
+            stubs.mockPlayer.expects('isAudioOnly').returns(false);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
                 { width: 200, videoId: 1 },
                 { width: 100, videoId: 2 },
             ]);
@@ -1061,8 +1067,8 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should use SD video dimensions if no HD', () => {
-            stubs.mockPlayer.expects('isAudioOnly').mockReturnValue(false);
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([
+            stubs.mockPlayer.expects('isAudioOnly').returns(false);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
                 { width: 640, videoId: 1, audioId: 2 },
                 { width: 640, videoId: 1, audioId: 3 },
             ]);
@@ -1073,8 +1079,8 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should default video dimensions when video is audio-only', () => {
-            stubs.mockPlayer.expects('isAudioOnly').mockReturnValue(true);
-            stubs.mockPlayer.expects('getVariantTracks').mockReturnValue([
+            stubs.mockPlayer.expects('isAudioOnly').returns(true);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
                 { width: null, videoId: null, audioId: 1 },
                 { width: null, videoId: null, audioId: 2 },
             ]);
@@ -1086,14 +1092,29 @@ describe.skip('lib/viewers/media/DashViewer', () => {
     });
 
     describe('resize()', () => {
+        const clientHeight = {
+            get() {
+                return parseInt(this.style.height, 10);
+            },
+        };
+        const clientWidth = {
+            get() {
+                return parseInt(this.style.width, 10);
+            },
+        };
+
         beforeEach(() => {
             stubs.resizeFunc = DashViewer.prototype.resize;
-            Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: sandbox.mock() });
+            Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: jest.fn() });
+
             dash.aspect = 1;
             dash.videoWidth = 500;
             dash.videoHeight = 500;
             dash.wrapperEl.style.width = '600px';
             dash.wrapperEl.style.height = '650px';
+
+            Object.defineProperty(dash.wrapperEl, 'clientHeight', clientHeight);
+            Object.defineProperty(dash.wrapperEl, 'clientWidth', clientWidth);
         });
 
         afterEach(() => {
@@ -1170,7 +1191,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should get bandwidth stats at current interval', () => {
-            stubs.mockPlayer.expects('getStats').mockReturnValue({
+            stubs.mockPlayer.expects('getStats').returns({
                 estimatedBandwidth: 2000,
                 streamBandwidth: 1000,
                 switchHistory: 'history',
@@ -1181,7 +1202,7 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should display stats visually if stats element exists', () => {
-            stubs.mockPlayer.expects('getStats').mockReturnValue({
+            stubs.mockPlayer.expects('getStats').returns({
                 estimatedBandwidth: 2000,
                 streamBandwidth: 1000,
                 switchHistory: 'history',
@@ -1226,19 +1247,18 @@ describe.skip('lib/viewers/media/DashViewer', () => {
     describe('toggleStats()', () => {
         beforeEach(() => {
             stubs.mock = sandbox.mock(dash.mediaContainerEl);
+            stubs.removeStats = jest.spyOn(dash, 'removeStats').mockImplementation();
         });
 
         test('should hide the stats if they were being shown', () => {
-            jest.spyOn(dash, 'removeStats');
             dash.statsEl = { className: '' };
             dash.toggleStats();
             expect(dash.removeStats).toBeCalled();
-            expect(dash.statsEl.className).toBeEmpty();
+            expect(dash.statsEl.className).toBe('');
             dash.statsEl = null;
         });
 
         test('should show the stats if they were being hidden', () => {
-            jest.spyOn(dash, 'removeStats');
             dash.toggleStats();
             expect(dash.removeStats).not.toBeCalled();
             expect(dash.statsEl).toHaveClass('bp-media-dash-stats');
@@ -1404,11 +1424,19 @@ describe.skip('lib/viewers/media/DashViewer', () => {
         });
 
         test('should return the sum of all the played parts', () => {
-            dash.mediaEl.played = { length: 2, start: jest.fn(), end: jest.fn() };
-            dash.mediaEl.played.start.withArgs(0).mockReturnValue(0);
-            dash.mediaEl.played.end.withArgs(0).mockReturnValue(5);
-            dash.mediaEl.played.start.withArgs(1).mockReturnValue(10);
-            dash.mediaEl.played.end.withArgs(1).mockReturnValue(15);
+            dash.mediaEl.played = {
+                length: 2,
+                start: jest
+                    .fn()
+                    .mockImplementation()
+                    .mockReturnValueOnce(0)
+                    .mockReturnValueOnce(10),
+                end: jest
+                    .fn()
+                    .mockImplementation()
+                    .mockReturnValueOnce(5)
+                    .mockReturnValueOnce(15),
+            };
 
             expect(dash.determineWatchLength()).toBe(10000);
         });
