@@ -266,6 +266,8 @@ describe('VirtualScroller', () => {
         test('should still render the item even if renderItemFn throws an error', () => {
             const renderedThumbnail = document.createElement('button');
             renderedThumbnail.className = 'rendered-thumbnail';
+
+            stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
             stubs.renderItemFn = jest.fn(() => {
                 throw new Error();
             });

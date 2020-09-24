@@ -259,22 +259,6 @@ describe('lib/util', () => {
                 expect(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement).toBeTruthy();
                 expect(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement).toBeTruthy();
             });
-
-            test.skip('should disable AMD until scripts are loaded or fail to load', () => {
-                /* eslint-disable require-jsdoc */
-                const defineFunc = () => {};
-                /* eslint-enable require-jsdoc */
-
-                defineFunc.amd = { jquery: '' };
-                window.define = defineFunc;
-
-                const promise = util.loadScripts(['foo', 'bar'], true);
-                expect(window.define).toBeUndefined();
-
-                return promise.then(() => {
-                    expect(window.define).toBe(defineFunc);
-                });
-            });
         });
 
         describe('findScriptLocation()', () => {

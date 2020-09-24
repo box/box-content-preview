@@ -403,7 +403,7 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.checkFileValid = jest.spyOn(file, 'checkFileValid').mockImplementation();
             stubs.cacheFile = jest.spyOn(file, 'cacheFile').mockImplementation();
-            stubs.error = jest.spyOn(console, 'error').mockImplementation();
+            stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
             stubs.emitPreviewError = jest.spyOn(preview, 'emitPreviewError').mockImplementation();
         });
 
@@ -441,7 +441,7 @@ describe('lib/Preview', () => {
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).toBeCalledTimes(1);
-            expect(stubs.error).toBeCalledTimes(1);
+            expect(stubs.consoleError).toBeCalledTimes(1);
             expect(stubs.emitPreviewError).toBeCalledTimes(1);
         });
 
@@ -457,7 +457,7 @@ describe('lib/Preview', () => {
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).not.toBeCalled();
-            expect(stubs.error).not.toBeCalled();
+            expect(stubs.consoleError).not.toBeCalled();
         });
     });
 
@@ -2055,8 +2055,7 @@ describe('lib/Preview', () => {
         });
 
         test('should reset the log retry count if the post fails and retry limit has been reached', () => {
-            const promiseReject = Promise.reject({}); // eslint-disable-line prefer-promise-reject-errors
-            jest.spyOn(stubs.api, 'post').mockReturnValue(promiseReject);
+            jest.spyOn(stubs.api, 'post').mockRejectedValue({});
             preview.logRetryCount = 3;
             preview.logRetryTimeout = true;
 
@@ -2084,9 +2083,9 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             jest.useFakeTimers();
 
-            stubs.uncacheFile = jest.spyOn(file, 'uncacheFile');
-            stubs.triggerError = jest.spyOn(preview, 'triggerError');
-            stubs.load = jest.spyOn(preview, 'load');
+            stubs.uncacheFile = jest.spyOn(file, 'uncacheFile').mockImplementation();
+            stubs.triggerError = jest.spyOn(preview, 'triggerError').mockImplementation();
+            stubs.load = jest.spyOn(preview, 'load').mockImplementation();
             stubs.error = {
                 response: {
                     status: 400,

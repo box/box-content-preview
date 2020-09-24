@@ -103,64 +103,66 @@ describe('lib/RepStatus', () => {
 
     describe('updateStatus()', () => {
         const state = 'success';
+
         beforeEach(() => {
-            jest.spyOn(repStatus, 'handleResponse');
+            jest.spyOn(repStatus, 'handleResponse').mockImplementation();
         });
 
         test('should fetch latest status', () => {
-            sandbox
-                .mock(repStatus.api)
-                .expects('get')
-                .returns(
-                    Promise.resolve({
-                        status: {
-                            state,
-                        },
-                    }),
-                );
+            jest.spyOn(repStatus.api, 'get').mockResolvedValue({
+                info: {},
+                status: {
+                    state,
+                },
+            });
 
             return repStatus.updateStatus().then(() => {
+                expect(repStatus.api.get).toBeCalled();
                 expect(repStatus.representation.status.state).toBe(state);
                 expect(repStatus.handleResponse).toBeCalled();
             });
         });
 
         test('should update provided metadata', () => {
-            sandbox
-                .mock(repStatus.api)
-                .expects('get')
-                .returns(
-                    Promise.resolve({
-                        status: {
-                            state,
-                        },
-                        metadata: {
-                            pages: 10,
-                        },
-                    }),
-                );
+            jest.spyOn(repStatus.api, 'get').mockResolvedValue({
+                info: {},
+                metadata: {
+                    pages: 10,
+                },
+                status: {
+                    state,
+                },
+            });
 
             return repStatus.updateStatus().then(() => {
-                expect(repStatus.representation.status.state).toBe(state);
+                expect(repStatus.api.get).toBeCalled();
                 expect(repStatus.handleResponse).toBeCalled();
+                expect(repStatus.representation.status.state).toBe(state);
                 expect(repStatus.representation.metadata.pages).toBe(10);
             });
         });
 
         test('should return a resolved promise if there is no info url', () => {
-            sandbox
-                .mock(Api.prototype)
-                .expects('get')
-                .never();
+            jest.spyOn(repStatus.api, 'get');
+
             repStatus.infoUrl = '';
             expect(repStatus.updateStatus()).toBeInstanceOf(Promise);
+            expect(repStatus.api.get).not.toBeCalled();
         });
 
         test('should start a convert time Timer', () => {
-            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
-            repStatus.updateStatus();
+            jest.spyOn(repStatus.api, 'get').mockResolvedValue({
+                info: {},
+                status: {
+                    state,
+                },
+            });
 
-            expect(Timer.get(tag)).toBeDefined();
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+
+            return repStatus.updateStatus().then(() => {
+                expect(Timer.get(tag)).toBeDefined();
+            });
         });
     });
 

@@ -113,8 +113,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             jest.spyOn(text, 'loadAssets').mockResolvedValue(undefined);
             jest.spyOn(text, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-            jest.spyOn(text, 'postLoad');
-            jest.spyOn(text, 'setup');
+            jest.spyOn(text, 'postLoad').mockImplementation();
+            jest.spyOn(text, 'setup').mockImplementation();
 
             return text.load().then(() => {
                 expect(text.setup).not.toBeCalled();

@@ -185,28 +185,33 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('handleExpiredTokenError()', () => {
+        beforeEach(() => {
+            jest.spyOn(media, 'triggerError').mockImplementation();
+        });
+
         test('should not trigger error if is not an ExpiredTokenError', () => {
             jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(false);
-            jest.spyOn(media, 'triggerError').mockImplementation();
+
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
             media.handleExpiredTokenError(error);
             expect(media.triggerError).not.toBeCalled();
         });
 
         test('should trigger error if retry token count reaches max retry limit', () => {
-            media.retryTokenCount = MAX_RETRY_TOKEN + 1;
             jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(true);
-            jest.spyOn(media, 'triggerError').mockImplementation();
+
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
+            media.retryTokenCount = MAX_RETRY_TOKEN + 1;
             media.handleExpiredTokenError(error);
             expect(media.triggerError).toBeCalledWith(expect.objectContaining({ code: ERROR_CODE.TOKEN_NOT_VALID }));
         });
 
         test('should call refreshToken if retry token count did not reach max retry limit', () => {
-            media.retryTokenCount = 0;
             jest.spyOn(media, 'isExpiredTokenError').mockReturnValue(true);
-            media.options.refreshToken = jest.fn(() => Promise.resolve());
+
             const error = new PreviewError(ERROR_CODE.LOAD_MEDIA);
+            media.retryTokenCount = 0;
+            media.options.refreshToken = jest.fn(() => Promise.resolve());
             media.handleExpiredTokenError(error);
 
             expect(media.options.refreshToken).toBeCalled();
@@ -218,6 +223,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should handle download error if the viewer was not yet loaded', () => {
             const err = new Error();
             media.mediaUrl = 'foo';
+
+            jest.spyOn(console, 'error').mockImplementation();
             jest.spyOn(media, 'isLoaded').mockReturnValue(false);
             jest.spyOn(media, 'handleDownloadError').mockImplementation();
 
@@ -228,6 +235,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         test('should trigger an error if Preview is already loaded', () => {
             const err = new Error();
+
+            jest.spyOn(console, 'error').mockImplementation();
             jest.spyOn(media, 'isLoaded').mockReturnValue(true);
             jest.spyOn(media, 'triggerError').mockImplementation();
 
@@ -308,19 +317,25 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         test('should set autoplay to true if mediaEl.play does not return a promise', done => {
             media.play.mockReturnValue(Promise.reject(new Error(PLAY_PROMISE_NOT_SUPPORTED)));
-            media.autoplay().then(() => {
-                expect(media.mediaEl.autoplay).toBe(true);
-                done();
-            });
+            media
+                .autoplay()
+                .then(() => {
+                    expect(media.mediaEl.autoplay).toBe(true);
+                    done();
+                })
+                .catch(() => {});
         });
 
         test('should call handleAutoplayFail if the promise is rejected', done => {
             jest.spyOn(media, 'handleAutoplayFail');
             media.play.mockReturnValue(Promise.reject(new Error('NotAllowedError')));
-            media.autoplay().then(() => {
-                expect(media.handleAutoplayFail).toBeCalled();
-                done();
-            });
+            media
+                .autoplay()
+                .then(() => {
+                    expect(media.handleAutoplayFail).toBeCalled();
+                    done();
+                })
+                .catch(() => {});
         });
     });
 
@@ -549,10 +564,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             jest.spyOn(media, 'pause').mockImplementation();
             jest.spyOn(media, 'removePauseEventListener').mockImplementation();
             jest.spyOn(media, 'setMediaTime').mockImplementation();
+
+            media.mediaEl = { play: jest.fn().mockResolvedValue(null) };
         });
 
         test('should play the media when no time parameters are passed', () => {
-            media.mediaEl = { play: jest.fn() };
             media.play();
 
             expect(media.removePauseEventListener).toBeCalledTimes(1);
@@ -566,7 +582,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 .mockImplementation()
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(false);
-            media.mediaEl = { play: jest.fn() };
             media.play(100);
 
             expect(media.removePauseEventListener).toBeCalledTimes(1);
@@ -579,7 +594,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         test('should start playing from start time and pause at end time', () => {
             jest.spyOn(media, 'isValidTime').mockReturnValue(true);
-            media.mediaEl = { play: jest.fn() };
             media.play(100, 200);
 
             expect(media.removePauseEventListener).toBeCalledTimes(1);
@@ -592,7 +606,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
         test('should ignore when invalid time parameters are passed', () => {
             jest.spyOn(media, 'isValidTime').mockReturnValue(false);
-            media.mediaEl = { play: jest.fn() };
             media.play(200, 100);
 
             expect(media.removePauseEventListener).toBeCalledTimes(1);
@@ -1046,6 +1059,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         test('should return the default value if invalid unit', () => {
+            jest.spyOn(console, 'error').mockImplementation();
+
             const startAt = {
                 unit: 'foo',
                 value: 55,

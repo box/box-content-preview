@@ -6,7 +6,12 @@ import DownloadReachability from '../DownloadReachability';
 const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
 const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
 
-describe('lib/DownloadReachability', () => {
+jest.mock('../util', () => ({
+    isLocalStorageAvailable: jest.fn(() => true),
+    openUrlInsideIframe: jest.fn(),
+}));
+
+describe.only('lib/DownloadReachability', () => {
     beforeEach(() => {
         jest.spyOn(DownloadReachability, 'isStorageAvailable').mockReturnValue(true);
 
@@ -144,7 +149,6 @@ describe('lib/DownloadReachability', () => {
 
         test('should download with default host if download host is blocked', () => {
             jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(true);
-            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
             const expected = 'https://dl.boxcloud.com/blah';
@@ -157,7 +161,6 @@ describe('lib/DownloadReachability', () => {
         test('should download with default host if download host is already default', () => {
             jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
             jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(false);
-            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://dl.boxcloud.com/blah';
 
@@ -169,7 +172,6 @@ describe('lib/DownloadReachability', () => {
         test('should download with the custom download host if host is not blocked', () => {
             jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
             jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(true);
-            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 
@@ -182,7 +184,6 @@ describe('lib/DownloadReachability', () => {
             jest.spyOn(DownloadReachability, 'isDownloadHostBlocked').mockReturnValue(false);
             jest.spyOn(DownloadReachability, 'isCustomDownloadHost').mockReturnValue(true);
             jest.spyOn(downloadReachability, 'setDownloadReachability').mockResolvedValue(false);
-            jest.spyOn(util, 'openUrlInsideIframe');
 
             const downloadUrl = 'https://custom.boxcloud.com/blah';
 

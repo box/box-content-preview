@@ -17,6 +17,7 @@ describe('ThumbnailsSidebar', () => {
     beforeEach(() => {
         fixture.load('__tests__/ThumbnailsSidebar-test.html');
 
+        stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
         stubs.raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => callback());
 
         stubs.getViewport = jest.fn();

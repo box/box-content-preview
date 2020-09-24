@@ -239,8 +239,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('handleAutoplayFail()', () => {
         test('should mute and play again', () => {
-            jest.spyOn(videoBase, 'setVolume');
-            videoBase.play = jest.fn(() => Promise.reject());
+            jest.spyOn(videoBase, 'setVolume').mockImplementation();
+            jest.spyOn(videoBase, 'play').mockResolvedValue('');
 
             videoBase.handleAutoplayFail();
 

@@ -1325,6 +1325,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     url: 'url',
                 };
 
+                stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                 stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
                 stubs.getDocument.mockReturnValue({ promise: Promise.reject(doc) });
                 docBase.options.location = {
@@ -2243,6 +2244,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should return undefined if an invalid unit is passed', () => {
+                jest.spyOn(console, 'error').mockImplementation();
+
                 const startAt = {
                     value: 3,
                     unit: 'foo',

@@ -9,21 +9,21 @@ describe('metadataAPI', () => {
     beforeEach(() => {
         stubs = {};
         stubs.metaDataAPI = new MetadataAPI(new Api());
-        stubs.get = jest.spyOn(Api.prototype, 'get');
+        stubs.get = jest.spyOn(Api.prototype, 'get').mockImplementation();
     });
 
     describe('getXrefsMetadata()', () => {
         test('Should reject the promise if id is not provided on the file', () => {
             return stubs.metaDataAPI.getXrefsMetadata(null, 'autocad').catch(err => {
                 expect(stubs.get).not.toBeCalled();
-                expect(err instanceof Error).toBe(true);
+                expect(err).toBeInstanceOf(Error);
             });
         });
 
         test('Should reject the promise if template is not provided on the file', () => {
             return stubs.metaDataAPI.getXrefsMetadata('123').catch(err => {
                 expect(stubs.get).not.toBeCalled();
-                expect(err instanceof Error).toBe(true);
+                expect(err).toBeInstanceOf(Error);
             });
         });
 
