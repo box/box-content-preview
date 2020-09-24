@@ -59,13 +59,21 @@ describe('lib/AnnotationControlsFSM', () => {
                 expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
             });
         });
+
+        // Should reset state
+        it('should reset state if input is AnnotationInput.RESET', () => {
+            const annotationControlsFSM = new AnnotationControlsFSM();
+
+            expect(annotationControlsFSM.transition(AnnotationInput.RESET)).to.equal(AnnotationMode.NONE);
+            expect(annotationControlsFSM.getState()).to.equal(AnnotationState.NONE);
+        });
     });
 
     describe('AnnotationState.HIGHLIGHT/REGION', () => {
         // Stay in the same state
         [AnnotationState.HIGHLIGHT, AnnotationState.REGION].forEach(state => {
             Object.values(AnnotationInput)
-                .filter(input => input !== AnnotationInput.CLICK)
+                .filter(input => input !== AnnotationInput.CLICK && input !== AnnotationInput.RESET)
                 .forEach(input => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
@@ -80,18 +88,30 @@ describe('lib/AnnotationControlsFSM', () => {
         describe('AnnotationState.HIGHLIGHT', () => {
             [
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.REGION,
                 },
-            ].forEach(({ mode, output }) => {
-                it(`should output ${output} if input is click and mode is ${mode}`, () => {
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+            ].forEach(({ input, mode, output }) => {
+                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT);
 
-                    expect(annotationControlsFSM.transition(AnnotationInput.CLICK, mode)).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
                     expect(annotationControlsFSM.getState()).to.equal(output);
                 });
             });
@@ -101,18 +121,30 @@ describe('lib/AnnotationControlsFSM', () => {
         describe('AnnotationState.REGION', () => {
             [
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.HIGHLIGHT,
                 },
-            ].forEach(({ mode, output }) => {
-                it(`should output ${output} if input is click and mode is ${mode}`, () => {
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+            ].forEach(({ input, mode, output }) => {
+                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
 
-                    expect(annotationControlsFSM.transition(AnnotationInput.CLICK, mode)).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
                     expect(annotationControlsFSM.getState()).to.equal(output);
                 });
             });
@@ -142,6 +174,11 @@ describe('lib/AnnotationControlsFSM', () => {
                     nextState: AnnotationState.NONE,
                     output: AnnotationMode.NONE,
                 },
+                {
+                    input: AnnotationInput.RESET,
+                    nextState: AnnotationState.NONE,
+                    output: AnnotationMode.NONE,
+                },
             ].forEach(({ input, nextState, output }) => {
                 it(`should go to state ${nextState} and output ${output} if input is ${input}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(state);
@@ -166,18 +203,30 @@ describe('lib/AnnotationControlsFSM', () => {
         describe('AnnotationState.HIGHLIGHT_TEMP', () => {
             [
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.REGION,
                 },
-            ].forEach(({ mode, output }) => {
-                it(`should output ${output} if input is click and mode is ${mode}`, () => {
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+            ].forEach(({ input, mode, output }) => {
+                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT_TEMP);
 
-                    expect(annotationControlsFSM.transition(AnnotationInput.CLICK, mode)).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
                     expect(annotationControlsFSM.getState()).to.equal(output);
                 });
             });
@@ -187,18 +236,30 @@ describe('lib/AnnotationControlsFSM', () => {
         describe('AnnotationState.REGION_TEMP', () => {
             [
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
                 {
+                    input: AnnotationInput.CLICK,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.HIGHLIGHT,
                 },
-            ].forEach(({ mode, output }) => {
-                it(`should output ${output} if input is click and mode is ${mode}`, () => {
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+            ].forEach(({ input, mode, output }) => {
+                it(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
 
-                    expect(annotationControlsFSM.transition(AnnotationInput.CLICK, mode)).to.equal(output);
+                    expect(annotationControlsFSM.transition(input, mode)).to.equal(output);
                     expect(annotationControlsFSM.getState()).to.equal(output);
                 });
             });

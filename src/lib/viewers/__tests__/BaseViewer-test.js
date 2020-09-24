@@ -600,12 +600,14 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: sandbox.mock(),
             };
             base.options.enableAnnotationsDiscoverability = true;
+            base.processAnnotationModeChange = sandbox.mock();
 
             base.handleFullscreenExit();
 
             expect(base.annotator.emit).to.be.calledWith(ANNOTATOR_EVENT.setVisibility, true);
-            expect(base.enableAnnotationControls).to.be.called;
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
+            expect(base.enableAnnotationControls).to.be.called;
         });
     });
 
@@ -1875,14 +1877,28 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('handleAnnotationControlsEscape()', () => {
-        it('should call toggleAnnotationMode', () => {
+        it('should call toggleAnnotationMode with AnnotationMode.NONE if enableAnnotationsDiscoverability is false', () => {
             base.annotator = {
                 toggleAnnotationMode: sandbox.stub(),
             };
+            base.options.enableAnnotationsDiscoverability = false;
 
             base.handleAnnotationControlsEscape();
 
             expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.NONE);
+        });
+
+        it('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {
+            base.annotator = {
+                toggleAnnotationMode: sandbox.stub(),
+            };
+            base.options.enableAnnotationsDiscoverability = true;
+            base.processAnnotationModeChange = sandbox.stub();
+
+            base.handleAnnotationControlsEscape();
+
+            expect(base.annotator.toggleAnnotationMode).to.be.calledWith(AnnotationMode.REGION);
+            expect(base.processAnnotationModeChange).to.be.calledWith(AnnotationMode.NONE);
         });
     });
 

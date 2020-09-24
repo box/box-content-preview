@@ -595,6 +595,7 @@ class BaseViewer extends EventEmitter {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
             if (this.options.enableAnnotationsDiscoverability) {
                 this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+                this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
             }
             this.enableAnnotationControls();
         }
@@ -1087,7 +1088,12 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAnnotationControlsEscape() {
-        this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        if (this.options.enableAnnotationsDiscoverability) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        } else {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
     }
 
     /**
