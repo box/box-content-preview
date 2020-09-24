@@ -1,3 +1,11 @@
+## 2.53.0 (2020-09-24)
+
+* test(jest): Migrate all unit tests from Karma to Jest (#1264) ([09e8d31](https://github.com/box/box-content-preview/commit/09e8d31)), closes [#1264](https://github.com/box/box-content-preview/issues/1264)
+* fix(discoverability): set mode to REGION on escape key press (#1263) ([e72a7c7](https://github.com/box/box-content-preview/commit/e72a7c7)), closes [#1263](https://github.com/box/box-content-preview/issues/1263)
+* chore(i18n): Update Translations (#1265) ([9a81ad3](https://github.com/box/box-content-preview/commit/9a81ad3)), closes [#1265](https://github.com/box/box-content-preview/issues/1265)
+
+
+
 ## 2.52.0 (2020-09-22)
 
 * feat(annotations): Disable highlight button if no download permission (#1253) ([b3a72d6](https://github.com/box/box-content-preview/commit/b3a72d6)), closes [#1253](https://github.com/box/box-content-preview/issues/1253)
