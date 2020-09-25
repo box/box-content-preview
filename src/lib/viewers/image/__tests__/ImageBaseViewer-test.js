@@ -316,7 +316,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.isPanning = false;
         });
 
-        it('should do nothing if incorrect click type', () => {
+        test('should do nothing if incorrect click type', () => {
             const event = {
                 button: 3,
                 ctrlKey: null,
@@ -336,7 +336,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.emitMetric).not.toBeCalled();
         });
 
-        it('should zoom in if zoomable but not pannable', () => {
+        test('should zoom in if zoomable but not pannable', () => {
             const event = {
                 button: 1,
                 ctrlKey: null,
@@ -351,7 +351,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.emitMetric).toBeCalledWith('zoom', 'inClick');
         });
 
-        it('should reset zoom if mouseup was not due to end of panning', () => {
+        test('should reset zoom if mouseup was not due to end of panning', () => {
             const event = {
                 button: 1,
                 ctrlKey: null,
@@ -367,7 +367,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.emitMetric).toBeCalledWith('zoom', 'resetClick');
         });
 
-        it('should not zoom if mouse up was due to end of panning', () => {
+        test('should not zoom if mouse up was due to end of panning', () => {
             const event = {
                 button: 1,
                 ctrlKey: null,

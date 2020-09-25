@@ -1247,7 +1247,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should avoid preflight requests by not adding non-standard headers', done => {
+            test('should avoid preflight requests by not adding non-standard headers', done => {
                 docBase.options.location = {
                     locale: 'en-US',
                 };
@@ -1268,7 +1268,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer('');
             });
 
-            it('should append encoding query parameter for gzip content when range requests are disabled', () => {
+            test('should append encoding query parameter for gzip content when range requests are disabled', () => {
                 const defaultChunkSize = 524288; // Taken from RANGE_CHUNK_SIZE_NON_US
                 const url = 'www.myTestPDF.com/123456';
                 const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
@@ -1836,7 +1836,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.stop = jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 1000 });
             });
 
-            it('should emit render metric event for start page if not already emitted', () => {
+            test('should emit render metric event for start page if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emitMetric).toBeCalledWith({
                     name: RENDER_EVENT,
@@ -1844,13 +1844,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            it('should not emit render metric event if it was already emitted', () => {
+            test('should not emit render metric event if it was already emitted', () => {
                 docBase.startPageRendered = true;
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emitMetric).not.toBeCalled();
             });
 
-            it('should not emit render metric event if rendered page is not start page', () => {
+            test('should not emit render metric event if rendered page is not start page', () => {
                 docBase.pagerenderedHandler({ pageNumber: 5 });
                 expect(stubs.emitMetric).not.toBeCalled();
             });

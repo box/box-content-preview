@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import Model3DViewer from '../Model3DViewer';
 import BaseViewer from '../../../BaseViewer';
+import Box3DRuntime from '../../__mocks__/Box3DRuntime';
 import Model3DControls from '../Model3DControls';
 import Model3DRenderer from '../Model3DRenderer';
+import Model3DViewer from '../Model3DViewer';
 import {
     EVENT_CANVAS_CLICK,
     EVENT_ROTATE_ON_AXIS,
@@ -21,13 +22,17 @@ let containerEl;
 let model3d;
 let stubs = {};
 
-describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
+describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
+
+    beforeAll(() => {
+        global.Box3D = Box3DRuntime;
+    });
 
     beforeEach(() => {
         fixture.load('viewers/box3d/model3d/__tests__/Model3DViewer-test.html');
         containerEl = document.querySelector('.container');
-        stubs.BoxSDK = jest.spyOn(window, 'BoxSDK');
+        stubs.BoxSDK = jest.spyOn(window, 'BoxSDK').mockImplementation();
         model3d = new Model3DViewer({
             file: {
                 id: 0,
@@ -47,7 +52,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
         model3d.containerEl = containerEl;
         model3d.setup();
 
-        jest.spyOn(model3d, 'createSubModules');
+        jest.spyOn(model3d, 'createSubModules').mockImplementation();
         model3d.controls = {
             addAnimationClip: () => {},
             addUi: () => {},
@@ -277,7 +282,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 getMetadataClient: () => meta,
             };
 
-            const stub = jest.spyOn(model3d, 'populateAnimationControls');
+            const stub = jest.spyOn(model3d, 'populateAnimationControls').mockImplementation();
             model3d.handleSceneLoaded().then(() => {
                 expect(stub).toBeCalled();
                 done();
@@ -312,7 +317,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 b3dMock
                     .expects('getEntitiesByType')
                     .once()
-                    .mockReturnValue([]);
+                    .returns([]);
                 model3d.populateAnimationControls();
             });
 
@@ -323,7 +328,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 b3dMock
                     .expects('getEntitiesByType')
                     .once()
-                    .mockReturnValue([animation]);
+                    .returns([animation]);
                 model3d.populateAnimationControls();
             });
 
@@ -343,7 +348,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     name: 'two',
                 };
                 const animMock = sandbox.mock(animation);
-                animMock.expects('getClipIds').mockReturnValue(['1', '2']);
+                animMock.expects('getClipIds').returns(['1', '2']);
                 animMock
                     .expects('getClip')
                     .withArgs('1')
@@ -352,7 +357,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     .expects('getClip')
                     .withArgs('2')
                     .returns(clipTwo);
-                b3dMock.expects('getEntitiesByType').mockReturnValue([animation]);
+                b3dMock.expects('getEntitiesByType').returns([animation]);
                 controlMock.expects('addAnimationClip').twice();
                 model3d.populateAnimationControls();
             });
@@ -364,7 +369,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 b3dMock
                     .expects('getEntitiesByType')
                     .once()
-                    .mockReturnValue([animation]);
+                    .returns([animation]);
                 controlMock.expects('showAnimationControls').never();
 
                 model3d.populateAnimationControls();
@@ -377,7 +382,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 b3dMock
                     .expects('getEntitiesByType')
                     .once()
-                    .mockReturnValue([animation]);
+                    .returns([animation]);
                 controlMock.expects('selectAnimationClip').never();
 
                 model3d.populateAnimationControls();
@@ -394,12 +399,12 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     name: 'one',
                 };
                 const animMock = sandbox.mock(animation);
-                animMock.expects('getClipIds').mockReturnValue(['1']);
+                animMock.expects('getClipIds').returns(['1']);
                 animMock
                     .expects('getClip')
                     .withArgs('1')
                     .returns(clipOne);
-                b3dMock.expects('getEntitiesByType').mockReturnValue([animation]);
+                b3dMock.expects('getEntitiesByType').returns([animation]);
                 controlMock.expects('showAnimationControls').once();
 
                 model3d.populateAnimationControls();
@@ -416,12 +421,12 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     name: 'one',
                 };
                 const animMock = sandbox.mock(animation);
-                animMock.expects('getClipIds').mockReturnValue(['1']);
+                animMock.expects('getClipIds').returns(['1']);
                 animMock
                     .expects('getClip')
                     .withArgs('1')
                     .returns(clipOne);
-                b3dMock.expects('getEntitiesByType').mockReturnValue([animation]);
+                b3dMock.expects('getEntitiesByType').returns([animation]);
                 controlMock
                     .expects('selectAnimationClip')
                     .once()
@@ -460,9 +465,9 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 getMetadataClient: () => meta,
             };
 
-            jest.spyOn(model3d, 'handleReset');
-            jest.spyOn(model3d, 'populateAnimationControls');
-            jest.spyOn(model3d, 'showWrapper');
+            jest.spyOn(model3d, 'handleReset').mockImplementation();
+            jest.spyOn(model3d, 'populateAnimationControls').mockImplementation();
+            jest.spyOn(model3d, 'showWrapper').mockImplementation();
             const axisSetStub = jest.spyOn(model3d, 'handleRotationAxisSet');
 
             model3d.handleSceneLoaded().then(() => {
@@ -479,9 +484,9 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 getMetadataClient: () => meta,
             };
 
-            jest.spyOn(model3d, 'handleReset');
-            jest.spyOn(model3d, 'populateAnimationControls');
-            jest.spyOn(model3d, 'showWrapper');
+            jest.spyOn(model3d, 'handleReset').mockImplementation();
+            jest.spyOn(model3d, 'populateAnimationControls').mockImplementation();
+            jest.spyOn(model3d, 'showWrapper').mockImplementation();
             const axisSetStub = jest.spyOn(model3d, 'handleRotationAxisSet');
 
             model3d.handleSceneLoaded().then(() => {
@@ -588,7 +593,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 getMetadataClient: () => meta,
             };
 
-            const onErrorStub = jest.spyOn(model3d, 'onMetadataError');
+            const onErrorStub = jest.spyOn(model3d, 'onMetadataError').mockImplementation();
 
             model3d.handleSceneLoaded().catch(() => {
                 expect(onErrorStub).toBeCalled();
@@ -597,7 +602,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should should invoke onMetadataError() when issues loading metadata', done => {
-            const errStub = jest.spyOn(model3d, 'onMetadataError');
+            const errStub = jest.spyOn(model3d, 'onMetadataError').mockImplementation();
             const meta = {
                 get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } }),
             };
@@ -612,7 +617,7 @@ describe.skip('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should still advance the promise chain for ui setup after failed metadata load', done => {
-            jest.spyOn(model3d, 'onMetadataError');
+            jest.spyOn(model3d, 'onMetadataError').mockImplementation();
             const addUi = jest.spyOn(model3d.controls, 'addUi');
             const meta = {
                 get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } }),

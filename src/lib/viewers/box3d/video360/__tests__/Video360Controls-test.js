@@ -3,7 +3,7 @@ import Video360Controls from '../Video360Controls';
 import { ICON_3D_VR } from '../../../../icons/icons';
 import { EVENT_TOGGLE_VR } from '../../box3DConstants';
 
-describe.skip('lib/viewers/box3d/video360/Video360Controls', () => {
+describe('lib/viewers/box3d/video360/Video360Controls', () => {
     let containerEl;
     let controls;
     const CSS_CLASS_HIDDEN = 'bp-is-hidden';
@@ -28,8 +28,8 @@ describe.skip('lib/viewers/box3d/video360/Video360Controls', () => {
 
     describe('constructor()', () => {
         beforeEach(() => {
-            jest.spyOn(Video360Controls.prototype, 'addUi');
-            jest.spyOn(Video360Controls.prototype, 'attachEventHandlers');
+            jest.spyOn(Video360Controls.prototype, 'addUi').mockImplementation();
+            jest.spyOn(Video360Controls.prototype, 'attachEventHandlers').mockImplementation();
             controls = new Video360Controls(containerEl);
         });
 
@@ -82,10 +82,10 @@ describe.skip('lib/viewers/box3d/video360/Video360Controls', () => {
 
             jest.spyOn(Video360Controls.prototype, 'attachEventHandlers');
             jest.spyOn(containerEl, 'querySelector').mockReturnValue(mediaControlsEl);
-
-            const createElement = jest.spyOn(document, 'createElement');
-            createElement.withArgs('button').mockReturnValue(vrButtonEl);
-            createElement.withArgs('span').mockReturnValue(iconSpanEl);
+            jest.spyOn(document, 'createElement')
+                .mockImplementation()
+                .mockReturnValueOnce(vrButtonEl)
+                .mockReturnValueOnce(iconSpanEl);
 
             controls.addUi();
         });
@@ -192,10 +192,10 @@ describe.skip('lib/viewers/box3d/video360/Video360Controls', () => {
 
     describe('destroy()', () => {
         beforeEach(() => {
-            jest.spyOn(Video360Controls.prototype, 'addUi');
-            jest.spyOn(Video360Controls.prototype, 'attachEventHandlers');
-            jest.spyOn(Video360Controls.prototype, 'removeAllListeners');
-            jest.spyOn(Video360Controls.prototype, 'detachEventHandlers');
+            jest.spyOn(Video360Controls.prototype, 'addUi').mockImplementation();
+            jest.spyOn(Video360Controls.prototype, 'attachEventHandlers').mockImplementation();
+            jest.spyOn(Video360Controls.prototype, 'removeAllListeners').mockImplementation();
+            jest.spyOn(Video360Controls.prototype, 'detachEventHandlers').mockImplementation();
         });
 
         afterEach(() => {

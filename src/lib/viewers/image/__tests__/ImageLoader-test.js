@@ -44,7 +44,7 @@ describe('lib/viewers/image/ImageLoader', () => {
     });
 
     describe('determineViewer', () => {
-        it('it should return the MultiImage viewer for a tif file with a jpg representation', () => {
+        test('it should return the MultiImage viewer for a tif file with a jpg representation', () => {
             const file = {
                 extension: 'tif',
                 representations: {
@@ -72,7 +72,7 @@ describe('lib/viewers/image/ImageLoader', () => {
             expect(determinedViewer.REP).toBe('jpg');
         });
 
-        it('it should return the MultiImage viewer for a tif file with a png representation', () => {
+        test('it should return the MultiImage viewer for a tif file with a png representation', () => {
             const file = {
                 extension: 'tif',
                 representations: {

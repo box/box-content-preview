@@ -798,21 +798,21 @@ describe('lib/Preview', () => {
             stubs.checkFeature = jest.spyOn(file, 'checkFeature');
         });
 
-        it('should return true is file is downloadable and has printing feature', () => {
+        test('should return true is file is downloadable and has printing feature', () => {
             stubs.canDownload.mockReturnValue(true);
             stubs.checkFeature.mockReturnValue(true);
 
             expect(preview.canPrint()).toBe(true);
         });
 
-        it('should return false is file is not downloadable and has printing feature', () => {
+        test('should return false is file is not downloadable and has printing feature', () => {
             stubs.canDownload.mockReturnValue(false);
             stubs.checkFeature.mockReturnValue(true);
 
             expect(preview.canPrint()).toBe(false);
         });
 
-        it('should return false is file is downloadable and but does not have printing feature', () => {
+        test('should return false is file is downloadable and but does not have printing feature', () => {
             stubs.canDownload.mockReturnValue(true);
             stubs.checkFeature.mockReturnValue(false);
 
