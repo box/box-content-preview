@@ -67,11 +67,7 @@ export default class AnnotationControlsFSM {
                 break;
             case AnnotationState.HIGHLIGHT_TEMP:
             case AnnotationState.REGION_TEMP:
-                if (
-                    input === AnnotationInput.CANCEL ||
-                    input === AnnotationInput.SUCCESS ||
-                    input === AnnotationInput.INIT
-                ) {
+                if (input === AnnotationInput.CANCEL || input === AnnotationInput.SUCCESS) {
                     this.currentState = AnnotationState.NONE;
                 }
                 break;

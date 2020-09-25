@@ -67,25 +67,13 @@ describe('lib/AnnotationControlsFSM', () => {
             expect(annotationControlsFSM.transition(AnnotationInput.RESET)).toEqual(AnnotationMode.NONE);
             expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
         });
-
-        it('should reset state if input is AnnotationInput.INIT', () => {
-            const annotationControlsFSM = new AnnotationControlsFSM();
-
-            expect(annotationControlsFSM.transition(AnnotationInput.INIT)).toEqual(AnnotationMode.NONE);
-            expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
-        });
     });
 
     describe('AnnotationState.HIGHLIGHT/REGION', () => {
         // Stay in the same state
         [AnnotationState.HIGHLIGHT, AnnotationState.REGION].forEach(state => {
             Object.values(AnnotationInput)
-                .filter(
-                    input =>
-                        input !== AnnotationInput.CLICK &&
-                        input !== AnnotationInput.RESET &&
-                        input !== AnnotationInput.INIT,
-                )
+                .filter(input => input !== AnnotationInput.CLICK && input !== AnnotationInput.RESET)
                 .forEach(input => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
@@ -118,16 +106,6 @@ describe('lib/AnnotationControlsFSM', () => {
                     input: AnnotationInput.RESET,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
-                },
-                {
-                    input: AnnotationInput.INIT,
-                    mode: AnnotationMode.HIGHLIGHT,
-                    output: AnnotationMode.HIGHLIGHT,
-                },
-                {
-                    input: AnnotationInput.INIT,
-                    mode: AnnotationMode.REGION,
-                    output: AnnotationMode.HIGHLIGHT,
                 },
             ].forEach(({ input, mode, output }) => {
                 test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
@@ -163,12 +141,12 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.REGION,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.REGION,
                 },
@@ -208,11 +186,6 @@ describe('lib/AnnotationControlsFSM', () => {
                 },
                 {
                     input: AnnotationInput.RESET,
-                    nextState: AnnotationState.NONE,
-                    output: AnnotationMode.NONE,
-                },
-                {
-                    input: AnnotationInput.INIT,
                     nextState: AnnotationState.NONE,
                     output: AnnotationMode.NONE,
                 },
@@ -260,12 +233,12 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
@@ -303,12 +276,12 @@ describe('lib/AnnotationControlsFSM', () => {
                     output: AnnotationMode.NONE,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
                 {
-                    input: AnnotationInput.INIT,
+                    input: AnnotationInput.CANCEL,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
