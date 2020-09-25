@@ -122,12 +122,12 @@ describe('lib/AnnotationControlsFSM', () => {
                 {
                     input: AnnotationInput.INIT,
                     mode: AnnotationMode.HIGHLIGHT,
-                    output: AnnotationMode.NONE,
+                    output: AnnotationMode.HIGHLIGHT,
                 },
                 {
                     input: AnnotationInput.INIT,
                     mode: AnnotationMode.REGION,
-                    output: AnnotationMode.NONE,
+                    output: AnnotationMode.HIGHLIGHT,
                 },
             ].forEach(({ input, mode, output }) => {
                 test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
@@ -165,12 +165,12 @@ describe('lib/AnnotationControlsFSM', () => {
                 {
                     input: AnnotationInput.INIT,
                     mode: AnnotationMode.REGION,
-                    output: AnnotationMode.NONE,
+                    output: AnnotationMode.REGION,
                 },
                 {
                     input: AnnotationInput.INIT,
                     mode: AnnotationMode.HIGHLIGHT,
-                    output: AnnotationMode.NONE,
+                    output: AnnotationMode.REGION,
                 },
             ].forEach(({ input, mode, output }) => {
                 test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
