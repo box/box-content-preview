@@ -54,7 +54,7 @@ export default class AnnotationControlsFSM {
             return stateModeMap[this.currentState];
         }
 
-        if (input === AnnotationInput.RESET || input === AnnotationInput.INIT) {
+        if (input === AnnotationInput.RESET) {
             this.currentState = AnnotationState.NONE;
             return stateModeMap[this.currentState];
         }
@@ -67,7 +67,11 @@ export default class AnnotationControlsFSM {
                 break;
             case AnnotationState.HIGHLIGHT_TEMP:
             case AnnotationState.REGION_TEMP:
-                if (input === AnnotationInput.CANCEL || input === AnnotationInput.SUCCESS) {
+                if (
+                    input === AnnotationInput.CANCEL ||
+                    input === AnnotationInput.SUCCESS ||
+                    input === AnnotationInput.INIT
+                ) {
                     this.currentState = AnnotationState.NONE;
                 }
                 break;
