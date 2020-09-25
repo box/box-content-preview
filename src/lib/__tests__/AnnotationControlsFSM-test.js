@@ -67,13 +67,25 @@ describe('lib/AnnotationControlsFSM', () => {
             expect(annotationControlsFSM.transition(AnnotationInput.RESET)).toEqual(AnnotationMode.NONE);
             expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
         });
+
+        it('should reset state if input is AnnotationInput.INIT', () => {
+            const annotationControlsFSM = new AnnotationControlsFSM();
+
+            expect(annotationControlsFSM.transition(AnnotationInput.INIT)).toEqual(AnnotationMode.NONE);
+            expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
+        });
     });
 
     describe('AnnotationState.HIGHLIGHT/REGION', () => {
         // Stay in the same state
         [AnnotationState.HIGHLIGHT, AnnotationState.REGION].forEach(state => {
             Object.values(AnnotationInput)
-                .filter(input => input !== AnnotationInput.CLICK && input !== AnnotationInput.RESET)
+                .filter(
+                    input =>
+                        input !== AnnotationInput.CLICK &&
+                        input !== AnnotationInput.RESET &&
+                        input !== AnnotationInput.INIT,
+                )
                 .forEach(input => {
                     it(`should stay in state ${state} if input is ${input}`, () => {
                         const annotationControlsFSM = new AnnotationControlsFSM(state);
@@ -107,6 +119,16 @@ describe('lib/AnnotationControlsFSM', () => {
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
             ].forEach(({ input, mode, output }) => {
                 test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT);
@@ -137,6 +159,16 @@ describe('lib/AnnotationControlsFSM', () => {
                 },
                 {
                     input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
@@ -176,6 +208,11 @@ describe('lib/AnnotationControlsFSM', () => {
                 },
                 {
                     input: AnnotationInput.RESET,
+                    nextState: AnnotationState.NONE,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
                     nextState: AnnotationState.NONE,
                     output: AnnotationMode.NONE,
                 },
@@ -222,6 +259,16 @@ describe('lib/AnnotationControlsFSM', () => {
                     mode: AnnotationMode.REGION,
                     output: AnnotationMode.NONE,
                 },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
             ].forEach(({ input, mode, output }) => {
                 test(`should output ${output} if input is ${input} and mode is ${mode}`, () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT_TEMP);
@@ -252,6 +299,16 @@ describe('lib/AnnotationControlsFSM', () => {
                 },
                 {
                     input: AnnotationInput.RESET,
+                    mode: AnnotationMode.HIGHLIGHT,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
+                    mode: AnnotationMode.REGION,
+                    output: AnnotationMode.NONE,
+                },
+                {
+                    input: AnnotationInput.INIT,
                     mode: AnnotationMode.HIGHLIGHT,
                     output: AnnotationMode.NONE,
                 },
