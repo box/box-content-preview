@@ -12,7 +12,6 @@ export enum AnnotationInput {
     CANCEL = 'cancel',
     CLICK = 'click',
     CREATE = 'create',
-    INIT = 'init',
     RESET = 'reset',
     STARTED = 'started',
     SUCCESS = 'success',
