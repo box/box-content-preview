@@ -45,13 +45,13 @@ describe('lib/Controls', () => {
             controlsElEventListener = undefined;
         });
 
-        it('should create the correct DOM structure', () => {
+        test('should create the correct DOM structure', () => {
             expect(controls.containerEl).toEqual(document.getElementById('test-controls-container'));
 
             expect(controls.controlsEl.classList.contains('bp-controls')).toBe(true);
         });
 
-        it('should add the correct event listeners', () => {
+        test('should add the correct event listeners', () => {
             jest.spyOn(Browser, 'hasTouch').mockReturnValue(false);
             controls = new Controls(container);
 
@@ -63,7 +63,7 @@ describe('lib/Controls', () => {
             expect(controlsElEventListener).toBeCalledWith('click', controls.clickHandler);
         });
 
-        it('should add the correct event listeners when browser has touch', () => {
+        test('should add the correct event listeners when browser has touch', () => {
             jest.spyOn(Browser, 'hasTouch').mockReturnValue(true);
             controls = new Controls(container);
 
@@ -282,7 +282,7 @@ describe('lib/Controls', () => {
             expect(controls.shouldHide).toBe(true);
         });
 
-        it('should call stopPropagation on event when called', () => {
+        test('should call stopPropagation on event when called', () => {
             const stopPropagation = jest.fn();
 
             controls.clickHandler({ stopPropagation });

@@ -1833,7 +1833,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
         });
 
-        it('should reset controls if status is success', () => {
+        test('should reset controls if status is success', () => {
             const event = createEvent('success');
             base.handleAnnotationCreateEvent(event);
 
@@ -1928,7 +1928,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl.classList.remove).not.toBeCalled();
         });
 
-        it('should call annotationControls setMode', () => {
+        test('should call annotationControls setMode', () => {
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
             expect(base.annotationControls.setMode).toBeCalledWith(AnnotationMode.REGION);

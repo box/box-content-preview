@@ -1,10 +1,7 @@
 /* eslint-disable no-unused-expressions */
+import Box3DRuntime from '../../__mocks__/Box3DRuntime';
 import Image360Renderer from '../Image360Renderer';
 import sceneEntities from '../SceneEntities';
-import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../../constants';
-
-// eslint-disable-next-line import/no-dynamic-require
-const Box3DRuntime = require(`../../../../../third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/box3d-runtime.min.js`);
 
 describe('lib/viewers/box3d/image360/Image360Renderer', () => {
     let containerEl;

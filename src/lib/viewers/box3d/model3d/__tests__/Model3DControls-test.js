@@ -19,7 +19,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
 import { CSS_CLASS_HIDDEN } from '../../box3DConstants';
 
-describe.skip('lib/viewers/box3d/model3d/Model3DControls', () => {
+describe('lib/viewers/box3d/model3d/Model3DControls', () => {
     let containerEl;
     let controls;
     const sandbox = sinon.createSandbox();
@@ -422,20 +422,20 @@ describe.skip('lib/viewers/box3d/model3d/Model3DControls', () => {
 
     describe('handleSelectAnimationClip()', () => {
         test('should invoke setAnimationPlaying() to stop animation playback', () => {
-            const stub = jest.spyOn(controls, 'setAnimationPlaying');
+            const stub = jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             controls.handleSelectAnimationClip();
             expect(stub).toBeCalledWith(false);
         });
 
         test('should emit a "select animation clip" event', () => {
-            jest.spyOn(controls, 'setAnimationPlaying');
+            jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             const stub = jest.spyOn(controls, 'emit');
             controls.handleSelectAnimationClip();
-            expect(stub).toBeCalledWith(EVENT_SELECT_ANIMATION_CLIP);
+            expect(stub).toBeCalledWith(EVENT_SELECT_ANIMATION_CLIP, undefined);
         });
 
         test('should emit a "select animation clip" event, with the clip selected', () => {
-            jest.spyOn(controls, 'setAnimationPlaying');
+            jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             const stub = jest.spyOn(controls, 'emit');
             const id = 'p1p1p1p1';
             controls.handleSelectAnimationClip(id);
@@ -458,19 +458,19 @@ describe.skip('lib/viewers/box3d/model3d/Model3DControls', () => {
     describe('handleToggleAnimation()', () => {
         test('should invoke hidePullups()', () => {
             const hidePullupsStub = jest.spyOn(controls, 'hidePullups');
-            jest.spyOn(controls, 'setAnimationPlaying');
+            jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             controls.handleToggleAnimation();
             expect(hidePullupsStub).toBeCalled();
         });
 
         test('should toggle playback of the current animation via setAnimationPlaying()', () => {
-            const playStub = jest.spyOn(controls, 'setAnimationPlaying');
+            const playStub = jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             controls.handleToggleAnimation();
             expect(playStub).toBeCalled();
         });
 
         test('should set toggle animation playback by inverting playback state (.isAnimationPlaying)', () => {
-            const playStub = jest.spyOn(controls, 'setAnimationPlaying');
+            const playStub = jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             controls.isAnimationPlaying = true;
             controls.handleToggleAnimation();
             expect(playStub).toBeCalledWith(false);
@@ -579,20 +579,20 @@ describe.skip('lib/viewers/box3d/model3d/Model3DControls', () => {
 
     describe('handleReset()', () => {
         test('should hide all pullups', () => {
-            jest.spyOn(controls, 'setAnimationPlaying');
+            jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             const stub = jest.spyOn(controls, 'hidePullups');
             controls.handleReset();
             expect(stub).toBeCalled();
         });
 
         test('should reset the settings pullup', () => {
-            jest.spyOn(controls, 'setAnimationPlaying');
+            jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             sandbox.mock(controls.settingsPullup).expects('reset');
             controls.handleReset();
         });
 
         test('should pause animation playback', () => {
-            const stub = jest.spyOn(controls, 'setAnimationPlaying');
+            const stub = jest.spyOn(controls, 'setAnimationPlaying').mockImplementation();
             controls.handleReset();
             expect(stub).toBeCalledWith(false);
         });

@@ -1,11 +1,8 @@
 /* global Box3D */
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../Box3DRenderer';
+import Box3DRuntime from '../__mocks__/Box3DRuntime';
 import { EVENT_SHOW_VR_BUTTON, EVENT_WEBGL_CONTEXT_RESTORED } from '../box3DConstants';
-import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
-
-// eslint-disable-next-line import/no-dynamic-require
-const Box3DRuntime = require(`../../../../third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/box3d-runtime.min.js`);
 
 const sandbox = sinon.createSandbox();
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';

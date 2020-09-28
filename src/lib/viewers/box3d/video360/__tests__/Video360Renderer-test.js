@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Video360Renderer from '../Video360Renderer';
 
-describe.skip('lib/viewers/box3d/video360/Video360Renderer', () => {
+describe('lib/viewers/box3d/video360/Video360Renderer', () => {
     let containerEl;
     let renderer;
     const OPTIONS = {
@@ -69,7 +69,7 @@ describe.skip('lib/viewers/box3d/video360/Video360Renderer', () => {
     describe('destroy()', () => {
         test('should nullify .inputController', () => {
             renderer.destroy();
-            expect(renderer.inputController).not.toBeDefined();
+            expect(renderer.inputController).toBeNull();
         });
 
         test('should call super.destroy()', () => {
