@@ -63,6 +63,9 @@ export default class AnnotationControlsFSM {
                 if (input === AnnotationInput.CREATE || input === AnnotationInput.STARTED) {
                     this.currentState = modeTempStateMap[mode] || AnnotationState.NONE;
                 }
+                if (input === AnnotationInput.CANCEL) {
+                    this.currentState = AnnotationState.NONE;
+                }
                 break;
             case AnnotationState.HIGHLIGHT_TEMP:
             case AnnotationState.REGION_TEMP:
