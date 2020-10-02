@@ -66,6 +66,8 @@ const STANDARD_HEADERS = [
 
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
+    const pdfjsLib = { GlobalWorkerOptions: {} };
+    const pdfjsViewer = {};
 
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
@@ -73,8 +75,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
         stubs = {};
 
-        Object.defineProperty(global, 'pdfjsLib', { value: { GlobalWorkerOptions: {} }, configurable: true });
-        Object.defineProperty(global, 'pdfjsViewer', { value: {}, configurable: true });
+        Object.defineProperty(window, 'pdfjsLib', { value: pdfjsLib, writable: true });
+        Object.defineProperty(window, 'pdfjsViewer', { value: pdfjsViewer, writable: true });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
 
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);

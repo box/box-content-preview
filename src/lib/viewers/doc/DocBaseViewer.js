@@ -757,6 +757,7 @@ class DocBaseViewer extends BaseViewer {
             imageResourcesPath: assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`),
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? textLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
     }
