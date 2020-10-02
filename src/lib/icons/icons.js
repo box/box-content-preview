@@ -214,7 +214,6 @@ export const ICON_FILE_MAP = {};
     'raf',
     'raw',
     'svg',
-    'svs',
     'swf',
     'tga',
     'tif',
