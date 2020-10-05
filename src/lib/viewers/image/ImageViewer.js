@@ -1,4 +1,5 @@
-import AnnotationControls from '../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
@@ -180,6 +181,10 @@ class ImageViewer extends ImageBaseViewer {
         let height;
         let width;
         const isRotated = this.isRotated();
+        const viewport = {
+            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+        };
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
@@ -194,6 +199,20 @@ class ImageViewer extends ImageBaseViewer {
             // Since we are taking offsetWidth, we only need to apply the zoom to the width
             // as clearing the height will preserve the aspect ratio
             newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
+
+            // We want to calculate the zoomedWidth / zoomedHeight to determine if we should toggle annotation mode to None
+            const ratio = Math.min(viewport.width / width, viewport.height / height);
+            const zoomedWidth = newWidth * ratio;
+            const zoomedHeight =
+                type === 'in' ? height * IMAGE_ZOOM_SCALE * ratio : (height / IMAGE_ZOOM_SCALE) * ratio;
+
+            // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
+            if (zoomedWidth > viewport.width || zoomedHeight > viewport.height) {
+                if (this.options.enableAnnotationsImageDiscoverability) {
+                    this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
+                    this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+                }
+            }
         } else {
             // This can be triggered by initial render as well as reset
             // When it is an initial render or reset, take the original dimensions of the image
@@ -202,10 +221,6 @@ class ImageViewer extends ImageBaseViewer {
             ({ width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated));
             const modifyWidthInsteadOfHeight = width >= height;
 
-            const viewport = {
-                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-            };
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
             if (width > viewport.width || height > viewport.height) {
@@ -298,6 +313,7 @@ class ImageViewer extends ImageBaseViewer {
         if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls = new AnnotationControls(this.controls);
             this.annotationControls.init({
+                enableAnnotationsImageDiscoverability: this.options.enableAnnotationsImageDiscoverability,
                 fileId: this.options.file.id,
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,

@@ -18,6 +18,7 @@ export enum AnnotationMode {
 }
 export type ClickHandler = ({ event, mode }: { event: MouseEvent; mode: AnnotationMode }) => void;
 export type Options = {
+    enableAnnotationsImageDiscoverability: boolean;
     fileId: string;
     onClick?: ClickHandler;
     onEscape?: () => void;
@@ -194,7 +195,13 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ fileId, onEscape = noop, onClick = noop, showHighlightText = false }: Options): void {
+    public init({
+        enableAnnotationsImageDiscoverability = false,
+        fileId,
+        onEscape = noop,
+        onClick = noop,
+        showHighlightText = false,
+    }: Options): void {
         if (this.hasInit) {
             return;
         }
@@ -204,6 +211,10 @@ export default class AnnotationControls {
         this.addButton(AnnotationMode.REGION, onClick, groupElement, fileId);
         if (showHighlightText) {
             this.addButton(AnnotationMode.HIGHLIGHT, onClick, groupElement, fileId);
+        }
+
+        if (enableAnnotationsImageDiscoverability) {
+            this.setMode(AnnotationMode.REGION);
         }
 
         this.onEscape = onEscape;

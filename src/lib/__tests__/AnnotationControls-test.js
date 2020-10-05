@@ -72,6 +72,7 @@ describe('lib/AnnotationControls', () => {
     describe('init()', () => {
         beforeEach(() => {
             jest.spyOn(annotationControls, 'addButton');
+            jest.spyOn(annotationControls, 'setMode');
         });
 
         test('should only add region button', () => {
@@ -122,6 +123,12 @@ describe('lib/AnnotationControls', () => {
 
             expect(annotationControls.addButton).not.toBeCalled();
             expect(document.addEventListener).not.toBeCalled();
+        });
+
+        test('should call setMode with mode REGION if enableAnnotationsImageDiscoverability is true', () => {
+            annotationControls.init({ enableAnnotationsImageDiscoverability: true });
+
+            expect(annotationControls.setMode).toBeCalledWith(AnnotationMode.REGION);
         });
     });
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
+import { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -252,6 +253,24 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(getValue(image.imageEl.style.width)).toBeGreaterThan(origImageSize);
         });
 
+        test('should set annotation mode to be NONE if the enableAnnotationsImageDiscoverability FF is on and the image has overflowed the viewport', () => {
+            image.processAnnotationModeChange = jest.fn();
+            image.annotationControlsFSM = {
+                transition: jest.fn().mockReturnValue(AnnotationState.NONE),
+            };
+            image.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            image.getTransformWidthAndHeight = jest.fn().mockReturnValue({ width: 50, height: 50 });
+            image.options.enableAnnotationsImageDiscoverability = true;
+
+            image.zoom('in');
+
+            expect(image.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.CANCEL);
+            expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationState.NONE);
+            expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+        });
+
         test('should zoom out by modifying width', () => {
             const origImageSize = 200;
 
@@ -351,7 +370,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.annotationControls).toBeInstanceOf(AnnotationControls);
         });
 
-        test('should call annotations controls init with callbacks', () => {
+        test.each`
+            enableAnnotationsImageDiscoverability | should
+            ${false}                              | ${'should call annotation controls init with callbacks'}
+            ${true}                               | ${'should call annotation controls init with enableAnnotationDiscoverability set to true'}
+        `('$should', ({ enableAnnotationsImageDiscoverability }) => {
+            image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
             jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
             jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
@@ -359,6 +383,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.loadUI();
 
             expect(AnnotationControls.prototype.init).toBeCalledWith({
+                enableAnnotationsImageDiscoverability,
                 fileId: image.options.file.id,
                 onClick: image.handleAnnotationControlsClick,
                 onEscape: image.handleAnnotationControlsEscape,
