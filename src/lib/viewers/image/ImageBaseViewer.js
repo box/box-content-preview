@@ -1,5 +1,4 @@
 import BaseViewer from '../BaseViewer';
-import { AnnotationInput } from '../../AnnotationControlsFSM';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import PreviewError from '../../PreviewError';
@@ -8,9 +7,6 @@ import ZoomControls from '../../ZoomControls';
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
-
-export const IMAGE_PADDING = 15;
-export const IMAGE_ZOOM_SCALE = 1.2;
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -30,9 +26,6 @@ class ImageBaseViewer extends BaseViewer {
         this.stopPanning = this.stopPanning.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
-
-        this.getTransformWidthAndHeight = this.getTransformWidthAndHeight.bind(this);
-        this.isRotated = this.isRotated.bind(this);
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
@@ -99,29 +92,6 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     zoomIn() {
-        if (this.options.enableAnnotationsImageDiscoverability) {
-            const isRotated = this.isRotated();
-            const { width, height } = this.getTransformWidthAndHeight(
-                this.imageEl.offsetWidth,
-                this.imageEl.offsetHeight,
-                isRotated,
-            );
-
-            const viewport = {
-                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-            };
-            // We want to calculate the zoomedWidth / zoomedHeight to determine if we should toggle annotation mode to None
-            const ratio = Math.min(viewport.width / width, viewport.height / height);
-            const zoomedWidth = width * IMAGE_ZOOM_SCALE * ratio;
-            const zoomedHeight = height * IMAGE_ZOOM_SCALE * ratio;
-
-            // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
-            if (zoomedWidth > viewport.width || zoomedHeight > viewport.height) {
-                this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
-            }
-        }
-
         this.zoom('in');
     }
 
@@ -132,40 +102,6 @@ class ImageBaseViewer extends BaseViewer {
      */
     zoomOut() {
         this.zoom('out');
-    }
-
-    /**
-     * Determines if Image file has been rotated 90 or 270 degrees to the left
-     *
-     * @return {boolean} Whether image has been rotated -90 or -270 degrees
-     */
-    isRotated() {
-        return Math.abs(this.currentRotationAngle) % 180 === 90;
-    }
-
-    /**
-     * Gets the width & height after the transforms are applied.
-     * When an image is rotated, the width & height of an image, e.g. offsetWidth & offsetHeight,
-     * are the values before transforms are applied, so if the image is rotated we need to swap the
-     * width & height
-     *
-     * @private
-     * @param {number} [width] - The width in px
-     * @param {number} [height] - The height in px
-     * @param {boolean} [isRotated] - if the image has a transform rotate applied to it
-     * @return {Object} the width & height of the image after tranformations
-     */
-    getTransformWidthAndHeight(width, height, isRotated) {
-        if (isRotated) {
-            return {
-                width: height,
-                height: width,
-            };
-        }
-        return {
-            width,
-            height,
-        };
     }
 
     /**
