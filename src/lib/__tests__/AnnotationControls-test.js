@@ -125,8 +125,8 @@ describe('lib/AnnotationControls', () => {
             expect(document.addEventListener).not.toBeCalled();
         });
 
-        test('should call setMode with mode REGION if enableAnnotationsImageDiscoverability is true', () => {
-            annotationControls.init({ enableAnnotationsImageDiscoverability: true });
+        test('should call setMode with the initialMode that is passed in', () => {
+            annotationControls.init({ initialMode: AnnotationMode.REGION });
 
             expect(annotationControls.setMode).toBeCalledWith(AnnotationMode.REGION);
         });

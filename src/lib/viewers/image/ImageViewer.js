@@ -1,5 +1,6 @@
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import { AnnotationInput } from '../../AnnotationControlsFSM';
+import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
@@ -271,8 +272,10 @@ class ImageViewer extends ImageBaseViewer {
         if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
             this.annotationControls = new AnnotationControls(this.controls);
             this.annotationControls.init({
-                enableAnnotationsImageDiscoverability: this.options.enableAnnotationsImageDiscoverability,
                 fileId: this.options.file.id,
+                initialMode: this.options.enableAnnotationsImageDiscoverability
+                    ? AnnotationMode.REGION
+                    : AnnotationMode.NONE,
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
             });
