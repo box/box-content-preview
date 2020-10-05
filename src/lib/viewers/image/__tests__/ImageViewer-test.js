@@ -353,23 +353,26 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         test.each`
             enableAnnotationsImageDiscoverability | initialMode              | should
-            ${false}                              | ${AnnotationMode.NONE}   | ${'should call annotation controls init with callbacks and with initialMode set to AnnotationMode.NONE if enableAnnotationsImageDiscoverability is false'}
-            ${true}                               | ${AnnotationMode.REGION} | ${'should call annotation controls init with initialMode set to AnnotationMode.REGION if enableAnnotationsImageDiscoverability is true '}
-        `('$should', ({ enableAnnotationsImageDiscoverability, initialMode }) => {
-            image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
-            jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
-            jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
+            ${false}                              | ${AnnotationMode.NONE}   | ${'AnnotationMode.NONE if enableAnnotationsImageDiscoverability is false'}
+            ${true}                               | ${AnnotationMode.REGION} | ${'AnnotationMode.REGION if enableAnnotationsImageDiscoverability is true '}
+        `(
+            'should call annotation controls init with callbacks and with initialMode set to $should ',
+            ({ enableAnnotationsImageDiscoverability, initialMode }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
+                jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
 
-            image.loadUI();
+                image.loadUI();
 
-            expect(AnnotationControls.prototype.init).toBeCalledWith({
-                fileId: image.options.file.id,
-                initialMode,
-                onClick: image.handleAnnotationControlsClick,
-                onEscape: image.handleAnnotationControlsEscape,
-            });
-        });
+                expect(AnnotationControls.prototype.init).toBeCalledWith({
+                    fileId: image.options.file.id,
+                    initialMode,
+                    onClick: image.handleAnnotationControlsClick,
+                    onEscape: image.handleAnnotationControlsEscape,
+                });
+            },
+        );
     });
 
     describe('adjustImageZoomPadding()', () => {

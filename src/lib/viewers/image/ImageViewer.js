@@ -1,6 +1,5 @@
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import { AnnotationInput } from '../../AnnotationControlsFSM';
-import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
