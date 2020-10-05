@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
-import { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
+import AnnotationControls from '../../../AnnotationControls';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -253,24 +252,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(getValue(image.imageEl.style.width)).toBeGreaterThan(origImageSize);
         });
 
-        test('should set annotation mode to be NONE if the enableAnnotationsImageDiscoverability FF is on and the image has overflowed the viewport', () => {
-            image.processAnnotationModeChange = jest.fn();
-            image.annotationControlsFSM = {
-                transition: jest.fn().mockReturnValue(AnnotationState.NONE),
-            };
-            image.annotator = {
-                toggleAnnotationMode: jest.fn(),
-            };
-            image.getTransformWidthAndHeight = jest.fn().mockReturnValue({ width: 50, height: 50 });
-            image.options.enableAnnotationsImageDiscoverability = true;
-
-            image.zoom('in');
-
-            expect(image.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.CANCEL);
-            expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationState.NONE);
-            expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
-        });
-
         test('should zoom out by modifying width', () => {
             const origImageSize = 200;
 
@@ -387,41 +368,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                 fileId: image.options.file.id,
                 onClick: image.handleAnnotationControlsClick,
                 onEscape: image.handleAnnotationControlsEscape,
-            });
-        });
-    });
-
-    describe('isRotated()', () => {
-        test('should return false if image is not rotated', () => {
-            const result = image.isRotated();
-            expect(result).toBe(false);
-        });
-
-        test('should return true if image is rotated', () => {
-            image.currentRotationAngle = 90;
-            const result = image.isRotated();
-            expect(result).toBe(true);
-        });
-    });
-
-    describe('getTransformWidthAndHeight', () => {
-        test('should return the same width & height if the image is not rotated', () => {
-            const width = 100;
-            const height = 200;
-            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
-            expect(widthAndHeightObj).toEqual({
-                width,
-                height,
-            });
-        });
-
-        test('should return swap the width & height if the image is rotated', () => {
-            const width = 100;
-            const height = 200;
-            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
-            expect(widthAndHeightObj).toEqual({
-                width: height,
-                height: width,
             });
         });
     });

@@ -1,14 +1,11 @@
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import { AnnotationInput } from '../../AnnotationControlsFSM';
-import ImageBaseViewer from './ImageBaseViewer';
-import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
+import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
-const IMAGE_PADDING = 15;
-const IMAGE_ZOOM_SCALE = 1.2;
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -144,31 +141,6 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Gets the width & height after the transforms are applied.
-     * When an image is rotated, the width & height of an image, e.g. offsetWidth & offsetHeight,
-     * are the values before transforms are applied, so if the image is rotated we need to swap the
-     * width & height
-     *
-     * @private
-     * @param {number} [width] - The width in px
-     * @param {number} [height] - The height in px
-     * @param {boolean} [isRotated] - if the image has a transform rotate applied to it
-     * @return {Object} the width & height of the image after tranformations
-     */
-    getTransformWidthAndHeight(width, height, isRotated) {
-        if (isRotated) {
-            return {
-                width: height,
-                height: width,
-            };
-        }
-        return {
-            width,
-            height,
-        };
-    }
-
-    /**
      * Handles zoom
      *
      * @private
@@ -181,10 +153,6 @@ class ImageViewer extends ImageBaseViewer {
         let height;
         let width;
         const isRotated = this.isRotated();
-        const viewport = {
-            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-        };
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
@@ -199,20 +167,6 @@ class ImageViewer extends ImageBaseViewer {
             // Since we are taking offsetWidth, we only need to apply the zoom to the width
             // as clearing the height will preserve the aspect ratio
             newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
-
-            // We want to calculate the zoomedWidth / zoomedHeight to determine if we should toggle annotation mode to None
-            const ratio = Math.min(viewport.width / width, viewport.height / height);
-            const zoomedWidth = newWidth * ratio;
-            const zoomedHeight =
-                type === 'in' ? height * IMAGE_ZOOM_SCALE * ratio : (height / IMAGE_ZOOM_SCALE) * ratio;
-
-            // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
-            if (zoomedWidth > viewport.width || zoomedHeight > viewport.height) {
-                if (this.options.enableAnnotationsImageDiscoverability) {
-                    this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
-                    this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
-                }
-            }
         } else {
             // This can be triggered by initial render as well as reset
             // When it is an initial render or reset, take the original dimensions of the image
@@ -221,6 +175,10 @@ class ImageViewer extends ImageBaseViewer {
             ({ width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated));
             const modifyWidthInsteadOfHeight = width >= height;
 
+            const viewport = {
+                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+            };
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
             if (width > viewport.width || height > viewport.height) {
@@ -319,15 +277,6 @@ class ImageViewer extends ImageBaseViewer {
                 onEscape: this.handleAnnotationControlsEscape,
             });
         }
-    }
-
-    /**
-     * Determines if Image file has been rotated 90 or 270 degrees to the left
-     *
-     * @return {boolean} Whether image has been rotated -90 or -270 degrees
-     */
-    isRotated() {
-        return Math.abs(this.currentRotationAngle) % 180 === 90;
     }
 
     /**
