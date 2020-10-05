@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationControls from '../../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -352,10 +352,10 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         test.each`
-            enableAnnotationsImageDiscoverability | should
-            ${false}                              | ${'should call annotation controls init with callbacks'}
-            ${true}                               | ${'should call annotation controls init with enableAnnotationDiscoverability set to true'}
-        `('$should', ({ enableAnnotationsImageDiscoverability }) => {
+            enableAnnotationsImageDiscoverability | initialMode              | should
+            ${false}                              | ${AnnotationMode.NONE}   | ${'should call annotation controls init with callbacks and with initialMode set to AnnotationMode.NONE if enableAnnotationsImageDiscoverability is false'}
+            ${true}                               | ${AnnotationMode.REGION} | ${'should call annotation controls init with initialMode set to AnnotationMode.REGION if enableAnnotationsImageDiscoverability is true '}
+        `('$should', ({ enableAnnotationsImageDiscoverability, initialMode }) => {
             image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
             jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
@@ -364,8 +364,8 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.loadUI();
 
             expect(AnnotationControls.prototype.init).toBeCalledWith({
-                enableAnnotationsImageDiscoverability,
                 fileId: image.options.file.id,
+                initialMode,
                 onClick: image.handleAnnotationControlsClick,
                 onEscape: image.handleAnnotationControlsEscape,
             });
