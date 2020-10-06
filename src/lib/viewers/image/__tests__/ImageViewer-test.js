@@ -352,11 +352,11 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         test.each`
-            enableAnnotationsImageDiscoverability | initialMode              | should
-            ${false}                              | ${AnnotationMode.NONE}   | ${'AnnotationMode.NONE if enableAnnotationsImageDiscoverability is false'}
-            ${true}                               | ${AnnotationMode.REGION} | ${'AnnotationMode.REGION if enableAnnotationsImageDiscoverability is true '}
+            enableAnnotationsImageDiscoverability | initialMode
+            ${false}                              | ${AnnotationMode.NONE}
+            ${true}                               | ${AnnotationMode.REGION}
         `(
-            'should call annotation controls init with callbacks and with initialMode set to $should ',
+            'should call annotation controls init with $initialMode when enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
             ({ enableAnnotationsImageDiscoverability, initialMode }) => {
                 image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
                 jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
@@ -593,7 +593,6 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-<<<<<<< HEAD
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
             image.annotator = {
@@ -612,7 +611,21 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
-=======
+         });
+    });
+
+    describe('getViewportDimensions', () => {
+        test('should return width and height', () => {
+            image.wrapperEl = document.createElement('img');
+            Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
+            Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 100 });
+
+            const result = image.getViewportDimensions();
+
+            expect(result).toEqual({ width: 70, height: 70 });
+        });
+    });
+
     describe('handleZoomEvent', () => {
         let height;
         let width;
@@ -640,7 +653,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.handleZoomEvent(width, height);
 
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
->>>>>>> feat(discoverability): add handleZoomEvent listener / put helpers back
         });
     });
 });

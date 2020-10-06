@@ -1,8 +1,8 @@
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
+import ImageBaseViewer from './ImageBaseViewer';
 import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
-import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -82,19 +82,29 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Gets the viewport dimensions.
+     *
+     * @return {Object} the width & height of the viewport
+     */
+
+    getViewportDimensions() {
+        return {
+            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+        };
+    }
+
+    /**
      * Sets mode to be AnnotationMode.NONE if the zoomed image overflows the viewport.
      *
      * @return {void}
      */
     handleZoomEvent(height, width) {
-        const viewport = {
-            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-        };
+        const viewport = this.getViewportDimensions();
 
         // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
         if (width > viewport.width || height > viewport.height) {
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
         }
     }
 
@@ -220,10 +230,8 @@ class ImageViewer extends ImageBaseViewer {
             ({ width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated));
             const modifyWidthInsteadOfHeight = width >= height;
 
-            const viewport = {
-                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-            };
+            const viewport = this.getViewportDimensions();
+
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
             if (width > viewport.width || height > viewport.height) {
