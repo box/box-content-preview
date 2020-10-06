@@ -57,6 +57,15 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
         });
+
+        test('should bind zoom listener if enableAnnotationsImageDiscoverability is true', () => {
+            image.options.enableAnnotationsImageDiscoverability = true;
+            image.addListener = jest.fn();
+
+            image.setup();
+
+            expect(image.addListener).toBeCalledWith('zoom', expect.any(Function));
+        });
     });
 
     describe('load()', () => {
@@ -466,13 +475,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.bindDOMListeners();
             expect(stubs.listeners).toBeCalledWith('orientationchange', image.handleOrientationChange);
         });
-
-        test('should bind zoom listener if enableAnnotationsImageDiscoverability is true', () => {
-            image.options.enableAnnotationsImageDiscoverability = true;
-            image.addListener = jest.fn();
-            image.bindDOMListeners();
-            expect(image.addListener).toBeCalledWith('zoom', expect.any(Function));
-        });
     });
 
     describe('unbindDOMListeners()', () => {
@@ -592,6 +594,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.imageEl.src).toBe(url);
         });
     });
+<<<<<<< HEAD
 
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
@@ -655,4 +658,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
         });
     });
+=======
+>>>>>>> feat(discoverability): move zoom event logic into ImageBaseViewer
 });

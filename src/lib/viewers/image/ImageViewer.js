@@ -1,12 +1,11 @@
-import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
-const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
 class ImageViewer extends ImageBaseViewer {
@@ -51,6 +50,10 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
         this.currentRotationAngle = 0;
+
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.addListener('zoom', this.handleZoomEvent);
+        }
     }
 
     /**
@@ -83,33 +86,6 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.src = downloadUrl;
 
         super.handleAssetAndRepLoad();
-    }
-
-    /**
-     * Gets the viewport dimensions.
-     *
-     * @return {Object} the width & height of the viewport
-     */
-
-    getViewportDimensions() {
-        return {
-            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-        };
-    }
-
-    /**
-     * Sets mode to be AnnotationMode.NONE if the zoomed image overflows the viewport.
-     *
-     * @return {void}
-     */
-    handleZoomEvent(height, width) {
-        const viewport = this.getViewportDimensions();
-
-        // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
-        if (width > viewport.width || height > viewport.height) {
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
-        }
     }
 
     /**
@@ -423,15 +399,6 @@ class ImageViewer extends ImageBaseViewer {
 
         if (this.isMobile) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
-        }
-
-        if (this.options.enableAnnotationsImageDiscoverability) {
-            this.addListener('zoom', ({ newScale }) => {
-                const height = newScale[1];
-                const width = newScale[0];
-
-                this.handleZoomEvent(height, width);
-            });
         }
     }
 

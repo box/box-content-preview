@@ -1,3 +1,4 @@
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -8,6 +9,7 @@ import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
 
+export const IMAGE_PADDING = 15;
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -31,6 +33,8 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.handleZoomEvent = this.handleZoomEvent.bind(this);
+        this.getViewportDimensions = this.getViewportDimensions.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -62,6 +66,10 @@ class ImageBaseViewer extends BaseViewer {
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         }
 
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.removeListener('zoom', this.handleZoomEvent);
+        }
+
         super.destroy();
     }
 
@@ -84,6 +92,36 @@ class ImageBaseViewer extends BaseViewer {
             this.loaded = true;
             this.emit(VIEWER_EVENT.load);
         });
+    }
+
+    /**
+     * Gets the viewport dimensions.
+     *
+     * @return {Object} the width & height of the viewport
+     */
+
+    getViewportDimensions() {
+        return {
+            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+        };
+    }
+
+    /**
+     * Sets mode to be AnnotationMode.NONE if the zoomed image overflows the viewport.
+     *
+     * @return {void}
+     */
+    handleZoomEvent({ newScale }) {
+        const width = newScale[0];
+        const height = newScale[1];
+
+        const viewport = this.getViewportDimensions();
+
+        // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
+        if (width > viewport.width || height > viewport.height) {
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        }
     }
 
     /**
