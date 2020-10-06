@@ -72,7 +72,6 @@ describe('lib/AnnotationControls', () => {
     describe('init()', () => {
         beforeEach(() => {
             jest.spyOn(annotationControls, 'addButton');
-            jest.spyOn(annotationControls, 'setMode');
         });
 
         test('should only add region button', () => {
@@ -125,7 +124,7 @@ describe('lib/AnnotationControls', () => {
             expect(document.addEventListener).not.toBeCalled();
         });
 
-        test('should call setMode with the initialMode that is passed in', () => {
+        test('should set annotationControls currentMode to be REGION', () => {
             annotationControls.init({ initialMode: AnnotationMode.REGION });
 
             expect(annotationControls.currentMode).toBe(AnnotationMode.REGION);
