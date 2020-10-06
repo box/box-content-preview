@@ -1,6 +1,6 @@
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
-import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
@@ -23,6 +23,10 @@ class ImageViewer extends ImageBaseViewer {
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
+        }
+
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
         }
     }
 
