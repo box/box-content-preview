@@ -1,10 +1,10 @@
-import { AnnotationInput } from '../../AnnotationControlsFSM';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import PreviewError from '../../PreviewError';
 import ZoomControls from '../../ZoomControls';
 
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
