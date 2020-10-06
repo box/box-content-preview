@@ -5,6 +5,8 @@ import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../..
 import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import './Image.scss';
 
+const IMAGE_PADDING = 15;
+const IMAGE_ZOOM_SCALE = 1.2;
 const CSS_CLASS_IMAGE = 'bp-image';
 
 class ImageViewer extends ImageBaseViewer {
@@ -12,11 +14,14 @@ class ImageViewer extends ImageBaseViewer {
     constructor(options) {
         super(options);
         this.api = options.api;
+        this.getTransformWidthAndHeight = this.getTransformWidthAndHeight.bind(this);
+        this.isRotated = this.isRotated.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
+        this.handleZoomEvent = this.handleZoomEvent.bind(this);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
@@ -79,6 +84,23 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Sets mode to be AnnotationMode.NONE if the zoomed image overflows the viewport.
+     *
+     * @return {void}
+     */
+    handleZoomEvent(height, width) {
+        const viewport = {
+            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+        };
+
+        // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
+        if (width > viewport.width || height > viewport.height) {
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
+        }
+    }
+
+    /**
      * Prefetches assets for an image.
      *
      * @param {boolean} [options.content] - Whether or not to prefetch rep content
@@ -138,6 +160,40 @@ class ImageViewer extends ImageBaseViewer {
         // Re-adjust image position after rotation
         this.handleOrientationChange();
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
+    }
+
+    /**
+     * Determines if Image file has been rotated 90 or 270 degrees to the left
+     *
+     * @return {boolean} Whether image has been rotated -90 or -270 degrees
+     */
+    isRotated() {
+        return Math.abs(this.currentRotationAngle) % 180 === 90;
+    }
+
+    /**
+     * Gets the width & height after the transforms are applied.
+     * When an image is rotated, the width & height of an image, e.g. offsetWidth & offsetHeight,
+     * are the values before transforms are applied, so if the image is rotated we need to swap the
+     * width & height
+     *
+     * @private
+     * @param {number} [width] - The width in px
+     * @param {number} [height] - The height in px
+     * @param {boolean} [isRotated] - if the image has a transform rotate applied to it
+     * @return {Object} the width & height of the image after tranformations
+     */
+    getTransformWidthAndHeight(width, height, isRotated) {
+        if (isRotated) {
+            return {
+                width: height,
+                height: width,
+            };
+        }
+        return {
+            width,
+            height,
+        };
     }
 
     /**
@@ -357,6 +413,15 @@ class ImageViewer extends ImageBaseViewer {
 
         if (this.isMobile) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
+        }
+
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.addListener('zoom', ({ newScale }) => {
+                const height = newScale[1];
+                const width = newScale[0];
+
+                this.handleZoomEvent(height, width);
+            });
         }
     }
 

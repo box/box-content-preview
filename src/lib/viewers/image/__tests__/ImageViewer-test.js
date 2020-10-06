@@ -331,6 +331,41 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
+    describe('isRotated()', () => {
+        test('should return false if image is not rotated', () => {
+            const result = image.isRotated();
+            expect(result).toBe(false);
+        });
+
+        test('should return true if image is rotated', () => {
+            image.currentRotationAngle = 90;
+            const result = image.isRotated();
+            expect(result).toBe(true);
+        });
+    });
+
+    describe('getTransformWidthAndHeight', () => {
+        test('should return the same width & height if the image is not rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
+            expect(widthAndHeightObj).toEqual({
+                width,
+                height,
+            });
+        });
+
+        test('should return swap the width & height if the image is rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
+            expect(widthAndHeightObj).toEqual({
+                width: height,
+                height: width,
+            });
+        });
+    });
+
     describe('loadUI()', () => {
         test('should load UI & controls for zoom', () => {
             image.scale = 0.5;
@@ -430,6 +465,13 @@ describe('lib/viewers/image/ImageViewer', () => {
             jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             image.bindDOMListeners();
             expect(stubs.listeners).toBeCalledWith('orientationchange', image.handleOrientationChange);
+        });
+
+        test('should bind zoom listener if enableAnnotationsImageDiscoverability is true', () => {
+            image.options.enableAnnotationsImageDiscoverability = true;
+            image.addListener = jest.fn();
+            image.bindDOMListeners();
+            expect(image.addListener).toBeCalledWith('zoom', expect.any(Function));
         });
     });
 
@@ -551,6 +593,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
+<<<<<<< HEAD
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
             image.annotator = {
@@ -569,6 +612,35 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+=======
+    describe('handleZoomEvent', () => {
+        let height;
+        let width;
+
+        beforeEach(() => {
+            image.wrapperEl = document.createElement('img');
+            Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
+            Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 100 });
+            jest.spyOn(image, 'processAnnotationModeChange');
+        });
+
+        test('should not call processAnnotationModeChange if image does not overflow the viewport', () => {
+            height = 60;
+            width = 60;
+
+            image.handleZoomEvent(width, height);
+
+            expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
+        });
+
+        test('should call processAnnotationModeChange if image does overflow the viewport', () => {
+            height = 110;
+            width = 110;
+
+            image.handleZoomEvent(width, height);
+
+            expect(image.processAnnotationModeChange).toHaveBeenCalled();
+>>>>>>> feat(discoverability): add handleZoomEvent listener / put helpers back
         });
     });
 });
