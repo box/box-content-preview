@@ -5,17 +5,15 @@ import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../..
 import ImageBaseViewer, { IMAGE_PADDING, IMAGE_ZOOM_SCALE } from './ImageBaseViewer';
 import './Image.scss';
 
+const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
-const CSS_CLASS_IMAGE = 'bp-image';
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
     constructor(options) {
         super(options);
         this.api = options.api;
-        this.getTransformWidthAndHeight = this.getTransformWidthAndHeight.bind(this);
-        this.isRotated = this.isRotated.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
@@ -160,15 +158,6 @@ class ImageViewer extends ImageBaseViewer {
         // Re-adjust image position after rotation
         this.handleOrientationChange();
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
-    }
-
-    /**
-     * Determines if Image file has been rotated 90 or 270 degrees to the left
-     *
-     * @return {boolean} Whether image has been rotated -90 or -270 degrees
-     */
-    isRotated() {
-        return Math.abs(this.currentRotationAngle) % 180 === 90;
     }
 
     /**
@@ -335,6 +324,15 @@ class ImageViewer extends ImageBaseViewer {
                 onEscape: this.handleAnnotationControlsEscape,
             });
         }
+    }
+
+    /**
+     * Determines if Image file has been rotated 90 or 270 degrees to the left
+     *
+     * @return {boolean} Whether image has been rotated -90 or -270 degrees
+     */
+    isRotated() {
+        return Math.abs(this.currentRotationAngle) % 180 === 90;
     }
 
     /**
