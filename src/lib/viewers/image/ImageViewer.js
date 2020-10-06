@@ -20,13 +20,12 @@ class ImageViewer extends ImageBaseViewer {
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
+        this.annotationControlsFSM = new AnnotationControlsFSM(
+            this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION : AnnotationState.NONE,
+        );
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
-        }
-
-        if (this.options.enableAnnotationsImageDiscoverability) {
-            this.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
         }
     }
 
