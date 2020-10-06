@@ -1,6 +1,6 @@
 import ImageBaseViewer from './ImageBaseViewer';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
@@ -20,8 +20,9 @@ class ImageViewer extends ImageBaseViewer {
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
+        this.handleZoomEvent = this.handleZoomEvent.bind(this);
         this.annotationControlsFSM = new AnnotationControlsFSM(
-            this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION : AnnotationState.NONE,
+            this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
 
         if (this.isMobile) {
@@ -206,15 +207,15 @@ class ImageViewer extends ImageBaseViewer {
      *
      * @return {void}
      */
+
     handleZoomEvent({ newScale }) {
-        const width = newScale[0];
-        const height = newScale[1];
+        const [width, height] = newScale;
 
         const viewport = this.getViewportDimensions();
 
         // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
         if (width > viewport.width || height > viewport.height) {
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
         }
     }
 
@@ -349,8 +350,8 @@ class ImageViewer extends ImageBaseViewer {
             this.annotationControls.init({
                 fileId: this.options.file.id,
                 initialMode: this.options.enableAnnotationsImageDiscoverability
-                    ? AnnotationMode.REGION
-                    : AnnotationMode.NONE,
+                    ? stateModeMap[AnnotationState.REGION_TEMP]
+                    : stateModeMap[AnnotationState.NONE],
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
             });

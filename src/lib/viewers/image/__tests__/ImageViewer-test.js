@@ -1,6 +1,11 @@
 /* eslint-disable no-unused-expressions */
+<<<<<<< HEAD
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationState } from '../../../AnnotationControlsFSM';
+=======
+import AnnotationControls from '../../../AnnotationControls';
+import { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
+>>>>>>> feat(discoverability): use REGION_TEMP instead of REGION
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -374,8 +379,8 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         test.each`
             enableAnnotationsImageDiscoverability | initialMode
-            ${false}                              | ${AnnotationMode.NONE}
-            ${true}                               | ${AnnotationMode.REGION}
+            ${false}                              | ${stateModeMap[AnnotationState.NONE]}
+            ${true}                               | ${stateModeMap[AnnotationState.REGION_TEMP]}
         `(
             'should call annotation controls init with $initialMode when enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
             ({ enableAnnotationsImageDiscoverability, initialMode }) => {
