@@ -128,7 +128,7 @@ describe('lib/AnnotationControls', () => {
         test('should call setMode with the initialMode that is passed in', () => {
             annotationControls.init({ initialMode: AnnotationMode.REGION });
 
-            expect(annotationControls.setMode).toBeCalledWith(AnnotationMode.REGION);
+            expect(annotationControls.currentMode).toBe(AnnotationMode.REGION);
         });
     });
 
