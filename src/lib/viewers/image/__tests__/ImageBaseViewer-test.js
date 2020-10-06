@@ -68,15 +68,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.unbindDOMListeners).toBeCalled();
         });
-
-        test('should remove the zoom event listener', () => {
-            imageBase.options.enableAnnotationsImageDiscoverability = true;
-            imageBase.removeListener = jest.fn();
-
-            imageBase.destroy();
-
-            expect(imageBase.removeListener).toBeCalledWith('zoom', expect.any(Function));
-        });
     });
 
     describe('zoomIn()', () => {
@@ -566,48 +557,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             imageBase.finishLoading();
             expect(stubs.setOriginalImageSize).toBeCalled();
-        });
-    });
-
-    describe('getViewportDimensions', () => {
-        test('should return width and height', () => {
-            imageBase.wrapperEl = document.createElement('img');
-            Object.defineProperty(imageBase.wrapperEl, 'clientWidth', { value: 100 });
-            Object.defineProperty(imageBase.wrapperEl, 'clientHeight', { value: 100 });
-
-            const result = imageBase.getViewportDimensions();
-
-            expect(result).toEqual({ width: 70, height: 70 });
-        });
-    });
-
-    describe('handleZoomEvent', () => {
-        let height;
-        let width;
-
-        beforeEach(() => {
-            imageBase.wrapperEl = document.createElement('img');
-            Object.defineProperty(imageBase.wrapperEl, 'clientWidth', { value: 100 });
-            Object.defineProperty(imageBase.wrapperEl, 'clientHeight', { value: 100 });
-            jest.spyOn(imageBase, 'processAnnotationModeChange');
-        });
-
-        test('should not call processAnnotationModeChange if image does not overflow the viewport', () => {
-            height = 60;
-            width = 60;
-
-            imageBase.handleZoomEvent({ newScale: [width, height] });
-
-            expect(imageBase.processAnnotationModeChange).not.toHaveBeenCalled();
-        });
-
-        test('should call processAnnotationModeChange if image does overflow the viewport', () => {
-            height = 110;
-            width = 110;
-
-            imageBase.handleZoomEvent({ newScale: [width, height] });
-
-            expect(imageBase.processAnnotationModeChange).toHaveBeenCalled();
         });
     });
 

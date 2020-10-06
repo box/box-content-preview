@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationState } from '../../../AnnotationControlsFSM';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -50,6 +51,17 @@ describe('lib/viewers/image/ImageViewer', () => {
         }
         image = null;
         stubs = {};
+    });
+
+    describe('destroy()', () => {
+        test('should remove the zoom event listener', () => {
+            image.options.enableAnnotationsImageDiscoverability = true;
+            image.removeListener = jest.fn();
+
+            image.destroy();
+
+            expect(image.removeListener).toBeCalledWith('zoom', expect.any(Function));
+        });
     });
 
     describe('setup()', () => {
@@ -594,7 +606,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.imageEl.src).toBe(url);
         });
     });
-<<<<<<< HEAD
 
     describe('handleAnnotationControlsClick', () => {
         beforeEach(() => {
@@ -630,9 +641,6 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('handleZoomEvent', () => {
-        let height;
-        let width;
-
         beforeEach(() => {
             image.wrapperEl = document.createElement('img');
             Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
@@ -640,24 +648,43 @@ describe('lib/viewers/image/ImageViewer', () => {
             jest.spyOn(image, 'processAnnotationModeChange');
         });
 
-        test('should not call processAnnotationModeChange if image does not overflow the viewport', () => {
-            height = 60;
-            width = 60;
+        test('should not call getViewportDimensions if type is undefined', () => {
+            const width = 100;
+            const height = 100;
+            image.getViewportDimensions = jest.fn();
 
-            image.handleZoomEvent(width, height);
+            image.handleZoomEvent({ newScale: [width, height], type: undefined });
 
-            expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
+            expect(image.getViewportDimensions).not.toHaveBeenCalled();
         });
 
-        test('should call processAnnotationModeChange if image does overflow the viewport', () => {
-            height = 110;
-            width = 110;
-
-            image.handleZoomEvent(width, height);
-
+        test.each`
+            currentState                   | height | width  | should
+            ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
+            ${AnnotationState.REGION}      | ${60}  | ${60}  | ${'image does not overflow the viewport'}
+            ${AnnotationState.REGION_TEMP} | ${60}  | ${60}  | ${'image does not overflow the viewport'}
+        `('should not call processAnnotationModeChange if $should and currentState is $currentState',
+            ({ currentState, height, width }) => {
+                image.annotationControlsFSM = new AnnotationControlsFSM(currentState);
+    
+                image.handleZoomEvent({ newScale: [width, height], type: 'in' });
+    
+                expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
+            },
+        );
+    
+        test('should call processAnnotationModeChange and toggleAnnotationMode if image does overflow the viewport and currentState is REGION_TEMP', () => {
+            const width = 110;
+            const height = 110;
+            image.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
+    
+            image.handleZoomEvent({ newScale: [width, height], type: 'in' });
+    
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
+            expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
         });
     });
-=======
->>>>>>> feat(discoverability): move zoom event logic into ImageBaseViewer
 });
