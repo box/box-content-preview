@@ -1,6 +1,6 @@
 import ImageBaseViewer from './ImageBaseViewer';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
