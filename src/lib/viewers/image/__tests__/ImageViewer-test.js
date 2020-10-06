@@ -331,41 +331,6 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-    describe('isRotated()', () => {
-        test('should return false if image is not rotated', () => {
-            const result = image.isRotated();
-            expect(result).toBe(false);
-        });
-
-        test('should return true if image is rotated', () => {
-            image.currentRotationAngle = 90;
-            const result = image.isRotated();
-            expect(result).toBe(true);
-        });
-    });
-
-    describe('getTransformWidthAndHeight', () => {
-        test('should return the same width & height if the image is not rotated', () => {
-            const width = 100;
-            const height = 200;
-            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
-            expect(widthAndHeightObj).toEqual({
-                width,
-                height,
-            });
-        });
-
-        test('should return swap the width & height if the image is rotated', () => {
-            const width = 100;
-            const height = 200;
-            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
-            expect(widthAndHeightObj).toEqual({
-                width: height,
-                height: width,
-            });
-        });
-    });
-
     describe('loadUI()', () => {
         test('should load UI & controls for zoom', () => {
             image.scale = 0.5;
@@ -408,6 +373,41 @@ describe('lib/viewers/image/ImageViewer', () => {
                 });
             },
         );
+    });
+
+    describe('isRotated()', () => {
+        test('should return false if image is not rotated', () => {
+            const result = image.isRotated();
+            expect(result).toBe(false);
+        });
+
+        test('should return true if image is rotated', () => {
+            image.currentRotationAngle = 90;
+            const result = image.isRotated();
+            expect(result).toBe(true);
+        });
+    });
+
+    describe('getTransformWidthAndHeight', () => {
+        test('should return the same width & height if the image is not rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
+            expect(widthAndHeightObj).toEqual({
+                width,
+                height,
+            });
+        });
+
+        test('should return swap the width & height if the image is rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
+            expect(widthAndHeightObj).toEqual({
+                width: height,
+                height: width,
+            });
+        });
     });
 
     describe('adjustImageZoomPadding()', () => {
