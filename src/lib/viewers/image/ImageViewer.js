@@ -194,7 +194,6 @@ class ImageViewer extends ImageBaseViewer {
      *
      * @return {Object} the width & height of the viewport
      */
-
     getViewportDimensions() {
         return {
             width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
@@ -207,15 +206,14 @@ class ImageViewer extends ImageBaseViewer {
      *
      * @return {void}
      */
-
     handleZoomEvent({ newScale }) {
         const [width, height] = newScale;
 
         const viewport = this.getViewportDimensions();
 
         // We only set AnnotationMode to be NONE if the image overflows the viewport and the state is not explicit region creation
-        const { currentState } = this.annotationControlsFSM;
-        if (currentState !== AnnotationState.REGION && (width > viewport.width || height > viewport.height)) {
+        const currentState = this.annotationControlsFSM.getState();
+        if (currentState === AnnotationState.REGION_TEMP && (width > viewport.width || height > viewport.height)) {
             this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
