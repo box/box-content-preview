@@ -190,6 +190,22 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Noop for handling annotation creation event.
+     *
+     * @override
+     * @return {void}
+     */
+    handleAnnotationCreateEvent() {}
+
+    /**
+     * Noop for handling annotation creator change event.
+     *
+     * @override
+     * @return {void}
+     */
+    handleAnnotationCreatorChangeEvent() {}
+
+    /**
      * Gets the viewport dimensions.
      *
      * @return {Object} the width & height of the viewport
