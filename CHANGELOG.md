@@ -1,3 +1,11 @@
+## 2.54.0 (2020-10-07)
+
+* fix(image): Remove unsupported svs file extension from image loaders (#1269) ([24fd78d](https://github.com/box/box-content-preview/commit/24fd78d)), closes [#1269](https://github.com/box/box-content-preview/issues/1269)
+* feat(pdf): Upgrade pdf.js to v2.6.347 and closure compiler to v20200719 (#1252) ([296f23b](https://github.com/box/box-content-preview/commit/296f23b)), closes [#1252](https://github.com/box/box-content-preview/issues/1252)
+* test(jest): Convert the remaining 3D viewer unit tests to Jest (#1267) ([907661d](https://github.com/box/box-content-preview/commit/907661d)), closes [#1267](https://github.com/box/box-content-preview/issues/1267)
+
+
+
 ## 2.53.0 (2020-09-24)
 
 * test(jest): Migrate all unit tests from Karma to Jest (#1264) ([09e8d31](https://github.com/box/box-content-preview/commit/09e8d31)), closes [#1264](https://github.com/box/box-content-preview/issues/1264)
