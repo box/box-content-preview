@@ -658,17 +658,18 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.getViewportDimensions).not.toHaveBeenCalled();
         });
 
-        test.each`
+        test.each`    
             currentState                   | height | width  | should
             ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
             ${AnnotationState.REGION}      | ${60}  | ${60}  | ${'image does not overflow the viewport'}
             ${AnnotationState.REGION_TEMP} | ${60}  | ${60}  | ${'image does not overflow the viewport'}
-        `('should not call processAnnotationModeChange if $should and currentState is $currentState',
+        `(
+            'should not call processAnnotationModeChange if $should and currentState is $currentState',
             ({ currentState, height, width }) => {
                 image.annotationControlsFSM = new AnnotationControlsFSM(currentState);
-    
+
                 image.handleZoomEvent({ newScale: [width, height], type: 'in' });
-    
+
                 expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
             },
         );
