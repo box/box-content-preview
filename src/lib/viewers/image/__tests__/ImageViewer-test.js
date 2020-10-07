@@ -1,11 +1,6 @@
 /* eslint-disable no-unused-expressions */
-<<<<<<< HEAD
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationState } from '../../../AnnotationControlsFSM';
-=======
-import AnnotationControls from '../../../AnnotationControls';
-import { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
->>>>>>> feat(discoverability): use REGION_TEMP instead of REGION
+import AnnotationControlsFSM, { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -663,7 +658,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.getViewportDimensions).not.toHaveBeenCalled();
         });
 
-<<<<<<< HEAD
         test.each`
             currentState                   | height | width  | should
             ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
@@ -678,7 +672,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
             },
         );
-    
+
         test('should call processAnnotationModeChange and toggleAnnotationMode if image does overflow the viewport and currentState is REGION_TEMP', () => {
             const width = 110;
             const height = 110;
@@ -686,20 +680,9 @@ describe('lib/viewers/image/ImageViewer', () => {
                 toggleAnnotationMode: jest.fn(),
             };
             image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
-    
+
             image.handleZoomEvent({ newScale: [width, height], type: 'in' });
-    
-=======
-        test('should call processAnnotationModeChange and toggleAnnotationMode if image does overflow the viewport', () => {
-            height = 110;
-            width = 110;
-            image.annotator = {
-                toggleAnnotationMode: jest.fn(),
-            };
 
-            image.handleZoomEvent({ newScale: [width, height] });
-
->>>>>>> feat(discoverability): call toggleAnnotationMode
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
             expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
         });

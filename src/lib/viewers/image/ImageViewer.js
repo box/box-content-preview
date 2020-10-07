@@ -213,8 +213,9 @@ class ImageViewer extends ImageBaseViewer {
 
         const viewport = this.getViewportDimensions();
 
-        // If the image is overflowing the viewport, we should set annotation mode to be NONE so that the user can pan
-        if (width > viewport.width || height > viewport.height) {
+        // We only set AnnotationMode to be NONE if the image overflows the viewport and the state is not explicit region creation
+        const { currentState } = this.annotationControlsFSM;
+        if (currentState !== AnnotationState.REGION && (width > viewport.width || height > viewport.height)) {
             this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
