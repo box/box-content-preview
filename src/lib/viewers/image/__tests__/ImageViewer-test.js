@@ -663,6 +663,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.getViewportDimensions).not.toHaveBeenCalled();
         });
 
+<<<<<<< HEAD
         test.each`
             currentState                   | height | width  | should
             ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
@@ -688,6 +689,17 @@ describe('lib/viewers/image/ImageViewer', () => {
     
             image.handleZoomEvent({ newScale: [width, height], type: 'in' });
     
+=======
+        test('should call processAnnotationModeChange and toggleAnnotationMode if image does overflow the viewport', () => {
+            height = 110;
+            width = 110;
+            image.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+
+            image.handleZoomEvent({ newScale: [width, height] });
+
+>>>>>>> feat(discoverability): call toggleAnnotationMode
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
             expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
         });
