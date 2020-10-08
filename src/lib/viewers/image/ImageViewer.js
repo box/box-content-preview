@@ -224,18 +224,16 @@ class ImageViewer extends ImageBaseViewer {
      */
     handleZoomEvent({ newScale, type }) {
         const [width, height] = newScale;
-        // This method is fired on first render - we don't want toggleAnnotationMode to be called on the first render
-        const isFirstRender = type === undefined;
+        const isUserInitiated = type !== undefined;
+        if (!isUserInitiated) {
+            return;
+        }
 
         const viewport = this.getViewportDimensions();
 
         // We only set AnnotationMode to be NONE if the image overflows the viewport and the state is not explicit region creation
         const currentState = this.annotationControlsFSM.getState();
-        if (
-            !isFirstRender &&
-            currentState === AnnotationState.REGION_TEMP &&
-            (width > viewport.width || height > viewport.height)
-        ) {
+        if (currentState === AnnotationState.REGION_TEMP && (width > viewport.width || height > viewport.height)) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
             this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
         }

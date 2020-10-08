@@ -658,7 +658,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.getViewportDimensions).not.toHaveBeenCalled();
         });
 
-        test.each`    
+        test.each`
             currentState                   | height | width  | should
             ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
             ${AnnotationState.REGION}      | ${60}  | ${60}  | ${'image does not overflow the viewport'}
