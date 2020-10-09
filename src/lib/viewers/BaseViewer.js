@@ -161,10 +161,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
-        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
-        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
-        this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -593,10 +590,6 @@ class BaseViewer extends EventEmitter {
 
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
-            if (this.options.enableAnnotationsDiscoverability) {
-                this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-                this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
-            }
             this.enableAnnotationControls();
         }
     }
@@ -989,7 +982,7 @@ class BaseViewer extends EventEmitter {
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             features: options && options.features,
-            initialMode: this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE,
+            initialMode: this.getInitialAnnotionMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
             modeButtons: ANNOTATION_BUTTONS,
         });
@@ -1001,6 +994,10 @@ class BaseViewer extends EventEmitter {
         if (this.annotatorPromiseResolver) {
             this.annotatorPromiseResolver();
         }
+    }
+
+    getInitialAnnotionMode() {
+        return AnnotationMode.NONE;
     }
 
     /**
@@ -1033,12 +1030,6 @@ class BaseViewer extends EventEmitter {
 
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
-
-        if (this.areNewAnnotationsEnabled() && this.annotationControls) {
-            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
-            this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
-            this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
-        }
     }
 
     /**
@@ -1088,12 +1079,8 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleAnnotationControlsEscape() {
-        if (this.options.enableAnnotationsDiscoverability) {
-            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
-        } else {
-            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
-        }
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
     }
 
     /**
@@ -1121,23 +1108,6 @@ class BaseViewer extends EventEmitter {
             }
         }
     };
-
-    /**
-     * Handler for annotation controls button click event.
-     *
-     * @private
-     * @param {AnnotationMode} mode one of annotation modes
-     * @return {void}
-     */
-    handleAnnotationControlsClick({ mode }) {
-        const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-        this.annotator.toggleAnnotationMode(
-            this.options.enableAnnotationsDiscoverability && nextMode === AnnotationMode.NONE
-                ? AnnotationMode.REGION
-                : nextMode,
-        );
-        this.processAnnotationModeChange(nextMode);
-    }
 
     /**
      * Handles the 'scrolltoannotation' event and calls the annotator scroll method
@@ -1301,20 +1271,6 @@ class BaseViewer extends EventEmitter {
         // Emit all annotation events to Preview
         this.emit(data.event, data.data);
         this.emit('annotatorevent', data);
-    }
-
-    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
-        // Only on success do we exit create annotation mode. If error occurs,
-        // we remain in create mode
-        if (status === 'success') {
-            this.annotator.emit('annotations_active_set', id);
-
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.SUCCESS));
-        }
-    }
-
-    handleAnnotationCreatorChangeEvent({ status, type }) {
-        this.processAnnotationModeChange(this.annotationControlsFSM.transition(status, type));
     }
 
     /**
