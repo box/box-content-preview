@@ -1568,7 +1568,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     // Annotation overrides
-    getInitialAnnotionMode() {
+    getInitialAnnotationMode() {
         return this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE;
     }
 

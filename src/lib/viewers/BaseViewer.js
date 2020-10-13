@@ -982,7 +982,7 @@ class BaseViewer extends EventEmitter {
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             features: options && options.features,
-            initialMode: this.getInitialAnnotionMode(),
+            initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
             modeButtons: ANNOTATION_BUTTONS,
         });
@@ -996,7 +996,7 @@ class BaseViewer extends EventEmitter {
         }
     }
 
-    getInitialAnnotionMode() {
+    getInitialAnnotationMode() {
         return AnnotationMode.NONE;
     }
 

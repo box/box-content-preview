@@ -1,19 +1,21 @@
 /* eslint-disable no-unused-expressions */
 import Api from '../../../api';
+import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import DocBaseViewer from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
-import AnnotationControls from '../../../AnnotationControls';
 import PageControls from '../../../PageControls';
 import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
 import DocPreloader from '../DocPreloader';
+import { AnnotationInput } from '../../../AnnotationControlsFSM';
 import * as file from '../../../file';
 import * as util from '../../../util';
 
 import {
+    ANNOTATOR_EVENT,
     CLASS_HIDDEN,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
@@ -1934,16 +1936,47 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('handleFullscreenExit()', () => {
-            test('should update the scale value, and resize the page', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(docBase, 'enableAnnotationControls').mockImplementation();
+
                 docBase.pdfViewer = {
                     presentationModeState: 'fullscreen',
                     currentScaleValue: 'pagefit',
                 };
+                docBase.annotator = {
+                    emit: jest.fn(),
+                    toggleAnnotationMode: jest.fn(),
+                };
+                docBase.annotationControls = {
+                    destroy: jest.fn(),
+                };
+                docBase.processAnnotationModeChange = jest.fn();
+            });
+
+            test('should update the scale value, and resize the page', () => {
                 const resizeStub = jest.spyOn(docBase, 'resize').mockImplementation();
 
                 docBase.handleFullscreenExit();
                 expect(resizeStub).toBeCalled();
                 expect(docBase.pdfViewer.currentScaleValue).toBe('auto');
+            });
+
+            test('should not change mode if enableAnnotationsDiscoverability is false', () => {
+                docBase.handleFullscreenExit();
+
+                expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
+            });
+
+            test(`should show annotations and toggle annotations mode to REGION if enableAnnotationsDiscoverability is true`, () => {
+                docBase.options.enableAnnotationsDiscoverability = true;
+
+                docBase.handleFullscreenExit();
+
+                expect(docBase.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, true);
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.enableAnnotationControls).toBeCalled();
             });
         });
 
@@ -2655,6 +2688,186 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.shouldThumbnailsBeToggled()).toBe(false);
             });
+        });
+
+        describe('initAnnotations()', () => {
+            beforeEach(() => {
+                docBase.options = {
+                    container: document,
+                    file: {
+                        file_version: {
+                            id: 123,
+                        },
+                    },
+                    location: {
+                        locale: 'en-US',
+                    },
+                };
+                docBase.scale = 1.5;
+                docBase.annotator = {
+                    init: jest.fn(),
+                    addListener: jest.fn(),
+                };
+                docBase.annotatorConf = {
+                    CONSTRUCTOR: jest.fn(() => docBase.annotator),
+                };
+                docBase.annotationControls = {
+                    destroy: jest.fn(),
+                    resetControls: jest.fn(),
+                };
+
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            });
+
+            test('should initialize the annotator', () => {
+                jest.spyOn(docBase, 'emit');
+                docBase.addListener = jest.fn();
+                docBase.initAnnotations();
+
+                expect(docBase.annotator.init).toBeCalledWith(1.5);
+                expect(docBase.addListener).toBeCalledWith('toggleannotationmode', expect.any(Function));
+                expect(docBase.addListener).toBeCalledWith('scale', expect.any(Function));
+                expect(docBase.addListener).toBeCalledWith('scrolltoannotation', docBase.handleScrollToAnnotation);
+                expect(docBase.annotator.addListener).toBeCalledWith('annotatorevent', expect.any(Function));
+                expect(docBase.annotator.addListener).toBeCalledWith(
+                    'annotations_create',
+                    docBase.handleAnnotationCreateEvent,
+                );
+                expect(docBase.annotator.addListener).toBeCalledWith(
+                    'annotations_initialized',
+                    docBase.handleAnnotationsInitialized,
+                );
+                expect(docBase.annotator.addListener).toBeCalledWith(
+                    'creator_staged_change',
+                    docBase.handleAnnotationCreatorChangeEvent,
+                );
+                expect(docBase.annotator.addListener).toBeCalledWith(
+                    'creator_status_change',
+                    docBase.handleAnnotationCreatorChangeEvent,
+                );
+                expect(docBase.emit).toBeCalledWith('annotator', docBase.annotator);
+            });
+        });
+
+        describe('handleAnnotationCreateEvent()', () => {
+            beforeEach(() => {
+                docBase.annotator = {
+                    emit: jest.fn(),
+                };
+                docBase.annotationControls = {
+                    destroy: jest.fn(),
+                    setMode: jest.fn(),
+                };
+                docBase.processAnnotationModeChange = jest.fn();
+            });
+
+            const createEvent = status => ({
+                annotation: { id: '123' },
+                meta: {
+                    status,
+                },
+            });
+
+            ['error', 'pending'].forEach(status => {
+                test(`should not do anything if status is ${status}`, () => {
+                    const event = createEvent(status);
+                    docBase.handleAnnotationCreateEvent(event);
+
+                    expect(docBase.annotator.emit).not.toBeCalled();
+                });
+            });
+
+            test('should reset controls if status is success', () => {
+                const event = createEvent('success');
+                docBase.handleAnnotationCreateEvent(event);
+
+                expect(docBase.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+            });
+        });
+
+        describe('handleAnnotationCreatorChangeEvent()', () => {
+            test('should set mode', () => {
+                docBase.annotationControls = {
+                    destroy: jest.fn(),
+                    setMode: jest.fn(),
+                };
+
+                docBase.processAnnotationModeChange = jest.fn();
+                docBase.handleAnnotationCreatorChangeEvent({
+                    status: AnnotationInput.CREATE,
+                    type: AnnotationMode.HIGHLIGHT,
+                });
+
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.HIGHLIGHT);
+            });
+        });
+
+        describe('handleAnnotationControlsEscape()', () => {
+            test('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {
+                docBase.annotator = {
+                    toggleAnnotationMode: jest.fn(),
+                };
+                docBase.options.enableAnnotationsDiscoverability = true;
+                docBase.processAnnotationModeChange = jest.fn();
+
+                docBase.handleAnnotationControlsEscape();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+            });
+
+            test('should set annotations mode to none', () => {
+                docBase.annotator = {
+                    toggleAnnotationMode: jest.fn(),
+                };
+                docBase.processAnnotationModeChange = jest.fn();
+
+                docBase.handleAnnotationControlsEscape();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.processAnnotationModeChange).not.toBeCalled();
+            });
+        });
+
+        describe('handleAnnotationControlsClick', () => {
+            beforeEach(() => {
+                docBase.annotator = {
+                    toggleAnnotationMode: jest.fn(),
+                };
+                docBase.processAnnotationModeChange = jest.fn();
+            });
+
+            test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
+                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.REGION);
+            });
+
+            test('should call toggleAnnotationMode with appropriate mode if discoverability is enabled', () => {
+                docBase.options.enableAnnotationsDiscoverability = false;
+                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+
+                docBase.options.enableAnnotationsDiscoverability = true;
+                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            });
+        });
+
+        describe('getInitialAnnotationMode()', () => {
+            test.each`
+                enableAnnotationsDiscoverability | expectedMode
+                ${false}                         | ${AnnotationMode.NONE}
+                ${true}                          | ${AnnotationMode.REGION}
+            `(
+                'should return initial annotations mode based as $expectedMode if enableAnnotationsDiscoverability is $enableAnnotationsDiscoverability',
+                ({ enableAnnotationsDiscoverability, expectedMode }) => {
+                    docBase.options.enableAnnotationsDiscoverability = enableAnnotationsDiscoverability;
+                    expect(docBase.getInitialAnnotationMode()).toBe(expectedMode);
+                },
+            );
         });
     });
 });
