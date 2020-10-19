@@ -1,3 +1,10 @@
+## 2.55.0 (2020-10-19)
+
+* fix(annotations): Fix text blocked by old highlight selection background (#1272) ([ce69954](https://github.com/box/box-content-preview/commit/ce69954)), closes [#1272](https://github.com/box/box-content-preview/issues/1272)
+* fix(annotations): move discoverability changes into DocBaseViewer (#1271) ([cb26355](https://github.com/box/box-content-preview/commit/cb26355)), closes [#1271](https://github.com/box/box-content-preview/issues/1271)
+
+
+
 ## 2.54.0 (2020-10-07)
 
 * fix(image): Remove unsupported svs file extension from image loaders (#1269) ([24fd78d](https://github.com/box/box-content-preview/commit/24fd78d)), closes [#1269](https://github.com/box/box-content-preview/issues/1269)
