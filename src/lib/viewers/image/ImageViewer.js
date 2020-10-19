@@ -1,5 +1,6 @@
 import AnnotationControls from '../../AnnotationControls';
 import ImageBaseViewer from './ImageBaseViewer';
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
@@ -15,8 +16,9 @@ class ImageViewer extends ImageBaseViewer {
         this.api = options.api;
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
-        this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
+        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
@@ -427,6 +429,19 @@ class ImageViewer extends ImageBaseViewer {
             scale: this.scale,
             rotationAngle: this.rotationAngle,
         });
+    }
+
+    /**
+     * Handler for annotation controls button click event.
+     *
+     * @private
+     * @param {AnnotationMode} mode one of annotation modes
+     * @return {void}
+     */
+    handleAnnotationControlsClick({ mode }) {
+        const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
+        this.annotator.toggleAnnotationMode(nextMode);
+        this.processAnnotationModeChange(nextMode);
     }
 }
 

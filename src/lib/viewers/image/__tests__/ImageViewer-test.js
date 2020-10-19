@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationControls from '../../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -574,6 +574,27 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.startLoadTimer).toBeCalled();
             expect(image.imageEl.src).toBe(url);
+        });
+    });
+
+    describe('handleAnnotationControlsClick', () => {
+        beforeEach(() => {
+            image.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            image.processAnnotationModeChange = jest.fn();
+        });
+
+        test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
+            image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+            expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.REGION);
+
+            image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+            expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+            expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
     });
 });

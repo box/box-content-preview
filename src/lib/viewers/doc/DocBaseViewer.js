@@ -1,5 +1,5 @@
 import throttle from 'lodash/throttle';
-import AnnotationControls from '../../AnnotationControls';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
@@ -10,6 +10,7 @@ import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
@@ -92,10 +93,15 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
+
         // Bind context for callbacks
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
+        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
+        this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
+        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
+        this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
@@ -1262,6 +1268,11 @@ class DocBaseViewer extends BaseViewer {
     handleFullscreenExit() {
         this.pdfViewer.currentScaleValue = 'auto';
         super.handleFullscreenExit();
+
+        if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        }
     }
 
     /**
@@ -1554,6 +1565,54 @@ class DocBaseViewer extends BaseViewer {
 
         // For documents of only 1 page, default thumbnails as closed
         return toggledState && numPages > 1;
+    }
+
+    // Annotation overrides
+    getInitialAnnotationMode() {
+        return this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE;
+    }
+
+    initAnnotations() {
+        super.initAnnotations();
+
+        if (this.areNewAnnotationsEnabled() && this.annotationControls) {
+            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+            this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
+            this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
+        }
+    }
+
+    handleAnnotationControlsClick({ mode }) {
+        const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
+        this.annotator.toggleAnnotationMode(
+            this.options.enableAnnotationsDiscoverability && nextMode === AnnotationMode.NONE
+                ? AnnotationMode.REGION
+                : nextMode,
+        );
+        this.processAnnotationModeChange(nextMode);
+    }
+
+    handleAnnotationControlsEscape() {
+        if (this.options.enableAnnotationsDiscoverability) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        } else {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
+    }
+
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        // Only on success do we exit create annotation mode. If error occurs,
+        // we remain in create mode
+        if (status === 'success') {
+            this.annotator.emit('annotations_active_set', id);
+
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.SUCCESS));
+        }
+    }
+
+    handleAnnotationCreatorChangeEvent({ status, type }) {
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(status, type));
     }
 }
 
