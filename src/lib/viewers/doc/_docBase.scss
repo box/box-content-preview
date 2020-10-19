@@ -271,6 +271,11 @@ $thumbnail-sidebar-width: 226px;
             }
         }
 
+        // For legacy Annotations highlight selection
+        .rangy-highlight {
+            opacity: .2;
+        }
+
         ::selection {
             background-color: fade-out($box-blue, .9);
         }
