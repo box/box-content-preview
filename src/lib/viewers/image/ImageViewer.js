@@ -1,6 +1,6 @@
-import AnnotationControls from '../../AnnotationControls';
 import ImageBaseViewer from './ImageBaseViewer';
-import { AnnotationInput } from '../../AnnotationControlsFSM';
+import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
@@ -19,10 +19,28 @@ class ImageViewer extends ImageBaseViewer {
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
+        this.getViewportDimensions = this.getViewportDimensions.bind(this);
+        this.handleZoomEvent = this.handleZoomEvent.bind(this);
+        this.annotationControlsFSM = new AnnotationControlsFSM(
+            this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
+        );
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
         }
+    }
+
+    /**
+     * [destructor]
+     *
+     * @return {void}
+     */
+    destroy() {
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.removeListener('zoom', this.handleZoomEvent);
+        }
+
+        super.destroy();
     }
 
     /**
@@ -46,6 +64,10 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
         this.currentRotationAngle = 0;
+
+        if (this.options.enableAnnotationsImageDiscoverability) {
+            this.addListener('zoom', this.handleZoomEvent);
+        }
     }
 
     /**
@@ -168,6 +190,41 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Gets the viewport dimensions.
+     *
+     * @return {Object} the width & height of the viewport
+     */
+    getViewportDimensions() {
+        return {
+            width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
+        };
+    }
+
+    /**
+     * Sets mode to be AnnotationMode.NONE if the zoomed image overflows the viewport.
+     *
+     * @return {void}
+     */
+    handleZoomEvent({ newScale, type }) {
+        const [width, height] = newScale;
+
+        // type is undefined on initial render, we only want below logic to execute on user initiated actions
+        if (!type) {
+            return;
+        }
+
+        const viewport = this.getViewportDimensions();
+
+        // We only set AnnotationMode to be NONE if the image overflows the viewport and the state is not explicit region creation
+        const currentState = this.annotationControlsFSM.getState();
+        if (currentState === AnnotationState.REGION_TEMP && (width > viewport.width || height > viewport.height)) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.CANCEL));
+        }
+    }
+
+    /**
      * Handles zoom
      *
      * @private
@@ -202,10 +259,8 @@ class ImageViewer extends ImageBaseViewer {
             ({ width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated));
             const modifyWidthInsteadOfHeight = width >= height;
 
-            const viewport = {
-                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING,
-            };
+            const viewport = this.getViewportDimensions();
+
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
             if (width > viewport.width || height > viewport.height) {
@@ -251,6 +306,7 @@ class ImageViewer extends ImageBaseViewer {
             newScale: [newWidth || width, newHeight || height],
             canZoomIn: true,
             canZoomOut: true,
+            type,
         });
     }
 
@@ -299,6 +355,9 @@ class ImageViewer extends ImageBaseViewer {
             this.annotationControls = new AnnotationControls(this.controls);
             this.annotationControls.init({
                 fileId: this.options.file.id,
+                initialMode: this.options.enableAnnotationsImageDiscoverability
+                    ? stateModeMap[AnnotationState.REGION_TEMP]
+                    : stateModeMap[AnnotationState.NONE],
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
             });

@@ -123,6 +123,12 @@ describe('lib/AnnotationControls', () => {
             expect(annotationControls.addButton).not.toBeCalled();
             expect(document.addEventListener).not.toBeCalled();
         });
+
+        test('should set annotationControls currentMode to be REGION', () => {
+            annotationControls.init({ initialMode: AnnotationMode.REGION });
+
+            expect(annotationControls.currentMode).toBe(AnnotationMode.REGION);
+        });
     });
 
     describe('handleKeyDown', () => {

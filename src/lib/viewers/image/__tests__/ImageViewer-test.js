@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -52,11 +53,45 @@ describe('lib/viewers/image/ImageViewer', () => {
         stubs = {};
     });
 
+    describe('destroy()', () => {
+        test.each`
+            enableAnnotationsImageDiscoverability | numberOfCalls
+            ${true}                               | ${1}
+            ${false}                              | ${0}
+        `(
+            'should call removeListener $numberOfCalls times if enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, numberOfCalls }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'removeListener');
+
+                image.destroy();
+
+                expect(image.removeListener).toBeCalledTimes(numberOfCalls);
+            },
+        );
+    });
+
     describe('setup()', () => {
         test('should set up layout', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
         });
+
+        test.each`
+            enableAnnotationsImageDiscoverability | numberOfCalls
+            ${true}                               | ${1}
+            ${false}                              | ${0}
+        `(
+            'should call addListener $numberOfCalls times if enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, numberOfCalls }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'addListener');
+
+                image.setup();
+
+                expect(image.addListener).toBeCalledTimes(numberOfCalls);
+            },
+        );
     });
 
     describe('load()', () => {
@@ -351,19 +386,28 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.annotationControls).toBeInstanceOf(AnnotationControls);
         });
 
-        test('should call annotations controls init with callbacks', () => {
-            jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
-            jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
+        test.each`
+            enableAnnotationsImageDiscoverability | initialMode
+            ${false}                              | ${stateModeMap[AnnotationState.NONE]}
+            ${true}                               | ${stateModeMap[AnnotationState.REGION_TEMP]}
+        `(
+            'should call annotation controls init with $initialMode when enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, initialMode }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
+                jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
 
-            image.loadUI();
+                image.loadUI();
 
-            expect(AnnotationControls.prototype.init).toBeCalledWith({
-                fileId: image.options.file.id,
-                onClick: image.handleAnnotationControlsClick,
-                onEscape: image.handleAnnotationControlsEscape,
-            });
-        });
+                expect(AnnotationControls.prototype.init).toBeCalledWith({
+                    fileId: image.options.file.id,
+                    initialMode,
+                    onClick: image.handleAnnotationControlsClick,
+                    onEscape: image.handleAnnotationControlsEscape,
+                });
+            },
+        );
     });
 
     describe('isRotated()', () => {
@@ -595,6 +639,67 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+        });
+    });
+
+    describe('getViewportDimensions', () => {
+        test('should return width and height', () => {
+            image.wrapperEl = document.createElement('img');
+            Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
+            Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 100 });
+
+            const result = image.getViewportDimensions();
+
+            expect(result).toEqual({ width: 70, height: 70 });
+        });
+    });
+
+    describe('handleZoomEvent', () => {
+        beforeEach(() => {
+            image.wrapperEl = document.createElement('img');
+            Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
+            Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 100 });
+            jest.spyOn(image, 'processAnnotationModeChange');
+        });
+
+        test('should not call getViewportDimensions if type is undefined', () => {
+            const width = 100;
+            const height = 100;
+            image.getViewportDimensions = jest.fn();
+
+            image.handleZoomEvent({ newScale: [width, height], type: undefined });
+
+            expect(image.getViewportDimensions).not.toHaveBeenCalled();
+        });
+
+        test.each`
+            currentState                   | height | width
+            ${AnnotationState.REGION}      | ${110} | ${110}
+            ${AnnotationState.REGION}      | ${60}  | ${60}
+            ${AnnotationState.REGION_TEMP} | ${60}  | ${60}
+        `(
+            'should not call processAnnotationModeChange when height is $height and width is $width and currentState is $currentState',
+            ({ currentState, height, width }) => {
+                image.annotationControlsFSM = new AnnotationControlsFSM(currentState);
+
+                image.handleZoomEvent({ newScale: [width, height], type: 'in' });
+
+                expect(image.processAnnotationModeChange).not.toHaveBeenCalled();
+            },
+        );
+
+        test('should call processAnnotationModeChange and toggleAnnotationMode if image does overflow the viewport and currentState is REGION_TEMP', () => {
+            const width = 110;
+            const height = 110;
+            image.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
+
+            image.handleZoomEvent({ newScale: [width, height], type: 'in' });
+
+            expect(image.processAnnotationModeChange).toHaveBeenCalled();
+            expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
         });
     });
 });

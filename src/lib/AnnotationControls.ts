@@ -19,6 +19,7 @@ export enum AnnotationMode {
 export type ClickHandler = ({ event, mode }: { event: MouseEvent; mode: AnnotationMode }) => void;
 export type Options = {
     fileId: string;
+    initialMode?: AnnotationMode;
     onClick?: ClickHandler;
     onEscape?: () => void;
     showHighlightText: boolean;
@@ -194,7 +195,13 @@ export default class AnnotationControls {
     /**
      * Initialize the annotation controls with options.
      */
-    public init({ fileId, onEscape = noop, onClick = noop, showHighlightText = false }: Options): void {
+    public init({
+        fileId,
+        initialMode = AnnotationMode.NONE,
+        onEscape = noop,
+        onClick = noop,
+        showHighlightText = false,
+    }: Options): void {
         if (this.hasInit) {
             return;
         }
@@ -210,5 +217,7 @@ export default class AnnotationControls {
         document.addEventListener('keydown', this.handleKeyDown);
 
         this.hasInit = true;
+
+        this.setMode(initialMode);
     }
 }
