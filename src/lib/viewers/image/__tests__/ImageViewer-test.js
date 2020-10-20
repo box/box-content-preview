@@ -54,17 +54,32 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('destroy()', () => {
-        test('should remove the zoom event listener', () => {
+        beforeEach(() => {
+            jest.spyOn(image, 'removeListener');
+        });
+
+        test('should remove the zoom event listener if enableAnnotationsImageDiscoverability is true', () => {
             image.options.enableAnnotationsImageDiscoverability = true;
-            image.removeListener = jest.fn();
 
             image.destroy();
 
             expect(image.removeListener).toBeCalledWith('zoom', expect.any(Function));
         });
+
+        test('should not remove the zoom event listener if enableAnnotationsImageDiscoverability is false', () => {
+            image.options.enableAnnotationsImageDiscoverability = false;
+
+            image.destroy();
+
+            expect(image.removeListener).not.toBeCalledWith('zoom', expect.any(Function));
+        });
     });
 
     describe('setup()', () => {
+        beforeEach(() => {
+            jest.spyOn(image, 'addListener');
+        });
+
         test('should set up layout', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
@@ -72,11 +87,18 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         test('should bind zoom listener if enableAnnotationsImageDiscoverability is true', () => {
             image.options.enableAnnotationsImageDiscoverability = true;
-            image.addListener = jest.fn();
 
             image.setup();
 
             expect(image.addListener).toBeCalledWith('zoom', expect.any(Function));
+        });
+
+        test('should not bind zoom listener if enableAnnotationsImageDiscoverability is false', () => {
+            image.options.enableAnnotationsImageDiscoverability = false;
+
+            image.setup();
+
+            expect(image.addListener).not.toBeCalledWith('zoom', expect.any(Function));
         });
     });
 
@@ -659,12 +681,12 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         test.each`
-            currentState                   | height | width  | should
-            ${AnnotationState.REGION}      | ${110} | ${110} | ${'image does overflow the viewport'}
-            ${AnnotationState.REGION}      | ${60}  | ${60}  | ${'image does not overflow the viewport'}
-            ${AnnotationState.REGION_TEMP} | ${60}  | ${60}  | ${'image does not overflow the viewport'}
+            currentState                   | height | width
+            ${AnnotationState.REGION}      | ${110} | ${110}
+            ${AnnotationState.REGION}      | ${60}  | ${60}
+            ${AnnotationState.REGION_TEMP} | ${60}  | ${60}
         `(
-            'should not call processAnnotationModeChange if $should and currentState is $currentState',
+            'should not call processAnnotationModeChange when height is $height and width is $width and currentState is $currentState',
             ({ currentState, height, width }) => {
                 image.annotationControlsFSM = new AnnotationControlsFSM(currentState);
 
