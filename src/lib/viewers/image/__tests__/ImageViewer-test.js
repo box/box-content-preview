@@ -625,7 +625,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
-         });
+        });
     });
 
     describe('getViewportDimensions', () => {
