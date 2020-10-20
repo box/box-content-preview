@@ -54,52 +54,44 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('destroy()', () => {
-        beforeEach(() => {
-            jest.spyOn(image, 'removeListener');
-        });
+        test.each`
+            enableAnnotationsImageDiscoverability | numberOfCalls
+            ${true}                               | ${1}
+            ${false}                              | ${0}
+        `(
+            'should call removeListener $numberOfCalls times if enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, numberOfCalls }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'removeListener');
 
-        test('should remove the zoom event listener if enableAnnotationsImageDiscoverability is true', () => {
-            image.options.enableAnnotationsImageDiscoverability = true;
+                image.destroy();
 
-            image.destroy();
-
-            expect(image.removeListener).toBeCalledWith('zoom', expect.any(Function));
-        });
-
-        test('should not remove the zoom event listener if enableAnnotationsImageDiscoverability is false', () => {
-            image.options.enableAnnotationsImageDiscoverability = false;
-
-            image.destroy();
-
-            expect(image.removeListener).not.toBeCalledWith('zoom', expect.any(Function));
-        });
+                expect(image.removeListener).toBeCalledTimes(numberOfCalls);
+            },
+        );
     });
 
     describe('setup()', () => {
-        beforeEach(() => {
-            jest.spyOn(image, 'addListener');
-        });
-
         test('should set up layout', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
         });
 
-        test('should bind zoom listener if enableAnnotationsImageDiscoverability is true', () => {
-            image.options.enableAnnotationsImageDiscoverability = true;
+        test.each`
+            enableAnnotationsImageDiscoverability | numberOfCalls
+            ${true}                               | ${1}
+            ${false}                              | ${0}
+        `(
+            'should call addListener $numberOfCalls times if enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, numberOfCalls }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+                jest.spyOn(image, 'addListener');
 
-            image.setup();
+                image.setup();
 
-            expect(image.addListener).toBeCalledWith('zoom', expect.any(Function));
-        });
-
-        test('should not bind zoom listener if enableAnnotationsImageDiscoverability is false', () => {
-            image.options.enableAnnotationsImageDiscoverability = false;
-
-            image.setup();
-
-            expect(image.addListener).not.toBeCalledWith('zoom', expect.any(Function));
-        });
+                expect(image.addListener).toBeCalledTimes(numberOfCalls);
+            },
+        );
     });
 
     describe('load()', () => {
