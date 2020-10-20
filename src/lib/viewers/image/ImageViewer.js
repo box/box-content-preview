@@ -208,8 +208,9 @@ class ImageViewer extends ImageBaseViewer {
      */
     handleZoomEvent({ newScale, type }) {
         const [width, height] = newScale;
-        const isUserInitiated = type !== undefined;
-        if (!isUserInitiated) {
+
+        // type is undefined on initial render, we only want below logic to execute on user initiated actions
+        if (!type) {
             return;
         }
 
