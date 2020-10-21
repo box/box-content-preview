@@ -433,9 +433,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             ({ enableAnnotationsImageDiscoverability, mode }) => {
                 image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
 
-                const result = image.getInitialAnnotationMode();
-
-                expect(result).toBe(mode);
+                expect(image.getInitialAnnotationMode()).toBe(mode);
             },
         );
     });
