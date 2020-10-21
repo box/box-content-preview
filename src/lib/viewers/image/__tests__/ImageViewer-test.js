@@ -423,6 +423,21 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
+    describe('getInitialAnnotationMode()', () => {
+        test.each`
+            mode                     | enableAnnotationsImageDiscoverability
+            ${AnnotationMode.REGION} | ${true}
+            ${AnnotationMode.NONE}   | ${false}
+        `(
+            'should return $mode if enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
+            ({ enableAnnotationsImageDiscoverability, mode }) => {
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+
+                expect(image.getInitialAnnotationMode()).toBe(mode);
+            },
+        );
+    });
+
     describe('getTransformWidthAndHeight', () => {
         test('should return the same width & height if the image is not rotated', () => {
             const width = 100;
