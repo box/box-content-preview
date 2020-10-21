@@ -1,3 +1,10 @@
+## 2.56.0 (2020-10-21)
+
+* fix(discoverability): add getInitialAnnotationMode override (#1273) ([b64d8fc](https://github.com/box/box-content-preview/commit/b64d8fc)), closes [#1273](https://github.com/box/box-content-preview/issues/1273)
+* feat(discoverability): add image cursor experience (#1270) ([b42768a](https://github.com/box/box-content-preview/commit/b42768a)), closes [#1270](https://github.com/box/box-content-preview/issues/1270)
+
+
+
 ## 2.55.0 (2020-10-19)
 
 * fix(annotations): Fix text blocked by old highlight selection background (#1272) ([ce69954](https://github.com/box/box-content-preview/commit/ce69954)), closes [#1272](https://github.com/box/box-content-preview/issues/1272)
