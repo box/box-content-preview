@@ -164,6 +164,11 @@ class ImageViewer extends ImageBaseViewer {
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
     }
 
+    // Annotation overrides
+    getInitialAnnotationMode() {
+        return this.options.enableAnnotationsImageDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE;
+    }
+
     /**
      * Gets the width & height after the transforms are applied.
      * When an image is rotated, the width & height of an image, e.g. offsetWidth & offsetHeight,
