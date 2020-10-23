@@ -276,11 +276,13 @@ describe('lib/AnnotationControlsFSM', () => {
         );
 
         test.each(REMAINING_STATES)('should return false if state is %s', state => {
-            expect(AnnotationControlsFSM.isDiscoverable(state)).toBe(false);
+            const fsm = new AnnotationControlsFSM(state);
+            expect(fsm.isDiscoverable()).toBe(false);
         });
 
-        test.each(DISCOVERABILITY_STATES)('should return true if state is %s', state =>
-            expect(AnnotationControlsFSM.isDiscoverable(state)).toBe(true),
-        );
+        test.each(DISCOVERABILITY_STATES)('should return true if state is %s', state => {
+            const fsm = new AnnotationControlsFSM(state);
+            expect(fsm.isDiscoverable()).toBe(true);
+        });
     });
 });

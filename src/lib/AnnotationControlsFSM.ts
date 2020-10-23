@@ -53,7 +53,7 @@ export default class AnnotationControlsFSM {
 
     public getState = (): AnnotationState => this.currentState;
 
-    public static isDiscoverable = (state: AnnotationState): boolean => DISCOVERABILITY_STATES.includes(state);
+    public isDiscoverable = (): boolean => DISCOVERABILITY_STATES.includes(this.currentState);
 
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
