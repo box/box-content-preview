@@ -1,3 +1,9 @@
+## <small>2.56.1 (2020-10-23)</small>
+
+* fix(pdf): Revert pdf.js to v2.2.228 due to font rendering issue (#1274) ([741da26](https://github.com/box/box-content-preview/commit/741da26)), closes [#1274](https://github.com/box/box-content-preview/issues/1274)
+
+
+
 ## 2.56.0 (2020-10-21)
 
 * fix(discoverability): add getInitialAnnotationMode override (#1273) ([b64d8fc](https://github.com/box/box-content-preview/commit/b64d8fc)), closes [#1273](https://github.com/box/box-content-preview/issues/1273)
