@@ -3,9 +3,9 @@ import EventEmitter from 'events';
 import * as constants from '../../constants';
 import * as icons from '../../icons/icons';
 import * as util from '../../util';
-import AnnotationControlsFSM, { AnnotationState } from '../../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationState, DISCOVERABILITY_STATES } from '../../AnnotationControlsFSM';
 import Api from '../../api';
-import BaseViewer, { ANNOTATION_DISCOVERABILITY_STATES } from '../BaseViewer';
+import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import fullscreen from '../../Fullscreen';
 import intl from '../../i18n';
@@ -85,7 +85,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(typeof base.loadTimeout).toBe('number');
             expect(base.annotatorPromise).toBeDefined();
             expect(base.annotatorPromiseResolver).toBeDefined();
-            expect(base.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('true');
+            expect(base.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
         });
 
         test('should add a mobile class to the container if on mobile', () => {
@@ -1821,7 +1821,7 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('updateDiscoverabilityResinTag()', () => {
         const REMAINING_STATES = Object.values(AnnotationState).filter(
-            state => !ANNOTATION_DISCOVERABILITY_STATES.includes(state),
+            state => !DISCOVERABILITY_STATES.includes(state),
         );
 
         beforeEach(() => {
@@ -1836,7 +1836,7 @@ describe('lib/viewers/BaseViewer', () => {
 
                 base.updateDiscoverabilityResinTag();
 
-                expect(base.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('false');
+                expect(base.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
             },
         );
 
@@ -1848,11 +1848,11 @@ describe('lib/viewers/BaseViewer', () => {
 
                 base.updateDiscoverabilityResinTag();
 
-                expect(base.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('false');
+                expect(base.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
             },
         );
 
-        test.each(ANNOTATION_DISCOVERABILITY_STATES)(
+        test.each(DISCOVERABILITY_STATES)(
             'should set resin tag to true if enableDiscoverability is true and state is %s',
             state => {
                 base.options.enableAnnotationsDiscoverability = true;
@@ -1860,7 +1860,7 @@ describe('lib/viewers/BaseViewer', () => {
 
                 base.updateDiscoverabilityResinTag();
 
-                expect(base.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('true');
+                expect(base.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             },
         );
     });

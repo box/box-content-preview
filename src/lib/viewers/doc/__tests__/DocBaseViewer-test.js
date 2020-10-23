@@ -2815,7 +2815,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
                 expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
-                expect(docBase.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('true');
+                expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             });
 
             test('should set annotations mode to none', () => {
@@ -2829,7 +2829,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
                 expect(docBase.processAnnotationModeChange).not.toBeCalled();
-                expect(docBase.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('false');
+                expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
             });
         });
 
@@ -2852,12 +2852,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.enableAnnotationsDiscoverability = false;
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
-                expect(docBase.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('false');
+                expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
 
                 docBase.options.enableAnnotationsDiscoverability = true;
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
-                expect(docBase.containerEl.getAttribute('data-resin-usingdiscoverability')).toBe('true');
+                expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             });
         });
 

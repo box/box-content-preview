@@ -18,6 +18,12 @@ export enum AnnotationInput {
     UPDATE = 'update',
 }
 
+export const DISCOVERABILITY_STATES = [
+    AnnotationState.HIGHLIGHT_TEMP,
+    AnnotationState.NONE,
+    AnnotationState.REGION_TEMP,
+];
+
 export const modeStateMap = {
     [AnnotationMode.HIGHLIGHT]: AnnotationState.HIGHLIGHT,
     [AnnotationMode.NONE]: AnnotationState.NONE,
@@ -46,6 +52,8 @@ export default class AnnotationControlsFSM {
     }
 
     public getState = (): AnnotationState => this.currentState;
+
+    public static isDiscoverable = (state: AnnotationState): boolean => DISCOVERABILITY_STATES.includes(state);
 
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {

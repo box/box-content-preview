@@ -1,4 +1,8 @@
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, {
+    AnnotationInput,
+    AnnotationState,
+    DISCOVERABILITY_STATES,
+} from '../AnnotationControlsFSM';
 import { AnnotationMode } from '../AnnotationControls';
 
 describe('lib/AnnotationControlsFSM', () => {
@@ -264,5 +268,19 @@ describe('lib/AnnotationControlsFSM', () => {
                 });
             });
         });
+    });
+
+    describe('isDiscoverable()', () => {
+        const REMAINING_STATES = Object.values(AnnotationState).filter(
+            state => !DISCOVERABILITY_STATES.includes(state),
+        );
+
+        test.each(REMAINING_STATES)('should return false if state is %s', state => {
+            expect(AnnotationControlsFSM.isDiscoverable(state)).toBe(false);
+        });
+
+        test.each(DISCOVERABILITY_STATES)('should return true if state is %s', state =>
+            expect(AnnotationControlsFSM.isDiscoverable(state)).toBe(true),
+        );
     });
 });
