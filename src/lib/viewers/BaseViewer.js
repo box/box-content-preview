@@ -38,7 +38,7 @@ import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import { AnnotationMode } from '../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput } from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../AnnotationControlsFSM';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -52,6 +52,12 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.HIGHLIGHT]: CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
+
+export const ANNOTATION_DISCOVERABILITY_STATES = [
+    AnnotationState.HIGHLIGHT_TEMP,
+    AnnotationState.NONE,
+    AnnotationState.REGION_TEMP,
+];
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -223,7 +229,21 @@ class BaseViewer extends EventEmitter {
             this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
+        this.updateDiscoverabilityResinTag();
+
         this.isSetup = true;
+    }
+
+    updateDiscoverabilityResinTag() {
+        if (!this.containerEl) {
+            return;
+        }
+
+        const isDiscoverabilityState = ANNOTATION_DISCOVERABILITY_STATES.includes(
+            this.annotationControlsFSM.getState(),
+        );
+        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverabilityState;
+        this.containerEl.setAttribute('data-resin-usingdiscoverability', isUsingDiscoverability);
     }
 
     /**

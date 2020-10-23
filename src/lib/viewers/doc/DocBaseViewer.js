@@ -1590,6 +1590,8 @@ class DocBaseViewer extends BaseViewer {
                 : nextMode,
         );
         this.processAnnotationModeChange(nextMode);
+
+        this.updateDiscoverabilityResinTag();
     }
 
     handleAnnotationControlsEscape() {
@@ -1599,6 +1601,8 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
+
+        this.updateDiscoverabilityResinTag();
     }
 
     handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
