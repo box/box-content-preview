@@ -57,6 +57,8 @@ export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
 export const CLASS_CRAWLER = 'bp-crawler';
 
+export const DISCOVERABILITY_ATTRIBUTE = 'data-resin-discoverability';
+
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
 export const SELECTOR_BOX_PREVIEW_CONTENT = `.${CLASS_BOX_PREVIEW_CONTENT}`;

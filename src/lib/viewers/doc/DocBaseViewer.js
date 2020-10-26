@@ -21,6 +21,7 @@ import {
     CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
+    DISCOVERABILITY_ATTRIBUTE,
     DOC_STATIC_ASSETS_VERSION,
     ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
@@ -100,8 +101,6 @@ class DocBaseViewer extends BaseViewer {
     constructor(options) {
         super(options);
 
-        this.annotationControlsFSM.subscribe(this.handleFSMChange);
-
         // Bind context for callbacks
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
@@ -121,8 +120,11 @@ class DocBaseViewer extends BaseViewer {
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
+        this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
+
+        this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
     }
 
     /**
@@ -1625,10 +1627,6 @@ class DocBaseViewer extends BaseViewer {
         this.processAnnotationModeChange(this.annotationControlsFSM.transition(status, type));
     }
 
-    handleFSMChange = () => {
-        this.updateDiscoverabilityResinTag();
-    };
-
     updateDiscoverabilityResinTag() {
         if (!this.containerEl) {
             return;
@@ -1640,7 +1638,7 @@ class DocBaseViewer extends BaseViewer {
 
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
-        this.containerEl.setAttribute('data-resin-discoverability', isUsingDiscoverability);
+        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
     }
 }
 
