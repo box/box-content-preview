@@ -717,4 +717,40 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
         });
     });
+
+    describe('handleAnnotationCreateEvent()', () => {
+        beforeEach(() => {
+            image.annotator = {
+                emit: jest.fn(),
+            };
+            image.annotationControls = {
+                destroy: jest.fn(),
+                setMode: jest.fn(),
+            };
+            image.processAnnotationModeChange = jest.fn();
+        });
+
+        const createEvent = status => ({
+            annotation: { id: '123' },
+            meta: {
+                status,
+            },
+        });
+
+        ['error', 'pending'].forEach(status => {
+            test(`should not do anything if status is ${status}`, () => {
+                const event = createEvent(status);
+                image.handleAnnotationCreateEvent(event);
+
+                expect(image.annotator.emit).not.toBeCalled();
+            });
+        });
+
+        test('should reset controls if status is success', () => {
+            const event = createEvent('success');
+            image.handleAnnotationCreateEvent(event);
+
+            expect(image.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+        });
+    });
 });
