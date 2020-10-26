@@ -514,15 +514,13 @@ class ImageViewer extends ImageBaseViewer {
             return;
         }
 
-        // Only on success do we exit create annotation mode. If error occurs,
-        // we remain in create mode
         this.annotator.emit('annotations_active_set', id);
     }
 
     initAnnotations() {
         super.initAnnotations();
 
-        if (this.areNewAnnotationsEnabled() && this.annotationControls) {
+        if (this.areNewAnnotationsEnabled()) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
     }

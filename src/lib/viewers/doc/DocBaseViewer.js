@@ -1575,7 +1575,7 @@ class DocBaseViewer extends BaseViewer {
     initAnnotations() {
         super.initAnnotations();
 
-        if (this.areNewAnnotationsEnabled() && this.annotationControls) {
+        if (this.areNewAnnotationsEnabled()) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
             this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
             this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
