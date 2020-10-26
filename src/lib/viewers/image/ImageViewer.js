@@ -510,11 +510,13 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        if (status !== 'success') {
+            return;
+        }
+
         // Only on success do we exit create annotation mode. If error occurs,
         // we remain in create mode
-        if (status === 'success') {
-            this.annotator.emit('annotations_active_set', id);
-        }
+        this.annotator.emit('annotations_active_set', id);
     }
 
     initAnnotations() {
