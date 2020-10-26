@@ -18,11 +18,7 @@ export enum AnnotationInput {
     UPDATE = 'update',
 }
 
-export const DISCOVERABILITY_STATES = [
-    AnnotationState.HIGHLIGHT_TEMP,
-    AnnotationState.NONE,
-    AnnotationState.REGION_TEMP,
-];
+type Subscription = (state: AnnotationState) => void;
 
 export const modeStateMap = {
     [AnnotationMode.HIGHLIGHT]: AnnotationState.HIGHLIGHT,
@@ -47,22 +43,28 @@ export const stateModeMap = {
 export default class AnnotationControlsFSM {
     private currentState: AnnotationState;
 
+    private subscriptions: Subscription[] = [];
+
     constructor(initialState = AnnotationState.NONE) {
         this.currentState = initialState;
     }
 
     public getState = (): AnnotationState => this.currentState;
 
-    public isDiscoverable = (): boolean => DISCOVERABILITY_STATES.includes(this.currentState);
+    private notify = (): void => this.subscriptions.forEach(callback => callback(this.currentState));
+
+    public subscribe = (callback: Subscription): void => this.subscriptions.push(callback);
 
     public transition = (input: AnnotationInput, mode: AnnotationMode = AnnotationMode.NONE): AnnotationMode => {
         if (input === AnnotationInput.CLICK) {
             this.currentState = mode === stateModeMap[this.currentState] ? AnnotationState.NONE : modeStateMap[mode];
+            this.notify();
             return stateModeMap[this.currentState];
         }
 
         if (input === AnnotationInput.RESET) {
             this.currentState = AnnotationState.NONE;
+            this.notify();
             return stateModeMap[this.currentState];
         }
 
@@ -81,6 +83,11 @@ export default class AnnotationControlsFSM {
             default:
         }
 
+        this.notify();
         return stateModeMap[this.currentState];
+    };
+
+    public unsubscribe = (callback: Subscription): void => {
+        this.subscriptions = this.subscriptions.filter(subscription => subscription !== callback);
     };
 }

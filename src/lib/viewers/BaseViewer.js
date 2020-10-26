@@ -223,22 +223,7 @@ class BaseViewer extends EventEmitter {
             this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
-        this.updateDiscoverabilityResinTag();
-
         this.isSetup = true;
-    }
-
-    updateDiscoverabilityResinTag() {
-        if (!this.containerEl) {
-            return;
-        }
-
-        const isDiscoverable = this.annotationControlsFSM.isDiscoverable();
-        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverable;
-
-        // For tracking purposes, set property to true when the annotation controls are in a state
-        // in which the default discoverability experience is enabled
-        this.containerEl.setAttribute('data-resin-discoverability', isUsingDiscoverability);
     }
 
     /**

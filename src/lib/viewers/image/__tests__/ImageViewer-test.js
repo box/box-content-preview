@@ -38,6 +38,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         image.containerEl = containerEl;
+        image.options.enableAnnotationsImageDiscoverability = false;
         image.setup();
     });
 
@@ -671,7 +672,29 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('handleZoomEvent', () => {
         beforeEach(() => {
+            image = new ImageViewer({
+                container: containerEl,
+                enableAnnotationsImageDiscoverability: true,
+                file: {
+                    id: '1',
+                    file_version: {
+                        id: '1',
+                    },
+                },
+                viewer: {
+                    NAME: 'Image',
+                    ASSET: '1.png',
+                },
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+            });
+            image.containerEl = containerEl;
+            image.setup();
             image.wrapperEl = document.createElement('img');
+
             Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 100 });
             Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 100 });
             jest.spyOn(image, 'processAnnotationModeChange');
@@ -709,12 +732,53 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.annotator = {
                 toggleAnnotationMode: jest.fn(),
             };
-            image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
 
             image.handleZoomEvent({ newScale: [width, height], type: 'in' });
 
             expect(image.processAnnotationModeChange).toHaveBeenCalled();
             expect(image.annotator.toggleAnnotationMode).toHaveBeenCalled();
+            expect(image.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+        });
+    });
+
+    describe('updateDiscoverabilityResinTag()', () => {
+        const REMAINING_STATES = Object.values(AnnotationState).filter(state => state !== AnnotationState.REGION_TEMP);
+
+        beforeEach(() => {
+            image.containerEl = document.createElement('div');
+        });
+
+        test.each(Object.values(AnnotationState))(
+            'should set resin tag to false if enableAnnotationsImageDiscoverability is false even if state=%s',
+            state => {
+                image.options.enableAnnotationsImageDiscoverability = false;
+                image.annotationControlsFSM = new AnnotationControlsFSM(state);
+
+                image.updateDiscoverabilityResinTag();
+
+                expect(image.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+            },
+        );
+
+        test.each(REMAINING_STATES)(
+            'should set resin tag to false if enableAnnotationsImageDiscoverability is true but state is %s',
+            state => {
+                image.options.enableAnnotationsImageDiscoverability = true;
+                image.annotationControlsFSM = new AnnotationControlsFSM(state);
+
+                image.updateDiscoverabilityResinTag();
+
+                expect(image.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+            },
+        );
+
+        test('should set resin tag to true if enableDiscoverability is true and state is REGION_TEMP', () => {
+            image.options.enableAnnotationsImageDiscoverability = true;
+            image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
+
+            image.updateDiscoverabilityResinTag();
+
+            expect(image.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
         });
     });
 

@@ -1,8 +1,4 @@
-import AnnotationControlsFSM, {
-    AnnotationInput,
-    AnnotationState,
-    DISCOVERABILITY_STATES,
-} from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../AnnotationControlsFSM';
 import { AnnotationMode } from '../AnnotationControls';
 
 describe('lib/AnnotationControlsFSM', () => {
@@ -270,19 +266,28 @@ describe('lib/AnnotationControlsFSM', () => {
         });
     });
 
-    describe('isDiscoverable()', () => {
-        const REMAINING_STATES = Object.values(AnnotationState).filter(
-            state => !DISCOVERABILITY_STATES.includes(state),
-        );
+    describe('subscriptions', () => {
+        const fsm = new AnnotationControlsFSM();
+        let callback;
 
-        test.each(REMAINING_STATES)('should return false if state is %s', state => {
-            const fsm = new AnnotationControlsFSM(state);
-            expect(fsm.isDiscoverable()).toBe(false);
+        beforeEach(() => {
+            callback = jest.fn();
+            fsm.subscribe(callback);
         });
 
-        test.each(DISCOVERABILITY_STATES)('should return true if state is %s', state => {
-            const fsm = new AnnotationControlsFSM(state);
-            expect(fsm.isDiscoverable()).toBe(true);
+        test('should call callback on transition with new state', () => {
+            fsm.transition(AnnotationInput.CLICK, AnnotationMode.REGION);
+            expect(callback).toHaveBeenCalledWith(fsm.getState());
+        });
+
+        test('should handle unsubscribe', () => {
+            const callbackTwo = jest.fn();
+            fsm.subscribe(callbackTwo);
+            fsm.unsubscribe(callback);
+
+            fsm.transition(AnnotationInput.CLICK, AnnotationMode.REGION);
+            expect(callback).not.toHaveBeenCalled();
+            expect(callbackTwo).toHaveBeenCalledWith(fsm.getState());
         });
     });
 });

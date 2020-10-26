@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
-import DocBaseViewer from '../DocBaseViewer';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
+import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
@@ -10,7 +11,6 @@ import PageControls from '../../../PageControls';
 import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
 import DocPreloader from '../DocPreloader';
-import { AnnotationInput } from '../../../AnnotationControlsFSM';
 import * as file from '../../../file';
 import * as util from '../../../util';
 
@@ -130,6 +130,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
+            docBase.options.enableAnnotationsDiscoverability = true;
             docBase.setup();
 
             expect(docBase.docEl.classList.contains('bp-doc')).toBe(true);
@@ -142,6 +143,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.thumbnailsSidebarEl.parentNode).toBe(docBase.containerEl.parentNode);
 
             expect(docBase.loadTimeout).toBe(LOAD_TIMEOUT_MS);
+            expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
         });
 
         test('should not set a thumbnails sidebar element if the option is not enabled', () => {
@@ -2824,6 +2826,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.options.enableAnnotationsDiscoverability = false;
                 docBase.processAnnotationModeChange = jest.fn();
+                docBase.containerEl.setAttribute('data-resin-discoverability', false);
 
                 docBase.handleAnnotationControlsEscape();
 
@@ -2871,6 +2874,52 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ({ enableAnnotationsDiscoverability, expectedMode }) => {
                     docBase.options.enableAnnotationsDiscoverability = enableAnnotationsDiscoverability;
                     expect(docBase.getInitialAnnotationMode()).toBe(expectedMode);
+                },
+            );
+        });
+
+        describe('updateDiscoverabilityResinTag()', () => {
+            const REMAINING_STATES = Object.values(AnnotationState).filter(
+                state => !DISCOVERABILITY_STATES.includes(state),
+            );
+
+            beforeEach(() => {
+                docBase.containerEl = document.createElement('div');
+            });
+
+            test.each(Object.values(AnnotationState))(
+                'should set resin tag to false if enableAnnotationsDiscoverability is false even if state=%s',
+                state => {
+                    docBase.options.enableAnnotationsDiscoverability = false;
+                    docBase.annotationControlsFSM = new AnnotationControlsFSM(state);
+
+                    docBase.updateDiscoverabilityResinTag();
+
+                    expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+                },
+            );
+
+            test.each(REMAINING_STATES)(
+                'should set resin tag to false if enableAnnotationsDiscoverability is true but state is %s',
+                state => {
+                    docBase.options.enableAnnotationsDiscoverability = true;
+                    docBase.annotationControlsFSM = new AnnotationControlsFSM(state);
+
+                    docBase.updateDiscoverabilityResinTag();
+
+                    expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+                },
+            );
+
+            test.each(DISCOVERABILITY_STATES)(
+                'should set resin tag to true if enableDiscoverability is true and state is %s',
+                state => {
+                    docBase.options.enableAnnotationsDiscoverability = true;
+                    docBase.annotationControlsFSM = new AnnotationControlsFSM(state);
+
+                    docBase.updateDiscoverabilityResinTag();
+
+                    expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
                 },
             );
         });

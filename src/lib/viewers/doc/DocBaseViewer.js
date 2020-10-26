@@ -10,7 +10,7 @@ import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
-import { AnnotationInput } from '../../AnnotationControlsFSM';
+import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
@@ -47,6 +47,12 @@ import {
     VIEWER_EVENT,
 } from '../../events';
 import Timer from '../../Timer';
+
+export const DISCOVERABILITY_STATES = [
+    AnnotationState.HIGHLIGHT_TEMP,
+    AnnotationState.NONE,
+    AnnotationState.REGION_TEMP,
+];
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 0.1;
@@ -93,6 +99,8 @@ class DocBaseViewer extends BaseViewer {
      */
     constructor(options) {
         super(options);
+
+        this.annotationControlsFSM.subscribe(this.handleFSMChange);
 
         // Bind context for callbacks
         this.emitMetric = this.emitMetric.bind(this);
@@ -158,6 +166,8 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebarEl.tabIndex = 0;
             this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
         }
+
+        this.updateDiscoverabilityResinTag();
     }
 
     /**
@@ -1590,8 +1600,6 @@ class DocBaseViewer extends BaseViewer {
                 : nextMode,
         );
         this.processAnnotationModeChange(nextMode);
-
-        this.updateDiscoverabilityResinTag();
     }
 
     handleAnnotationControlsEscape() {
@@ -1601,8 +1609,6 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
-
-        this.updateDiscoverabilityResinTag();
     }
 
     handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
@@ -1617,6 +1623,24 @@ class DocBaseViewer extends BaseViewer {
 
     handleAnnotationCreatorChangeEvent({ status, type }) {
         this.processAnnotationModeChange(this.annotationControlsFSM.transition(status, type));
+    }
+
+    handleFSMChange = () => {
+        this.updateDiscoverabilityResinTag();
+    };
+
+    updateDiscoverabilityResinTag() {
+        if (!this.containerEl) {
+            return;
+        }
+
+        const controlsState = this.annotationControlsFSM.getState();
+        const isDiscoverable = DISCOVERABILITY_STATES.includes(controlsState);
+        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverable;
+
+        // For tracking purposes, set property to true when the annotation controls are in a state
+        // in which the default discoverability experience is enabled
+        this.containerEl.setAttribute('data-resin-discoverability', isUsingDiscoverability);
     }
 }
 

@@ -26,6 +26,8 @@ class ImageViewer extends ImageBaseViewer {
             this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
 
+        this.annotationControlsFSM.subscribe(this.handleFSMChange);
+
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
         }
@@ -69,6 +71,8 @@ class ImageViewer extends ImageBaseViewer {
         if (this.options.enableAnnotationsImageDiscoverability) {
             this.addListener('zoom', this.handleZoomEvent);
         }
+
+        this.updateDiscoverabilityResinTag();
     }
 
     /**
@@ -523,6 +527,23 @@ class ImageViewer extends ImageBaseViewer {
         if (this.areNewAnnotationsEnabled()) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
+    }
+
+    handleFSMChange = () => {
+        this.updateDiscoverabilityResinTag();
+    };
+
+    updateDiscoverabilityResinTag() {
+        if (!this.containerEl) {
+            return;
+        }
+
+        const isDiscoverable = this.annotationControlsFSM.getState() === AnnotationState.REGION_TEMP;
+        const isUsingDiscoverability = this.options.enableAnnotationsImageDiscoverability && isDiscoverable;
+
+        // For tracking purposes, set property to true when the annotation controls are in a state
+        // in which the default discoverability experience is enabled
+        this.containerEl.setAttribute('data-resin-discoverability', isUsingDiscoverability);
     }
 }
 
