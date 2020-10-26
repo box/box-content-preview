@@ -17,6 +17,7 @@ class ImageViewer extends ImageBaseViewer {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
+        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
@@ -506,6 +507,22 @@ class ImageViewer extends ImageBaseViewer {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
         this.annotator.toggleAnnotationMode(nextMode);
         this.processAnnotationModeChange(nextMode);
+    }
+
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        if (status !== 'success') {
+            return;
+        }
+
+        this.annotator.emit('annotations_active_set', id);
+    }
+
+    initAnnotations() {
+        super.initAnnotations();
+
+        if (this.areNewAnnotationsEnabled()) {
+            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+        }
     }
 }
 
