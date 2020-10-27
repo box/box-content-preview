@@ -1,7 +1,7 @@
 import ImageBaseViewer from './ImageBaseViewer';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, DISCOVERABILITY_ATTRIBUTE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
 
@@ -14,17 +14,23 @@ class ImageViewer extends ImageBaseViewer {
     constructor(options) {
         super(options);
         this.api = options.api;
-        this.rotateLeft = this.rotateLeft.bind(this);
-        this.updatePannability = this.updatePannability.bind(this);
+
+        // Bind context for callbacks
+        this.getViewportDimensions = this.getViewportDimensions.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
-        this.getViewportDimensions = this.getViewportDimensions.bind(this);
         this.handleZoomEvent = this.handleZoomEvent.bind(this);
+        this.rotateLeft = this.rotateLeft.bind(this);
+        this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
+        this.updatePannability = this.updatePannability.bind(this);
+
         this.annotationControlsFSM = new AnnotationControlsFSM(
             this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
+
+        this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
@@ -69,6 +75,8 @@ class ImageViewer extends ImageBaseViewer {
         if (this.options.enableAnnotationsImageDiscoverability) {
             this.addListener('zoom', this.handleZoomEvent);
         }
+
+        this.updateDiscoverabilityResinTag();
     }
 
     /**
@@ -523,6 +531,19 @@ class ImageViewer extends ImageBaseViewer {
         if (this.areNewAnnotationsEnabled()) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
+    }
+
+    updateDiscoverabilityResinTag() {
+        if (!this.containerEl) {
+            return;
+        }
+
+        const isDiscoverable = this.annotationControlsFSM.getState() === AnnotationState.REGION_TEMP;
+        const isUsingDiscoverability = this.options.enableAnnotationsImageDiscoverability && isDiscoverable;
+
+        // For tracking purposes, set property to true when the annotation controls are in a state
+        // in which the default discoverability experience is enabled
+        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
     }
 }
 

@@ -265,4 +265,29 @@ describe('lib/AnnotationControlsFSM', () => {
             });
         });
     });
+
+    describe('subscriptions', () => {
+        const fsm = new AnnotationControlsFSM();
+        let callback;
+
+        beforeEach(() => {
+            callback = jest.fn();
+            fsm.subscribe(callback);
+        });
+
+        test('should call callback on transition with new state', () => {
+            fsm.transition(AnnotationInput.CLICK, AnnotationMode.REGION);
+            expect(callback).toHaveBeenCalledWith(fsm.getState());
+        });
+
+        test('should handle unsubscribe', () => {
+            const callbackTwo = jest.fn();
+            fsm.subscribe(callbackTwo);
+            fsm.unsubscribe(callback);
+
+            fsm.transition(AnnotationInput.CLICK, AnnotationMode.REGION);
+            expect(callback).not.toHaveBeenCalled();
+            expect(callbackTwo).toHaveBeenCalledWith(fsm.getState());
+        });
+    });
 });

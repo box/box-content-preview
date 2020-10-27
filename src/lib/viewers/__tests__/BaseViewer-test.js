@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
+import * as constants from '../../constants';
+import * as icons from '../../icons/icons';
+import * as util from '../../util';
+import Api from '../../api';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
-import RepStatus from '../../RepStatus';
-import PreviewError from '../../PreviewError';
 import fullscreen from '../../Fullscreen';
 import intl from '../../i18n';
-import * as util from '../../util';
-import * as icons from '../../icons/icons';
-import * as constants from '../../constants';
-import { AnnotationMode } from '../../AnnotationControls';
-import { EXCLUDED_EXTENSIONS } from '../../extensions';
-import { VIEWER_EVENT, LOAD_METRIC, ERROR_CODE } from '../../events';
+import PreviewError from '../../PreviewError';
+import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
-import Api from '../../api';
+import { AnnotationMode } from '../../AnnotationControls';
+import { ERROR_CODE, LOAD_METRIC, VIEWER_EVENT } from '../../events';
+import { EXCLUDED_EXTENSIONS } from '../../extensions';
 
 let base;
 let containerEl;
