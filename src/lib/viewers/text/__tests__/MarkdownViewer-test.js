@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-expressions */
-import Remarkable from '../../../../third-party/text/0.114.0/remarkable.min.js';
-import MarkdownViewer from '../MarkdownViewer';
+import React from 'react';
 import BaseViewer from '../../BaseViewer';
+import ControlsRoot from '../../controls/controls-root';
+import MarkdownControls from '../MarkdownControls';
+import MarkdownViewer from '../MarkdownViewer';
 import Popup from '../../../Popup';
+import Remarkable from '../../../../third-party/text/0.114.0/remarkable.min.js';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+
+jest.mock('../../controls/controls-root');
 
 let containerEl;
 let markdown;
@@ -123,6 +128,7 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             };
             jest.spyOn(markdown, 'initRemarkable').mockReturnValue(md);
             jest.spyOn(markdown, 'loadUI');
+            jest.spyOn(markdown, 'loadUIReact');
             jest.spyOn(markdown, 'emit');
 
             markdown.finishLoading('');
@@ -130,9 +136,21 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             expect(markdown.initRemarkable).toBeCalled();
             expect(md.render).toBeCalled();
             expect(markdown.loadUI).toBeCalled();
+            expect(markdown.loadUIReact).not.toBeCalled();
             expect(markdown.emit).toBeCalledWith(VIEWER_EVENT.load);
             expect(markdown.loaded).toBe(true);
             expect(markdown.textEl.classList.contains('bp-is-hidden')).toBe(false);
+        });
+
+        test('should finish loading and render react ui if option is enabled', () => {
+            jest.spyOn(markdown, 'loadUI');
+            jest.spyOn(markdown, 'loadUIReact');
+
+            markdown.options.useReactControls = true;
+            markdown.finishLoading('');
+
+            expect(markdown.loadUI).not.toBeCalled();
+            expect(markdown.loadUIReact).toBeCalled();
         });
 
         test('should show truncated download button if text is truncated', () => {
@@ -147,6 +165,18 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             markdown.finishLoading('');
 
             expect(markdown.showTruncatedDownloadButton).toBeCalled();
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        test('should create controls root and render the react controls', () => {
+            markdown.options.useReactControls = true;
+            markdown.loadUIReact();
+
+            expect(markdown.controls).toBeInstanceOf(ControlsRoot);
+            expect(markdown.controls.render).toBeCalledWith(
+                <MarkdownControls onFullscreenToggle={markdown.toggleFullscreen} />,
+            );
         });
     });
 });

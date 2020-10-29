@@ -1377,6 +1377,19 @@ describe('lib/Preview', () => {
 
             expect(preview.options.responseInterceptor).toBe(responseInterceptor);
         });
+
+        test('should disable react controls by default', () => {
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.useReactControls).toBe(false);
+        });
+
+        test('should enable react controls if provided', () => {
+            preview.previewOptions.useReactControls = true;
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.useReactControls).toBe(true);
+        });
     });
 
     describe('createViewerOptions()', () => {
