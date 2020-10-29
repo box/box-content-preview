@@ -21,6 +21,7 @@
         "@commitlint/config-conventional": "^8.2.0",
         "@commitlint/travis-cli": "^8.2.0",
         "@testing-library/jest-dom": "^5.11.4",
+        "@types/enzyme": "^3.10.8",
         "@types/lodash": "^4.14.149",
         "@types/react": "^16.9.0",
         "@types/react-dom": "^16.9.0",
