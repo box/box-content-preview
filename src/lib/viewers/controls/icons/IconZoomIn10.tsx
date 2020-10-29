@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function IconZoomIn(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+function IconZoomIn10(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg focusable="false" height={10} viewBox="0 0 10 10" width={10} {...props}>
             <path
@@ -12,4 +12,4 @@ function IconZoomIn(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     );
 }
 
-export default IconZoomIn;
+export default IconZoomIn10;
