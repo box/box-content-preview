@@ -268,7 +268,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(iframeEl.width).toBe('100%');
             expect(iframeEl.height).toBe('100%');
             expect(iframeEl.frameBorder).toBe('0');
-            expect(iframeEl.getAttribute('sandbox')).toBe('allow-scripts allow-same-origin allow-forms allow-popups');
+            expect(iframeEl.getAttribute('sandbox')).toBe(
+                'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads',
+            );
         });
 
         test('should allow fullscreen if using the platform setup', () => {
