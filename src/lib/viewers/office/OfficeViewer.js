@@ -268,7 +268,7 @@ class OfficeViewer extends BaseViewer {
         iframeEl.setAttribute('width', '100%');
         iframeEl.setAttribute('height', '100%');
         iframeEl.setAttribute('frameborder', 0);
-        iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+        iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads');
 
         if (this.platformSetup) {
             iframeEl.setAttribute('allowfullscreen', 'true');
