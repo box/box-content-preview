@@ -1,0 +1,9 @@
+.bp-ControlsLayer {
+    display: flex;
+    opacity: 0;
+    transition: opacity .5s;
+
+    &.bp-is-visible {
+        opacity: 1;
+    }
+}

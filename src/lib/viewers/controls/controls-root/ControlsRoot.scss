@@ -1,0 +1,13 @@
+@import '~box-ui-elements/es/styles/variables';
+
+.bp-ControlsRoot {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translate3d(-50%, 0, 0);
+    backface-visibility: hidden;
+
+    &.bp-is-hidden {
+        display: none;
+    }
+}
