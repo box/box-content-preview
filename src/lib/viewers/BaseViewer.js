@@ -53,6 +53,9 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
+const IMAGE_FTUX_CURSOR_DISABLED_KEY = 'image-ftux-cursor-disabled';
+const DOCUMENT_FTUX_CURSOR_DISABLED_KEY = 'document-ftux-cursor-disabled';
+
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
 
@@ -978,11 +981,23 @@ class BaseViewer extends EventEmitter {
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
 
+        // Set disabled ftux cursor flag depending on if the local storage key is set
+        let isDocumentFtuxCursorDisabled = false;
+        let isImageFtuxCursorDisabled = false;
+        if (this.cache.get(DOCUMENT_FTUX_CURSOR_DISABLED_KEY)) {
+            isDocumentFtuxCursorDisabled = true;
+        }
+        if (this.cache.get(IMAGE_FTUX_CURSOR_DISABLED_KEY)) {
+            isImageFtuxCursorDisabled = true;
+        }
+
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             features: options && options.features,
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
+            isDocumentFtuxCursorDisabled,
+            isImageFtuxCursorDisabled,
             modeButtons: ANNOTATION_BUTTONS,
         });
 
