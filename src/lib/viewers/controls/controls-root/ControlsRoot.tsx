@@ -48,13 +48,13 @@ export default class ControlsRoot {
     }, 100);
 
     destroy(): void {
-        if (!this.containerEl) {
-            return;
-        }
+        ReactDOM.unmountComponentAtNode(this.controlsEl);
 
-        this.containerEl.removeEventListener('mousemove', this.handleMouseMove);
-        this.containerEl.removeEventListener('touchstart', this.handleMouseMove);
-        this.containerEl.removeChild(this.controlsEl);
+        if (this.containerEl) {
+            this.containerEl.removeEventListener('mousemove', this.handleMouseMove);
+            this.containerEl.removeEventListener('touchstart', this.handleMouseMove);
+            this.containerEl.removeChild(this.controlsEl);
+        }
     }
 
     disable(): void {

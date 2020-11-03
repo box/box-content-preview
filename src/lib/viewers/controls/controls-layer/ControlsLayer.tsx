@@ -11,7 +11,6 @@ export type Helpers = {
 export type Props = {
     children: React.ReactNode;
     onMount?: (helpers: Helpers) => void;
-    timeout?: number;
 };
 
 export const HIDE_CLASSNAME = 'bp-is-visible';
@@ -24,7 +23,7 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
     const hideTimeoutRef = React.useRef<number>();
 
     // Visibility helpers
-    const helpers = React.useRef({
+    const helpersRef = React.useRef({
         hide() {
             window.clearTimeout(hideTimeoutRef.current);
 
@@ -49,27 +48,27 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
     // Event handlers
     const handleFocusIn = (): void => {
         hasFocusRef.current = true;
-        helpers.current.show();
+        helpersRef.current.show();
     };
 
     const handleFocusOut = (): void => {
         hasFocusRef.current = false;
-        helpers.current.hide();
+        helpersRef.current.hide();
     };
 
     const handleMouseEnter = (): void => {
         hasCursorRef.current = true;
-        helpers.current.show();
+        helpersRef.current.show();
     };
 
     const handleMouseLeave = (): void => {
         hasCursorRef.current = false;
-        helpers.current.hide();
+        helpersRef.current.hide();
     };
 
     // Expose helpers to parent
     React.useEffect(() => {
-        onMount(helpers.current);
+        onMount(helpersRef.current);
     }, [onMount]);
 
     return (
