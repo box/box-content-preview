@@ -13,8 +13,8 @@ export type Props = {
     onMount?: (helpers: Helpers) => void;
 };
 
-export const HIDE_CLASSNAME = 'bp-is-visible';
 export const HIDE_DELAY_MS = 2000;
+export const SHOW_CLASSNAME = 'bp-is-visible';
 
 export default function ControlsLayer({ children, onMount = noop }: Props): JSX.Element {
     const [isShown, setIsShown] = React.useState(false);
@@ -73,7 +73,7 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
 
     return (
         <div
-            className={`bp-ControlsLayer ${isShown ? HIDE_CLASSNAME : ''}`}
+            className={`bp-ControlsLayer ${isShown ? SHOW_CLASSNAME : ''}`}
             onBlur={handleFocusOut}
             onFocus={handleFocusIn}
             onMouseEnter={handleMouseEnter}

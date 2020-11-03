@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import ControlsLayer, { HIDE_CLASSNAME, HIDE_DELAY_MS } from '../ControlsLayer';
+import ControlsLayer, { HIDE_DELAY_MS, SHOW_CLASSNAME } from '../ControlsLayer';
 
 describe('ControlsLayer', () => {
     const children = <div className="TestControls">Controls</div>;
@@ -21,7 +21,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
         });
 
         test.each`
@@ -36,7 +36,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
 
             act(() => {
                 getElement(wrapper).simulate(hideTrigger);
@@ -44,7 +44,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(false);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(false);
         });
 
         test('should always show the controls if they have focus', () => {
@@ -56,7 +56,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
 
             act(() => {
                 getElement(wrapper).simulate('mouseleave');
@@ -64,7 +64,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
         });
 
         test('should always show the controls if they have the mouse cursor', () => {
@@ -76,7 +76,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
 
             act(() => {
                 getElement(wrapper).simulate('blur');
@@ -84,7 +84,7 @@ describe('ControlsLayer', () => {
             });
             wrapper.update();
 
-            expect(getElement(wrapper).hasClass(HIDE_CLASSNAME)).toBe(true);
+            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
         });
     });
 
