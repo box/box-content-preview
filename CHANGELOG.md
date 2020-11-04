@@ -1,3 +1,17 @@
+## 2.57.0 (2020-11-04)
+
+* feat(controls): Add react versions of core control components (#1282) ([d00879d](https://github.com/box/box-content-preview/commit/d00879d)), closes [#1282](https://github.com/box/box-content-preview/issues/1282)
+* feat(controls): Add react versions of existing control icons (#1280) ([43fe1d5](https://github.com/box/box-content-preview/commit/43fe1d5)), closes [#1280](https://github.com/box/box-content-preview/issues/1280)
+* feat(controls): Add react versions of fullscreen and zoom controls (#1283) ([443746e](https://github.com/box/box-content-preview/commit/443746e)), closes [#1283](https://github.com/box/box-content-preview/issues/1283)
+* feat(controls): Add react versions of text viewer controls (#1284) ([3d9ef91](https://github.com/box/box-content-preview/commit/3d9ef91)), closes [#1284](https://github.com/box/box-content-preview/issues/1284)
+* feat(discoverability): Add instrumentation for annotation creation (#1275) ([480a90d](https://github.com/box/box-content-preview/commit/480a90d)), closes [#1275](https://github.com/box/box-content-preview/issues/1275)
+* feat(react): Upgrade react and react-dom to ^16.9.0 (#1278) ([0cbc74d](https://github.com/box/box-content-preview/commit/0cbc74d)), closes [#1278](https://github.com/box/box-content-preview/issues/1278)
+* fix(annotations): Select newly created annotation (#1276) ([7f11114](https://github.com/box/box-content-preview/commit/7f11114)), closes [#1276](https://github.com/box/box-content-preview/issues/1276)
+* fix(office): Allow download of files via embedded links in Chrome (#1277) ([281b9ab](https://github.com/box/box-content-preview/commit/281b9ab)), closes [#1277](https://github.com/box/box-content-preview/issues/1277)
+* fix(pdf): Revert pdf.js to v2.2.228 due to font rendering issue (#1274) ([741da26](https://github.com/box/box-content-preview/commit/741da26)), closes [#1274](https://github.com/box/box-content-preview/issues/1274)
+
+
+
 ## 2.56.0 (2020-10-21)
 
 * fix(discoverability): add getInitialAnnotationMode override (#1273) ([b64d8fc](https://github.com/box/box-content-preview/commit/b64d8fc)), closes [#1273](https://github.com/box/box-content-preview/issues/1273)
