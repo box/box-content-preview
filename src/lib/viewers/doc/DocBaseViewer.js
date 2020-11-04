@@ -1635,7 +1635,7 @@ class DocBaseViewer extends BaseViewer {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
 
         if (nextMode === AnnotationMode.REGION) {
-            this.handleFtuxCursorToggle('annotations_document_explicit_create_toggled', DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            this.handleFtuxCursorToggle(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
         }
 
         this.annotator.toggleAnnotationMode(

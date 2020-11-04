@@ -55,8 +55,8 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
-export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-image-ftux-cursor-seen';
 export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'bp-document-ftux-cursor-seen';
+export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-image-ftux-cursor-seen';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -1013,7 +1013,7 @@ class BaseViewer extends EventEmitter {
      * @param {string} key
      * @return {void}
      */
-    handleFtuxCursorToggle(event, key) {
+    handleFtuxCursorToggle(key) {
         if (!this.cache.get(key)) {
             this.cache.set(key, true, true);
         } else if (this.cache.get(key) && this.containerEl) {
