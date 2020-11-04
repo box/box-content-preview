@@ -8,7 +8,7 @@ import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
 import DocControls from '../DocControls';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
-import BaseViewer from '../../BaseViewer';
+import BaseViewer, { DOCUMENT_FTUX_CURSOR_SEEN_KEY } from '../../BaseViewer';
 import Controls from '../../../Controls';
 import PageControls from '../../../PageControls';
 import ZoomControls from '../../../ZoomControls';
@@ -2883,6 +2883,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     toggleAnnotationMode: jest.fn(),
                 };
                 docBase.processAnnotationModeChange = jest.fn();
+                docBase.handleFtuxCursorToggle = jest.fn();
             });
 
             test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -2902,6 +2903,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
+            });
+
+            test('should call handleFtuxCursorToggle if nextMode is AnnotationMode.REGION', () => {
+                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+                expect(docBase.handleFtuxCursorToggle).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
             });
         });
 

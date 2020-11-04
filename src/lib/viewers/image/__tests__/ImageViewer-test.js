@@ -2,6 +2,7 @@ import React from 'react';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
 import BaseViewer from '../../BaseViewer';
+import ImageViewer from '../ImageViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageControls from '../ImageControls';
@@ -665,6 +666,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 toggleAnnotationMode: jest.fn(),
             };
             image.processAnnotationModeChange = jest.fn();
+            image.handleFtuxCursorToggle = jest.fn();
         });
 
         test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -677,6 +679,12 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+        });
+
+        test('should call handleFtuxCursorToggle with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION', () => {
+            image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+            expect(image.handleFtuxCursorToggle).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY);
         });
     });
 
