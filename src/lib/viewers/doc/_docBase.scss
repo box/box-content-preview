@@ -370,6 +370,13 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
+    &.bp-annotations-ftux-document-cursor-seen,
+    &.bp-annotations-ftux-image-cursor-seen {
+        .ba-PopupCursor {
+            display: none;
+        }
+    }
+
     // Hide the toggle thumbnails button when in fullscreen
     &.bp-is-fullscreen .bp-toggle-thumbnails-icon {
         display: none;

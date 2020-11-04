@@ -1,7 +1,7 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
-import BaseViewer from '../BaseViewer';
+import BaseViewer, { DOCUMENT_FTUX_CURSOR_SEEN_KEY } from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import ControlsRoot from '../controls/controls-root';
@@ -60,7 +60,6 @@ export const DISCOVERABILITY_STATES = [
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 0.1;
-const DOCUMENT_FTUX_CURSOR_DISABLED_KEY = 'document-ftux-cursor-disabled';
 const IS_SAFARI_CLASS = 'is-safari';
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const MAX_PINCH_SCALE_VALUE = 3;
@@ -1630,23 +1629,13 @@ class DocBaseViewer extends BaseViewer {
             this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
             this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
         }
-
-        if (this.cache.get(DOCUMENT_FTUX_CURSOR_DISABLED_KEY)) {
-            this.annotator.emit('annotations_document_explicit_create_toggled');
-        }
     }
 
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
 
         if (nextMode === AnnotationMode.REGION) {
-            // the first time that we click on the explicit create region
-            if (!this.cache.get(DOCUMENT_FTUX_CURSOR_DISABLED_KEY)) {
-                this.cache.set(DOCUMENT_FTUX_CURSOR_DISABLED_KEY, true, true /* useLocalStorage */);
-            } else {
-                // we only update the toggle on every explicit click after the first time
-                this.annotator.emit('annotations_document_explicit_create_toggled');
-            }
+            this.handleFtuxCursorToggle('annotations_document_explicit_create_toggled', DOCUMENT_FTUX_CURSOR_SEEN_KEY);
         }
 
         this.annotator.toggleAnnotationMode(

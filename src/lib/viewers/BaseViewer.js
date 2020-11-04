@@ -22,6 +22,8 @@ import {
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
+    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -53,8 +55,8 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
-const IMAGE_FTUX_CURSOR_DISABLED_KEY = 'image-ftux-cursor-disabled';
-const DOCUMENT_FTUX_CURSOR_DISABLED_KEY = 'document-ftux-cursor-disabled';
+export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-image-ftux-cursor-seen';
+export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'bp-document-ftux-cursor-seen';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -165,6 +167,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
+        this.handleFtuxCursorToggle = this.handleFtuxCursorToggle.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -981,23 +984,11 @@ class BaseViewer extends EventEmitter {
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
 
-        // Set disabled ftux cursor flag depending on if the local storage key is set
-        let isDocumentFtuxCursorDisabled = false;
-        let isImageFtuxCursorDisabled = false;
-        if (this.cache.get(DOCUMENT_FTUX_CURSOR_DISABLED_KEY)) {
-            isDocumentFtuxCursorDisabled = true;
-        }
-        if (this.cache.get(IMAGE_FTUX_CURSOR_DISABLED_KEY)) {
-            isImageFtuxCursorDisabled = true;
-        }
-
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             features: options && options.features,
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
-            isDocumentFtuxCursorDisabled,
-            isImageFtuxCursorDisabled,
             modeButtons: ANNOTATION_BUTTONS,
         });
 
@@ -1012,6 +1003,31 @@ class BaseViewer extends EventEmitter {
 
     getInitialAnnotationMode() {
         return AnnotationMode.NONE;
+    }
+
+    /**
+     * Updates localStorage with the state of the ftux cursor toggle
+     *
+     * @protected
+     * @param {string} event
+     * @param {string} key
+     * @return {void}
+     */
+    handleFtuxCursorToggle(event, key) {
+        if (!this.cache.get(key)) {
+            this.cache.set(key, true, true);
+        } else if (this.cache.get(key) && this.containerEl) {
+            switch (key) {
+                case IMAGE_FTUX_CURSOR_SEEN_KEY:
+                    this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+                    break;
+                case DOCUMENT_FTUX_CURSOR_SEEN_KEY:
+                    this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     /**

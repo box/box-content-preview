@@ -5,9 +5,9 @@ import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
 import { CLASS_INVISIBLE, DISCOVERABILITY_ATTRIBUTE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
+import { IMAGE_FTUX_CURSOR_SEEN_KEY } from '../BaseViewer';
 import './Image.scss';
 
-const IMAGE_FTUX_CURSOR_DISABLED_KEY = 'image-ftux-cursor-disabled';
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
@@ -540,11 +540,7 @@ class ImageViewer extends ImageBaseViewer {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
 
         if (nextMode === AnnotationMode.REGION) {
-            if (!this.cache.get(IMAGE_FTUX_CURSOR_DISABLED_KEY)) {
-                this.cache.set(IMAGE_FTUX_CURSOR_DISABLED_KEY, true, true /* useLocalStorage */);
-            } else {
-                this.annotator.emit('annotations_image_explicit_create_toggled');
-            }
+            this.handleFtuxCursorToggle('annotations_image_explicit_create_toggled', IMAGE_FTUX_CURSOR_SEEN_KEY);
         }
 
         this.annotator.toggleAnnotationMode(nextMode);
@@ -564,10 +560,6 @@ class ImageViewer extends ImageBaseViewer {
 
         if (this.areNewAnnotationsEnabled()) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
-        }
-
-        if (this.cache.get(IMAGE_FTUX_CURSOR_DISABLED_KEY)) {
-            this.annotator.emit('annotations_image_explicit_create_toggled');
         }
     }
 
