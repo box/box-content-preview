@@ -1009,7 +1009,6 @@ class BaseViewer extends EventEmitter {
      * Updates localStorage with the state of the ftux cursor toggle
      *
      * @protected
-     * @param {string} event
      * @param {string} key
      * @return {void}
      */
