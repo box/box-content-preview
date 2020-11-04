@@ -1,9 +1,12 @@
+import React from 'react';
 import BaseViewer from '../BaseViewer';
 import Controls from '../../Controls';
+import ControlsRoot from '../controls';
+import TextControls from './TextControls';
 import ZoomControls from '../../ZoomControls';
-import { checkPermission } from '../../file';
 import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import { checkPermission } from '../../file';
 
 const ZOOM_DEFAULT = 1.0;
 const ZOOM_MAX = 10;
@@ -77,7 +80,7 @@ class TextBaseViewer extends BaseViewer {
         });
 
         this.scale = newScale;
-        this.zoomControls.setCurrentScale(newScale);
+        this.renderUI();
     }
 
     /**
@@ -141,6 +144,30 @@ class TextBaseViewer extends BaseViewer {
             ICON_FULLSCREEN_IN,
         );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    }
+
+    loadUIReact() {
+        this.controls = new ControlsRoot({ containerEl: this.containerEl });
+        this.renderUI();
+    }
+
+    renderUI() {
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
+
+        if (this.options.useReactControls) {
+            this.controls.render(
+                <TextControls
+                    maxScale={ZOOM_MAX}
+                    minScale={ZOOM_MIN}
+                    onFullscreenToggle={this.toggleFullscreen}
+                    onZoomIn={this.zoomIn}
+                    onZoomOut={this.zoomOut}
+                    scale={this.scale}
+                />,
+            );
+        }
     }
 
     /**

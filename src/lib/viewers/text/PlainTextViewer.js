@@ -1,4 +1,4 @@
-import './Text.scss';
+import './PlainText.scss';
 import TextBaseViewer from './TextBaseViewer';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
@@ -160,7 +160,12 @@ class PlainTextViewer extends TextBaseViewer {
             this.codeEl.textContent = content;
         }
 
-        this.loadUI();
+        if (this.options.useReactControls) {
+            this.loadUIReact();
+        } else {
+            this.loadUI();
+        }
+
         this.textEl.classList.remove(CLASS_HIDDEN);
 
         this.loaded = true;

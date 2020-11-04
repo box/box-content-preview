@@ -1,10 +1,14 @@
-/* eslint-disable no-unused-expressions */
+import React from 'react';
+import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
+import ControlsRoot from '../../controls/controls-root';
 import TextBaseViewer from '../TextBaseViewer';
+import TextControls from '../TextControls';
 import ZoomControls from '../../../ZoomControls';
-import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
+
+jest.mock('../../controls/controls-root');
 
 let containerEl;
 let textBase;
@@ -162,6 +166,25 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                 zoomInClassName: 'bp-text-zoom-in-icon',
                 zoomOutClassName: 'bp-text-zoom-out-icon',
             });
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        test('should create controls root and render the react controls', () => {
+            textBase.options.useReactControls = true;
+            textBase.loadUIReact();
+
+            expect(textBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(textBase.controls.render).toBeCalledWith(
+                <TextControls
+                    maxScale={10}
+                    minScale={0.1}
+                    onFullscreenToggle={textBase.toggleFullscreen}
+                    onZoomIn={textBase.zoomIn}
+                    onZoomOut={textBase.zoomOut}
+                    scale={1}
+                />,
+            );
         });
     });
 
