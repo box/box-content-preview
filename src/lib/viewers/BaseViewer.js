@@ -175,6 +175,7 @@ class BaseViewer extends EventEmitter {
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
         this.createViewer = this.createViewer.bind(this);
+        this.setCursorFtux = this.setCursorFtux.bind(this);
     }
 
     /**
@@ -1006,6 +1007,17 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Sets the cursor ftux key in localStorage
+     *
+     * @protected
+     * @param {string} key
+     * @return {void}
+     */
+    setCursorFtux(key) {
+        this.cache.set(key, true, true);
+    }
+
+    /**
      * Updates localStorage with the state of the ftux cursor toggle
      *
      * @protected
@@ -1013,19 +1025,15 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     applyCursorFtux(key) {
+        const keyToClassMap = {
+            [IMAGE_FTUX_CURSOR_SEEN_KEY]: CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
+            [DOCUMENT_FTUX_CURSOR_SEEN_KEY]: CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
+        };
+
         if (!this.cache.get(key)) {
-            this.cache.set(key, true, true);
+            this.setCursorFtux(key);
         } else if (this.cache.get(key) && this.containerEl) {
-            switch (key) {
-                case IMAGE_FTUX_CURSOR_SEEN_KEY:
-                    this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
-                    break;
-                case DOCUMENT_FTUX_CURSOR_SEEN_KEY:
-                    this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
-                    break;
-                default:
-                    break;
-            }
+            this.containerEl.classList.add(keyToClassMap[key]);
         }
     }
 
