@@ -1,14 +1,18 @@
-/* eslint-disable no-unused-expressions */
+import React from 'react';
+import * as util from '../../../util';
+import BaseViewer from '../../BaseViewer';
+import Browser from '../../../Browser';
+import ControlsRoot from '../../controls/controls-root';
+import ImageBaseViewer from '../ImageBaseViewer';
+import MultiImageControls from '../MultiImageControls';
 import MultiImageViewer from '../MultiImageViewer';
 import PageControls from '../../../PageControls';
+import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
 import { CLASS_MULTI_IMAGE_PAGE } from '../../../constants';
-import BaseViewer from '../../BaseViewer';
-import ImageBaseViewer from '../ImageBaseViewer';
-import Browser from '../../../Browser';
-import * as util from '../../../util';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
-import ZoomControls from '../../../ZoomControls';
+
+jest.mock('../../controls/controls-root');
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
 
@@ -374,6 +378,23 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.zoomControls instanceof ZoomControls).toBe(true);
             expect(stubs.bindPageControlListeners).toBeCalled();
             expect(ZoomControls.prototype.init).toBeCalled();
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        test('should create controls root and render the react controls', () => {
+            multiImage.options.useReactControls = true;
+            multiImage.loadUIReact();
+
+            expect(multiImage.controls).toBeInstanceOf(ControlsRoot);
+            expect(multiImage.controls.render).toBeCalledWith(
+                <MultiImageControls
+                    onFullscreenToggle={multiImage.toggleFullscreen}
+                    onZoomIn={multiImage.zoomIn}
+                    onZoomOut={multiImage.zoomOut}
+                    scale={1}
+                />,
+            );
         });
     });
 

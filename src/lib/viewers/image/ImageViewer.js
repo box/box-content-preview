@@ -1,6 +1,8 @@
-import ImageBaseViewer from './ImageBaseViewer';
+import React from 'react';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
+import ImageBaseViewer from './ImageBaseViewer';
+import ImageControls from './ImageControls';
 import { CLASS_INVISIBLE, DISCOVERABILITY_ATTRIBUTE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
@@ -338,9 +340,8 @@ class ImageViewer extends ImageBaseViewer {
             ? width / this.imageEl.getAttribute('originalWidth')
             : height / this.imageEl.getAttribute('originalHeight');
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.scale);
-        }
+        this.renderUI();
+
         this.emit('scale', {
             scale: this.scale,
             rotationAngle: this.rotationAngle,
@@ -375,6 +376,28 @@ class ImageViewer extends ImageBaseViewer {
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
             });
+        }
+    }
+
+    loadUIReact() {
+        super.loadUIReact();
+        this.renderUI();
+    }
+
+    renderUI() {
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
+
+        if (this.controls && this.options.useReactControls) {
+            this.controls.render(
+                <ImageControls
+                    onFullscreenToggle={this.toggleFullscreen}
+                    onZoomIn={this.zoomIn}
+                    onZoomOut={this.zoomOut}
+                    scale={this.scale}
+                />,
+            );
         }
     }
 

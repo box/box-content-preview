@@ -522,6 +522,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.loaded = false;
             stubs.zoom = jest.spyOn(imageBase, 'zoom');
             stubs.loadUI = jest.spyOn(imageBase, 'loadUI');
+            stubs.loadUIReact = jest.spyOn(imageBase, 'loadUIReact');
             stubs.setOriginalImageSize = jest.spyOn(imageBase, 'setOriginalImageSize');
             imageBase.options = {
                 file: {
@@ -543,20 +544,39 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.zoom).not.toBeCalled();
             expect(stubs.setOriginalImageSize).not.toBeCalled();
             expect(stubs.loadUI).not.toBeCalled();
+            expect(stubs.loadUIReact).not.toBeCalled();
         });
 
         test('should load UI if not destroyed', done => {
+            stubs.setOriginalImageSize.mockResolvedValue(undefined);
+
             imageBase.on(VIEWER_EVENT.load, () => {
                 expect(imageBase.loaded).toBe(true);
                 expect(stubs.zoom).toBeCalled();
                 expect(stubs.loadUI).toBeCalled();
+                expect(stubs.loadUIReact).not.toBeCalled();
                 done();
             });
-            stubs.setOriginalImageSize.mockResolvedValue(undefined);
-            imageBase.destroyed = false;
 
+            imageBase.destroyed = false;
             imageBase.finishLoading();
+
             expect(stubs.setOriginalImageSize).toBeCalled();
+        });
+
+        test('should load react UI if option is provided', done => {
+            stubs.setOriginalImageSize.mockResolvedValue(undefined);
+
+            imageBase.on(VIEWER_EVENT.load, () => {
+                expect(imageBase.loaded).toBe(true);
+                expect(stubs.zoom).toBeCalled();
+                expect(stubs.loadUI).not.toBeCalled();
+                expect(stubs.loadUIReact).toBeCalled();
+                done();
+            });
+            imageBase.destroyed = false;
+            imageBase.options.useReactControls = true;
+            imageBase.finishLoading('', true);
         });
     });
 

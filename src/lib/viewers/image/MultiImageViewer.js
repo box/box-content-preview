@@ -1,9 +1,10 @@
+import React from 'react';
 import ImageBaseViewer from './ImageBaseViewer';
+import MultiImageControls from './MultiImageControls';
 import PageControls from '../../PageControls';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { pageNumberFromScroll } from '../../util';
-
 import './MultiImage.scss';
 
 const PADDING_BUFFER = 100;
@@ -246,9 +247,7 @@ class MultiImageViewer extends ImageBaseViewer {
         // Grab the first page image dimensions
         const imageEl = this.singleImageEls[0];
         this.scale = width ? width / imageEl.naturalWidth : height / imageEl.naturalHeight;
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.scale);
-        }
+        this.renderUI();
         this.emit('scale', { scale: this.scale });
     }
 
@@ -263,6 +262,28 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.pageControls = new PageControls(this.controls, this.wrapperEl);
         this.bindPageControlListeners();
+    }
+
+    loadUIReact() {
+        super.loadUIReact();
+        this.renderUI();
+    }
+
+    renderUI() {
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.scale);
+        }
+
+        if (this.controls && this.options.useReactControls) {
+            this.controls.render(
+                <MultiImageControls
+                    onFullscreenToggle={this.toggleFullscreen}
+                    onZoomIn={this.zoomIn}
+                    onZoomOut={this.zoomOut}
+                    scale={this.scale}
+                />,
+            );
+        }
     }
 
     /**

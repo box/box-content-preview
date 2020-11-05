@@ -1,6 +1,7 @@
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
+import ControlsRoot from '../controls/controls-root';
 import PreviewError from '../../PreviewError';
 import ZoomControls from '../../ZoomControls';
 
@@ -78,7 +79,12 @@ class ImageBaseViewer extends BaseViewer {
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions.then(() => {
             this.zoom();
-            this.loadUI();
+
+            if (this.options.useReactControls) {
+                this.loadUIReact();
+            } else {
+                this.loadUI();
+            }
 
             this.imageEl.classList.remove(CLASS_INVISIBLE);
             this.loaded = true;
@@ -201,6 +207,10 @@ class ImageBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.zoomControls = new ZoomControls(this.controls);
         this.zoomControls.init(this.scale, { onZoomIn: this.zoomIn, onZoomOut: this.zoomOut });
+    }
+
+    loadUIReact() {
+        this.controls = new ControlsRoot({ containerEl: this.containerEl });
     }
 
     /**
