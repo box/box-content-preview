@@ -1826,7 +1826,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('handleFtuxCursorToggle()', () => {
+    describe('applyCursorFtux()', () => {
         beforeEach(() => {
             base.cache = {
                 get: jest.fn(),
@@ -1845,7 +1845,7 @@ describe('lib/viewers/BaseViewer', () => {
         test('should set the key in the cache with a value of true if the cache does not have the key yet', () => {
             base.cache.get = jest.fn().mockImplementation(() => false);
 
-            base.handleFtuxCursorToggle(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            base.applyCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
 
             expect(base.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
         });
@@ -1857,7 +1857,7 @@ describe('lib/viewers/BaseViewer', () => {
         `('$should add $expected class to the containerEl classlist when the key is $key', ({ expected, key }) => {
             base.cache.get = jest.fn().mockImplementation(() => true);
 
-            base.handleFtuxCursorToggle(key);
+            base.applyCursorFtux(key);
 
             expect(base.containerEl.classList.add).toBeCalledWith(expected);
         });

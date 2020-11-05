@@ -55,8 +55,8 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
-export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'bp-document-ftux-cursor-seen';
-export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-image-ftux-cursor-seen';
+export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'bp-ftux-cursor-seen-document';
+export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-ftux-cursor-seen-image';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -167,7 +167,7 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
-        this.handleFtuxCursorToggle = this.handleFtuxCursorToggle.bind(this);
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -1012,7 +1012,7 @@ class BaseViewer extends EventEmitter {
      * @param {string} key
      * @return {void}
      */
-    handleFtuxCursorToggle(key) {
+    applyCursorFtux(key) {
         if (!this.cache.get(key)) {
             this.cache.set(key, true, true);
         } else if (this.cache.get(key) && this.containerEl) {

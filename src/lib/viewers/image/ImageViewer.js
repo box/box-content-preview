@@ -540,7 +540,7 @@ class ImageViewer extends ImageBaseViewer {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
 
         if (nextMode === AnnotationMode.REGION) {
-            this.handleFtuxCursorToggle(IMAGE_FTUX_CURSOR_SEEN_KEY);
+            this.applyCursorFtux(IMAGE_FTUX_CURSOR_SEEN_KEY);
         }
 
         this.annotator.toggleAnnotationMode(nextMode);

@@ -2883,7 +2883,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     toggleAnnotationMode: jest.fn(),
                 };
                 docBase.processAnnotationModeChange = jest.fn();
-                docBase.handleFtuxCursorToggle = jest.fn();
+                docBase.applyCursorFtux = jest.fn();
             });
 
             test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -2905,10 +2905,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             });
 
-            test('should call handleFtuxCursorToggle if nextMode is AnnotationMode.REGION', () => {
+            test('should call applyCursorFtux if nextMode is AnnotationMode.REGION', () => {
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-                expect(docBase.handleFtuxCursorToggle).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+                expect(docBase.applyCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
             });
         });
 

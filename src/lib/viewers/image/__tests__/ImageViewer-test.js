@@ -666,7 +666,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 toggleAnnotationMode: jest.fn(),
             };
             image.processAnnotationModeChange = jest.fn();
-            image.handleFtuxCursorToggle = jest.fn();
+            image.applyCursorFtux = jest.fn();
         });
 
         test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -681,10 +681,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
 
-        test('should call handleFtuxCursorToggle with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION', () => {
+        test('should call applyCursorFtux with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION', () => {
             image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(image.handleFtuxCursorToggle).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY);
+            expect(image.applyCursorFtux).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY);
         });
     });
 
