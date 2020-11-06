@@ -919,8 +919,8 @@ class BaseViewer extends EventEmitter {
         if (this.annotator && this.annotationControls && this.areNewAnnotationsEnabled()) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
             this.annotationControls.toggle(false);
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
         }
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
     }
 
     enableAnnotationControls() {
