@@ -424,6 +424,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
                     onFullscreenToggle={image.toggleFullscreen}
+                    onRotateLeft={image.rotateLeft}
                     onZoomIn={image.zoomIn}
                     onZoomOut={image.zoomOut}
                     scale={1}
