@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import React from 'react';
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
+import ControlsRoot from '../../controls/controls-root';
 import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
+import DocControls from '../DocControls';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
@@ -37,6 +40,8 @@ import {
 } from '../../../icons/icons';
 import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
+
+jest.mock('../../controls/controls-root');
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1683,6 +1688,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('loadUIReact()', () => {
+            test('should create controls root and render the react controls', () => {
+                docBase.pdfViewer = {
+                    currentScale: 1,
+                };
+                docBase.options.useReactControls = true;
+                docBase.loadUIReact();
+
+                expect(docBase.controls).toBeInstanceOf(ControlsRoot);
+                expect(docBase.controls.render).toBeCalledWith(
+                    <DocControls
+                        maxScale={10}
+                        minScale={0.1}
+                        onFindBarToggle={docBase.toggleFindBar}
+                        onFullscreenToggle={docBase.toggleFullscreen}
+                        onThumbnailsToggle={docBase.toggleThumbnails}
+                        onZoomIn={docBase.zoomIn}
+                        onZoomOut={docBase.zoomOut}
+                        scale={1}
+                    />,
+                );
+            });
+        });
+
         describe('bindDOMListeners()', () => {
             beforeEach(() => {
                 stubs.addEventListener = jest.spyOn(docBase.docEl, 'addEventListener').mockImplementation();
@@ -1768,6 +1797,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('pagesinitHandler()', () => {
             beforeEach(() => {
                 stubs.loadUI = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                stubs.loadUIReact = jest.spyOn(docBase, 'loadUIReact').mockImplementation();
                 stubs.setPage = jest.spyOn(docBase, 'setPage').mockImplementation();
                 stubs.getCachedPage = jest.spyOn(docBase, 'getCachedPage').mockImplementation();
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
@@ -1780,10 +1810,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 docBase.pagesinitHandler();
-                expect(stubs.loadUI).toBeCalled();
-                expect(stubs.setPage).toBeCalled();
                 expect(docBase.docEl).toHaveClass('bp-is-scrollable');
+                expect(stubs.loadUI).toBeCalled();
+                expect(stubs.loadUIReact).not.toBeCalled();
+                expect(stubs.setPage).toBeCalled();
                 expect(stubs.setupPages).toBeCalled();
+            });
+
+            test('should load the React UI if the option is enabled', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.options.useReactControls = true;
+                docBase.pagesinitHandler();
+
+                expect(stubs.loadUI).not.toBeCalled();
+                expect(stubs.loadUIReact).toBeCalled();
             });
 
             test("should broadcast that the preview is loaded if it hasn't already", () => {

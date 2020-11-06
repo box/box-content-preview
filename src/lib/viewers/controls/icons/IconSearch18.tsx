@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function IconSearch(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+function IconSearch18(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg focusable="false" height={18} viewBox="0 0 15 14" width={18} {...props}>
             <g fill="none" fillRule="evenodd">
@@ -15,4 +15,4 @@ function IconSearch(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     );
 }
 
-export default IconSearch;
+export default IconSearch18;

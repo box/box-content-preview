@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function IconThumbnailsToggle(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+function IconThumbnailsToggle18(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg focusable="false" height={18} viewBox="0 0 18 18" width={18} {...props}>
             <path
@@ -12,4 +12,4 @@ function IconThumbnailsToggle(props: React.SVGProps<SVGSVGElement>): JSX.Element
     );
 }
 
-export default IconThumbnailsToggle;
+export default IconThumbnailsToggle18;

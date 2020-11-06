@@ -1,15 +1,18 @@
+import React from 'react';
 import throttle from 'lodash/throttle';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
-import PageControls from '../../PageControls';
-import ZoomControls from '../../ZoomControls';
+import ControlsRoot from '../controls/controls-root';
+import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
+import PageControls from '../../PageControls';
 import Popup from '../../Popup';
-import RepStatus from '../../RepStatus';
 import PreviewError from '../../PreviewError';
+import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import ZoomControls from '../../ZoomControls';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
@@ -119,6 +122,7 @@ class DocBaseViewer extends BaseViewer {
         this.print = this.print.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
+        this.toggleFindBar = this.toggleFindBar.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
@@ -1045,6 +1049,32 @@ class DocBaseViewer extends BaseViewer {
         this.bindControlListeners();
     }
 
+    loadUIReact() {
+        this.controls = new ControlsRoot({ containerEl: this.containerEl });
+        this.renderUI();
+    }
+
+    renderUI() {
+        if (this.zoomControls) {
+            this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
+        }
+
+        if (this.controls && this.options.useReactControls) {
+            this.controls.render(
+                <DocControls
+                    maxScale={MAX_SCALE}
+                    minScale={MIN_SCALE}
+                    onFindBarToggle={this.toggleFindBar}
+                    onFullscreenToggle={this.toggleFullscreen}
+                    onThumbnailsToggle={this.toggleThumbnails}
+                    onZoomIn={this.zoomIn}
+                    onZoomOut={this.zoomOut}
+                    scale={this.pdfViewer.currentScale}
+                />,
+            );
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Event Listeners
     //--------------------------------------------------------------------------
@@ -1101,7 +1131,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (!this.isFindDisabled()) {
-            this.controls.add(__('toggle_findbar'), () => this.findBar.toggle(), 'bp-toggle-findbar-icon', ICON_SEARCH);
+            this.controls.add(__('toggle_findbar'), this.toggleFindBar, 'bp-toggle-findbar-icon', ICON_SEARCH);
         }
 
         this.zoomControls.init(this.pdfViewer.currentScale, {
@@ -1144,7 +1174,11 @@ class DocBaseViewer extends BaseViewer {
     pagesinitHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
 
-        this.loadUI();
+        if (this.options.useReactControls) {
+            this.loadUIReact();
+        } else {
+            this.loadUI();
+        }
 
         const { pagesCount, currentScale } = this.pdfViewer;
 
@@ -1207,7 +1241,7 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
+        this.renderUI();
 
         // Page rendered event
         this.emit('pagerender', pageNumber);
@@ -1450,6 +1484,10 @@ class DocBaseViewer extends BaseViewer {
         this.originalDistance = 0;
         this.pinchScale = 1;
         this.pinchPage = null;
+    }
+
+    toggleFindBar() {
+        this.findBar.toggle();
     }
 
     /**
