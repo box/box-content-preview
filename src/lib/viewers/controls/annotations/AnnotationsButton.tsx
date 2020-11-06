@@ -2,7 +2,7 @@ import React, { ButtonHTMLAttributes } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 import { AnnotationMode } from './types';
-import './AnnotationsControls.scss';
+import './AnnotationsButton.scss';
 
 export type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
     children?: React.ReactNode;
@@ -30,7 +30,7 @@ export default function AnnotationsButton({
 
     return (
         <button
-            className={classNames('bp-AnnotationsControls-button', className, {
+            className={classNames('bp-AnnotationsButton', className, {
                 'bp-is-active': isActive,
             })}
             data-resin-fileid={fileId}
