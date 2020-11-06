@@ -32,12 +32,13 @@ describe('ZoomControls', () => {
 
     describe('render', () => {
         test.each`
-            minScale | scale  | disabled
-            ${null}  | ${1}   | ${false}
-            ${0.5}   | ${1}   | ${false}
-            ${0.5}   | ${0.5} | ${true}
-            ${-50}   | ${0.1} | ${true}
-            ${-50}   | ${0.2} | ${false}
+            minScale | scale     | disabled
+            ${null}  | ${1}      | ${false}
+            ${0.5}   | ${1}      | ${false}
+            ${0.5}   | ${0.5005} | ${true}
+            ${0.5}   | ${0.5}    | ${true}
+            ${-50}   | ${0.1}    | ${true}
+            ${-50}   | ${0.2}    | ${false}
         `('should set disabled for zoom out to $disabled for $scale / $minScale', ({ disabled, minScale, scale }) => {
             const wrapper = getWrapper({ minScale, scale });
 
@@ -45,13 +46,13 @@ describe('ZoomControls', () => {
         });
 
         test.each`
-            maxScale | scale  | disabled
-            ${null}  | ${1}   | ${false}
-            ${10}    | ${1}   | ${false}
-            ${50}    | ${10}  | ${false}
-            ${50}    | ${50}  | ${true}
-            ${500}   | ${100} | ${true}
-            ${500}   | ${99}  | ${false}
+            maxScale | scale      | disabled
+            ${null}  | ${1}       | ${false}
+            ${10}    | ${1}       | ${false}
+            ${50}    | ${49.9999} | ${true}
+            ${50}    | ${50}      | ${true}
+            ${500}   | ${100}     | ${true}
+            ${500}   | ${99}      | ${false}
         `('should set disabled for zoom in to $disabled for $scale / $maxScale', ({ disabled, maxScale, scale }) => {
             const wrapper = getWrapper({ maxScale, scale });
 

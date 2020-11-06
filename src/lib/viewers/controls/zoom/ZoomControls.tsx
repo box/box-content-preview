@@ -22,7 +22,7 @@ export default function ZoomControls({
     onZoomOut,
     scale = 1,
 }: Props): JSX.Element {
-    const currentZoom = Math.round(scale * 100);
+    const currentScale = Math.round((scale + Number.EPSILON) * 100) / 100;
     const maxScaleValue = isFinite(maxScale) ? Math.min(maxScale, MAX_SCALE) : MAX_SCALE;
     const minScaleValue = isFinite(minScale) ? Math.max(minScale, MIN_SCALE) : MIN_SCALE;
 
@@ -31,7 +31,7 @@ export default function ZoomControls({
             <button
                 className="bp-ZoomControls-button"
                 data-testid="bp-ZoomControls-out"
-                disabled={scale <= minScaleValue}
+                disabled={currentScale <= minScaleValue}
                 onClick={onZoomOut}
                 title={__('zoom_out')}
                 type="button"
@@ -42,11 +42,11 @@ export default function ZoomControls({
                 className="bp-ZoomControls-current"
                 data-testid="current-zoom"
                 title={__('zoom_current_scale')}
-            >{`${currentZoom}%`}</div>
+            >{`${Math.round(currentScale * 100)}%`}</div>
             <button
                 className="bp-ZoomControls-button"
                 data-testid="bp-ZoomControls-in"
-                disabled={scale >= maxScaleValue}
+                disabled={currentScale >= maxScaleValue}
                 onClick={onZoomIn}
                 title={__('zoom_in')}
                 type="button"
