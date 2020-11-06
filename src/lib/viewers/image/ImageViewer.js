@@ -393,6 +393,7 @@ class ImageViewer extends ImageBaseViewer {
             this.controls.render(
                 <ImageControls
                     onFullscreenToggle={this.toggleFullscreen}
+                    onRotateLeft={this.rotateLeft}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
                     scale={this.scale}
