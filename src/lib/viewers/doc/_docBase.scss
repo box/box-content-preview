@@ -370,8 +370,7 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
-    &.bp-annotations-ftux-document-cursor-seen,
-    &.bp-annotations-ftux-image-cursor-seen {
+    &.bp-annotations-ftux-document-cursor-seen {
         .ba-PopupCursor {
             display: none;
         }
