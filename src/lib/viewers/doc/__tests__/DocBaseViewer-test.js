@@ -1977,7 +1977,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, true);
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
-                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
                 expect(docBase.enableAnnotationControls).toBeCalled();
             });
         });

@@ -1283,7 +1283,6 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
         }
     }
 

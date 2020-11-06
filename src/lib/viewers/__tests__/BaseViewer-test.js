@@ -527,6 +527,7 @@ describe('lib/viewers/BaseViewer', () => {
         test('should hide annotations and toggle annotations mode', () => {
             jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'disableAnnotationControls');
+            jest.spyOn(base, 'processAnnotationModeChange');
 
             base.annotator = {
                 emit: jest.fn(),
@@ -535,6 +536,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 destroy: jest.fn(),
                 resetControls: jest.fn(),
+                setMode: jest.fn(),
                 toggle: jest.fn(),
             };
 
@@ -543,6 +545,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setVisibility, false);
             expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             expect(base.disableAnnotationControls).toBeCalled();
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
     });
 
@@ -1042,6 +1045,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('disableAnnotationControls()', () => {
         test('should hide annotations and toggle annotations mode', () => {
             jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'processAnnotationModeChange');
 
             base.annotator = {
                 toggleAnnotationMode: jest.fn(),
@@ -1049,13 +1053,14 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotationControls = {
                 destroy: jest.fn(),
                 resetControls: jest.fn(),
+                setMode: jest.fn(),
                 toggle: jest.fn(),
             };
 
             base.disableAnnotationControls();
 
-            expect(base.annotationControls.resetControls).toBeCalled();
             expect(base.annotationControls.toggle).toBeCalledWith(false);
+            expect(base.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
     });
 
