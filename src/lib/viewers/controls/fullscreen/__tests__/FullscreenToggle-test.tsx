@@ -1,29 +1,35 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { act } from 'react-dom/test-utils';
+import { mount, ReactWrapper } from 'enzyme';
 import fullscreen from '../../../../Fullscreen';
 import FullscreenToggle from '../FullscreenToggle';
 import IconFullscreenIn24 from '../../icons/IconFullscreenIn24';
 import IconFullscreenOut24 from '../../icons/IconFullscreenOut24';
 
 describe('FullscreenToggle', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
-
-    beforeEach(() => {
-        jest.spyOn(React, 'useEffect').mockImplementation(fn => fn());
-    });
+    const getButton = (wrapper: ReactWrapper): ReactWrapper => wrapper.childAt(0);
+    const getWrapper = (props = {}): ReactWrapper =>
+        mount(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
 
     describe('event handlers', () => {
         test('should respond to fullscreen events', () => {
             const wrapper = getWrapper();
 
-            fullscreen.enter();
-            expect(wrapper.exists(IconFullscreenOut24)).toBe(true);
-            expect(wrapper.prop('title')).toBe(__('exit_fullscreen'));
+            act(() => {
+                fullscreen.enter();
+            });
+            wrapper.update();
 
-            fullscreen.exit();
-            expect(wrapper.exists(IconFullscreenIn24)).toBe(true);
-            expect(wrapper.prop('title')).toBe(__('enter_fullscreen'));
+            expect(getButton(wrapper).exists(IconFullscreenOut24)).toBe(true);
+            expect(getButton(wrapper).prop('title')).toBe(__('exit_fullscreen'));
+
+            act(() => {
+                fullscreen.exit();
+            });
+            wrapper.update();
+
+            expect(getButton(wrapper).exists(IconFullscreenIn24)).toBe(true);
+            expect(getButton(wrapper).prop('title')).toBe(__('enter_fullscreen'));
         });
 
         test('should invoke onFullscreenToggle prop on click', () => {
@@ -38,8 +44,9 @@ describe('FullscreenToggle', () => {
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
+            const button = getButton(wrapper);
 
-            expect(wrapper.hasClass('bp-FullscreenToggle')).toBe(true);
+            expect(button.hasClass('bp-FullscreenToggle')).toBe(true);
         });
     });
 });

@@ -381,6 +381,8 @@ class ImageViewer extends ImageBaseViewer {
 
     loadUIReact() {
         super.loadUIReact();
+
+        this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
 
@@ -390,8 +392,18 @@ class ImageViewer extends ImageBaseViewer {
         }
 
         if (this.controls && this.options.useReactControls) {
+            const canAnnotate =
+                this.areNewAnnotationsEnabled() &&
+                this.hasAnnotationCreatePermission() &&
+                this.currentRotationAngle === 0;
+
             this.controls.render(
                 <ImageControls
+                    annotationMode={this.annotationControlsFSM.getMode()}
+                    fileId={this.options.file.id}
+                    hasHighlight={false}
+                    hasRegion={canAnnotate}
+                    onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onFullscreenToggle={this.toggleFullscreen}
                     onRotateLeft={this.rotateLeft}
                     onZoomIn={this.zoomIn}

@@ -1051,6 +1051,7 @@ class DocBaseViewer extends BaseViewer {
 
     loadUIReact() {
         this.controls = new ControlsRoot({ containerEl: this.containerEl });
+        this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
 
@@ -1060,10 +1061,19 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (this.controls && this.options.useReactControls) {
+            const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
+            const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+            const canHighlight = this.options.showAnnotationsHighlightText && canAnnotate && canDownload;
+
             this.controls.render(
                 <DocControls
+                    annotationMode={this.annotationControlsFSM.getMode()}
+                    fileId={this.options.file.id}
+                    hasHighlight={canHighlight}
+                    hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
+                    onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
                     onThumbnailsToggle={this.toggleThumbnails}

@@ -423,6 +423,11 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls).toBeInstanceOf(ControlsRoot);
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
+                    annotationMode="none"
+                    fileId="1"
+                    hasHighlight={false}
+                    hasRegion={false}
+                    onAnnotationModeClick={image.handleAnnotationControlsClick}
                     onFullscreenToggle={image.toggleFullscreen}
                     onRotateLeft={image.rotateLeft}
                     onZoomIn={image.zoomIn}

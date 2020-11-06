@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function IconRegion(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+function IconRegion24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg focusable="false" height={24} viewBox="0 0 18 18" width={24} {...props}>
             <path
@@ -11,4 +11,4 @@ function IconRegion(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     );
 }
 
-export default IconRegion;
+export default IconRegion24;

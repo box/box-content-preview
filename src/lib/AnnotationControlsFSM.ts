@@ -49,6 +49,8 @@ export default class AnnotationControlsFSM {
         this.currentState = initialState;
     }
 
+    public getMode = (): AnnotationMode => stateModeMap[this.currentState];
+
     public getState = (): AnnotationState => this.currentState;
 
     public subscribe = (callback: Subscription): void => {
