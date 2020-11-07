@@ -9,7 +9,6 @@ export type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
     className?: string;
     isActive?: boolean;
     isEnabled?: boolean;
-    fileId: string;
     onClick?: (mode: AnnotationMode) => void;
     mode: AnnotationMode;
 };
@@ -19,7 +18,6 @@ export default function AnnotationsButton({
     className,
     isEnabled = true,
     isActive = false,
-    fileId,
     onClick = noop,
     mode,
     ...rest
@@ -33,7 +31,6 @@ export default function AnnotationsButton({
             className={classNames('bp-AnnotationsButton', className, {
                 'bp-is-active': isActive,
             })}
-            data-resin-fileid={fileId}
             onClick={(): void => onClick(mode)}
             type="button"
             {...rest}

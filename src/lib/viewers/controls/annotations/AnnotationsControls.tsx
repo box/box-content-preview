@@ -9,7 +9,6 @@ import './AnnotationsControls.scss';
 
 export type Props = {
     annotationMode?: AnnotationMode;
-    fileId: string;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     hasHighlight?: boolean;
     hasRegion?: boolean;
@@ -17,7 +16,6 @@ export type Props = {
 
 export default function AnnotationsControls({
     annotationMode = AnnotationMode.NONE,
-    fileId,
     onAnnotationModeClick = noop,
     hasHighlight = true,
     hasRegion = true,
@@ -39,7 +37,6 @@ export default function AnnotationsControls({
             <AnnotationsButton
                 data-resin-target="highlightRegion"
                 data-testid="bp-AnnotationsControls-regionBtn"
-                fileId={fileId}
                 isActive={annotationMode === AnnotationMode.REGION}
                 isEnabled={showRegion}
                 mode={AnnotationMode.REGION}
@@ -51,7 +48,6 @@ export default function AnnotationsControls({
             <AnnotationsButton
                 data-resin-target="highlightText"
                 data-testid="bp-AnnotationsControls-highlightBtn"
-                fileId={fileId}
                 isActive={annotationMode === AnnotationMode.HIGHLIGHT}
                 isEnabled={showHighlight}
                 mode={AnnotationMode.HIGHLIGHT}

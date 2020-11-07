@@ -1,21 +1,18 @@
 import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import ControlsRoot from '../ControlsRoot';
 
 describe('ControlsRoot', () => {
     const getInstance = (options = {}): ControlsRoot =>
-        new ControlsRoot({ containerEl: document.createElement('div'), ...options });
+        new ControlsRoot({ containerEl: document.createElement('div'), fileId: '1', ...options });
 
     describe('constructor', () => {
         test('should inject a controls root element into the container', () => {
             const instance = getInstance();
 
-            expect(instance.containerEl.firstChild).toMatchInlineSnapshot(`
-                <div
-                  class="bp-ControlsRoot"
-                  data-resin-component="toolbar"
-                  data-testid="bp-controls"
-                />
-            `);
+            expect(instance.controlsEl).toHaveClass('bp-ControlsRoot');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-component', 'toolbar');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileid', '1');
         });
 
         test('should attach event handlers to the container element', () => {
@@ -106,17 +103,8 @@ describe('ControlsRoot', () => {
 
             instance.render(controls);
 
-            expect(instance.controlsEl.firstChild).toMatchInlineSnapshot(`
-                <div
-                  class="bp-ControlsLayer "
-                >
-                  <div
-                    class="TestControls"
-                  >
-                    Controls
-                  </div>
-                </div>
-            `);
+            expect(instance.controlsEl.firstChild).toHaveClass('bp-ControlsLayer');
+            expect(instance.controlsEl.firstChild).toContainHTML(ReactDOMServer.renderToStaticMarkup(controls));
         });
     });
 });

@@ -1700,7 +1700,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
                         annotationMode="none"
-                        fileId="0"
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}

@@ -1050,7 +1050,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     loadUIReact() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl });
+        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
@@ -1068,7 +1068,6 @@ class DocBaseViewer extends BaseViewer {
             this.controls.render(
                 <DocControls
                     annotationMode={this.annotationControlsFSM.getMode()}
-                    fileId={this.options.file.id}
                     hasHighlight={canHighlight}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
