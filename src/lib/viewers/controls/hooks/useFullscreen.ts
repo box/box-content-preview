@@ -2,7 +2,7 @@ import * as React from 'react';
 import fullscreen from '../../../Fullscreen';
 
 export default function useFullscreen(): boolean {
-    const [isFullscreen, setFullscreen] = React.useState(false);
+    const [isFullscreen, setFullscreen] = React.useState(fullscreen.isFullscreen());
 
     React.useEffect(() => {
         const handleFullscreenEnter = (): void => setFullscreen(true);
