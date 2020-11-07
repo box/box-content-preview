@@ -1830,7 +1830,6 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             base.cache = {
                 get: jest.fn(),
-                set: jest.fn(),
             };
             base.containerEl = {
                 addEventListener: jest.fn(),
@@ -1840,16 +1839,6 @@ describe('lib/viewers/BaseViewer', () => {
                     remove: jest.fn(),
                 },
             };
-        });
-
-        test('should set the key in the cache with a value of true if the cache does not have the key yet', () => {
-            base.cache.get = jest.fn().mockImplementation(() => false);
-            base.setCursorFtux = jest.fn();
-
-            base.applyCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
-
-            expect(base.setCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
-            expect(base.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
         });
 
         test.only.each`

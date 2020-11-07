@@ -1635,7 +1635,13 @@ class DocBaseViewer extends BaseViewer {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
 
         if (nextMode === AnnotationMode.REGION) {
-            this.applyCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            const isDocumentFtuxCursorSeen = this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+
+            if (isDocumentFtuxCursorSeen) {
+                this.applyCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            } else {
+                this.setCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            }
         }
 
         this.annotator.toggleAnnotationMode(

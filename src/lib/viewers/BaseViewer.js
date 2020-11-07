@@ -1030,9 +1030,7 @@ class BaseViewer extends EventEmitter {
             [DOCUMENT_FTUX_CURSOR_SEEN_KEY]: CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
         };
 
-        if (!this.cache.get(key)) {
-            this.setCursorFtux(key);
-        } else if (this.cache.get(key) && this.containerEl) {
+        if (this.containerEl) {
             this.containerEl.classList.add(keyToClassMap[key]);
         }
     }

@@ -2884,6 +2884,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.processAnnotationModeChange = jest.fn();
                 docBase.applyCursorFtux = jest.fn();
+                docBase.setCursorFtux = jest.fn();
+                docBase.cache = {
+                    get: jest.fn(),
+                };
             });
 
             test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -2905,10 +2909,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             });
 
-            test('should call applyCursorFtux if nextMode is AnnotationMode.REGION', () => {
+            test('should call applyCursorFtux if nextMode is AnnotationMode.REGION and the cache already has DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => true);
+
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
                 expect(docBase.applyCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+            });
+
+            test('should call setCursorFtux if nextMode is AnnotationMode.REGION and the cache does not have DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => false);
+
+                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
+
+                expect(docBase.setCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
             });
         });
 
