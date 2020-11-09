@@ -1,7 +1,7 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
 import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
-import BaseViewer, { DOCUMENT_FTUX_CURSOR_SEEN_KEY } from '../BaseViewer';
+import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
 import ControlsRoot from '../controls/controls-root';
@@ -16,6 +16,7 @@ import ZoomControls from '../../ZoomControls';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
@@ -26,6 +27,7 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOC_STATIC_ASSETS_VERSION,
+    DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
@@ -1638,9 +1640,9 @@ class DocBaseViewer extends BaseViewer {
             const isDocumentFtuxCursorSeen = this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
 
             if (isDocumentFtuxCursorSeen) {
-                this.applyCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+                this.applyCursorFtux();
             } else {
-                this.setCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+                this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
             }
         }
 
@@ -1687,6 +1689,18 @@ class DocBaseViewer extends BaseViewer {
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
         this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+    }
+
+    /**
+     * Hides the create region cursor popup for a document
+     *
+     * @protected
+     * @return {void}
+     */
+    applyCursorFtux() {
+        if (this.containerEl) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+        }
     }
 }
 

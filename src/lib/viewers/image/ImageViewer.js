@@ -3,9 +3,13 @@ import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
-import { CLASS_INVISIBLE, DISCOVERABILITY_ATTRIBUTE } from '../../constants';
+import {
+    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
+    CLASS_INVISIBLE,
+    DISCOVERABILITY_ATTRIBUTE,
+    IMAGE_FTUX_CURSOR_SEEN_KEY,
+} from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
-import { IMAGE_FTUX_CURSOR_SEEN_KEY } from '../BaseViewer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -543,9 +547,9 @@ class ImageViewer extends ImageBaseViewer {
             const isImageFtuxCursorSeen = this.cache.get(IMAGE_FTUX_CURSOR_SEEN_KEY);
 
             if (isImageFtuxCursorSeen) {
-                this.applyCursorFtux(IMAGE_FTUX_CURSOR_SEEN_KEY);
+                this.applyCursorFtux();
             } else {
-                this.setCursorFtux(IMAGE_FTUX_CURSOR_SEEN_KEY);
+                this.cache.set(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
             }
         }
 
@@ -580,6 +584,18 @@ class ImageViewer extends ImageBaseViewer {
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
         this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+    }
+
+    /**
+     * Hides the create region cursor popup for an image
+     *
+     * @protected
+     * @return {void}
+     */
+    applyCursorFtux() {
+        if (this.containerEl) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+        }
     }
 }
 

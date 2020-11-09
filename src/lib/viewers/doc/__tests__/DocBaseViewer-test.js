@@ -8,7 +8,7 @@ import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
 import DocControls from '../DocControls';
 import DocFindBar from '../DocFindBar';
 import Browser from '../../../Browser';
-import BaseViewer, { DOCUMENT_FTUX_CURSOR_SEEN_KEY } from '../../BaseViewer';
+import BaseViewer from '../../BaseViewer';
 import Controls from '../../../Controls';
 import PageControls from '../../../PageControls';
 import ZoomControls from '../../../ZoomControls';
@@ -20,6 +20,7 @@ import * as util from '../../../util';
 import {
     ANNOTATOR_EVENT,
     CLASS_HIDDEN,
+    DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
     STATUS_PENDING,
@@ -27,6 +28,7 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_CONTENT,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
@@ -2884,9 +2886,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.processAnnotationModeChange = jest.fn();
                 docBase.applyCursorFtux = jest.fn();
-                docBase.setCursorFtux = jest.fn();
                 docBase.cache = {
                     get: jest.fn(),
+                    set: jest.fn(),
                 };
             });
 
@@ -2914,15 +2916,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-                expect(docBase.applyCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+                expect(docBase.applyCursorFtux).toBeCalled();
             });
 
-            test('should call setCursorFtux if nextMode is AnnotationMode.REGION and the cache does not have DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+            test('should call this.cache.set if nextMode is AnnotationMode.REGION and the cache does not have DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
                 docBase.cache.get = jest.fn().mockImplementation(() => false);
 
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-                expect(docBase.setCursorFtux).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
+                expect(docBase.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
             });
         });
 
@@ -2984,6 +2986,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
                 },
             );
+        });
+
+        describe('applyCursorFtux()', () => {
+            test('should add CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN to the container classList', () => {
+                docBase.containerEl = {
+                    classList: {
+                        add: jest.fn(),
+                        remove: jest.fn(),
+                    },
+                    removeEventListener: jest.fn(),
+                };
+
+                docBase.applyCursorFtux();
+
+                expect(docBase.containerEl.classList.add).toBeCalledWith(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+            });
         });
     });
 });

@@ -2,11 +2,11 @@ import React from 'react';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
 import BaseViewer from '../../BaseViewer';
-import ImageViewer from '../ImageViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageControls from '../ImageControls';
 import ImageViewer from '../ImageViewer';
+import { CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN, IMAGE_FTUX_CURSOR_SEEN_KEY } from '../../../constants';
 
 jest.mock('../../controls/controls-root');
 
@@ -667,9 +667,9 @@ describe('lib/viewers/image/ImageViewer', () => {
             };
             image.processAnnotationModeChange = jest.fn();
             image.applyCursorFtux = jest.fn();
-            image.setCursorFtux = jest.fn();
             image.cache = {
                 get: jest.fn(),
+                set: jest.fn(),
             };
         });
 
@@ -685,20 +685,20 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
         });
 
-        test('should call applyCursorFtux with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION and the cache contains IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
+        test('should call applyCursorFtux if nextMode is REGION and the cache contains IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
             image.cache.get = jest.fn().mockImplementation(() => true);
 
             image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(image.applyCursorFtux).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY);
+            expect(image.applyCursorFtux).toBeCalled();
         });
 
-        test('should call applyCursorFtux with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION and the cache does not contain IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
+        test('should call this.cache.set with IMAGE_FTUX_CURSOR_SEEN_KEY if nextMode is REGION and the cache does not contain IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
             image.cache.get = jest.fn().mockImplementation(() => false);
 
             image.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
 
-            expect(image.setCursorFtux).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY);
+            expect(image.cache.set).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
         });
     });
 
@@ -859,6 +859,22 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.handleAnnotationCreateEvent(event);
 
             expect(image.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+        });
+    });
+
+    describe('applyCursorFtux()', () => {
+        test('should add CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN to the container classList', () => {
+            image.containerEl = {
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+                removeEventListener: jest.fn(),
+            };
+
+            image.applyCursorFtux();
+
+            expect(image.containerEl.classList.add).toBeCalledWith(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
         });
     });
 });

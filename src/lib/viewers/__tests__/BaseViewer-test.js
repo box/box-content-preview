@@ -4,7 +4,7 @@ import * as constants from '../../constants';
 import * as icons from '../../icons/icons';
 import * as util from '../../util';
 import Api from '../../api';
-import BaseViewer, { DOCUMENT_FTUX_CURSOR_SEEN_KEY, IMAGE_FTUX_CURSOR_SEEN_KEY } from '../BaseViewer';
+import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import fullscreen from '../../Fullscreen';
 import intl from '../../i18n';
@@ -18,11 +18,7 @@ import { EXCLUDED_EXTENSIONS } from '../../extensions';
 let base;
 let containerEl;
 let stubs = {};
-const {
-    ANNOTATOR_EVENT,
-    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
-    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
-} = constants;
+const { ANNOTATOR_EVENT } = constants;
 
 describe('lib/viewers/BaseViewer', () => {
     beforeEach(() => {
@@ -1823,46 +1819,6 @@ describe('lib/viewers/BaseViewer', () => {
     describe('getInitialAnnotationMode()', () => {
         test('should return none as initial mode', () => {
             expect(base.getInitialAnnotationMode()).toBe(AnnotationMode.NONE);
-        });
-    });
-
-    describe('applyCursorFtux()', () => {
-        beforeEach(() => {
-            base.cache = {
-                get: jest.fn(),
-            };
-            base.containerEl = {
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                classList: {
-                    add: jest.fn(),
-                    remove: jest.fn(),
-                },
-            };
-        });
-
-        test.only.each`
-            key                              | expected
-            ${IMAGE_FTUX_CURSOR_SEEN_KEY}    | ${CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN}
-            ${DOCUMENT_FTUX_CURSOR_SEEN_KEY} | ${CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN}
-        `('$should add $expected class to the containerEl classlist when the key is $key', ({ expected, key }) => {
-            base.cache.get = jest.fn().mockImplementation(() => true);
-
-            base.applyCursorFtux(key);
-
-            expect(base.containerEl.classList.add).toBeCalledWith(expected);
-        });
-    });
-
-    describe('setCursorFtux()', () => {
-        test('should call this.cache.set with key and true and true', () => {
-            base.cache = {
-                set: jest.fn(),
-            };
-
-            base.setCursorFtux(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
-
-            expect(base.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
         });
     });
 });

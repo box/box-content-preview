@@ -22,8 +22,6 @@ import {
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
-    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
-    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_MOBILE,
     CLASS_HIDDEN,
     FILE_OPTION_START,
@@ -54,9 +52,6 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.HIGHLIGHT]: CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
-
-export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'bp-ftux-cursor-seen-document';
-export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'bp-ftux-cursor-seen-image';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -167,7 +162,6 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
-        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.handleFullscreenEnter = this.handleFullscreenEnter.bind(this);
         this.handleFullscreenExit = this.handleFullscreenExit.bind(this);
         this.createAnnotator = this.createAnnotator.bind(this);
@@ -175,7 +169,6 @@ class BaseViewer extends EventEmitter {
         this.initAnnotations = this.initAnnotations.bind(this);
         this.loadBoxAnnotations = this.loadBoxAnnotations.bind(this);
         this.createViewer = this.createViewer.bind(this);
-        this.setCursorFtux = this.setCursorFtux.bind(this);
     }
 
     /**
@@ -1004,35 +997,6 @@ class BaseViewer extends EventEmitter {
 
     getInitialAnnotationMode() {
         return AnnotationMode.NONE;
-    }
-
-    /**
-     * Sets the cursor ftux key in localStorage
-     *
-     * @protected
-     * @param {string} key
-     * @return {void}
-     */
-    setCursorFtux(key) {
-        this.cache.set(key, true, true);
-    }
-
-    /**
-     * Updates localStorage with the state of the ftux cursor toggle
-     *
-     * @protected
-     * @param {string} key
-     * @return {void}
-     */
-    applyCursorFtux(key) {
-        const keyToClassMap = {
-            [IMAGE_FTUX_CURSOR_SEEN_KEY]: CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
-            [DOCUMENT_FTUX_CURSOR_SEEN_KEY]: CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
-        };
-
-        if (this.containerEl) {
-            this.containerEl.classList.add(keyToClassMap[key]);
-        }
     }
 
     /**
