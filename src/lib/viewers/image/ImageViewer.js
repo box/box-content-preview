@@ -23,6 +23,7 @@ class ImageViewer extends ImageBaseViewer {
         this.api = options.api;
 
         // Bind context for callbacks
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
@@ -37,6 +38,7 @@ class ImageViewer extends ImageBaseViewer {
             this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
 
+        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
 
         if (this.isMobile) {
@@ -542,17 +544,6 @@ class ImageViewer extends ImageBaseViewer {
      */
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-
-        if (nextMode === AnnotationMode.REGION) {
-            const isImageFtuxCursorSeen = this.cache.get(IMAGE_FTUX_CURSOR_SEEN_KEY);
-
-            if (isImageFtuxCursorSeen) {
-                this.applyCursorFtux();
-            } else {
-                this.cache.set(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
-            }
-        }
-
         this.annotator.toggleAnnotationMode(nextMode);
         this.processAnnotationModeChange(nextMode);
     }
@@ -593,8 +584,16 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     applyCursorFtux() {
-        if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+        if (!this.containerEl) {
+            return;
+        }
+
+        if (this.annotationControlsFSM.getState() === AnnotationState.REGION) {
+            if (this.cache.get(IMAGE_FTUX_CURSOR_SEEN_KEY)) {
+                this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+            } else {
+                this.cache.set(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
+            }
         }
     }
 }

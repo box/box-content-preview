@@ -2910,22 +2910,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
             });
-
-            test('should call applyCursorFtux if nextMode is AnnotationMode.REGION and the cache already has DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
-                docBase.cache.get = jest.fn().mockImplementation(() => true);
-
-                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
-
-                expect(docBase.applyCursorFtux).toBeCalled();
-            });
-
-            test('should call this.cache.set if nextMode is AnnotationMode.REGION and the cache does not have DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
-                docBase.cache.get = jest.fn().mockImplementation(() => false);
-
-                docBase.handleAnnotationControlsClick({ mode: AnnotationMode.REGION });
-
-                expect(docBase.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
-            });
         });
 
         describe('getInitialAnnotationMode()', () => {
@@ -2989,7 +2973,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('applyCursorFtux()', () => {
-            test('should add CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN to the container classList', () => {
+            beforeEach(() => {
                 docBase.containerEl = {
                     classList: {
                         add: jest.fn(),
@@ -2997,10 +2981,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     },
                     removeEventListener: jest.fn(),
                 };
+                docBase.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
+                docBase.cache = {
+                    get: jest.fn(),
+                    set: jest.fn(),
+                };
+            });
+
+            test('should add CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN to the container classList if the cache contains DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => true);
 
                 docBase.applyCursorFtux();
 
                 expect(docBase.containerEl.classList.add).toBeCalledWith(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+            });
+
+            test('should set DOCUMENT_FTUX_CURSOR_SEEN_KEY in cache if cache does not contain DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => false);
+
+                docBase.applyCursorFtux();
+
+                expect(docBase.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
             });
         });
     });

@@ -107,6 +107,7 @@ class DocBaseViewer extends BaseViewer {
         super(options);
 
         // Bind context for callbacks
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
@@ -130,6 +131,7 @@ class DocBaseViewer extends BaseViewer {
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
 
+        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
     }
 
@@ -1635,17 +1637,6 @@ class DocBaseViewer extends BaseViewer {
 
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-
-        if (nextMode === AnnotationMode.REGION) {
-            const isDocumentFtuxCursorSeen = this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY);
-
-            if (isDocumentFtuxCursorSeen) {
-                this.applyCursorFtux();
-            } else {
-                this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
-            }
-        }
-
         this.annotator.toggleAnnotationMode(
             this.options.enableAnnotationsDiscoverability && nextMode === AnnotationMode.NONE
                 ? AnnotationMode.REGION
@@ -1698,8 +1689,16 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     applyCursorFtux() {
-        if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+        if (!this.containerEl) {
+            return;
+        }
+
+        if (this.annotationControlsFSM.getState() === AnnotationState.REGION) {
+            if (this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY)) {
+                this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+            } else {
+                this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
+            }
         }
     }
 }
