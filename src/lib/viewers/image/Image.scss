@@ -51,10 +51,8 @@
 
 .bp-content {
     &.bp-annotations-ftux-image-cursor-seen {
-        .bp-image {
-            .ba-PopupCursor {
-                display: none;
-            }
+        .ba-PopupCursor {
+            display: none;
         }
     }
 }
