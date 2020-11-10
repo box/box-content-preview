@@ -9,17 +9,17 @@ export type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
     className?: string;
     isActive?: boolean;
     isEnabled?: boolean;
-    onClick?: (mode: AnnotationMode) => void;
     mode: AnnotationMode;
+    onClick?: (mode: AnnotationMode) => void;
 };
 
 export default function AnnotationsButton({
     children,
     className,
-    isEnabled = true,
     isActive = false,
-    onClick = noop,
+    isEnabled = true,
     mode,
+    onClick = noop,
     ...rest
 }: Props): JSX.Element | null {
     if (!isEnabled) {

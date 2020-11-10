@@ -19,6 +19,7 @@ export default function DocControls({
     maxScale,
     minScale,
     onAnnotationModeClick,
+    onAnnotationModeEscape,
     onFindBarToggle,
     onFullscreenToggle,
     onThumbnailsToggle,
@@ -44,6 +45,7 @@ export default function DocControls({
                 hasHighlight={hasHighlight}
                 hasRegion={hasRegion}
                 onAnnotationModeClick={onAnnotationModeClick}
+                onAnnotationModeEscape={onAnnotationModeEscape}
             />
         </ControlsBar>
     );

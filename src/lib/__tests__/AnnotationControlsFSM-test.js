@@ -46,6 +46,7 @@ describe('lib/AnnotationControlsFSM', () => {
                 const annotationControlsFSM = new AnnotationControlsFSM();
 
                 expect(annotationControlsFSM.transition(input, mode)).toBe(output);
+                expect(annotationControlsFSM.getMode()).toBe(output);
                 expect(annotationControlsFSM.getState()).toBe(nextState);
             });
         });
@@ -56,6 +57,7 @@ describe('lib/AnnotationControlsFSM', () => {
                 const annotationControlsFSM = new AnnotationControlsFSM();
 
                 expect(annotationControlsFSM.transition(input)).toBe(AnnotationMode.NONE);
+                expect(annotationControlsFSM.getMode()).toBe(AnnotationMode.NONE);
                 expect(annotationControlsFSM.getState()).toBe(AnnotationState.NONE);
             });
         });
@@ -65,6 +67,7 @@ describe('lib/AnnotationControlsFSM', () => {
             const annotationControlsFSM = new AnnotationControlsFSM();
 
             expect(annotationControlsFSM.transition(AnnotationInput.RESET)).toEqual(AnnotationMode.NONE);
+            expect(annotationControlsFSM.getMode()).toBe(AnnotationMode.NONE);
             expect(annotationControlsFSM.getState()).toEqual(AnnotationState.NONE);
         });
     });
@@ -112,6 +115,7 @@ describe('lib/AnnotationControlsFSM', () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT);
 
                     expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getMode()).toBe(output);
                     expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
@@ -145,6 +149,7 @@ describe('lib/AnnotationControlsFSM', () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
 
                     expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getMode()).toBe(output);
                     expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
@@ -227,6 +232,7 @@ describe('lib/AnnotationControlsFSM', () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.HIGHLIGHT_TEMP);
 
                     expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getMode()).toBe(output);
                     expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });
@@ -260,6 +266,7 @@ describe('lib/AnnotationControlsFSM', () => {
                     const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION_TEMP);
 
                     expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
+                    expect(annotationControlsFSM.getMode()).toBe(output);
                     expect(annotationControlsFSM.getState()).toEqual(output);
                 });
             });

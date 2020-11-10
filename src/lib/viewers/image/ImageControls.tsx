@@ -9,10 +9,10 @@ export type Props = AnnotationsControlsProps & FullscreenToggleProps & RotateCon
 
 export default function ImageControls({
     annotationMode,
-    fileId,
     hasHighlight,
     hasRegion,
     onAnnotationModeClick,
+    onAnnotationModeEscape,
     onFullscreenToggle,
     onRotateLeft,
     onZoomIn,
@@ -26,10 +26,10 @@ export default function ImageControls({
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
             <AnnotationsControls
                 annotationMode={annotationMode}
-                fileId={fileId}
                 hasHighlight={hasHighlight}
                 hasRegion={hasRegion}
                 onAnnotationModeClick={onAnnotationModeClick}
+                onAnnotationModeEscape={onAnnotationModeEscape}
             />
         </ControlsBar>
     );

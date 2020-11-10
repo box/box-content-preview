@@ -1704,6 +1704,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         maxScale={10}
                         minScale={0.1}
                         onAnnotationModeClick={docBase.handleAnnotationControlsClick}
+                        onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
                         onThumbnailsToggle={docBase.toggleThumbnails}

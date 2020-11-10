@@ -427,6 +427,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                     hasHighlight={false}
                     hasRegion={false}
                     onAnnotationModeClick={image.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={image.handleAnnotationControlsEscape}
                     onFullscreenToggle={image.toggleFullscreen}
                     onRotateLeft={image.rotateLeft}
                     onZoomIn={image.zoomIn}

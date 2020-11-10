@@ -1073,6 +1073,7 @@ class DocBaseViewer extends BaseViewer {
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
                     onThumbnailsToggle={this.toggleThumbnails}

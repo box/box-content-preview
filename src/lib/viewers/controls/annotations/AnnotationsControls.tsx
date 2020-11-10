@@ -9,28 +9,54 @@ import './AnnotationsControls.scss';
 
 export type Props = {
     annotationMode?: AnnotationMode;
-    onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     hasHighlight?: boolean;
     hasRegion?: boolean;
+    onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
+    onAnnotationModeEscape?: () => void;
 };
 
 export default function AnnotationsControls({
     annotationMode = AnnotationMode.NONE,
+    hasHighlight = false,
+    hasRegion = false,
     onAnnotationModeClick = noop,
-    hasHighlight = true,
-    hasRegion = true,
+    onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
     const isFullscreen = useFullscreen();
     const showHighlight = !isFullscreen && hasHighlight;
     const showRegion = !isFullscreen && hasRegion;
 
-    if (!showHighlight && !showRegion) {
-        return null;
-    }
-
+    // Component event handlers
     const handleModeClick = (mode: AnnotationMode): void => {
         onAnnotationModeClick({ mode: annotationMode === mode ? AnnotationMode.NONE : mode });
     };
+
+    // Global event handlers
+    React.useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent): void => {
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            onAnnotationModeEscape();
+        };
+
+        if (annotationMode !== AnnotationMode.NONE) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        return (): void => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [annotationMode, onAnnotationModeEscape]);
+
+    // Prevent empty group from being displayed
+    if (!showHighlight && !showRegion) {
+        return null;
+    }
 
     return (
         <div className="bp-AnnotationsControls">

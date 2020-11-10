@@ -403,6 +403,7 @@ class ImageViewer extends ImageBaseViewer {
                     hasHighlight={false}
                     hasRegion={canAnnotate}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFullscreenToggle={this.toggleFullscreen}
                     onRotateLeft={this.rotateLeft}
                     onZoomIn={this.zoomIn}
