@@ -1,0 +1,9 @@
+@import '~box-ui-elements/es/styles/variables';
+@import '../styles';
+
+.bp-AnnotationsControls {
+    @include bp-ControlGroup;
+
+    padding-left: 4px;
+    border-left: 1px solid $twos;
+}

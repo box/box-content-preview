@@ -210,7 +210,7 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     loadUIReact() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl });
+        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
     }
 
     /**

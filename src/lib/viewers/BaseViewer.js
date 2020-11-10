@@ -916,10 +916,18 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     disableAnnotationControls() {
-        if (this.annotator && this.annotationControls && this.areNewAnnotationsEnabled()) {
+        if (!this.areNewAnnotationsEnabled()) {
+            return;
+        }
+
+        if (this.annotator) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
+
+        if (this.annotationControls) {
             this.annotationControls.toggle(false);
         }
+
         this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
     }
 
@@ -1090,11 +1098,13 @@ class BaseViewer extends EventEmitter {
      * @param {AnnotationMode} mode Next annotation mode
      */
     processAnnotationModeChange = mode => {
-        if (!this.annotationControls) {
+        if (!this.areNewAnnotationsEnabled()) {
             return;
         }
 
-        this.annotationControls.setMode(mode);
+        if (this.annotationControls) {
+            this.annotationControls.setMode(mode);
+        }
 
         if (this.containerEl) {
             // Remove all annotations create related classes

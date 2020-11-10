@@ -1776,13 +1776,14 @@ describe('lib/viewers/BaseViewer', () => {
                 setMode: jest.fn(),
             };
             base.containerEl = document.createElement('div');
+            base.areNewAnnotationsEnabled = jest.fn().mockReturnValue(true);
         });
 
-        test('should do nothing if no annotationControls', () => {
+        test('should do nothing if new annotations are not enabled', () => {
             jest.spyOn(base.containerEl.classList, 'add');
             jest.spyOn(base.containerEl.classList, 'remove');
 
-            base.annotationControls = undefined;
+            base.areNewAnnotationsEnabled.mockReturnValue(false);
             base.processAnnotationModeChange(AnnotationMode.REGION);
 
             expect(base.containerEl.classList.add).not.toBeCalled();
