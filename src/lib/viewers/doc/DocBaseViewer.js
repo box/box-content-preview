@@ -1298,7 +1298,10 @@ class DocBaseViewer extends BaseViewer {
      */
     pagechangingHandler(event) {
         const { pageNumber } = event;
-        this.pageControls.updateCurrentPage(pageNumber);
+
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(pageNumber);
+        }
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.setCurrentPage(pageNumber);
