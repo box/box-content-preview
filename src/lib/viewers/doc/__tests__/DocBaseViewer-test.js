@@ -1699,8 +1699,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
+                        annotationMode="none"
+                        hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
+                        onAnnotationModeClick={docBase.handleAnnotationControlsClick}
+                        onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
                         onThumbnailsToggle={docBase.toggleThumbnails}

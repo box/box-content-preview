@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function IconHighlightText(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+function IconHighlightText16(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg focusable="false" height={16} viewBox="0 0 16 16" width={16} {...props}>
             <path
@@ -11,4 +11,4 @@ function IconHighlightText(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     );
 }
 
-export default IconHighlightText;
+export default IconHighlightText16;

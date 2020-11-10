@@ -7,6 +7,7 @@ import './ControlsRoot.scss';
 
 export type Options = {
     containerEl: HTMLElement;
+    fileId: string;
 };
 
 export default class ControlsRoot {
@@ -20,11 +21,12 @@ export default class ControlsRoot {
         show: noop,
     };
 
-    constructor({ containerEl }: Options) {
+    constructor({ containerEl, fileId }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
         this.controlsEl.setAttribute('data-resin-component', 'toolbar');
+        this.controlsEl.setAttribute('data-resin-fileid', fileId);
 
         this.containerEl = containerEl;
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);
