@@ -1689,16 +1689,14 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     applyCursorFtux() {
-        if (!this.containerEl) {
+        if (!this.containerEl || this.annotationControlsFSM.getState() !== AnnotationState.REGION) {
             return;
         }
 
-        if (this.annotationControlsFSM.getState() === AnnotationState.REGION) {
-            if (this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY)) {
-                this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
-            } else {
-                this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
-            }
+        if (this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY)) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+        } else {
+            this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
         }
     }
 }
