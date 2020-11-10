@@ -385,7 +385,7 @@ export function loadScripts(urls, disableAMD = false) {
  * Function to decode key down events into keys
  *
  * @public
- * @param {Event} event - Keydown event
+ * @param {Event} KeyboardEvent - Keydown event
  * @return {string} Decoded keydown key
  */
 export function decodeKeydown(event) {

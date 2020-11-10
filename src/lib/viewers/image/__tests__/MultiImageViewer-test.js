@@ -390,9 +390,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.controls.render).toBeCalledWith(
                 <MultiImageControls
                     onFullscreenToggle={multiImage.toggleFullscreen}
+                    onPageChange={multiImage.setPage}
                     onZoomIn={multiImage.zoomIn}
                     onZoomOut={multiImage.zoomOut}
+                    pageCount={multiImage.pagesCount}
+                    pageNumber={multiImage.currentPageNumber}
                     scale={1}
+                    viewer={multiImage.wrapperEl}
                 />,
             );
         });

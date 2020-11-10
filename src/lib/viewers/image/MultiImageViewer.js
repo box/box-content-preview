@@ -274,13 +274,21 @@ class MultiImageViewer extends ImageBaseViewer {
             this.zoomControls.setCurrentScale(this.scale);
         }
 
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(this.currentPageNumber);
+        }
+
         if (this.controls && this.options.useReactControls) {
             this.controls.render(
                 <MultiImageControls
                     onFullscreenToggle={this.toggleFullscreen}
+                    onPageChange={this.setPage}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
+                    pageCount={this.pagesCount}
+                    pageNumber={this.currentPageNumber}
                     scale={this.scale}
+                    viewer={this.wrapperEl}
                 />,
             );
         }
@@ -400,9 +408,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.currentPageNumber = pageNumber;
 
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(pageNumber);
-        }
+        this.renderUI();
 
         this.emit('pagefocus', {
             pageNumber,

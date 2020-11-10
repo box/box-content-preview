@@ -1,0 +1,42 @@
+@import '../styles';
+
+.bp-PageControls {
+    @include bp-ControlGroup;
+}
+
+.bp-PageControls-button {
+    @include bp-ControlButton($width: 32px);
+}
+
+.bp-PageControls-num-button {
+    @include bp-ControlButton($width: auto);
+
+    .bp-PageControls-num-button-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        padding: 7px 5px;
+        color: $white;
+        font-size: 14px;
+        background-color: $fours;
+        border-radius: 3px;
+    }
+}
+
+.bp-PageControls-num-input {
+    width: 44px; // hard-coded to solve layout issues
+    margin: 5px;
+    font-size: 14px;
+    text-align: center;
+
+    /* stylelint-disable property-no-vendor-prefix */
+    // Removes the spinner for number type inputs in Firefox
+    -moz-appearance: textfield;
+
+    // Removes the spinner for number type inputs in Webkit browsers
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+}
