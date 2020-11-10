@@ -6,6 +6,7 @@ import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageControls from '../ImageControls';
 import ImageViewer from '../ImageViewer';
+import { CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN, IMAGE_FTUX_CURSOR_SEEN_KEY } from '../../../constants';
 
 jest.mock('../../controls/controls-root');
 
@@ -43,6 +44,10 @@ describe('lib/viewers/image/ImageViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         image.containerEl = containerEl;
         image.options.enableAnnotationsImageDiscoverability = false;
+        image.cache = {
+            get: jest.fn(),
+            set: jest.fn(),
+        };
         image.setup();
     });
 
@@ -842,6 +847,35 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.handleAnnotationCreateEvent(event);
 
             expect(image.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+        });
+    });
+
+    describe('applyCursorFtux()', () => {
+        beforeEach(() => {
+            image.containerEl = {
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+                removeEventListener: jest.fn(),
+            };
+            image.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
+        });
+
+        test('should add CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN to the container classList if the cache contains IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
+            image.cache.get = jest.fn().mockImplementation(() => true);
+
+            image.applyCursorFtux();
+
+            expect(image.containerEl.classList.add).toBeCalledWith(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+        });
+
+        test('should set IMAGE_FTUX_CURSOR_SEEN_KEY in cache if the cache does not contain IMAGE_FTUX_CURSOR_SEEN_KEY', () => {
+            image.cache.get = jest.fn().mockImplementation(() => false);
+
+            image.applyCursorFtux();
+
+            expect(image.cache.set).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
         });
     });
 });

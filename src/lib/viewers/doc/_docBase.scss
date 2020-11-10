@@ -365,6 +365,12 @@ $thumbnail-sidebar-width: 226px;
         @include bp-annotations-disable-highlight-targets;
         @include bp-annotations-disable-region-targets;
 
+        &.bp-annotations-ftux-document-cursor-seen {
+            .ba-PopupCursor {
+                display: none;
+            }
+        }
+
         .textLayer span {
             pointer-events: none;
         }

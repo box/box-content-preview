@@ -20,6 +20,7 @@ import * as util from '../../../util';
 import {
     ANNOTATOR_EVENT,
     CLASS_HIDDEN,
+    DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
     STATUS_PENDING,
@@ -27,6 +28,7 @@ import {
     QUERY_PARAM_ENCODING,
     ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_CONTENT,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
@@ -2887,6 +2889,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     toggleAnnotationMode: jest.fn(),
                 };
                 docBase.processAnnotationModeChange = jest.fn();
+                docBase.applyCursorFtux = jest.fn();
+                docBase.cache = {
+                    get: jest.fn(),
+                    set: jest.fn(),
+                };
             });
 
             test('should call toggleAnnotationMode and processAnnotationModeChange', () => {
@@ -2967,6 +2974,39 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
                 },
             );
+        });
+
+        describe('applyCursorFtux()', () => {
+            beforeEach(() => {
+                docBase.containerEl = {
+                    classList: {
+                        add: jest.fn(),
+                        remove: jest.fn(),
+                    },
+                    removeEventListener: jest.fn(),
+                };
+                docBase.annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.REGION);
+                docBase.cache = {
+                    get: jest.fn(),
+                    set: jest.fn(),
+                };
+            });
+
+            test('should add CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN to the container classList if the cache contains DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => true);
+
+                docBase.applyCursorFtux();
+
+                expect(docBase.containerEl.classList.add).toBeCalledWith(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+            });
+
+            test('should set DOCUMENT_FTUX_CURSOR_SEEN_KEY in cache if cache does not contain DOCUMENT_FTUX_CURSOR_SEEN_KEY', () => {
+                docBase.cache.get = jest.fn().mockImplementation(() => false);
+
+                docBase.applyCursorFtux();
+
+                expect(docBase.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
+            });
         });
     });
 });

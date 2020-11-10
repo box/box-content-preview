@@ -16,6 +16,7 @@ import ZoomControls from '../../ZoomControls';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
@@ -26,6 +27,7 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOC_STATIC_ASSETS_VERSION,
+    DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
@@ -105,6 +107,7 @@ class DocBaseViewer extends BaseViewer {
         super(options);
 
         // Bind context for callbacks
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
@@ -128,6 +131,7 @@ class DocBaseViewer extends BaseViewer {
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
 
+        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
     }
 
@@ -1689,6 +1693,24 @@ class DocBaseViewer extends BaseViewer {
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
         this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+    }
+
+    /**
+     * Hides the create region cursor popup for a document
+     *
+     * @protected
+     * @return {void}
+     */
+    applyCursorFtux() {
+        if (!this.containerEl || this.annotationControlsFSM.getState() !== AnnotationState.REGION) {
+            return;
+        }
+
+        if (this.cache.get(DOCUMENT_FTUX_CURSOR_SEEN_KEY)) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN);
+        } else {
+            this.cache.set(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
+        }
     }
 }
 

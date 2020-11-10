@@ -48,3 +48,11 @@
     display: block;
     width: 100%;
 }
+
+.bp-content {
+    &.bp-annotations-create--region.bp-annotations-ftux-image-cursor-seen {
+        .ba-PopupCursor {
+            display: none;
+        }
+    }
+}

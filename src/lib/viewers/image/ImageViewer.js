@@ -3,7 +3,12 @@ import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
-import { CLASS_INVISIBLE, DISCOVERABILITY_ATTRIBUTE } from '../../constants';
+import {
+    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
+    CLASS_INVISIBLE,
+    DISCOVERABILITY_ATTRIBUTE,
+    IMAGE_FTUX_CURSOR_SEEN_KEY,
+} from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
 
@@ -18,6 +23,7 @@ class ImageViewer extends ImageBaseViewer {
         this.api = options.api;
 
         // Bind context for callbacks
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
@@ -32,6 +38,7 @@ class ImageViewer extends ImageBaseViewer {
             this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
 
+        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
 
         if (this.isMobile) {
@@ -580,6 +587,24 @@ class ImageViewer extends ImageBaseViewer {
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
         this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+    }
+
+    /**
+     * Hides the create region cursor popup for an image
+     *
+     * @protected
+     * @return {void}
+     */
+    applyCursorFtux() {
+        if (!this.containerEl || this.annotationControlsFSM.getState() !== AnnotationState.REGION) {
+            return;
+        }
+
+        if (this.cache.get(IMAGE_FTUX_CURSOR_SEEN_KEY)) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN);
+        } else {
+            this.cache.set(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
+        }
     }
 }
 
