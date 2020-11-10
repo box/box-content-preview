@@ -50,11 +50,9 @@
 }
 
 .bp-content {
-    &.bp-annotations-ftux-image-cursor-seen {
-        .bp-image {
-            .ba-PopupCursor {
-                display: none;
-            }
+    &.bp-annotations-create--region.bp-annotations-ftux-image-cursor-seen {
+        .ba-PopupCursor {
+            display: none;
         }
     }
 }
