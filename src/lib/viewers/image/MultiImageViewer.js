@@ -20,6 +20,7 @@ class MultiImageViewer extends ImageBaseViewer {
     constructor(options) {
         super(options);
 
+        this.getViewer = this.getViewer.bind(this);
         this.setPage = this.setPage.bind(this);
         this.scrollHandler = this.scrollHandler.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
@@ -103,6 +104,15 @@ class MultiImageViewer extends ImageBaseViewer {
     finishLoading() {
         super.finishLoading();
         this.setOriginalImageSizes();
+    }
+
+    /**
+     * Retrieves wrapper element
+     *
+     * @return HTMLElement
+     */
+    getViewer() {
+        return this.wrapperEl;
     }
 
     /**
@@ -281,6 +291,7 @@ class MultiImageViewer extends ImageBaseViewer {
         if (this.controls && this.options.useReactControls) {
             this.controls.render(
                 <MultiImageControls
+                    getViewer={this.getViewer}
                     onFullscreenToggle={this.toggleFullscreen}
                     onPageChange={this.setPage}
                     onZoomIn={this.zoomIn}
@@ -288,7 +299,6 @@ class MultiImageViewer extends ImageBaseViewer {
                     pageCount={this.pagesCount}
                     pageNumber={this.currentPageNumber}
                     scale={this.scale}
-                    viewer={this.wrapperEl}
                 />,
             );
         }

@@ -109,6 +109,7 @@ class DocBaseViewer extends BaseViewer {
         // Bind context for callbacks
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
+        this.getViewer = this.getViewer.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
@@ -269,6 +270,15 @@ class DocBaseViewer extends BaseViewer {
                 });
             }
         });
+    }
+
+    /**
+     * Retrieves wrapper element
+     *
+     * @return HTMLElement
+     */
+    getViewer() {
+        return this.wrapperEl;
     }
 
     /**
@@ -1072,6 +1082,7 @@ class DocBaseViewer extends BaseViewer {
             this.controls.render(
                 <DocControls
                     annotationMode={this.annotationControlsFSM.getMode()}
+                    getViewer={this.getViewer}
                     hasHighlight={canHighlight}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
@@ -1080,9 +1091,12 @@ class DocBaseViewer extends BaseViewer {
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
+                    onPageChange={this.setPage}
                     onThumbnailsToggle={this.toggleThumbnails}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
+                    pageCount={this.pagesCount}
+                    pageNumber={this.currentPageNumber}
                     scale={this.pdfViewer.currentScale}
                 />,
             );

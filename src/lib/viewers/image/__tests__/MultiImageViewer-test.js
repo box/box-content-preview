@@ -170,6 +170,14 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
+    describe('getViewer()', () => {
+        test('should return viewer', () => {
+            const viewer = multiImage.getViewer();
+
+            expect(viewer).toBe(multiImage.wrapperEl);
+        });
+    });
+
     describe('constructImageUrls()', () => {
         test('should remove both the new and old form of asset path', () => {
             const firstURL = 'file/100/content/1.png';
@@ -389,6 +397,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.controls).toBeInstanceOf(ControlsRoot);
             expect(multiImage.controls.render).toBeCalledWith(
                 <MultiImageControls
+                    getViewer={multiImage.getViewer}
                     onFullscreenToggle={multiImage.toggleFullscreen}
                     onPageChange={multiImage.setPage}
                     onZoomIn={multiImage.zoomIn}
@@ -396,7 +405,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                     pageCount={multiImage.pagesCount}
                     pageNumber={multiImage.currentPageNumber}
                     scale={1}
-                    viewer={multiImage.wrapperEl}
                 />,
             );
         });

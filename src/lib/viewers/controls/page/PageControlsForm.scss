@@ -1,0 +1,48 @@
+@import '../styles';
+
+.bp-PageControlsForm-button {
+    @include bp-ControlButton($width: auto);
+}
+
+.bp-PageControlsForm-button-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    padding: 7px 5px;
+    color: $white;
+    font-size: 14px;
+    background-color: $fours;
+    border-radius: 3px;
+}
+
+.bp-PageControlsForm-input {
+    width: 44px;
+    margin: 5px;
+    padding: 7px;
+    color: $twos;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid $seesee;
+    border-radius: 3px;
+    transition: border-color linear .15s;
+    -webkit-font-smoothing: antialiased;
+
+    /* stylelint-disable property-no-vendor-prefix */
+    // Removes the spinner for number type inputs in Firefox
+    -moz-appearance: textfield;
+
+    // Removes the spinner for number type inputs in Webkit browsers
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    /* stylelint-enable property-no-vendor-prefix */
+
+    &:focus {
+        border: 1px solid $primary-color;
+        outline: 0;
+        box-shadow: none;
+    }
+}

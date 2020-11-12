@@ -631,6 +631,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('getViewer()', () => {
+            test('should return viewer', () => {
+                const viewer = docBase.getViewer();
+
+                expect(viewer).toBe(docBase.wrapperEl);
+            });
+        });
+
         describe('handleAssetAndRepLoad', () => {
             test('should setup pdfjs, init viewer, print, and find', () => {
                 const url = 'foo';
@@ -1702,6 +1710,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
                         annotationMode="none"
+                        getViewer={docBase.getViewer}
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
@@ -1709,9 +1718,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
+                        onPageChange={docBase.setPage}
                         onThumbnailsToggle={docBase.toggleThumbnails}
                         onZoomIn={docBase.zoomIn}
                         onZoomOut={docBase.zoomOut}
+                        pageCount={docBase.pagesCount}
+                        pageNumber={docBase.currentPageNumber}
                         scale={1}
                     />,
                 );
