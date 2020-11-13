@@ -12,30 +12,30 @@ describe('MultiImageControls', () => {
             const pageCount = 3;
             const pageNumber = 1;
             const onPageChange = jest.fn();
+            const onPageSubmit = jest.fn();
             const onToggle = jest.fn();
             const onZoomIn = jest.fn();
             const onZoomOut = jest.fn();
-            const viewer = document.createElement('div');
             const wrapper = shallow(
                 <MultiImageControls
                     onFullscreenToggle={onToggle}
                     onPageChange={onPageChange}
+                    onPageSubmit={onPageSubmit}
                     onZoomIn={onZoomIn}
                     onZoomOut={onZoomOut}
                     pageCount={pageCount}
                     pageNumber={pageNumber}
-                    viewer={viewer}
                 />,
             );
 
             expect(wrapper.exists(ControlsBar));
             expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onToggle);
             expect(wrapper.find(PageControls).prop('onPageChange')).toEqual(onPageChange);
+            expect(wrapper.find(PageControls).prop('onPageSubmit')).toEqual(onPageSubmit);
             expect(wrapper.find(ZoomControls).prop('onZoomIn')).toEqual(onZoomIn);
             expect(wrapper.find(ZoomControls).prop('onZoomOut')).toEqual(onZoomOut);
             expect(wrapper.find(PageControls).prop('pageCount')).toEqual(pageCount);
             expect(wrapper.find(PageControls).prop('pageNumber')).toEqual(pageNumber);
-            expect(wrapper.find(PageControls).prop('viewer')).toEqual(viewer);
         });
     });
 });

@@ -20,13 +20,13 @@ class MultiImageViewer extends ImageBaseViewer {
     constructor(options) {
         super(options);
 
-        this.getViewer = this.getViewer.bind(this);
-        this.setPage = this.setPage.bind(this);
-        this.scrollHandler = this.scrollHandler.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
+        this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
         this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
-        this.finishLoading = this.finishLoading.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.setPage = this.setPage.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
     }
 
@@ -104,15 +104,6 @@ class MultiImageViewer extends ImageBaseViewer {
     finishLoading() {
         super.finishLoading();
         this.setOriginalImageSizes();
-    }
-
-    /**
-     * Retrieves wrapper element
-     *
-     * @return HTMLElement
-     */
-    getViewer() {
-        return this.wrapperEl;
     }
 
     /**
@@ -262,6 +253,17 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Handles page submit by setting page and then setting focus
+     *
+     * @override
+     * @return {void}
+     */
+    handlePageSubmit(page) {
+        this.setPage(page);
+        this.wrapperEl.focus();
+    }
+
+    /**
      * Adds UI controls
      *
      * @override
@@ -291,9 +293,9 @@ class MultiImageViewer extends ImageBaseViewer {
         if (this.controls && this.options.useReactControls) {
             this.controls.render(
                 <MultiImageControls
-                    getViewer={this.getViewer}
                     onFullscreenToggle={this.toggleFullscreen}
                     onPageChange={this.setPage}
+                    onPageSubmit={this.handlePageSubmit}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
                     pageCount={this.pagesCount}

@@ -109,13 +109,13 @@ class DocBaseViewer extends BaseViewer {
         // Bind context for callbacks
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
-        this.getViewer = this.getViewer.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
+        this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
@@ -270,15 +270,6 @@ class DocBaseViewer extends BaseViewer {
                 });
             }
         });
-    }
-
-    /**
-     * Retrieves wrapper element
-     *
-     * @return HTMLElement
-     */
-    getViewer() {
-        return this.wrapperEl;
     }
 
     /**
@@ -1045,6 +1036,17 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles page submit by setting page and then setting focus
+     *
+     * @override
+     * @return {void}
+     */
+    handlePageSubmit(page) {
+        this.setPage(page);
+        this.docEl.focus();
+    }
+
+    /**
      * Creates UI for preview controls.
      *
      * @private
@@ -1082,7 +1084,6 @@ class DocBaseViewer extends BaseViewer {
             this.controls.render(
                 <DocControls
                     annotationMode={this.annotationControlsFSM.getMode()}
-                    getViewer={this.getViewer}
                     hasHighlight={canHighlight}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
@@ -1092,11 +1093,12 @@ class DocBaseViewer extends BaseViewer {
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
                     onPageChange={this.setPage}
+                    onPageSubmit={this.handlePageSubmit}
                     onThumbnailsToggle={this.toggleThumbnails}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
-                    pageCount={this.pagesCount}
-                    pageNumber={this.currentPageNumber}
+                    pageCount={this.pdfViewer.pagesCount}
+                    pageNumber={this.pdfViewer.currentPageNumber}
                     scale={this.pdfViewer.currentScale}
                 />,
             );

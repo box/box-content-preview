@@ -631,14 +631,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        describe('getViewer()', () => {
-            test('should return viewer', () => {
-                const viewer = docBase.getViewer();
-
-                expect(viewer).toBe(docBase.wrapperEl);
-            });
-        });
-
         describe('handleAssetAndRepLoad', () => {
             test('should setup pdfjs, init viewer, print, and find', () => {
                 const url = 'foo';
@@ -1676,6 +1668,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('handlePageSubmit()', () => {
+            test('should handle setting page and focusing wrapper', () => {
+                const pageNumber = 3;
+                jest.spyOn(docBase, 'setPage').mockImplementation();
+                jest.spyOn(docBase.docEl, 'focus').mockImplementation();
+
+                docBase.handlePageSubmit(pageNumber);
+
+                expect(docBase.setPage).toHaveBeenCalledWith(pageNumber);
+                expect(docBase.docEl.focus).toHaveBeenCalled();
+            });
+        });
+
         describe('loadUI()', () => {
             test('should set controls, bind listeners, and init the page number element', () => {
                 const bindControlListenersStub = jest.spyOn(docBase, 'bindControlListeners').mockImplementation();
@@ -1701,6 +1706,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('loadUIReact()', () => {
             test('should create controls root and render the react controls', () => {
                 docBase.pdfViewer = {
+                    pagesCount: 3,
+                    currentPageNumber: 2,
                     currentScale: 1,
                 };
                 docBase.options.useReactControls = true;
@@ -1710,7 +1717,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
                         annotationMode="none"
-                        getViewer={docBase.getViewer}
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
@@ -1719,11 +1725,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
                         onPageChange={docBase.setPage}
+                        onPageSubmit={docBase.handlePageSubmit}
                         onThumbnailsToggle={docBase.toggleThumbnails}
                         onZoomIn={docBase.zoomIn}
                         onZoomOut={docBase.zoomOut}
-                        pageCount={docBase.pagesCount}
-                        pageNumber={docBase.currentPageNumber}
+                        pageCount={docBase.pdfViewer.pagesCount}
+                        pageNumber={docBase.pdfViewer.currentPageNumber}
                         scale={1}
                     />,
                 );

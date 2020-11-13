@@ -170,14 +170,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('getViewer()', () => {
-        test('should return viewer', () => {
-            const viewer = multiImage.getViewer();
-
-            expect(viewer).toBe(multiImage.wrapperEl);
-        });
-    });
-
     describe('constructImageUrls()', () => {
         test('should remove both the new and old form of asset path', () => {
             const firstURL = 'file/100/content/1.png';
@@ -366,6 +358,19 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
+    describe('handlePageSubmit()', () => {
+        test('should handle setting page and focusing wrapper', () => {
+            const pageNumber = 3;
+            jest.spyOn(multiImage, 'setPage').mockImplementation();
+            jest.spyOn(multiImage.wrapperEl, 'focus').mockImplementation();
+
+            multiImage.handlePageSubmit(pageNumber);
+
+            expect(multiImage.setPage).toHaveBeenCalledWith(pageNumber);
+            expect(multiImage.wrapperEl.focus).toHaveBeenCalled();
+        });
+    });
+
     describe('loadUI()', () => {
         const zoomInitFunc = ZoomControls.prototype.init;
 
@@ -397,9 +402,9 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.controls).toBeInstanceOf(ControlsRoot);
             expect(multiImage.controls.render).toBeCalledWith(
                 <MultiImageControls
-                    getViewer={multiImage.getViewer}
                     onFullscreenToggle={multiImage.toggleFullscreen}
                     onPageChange={multiImage.setPage}
+                    onPageSubmit={multiImage.handlePageSubmit}
                     onZoomIn={multiImage.zoomIn}
                     onZoomOut={multiImage.zoomOut}
                     pageCount={multiImage.pagesCount}

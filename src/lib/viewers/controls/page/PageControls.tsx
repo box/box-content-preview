@@ -5,13 +5,13 @@ import PageControlsForm from './PageControlsForm';
 import './PageControls.scss';
 
 export type Props = {
-    getViewer: () => HTMLElement;
     onPageChange: (newPageNumber: number) => void;
+    onPageSubmit: (newPageNumber: number) => void;
     pageCount: number;
     pageNumber: number;
 };
 
-export default function PageControls({ getViewer, onPageChange, pageCount, pageNumber }: Props): JSX.Element {
+export default function PageControls({ onPageChange, onPageSubmit, pageCount, pageNumber }: Props): JSX.Element {
     return (
         <div className="bp-PageControls">
             <button
@@ -24,12 +24,7 @@ export default function PageControls({ getViewer, onPageChange, pageCount, pageN
             >
                 <IconArrowUp24 />
             </button>
-            <PageControlsForm
-                getViewer={getViewer}
-                onPageChange={onPageChange}
-                pageCount={pageCount}
-                pageNumber={pageNumber}
-            />
+            <PageControlsForm onPageSubmit={onPageSubmit} pageCount={pageCount} pageNumber={pageNumber} />
             <button
                 className="bp-PageControls-button"
                 data-testid="bp-PageControls-next"

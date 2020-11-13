@@ -16,7 +16,6 @@ export type Props = AnnotationsControlsProps &
 
 export default function DocControls({
     annotationMode,
-    getViewer,
     hasHighlight,
     hasRegion,
     maxScale,
@@ -26,6 +25,7 @@ export default function DocControls({
     onFindBarToggle,
     onFullscreenToggle,
     onPageChange,
+    onPageSubmit,
     onThumbnailsToggle,
     onZoomIn,
     onZoomOut,
@@ -45,8 +45,8 @@ export default function DocControls({
                 scale={scale}
             />
             <PageControls
-                getViewer={getViewer}
                 onPageChange={onPageChange}
+                onPageSubmit={onPageSubmit}
                 pageCount={pageCount}
                 pageNumber={pageNumber}
             />

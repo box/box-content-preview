@@ -6,15 +6,7 @@ import PageControlsForm from '../PageControlsForm';
 
 describe('PageControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(
-            <PageControls
-                getViewer={(): HTMLElement => document.createElement('div')}
-                onPageChange={noop}
-                pageCount={3}
-                pageNumber={1}
-                {...props}
-            />,
-        );
+        shallow(<PageControls onPageChange={noop} onPageSubmit={noop} pageCount={3} pageNumber={1} {...props} />);
     const getPreviousPageButton = (wrapper: ShallowWrapper): ShallowWrapper =>
         wrapper.find('[data-testid="bp-PageControls-previous"]');
     const getNextPageButton = (wrapper: ShallowWrapper): ShallowWrapper =>
