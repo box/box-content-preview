@@ -14,7 +14,7 @@ export const ESCAPE = 'Escape';
 export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }: Props): JSX.Element {
     const [isInputShown, setIsInputShown] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(pageNumber.toString());
-    const [isButtonFocus, setIsButtonFocus] = React.useState(false);
+    const isButtonFocus = React.useRef(false);
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const inputElRef = React.useRef<HTMLInputElement>(null);
 
@@ -32,7 +32,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
             setInputValue(pageNumber.toString()); // Reset the invalid input value to the current page
 
             if (allowRetry) {
-                setIsButtonFocus(true);
+                isButtonFocus.current = true;
             }
         }
 
@@ -62,7 +62,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                 event.preventDefault();
 
                 setIsInputShown(false);
-                setIsButtonFocus(true);
+                isButtonFocus.current = true;
                 break;
             default:
                 break;
@@ -76,7 +76,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
     React.useLayoutEffect(() => {
         if (buttonElRef.current && isButtonFocus) {
             buttonElRef.current.focus();
-            setIsButtonFocus(false);
+            isButtonFocus.current = false;
         }
     }, [isButtonFocus]);
 
