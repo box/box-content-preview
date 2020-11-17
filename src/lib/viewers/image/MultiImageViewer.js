@@ -21,10 +21,10 @@ class MultiImageViewer extends ImageBaseViewer {
         super(options);
 
         this.finishLoading = this.finishLoading.bind(this);
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
-        this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
-        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.scrollHandler = this.scrollHandler.bind(this);
         this.setPage = this.setPage.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
