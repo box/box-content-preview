@@ -354,17 +354,16 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
-    &.bp-annotations-create--highlight {
+    &.bp-annotations-create--drawing,
+    &.bp-annotations-create--highlight,
+    &.bp-annotations-create--region {
         @include bp-annotations-create-base;
+        @include bp-annotations-disable-drawing-targets;
         @include bp-annotations-disable-highlight-targets;
         @include bp-annotations-disable-region-targets;
     }
 
     &.bp-annotations-create--region {
-        @include bp-annotations-create-base;
-        @include bp-annotations-disable-highlight-targets;
-        @include bp-annotations-disable-region-targets;
-
         &.bp-annotations-ftux-document-cursor-seen {
             .ba-PopupCursor {
                 display: none;
