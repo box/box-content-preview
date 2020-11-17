@@ -3,10 +3,6 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import noop from 'lodash/noop';
 import PageControlsForm, { ENTER, ESCAPE } from '../PageControlsForm';
 
-jest.mock('../../../../Browser', () => ({
-    getName: jest.fn(),
-}));
-
 describe('PageControlsForm', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<PageControlsForm onPageSubmit={noop} pageCount={3} pageNumber={1} {...props} />);
@@ -16,87 +12,43 @@ describe('PageControlsForm', () => {
         wrapper.find('[data-testid="bp-PageControlsForm-input"]');
 
     describe('event handlers', () => {
-        const onPageSubmit = jest.fn();
-        const pageCount = 3;
-        const pageNumber = 2;
-
-        afterEach(() => {
-            jest.resetAllMocks();
-        });
-
-        test('should call onPageSubmit when input blurs', () => {
-            const newPageNumber = 3;
+        test.each`
+            newPageNumber | onPageSubmitCallCount
+            ${2}          | ${1}
+            ${''}         | ${0}
+        `('should call onPageSubmit when input blurs', ({ newPageNumber, onPageSubmitCallCount }) => {
+            const onPageSubmit = jest.fn();
+            const pageCount = 3;
+            const pageNumber = 1;
             const wrapper = getWrapper({ onPageSubmit, pageCount, pageNumber });
 
             getFormButton(wrapper).simulate('click');
             getFormInput(wrapper).simulate('change', { target: { value: newPageNumber } });
             getFormInput(wrapper).simulate('blur');
 
-            expect(onPageSubmit).toBeCalledWith(newPageNumber);
+            expect(onPageSubmit.mock.calls.length).toBe(onPageSubmitCallCount);
         });
 
-        test('should not call onPageSubmit when input blurs with NaN', () => {
-            const newPageNumber = '';
+        test.each`
+            newPageNumber | onPageSubmitCallCount
+            ${''}         | ${0}
+            ${2}          | ${1}
+        `('should handle when Enter key is pressed on input', ({ onPageSubmitCallCount, newPageNumber }) => {
+            const key = ENTER;
+            const onPageSubmit = jest.fn();
+            const pageCount = 3;
+            const pageNumber = 1;
+            const preventDefault = jest.fn();
+            const stopPropagation = jest.fn();
             const wrapper = getWrapper({ onPageSubmit, pageCount, pageNumber });
 
             getFormButton(wrapper).simulate('click');
-            getFormInput(wrapper).simulate('change', { target: { value: newPageNumber } });
-            getFormInput(wrapper).simulate('blur');
-
-            expect(onPageSubmit).not.toHaveBeenCalled();
-        });
-
-        test('should handle when Enter key is pressed on input and new page number is valid', () => {
-            const key = ENTER;
-            const newPageNumber = 2;
-            const preventDefault = jest.fn();
-            const stopPropagation = jest.fn();
-            const wrapper = getWrapper({ onPageSubmit });
-            const initialFormButton = getFormButton(wrapper);
-            const initialFormInput = getFormInput(wrapper);
-
-            getFormButton(wrapper).simulate('click');
-            const intermediaryFormButton = getFormButton(wrapper);
-            const intermediaryFormInput = getFormInput(wrapper);
+            expect(getFormButton(wrapper).exists()).toBe(false);
+            expect(getFormInput(wrapper).exists()).toBe(true);
             getFormInput(wrapper).simulate('change', {
                 preventDefault,
                 stopPropagation,
-                target: { value: newPageNumber.toString() },
-            });
-            getFormInput(wrapper).simulate('keydown', {
-                preventDefault,
-                stopPropagation,
-                key,
-                target: { value: newPageNumber.toString() },
-            });
-
-            expect(preventDefault).toHaveBeenCalled();
-            expect(stopPropagation).toHaveBeenCalled();
-            expect(onPageSubmit).toHaveBeenCalledWith(newPageNumber);
-            expect(initialFormButton.length).toBe(1);
-            expect(initialFormInput.length).toBe(0);
-            expect(intermediaryFormButton.length).toBe(0);
-            expect(intermediaryFormInput.length).toBe(1);
-            expect(getFormButton(wrapper).length).toBe(1);
-            expect(getFormInput(wrapper).length).toBe(0);
-        });
-
-        test('should handle when Enter key is pressed on input and new page number is invalid', () => {
-            const key = ENTER;
-            const newPageNumber = '';
-            const preventDefault = jest.fn();
-            const stopPropagation = jest.fn();
-            const wrapper = getWrapper({ onPageSubmit });
-            const initialFormButton = getFormButton(wrapper);
-            const initialFormInput = getFormInput(wrapper);
-
-            getFormButton(wrapper).simulate('click');
-            const intermediaryFormButton = getFormButton(wrapper);
-            const intermediaryFormInput = getFormInput(wrapper);
-            getFormInput(wrapper).simulate('change', {
-                preventDefault,
-                stopPropagation,
-                target: { value: newPageNumber.toString() },
+                target: { value: newPageNumber },
             });
             getFormInput(wrapper).simulate('keydown', {
                 preventDefault,
@@ -106,25 +58,21 @@ describe('PageControlsForm', () => {
 
             expect(preventDefault).toHaveBeenCalled();
             expect(stopPropagation).toHaveBeenCalled();
-            expect(onPageSubmit).not.toHaveBeenCalled();
-            expect(initialFormButton.length).toBe(1);
-            expect(initialFormInput.length).toBe(0);
-            expect(intermediaryFormButton.length).toBe(0);
-            expect(intermediaryFormInput.length).toBe(1);
-            expect(getFormButton(wrapper).length).toBe(1);
-            expect(getFormInput(wrapper).length).toBe(0);
+            expect(onPageSubmit.mock.calls.length).toBe(onPageSubmitCallCount);
+            expect(getFormButton(wrapper).exists()).toBe(true);
+            expect(getFormInput(wrapper).exists()).toBe(false);
         });
 
-        test('should handle escape key when pressed on input', () => {
+        test('should handle Escape key when pressed on input', () => {
             const preventDefault = jest.fn();
             const stopPropagation = jest.fn();
             const wrapper = getWrapper();
-            const initialFormButton = getFormButton(wrapper);
-            const initialFormInput = getFormInput(wrapper);
+            expect(getFormButton(wrapper).exists()).toBe(true);
+            expect(getFormInput(wrapper).exists()).toBe(false);
 
             getFormButton(wrapper).simulate('click');
-            const intermediaryFormButton = getFormButton(wrapper);
-            const intermediaryFormInput = getFormInput(wrapper);
+            expect(getFormButton(wrapper).exists()).toBe(false);
+            expect(getFormInput(wrapper).exists()).toBe(true);
             getFormInput(wrapper).simulate('keydown', {
                 preventDefault,
                 stopPropagation,
@@ -133,12 +81,8 @@ describe('PageControlsForm', () => {
 
             expect(preventDefault).toHaveBeenCalled();
             expect(stopPropagation).toHaveBeenCalled();
-            expect(initialFormButton.length).toBe(1);
-            expect(initialFormInput.length).toBe(0);
-            expect(intermediaryFormButton.length).toBe(0);
-            expect(intermediaryFormInput.length).toBe(1);
-            expect(getFormButton(wrapper).length).toBe(1);
-            expect(getFormInput(wrapper).length).toBe(0);
+            expect(getFormButton(wrapper).exists()).toBe(true);
+            expect(getFormInput(wrapper).exists()).toBe(false);
         });
     });
 
@@ -154,15 +98,13 @@ describe('PageControlsForm', () => {
 
         test('should render input when button is clicked', () => {
             const wrapper = getWrapper();
-            const initialFormButton = getFormButton(wrapper);
-            const initialFormInput = getFormInput(wrapper);
+            expect(getFormButton(wrapper).exists()).toBe(true);
+            expect(getFormInput(wrapper).exists()).toBe(false);
 
             getFormButton(wrapper).simulate('click');
 
-            expect(initialFormButton.length).toBe(1);
-            expect(initialFormInput.length).toBe(0);
-            expect(getFormButton(wrapper).length).toBe(0);
-            expect(getFormInput(wrapper).length).toBe(1);
+            expect(getFormButton(wrapper).exists()).toBe(false);
+            expect(getFormInput(wrapper).exists()).toBe(true);
         });
     });
 });

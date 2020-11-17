@@ -21,7 +21,7 @@ describe('PageControls', () => {
 
             getPreviousPageButton(wrapper).simulate('click');
 
-            expect(onPageChange).toBeCalledWith(1);
+            expect(onPageChange).toBeCalledWith(pageNumber - 1);
         });
 
         test('should handle next page click', () => {
@@ -32,33 +32,32 @@ describe('PageControls', () => {
 
             getNextPageButton(wrapper).simulate('click');
 
-            expect(onPageChange).toBeCalledWith(3);
+            expect(onPageChange).toBeCalledWith(pageNumber + 1);
         });
     });
 
     describe('render', () => {
-        test('should not be able to use previous button if on first page ', () => {
-            const pageNumber = 1;
-            const pageCount = 3;
-            const wrapper = getWrapper({ pageCount, pageNumber });
+        test.each`
+            pageNumber | pageCount | isPrevButtonDisabled | isNextButtonDisabled
+            ${1}       | ${3}      | ${true}              | ${false}
+            ${3}       | ${3}      | ${false}             | ${true}
+            ${2}       | ${3}      | ${false}             | ${false}
+        `(
+            'should handle the disable prop correctly when pageNumber is $pageNumber and pageCount is $pageCount',
+            ({ pageCount, pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
+                const wrapper = getWrapper({ pageCount, pageNumber });
 
-            expect(getPreviousPageButton(wrapper).prop('disabled')).toBe(true);
-        });
-
-        test('should not be able to use next button if on last page', () => {
-            const pageNumber = 3;
-            const pageCount = 3;
-            const wrapper = getWrapper({ pageCount, pageNumber });
-
-            expect(getNextPageButton(wrapper).prop('disabled')).toBe(true);
-        });
+                expect(getPreviousPageButton(wrapper).prop('disabled')).toBe(isPrevButtonDisabled);
+                expect(getNextPageButton(wrapper).prop('disabled')).toBe(isNextButtonDisabled);
+            },
+        );
 
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(getPreviousPageButton(wrapper)).toBeDefined();
-            expect(getNextPageButton(wrapper)).toBeDefined();
-            expect(wrapper.find(PageControlsForm)).toBeDefined();
+            expect(getPreviousPageButton(wrapper).exists()).toBe(true);
+            expect(getNextPageButton(wrapper).exists()).toBe(true);
+            expect(wrapper.find(PageControlsForm).exists()).toBe(true);
             expect(wrapper.hasClass('bp-PageControls')).toBe(true);
         });
     });
