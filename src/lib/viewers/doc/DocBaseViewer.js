@@ -1076,6 +1076,10 @@ class DocBaseViewer extends BaseViewer {
             this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
         }
 
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(this.pdfViewer.currentPageNumber);
+        }
+
         if (this.controls && this.options.useReactControls) {
             const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
             const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
@@ -1319,10 +1323,6 @@ class DocBaseViewer extends BaseViewer {
     pagechangingHandler(event) {
         const { pageNumber } = event;
 
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(pageNumber);
-        }
-
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.setCurrentPage(pageNumber);
         }
@@ -1334,6 +1334,7 @@ class DocBaseViewer extends BaseViewer {
             this.cachePage(pageNumber);
         }
 
+        this.renderUI();
         this.emit('pagefocus', pageNumber);
     }
 

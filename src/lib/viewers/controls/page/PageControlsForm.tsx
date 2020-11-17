@@ -17,7 +17,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
 
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const inputElRef = React.useRef<HTMLInputElement>(null);
-    const isRetyRef = React.useRef(false);
+    const isRetryRef = React.useRef(false);
 
     const setPage = (allowRetry = false): void => {
         if (!Number.isNaN(inputValue) && inputValue >= 1 && inputValue <= pageCount && inputValue !== pageNumber) {
@@ -26,7 +26,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
             setInputValue(pageNumber); // Reset the invalid input value to the current page
 
             if (allowRetry) {
-                isRetyRef.current = true;
+                isRetryRef.current = true;
             }
         }
 
@@ -55,9 +55,9 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                 event.stopPropagation();
                 event.preventDefault();
 
+                isRetryRef.current = true;
                 setIsInputShown(false);
                 setInputValue(pageNumber);
-                isRetyRef.current = true;
                 break;
             default:
                 break;
@@ -74,8 +74,11 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
         }
 
         if (buttonElRef.current && !isInputShown) {
-            buttonElRef.current.focus();
-            isRetyRef.current = false;
+            if (isRetryRef.current) {
+                buttonElRef.current.focus();
+            }
+
+            isRetryRef.current = false;
         }
     }, [isInputShown]);
 
@@ -86,7 +89,6 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                     ref={inputElRef}
                     className="bp-PageControlsForm-input"
                     data-testid="bp-PageControlsForm-input"
-                    disabled={pageCount <= 1}
                     min="1"
                     onBlur={handleNumInputBlur}
                     onChange={handleNumInputChange}

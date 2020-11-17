@@ -18,9 +18,7 @@ describe('PageControlsForm', () => {
             ${''}         | ${0}
         `('should call onPageSubmit when input blurs', ({ newPageNumber, onPageSubmitCallCount }) => {
             const onPageSubmit = jest.fn();
-            const pageCount = 3;
-            const pageNumber = 1;
-            const wrapper = getWrapper({ onPageSubmit, pageCount, pageNumber });
+            const wrapper = getWrapper({ onPageSubmit, pageCount: 3, pageNumber: 1 });
 
             getFormButton(wrapper).simulate('click');
             getFormInput(wrapper).simulate('change', { target: { value: newPageNumber } });
@@ -35,11 +33,9 @@ describe('PageControlsForm', () => {
             ${''}         | ${0}
         `('should handle when Enter key is pressed on input', ({ onPageSubmitCallCount, newPageNumber }) => {
             const onPageSubmit = jest.fn();
-            const pageCount = 3;
-            const pageNumber = 1;
             const preventDefault = jest.fn();
             const stopPropagation = jest.fn();
-            const wrapper = getWrapper({ onPageSubmit, pageCount, pageNumber });
+            const wrapper = getWrapper({ onPageSubmit, pageCount: 3, pageNumber: 1 });
 
             getFormButton(wrapper).simulate('click');
 
@@ -57,7 +53,7 @@ describe('PageControlsForm', () => {
 
             expect(preventDefault).toHaveBeenCalled();
             expect(stopPropagation).toHaveBeenCalled();
-            expect(onPageSubmit.mock.calls.length).toBe(onPageSubmitCallCount);
+            expect(onPageSubmit).toBeCalledTimes(onPageSubmitCallCount);
             expect(getFormButton(wrapper).exists()).toBe(true);
             expect(getFormInput(wrapper).exists()).toBe(false);
         });
