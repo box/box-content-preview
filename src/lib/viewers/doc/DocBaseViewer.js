@@ -1323,6 +1323,8 @@ class DocBaseViewer extends BaseViewer {
     pagechangingHandler(event) {
         const { pageNumber } = event;
 
+        this.renderUI();
+
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.setCurrentPage(pageNumber);
         }
@@ -1334,7 +1336,6 @@ class DocBaseViewer extends BaseViewer {
             this.cachePage(pageNumber);
         }
 
-        this.renderUI();
         this.emit('pagefocus', pageNumber);
     }
 
