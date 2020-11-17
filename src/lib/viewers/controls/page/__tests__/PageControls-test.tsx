@@ -15,9 +15,8 @@ describe('PageControls', () => {
     describe('event handlers', () => {
         test('should handle previous page click', () => {
             const pageNumber = 2;
-            const pageCount = 3;
             const onPageChange = jest.fn();
-            const wrapper = getWrapper({ onPageChange, pageCount, pageNumber });
+            const wrapper = getWrapper({ onPageChange, pageCount: 3, pageNumber });
 
             getPreviousPageButton(wrapper).simulate('click');
 
@@ -26,9 +25,8 @@ describe('PageControls', () => {
 
         test('should handle next page click', () => {
             const pageNumber = 2;
-            const pageCount = 3;
             const onPageChange = jest.fn();
-            const wrapper = getWrapper({ onPageChange, pageCount, pageNumber });
+            const wrapper = getWrapper({ onPageChange, pageCount: 3, pageNumber });
 
             getNextPageButton(wrapper).simulate('click');
 
@@ -45,8 +43,7 @@ describe('PageControls', () => {
         `(
             'should handle the disable prop correctly when pageNumber is $pageNumber and pageCount is $pageCount',
             ({ pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
-                const pageCount = 3;
-                const wrapper = getWrapper({ pageCount, pageNumber });
+                const wrapper = getWrapper({ pageCount: 3, pageNumber });
 
                 expect(getPreviousPageButton(wrapper).prop('disabled')).toBe(isPrevButtonDisabled);
                 expect(getNextPageButton(wrapper).prop('disabled')).toBe(isNextButtonDisabled);
