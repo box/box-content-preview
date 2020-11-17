@@ -38,13 +38,14 @@ describe('PageControls', () => {
 
     describe('render', () => {
         test.each`
-            pageNumber | pageCount | isPrevButtonDisabled | isNextButtonDisabled
-            ${1}       | ${3}      | ${true}              | ${false}
-            ${3}       | ${3}      | ${false}             | ${true}
-            ${2}       | ${3}      | ${false}             | ${false}
+            pageNumber | isPrevButtonDisabled | isNextButtonDisabled
+            ${1}       | ${true}              | ${false}
+            ${3}       | ${false}             | ${true}
+            ${2}       | ${false}             | ${false}
         `(
             'should handle the disable prop correctly when pageNumber is $pageNumber and pageCount is $pageCount',
-            ({ pageCount, pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
+            ({ pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
+                const pageCount = 3;
                 const wrapper = getWrapper({ pageCount, pageNumber });
 
                 expect(getPreviousPageButton(wrapper).prop('disabled')).toBe(isPrevButtonDisabled);

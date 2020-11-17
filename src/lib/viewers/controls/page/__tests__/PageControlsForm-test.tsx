@@ -1,6 +1,6 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
 import noop from 'lodash/noop';
+import { shallow, ShallowWrapper } from 'enzyme';
 import PageControlsForm, { ENTER, ESCAPE } from '../PageControlsForm';
 
 describe('PageControlsForm', () => {
@@ -26,15 +26,14 @@ describe('PageControlsForm', () => {
             getFormInput(wrapper).simulate('change', { target: { value: newPageNumber } });
             getFormInput(wrapper).simulate('blur');
 
-            expect(onPageSubmit.mock.calls.length).toBe(onPageSubmitCallCount);
+            expect(onPageSubmit).toBeCalledTimes(onPageSubmitCallCount);
         });
 
         test.each`
             newPageNumber | onPageSubmitCallCount
-            ${''}         | ${0}
             ${2}          | ${1}
+            ${''}         | ${0}
         `('should handle when Enter key is pressed on input', ({ onPageSubmitCallCount, newPageNumber }) => {
-            const key = ENTER;
             const onPageSubmit = jest.fn();
             const pageCount = 3;
             const pageNumber = 1;
@@ -43,17 +42,17 @@ describe('PageControlsForm', () => {
             const wrapper = getWrapper({ onPageSubmit, pageCount, pageNumber });
 
             getFormButton(wrapper).simulate('click');
+
             expect(getFormButton(wrapper).exists()).toBe(false);
             expect(getFormInput(wrapper).exists()).toBe(true);
+
             getFormInput(wrapper).simulate('change', {
-                preventDefault,
-                stopPropagation,
                 target: { value: newPageNumber },
             });
             getFormInput(wrapper).simulate('keydown', {
                 preventDefault,
                 stopPropagation,
-                key,
+                key: ENTER,
             });
 
             expect(preventDefault).toHaveBeenCalled();
@@ -67,12 +66,15 @@ describe('PageControlsForm', () => {
             const preventDefault = jest.fn();
             const stopPropagation = jest.fn();
             const wrapper = getWrapper();
+
             expect(getFormButton(wrapper).exists()).toBe(true);
             expect(getFormInput(wrapper).exists()).toBe(false);
 
             getFormButton(wrapper).simulate('click');
+
             expect(getFormButton(wrapper).exists()).toBe(false);
             expect(getFormInput(wrapper).exists()).toBe(true);
+
             getFormInput(wrapper).simulate('keydown', {
                 preventDefault,
                 stopPropagation,
@@ -91,13 +93,14 @@ describe('PageControlsForm', () => {
             const pageCount = 3;
             const pageNumber = 2;
 
-            const wrapper = getWrapper({ pageCount: 3, pageNumber: 2 });
+            const wrapper = getWrapper({ pageCount, pageNumber });
 
             expect(getFormButton(wrapper).text()).toEqual(`${pageNumber} / ${pageCount}`);
         });
 
         test('should render input when button is clicked', () => {
             const wrapper = getWrapper();
+
             expect(getFormButton(wrapper).exists()).toBe(true);
             expect(getFormInput(wrapper).exists()).toBe(false);
 

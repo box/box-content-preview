@@ -17,7 +17,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
             <button
                 className="bp-PageControls-button"
                 data-testid="bp-PageControls-previous"
-                disabled={pageNumber <= 1}
+                disabled={pageNumber === 1}
                 onClick={(): void => onPageChange(pageNumber - 1)}
                 title={__('previous_page')}
                 type="button"
@@ -28,7 +28,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
             <button
                 className="bp-PageControls-button"
                 data-testid="bp-PageControls-next"
-                disabled={pageNumber >= pageCount}
+                disabled={pageNumber === pageCount}
                 onClick={(): void => onPageChange(pageNumber + 1)}
                 title={__('next_page')}
                 type="button"

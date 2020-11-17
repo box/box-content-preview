@@ -14,9 +14,10 @@ export const ESCAPE = 'Escape';
 export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }: Props): JSX.Element {
     const [isInputShown, setIsInputShown] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(pageNumber);
-    const isButtonFocus = React.useRef(false);
+
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const inputElRef = React.useRef<HTMLInputElement>(null);
+    const isRetyRef = React.useRef(false);
 
     const setPage = (allowRetry = false): void => {
         if (!Number.isNaN(inputValue) && inputValue >= 1 && inputValue <= pageCount && inputValue !== pageNumber) {
@@ -25,7 +26,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
             setInputValue(pageNumber); // Reset the invalid input value to the current page
 
             if (allowRetry) {
-                isButtonFocus.current = true;
+                isRetyRef.current = true;
             }
         }
 
@@ -55,7 +56,8 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                 event.preventDefault();
 
                 setIsInputShown(false);
-                isButtonFocus.current = true;
+                setInputValue(pageNumber);
+                isRetyRef.current = true;
                 break;
             default:
                 break;
@@ -67,15 +69,13 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
     }, [pageNumber]);
 
     React.useLayoutEffect(() => {
-        if (buttonElRef.current && isButtonFocus) {
-            buttonElRef.current.focus();
-            isButtonFocus.current = false;
-        }
-    }, [isButtonFocus]);
-
-    React.useLayoutEffect(() => {
         if (inputElRef.current && isInputShown) {
             inputElRef.current.select();
+        }
+
+        if (buttonElRef.current && !isInputShown) {
+            buttonElRef.current.focus();
+            isRetyRef.current = false;
         }
     }, [isInputShown]);
 
