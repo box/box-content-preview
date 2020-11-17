@@ -24,9 +24,9 @@ describe('ImageControls', () => {
 
             expect(wrapper.exists(ControlsBar));
             expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onToggle);
+            expect(wrapper.find(RotateControl).prop('onRotateLeft')).toEqual(onRotateLeft);
             expect(wrapper.find(ZoomControls).prop('onZoomIn')).toEqual(onZoomIn);
             expect(wrapper.find(ZoomControls).prop('onZoomOut')).toEqual(onZoomOut);
-            expect(wrapper.find(RotateControl).prop('onRotateLeft')).toEqual(onRotateLeft);
         });
     });
 });

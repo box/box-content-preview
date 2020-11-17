@@ -32,10 +32,10 @@ describe('MultiImageControls', () => {
             expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onToggle);
             expect(wrapper.find(PageControls).prop('onPageChange')).toEqual(onPageChange);
             expect(wrapper.find(PageControls).prop('onPageSubmit')).toEqual(onPageSubmit);
-            expect(wrapper.find(ZoomControls).prop('onZoomIn')).toEqual(onZoomIn);
-            expect(wrapper.find(ZoomControls).prop('onZoomOut')).toEqual(onZoomOut);
             expect(wrapper.find(PageControls).prop('pageCount')).toEqual(pageCount);
             expect(wrapper.find(PageControls).prop('pageNumber')).toEqual(pageNumber);
+            expect(wrapper.find(ZoomControls).prop('onZoomIn')).toEqual(onZoomIn);
+            expect(wrapper.find(ZoomControls).prop('onZoomOut')).toEqual(onZoomOut);
         });
     });
 });
