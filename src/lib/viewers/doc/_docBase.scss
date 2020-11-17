@@ -354,7 +354,6 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
-    &.bp-annotations-create--drawing,
     &.bp-annotations-create--highlight,
     &.bp-annotations-create--region {
         @include bp-annotations-create-base;
