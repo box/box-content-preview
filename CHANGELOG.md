@@ -1,3 +1,9 @@
+## <small>2.58.1 (2020-11-18)</small>
+
+* fix(annotations): remove bp prefix from region cursor keys (#1295) ([5856512](https://github.com/box/box-content-preview/commit/5856512)), closes [#1295](https://github.com/box/box-content-preview/issues/1295)
+
+
+
 ## 2.58.0 (2020-11-18)
 
 * feat(annotations): add ftux cursor logic (#1281) ([b1a47b4](https://github.com/box/box-content-preview/commit/b1a47b4)), closes [#1281](https://github.com/box/box-content-preview/issues/1281)
