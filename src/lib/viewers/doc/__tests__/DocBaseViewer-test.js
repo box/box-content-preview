@@ -1702,6 +1702,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
                         annotationMode="none"
+                        hasHighlight={false}
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
@@ -2355,8 +2356,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('bindControlListeners()', () => {
             beforeEach(() => {
-                docBase.options.showAnnotationsHighlightText = true;
-
                 docBase.pdfViewer = {
                     pagesCount: 4,
                     currentPageNumber: 1,
@@ -2452,7 +2451,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             [true, false].forEach(option =>
                 it(`should init annotationControls with showHighlightText ${option}`, () => {
-                    docBase.options.showAnnotationsHighlightText = option;
+                    stubs.checkPermission.mockReturnValue(option);
 
                     docBase.bindControlListeners();
 
