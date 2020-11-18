@@ -9,6 +9,12 @@
     }
 }
 
+@mixin bp-annotations-disable-drawing-targets {
+    .ba-DrawingAnnotations-list.is-listening .ba-DrawingTarget {
+        pointer-events: none;
+    }
+}
+
 @mixin bp-annotations-disable-highlight-targets {
     .ba-HighlightList .ba-HighlightSvg.is-listening .ba-HighlightTarget-rect {
         pointer-events: none;

@@ -1797,6 +1797,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         [
+            [AnnotationMode.DRAWING, constants.CLASS_ANNOTATIONS_CREATE_DRAWING],
             [AnnotationMode.REGION, constants.CLASS_ANNOTATIONS_CREATE_REGION],
             [AnnotationMode.HIGHLIGHT, constants.CLASS_ANNOTATIONS_CREATE_HIGHLIGHT],
         ].forEach(([mode, className]) => {
@@ -1807,7 +1808,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
         });
 
-        [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT].forEach(mode => {
+        [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING].forEach(mode => {
             test(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
                 base.options.enableAnnotationsDiscoverability = true;
                 base.processAnnotationModeChange(mode);

@@ -20,12 +20,13 @@ class MultiImageViewer extends ImageBaseViewer {
     constructor(options) {
         super(options);
 
-        this.setPage = this.setPage.bind(this);
-        this.scrollHandler = this.scrollHandler.bind(this);
-        this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
-        this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
-        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
+        this.handlePageSubmit = this.handlePageSubmit.bind(this);
+        this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.setPage = this.setPage.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
     }
 
@@ -252,6 +253,17 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Handles page submit by setting page and then setting focus
+     *
+     * @override
+     * @return {void}
+     */
+    handlePageSubmit(page) {
+        this.setPage(page);
+        this.wrapperEl.focus();
+    }
+
+    /**
      * Adds UI controls
      *
      * @override
@@ -274,12 +286,20 @@ class MultiImageViewer extends ImageBaseViewer {
             this.zoomControls.setCurrentScale(this.scale);
         }
 
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(this.currentPageNumber);
+        }
+
         if (this.controls && this.options.useReactControls) {
             this.controls.render(
                 <MultiImageControls
                     onFullscreenToggle={this.toggleFullscreen}
+                    onPageChange={this.setPage}
+                    onPageSubmit={this.handlePageSubmit}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
+                    pageCount={this.pagesCount}
+                    pageNumber={this.currentPageNumber}
                     scale={this.scale}
                 />,
             );
@@ -400,9 +420,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.currentPageNumber = pageNumber;
 
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(pageNumber);
-        }
+        this.renderUI();
 
         this.emit('pagefocus', {
             pageNumber,

@@ -1668,6 +1668,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('handlePageSubmit()', () => {
+            test('should handle setting page and focusing wrapper', () => {
+                const pageNumber = 3;
+                jest.spyOn(docBase, 'setPage').mockImplementation();
+                jest.spyOn(docBase.docEl, 'focus').mockImplementation();
+
+                docBase.handlePageSubmit(pageNumber);
+
+                expect(docBase.setPage).toHaveBeenCalledWith(pageNumber);
+                expect(docBase.docEl.focus).toHaveBeenCalled();
+            });
+        });
+
         describe('loadUI()', () => {
             test('should set controls, bind listeners, and init the page number element', () => {
                 const bindControlListenersStub = jest.spyOn(docBase, 'bindControlListeners').mockImplementation();
@@ -1693,6 +1706,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('loadUIReact()', () => {
             test('should create controls root and render the react controls', () => {
                 docBase.pdfViewer = {
+                    pagesCount: 3,
+                    currentPageNumber: 2,
                     currentScale: 1,
                 };
                 docBase.options.useReactControls = true;
@@ -1710,9 +1725,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
+                        onPageChange={docBase.setPage}
+                        onPageSubmit={docBase.handlePageSubmit}
                         onThumbnailsToggle={docBase.toggleThumbnails}
                         onZoomIn={docBase.zoomIn}
                         onZoomOut={docBase.zoomOut}
+                        pageCount={docBase.pdfViewer.pagesCount}
+                        pageNumber={docBase.pdfViewer.currentPageNumber}
                         scale={1}
                     />,
                 );
@@ -1954,7 +1973,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should update the current page', () => {
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.event.pageNumber);
+                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.pdfViewer.currentPageNumber);
             });
 
             test('should cache the page if it is loaded', () => {

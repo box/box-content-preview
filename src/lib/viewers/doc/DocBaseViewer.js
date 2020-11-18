@@ -115,6 +115,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
+        this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
@@ -1035,6 +1036,17 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles page submit by setting page and then setting focus
+     *
+     * @override
+     * @return {void}
+     */
+    handlePageSubmit(page) {
+        this.setPage(page);
+        this.docEl.focus();
+    }
+
+    /**
      * Creates UI for preview controls.
      *
      * @private
@@ -1064,6 +1076,10 @@ class DocBaseViewer extends BaseViewer {
             this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
         }
 
+        if (this.pageControls) {
+            this.pageControls.updateCurrentPage(this.pdfViewer.currentPageNumber);
+        }
+
         if (this.controls && this.options.useReactControls) {
             const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
             const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
@@ -1080,9 +1096,13 @@ class DocBaseViewer extends BaseViewer {
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
+                    onPageChange={this.setPage}
+                    onPageSubmit={this.handlePageSubmit}
                     onThumbnailsToggle={this.toggleThumbnails}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
+                    pageCount={this.pdfViewer.pagesCount}
+                    pageNumber={this.pdfViewer.currentPageNumber}
                     scale={this.pdfViewer.currentScale}
                 />,
             );
@@ -1303,9 +1323,7 @@ class DocBaseViewer extends BaseViewer {
     pagechangingHandler(event) {
         const { pageNumber } = event;
 
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(pageNumber);
-        }
+        this.renderUI();
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.setCurrentPage(pageNumber);

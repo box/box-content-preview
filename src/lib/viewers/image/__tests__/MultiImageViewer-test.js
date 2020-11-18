@@ -358,6 +358,19 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
+    describe('handlePageSubmit()', () => {
+        test('should handle setting page and focusing wrapper', () => {
+            const pageNumber = 3;
+            jest.spyOn(multiImage, 'setPage').mockImplementation();
+            jest.spyOn(multiImage.wrapperEl, 'focus').mockImplementation();
+
+            multiImage.handlePageSubmit(pageNumber);
+
+            expect(multiImage.setPage).toHaveBeenCalledWith(pageNumber);
+            expect(multiImage.wrapperEl.focus).toHaveBeenCalled();
+        });
+    });
+
     describe('loadUI()', () => {
         const zoomInitFunc = ZoomControls.prototype.init;
 
@@ -390,8 +403,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.controls.render).toBeCalledWith(
                 <MultiImageControls
                     onFullscreenToggle={multiImage.toggleFullscreen}
+                    onPageChange={multiImage.setPage}
+                    onPageSubmit={multiImage.handlePageSubmit}
                     onZoomIn={multiImage.zoomIn}
                     onZoomOut={multiImage.zoomOut}
+                    pageCount={multiImage.pagesCount}
+                    pageNumber={multiImage.currentPageNumber}
                     scale={1}
                 />,
             );
