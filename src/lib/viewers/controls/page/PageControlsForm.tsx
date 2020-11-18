@@ -104,6 +104,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                     ref={buttonElRef}
                     className="bp-PageControlsForm-button"
                     data-testid="bp-PageControlsForm-button"
+                    disabled={pageCount <= 1}
                     onClick={(): void => setIsInputShown(true)}
                     title={__('enter_page_num')}
                     type="button"

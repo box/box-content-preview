@@ -1972,7 +1972,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should update the current page', () => {
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.event.pageNumber);
+                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.pdfViewer.currentPageNumber);
             });
 
             test('should cache the page if it is loaded', () => {

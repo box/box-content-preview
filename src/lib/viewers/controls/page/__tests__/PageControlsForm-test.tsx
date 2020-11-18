@@ -94,6 +94,12 @@ describe('PageControlsForm', () => {
             expect(getFormButton(wrapper).text()).toEqual(`${pageNumber} / ${pageCount}`);
         });
 
+        test('should render disabled button when pageCount is 1', () => {
+            const wrapper = getWrapper({ pageCount: 1, pageNumber: 1 });
+
+            expect(getFormButton(wrapper).prop('disabled')).toBe(true);
+        });
+
         test('should render input when button is clicked', () => {
             const wrapper = getWrapper();
 
