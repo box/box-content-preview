@@ -1,3 +1,18 @@
+## 2.58.0 (2020-11-18)
+
+* feat(annotations): add ftux cursor logic (#1281) ([b1a47b4](https://github.com/box/box-content-preview/commit/b1a47b4)), closes [#1281](https://github.com/box/box-content-preview/issues/1281)
+* feat(annotations): Update CSS pointer-events for drawing (#1293) ([39eec82](https://github.com/box/box-content-preview/commit/39eec82)), closes [#1293](https://github.com/box/box-content-preview/issues/1293)
+* feat(controls): Add react version of annotations controls (#1291) ([06c9084](https://github.com/box/box-content-preview/commit/06c9084)), closes [#1291](https://github.com/box/box-content-preview/issues/1291)
+* feat(controls): Add react versions of findbar and sidebar controls (#1288) ([9426404](https://github.com/box/box-content-preview/commit/9426404)), closes [#1288](https://github.com/box/box-content-preview/issues/1288)
+* feat(controls): Create new rotate control + add to image viewer (#1286) ([17eac90](https://github.com/box/box-content-preview/commit/17eac90)), closes [#1286](https://github.com/box/box-content-preview/issues/1286)
+* feat(controls): Create react core controls for image viewers (#1285) ([ede8e42](https://github.com/box/box-content-preview/commit/ede8e42)), closes [#1285](https://github.com/box/box-content-preview/issues/1285)
+* feat(controls): Create react version of page controls (#1292) ([20739ec](https://github.com/box/box-content-preview/commit/20739ec)), closes [#1292](https://github.com/box/box-content-preview/issues/1292)
+* fix(annotations): Fix AnnotationControlsFSM reset when fullscreen enter (#1287) ([65763fe](https://github.com/box/box-content-preview/commit/65763fe)), closes [#1287](https://github.com/box/box-content-preview/issues/1287)
+* fix(zoom): Round scale before comparing against max and min values (#1290) ([0dc7e65](https://github.com/box/box-content-preview/commit/0dc7e65)), closes [#1290](https://github.com/box/box-content-preview/issues/1290)
+* chore(settings): enable typescript format and validation (#1289) ([e8ec68a](https://github.com/box/box-content-preview/commit/e8ec68a)), closes [#1289](https://github.com/box/box-content-preview/issues/1289)
+
+
+
 ## 2.57.0 (2020-11-04)
 
 * feat(controls): Add react versions of core control components (#1282) ([d00879d](https://github.com/box/box-content-preview/commit/d00879d)), closes [#1282](https://github.com/box/box-content-preview/issues/1282)
