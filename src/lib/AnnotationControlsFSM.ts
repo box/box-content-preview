@@ -1,6 +1,7 @@
 import { AnnotationMode } from './AnnotationControls';
 
 export enum AnnotationState {
+    DRAWING = 'drawing',
     HIGHLIGHT = 'highlight',
     HIGHLIGHT_TEMP = 'highlight_temp',
     NONE = 'none',
@@ -21,6 +22,7 @@ export enum AnnotationInput {
 type Subscription = (state: AnnotationState) => void;
 
 export const modeStateMap = {
+    [AnnotationMode.DRAWING]: AnnotationState.DRAWING,
     [AnnotationMode.HIGHLIGHT]: AnnotationState.HIGHLIGHT,
     [AnnotationMode.NONE]: AnnotationState.NONE,
     [AnnotationMode.REGION]: AnnotationState.REGION,
@@ -33,6 +35,7 @@ export const modeTempStateMap = {
 };
 
 export const stateModeMap = {
+    [AnnotationState.DRAWING]: AnnotationMode.DRAWING,
     [AnnotationState.HIGHLIGHT]: AnnotationMode.HIGHLIGHT,
     [AnnotationState.HIGHLIGHT_TEMP]: AnnotationMode.HIGHLIGHT,
     [AnnotationState.NONE]: AnnotationMode.NONE,
