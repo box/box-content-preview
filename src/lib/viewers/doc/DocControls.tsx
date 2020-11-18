@@ -3,12 +3,14 @@ import AnnotationsControls, { Props as AnnotationsControlsProps } from '../contr
 import ControlsBar from '../controls/controls-bar';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
+import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
 export type Props = AnnotationsControlsProps &
     FindBarToggleProps &
     FullscreenToggleProps &
+    PageControlsProps &
     ThumbnailsToggleProps &
     ZoomControlsProps;
 
@@ -22,9 +24,13 @@ export default function DocControls({
     onAnnotationModeEscape,
     onFindBarToggle,
     onFullscreenToggle,
+    onPageChange,
+    onPageSubmit,
     onThumbnailsToggle,
     onZoomIn,
     onZoomOut,
+    pageCount,
+    pageNumber,
     scale,
 }: Props): JSX.Element {
     return (
@@ -38,7 +44,12 @@ export default function DocControls({
                 onZoomOut={onZoomOut}
                 scale={scale}
             />
-            {/* TODO: PageControls */}
+            <PageControls
+                onPageChange={onPageChange}
+                onPageSubmit={onPageSubmit}
+                pageCount={pageCount}
+                pageNumber={pageNumber}
+            />
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
             <AnnotationsControls
                 annotationMode={annotationMode}

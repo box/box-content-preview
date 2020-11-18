@@ -1,0 +1,9 @@
+@import '../styles';
+
+.bp-PageControls {
+    @include bp-ControlGroup;
+}
+
+.bp-PageControls-button {
+    @include bp-ControlButton($width: 32px);
+}
