@@ -29,6 +29,7 @@ export const modeStateMap = {
 };
 
 export const modeTempStateMap = {
+    [AnnotationMode.DRAWING]: AnnotationState.NONE,
     [AnnotationMode.HIGHLIGHT]: AnnotationState.HIGHLIGHT_TEMP,
     [AnnotationMode.NONE]: AnnotationState.NONE,
     [AnnotationMode.REGION]: AnnotationState.REGION_TEMP,
