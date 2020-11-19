@@ -429,6 +429,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
                     annotationMode="none"
+                    hasDrawing={false}
                     hasHighlight={false}
                     hasRegion={false}
                     onAnnotationModeClick={image.handleAnnotationControlsClick}
