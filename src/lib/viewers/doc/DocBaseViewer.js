@@ -1083,8 +1083,8 @@ class DocBaseViewer extends BaseViewer {
         if (this.controls && this.options.useReactControls) {
             const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
             const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-            const canHighlight = canAnnotate && canDownload;
             const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
+            const canHighlight = canAnnotate && canDownload;
 
             this.controls.render(
                 <DocControls
