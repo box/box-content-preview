@@ -1704,39 +1704,57 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('loadUIReact()', () => {
-            test('should create controls root and render the react controls', () => {
-                docBase.pdfViewer = {
-                    pagesCount: 3,
-                    currentPageNumber: 2,
-                    currentScale: 1,
-                };
-                docBase.options.useReactControls = true;
-                docBase.loadUIReact();
+            test.each`
+                areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | hasRegion | showAnnotationsDrawingCreate
+                ${false}                 | ${false}                      | ${false}   | ${false}  | ${false}
+                ${true}                  | ${true}                       | ${true}    | ${true}   | ${true}
+            `(
+                'should create controls root and render the react controls with hasDrawing set to $hasDrawing and hasRegion set to $hasRegion',
+                ({
+                    areNewAnnotationsEnabled,
+                    hasAnnotationCreatePermission,
+                    hasDrawing,
+                    hasRegion,
+                    showAnnotationsDrawingCreate,
+                }) => {
+                    docBase.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
+                    docBase.options.useReactControls = true;
+                    docBase.pdfViewer = {
+                        pagesCount: 3,
+                        currentPageNumber: 2,
+                        currentScale: 1,
+                    };
+                    jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
+                    jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
+                    stubs.checkPermission.mockReturnValue(false);
 
-                expect(docBase.controls).toBeInstanceOf(ControlsRoot);
-                expect(docBase.controls.render).toBeCalledWith(
-                    <DocControls
-                        annotationMode="none"
-                        hasDrawing={false}
-                        hasHighlight={false}
-                        hasRegion={false}
-                        maxScale={10}
-                        minScale={0.1}
-                        onAnnotationModeClick={docBase.handleAnnotationControlsClick}
-                        onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
-                        onFindBarToggle={docBase.toggleFindBar}
-                        onFullscreenToggle={docBase.toggleFullscreen}
-                        onPageChange={docBase.setPage}
-                        onPageSubmit={docBase.handlePageSubmit}
-                        onThumbnailsToggle={docBase.toggleThumbnails}
-                        onZoomIn={docBase.zoomIn}
-                        onZoomOut={docBase.zoomOut}
-                        pageCount={docBase.pdfViewer.pagesCount}
-                        pageNumber={docBase.pdfViewer.currentPageNumber}
-                        scale={1}
-                    />,
-                );
-            });
+                    docBase.loadUIReact();
+
+                    expect(docBase.controls).toBeInstanceOf(ControlsRoot);
+                    expect(docBase.controls.render).toBeCalledWith(
+                        <DocControls
+                            annotationMode="none"
+                            hasDrawing={hasDrawing}
+                            hasHighlight={false}
+                            hasRegion={hasRegion}
+                            maxScale={10}
+                            minScale={0.1}
+                            onAnnotationModeClick={docBase.handleAnnotationControlsClick}
+                            onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
+                            onFindBarToggle={docBase.toggleFindBar}
+                            onFullscreenToggle={docBase.toggleFullscreen}
+                            onPageChange={docBase.setPage}
+                            onPageSubmit={docBase.handlePageSubmit}
+                            onThumbnailsToggle={docBase.toggleThumbnails}
+                            onZoomIn={docBase.zoomIn}
+                            onZoomOut={docBase.zoomOut}
+                            pageCount={docBase.pdfViewer.pagesCount}
+                            pageNumber={docBase.pdfViewer.currentPageNumber}
+                            scale={1}
+                        />,
+                    );
+                },
+            );
         });
 
         describe('bindDOMListeners()', () => {
