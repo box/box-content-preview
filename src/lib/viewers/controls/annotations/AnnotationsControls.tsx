@@ -26,9 +26,9 @@ export default function AnnotationsControls({
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
     const isFullscreen = useFullscreen();
+    const showDrawing = !isFullscreen && hasDrawing;
     const showHighlight = !isFullscreen && hasHighlight;
     const showRegion = !isFullscreen && hasRegion;
-    const showDrawing = !isFullscreen && hasDrawing;
 
     // Component event handlers
     const handleModeClick = (mode: AnnotationMode): void => {
