@@ -1767,7 +1767,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.loadUIReact();
 
                     expect(docBase.controls).toBeInstanceOf(ControlsRoot);
-
                     expect(docBase.controls.render).toBeCalledWith(
                         expect.objectContaining({
                             props: expect.objectContaining({
