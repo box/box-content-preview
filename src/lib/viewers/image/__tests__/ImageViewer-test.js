@@ -421,54 +421,45 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('loadUIReact()', () => {
-        test('should create controls root and render the react controls', () => {
-            image.options.useReactControls = true;
-            image.loadUIReact();
+        test.each`
+            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | hasRegion | showAnnotationsDrawingCreate
+            ${false}                 | ${false}                      | ${false}   | ${false}  | ${false}
+            ${true}                  | ${true}                       | ${true}    | ${true}   | ${true}
+        `(
+            'should create controls root and render the react controls with hasDrawing set to $hasRegion and hasRegion set to $hasRegion',
+            ({
+                areNewAnnotationsEnabled,
+                hasAnnotationCreatePermission,
+                hasDrawing,
+                hasRegion,
+                showAnnotationsDrawingCreate,
+            }) => {
+                image.currentRotationAngle = 0;
+                image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
+                image.options.useReactControls = true;
+                jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
+                jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
 
-            expect(image.controls).toBeInstanceOf(ControlsRoot);
-            expect(image.controls.render).toBeCalledWith(
-                <ImageControls
-                    annotationMode="none"
-                    hasDrawing={false}
-                    hasHighlight={false}
-                    hasRegion={false}
-                    onAnnotationModeClick={image.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={image.handleAnnotationControlsEscape}
-                    onFullscreenToggle={image.toggleFullscreen}
-                    onRotateLeft={image.rotateLeft}
-                    onZoomIn={image.zoomIn}
-                    onZoomOut={image.zoomOut}
-                    scale={1}
-                />,
-            );
-        });
+                image.loadUIReact();
 
-        test('should render ImageControls with hasDrawing set to true and hasRegion set to true if user can annotate and showAnnotationsDrawingCreate is true', () => {
-            image.currentRotationAngle = 0;
-            image.options.showAnnotationsDrawingCreate = true;
-            image.options.useReactControls = true;
-
-            jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
-
-            image.loadUIReact();
-
-            expect(image.controls.render).toBeCalledWith(
-                <ImageControls
-                    annotationMode="none"
-                    hasDrawing
-                    hasHighlight={false}
-                    hasRegion
-                    onAnnotationModeClick={image.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={image.handleAnnotationControlsEscape}
-                    onFullscreenToggle={image.toggleFullscreen}
-                    onRotateLeft={image.rotateLeft}
-                    onZoomIn={image.zoomIn}
-                    onZoomOut={image.zoomOut}
-                    scale={1}
-                />,
-            );
-        });
+                expect(image.controls).toBeInstanceOf(ControlsRoot);
+                expect(image.controls.render).toBeCalledWith(
+                    <ImageControls
+                        annotationMode="none"
+                        hasDrawing={hasDrawing}
+                        hasHighlight={false}
+                        hasRegion={hasRegion}
+                        onAnnotationModeClick={image.handleAnnotationControlsClick}
+                        onAnnotationModeEscape={image.handleAnnotationControlsEscape}
+                        onFullscreenToggle={image.toggleFullscreen}
+                        onRotateLeft={image.rotateLeft}
+                        onZoomIn={image.zoomIn}
+                        onZoomOut={image.zoomOut}
+                        scale={1}
+                    />,
+                );
+            },
+        );
     });
 
     describe('isRotated()', () => {
