@@ -442,6 +442,33 @@ describe('lib/viewers/image/ImageViewer', () => {
                 />,
             );
         });
+
+        test('should render ImageControls with hasDrawing set to true and hasRegion set to true if user can annotate and showAnnotationsDrawingCreate is true', () => {
+            image.options.useReactControls = true;
+            image.options.showAnnotationsDrawingCreate = true;
+            image.currentRotationAngle = 0;
+
+            jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
+
+            image.loadUIReact();
+
+            expect(image.controls.render).toBeCalledWith(
+                <ImageControls
+                    annotationMode="none"
+                    hasDrawing
+                    hasHighlight={false}
+                    hasRegion
+                    onAnnotationModeClick={image.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={image.handleAnnotationControlsEscape}
+                    onFullscreenToggle={image.toggleFullscreen}
+                    onRotateLeft={image.rotateLeft}
+                    onZoomIn={image.zoomIn}
+                    onZoomOut={image.zoomOut}
+                    scale={1}
+                />,
+            );
+        });
     });
 
     describe('isRotated()', () => {
