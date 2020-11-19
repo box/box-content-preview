@@ -444,9 +444,9 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         test('should render ImageControls with hasDrawing set to true and hasRegion set to true if user can annotate and showAnnotationsDrawingCreate is true', () => {
-            image.options.useReactControls = true;
-            image.options.showAnnotationsDrawingCreate = true;
             image.currentRotationAngle = 0;
+            image.options.showAnnotationsDrawingCreate = true;
+            image.options.useReactControls = true;
 
             jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
