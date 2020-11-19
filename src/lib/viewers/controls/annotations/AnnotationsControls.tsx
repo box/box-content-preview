@@ -1,7 +1,7 @@
 import React from 'react';
 import noop from 'lodash/noop';
 import AnnotationsButton from './AnnotationsButton';
-import IconDrawing16 from '../icons/IconDrawing16';
+import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
@@ -73,7 +73,7 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconDrawing16 />
+                <IconDrawing24 />
             </AnnotationsButton>
             <AnnotationsButton
                 data-resin-target="highlightRegion"
