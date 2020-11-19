@@ -1720,9 +1720,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
                     docBase.options.useReactControls = true;
                     docBase.pdfViewer = {
-                        pagesCount: 3,
                         currentPageNumber: 2,
                         currentScale: 1,
+                        pagesCount: 3,
                     };
                     jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
                     jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
