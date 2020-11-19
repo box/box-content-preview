@@ -1704,26 +1704,62 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('loadUIReact()', () => {
+            beforeEach(() => {
+                docBase.pdfViewer = {
+                    pagesCount: 3,
+                    currentPageNumber: 2,
+                    currentScale: 1,
+                };
+                docBase.options.useReactControls = true;
+            });
+
+            test('should create controls root and render the react controls', () => {
+                docBase.loadUIReact();
+
+                expect(docBase.controls).toBeInstanceOf(ControlsRoot);
+                expect(docBase.controls.render).toBeCalledWith(
+                    <DocControls
+                        annotationMode="none"
+                        hasDrawing={false}
+                        hasHighlight={false}
+                        hasRegion={false}
+                        maxScale={10}
+                        minScale={0.1}
+                        onAnnotationModeClick={docBase.handleAnnotationControlsClick}
+                        onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
+                        onFindBarToggle={docBase.toggleFindBar}
+                        onFullscreenToggle={docBase.toggleFullscreen}
+                        onPageChange={docBase.setPage}
+                        onPageSubmit={docBase.handlePageSubmit}
+                        onThumbnailsToggle={docBase.toggleThumbnails}
+                        onZoomIn={docBase.zoomIn}
+                        onZoomOut={docBase.zoomOut}
+                        pageCount={docBase.pdfViewer.pagesCount}
+                        pageNumber={docBase.pdfViewer.currentPageNumber}
+                        scale={1}
+                    />,
+                );
+            });
+
             test.each`
-                areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | hasRegion | showAnnotationsDrawingCreate
-                ${false}                 | ${false}                      | ${false}   | ${false}  | ${false}
-                ${true}                  | ${true}                       | ${true}    | ${true}   | ${true}
+                areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
+                ${false}                 | ${false}                      | ${false}   | ${false}
+                ${false}                 | ${false}                      | ${false}   | ${true}
+                ${true}                  | ${true}                       | ${false}   | ${false}
+                ${true}                  | ${false}                      | ${false}   | ${true}
+                ${true}                  | ${false}                      | ${false}   | ${false}
+                ${false}                 | ${true}                       | ${false}   | ${true}
+                ${false}                 | ${true}                       | ${false}   | ${false}
+                ${true}                  | ${true}                       | ${true}    | ${true}
             `(
-                'should create controls root and render the react controls with hasDrawing set to $hasDrawing and hasRegion set to $hasRegion',
+                'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
                 ({
                     areNewAnnotationsEnabled,
                     hasAnnotationCreatePermission,
                     hasDrawing,
-                    hasRegion,
                     showAnnotationsDrawingCreate,
                 }) => {
                     docBase.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
-                    docBase.options.useReactControls = true;
-                    docBase.pdfViewer = {
-                        currentPageNumber: 2,
-                        currentScale: 1,
-                        pagesCount: 3,
-                    };
                     jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
                     jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
                     stubs.checkPermission.mockReturnValue(false);
@@ -1731,27 +1767,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.loadUIReact();
 
                     expect(docBase.controls).toBeInstanceOf(ControlsRoot);
+
                     expect(docBase.controls.render).toBeCalledWith(
-                        <DocControls
-                            annotationMode="none"
-                            hasDrawing={hasDrawing}
-                            hasHighlight={false}
-                            hasRegion={hasRegion}
-                            maxScale={10}
-                            minScale={0.1}
-                            onAnnotationModeClick={docBase.handleAnnotationControlsClick}
-                            onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
-                            onFindBarToggle={docBase.toggleFindBar}
-                            onFullscreenToggle={docBase.toggleFullscreen}
-                            onPageChange={docBase.setPage}
-                            onPageSubmit={docBase.handlePageSubmit}
-                            onThumbnailsToggle={docBase.toggleThumbnails}
-                            onZoomIn={docBase.zoomIn}
-                            onZoomOut={docBase.zoomOut}
-                            pageCount={docBase.pdfViewer.pagesCount}
-                            pageNumber={docBase.pdfViewer.currentPageNumber}
-                            scale={1}
-                        />,
+                        expect.objectContaining({
+                            props: expect.objectContaining({
+                                hasDrawing,
+                            }),
+                        }),
                     );
                 },
             );

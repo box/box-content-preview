@@ -421,22 +421,45 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('loadUIReact()', () => {
+        beforeEach(() => {
+            image.options.useReactControls = true;
+        });
+
+        test('should create controls root and render the react controls', () => {
+            image.loadUIReact();
+
+            expect(image.controls).toBeInstanceOf(ControlsRoot);
+            expect(image.controls.render).toBeCalledWith(
+                <ImageControls
+                    annotationMode="none"
+                    hasDrawing={false}
+                    hasHighlight={false}
+                    hasRegion={false}
+                    onAnnotationModeClick={image.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={image.handleAnnotationControlsEscape}
+                    onFullscreenToggle={image.toggleFullscreen}
+                    onRotateLeft={image.rotateLeft}
+                    onZoomIn={image.zoomIn}
+                    onZoomOut={image.zoomOut}
+                    scale={1}
+                />,
+            );
+        });
+
         test.each`
-            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | hasRegion | showAnnotationsDrawingCreate
-            ${false}                 | ${false}                      | ${false}   | ${false}  | ${false}
-            ${true}                  | ${true}                       | ${true}    | ${true}   | ${true}
+            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
+            ${false}                 | ${false}                      | ${false}   | ${false}
+            ${false}                 | ${false}                      | ${false}   | ${true}
+            ${true}                  | ${true}                       | ${false}   | ${false}
+            ${true}                  | ${false}                      | ${false}   | ${true}
+            ${true}                  | ${false}                      | ${false}   | ${false}
+            ${false}                 | ${true}                       | ${false}   | ${true}
+            ${false}                 | ${true}                       | ${false}   | ${false}
+            ${true}                  | ${true}                       | ${true}    | ${true}
         `(
-            'should create controls root and render the react controls with hasDrawing set to $hasRegion and hasRegion set to $hasRegion',
-            ({
-                areNewAnnotationsEnabled,
-                hasAnnotationCreatePermission,
-                hasDrawing,
-                hasRegion,
-                showAnnotationsDrawingCreate,
-            }) => {
-                image.currentRotationAngle = 0;
+            'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
+            ({ areNewAnnotationsEnabled, hasAnnotationCreatePermission, hasDrawing, showAnnotationsDrawingCreate }) => {
                 image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
-                image.options.useReactControls = true;
                 jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
                 jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
 
@@ -444,19 +467,11 @@ describe('lib/viewers/image/ImageViewer', () => {
 
                 expect(image.controls).toBeInstanceOf(ControlsRoot);
                 expect(image.controls.render).toBeCalledWith(
-                    <ImageControls
-                        annotationMode="none"
-                        hasDrawing={hasDrawing}
-                        hasHighlight={false}
-                        hasRegion={hasRegion}
-                        onAnnotationModeClick={image.handleAnnotationControlsClick}
-                        onAnnotationModeEscape={image.handleAnnotationControlsEscape}
-                        onFullscreenToggle={image.toggleFullscreen}
-                        onRotateLeft={image.rotateLeft}
-                        onZoomIn={image.zoomIn}
-                        onZoomOut={image.zoomOut}
-                        scale={1}
-                    />,
+                    expect.objectContaining({
+                        props: expect.objectContaining({
+                            hasDrawing,
+                        }),
+                    }),
                 );
             },
         );
