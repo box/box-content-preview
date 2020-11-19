@@ -58,7 +58,7 @@ export default function AnnotationsControls({
     }, [annotationMode, onAnnotationModeEscape]);
 
     // Prevent empty group from being displayed
-    if (!showHighlight && !showRegion && !showDrawing) {
+    if (!showDrawing && !showHighlight && !showRegion) {
         return null;
     }
 

@@ -1196,8 +1196,8 @@ class DocBaseViewer extends BaseViewer {
                 fileId: this.options.file.id,
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
-                showHighlightText: canDownload,
                 showDrawing: this.options.showAnnotationsDrawingCreate,
+                showHighlightText: canDownload,
             });
         }
     }

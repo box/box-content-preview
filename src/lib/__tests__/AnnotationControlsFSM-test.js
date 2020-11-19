@@ -81,11 +81,10 @@ describe('lib/AnnotationControlsFSM', () => {
     describe('AnnotationState.DRAWING', () => {
         describe('AnnotationState.DRAWING', () => {
             test('should output AnnotationMode.NONE if input is AnnotationInput.CLICK and mode is AnnotationMode.DRAWING', () => {
+                const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.DRAWING);
                 const input = AnnotationInput.CLICK;
                 const mode = AnnotationMode.DRAWING;
                 const output = AnnotationMode.NONE;
-
-                const annotationControlsFSM = new AnnotationControlsFSM(AnnotationState.DRAWING);
 
                 expect(annotationControlsFSM.transition(input, mode)).toEqual(output);
                 expect(annotationControlsFSM.getMode()).toBe(output);
