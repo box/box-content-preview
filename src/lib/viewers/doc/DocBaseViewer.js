@@ -1083,11 +1083,13 @@ class DocBaseViewer extends BaseViewer {
         if (this.controls && this.options.useReactControls) {
             const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
             const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+            const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
             const canHighlight = canAnnotate && canDownload;
 
             this.controls.render(
                 <DocControls
                     annotationMode={this.annotationControlsFSM.getMode()}
+                    hasDrawing={canDraw}
                     hasHighlight={canHighlight}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
@@ -1194,6 +1196,7 @@ class DocBaseViewer extends BaseViewer {
                 fileId: this.options.file.id,
                 onClick: this.handleAnnotationControlsClick,
                 onEscape: this.handleAnnotationControlsEscape,
+                showDrawing: this.options.showAnnotationsDrawingCreate,
                 showHighlightText: canDownload,
             });
         }

@@ -421,14 +421,18 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('loadUIReact()', () => {
-        test('should create controls root and render the react controls', () => {
+        beforeEach(() => {
             image.options.useReactControls = true;
+        });
+
+        test('should create controls root and render the react controls', () => {
             image.loadUIReact();
 
             expect(image.controls).toBeInstanceOf(ControlsRoot);
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
                     annotationMode="none"
+                    hasDrawing={false}
                     hasHighlight={false}
                     hasRegion={false}
                     onAnnotationModeClick={image.handleAnnotationControlsClick}
@@ -441,6 +445,36 @@ describe('lib/viewers/image/ImageViewer', () => {
                 />,
             );
         });
+
+        test.each`
+            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
+            ${false}                 | ${false}                      | ${false}   | ${false}
+            ${false}                 | ${false}                      | ${false}   | ${true}
+            ${true}                  | ${true}                       | ${false}   | ${false}
+            ${true}                  | ${false}                      | ${false}   | ${true}
+            ${true}                  | ${false}                      | ${false}   | ${false}
+            ${false}                 | ${true}                       | ${false}   | ${true}
+            ${false}                 | ${true}                       | ${false}   | ${false}
+            ${true}                  | ${true}                       | ${true}    | ${true}
+        `(
+            'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
+            ({ areNewAnnotationsEnabled, hasAnnotationCreatePermission, hasDrawing, showAnnotationsDrawingCreate }) => {
+                image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
+                jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
+                jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
+
+                image.loadUIReact();
+
+                expect(image.controls).toBeInstanceOf(ControlsRoot);
+                expect(image.controls.render).toBeCalledWith(
+                    expect.objectContaining({
+                        props: expect.objectContaining({
+                            hasDrawing,
+                        }),
+                    }),
+                );
+            },
+        );
     });
 
     describe('isRotated()', () => {
