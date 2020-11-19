@@ -149,9 +149,9 @@
     ],
     "husky": {
         "hooks": {
+            "commit-msg": "commitlint -e",
             "pre-commit": "lint-staged",
-            "pre-push": "yarn lint",
-            "commit-msg": "commitlint -e"
+            "pre-push": "./build/prepush.sh"
         }
     },
     "resolutions": {
