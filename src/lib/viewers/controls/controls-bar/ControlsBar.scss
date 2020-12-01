@@ -3,6 +3,7 @@
 .bp-ControlsBar {
     display: flex;
     align-items: center;
+    margin-right: 6px;
     background: fade-out($black, .2);
     border-radius: 3px;
 }

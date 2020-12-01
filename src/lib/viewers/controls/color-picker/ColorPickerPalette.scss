@@ -1,0 +1,21 @@
+.bp-ColorPickerPalette {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 146px;
+
+    .bp-ColorPickerPalette-button {
+        width: 20px;
+        height: 20px;
+        margin-right: 2px;
+        margin-left: 2px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 0 0 0 2pt white;
+        }
+    }
+}
