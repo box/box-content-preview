@@ -9,6 +9,7 @@ import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/si
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
 export type Props = AnnotationsControlsProps &
+    ColorPickerToggleProps &
     FindBarToggleProps &
     FullscreenToggleProps &
     PageControlsProps &

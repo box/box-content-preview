@@ -20,7 +20,7 @@ export default function ColorPickerToggle({ annotationMode, isActive = false, ..
         <div className="bp-ColorPickerToggle">
             {isColorPickerToggled && (
                 <ColorPickerPalette
-                    onColorSelect={color => {
+                    onColorSelect={(): void => {
                         setIsColorPickerToggled(false);
                     }}
                 />

@@ -6,7 +6,7 @@ import ControlsBar from '../controls-bar';
 import './ColorPickerPalette.scss';
 
 export type Props = {
-    onColorSelect: (color: string) => void;
+    onColorSelect: () => void; // TODO: this method wil need to take in a color string param
 };
 
 export default function ColorPickerPalette({ onColorSelect = noop }: Props): JSX.Element {
@@ -20,7 +20,7 @@ export default function ColorPickerPalette({ onColorSelect = noop }: Props): JSX
                         <button
                             key={color}
                             className="bp-ColorPickerPalette-button"
-                            onClick={(): void => onColorSelect(color)}
+                            onClick={(): void => onColorSelect()}
                             style={{
                                 backgroundColor: color,
                             }}
