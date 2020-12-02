@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 import ColorPickerPalette from './ColorPickerPalette';
 import { AnnotationMode } from '../annotations/types';
 import './ColorPickerToggle.scss';
 
 export type Props = {
     isActive?: boolean;
-    onClick?: () => void;
-    annotationMode: AnnotationMode;
+    annotationMode?: AnnotationMode;
 };
 
-export default function ColorPickerToggle({
-    annotationMode,
-    isActive = false,
-    onClick = noop,
-    ...rest
-}: Props): JSX.Element | null {
+export default function ColorPickerToggle({ annotationMode, isActive = false, ...rest }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
     if (annotationMode !== AnnotationMode.DRAWING) {
