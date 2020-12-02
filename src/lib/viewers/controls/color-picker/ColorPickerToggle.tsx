@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
-
 import ColorPickerPalette from './ColorPickerPalette';
-
 import { AnnotationMode } from '../annotations/types';
-
 import './ColorPickerToggle.scss';
 
 export type Props = {
@@ -32,7 +29,6 @@ export default function ColorPickerToggle({
                 <ColorPickerPalette
                     onColorSelect={color => {
                         setIsColorPickerToggled(false);
-                        console.log('the color is', color);
                     }}
                 />
             )}
