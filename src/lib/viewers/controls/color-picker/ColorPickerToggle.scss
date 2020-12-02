@@ -8,31 +8,6 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-
-    .bp-ColorPickerPalette {
-        position: absolute;
-        left: -55px;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 35px;
-        margin-bottom: 125px;
-        background-color: rgba(0, 0, 0, .8);
-        border-radius: 5px;
-
-        &::after {
-            position: absolute;
-            top: 75%;
-            width: 18px;
-            height: 18px;
-            background-color: rgba(0, 0, 0, .8);
-            border-radius: 0 0 0 .3em;
-            transform: rotate(-45deg);
-            content: '';
-            clip-path: polygon(0% 0%, 100% 100%, 0% 100%);
-        }
-    }
 }
 
 .bp-ColorPickerToggle-button {
