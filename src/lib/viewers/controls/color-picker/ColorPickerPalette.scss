@@ -16,7 +16,7 @@
         width: 18px;
         height: 18px;
         background: inherit;
-        border-radius: 0 0 0 .3em;
+        border-radius: 0 0 0 6px;
         transform: rotate(-45deg);
         content: '';
         clip-path: polygon(0% 0%, 100% 100%, 0% 100%);
@@ -32,12 +32,12 @@
     border-radius: 4px;
     cursor: pointer;
 
-    &:hover {
-        box-shadow: 0 0 0 2px white;
-    }
-
     &:first-child {
         margin-left: 8px;
+    }
+
+    &:hover {
+        box-shadow: 0 0 0 2px white;
     }
 
     &:last-child {
