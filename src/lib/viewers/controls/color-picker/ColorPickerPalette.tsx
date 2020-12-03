@@ -1,5 +1,4 @@
 import React from 'react';
-import ControlsBar from '../controls-bar';
 import './ColorPickerPalette.scss';
 
 export type Props = {
@@ -10,22 +9,20 @@ export default function ColorPickerPalette({ onColorSelect }: Props): JSX.Elemen
     const colors = ['#0061d5', '#26c281', '#ed3757', '#f5b31b', '#ffd700', '#4826c2'];
 
     return (
-        <ControlsBar>
-            <div className="bp-ColorPickerPalette">
-                {colors.map(color => {
-                    return (
-                        <button
-                            key={color}
-                            className="bp-ColorPickerPalette-button"
-                            onClick={(): void => onColorSelect(color)}
-                            style={{
-                                backgroundColor: color,
-                            }}
-                            type="button"
-                        />
-                    );
-                })}
-            </div>
-        </ControlsBar>
+        <div className="bp-ColorPickerPalette">
+            {colors.map(color => {
+                return (
+                    <button
+                        key={color}
+                        className="bp-ColorPickerPalette-button"
+                        onClick={(): void => onColorSelect(color)}
+                        style={{
+                            backgroundColor: color,
+                        }}
+                        type="button"
+                    />
+                );
+            })}
+        </div>
     );
 }

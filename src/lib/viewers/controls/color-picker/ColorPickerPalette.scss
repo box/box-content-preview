@@ -1,3 +1,5 @@
+@import '~box-ui-elements/es/styles/variables';
+
 .bp-ColorPickerPalette {
     position: absolute;
     top: -55px;
@@ -7,7 +9,7 @@
     align-items: center;
     justify-content: center;
     height: 35px;
-    background: inherit;
+    background: fade-out($black, .2);
     border-radius: 4px;
     transform: translateX(50%);
 
