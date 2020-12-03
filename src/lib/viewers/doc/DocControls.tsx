@@ -16,6 +16,7 @@ export type Props = AnnotationsControlsProps &
 
 export default function DocControls({
     annotationMode,
+    hasDrawing,
     hasHighlight,
     hasRegion,
     maxScale,
@@ -53,6 +54,7 @@ export default function DocControls({
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
             <AnnotationsControls
                 annotationMode={annotationMode}
+                hasDrawing={hasDrawing}
                 hasHighlight={hasHighlight}
                 hasRegion={hasRegion}
                 onAnnotationModeClick={onAnnotationModeClick}

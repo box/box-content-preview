@@ -12,6 +12,7 @@ export const CLASS_BUTTON_ACTIVE = 'is-active';
 export const CLASS_GROUP_HIDE = 'is-hidden';
 
 export enum AnnotationMode {
+    DRAWING = 'drawing',
     HIGHLIGHT = 'highlight',
     NONE = 'none',
     REGION = 'region',

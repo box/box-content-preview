@@ -928,6 +928,8 @@ class Preview extends EventEmitter {
         // Whether annotations v4 buttons should be shown in toolbar
         this.options.showAnnotationsControls = !!options.showAnnotationsControls;
 
+        this.options.showAnnotationsDrawingCreate = !!options.showAnnotationsDrawingCreate;
+
         this.options.enableAnnotationsDiscoverability = !!options.enableAnnotationsDiscoverability;
 
         this.options.enableAnnotationsImageDiscoverability = !!options.enableAnnotationsImageDiscoverability;

@@ -1704,19 +1704,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('loadUIReact()', () => {
-            test('should create controls root and render the react controls', () => {
+            beforeEach(() => {
                 docBase.pdfViewer = {
                     pagesCount: 3,
                     currentPageNumber: 2,
                     currentScale: 1,
                 };
                 docBase.options.useReactControls = true;
+            });
+
+            test('should create controls root and render the react controls', () => {
                 docBase.loadUIReact();
 
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
                         annotationMode="none"
+                        hasDrawing={false}
                         hasHighlight={false}
                         hasRegion={false}
                         maxScale={10}
@@ -1736,6 +1740,42 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     />,
                 );
             });
+
+            test.each`
+                areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
+                ${false}                 | ${false}                      | ${false}   | ${false}
+                ${false}                 | ${false}                      | ${false}   | ${true}
+                ${true}                  | ${true}                       | ${false}   | ${false}
+                ${true}                  | ${false}                      | ${false}   | ${true}
+                ${true}                  | ${false}                      | ${false}   | ${false}
+                ${false}                 | ${true}                       | ${false}   | ${true}
+                ${false}                 | ${true}                       | ${false}   | ${false}
+                ${true}                  | ${true}                       | ${true}    | ${true}
+            `(
+                'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
+                ({
+                    areNewAnnotationsEnabled,
+                    hasAnnotationCreatePermission,
+                    hasDrawing,
+                    showAnnotationsDrawingCreate,
+                }) => {
+                    docBase.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
+                    jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
+                    jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
+                    stubs.checkPermission.mockReturnValue(false);
+
+                    docBase.loadUIReact();
+
+                    expect(docBase.controls).toBeInstanceOf(ControlsRoot);
+                    expect(docBase.controls.render).toBeCalledWith(
+                        expect.objectContaining({
+                            props: expect.objectContaining({
+                                hasDrawing,
+                            }),
+                        }),
+                    );
+                },
+            );
         });
 
         describe('bindDOMListeners()', () => {

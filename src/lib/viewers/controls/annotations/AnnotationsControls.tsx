@@ -1,6 +1,7 @@
 import React from 'react';
 import noop from 'lodash/noop';
 import AnnotationsButton from './AnnotationsButton';
+import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
@@ -9,6 +10,7 @@ import './AnnotationsControls.scss';
 
 export type Props = {
     annotationMode?: AnnotationMode;
+    hasDrawing?: boolean;
     hasHighlight?: boolean;
     hasRegion?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
@@ -17,12 +19,14 @@ export type Props = {
 
 export default function AnnotationsControls({
     annotationMode = AnnotationMode.NONE,
+    hasDrawing = false,
     hasHighlight = false,
     hasRegion = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
     const isFullscreen = useFullscreen();
+    const showDrawing = !isFullscreen && hasDrawing;
     const showHighlight = !isFullscreen && hasHighlight;
     const showRegion = !isFullscreen && hasRegion;
 
@@ -54,12 +58,23 @@ export default function AnnotationsControls({
     }, [annotationMode, onAnnotationModeEscape]);
 
     // Prevent empty group from being displayed
-    if (!showHighlight && !showRegion) {
+    if (!showDrawing && !showHighlight && !showRegion) {
         return null;
     }
 
     return (
         <div className="bp-AnnotationsControls">
+            <AnnotationsButton
+                data-resin-target="draw"
+                data-testid="bp-AnnotationsControls-drawBtn"
+                isActive={annotationMode === AnnotationMode.DRAWING}
+                isEnabled={showDrawing}
+                mode={AnnotationMode.DRAWING}
+                onClick={handleModeClick}
+                title={__('drawing_comment')}
+            >
+                <IconDrawing24 />
+            </AnnotationsButton>
             <AnnotationsButton
                 data-resin-target="highlightRegion"
                 data-testid="bp-AnnotationsControls-regionBtn"

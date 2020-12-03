@@ -9,6 +9,7 @@ export type Props = AnnotationsControlsProps & FullscreenToggleProps & RotateCon
 
 export default function ImageControls({
     annotationMode,
+    hasDrawing,
     hasHighlight,
     hasRegion,
     onAnnotationModeClick,
@@ -26,6 +27,7 @@ export default function ImageControls({
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
             <AnnotationsControls
                 annotationMode={annotationMode}
+                hasDrawing={hasDrawing}
                 hasHighlight={hasHighlight}
                 hasRegion={hasRegion}
                 onAnnotationModeClick={onAnnotationModeClick}

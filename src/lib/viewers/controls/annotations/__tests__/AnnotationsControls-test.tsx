@@ -37,15 +37,18 @@ describe('AnnotationsControls', () => {
 
     describe('event handlers', () => {
         test.each`
-            current                  | selector                                 | result
-            ${AnnotationMode.NONE}   | ${'bp-AnnotationsControls-regionBtn'}    | ${AnnotationMode.REGION}
-            ${AnnotationMode.REGION} | ${'bp-AnnotationsControls-regionBtn'}    | ${AnnotationMode.NONE}
-            ${AnnotationMode.REGION} | ${'bp-AnnotationsControls-highlightBtn'} | ${AnnotationMode.HIGHLIGHT}
-            ${AnnotationMode.NONE}   | ${'bp-AnnotationsControls-highlightBtn'} | ${AnnotationMode.HIGHLIGHT}
+            current                   | selector                                 | result
+            ${AnnotationMode.NONE}    | ${'bp-AnnotationsControls-regionBtn'}    | ${AnnotationMode.REGION}
+            ${AnnotationMode.REGION}  | ${'bp-AnnotationsControls-regionBtn'}    | ${AnnotationMode.NONE}
+            ${AnnotationMode.REGION}  | ${'bp-AnnotationsControls-highlightBtn'} | ${AnnotationMode.HIGHLIGHT}
+            ${AnnotationMode.NONE}    | ${'bp-AnnotationsControls-highlightBtn'} | ${AnnotationMode.HIGHLIGHT}
+            ${AnnotationMode.NONE}    | ${'bp-AnnotationsControls-drawBtn'}      | ${AnnotationMode.DRAWING}
+            ${AnnotationMode.DRAWING} | ${'bp-AnnotationsControls-drawBtn'}      | ${AnnotationMode.NONE}
         `('in $current mode returns $result when $selector is clicked', ({ current, result, selector }) => {
             const onClick = jest.fn();
             const element = getElement({
                 annotationMode: current,
+                hasDrawing: true,
                 hasHighlight: true,
                 hasRegion: true,
                 onAnnotationModeClick: onClick,
