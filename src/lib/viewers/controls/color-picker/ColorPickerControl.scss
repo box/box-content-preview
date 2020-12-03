@@ -13,10 +13,10 @@ $color-picker-control-height: 48px;
 
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
+}
 
-    svg {
-        background-color: $box-blue;
-        border: 2px solid #fff;
-        border-radius: 2px;
-    }
+.bp-ColorPickerControl-button-swatch {
+    background-color: $box-blue;
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px white;
 }

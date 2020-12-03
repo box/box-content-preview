@@ -40,7 +40,13 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <svg focusable="false" height="16" viewBox="0 0 16 16" width="16" />
+                <svg
+                    className="bp-ColorPickerControl-button-swatch"
+                    focusable="false"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                />
             </button>
         </div>
     );
