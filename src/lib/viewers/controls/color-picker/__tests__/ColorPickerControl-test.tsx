@@ -4,7 +4,10 @@ import { AnnotationMode } from '../../annotations/types';
 import ColorPickerControl from '../ColorPickerControl';
 
 describe('ColorPickerControl', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<ColorPickerControl {...props} />);
+    const onAnnotationColorClick = jest.fn();
+
+    const getWrapper = (props = {}): ShallowWrapper =>
+        shallow(<ColorPickerControl onAnnotationColorClick={onAnnotationColorClick} {...props} />);
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
 
