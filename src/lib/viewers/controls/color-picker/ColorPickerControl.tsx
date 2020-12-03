@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import ColorPickerPalette from './ColorPickerPalette';
 import { AnnotationMode } from '../annotations/types';
-import './ColorPickerToggle.scss';
+import './ColorPickerControl.scss';
 
 export type Props = {
-    isActive?: boolean;
     annotationMode?: AnnotationMode;
+    isActive?: boolean;
 };
 
-export default function ColorPickerToggle({ annotationMode, isActive = false, ...rest }: Props): JSX.Element | null {
+export default function ColorPickerControl({ annotationMode, isActive = false, ...rest }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
     if (annotationMode !== AnnotationMode.DRAWING) {
@@ -17,7 +17,7 @@ export default function ColorPickerToggle({ annotationMode, isActive = false, ..
     }
 
     return (
-        <div className="bp-ColorPickerToggle">
+        <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
                 <ColorPickerPalette
                     onColorSelect={(): void => {
@@ -26,7 +26,7 @@ export default function ColorPickerToggle({ annotationMode, isActive = false, ..
                 />
             )}
             <button
-                className={classNames('bp-ColorPickerToggle-button', {
+                className={classNames('bp-ColorPickerControl-button', {
                     'bp-is-active': isActive,
                 })}
                 onClick={(): void => setIsColorPickerToggled(!isColorPickerToggled)}

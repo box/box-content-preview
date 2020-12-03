@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { AnnotationMode } from '../../annotations/types';
-import ColorPickerToggle from '../ColorPickerToggle';
+import ColorPickerControl from '../ColorPickerControl';
 
-describe('ColorPickerToggle', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<ColorPickerToggle {...props} />);
+describe('ColorPickerControl', () => {
+    const getWrapper = (props = {}): ShallowWrapper => shallow(<ColorPickerControl {...props} />);
 
-    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerToggle-button');
+    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
 
     describe('render', () => {
-        test('should render null if annotatioMode is not AnnotationMode.DRAWING', () => {
+        test('should render null if annotationMode is not AnnotationMode.DRAWING', () => {
             const wrapper = getWrapper({ annotationMode: AnnotationMode.REGION });
 
-            expect(wrapper.find('.bp-ColorPickerToggle').length).toBe(0);
+            expect(wrapper.find('.bp-ColorPickerControl').length).toBe(0);
         });
 
         test('should not render ColorPickerPalette when the component is first mounted', () => {

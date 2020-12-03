@@ -1,7 +1,7 @@
 @import '~box-ui-elements/es/styles/variables';
 @import '../styles';
 
-.bp-ColorPickerToggle {
+.bp-ColorPickerControl {
     position: relative;
     display: flex;
     align-items: center;
@@ -10,7 +10,7 @@
     height: 48px;
 }
 
-.bp-ColorPickerToggle-button {
+.bp-ColorPickerControl-button {
     @include bp-ControlButton;
 
     svg {

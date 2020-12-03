@@ -1,14 +1,15 @@
 .bp-ColorPickerPalette {
     position: absolute;
-    left: -55px;
+    top: -55px;
+    right: 50%;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 35px;
-    margin-bottom: 125px;
     background: inherit;
-    border-radius: 5px;
+    border-radius: 4px;
+    transform: translateX(50%);
 
     &::after {
         position: absolute;

@@ -1,6 +1,6 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import ColorPickerToggle, { Props as ColorPickerToggleProps } from '../controls/color-picker';
+import ColorPickerControl, { Props as ColorPickerControlProps } from '../controls/color-picker';
 import ControlsBar from '../controls/controls-bar';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
@@ -9,7 +9,7 @@ import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/si
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
 export type Props = AnnotationsControlsProps &
-    ColorPickerToggleProps &
+    ColorPickerControlProps &
     FindBarToggleProps &
     FullscreenToggleProps &
     PageControlsProps &
@@ -65,7 +65,7 @@ export default function DocControls({
                 />
             </ControlsBar>
             <ControlsBar>
-                <ColorPickerToggle annotationMode={annotationMode} />
+                <ColorPickerControl annotationMode={annotationMode} />
             </ControlsBar>
         </>
     );

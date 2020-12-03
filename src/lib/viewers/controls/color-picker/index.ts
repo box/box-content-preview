@@ -1,2 +1,2 @@
-export * from './ColorPickerToggle';
-export { default } from './ColorPickerToggle';
+export * from './ColorPickerControl';
+export { default } from './ColorPickerControl';
