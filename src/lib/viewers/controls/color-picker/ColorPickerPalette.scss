@@ -8,7 +8,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 35px;
     background: fade-out($black, .2);
     border-radius: 4px;
     transform: translateX(50%);
@@ -29,14 +28,14 @@
 .bp-ColorPickerPalette-button {
     width: 20px;
     height: 20px;
-    margin-right: 2px;
-    margin-left: 2px;
+    margin: 10px 2px 10px 2px;
+    padding: 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 
     &:first-child {
-        margin-left: 8px;
+        margin-left: 9px;
     }
 
     &:hover {
@@ -44,6 +43,6 @@
     }
 
     &:last-child {
-        margin-right: 8px;
+        margin-right: 9px;
     }
 }
