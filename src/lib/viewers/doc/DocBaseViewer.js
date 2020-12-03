@@ -111,6 +111,7 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
+        this.handleAnnotationColorClick = this.handleAnnotationColorClick.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
@@ -1094,6 +1095,7 @@ class DocBaseViewer extends BaseViewer {
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
+                    onAnnotationColorClick={this.handleAnnotationColorClick}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFindBarToggle={this.toggleFindBar}
@@ -1667,6 +1669,10 @@ class DocBaseViewer extends BaseViewer {
             this.annotator.addListener('creator_staged_change', this.handleAnnotationCreatorChangeEvent);
             this.annotator.addListener('creator_status_change', this.handleAnnotationCreatorChangeEvent);
         }
+    }
+
+    handleAnnotationColorClick() {
+        // TODO: Will implement in a separate PR
     }
 
     handleAnnotationControlsClick({ mode }) {
