@@ -15,13 +15,13 @@ describe('ColorPickerControl', () => {
         test('should render null if annotationMode is not AnnotationMode.DRAWING', () => {
             const wrapper = getWrapper({ annotationMode: AnnotationMode.REGION });
 
-            expect(wrapper.find('.bp-ColorPickerControl').length).toBe(0);
+            expect(wrapper.isEmptyRender()).toBe(true);
         });
 
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.find('ColorPickerPalette').length).toBe(0);
+            expect(wrapper.find('ColorPickerPalette').exists()).toBe(false);
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
@@ -29,7 +29,7 @@ describe('ColorPickerControl', () => {
 
             getToggleButton(wrapper).simulate('click');
 
-            expect(wrapper.find('ColorPickerPalette').length).toBe(1);
+            expect(wrapper.find('ColorPickerPalette').exists()).toBe(true);
         });
 
         test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
