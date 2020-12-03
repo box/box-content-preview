@@ -5,8 +5,8 @@
     align-items: center;
     background: fade-out($black, .2);
     border-radius: 3px;
-}
 
-.bp-ControlsBar ~ .bp-ControlsBar {
-    margin-left: 6px;
+    & + & {
+        margin-left: 6px;
+    }
 }
