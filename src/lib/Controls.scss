@@ -1,3 +1,5 @@
+$controls-background: fade-out($black, .2);
+$controls-bar-bottom-offset: 25px;
 $controls-button-width: 32px;
 
 @import './AnnotationControls';
@@ -5,10 +7,10 @@ $controls-button-width: 32px;
 
 .bp-controls {
     position: absolute;
-    bottom: 25px;
+    bottom: $controls-bar-bottom-offset;
     left: 50%;
     display: flex;
-    background: fade-out($black, .2);
+    background: $controls-background;
     border-radius: 3px;
     transform: translateX(-50%);
     opacity: 0;

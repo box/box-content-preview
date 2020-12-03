@@ -1,4 +1,5 @@
-@import '~box-ui-elements/es/styles/variables';
+$color-picker-control-height: 48px;
+
 @import '../styles';
 
 .bp-ColorPickerControl {
@@ -6,16 +7,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: $color-picker-control-height;
+    height: $color-picker-control-height;
 }
 
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
 
     svg {
-        background-color: #0061d5;
+        background-color: $box-blue;
         border-radius: 2px;
-        box-shadow: 0 0 0 2px white;
+        box-shadow: 0 0 0 2px $white;
     }
 }
