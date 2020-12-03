@@ -32,7 +32,7 @@ describe('ColorPickerToggle', () => {
         test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
             const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING, isActive: true });
 
-            expect(getToggleButton(wrapper).props().className).toBe('bp-ColorPickerToggle-button bp-is-active');
+            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
         });
     });
 });
