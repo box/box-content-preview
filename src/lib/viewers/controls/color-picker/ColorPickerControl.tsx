@@ -6,10 +6,16 @@ import './ColorPickerControl.scss';
 
 export type Props = {
     annotationMode?: AnnotationMode;
+    onAnnotationColorClick: (color: string) => void;
     isActive?: boolean;
 };
 
-export default function ColorPickerControl({ annotationMode, isActive = false, ...rest }: Props): JSX.Element | null {
+export default function ColorPickerControl({
+    annotationMode,
+    isActive = false,
+    onAnnotationColorClick,
+    ...rest
+}: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
     if (annotationMode !== AnnotationMode.DRAWING) {
@@ -20,8 +26,9 @@ export default function ColorPickerControl({ annotationMode, isActive = false, .
         <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
                 <ColorPickerPalette
-                    onColorSelect={(): void => {
+                    onColorSelect={(color: string): void => {
                         setIsColorPickerToggled(false);
+                        onAnnotationColorClick(color);
                     }}
                 />
             )}
