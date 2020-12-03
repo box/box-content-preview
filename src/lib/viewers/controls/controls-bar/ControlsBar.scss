@@ -5,4 +5,8 @@
     align-items: center;
     background: fade-out($black, .2);
     border-radius: 3px;
+
+    & + & {
+        margin-left: 6px;
+    }
 }

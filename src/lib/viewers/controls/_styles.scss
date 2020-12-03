@@ -1,5 +1,7 @@
 @import '~box-ui-elements/es/styles/variables';
 
+$bp-controls-background: fade-out($black, .2);
+
 @mixin bp-ControlButton($height: 48px, $width: 48px) {
     display: flex;
     align-items: center;

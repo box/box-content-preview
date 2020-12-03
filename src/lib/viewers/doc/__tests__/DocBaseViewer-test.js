@@ -1725,6 +1725,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
+                        onAnnotationColorClick={docBase.handleAnnotationColorClick}
                         onAnnotationModeClick={docBase.handleAnnotationControlsClick}
                         onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
