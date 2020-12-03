@@ -25,12 +25,14 @@ export default function ColorPickerControl({
     return (
         <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
-                <ColorPickerPalette
-                    onColorSelect={(color: string): void => {
-                        setIsColorPickerToggled(false);
-                        onAnnotationColorClick(color);
-                    }}
-                />
+                <div className="bp-ColorPickerControl-palette">
+                    <ColorPickerPalette
+                        onColorSelect={(color: string): void => {
+                            setIsColorPickerToggled(false);
+                            onAnnotationColorClick(color);
+                        }}
+                    />
+                </div>
             )}
             <button
                 className={classNames('bp-ColorPickerControl-button', {
@@ -40,13 +42,7 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <svg
-                    className="bp-ColorPickerControl-button-swatch"
-                    focusable="false"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                />
+                <div className="bp-ColorPickerControl-swatch" />
             </button>
         </div>
     );

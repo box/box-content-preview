@@ -1,5 +1,3 @@
-$color-picker-control-height: 48px;
-
 @import '../styles';
 
 .bp-ColorPickerControl {
@@ -7,16 +5,40 @@ $color-picker-control-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: $color-picker-control-height;
-    height: $color-picker-control-height;
+    width: 48px;
+    height: 48px;
 }
 
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
 }
 
-.bp-ColorPickerControl-button-swatch {
+.bp-ColorPickerControl-palette {
+    $arrow-height: 12px;
+
+    position: absolute;
+    top: -#{$arrow-height};
+    left: 50%;
+    z-index: 1;
+    padding-bottom: 10px;
+    transform: translate(-50%, -100%);
+
+    &::after {
+        position: absolute;
+        left: 50%;
+        display: block;
+        border-top: $arrow-height solid $bp-controls-background;
+        border-right: $arrow-height solid transparent;
+        border-left: $arrow-height solid transparent;
+        transform: translateX(-50%);
+        content: '';
+    }
+}
+
+.bp-ColorPickerControl-swatch {
+    width: 16px;
+    height: 16px;
     background-color: $box-blue;
+    border: 2px solid #fff;
     border-radius: 2px;
-    box-shadow: 0 0 0 2px white;
 }

@@ -1,31 +1,13 @@
 @import '~box-ui-elements/es/styles/variables';
-@import './ColorPickerControl';
-@import '../../../Controls';
+@import '../styles';
 
 .bp-ColorPickerPalette {
-    position: absolute;
-    top: calc(-1 * (#{$controls-bar-bottom-offset} + #{$color-picker-control-height / 2} + 10px)); // 10px is the padding between the popup and the rest of the control bar
-    right: 50%;
-    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 8px;
-    background: $controls-background;
+    background: $bp-controls-background;
     border-radius: 4px;
-    transform: translateX(50%);
-
-    &::after {
-        position: absolute;
-        top: 75%;
-        width: 18px;
-        height: 18px;
-        background: inherit;
-        border-radius: 0 0 0 6px;
-        transform: rotate(-45deg);
-        content: '';
-        clip-path: polygon(0% 0%, 100% 100%, 0% 100%);
-    }
 }
 
 .bp-ColorPickerPalette-button {
@@ -39,6 +21,7 @@
 
     &:focus,
     &:hover {
+        outline: 0;
         box-shadow: 0 0 0 2px white;
     }
 }
