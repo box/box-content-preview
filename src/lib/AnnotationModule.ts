@@ -1,4 +1,5 @@
 import { ANNOTATION_COLOR_KEY } from './constants';
+import Cache from './Cache';
 
 export enum AnnotationColor {
     BLUE = '#0061d5',
@@ -12,11 +13,11 @@ export enum AnnotationColor {
 type Subscription = (state: AnnotationColor) => void;
 
 export default class AnnotationModule {
-    private cache;
+    private cache: Cache;
 
     private subscriptions: Subscription[] = [];
 
-    constructor(cache, initialColor = AnnotationColor.BLUE) {
+    constructor(cache = new Cache()) {
         this.cache = cache;
 
         if (!this.cache.get(ANNOTATION_COLOR_KEY)) {
@@ -24,7 +25,7 @@ export default class AnnotationModule {
         }
     }
 
-    public getColor = (): AnnotationColor => this.cache.get(ANNOTATION_COLOR_KEY);
+    public getColor = (): AnnotationColor => this.cache.get(ANNOTATION_COLOR_KEY) as AnnotationColor;
 
     public transition = (color: AnnotationColor): AnnotationColor => {
         this.setColor(color);
@@ -39,7 +40,8 @@ export default class AnnotationModule {
         this.subscriptions = this.subscriptions.filter(subscription => subscription !== callback);
     };
 
-    private notify = (): void => this.subscriptions.forEach(callback => callback(this.cache.get(ANNOTATION_COLOR_KEY)));
+    private notify = (): void =>
+        this.subscriptions.forEach(callback => callback(this.cache.get(ANNOTATION_COLOR_KEY) as AnnotationColor));
 
     private setColor = (color: AnnotationColor): void => {
         this.cache.set(ANNOTATION_COLOR_KEY, color, true);
