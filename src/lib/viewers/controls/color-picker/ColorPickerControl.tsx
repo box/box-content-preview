@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import ColorPickerPalette from './ColorPickerPalette';
+import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from '../annotations/types';
 import './ColorPickerControl.scss';
 
 export type Props = {
+    annotationColor: AnnotationColor;
     annotationMode?: AnnotationMode;
-    onAnnotationColorClick: (color: string) => void;
     isActive?: boolean;
+    onAnnotationColorClick: (color: AnnotationColor) => void;
 };
 
 export default function ColorPickerControl({
+    annotationColor,
     annotationMode,
     isActive = false,
     onAnnotationColorClick,
@@ -27,7 +30,7 @@ export default function ColorPickerControl({
             {isColorPickerToggled && (
                 <div className="bp-ColorPickerControl-palette">
                     <ColorPickerPalette
-                        onColorSelect={(color: string): void => {
+                        onColorSelect={color => {
                             setIsColorPickerToggled(false);
                             onAnnotationColorClick(color);
                         }}
@@ -42,7 +45,7 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <div className="bp-ColorPickerControl-swatch" />
+                <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: annotationColor }} />
             </button>
         </div>
     );

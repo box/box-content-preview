@@ -17,6 +17,7 @@ export type Props = AnnotationsControlsProps &
     ZoomControlsProps;
 
 export default function DocControls({
+    annotationColor,
     annotationMode,
     hasDrawing,
     hasHighlight,
@@ -57,6 +58,7 @@ export default function DocControls({
                 />
                 <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                 <AnnotationsControls
+                    annotationColor={annotationColor}
                     annotationMode={annotationMode}
                     hasDrawing={hasDrawing}
                     hasHighlight={hasHighlight}
@@ -66,7 +68,11 @@ export default function DocControls({
                 />
             </ControlsBar>
             <ControlsBar>
-                <ColorPickerControl annotationMode={annotationMode} onAnnotationColorClick={onAnnotationColorClick} />
+                <ColorPickerControl
+                    annotationColor={annotationColor}
+                    annotationMode={annotationMode}
+                    onAnnotationColorClick={onAnnotationColorClick}
+                />
             </ControlsBar>
         </>
     );
