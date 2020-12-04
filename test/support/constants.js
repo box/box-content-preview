@@ -1,6 +1,6 @@
 Cypress.env({
     // NOTE: The token used is a readonly token accessing public data in a demo enterprise. DO NOT PUT A WRITE TOKEN
-    ACCESS_TOKEN: 'QvMQdM3Lqk9zyYjxS2a9bCNkM1R4Icr1',
+    ACCESS_TOKEN: 'P1n3ID8nYMxHRWvenDatQ9k6JKzWzYrz',
     FILE_ID_ARCHIVE: '589625563707',
     FILE_ID_ARCHIVE_LARGE: '611800378713',
     FILE_ID_BAD: '433514141824',
