@@ -1069,7 +1069,6 @@ class DocBaseViewer extends BaseViewer {
     loadUIReact() {
         this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
-        this.annotationModule.subscribe(() => this.renderUI());
         this.renderUI();
     }
 
@@ -1674,7 +1673,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleAnnotationColorClick(color) {
-        this.annotationModule.transition(color);
+        this.annotationModule.setColor(color);
+        this.renderUI();
     }
 
     handleAnnotationControlsClick({ mode }) {

@@ -10,12 +10,8 @@ export enum AnnotationColor {
     YELLOW = '#ffd700',
 }
 
-type Subscription = (state: AnnotationColor) => void;
-
 export default class AnnotationModule {
     private cache: Cache;
-
-    private subscriptions: Subscription[] = [];
 
     constructor(cache = new Cache()) {
         this.cache = cache;
@@ -27,24 +23,5 @@ export default class AnnotationModule {
 
     public getColor = (): AnnotationColor => this.cache.get(ANNOTATION_COLOR_KEY) as AnnotationColor;
 
-    public transition = (color: AnnotationColor): AnnotationColor => {
-        this.setColor(color);
-        return color;
-    };
-
-    public subscribe = (callback: Subscription): void => {
-        this.subscriptions.push(callback);
-    };
-
-    public unsubscribe = (callback: Subscription): void => {
-        this.subscriptions = this.subscriptions.filter(subscription => subscription !== callback);
-    };
-
-    private notify = (): void =>
-        this.subscriptions.forEach(callback => callback(this.cache.get(ANNOTATION_COLOR_KEY) as AnnotationColor));
-
-    private setColor = (color: AnnotationColor): void => {
-        this.cache.set(ANNOTATION_COLOR_KEY, color, true);
-        this.notify();
-    };
+    public setColor = (color: AnnotationColor): void => this.cache.set(ANNOTATION_COLOR_KEY, color, true);
 }
