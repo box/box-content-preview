@@ -4,6 +4,8 @@ import ColorPickerPalette from './ColorPickerPalette';
 import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerControl.scss';
 
+const colors = Object.values(AnnotationColor);
+
 export type Props = {
     annotationColor: AnnotationColor;
     isActive?: boolean;
@@ -23,6 +25,7 @@ export default function ColorPickerControl({
             {isColorPickerToggled && (
                 <div className="bp-ColorPickerControl-palette">
                     <ColorPickerPalette
+                        colors={colors}
                         onColorSelect={(color): void => {
                             setIsColorPickerToggled(false);
                             onAnnotationColorClick(color);
