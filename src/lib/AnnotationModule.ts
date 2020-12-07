@@ -4,10 +4,10 @@ import Cache from './Cache';
 export enum AnnotationColor {
     BLUE = '#0061d5',
     GREEN_LIGHT = '#26c281',
-    GRIMACE = '#4826c2',
     WATERMELON_RED = '#ed3757',
     YELLORANGE = '#f5b31b',
     YELLOW = '#ffd700',
+    GRIMACE = '#4826c2',
 }
 
 export default class AnnotationModule {
@@ -17,7 +17,7 @@ export default class AnnotationModule {
         this.cache = cache;
 
         if (!this.cache.get(ANNOTATION_COLOR_KEY)) {
-            this.cache.set(ANNOTATION_COLOR_KEY, AnnotationColor.BLUE, true);
+            this.setColor(AnnotationColor.BLUE);
         }
     }
 
