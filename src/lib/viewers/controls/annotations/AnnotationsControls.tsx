@@ -10,7 +10,7 @@ import { AnnotationMode } from './types';
 import './AnnotationsControls.scss';
 
 export type Props = {
-    annotationColor: AnnotationColor;
+    annotationColor?: AnnotationColor;
     annotationMode?: AnnotationMode;
     hasDrawing?: boolean;
     hasHighlight?: boolean;
@@ -20,7 +20,7 @@ export type Props = {
 };
 
 export default function AnnotationsControls({
-    annotationColor,
+    annotationColor = AnnotationColor.BLUE,
     annotationMode = AnnotationMode.NONE,
     hasDrawing = false,
     hasHighlight = false,
