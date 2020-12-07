@@ -7,7 +7,7 @@ import { AnnotationMode } from '../types';
 
 describe('AnnotationsControls', () => {
     const getWrapper = (props = {}): ReactWrapper =>
-        mount(<AnnotationsControls annotationColor={AnnotationColor.BOX_BLUE} {...props} />);
+        mount(<AnnotationsControls annotationColor={AnnotationColor.BLUE} {...props} />);
     const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
 
     beforeEach(() => {
