@@ -10,11 +10,15 @@ export enum AnnotationColor {
     GRIMACE = '#4826c2',
 }
 
+type Options = {
+    cache: Cache;
+};
+
 export default class AnnotationModule {
     private cache: Cache;
 
-    constructor(cache = new Cache()) {
-        this.cache = cache;
+    constructor(options: Options) {
+        this.cache = options.cache;
 
         if (!this.cache.get(ANNOTATION_COLOR_KEY)) {
             this.setColor(AnnotationColor.BLUE);

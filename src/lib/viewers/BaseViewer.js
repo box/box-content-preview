@@ -154,7 +154,7 @@ class BaseViewer extends EventEmitter {
 
         this.annotationControlsFSM = new AnnotationControlsFSM();
 
-        this.annotationModule = new AnnotationModule(this.cache);
+        this.annotationModule = new AnnotationModule({ cache: this.cache });
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
