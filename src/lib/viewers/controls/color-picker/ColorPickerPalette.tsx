@@ -2,20 +2,13 @@ import React from 'react';
 import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerPalette.scss';
 
+const colors = Object.values(AnnotationColor);
+
 export type Props = {
     onColorSelect: (color: AnnotationColor) => void;
 };
 
 export default function ColorPickerPalette({ onColorSelect }: Props): JSX.Element {
-    const colors = [
-        AnnotationColor.BLUE,
-        AnnotationColor.GREEN_LIGHT,
-        AnnotationColor.WATERMELON_RED,
-        AnnotationColor.YELLORANGE,
-        AnnotationColor.YELLOW,
-        AnnotationColor.GRIMACE,
-    ];
-
     return (
         <div className="bp-ColorPickerPalette">
             {colors.map(color => {
