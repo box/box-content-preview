@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { AnnotationColor } from '../../../../AnnotationModule';
-import { AnnotationMode } from '../../annotations/types';
 import ColorPickerControl from '../ColorPickerControl';
 
 describe('ColorPickerControl', () => {
@@ -10,7 +9,7 @@ describe('ColorPickerControl', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(
             <ColorPickerControl
-                annotationColor={AnnotationColor.BLUE}
+                annotationColor={AnnotationColor.BOX_BLUE}
                 onAnnotationColorClick={onAnnotationColorClick}
                 {...props}
             />,
@@ -19,12 +18,6 @@ describe('ColorPickerControl', () => {
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
 
     describe('render', () => {
-        test('should render null if annotationMode is not AnnotationMode.DRAWING', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.REGION });
-
-            expect(wrapper.isEmptyRender()).toBe(true);
-        });
-
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
@@ -32,7 +25,7 @@ describe('ColorPickerControl', () => {
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING });
+            const wrapper = getWrapper();
 
             getToggleButton(wrapper).simulate('click');
 
@@ -40,7 +33,7 @@ describe('ColorPickerControl', () => {
         });
 
         test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING, isActive: true });
+            const wrapper = getWrapper({ isActive: true });
 
             expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
         });

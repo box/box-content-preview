@@ -2,28 +2,21 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import ColorPickerPalette from './ColorPickerPalette';
 import { AnnotationColor } from '../../../AnnotationModule';
-import { AnnotationMode } from '../annotations/types';
 import './ColorPickerControl.scss';
 
 export type Props = {
     annotationColor: AnnotationColor;
-    annotationMode?: AnnotationMode;
     isActive?: boolean;
     onAnnotationColorClick: (color: AnnotationColor) => void;
 };
 
 export default function ColorPickerControl({
     annotationColor,
-    annotationMode,
     isActive = false,
     onAnnotationColorClick,
     ...rest
 }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
-
-    if (annotationMode !== AnnotationMode.DRAWING) {
-        return null;
-    }
 
     return (
         <div className="bp-ColorPickerControl">

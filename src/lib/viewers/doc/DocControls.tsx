@@ -67,13 +67,14 @@ export default function DocControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            <ControlsBar>
-                <ColorPickerControl
-                    annotationColor={annotationColor}
-                    annotationMode={annotationMode}
-                    onAnnotationColorClick={onAnnotationColorClick}
-                />
-            </ControlsBar>
+            {annotationMode === 'drawing' && (
+                <ControlsBar>
+                    <ColorPickerControl
+                        annotationColor={annotationColor}
+                        onAnnotationColorClick={onAnnotationColorClick}
+                    />
+                </ControlsBar>
+            )}
         </>
     );
 }
