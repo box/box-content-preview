@@ -8,6 +8,8 @@ import {
 } from 'box-ui-elements/es/styles/variables';
 import Cache from './Cache';
 
+export const ANNOTATION_COLOR_KEY = 'annotation-color';
+
 export const AnnotationColor = {
     BOX_BLUE: bdlBoxBlue,
     GREEN_LIGHT: bdlGreenLight,
@@ -20,8 +22,6 @@ export const AnnotationColor = {
 type Options = {
     cache: Cache;
 };
-
-const ANNOTATION_COLOR_KEY = 'annotation-color';
 
 export default class AnnotationModule {
     private cache: Cache;
