@@ -20,17 +20,16 @@ export default function ColorPickerControl({
 }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
+    const handleColorSelect = (color: string) => {
+        setIsColorPickerToggled(false);
+        onAnnotationColorClick(color);
+    };
+
     return (
         <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
                 <div className="bp-ColorPickerControl-palette">
-                    <ColorPickerPalette
-                        colors={colors}
-                        onColorSelect={(color): void => {
-                            setIsColorPickerToggled(false);
-                            onAnnotationColorClick(color);
-                        }}
-                    />
+                    <ColorPickerPalette colors={colors} onColorSelect={handleColorSelect} />
                 </div>
             )}
             <button
