@@ -14,7 +14,7 @@ describe('ColorPickerControl', () => {
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.find('ColorPickerPalette').exists()).toBe(false);
+            expect(wrapper.exists('ColorPickerPalette')).toBe(false);
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
@@ -22,7 +22,7 @@ describe('ColorPickerControl', () => {
 
             getToggleButton(wrapper).simulate('click');
 
-            expect(wrapper.find('ColorPickerPalette').exists()).toBe(true);
+            expect(wrapper.exists('ColorPickerPalette')).toBe(true);
         });
 
         test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
@@ -40,7 +40,7 @@ describe('ColorPickerControl', () => {
             getToggleButton(wrapper).simulate('click');
             wrapper.find('ColorPickerPalette').simulate('select', defaultColor);
 
-            expect(wrapper.find('ColorPickerPalette').exists()).toBe(false);
+            expect(wrapper.exists('ColorPickerPalette')).toBe(false);
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
