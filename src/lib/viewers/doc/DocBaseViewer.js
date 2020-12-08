@@ -1089,7 +1089,7 @@ class DocBaseViewer extends BaseViewer {
 
             this.controls.render(
                 <DocControls
-                    annotationColor={this.annotationModule ? this.annotationModule.getColor() : null}
+                    annotationColor={this.annotationModule ? this.annotationModule.getColor() : undefined}
                     annotationMode={this.annotationControlsFSM.getMode()}
                     hasDrawing={canDraw}
                     hasHighlight={canHighlight}
