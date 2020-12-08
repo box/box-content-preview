@@ -1,11 +1,11 @@
 import React from 'react';
 import noop from 'lodash/noop';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
-import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from './types';
 import './AnnotationsControls.scss';
 
@@ -20,7 +20,7 @@ export type Props = {
 };
 
 export default function AnnotationsControls({
-    annotationColor = AnnotationColor.BOX_BLUE,
+    annotationColor = bdlBoxBlue,
     annotationMode = AnnotationMode.NONE,
     hasDrawing = false,
     hasHighlight = false,
