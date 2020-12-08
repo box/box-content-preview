@@ -19,15 +19,11 @@ export const AnnotationColor = {
     GRIMACE: bdlGrimace,
 };
 
-type Options = {
-    cache: Cache;
-};
-
 export default class AnnotationModule {
     private cache: Cache;
 
-    constructor(options: Options) {
-        this.cache = options.cache;
+    constructor({ cache }: { cache: Cache }) {
+        this.cache = cache;
 
         if (this.cache && !this.cache.get(ANNOTATION_COLOR_KEY)) {
             this.setColor(AnnotationColor.BOX_BLUE);
