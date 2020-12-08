@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { ReactWrapper, mount } from 'enzyme';
 import AnnotationsControls from '../AnnotationsControls';
