@@ -8,7 +8,7 @@ import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 import { AnnotationColor } from '../../AnnotationModule';
-import { AnnotationMode } from '../../AnnotationControls';
+import { AnnotationMode } from '../controls/annotations/types';
 
 export type Props = AnnotationsControlsProps &
     ColorPickerControlProps &
