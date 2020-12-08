@@ -10,6 +10,8 @@ import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 import { AnnotationColor } from '../../AnnotationModule';
 import { AnnotationMode } from '../controls/annotations/types';
 
+const colors = Object.values(AnnotationColor);
+
 export type Props = AnnotationsControlsProps &
     ColorPickerControlProps &
     FindBarToggleProps &
@@ -42,8 +44,6 @@ export default function DocControls({
     pageNumber,
     scale,
 }: Props): JSX.Element {
-    const colors = Object.values(AnnotationColor);
-
     return (
         <>
             <ControlsBar>
