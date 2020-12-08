@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerControl from '../ColorPickerControl';
 
 describe('ColorPickerControl', () => {
+    const defaultColor = '#fff';
+
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<ColorPickerControl colors={[bdlBoxBlue]} onColorSelect={jest.fn()} {...props} />);
+        shallow(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
 
@@ -28,6 +29,19 @@ describe('ColorPickerControl', () => {
             const wrapper = getWrapper({ isActive: true });
 
             expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
+        });
+    });
+
+    describe('handleSelect', () => {
+        test('should close the palette and call onColorSelect if a color is selected', () => {
+            const onColorSelect = jest.fn();
+            const wrapper = getWrapper({ onColorSelect });
+
+            getToggleButton(wrapper).simulate('click');
+            wrapper.find('ColorPickerPalette').simulate('select', defaultColor);
+
+            expect(wrapper.find('ColorPickerPalette').exists()).toBe(false);
+            expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
 });
