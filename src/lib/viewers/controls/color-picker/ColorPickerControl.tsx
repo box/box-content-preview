@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
 import './ColorPickerControl.scss';
@@ -7,14 +6,12 @@ import './ColorPickerControl.scss';
 export type Props = {
     activeColor?: string;
     colors: Array<string>;
-    isActive?: boolean;
     onColorSelect: (color: string) => void;
 };
 
 export default function ColorPickerControl({
     activeColor = bdlBoxBlue,
     colors,
-    isActive = false,
     onColorSelect,
     ...rest
 }: Props): JSX.Element | null {
@@ -33,9 +30,7 @@ export default function ColorPickerControl({
                 </div>
             )}
             <button
-                className={classNames('bp-ColorPickerControl-button', {
-                    'bp-is-active': isActive,
-                })}
+                className="bp-ColorPickerControl-button"
                 onClick={(): void => setIsColorPickerToggled(!isColorPickerToggled)}
                 type="button"
                 {...rest}

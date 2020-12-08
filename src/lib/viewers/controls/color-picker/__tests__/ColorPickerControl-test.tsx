@@ -24,12 +24,6 @@ describe('ColorPickerControl', () => {
 
             expect(wrapper.exists('ColorPickerPalette')).toBe(true);
         });
-
-        test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
-            const wrapper = getWrapper({ isActive: true });
-
-            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
-        });
     });
 
     describe('handleSelect', () => {
