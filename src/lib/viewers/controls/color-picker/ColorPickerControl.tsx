@@ -40,7 +40,7 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: activeColor }} />
+                <div backgroundColor={activeColor} className="bp-ColorPickerControl-swatch" />
             </button>
         </div>
     );
