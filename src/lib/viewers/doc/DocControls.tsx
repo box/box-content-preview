@@ -71,7 +71,7 @@ export default function DocControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            {annotationMode === AnnotationMode.DRAWING && (
+            {hasDrawing && annotationMode === AnnotationMode.DRAWING && (
                 <ControlsBar>
                     <ColorPickerControl
                         activeColor={annotationColor}
