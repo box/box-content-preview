@@ -9,7 +9,8 @@ describe('ColorPickerPalette', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<ColorPickerPalette colors={colors} onSelect={jest.fn()} {...props} />);
 
-    const getButton = (wrapper: ShallowWrapper) => wrapper.find('[data-testid="bp-ColorPickerPalette-button"]');
+    const getButton = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ColorPickerPalette-button"]');
 
     describe('render', () => {
         test('should render a single color swatch', () => {
