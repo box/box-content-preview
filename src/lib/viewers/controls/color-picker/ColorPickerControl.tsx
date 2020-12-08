@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
 import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerControl.scss';
@@ -13,7 +14,7 @@ export type Props = {
 };
 
 export default function ColorPickerControl({
-    annotationColor = AnnotationColor.BOX_BLUE,
+    annotationColor = bdlBoxBlue,
     isActive = false,
     onColorSelect,
     ...rest
