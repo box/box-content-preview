@@ -26,11 +26,12 @@ export default function ColorPickerControl({
         <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
                 <div className="bp-ColorPickerControl-palette">
-                    <ColorPickerPalette colors={colors} onSelect={handleSelect} />
+                    <ColorPickerPalette colors={colors} data-testid="bp-ColorPickerPalette" onSelect={handleSelect} />
                 </div>
             )}
             <button
                 className="bp-ColorPickerControl-button"
+                data-testid="bp-ColorPickerControl-button"
                 onClick={(): void => setIsColorPickerToggled(!isColorPickerToggled)}
                 type="button"
                 {...rest}

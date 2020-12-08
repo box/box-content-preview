@@ -14,6 +14,7 @@ export default function ColorPickerPalette({ colors, onSelect }: Props): JSX.Ele
                     <button
                         key={color}
                         className="bp-ColorPickerPalette-button"
+                        data-testid="bp-ColorPickerPalette-button"
                         onClick={(): void => onSelect(color)}
                         style={{
                             backgroundColor: color,

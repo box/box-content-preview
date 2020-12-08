@@ -8,13 +8,17 @@ describe('ColorPickerControl', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
 
-    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
+    const getColorPickerPalette = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ColorPickerPalette"]');
+
+    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ColorPickerControl-button"]');
 
     describe('render', () => {
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.exists('ColorPickerPalette')).toBe(false);
+            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
@@ -22,7 +26,7 @@ describe('ColorPickerControl', () => {
 
             getToggleButton(wrapper).simulate('click');
 
-            expect(wrapper.exists('ColorPickerPalette')).toBe(true);
+            expect(getColorPickerPalette(wrapper).exists()).toBe(true);
         });
     });
 
@@ -32,9 +36,9 @@ describe('ColorPickerControl', () => {
             const wrapper = getWrapper({ onColorSelect });
 
             getToggleButton(wrapper).simulate('click');
-            wrapper.find('ColorPickerPalette').simulate('select', defaultColor);
+            getColorPickerPalette(wrapper).simulate('select', defaultColor);
 
-            expect(wrapper.exists('ColorPickerPalette')).toBe(false);
+            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
