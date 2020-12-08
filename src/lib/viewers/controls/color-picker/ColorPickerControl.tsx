@@ -21,7 +21,7 @@ export default function ColorPickerControl({
 }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
-    const handleSelect = (color: string) => {
+    const handleSelect = (color: string): void => {
         setIsColorPickerToggled(false);
         onColorSelect(color);
     };
