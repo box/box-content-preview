@@ -2,12 +2,10 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { ReactWrapper, mount } from 'enzyme';
 import AnnotationsControls from '../AnnotationsControls';
-import { AnnotationColor } from '../../../../AnnotationModule';
 import { AnnotationMode } from '../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(<AnnotationsControls annotationColor={AnnotationColor.BOX_BLUE} {...props} />);
+    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls {...props} />);
     const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
 
     beforeEach(() => {
