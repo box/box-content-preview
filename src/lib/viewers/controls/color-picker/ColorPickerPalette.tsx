@@ -3,8 +3,8 @@ import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerPalette.scss';
 
 export type Props = {
-    colors: Array<AnnotationColor>;
-    onColorSelect: (color: AnnotationColor) => void;
+    colors: Array<string>;
+    onColorSelect: (color: string) => void;
 };
 
 export default function ColorPickerPalette({ colors, onColorSelect }: Props): JSX.Element {

@@ -1,14 +1,22 @@
+import {
+    bdlBoxBlue,
+    bdlGreenLight,
+    bdlWatermelonRed,
+    bdlYellorange,
+    bdlYellow,
+    bdlGrimace,
+} from 'box-ui-elements/es/styles/variables';
 import { ANNOTATION_COLOR_KEY } from './constants';
 import Cache from './Cache';
 
-export enum AnnotationColor {
-    BLUE = '#0061d5',
-    GREEN_LIGHT = '#26c281',
-    WATERMELON_RED = '#ed3757',
-    YELLORANGE = '#f5b31b',
-    YELLOW = '#ffd700',
-    GRIMACE = '#4826c2',
-}
+export const AnnotationColor = {
+    BOX_BLUE: bdlBoxBlue,
+    GREEN_LIGHT: bdlGreenLight,
+    WATERMELON_RED: bdlWatermelonRed,
+    YELLORANGE: bdlYellorange,
+    YELLOW: bdlYellow,
+    GRIMACE: bdlGrimace,
+};
 
 type Options = {
     cache: Cache;
@@ -21,11 +29,11 @@ export default class AnnotationModule {
         this.cache = options.cache;
 
         if (!this.cache.get(ANNOTATION_COLOR_KEY)) {
-            this.setColor(AnnotationColor.BLUE);
+            this.setColor(AnnotationColor.BOX_BLUE);
         }
     }
 
-    public getColor = (): AnnotationColor => this.cache.get(ANNOTATION_COLOR_KEY) as AnnotationColor;
+    public getColor = (): string => this.cache.get(ANNOTATION_COLOR_KEY) as string;
 
-    public setColor = (color: AnnotationColor): void => this.cache.set(ANNOTATION_COLOR_KEY, color, true);
+    public setColor = (color: string): void => this.cache.set(ANNOTATION_COLOR_KEY, color, true);
 }

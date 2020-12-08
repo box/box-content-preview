@@ -7,13 +7,13 @@ import './ColorPickerControl.scss';
 const colors = Object.values(AnnotationColor);
 
 export type Props = {
-    annotationColor: AnnotationColor;
+    annotationColor?: string;
     isActive?: boolean;
-    onAnnotationColorClick: (color: AnnotationColor) => void;
+    onAnnotationColorClick: (color: string) => void;
 };
 
 export default function ColorPickerControl({
-    annotationColor,
+    annotationColor = AnnotationColor.BOX_BLUE,
     isActive = false,
     onAnnotationColorClick,
     ...rest

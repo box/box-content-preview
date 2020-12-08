@@ -9,7 +9,7 @@ describe('ColorPickerControl', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(
             <ColorPickerControl
-                annotationColor={AnnotationColor.BLUE}
+                annotationColor={AnnotationColor.BOX_BLUE}
                 onAnnotationColorClick={onAnnotationColorClick}
                 {...props}
             />,
