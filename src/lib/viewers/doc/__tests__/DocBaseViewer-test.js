@@ -1719,7 +1719,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
-                        annotationColor={null}
                         annotationMode="none"
                         hasDrawing={false}
                         hasHighlight={false}

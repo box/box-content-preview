@@ -154,9 +154,7 @@ class BaseViewer extends EventEmitter {
 
         this.annotationControlsFSM = new AnnotationControlsFSM();
 
-        if (this.options.showAnnotationsDrawingCreate) {
-            this.annotationModule = new AnnotationModule({ cache: this.cache });
-        }
+        this.annotationModule = new AnnotationModule({ cache: this.cache });
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
