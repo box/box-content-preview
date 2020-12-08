@@ -1,5 +1,4 @@
 import React from 'react';
-import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerPalette.scss';
 
 export type Props = {
