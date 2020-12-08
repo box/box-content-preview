@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
@@ -2939,6 +2940,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
                 expect(docBase.processAnnotationModeChange).not.toBeCalled();
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+            });
+        });
+
+        describe('handleAnnotationColorChange', () => {
+            beforeEach(() => {
+                docBase.annotationModule = {
+                    setColor: jest.fn(),
+                };
+                docBase.renderUI = jest.fn();
+            });
+
+            test('should call setColor and renderUI', () => {
+                docBase.handleAnnotationColorChange(bdlBoxBlue);
+
+                expect(docBase.annotationModule.setColor).toBeCalledWith(bdlBoxBlue);
+                expect(docBase.renderUI).toHaveBeenCalled();
             });
         });
 
