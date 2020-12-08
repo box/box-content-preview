@@ -78,7 +78,7 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconDrawing24 style={{ fill: isDrawingActive ? annotationColor : '#fff' }} />
+                <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
             </AnnotationsButton>
             <AnnotationsButton
                 data-resin-target="highlightRegion"
