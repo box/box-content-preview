@@ -109,9 +109,9 @@ describe('AnnotationsControls', () => {
         });
 
         test.each`
-            mode                      | fill
-            ${AnnotationMode.DRAWING} | ${bdlBoxBlue}
-            ${AnnotationMode.NONE}    | ${'#fff'}
+            fill          | mode
+            ${bdlBoxBlue} | ${AnnotationMode.DRAWING}
+            ${'#fff'}     | ${AnnotationMode.NONE}
         `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
             const wrapper = getWrapper({ annotationMode: mode, hasDrawing: true });
 
