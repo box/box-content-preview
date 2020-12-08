@@ -6,7 +6,6 @@ import {
     bdlYellow,
     bdlGrimace,
 } from 'box-ui-elements/es/styles/variables';
-import { ANNOTATION_COLOR_KEY } from './constants';
 import Cache from './Cache';
 
 export const AnnotationColor = {
@@ -21,6 +20,8 @@ export const AnnotationColor = {
 type Options = {
     cache: Cache;
 };
+
+const ANNOTATION_COLOR_KEY = 'annotation-color';
 
 export default class AnnotationModule {
     private cache: Cache;
