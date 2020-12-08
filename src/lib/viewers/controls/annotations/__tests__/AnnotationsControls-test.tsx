@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { ReactWrapper, mount } from 'enzyme';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
+import { ReactWrapper, mount } from 'enzyme';
 import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../types';
 
