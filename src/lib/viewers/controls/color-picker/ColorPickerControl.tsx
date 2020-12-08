@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
-import { AnnotationColor } from '../../../AnnotationModule';
 import './ColorPickerControl.scss';
 
-const colors = Object.values(AnnotationColor);
-
 export type Props = {
-    annotationColor?: string;
+    activeColor?: string;
+    colors: Array<string>;
     isActive?: boolean;
     onColorSelect: (color: string) => void;
 };
 
 export default function ColorPickerControl({
-    annotationColor = bdlBoxBlue,
+    activeColor = bdlBoxBlue,
+    colors,
     isActive = false,
     onColorSelect,
     ...rest
@@ -41,7 +40,7 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: annotationColor }} />
+                <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: activeColor }} />
             </button>
         </div>
     );

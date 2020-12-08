@@ -1,5 +1,5 @@
 import React from 'react';
-import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
+import AnnotationsControls, { AnnotationMode, Props as AnnotationsControlsProps } from '../controls/annotations';
 import ColorPickerControl, { Props as ColorPickerControlProps } from '../controls/color-picker';
 import ControlsBar from '../controls/controls-bar';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
@@ -7,7 +7,7 @@ import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fu
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
-import { AnnotationMode } from '../../AnnotationControls';
+import { AnnotationColor } from '../../AnnotationModule';
 
 export type Props = AnnotationsControlsProps &
     ColorPickerControlProps &
@@ -39,6 +39,8 @@ export default function DocControls({
     pageNumber,
     scale,
 }: Props): JSX.Element {
+    const colors = Object.values(AnnotationColor);
+
     return (
         <>
             <ControlsBar>
@@ -70,7 +72,7 @@ export default function DocControls({
             </ControlsBar>
             {annotationMode === AnnotationMode.DRAWING && (
                 <ControlsBar>
-                    <ColorPickerControl annotationColor={annotationColor} onColorSelect={onColorSelect} />
+                    <ColorPickerControl activeColor={annotationColor} colors={colors} onColorSelect={onColorSelect} />
                 </ControlsBar>
             )}
         </>

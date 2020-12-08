@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { AnnotationColor } from '../../../../AnnotationModule';
 import ColorPickerControl from '../ColorPickerControl';
+import { AnnotationColor } from '../../../../AnnotationModule';
 
 describe('ColorPickerControl', () => {
-    const onColorSelect = jest.fn();
-
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(
-            <ColorPickerControl annotationColor={AnnotationColor.BOX_BLUE} onColorSelect={onColorSelect} {...props} />,
+            <ColorPickerControl
+                activeColor={AnnotationColor.BOX_BLUE}
+                colors={Object.values(AnnotationColor)}
+                onColorSelect={jest.fn()}
+                {...props}
+            />,
         );
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
