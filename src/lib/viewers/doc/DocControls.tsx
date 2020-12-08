@@ -7,6 +7,7 @@ import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fu
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
+import { AnnotationMode } from '../../AnnotationControls';
 
 export type Props = AnnotationsControlsProps &
     ColorPickerControlProps &
@@ -67,7 +68,7 @@ export default function DocControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            {annotationMode === 'drawing' && (
+            {annotationMode === AnnotationMode.DRAWING && (
                 <ControlsBar>
                     <ColorPickerControl annotationColor={annotationColor} onColorSelect={onColorSelect} />
                 </ControlsBar>
