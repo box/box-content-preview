@@ -111,11 +111,11 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
-        this.handleAnnotationColorClick = this.handleAnnotationColorClick.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
+        this.handleColorSelect = this.handleColorSelect.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -1096,9 +1096,9 @@ class DocBaseViewer extends BaseViewer {
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
-                    onAnnotationColorClick={this.handleAnnotationColorClick}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                    onColorSelect={this.handleColorSelect}
                     onFindBarToggle={this.toggleFindBar}
                     onFullscreenToggle={this.toggleFullscreen}
                     onPageChange={this.setPage}
@@ -1672,7 +1672,7 @@ class DocBaseViewer extends BaseViewer {
         }
     }
 
-    handleAnnotationColorClick(color) {
+    handleColorSelect(color) {
         this.annotationModule.setColor(color);
         this.renderUI();
     }

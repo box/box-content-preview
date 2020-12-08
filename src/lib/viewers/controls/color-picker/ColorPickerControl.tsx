@@ -9,27 +9,27 @@ const colors = Object.values(AnnotationColor);
 export type Props = {
     annotationColor?: string;
     isActive?: boolean;
-    onAnnotationColorClick: (color: string) => void;
+    onColorSelect: (color: string) => void;
 };
 
 export default function ColorPickerControl({
     annotationColor = AnnotationColor.BOX_BLUE,
     isActive = false,
-    onAnnotationColorClick,
+    onColorSelect,
     ...rest
 }: Props): JSX.Element | null {
     const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
 
-    const handleColorSelect = (color: string) => {
+    const handleSelect = (color: string) => {
         setIsColorPickerToggled(false);
-        onAnnotationColorClick(color);
+        onColorSelect(color);
     };
 
     return (
         <div className="bp-ColorPickerControl">
             {isColorPickerToggled && (
                 <div className="bp-ColorPickerControl-palette">
-                    <ColorPickerPalette colors={colors} onColorSelect={handleColorSelect} />
+                    <ColorPickerPalette colors={colors} onSelect={handleSelect} />
                 </div>
             )}
             <button

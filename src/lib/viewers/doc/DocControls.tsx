@@ -24,7 +24,7 @@ export default function DocControls({
     hasRegion,
     maxScale,
     minScale,
-    onAnnotationColorClick,
+    onColorSelect,
     onAnnotationModeClick,
     onAnnotationModeEscape,
     onFindBarToggle,
@@ -69,10 +69,7 @@ export default function DocControls({
             </ControlsBar>
             {annotationMode === 'drawing' && (
                 <ControlsBar>
-                    <ColorPickerControl
-                        annotationColor={annotationColor}
-                        onAnnotationColorClick={onAnnotationColorClick}
-                    />
+                    <ColorPickerControl annotationColor={annotationColor} onColorSelect={onColorSelect} />
                 </ControlsBar>
             )}
         </>

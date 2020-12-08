@@ -3,10 +3,10 @@ import './ColorPickerPalette.scss';
 
 export type Props = {
     colors: Array<string>;
-    onColorSelect: (color: string) => void;
+    onSelect: (color: string) => void;
 };
 
-export default function ColorPickerPalette({ colors, onColorSelect }: Props): JSX.Element {
+export default function ColorPickerPalette({ colors, onSelect }: Props): JSX.Element {
     return (
         <div className="bp-ColorPickerPalette">
             {colors.map(color => {
@@ -14,7 +14,7 @@ export default function ColorPickerPalette({ colors, onColorSelect }: Props): JS
                     <button
                         key={color}
                         className="bp-ColorPickerPalette-button"
-                        onClick={(): void => onColorSelect(color)}
+                        onClick={() => onSelect(color)}
                         style={{
                             backgroundColor: color,
                         }}
