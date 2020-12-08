@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
@@ -2952,9 +2951,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should call setColor and renderUI', () => {
-                docBase.handleAnnotationColorChange(bdlBoxBlue);
+                const color = '#fff';
+                docBase.handleAnnotationColorChange(color);
 
-                expect(docBase.annotationModule.setColor).toBeCalledWith(bdlBoxBlue);
+                expect(docBase.annotationModule.setColor).toBeCalledWith(color);
                 expect(docBase.renderUI).toHaveBeenCalled();
             });
         });
