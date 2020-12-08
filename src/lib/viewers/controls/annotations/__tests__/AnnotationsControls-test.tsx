@@ -1,6 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { ReactWrapper, mount } from 'enzyme';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../types';
 
@@ -105,6 +106,16 @@ describe('AnnotationsControls', () => {
             const element = getElement({ hasHighlight: true, hasRegion: true });
 
             expect(element.hasClass('bp-AnnotationsControls')).toBe(true);
+        });
+
+        test.each`
+            mode                      | fill
+            ${AnnotationMode.DRAWING} | ${bdlBoxBlue}
+            ${AnnotationMode.NONE}    | ${'#fff'}
+        `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
+            const wrapper = getWrapper({ annotationMode: mode, hasDrawing: true });
+
+            expect(wrapper.find('IconDrawing24').props().fill).toBe(fill);
         });
     });
 });
