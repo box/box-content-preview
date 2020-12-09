@@ -10,6 +10,8 @@ let containerEl;
 let options;
 let archive;
 
+jest.mock('../../../AnnotationModule');
+
 describe('lib/viewers/archive/ArchiveViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 

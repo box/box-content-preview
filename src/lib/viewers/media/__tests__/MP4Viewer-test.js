@@ -2,6 +2,8 @@
 import MP4Viewer from '../MP4Viewer';
 import BaseViewer from '../../BaseViewer';
 
+jest.mock('../../../AnnotationModule');
+
 const sandbox = sinon.createSandbox();
 let mp4;
 

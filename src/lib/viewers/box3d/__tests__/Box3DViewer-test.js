@@ -19,6 +19,8 @@ import {
 import { VIEWER_EVENT } from '../../../events';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
+jest.mock('../../../AnnotationModule');
+
 const sandbox = sinon.createSandbox();
 
 let containerEl;

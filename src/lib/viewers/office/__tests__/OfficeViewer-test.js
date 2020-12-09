@@ -7,6 +7,8 @@ import OfficeViewer from '../OfficeViewer';
 import { CLASS_HIDDEN, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 
+jest.mock('../../../AnnotationModule');
+
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';

@@ -9,6 +9,7 @@ import Remarkable from '../../../../third-party/text/0.114.0/remarkable.min.js';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
+jest.mock('../../../AnnotationModule');
 jest.mock('../../controls/controls-root');
 
 let containerEl;

@@ -25,7 +25,7 @@ export default class AnnotationModule {
     constructor({ cache }: { cache: Cache }) {
         this.cache = cache;
 
-        if (this.cache && !this.cache.get(ANNOTATION_COLOR_KEY)) {
+        if (!this.getColor()) {
             this.setColor(AnnotationColor.BOX_BLUE);
         }
     }

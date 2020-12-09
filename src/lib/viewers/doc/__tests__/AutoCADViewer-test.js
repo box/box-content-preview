@@ -5,6 +5,8 @@ import AutoCADViewer from '../AutoCADViewer';
 import { METADATA } from '../../../constants';
 import { MISSING_EXTERNAL_REFS } from '../../../events';
 
+jest.mock('../../../AnnotationModule');
+
 const { FIELD_HASXREFS, TEMPLATE_AUTOCAD } = METADATA;
 const EXTENSION = 'dwg';
 

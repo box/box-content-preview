@@ -12,6 +12,7 @@ import fullscreen from '../../../Fullscreen';
 import { CLASS_MULTI_IMAGE_PAGE } from '../../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
 
+jest.mock('../../../AnnotationModule');
 jest.mock('../../controls/controls-root');
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
