@@ -5,11 +5,7 @@ import { AnnotationMode } from '../types';
 
 describe('DrawingControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(
-            <DrawingControls onAnnotationColorChange={jest.fn()} {...props}>
-                Test
-            </DrawingControls>,
-        );
+        shallow(<DrawingControls onAnnotationColorChange={jest.fn()} {...props} />);
 
     describe('render', () => {
         test('should return nothing if annotationMode is not DRAWING', () => {

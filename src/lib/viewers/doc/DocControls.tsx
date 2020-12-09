@@ -7,8 +7,6 @@ import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fu
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
-import { ANNOTATION_COLORS, AnnotationColor } from '../../AnnotationModule';
-import { AnnotationMode } from '../controls/annotations/types';
 
 export type Props = AnnotationsControlsProps &
     DrawingControlsProps &

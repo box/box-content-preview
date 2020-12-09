@@ -5,7 +5,7 @@ export type Props = {
     children?: React.ReactNode;
 };
 
-export default function ControlsBar({ children, ...rest }: Props): JSX.Element {
+export default function ControlsBar({ children, ...rest }: Props): JSX.Element | null {
     if (!children) {
         return null;
     }

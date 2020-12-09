@@ -1,13 +1,10 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import ColorPickerControl from '../controls/color-picker';
 import ControlsBar from '../controls/controls-bar';
 import DrawingControls from '../controls/annotations/DrawingControls';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
-import { ANNOTATION_COLORS, AnnotationColor } from '../../AnnotationModule';
-import { AnnotationMode } from '../controls/annotations/types';
 
 export type Props = AnnotationsControlsProps &
     FullscreenToggleProps &
