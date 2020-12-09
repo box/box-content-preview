@@ -1,7 +1,7 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
 import ControlsBar from '../controls/controls-bar';
+import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import PageControls, { Props as PageControlsProps } from '../controls/page';
