@@ -14,9 +14,7 @@ export type Props = AnnotationsControlsProps &
     FullscreenToggleProps &
     PageControlsProps &
     ThumbnailsToggleProps &
-    ZoomControlsProps & {
-        onAnnotationColorChange: (color: string) => void;
-    };
+    ZoomControlsProps;
 
 export default function DocControls({
     annotationColor,

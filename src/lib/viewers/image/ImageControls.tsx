@@ -1,17 +1,16 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
 import ControlsBar from '../controls/controls-bar';
-import DrawingControls from '../controls/annotations/DrawingControls';
+import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
 export type Props = AnnotationsControlsProps &
+    DrawingControlsProps &
     FullscreenToggleProps &
     RotateControlProps &
-    ZoomControlsProps & {
-        onAnnotationColorChange: (color: string) => void;
-    };
+    ZoomControlsProps;
 
 export default function ImageControls({
     annotationColor,
