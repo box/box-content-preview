@@ -1,19 +1,17 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import ColorPickerControl, { Props as ColorPickerControlProps } from '../controls/color-picker';
+import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
 import ControlsBar from '../controls/controls-bar';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
-import { AnnotationColor } from '../../AnnotationModule';
+import { ANNOTATION_COLORS, AnnotationColor } from '../../AnnotationModule';
 import { AnnotationMode } from '../controls/annotations/types';
 
-const colors = Object.values(AnnotationColor);
-
 export type Props = AnnotationsControlsProps &
-    ColorPickerControlProps &
+    DrawingControlsProps &
     FindBarToggleProps &
     FullscreenToggleProps &
     PageControlsProps &
@@ -73,15 +71,13 @@ export default function DocControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            {hasDrawing && annotationMode === AnnotationMode.DRAWING && (
-                <ControlsBar>
-                    <ColorPickerControl
-                        activeColor={annotationColor}
-                        colors={colors}
-                        onColorSelect={onAnnotationColorChange}
-                    />
-                </ControlsBar>
-            )}
+            <ControlsBar>
+                <DrawingControls
+                    annotationColor={annotationColor}
+                    annotationMode={annotationMode}
+                    onAnnotationColorChange={onAnnotationColorChange}
+                />
+            </ControlsBar>
         </>
     );
 }

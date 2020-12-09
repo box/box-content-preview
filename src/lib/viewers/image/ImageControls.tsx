@@ -2,13 +2,12 @@ import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
 import ColorPickerControl from '../controls/color-picker';
 import ControlsBar from '../controls/controls-bar';
+import DrawingControls from '../controls/annotations/DrawingControls';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
-import { AnnotationColor } from '../../AnnotationModule';
+import { ANNOTATION_COLORS, AnnotationColor } from '../../AnnotationModule';
 import { AnnotationMode } from '../controls/annotations/types';
-
-const colors = Object.values(AnnotationColor);
 
 export type Props = AnnotationsControlsProps &
     FullscreenToggleProps &
@@ -48,15 +47,13 @@ export default function ImageControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            {hasDrawing && annotationMode === AnnotationMode.DRAWING && (
-                <ControlsBar>
-                    <ColorPickerControl
-                        activeColor={annotationColor}
-                        colors={colors}
-                        onColorSelect={onAnnotationColorChange}
-                    />
-                </ControlsBar>
-            )}
+            <ControlsBar>
+                <DrawingControls
+                    annotationColor={annotationColor}
+                    annotationMode={annotationMode}
+                    onAnnotationColorChange={onAnnotationColorChange}
+                />
+            </ControlsBar>
         </>
     );
 }
