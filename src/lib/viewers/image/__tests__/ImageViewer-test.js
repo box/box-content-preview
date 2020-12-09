@@ -422,6 +422,9 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('loadUIReact()', () => {
         beforeEach(() => {
+            image.annotationModule = {
+                getColor: jest.fn(),
+            };
             image.options.useReactControls = true;
         });
 
@@ -435,6 +438,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                     hasDrawing={false}
                     hasHighlight={false}
                     hasRegion={false}
+                    onAnnotationColorChange={image.handleAnnotationColorChange}
                     onAnnotationModeClick={image.handleAnnotationControlsClick}
                     onAnnotationModeEscape={image.handleAnnotationControlsEscape}
                     onFullscreenToggle={image.toggleFullscreen}
@@ -700,6 +704,23 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.startLoadTimer).toBeCalled();
             expect(image.imageEl.src).toBe(url);
+        });
+    });
+
+    describe('handleAnnotationColorChange', () => {
+        beforeEach(() => {
+            image.annotationModule = {
+                setColor: jest.fn(),
+            };
+            image.renderUI = jest.fn();
+        });
+
+        test('should call setColor and renderUI', () => {
+            const color = '#fff';
+            image.handleAnnotationColorChange(color);
+
+            expect(image.annotationModule.setColor).toBeCalledWith(color);
+            expect(image.renderUI).toHaveBeenCalled();
         });
     });
 
