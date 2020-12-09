@@ -1,6 +1,6 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import ColorPickerControl, { Props as ColorPickerControlProps } from '../controls/color-picker';
+import ColorPickerControl from '../controls/color-picker';
 import ControlsBar from '../controls/controls-bar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
@@ -11,7 +11,6 @@ import { AnnotationMode } from '../controls/annotations/types';
 const colors = Object.values(AnnotationColor);
 
 export type Props = AnnotationsControlsProps &
-    ColorPickerControlProps &
     FullscreenToggleProps &
     RotateControlProps &
     ZoomControlsProps & {
