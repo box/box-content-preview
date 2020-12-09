@@ -1,3 +1,14 @@
+## 2.60.0 (2020-12-09)
+
+* Add annotation module (#1305) ([3d2149e](https://github.com/box/box-content-preview/commit/3d2149e)), closes [#1305](https://github.com/box/box-content-preview/issues/1305)
+* feat(controls): Add option for react controls to CSV viewer (#1306) ([e34cc02](https://github.com/box/box-content-preview/commit/e34cc02)), closes [#1306](https://github.com/box/box-content-preview/issues/1306)
+* feat(controls): Add react versions of existing media control icons (#1301) ([3fc73a8](https://github.com/box/box-content-preview/commit/3fc73a8)), closes [#1301](https://github.com/box/box-content-preview/issues/1301)
+* feat(drawing): add color picker component (#1300) ([30090ec](https://github.com/box/box-content-preview/commit/30090ec)), closes [#1300](https://github.com/box/box-content-preview/issues/1300)
+* test(cypress): Change access token for annotations access (#1303) ([93f9e9e](https://github.com/box/box-content-preview/commit/93f9e9e)), closes [#1303](https://github.com/box/box-content-preview/issues/1303)
+* test(cypress): Change to new primary token (#1304) ([f9b07fd](https://github.com/box/box-content-preview/commit/f9b07fd)), closes [#1304](https://github.com/box/box-content-preview/issues/1304)
+
+
+
 ## 2.59.0 (2020-12-01)
 
 * chore(annotations): Remove highlight text option (#1294) ([5ea6b2b](https://github.com/box/box-content-preview/commit/5ea6b2b)), closes [#1294](https://github.com/box/box-content-preview/issues/1294)
