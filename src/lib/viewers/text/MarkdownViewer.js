@@ -116,7 +116,7 @@ class MarkdownViewer extends PlainTextViewer {
     }
 
     renderUI() {
-        if (this.options.useReactControls) {
+        if (this.controls && this.options.useReactControls) {
             this.controls.render(<MarkdownControls onFullscreenToggle={this.toggleFullscreen} />);
         }
     }

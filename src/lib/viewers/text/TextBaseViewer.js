@@ -156,7 +156,7 @@ class TextBaseViewer extends BaseViewer {
             this.zoomControls.setCurrentScale(this.scale);
         }
 
-        if (this.options.useReactControls) {
+        if (this.controls && this.options.useReactControls) {
             this.controls.render(
                 <TextControls
                     maxScale={ZOOM_MAX}
