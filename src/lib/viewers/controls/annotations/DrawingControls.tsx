@@ -1,5 +1,5 @@
 import React from 'react';
-import ColorPickerControl from '../color-picker/ColorPickerControl';
+import ColorPickerControl from '../color-picker';
 import { ANNOTATION_COLORS } from '../../../AnnotationModule';
 import { AnnotationMode } from './types';
 
