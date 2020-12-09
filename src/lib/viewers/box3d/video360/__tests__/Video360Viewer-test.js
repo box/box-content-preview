@@ -7,8 +7,6 @@ import JS from '../../box3DAssets';
 import sceneEntities from '../SceneEntities';
 import fullscreen from '../../../../Fullscreen';
 
-jest.mock('../../../../AnnotationModule');
-
 describe('lib/viewers/box3d/video360/Video360Viewer', () => {
     const options = {
         token: '12345572asdfliuohhr34812348960',

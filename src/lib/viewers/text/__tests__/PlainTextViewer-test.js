@@ -9,8 +9,6 @@ import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
-jest.mock('../../../AnnotationModule');
-
 const sandbox = sinon.createSandbox();
 const stubs = {};
 let containerEl;

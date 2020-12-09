@@ -3,8 +3,6 @@ import VideoBaseViewer from '../VideoBaseViewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 
-jest.mock('../../../AnnotationModule');
-
 let containerEl;
 let rootEl;
 let videoBase;

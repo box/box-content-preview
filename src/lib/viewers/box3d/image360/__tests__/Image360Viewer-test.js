@@ -5,8 +5,6 @@ import Box3DControls from '../../Box3DControls';
 import Image360Renderer from '../Image360Renderer';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../../constants';
 
-jest.mock('../../../../AnnotationModule');
-
 const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 
 describe('lib/viewers/box3d/image360/Image360Viewer', () => {

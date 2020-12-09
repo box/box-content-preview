@@ -8,7 +8,6 @@ import ImageControls from '../ImageControls';
 import ImageViewer from '../ImageViewer';
 import { CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN, IMAGE_FTUX_CURSOR_SEEN_KEY } from '../../../constants';
 
-jest.mock('../../../AnnotationModule');
 jest.mock('../../controls/controls-root');
 
 const imageUrl =

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
@@ -1719,6 +1720,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
+                        annotationColor={bdlBoxBlue}
                         annotationMode="none"
                         hasDrawing={false}
                         hasHighlight={false}

@@ -1,8 +1,6 @@
 import IFrameViewer from '../IFrameViewer';
 import BaseViewer from '../../BaseViewer';
 
-jest.mock('../../../AnnotationModule');
-
 let containerEl;
 let iframe;
 

@@ -15,8 +15,6 @@ import { AnnotationMode } from '../../AnnotationControls';
 import { ERROR_CODE, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
 
-jest.mock('../../AnnotationModule');
-
 let base;
 let containerEl;
 let stubs = {};

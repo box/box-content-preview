@@ -9,8 +9,6 @@ import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
 import { VIEWER_EVENT } from '../../../events';
 
-jest.mock('../../../AnnotationModule');
-
 let containerEl;
 let options;
 let csv;

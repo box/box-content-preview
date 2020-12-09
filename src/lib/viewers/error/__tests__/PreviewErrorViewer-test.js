@@ -7,8 +7,6 @@ import * as file from '../../../file';
 import * as icons from '../../../icons/icons';
 import { VIEWER_EVENT } from '../../../events';
 
-jest.mock('../../../AnnotationModule');
-
 let error;
 let containerEl;
 

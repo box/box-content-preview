@@ -17,8 +17,6 @@ import {
     EVENT_TOGGLE_HELPERS,
 } from '../model3DConstants';
 
-jest.mock('../../../../AnnotationModule');
-
 const sandbox = sinon.createSandbox();
 let containerEl;
 let model3d;

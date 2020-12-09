@@ -5,8 +5,6 @@ import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
 
-jest.mock('../../../AnnotationModule');
-
 let containerEl;
 let doc;
 let stubs = {};

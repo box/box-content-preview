@@ -8,7 +8,6 @@ import TextControls from '../TextControls';
 import ZoomControls from '../../../ZoomControls';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
-jest.mock('../../../AnnotationModule');
 jest.mock('../../controls/controls-root');
 
 let containerEl;

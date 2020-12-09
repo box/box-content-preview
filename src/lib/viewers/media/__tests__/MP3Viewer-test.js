@@ -3,8 +3,6 @@ import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 
-jest.mock('../../../AnnotationModule');
-
 let mp3;
 
 describe('lib/viewers/media/MP3Viewer', () => {

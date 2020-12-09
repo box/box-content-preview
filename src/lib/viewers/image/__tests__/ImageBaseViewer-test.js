@@ -7,8 +7,6 @@ import fullscreen from '../../../Fullscreen';
 import { VIEWER_EVENT } from '../../../events';
 import * as util from '../../../util';
 
-jest.mock('../../../AnnotationModule');
-
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';

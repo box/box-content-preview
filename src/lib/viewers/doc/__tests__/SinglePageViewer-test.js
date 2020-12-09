@@ -3,8 +3,6 @@ import SinglePageViewer from '../SinglePageViewer';
 import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
 
-jest.mock('../../../AnnotationModule');
-
 const sandbox = sinon.createSandbox();
 let containerEl;
 let doc;

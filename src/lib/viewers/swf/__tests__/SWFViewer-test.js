@@ -2,8 +2,6 @@
 import SWFViewer from '../SWFViewer';
 import BaseViewer from '../../BaseViewer';
 
-jest.mock('../../../AnnotationModule');
-
 const sandbox = sinon.createSandbox();
 let swf;
 let containerEl;
