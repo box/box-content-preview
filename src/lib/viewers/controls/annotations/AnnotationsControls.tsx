@@ -1,5 +1,6 @@
 import React from 'react';
 import noop from 'lodash/noop';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
@@ -9,6 +10,7 @@ import { AnnotationMode } from './types';
 import './AnnotationsControls.scss';
 
 export type Props = {
+    annotationColor?: string;
     annotationMode?: AnnotationMode;
     hasDrawing?: boolean;
     hasHighlight?: boolean;
@@ -18,6 +20,7 @@ export type Props = {
 };
 
 export default function AnnotationsControls({
+    annotationColor = bdlBoxBlue,
     annotationMode = AnnotationMode.NONE,
     hasDrawing = false,
     hasHighlight = false,
@@ -62,18 +65,20 @@ export default function AnnotationsControls({
         return null;
     }
 
+    const isDrawingActive = annotationMode === AnnotationMode.DRAWING;
+
     return (
         <div className="bp-AnnotationsControls">
             <AnnotationsButton
                 data-resin-target="draw"
                 data-testid="bp-AnnotationsControls-drawBtn"
-                isActive={annotationMode === AnnotationMode.DRAWING}
+                isActive={isDrawingActive}
                 isEnabled={showDrawing}
                 mode={AnnotationMode.DRAWING}
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconDrawing24 />
+                <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
             </AnnotationsButton>
             <AnnotationsButton
                 data-resin-target="highlightRegion"

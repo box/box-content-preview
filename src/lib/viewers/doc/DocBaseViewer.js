@@ -111,7 +111,7 @@ class DocBaseViewer extends BaseViewer {
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
         this.handleFindBarClose = this.handleFindBarClose.bind(this);
-        this.handleAnnotationColorClick = this.handleAnnotationColorClick.bind(this);
+        this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
@@ -1089,13 +1089,14 @@ class DocBaseViewer extends BaseViewer {
 
             this.controls.render(
                 <DocControls
+                    annotationColor={this.annotationModule.getColor()}
                     annotationMode={this.annotationControlsFSM.getMode()}
                     hasDrawing={canDraw}
                     hasHighlight={canHighlight}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
-                    onAnnotationColorClick={this.handleAnnotationColorClick}
+                    onAnnotationColorChange={this.handleAnnotationColorChange}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFindBarToggle={this.toggleFindBar}
@@ -1671,8 +1672,9 @@ class DocBaseViewer extends BaseViewer {
         }
     }
 
-    handleAnnotationColorClick() {
-        // TODO: Will implement in a separate PR
+    handleAnnotationColorChange(color) {
+        this.annotationModule.setColor(color);
+        this.renderUI();
     }
 
     handleAnnotationControlsClick({ mode }) {

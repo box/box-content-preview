@@ -40,6 +40,7 @@ import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import { AnnotationMode } from '../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput } from '../AnnotationControlsFSM';
+import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';
 
@@ -152,6 +153,8 @@ class BaseViewer extends EventEmitter {
         this.emittedMetrics = {};
 
         this.annotationControlsFSM = new AnnotationControlsFSM();
+
+        this.annotationModule = new AnnotationModule({ cache: this.cache });
 
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);

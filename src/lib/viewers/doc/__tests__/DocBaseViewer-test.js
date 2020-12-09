@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
+import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import Api from '../../../api';
 import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
@@ -1719,13 +1720,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.controls.render).toBeCalledWith(
                     <DocControls
+                        annotationColor={bdlBoxBlue}
                         annotationMode="none"
                         hasDrawing={false}
                         hasHighlight={false}
                         hasRegion={false}
                         maxScale={10}
                         minScale={0.1}
-                        onAnnotationColorClick={docBase.handleAnnotationColorClick}
+                        onAnnotationColorChange={docBase.handleAnnotationColorChange}
                         onAnnotationModeClick={docBase.handleAnnotationControlsClick}
                         onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
                         onFindBarToggle={docBase.toggleFindBar}
@@ -2939,6 +2941,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
                 expect(docBase.processAnnotationModeChange).not.toBeCalled();
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
+            });
+        });
+
+        describe('handleAnnotationColorChange', () => {
+            beforeEach(() => {
+                docBase.annotationModule = {
+                    setColor: jest.fn(),
+                };
+                docBase.renderUI = jest.fn();
+            });
+
+            test('should call setColor and renderUI', () => {
+                const color = '#fff';
+                docBase.handleAnnotationColorChange(color);
+
+                expect(docBase.annotationModule.setColor).toBeCalledWith(color);
+                expect(docBase.renderUI).toHaveBeenCalled();
             });
         });
 

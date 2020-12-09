@@ -1,41 +1,45 @@
 import * as React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { AnnotationMode } from '../../annotations/types';
 import ColorPickerControl from '../ColorPickerControl';
 
 describe('ColorPickerControl', () => {
-    const onAnnotationColorClick = jest.fn();
+    const defaultColor = '#fff';
 
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<ColorPickerControl onAnnotationColorClick={onAnnotationColorClick} {...props} />);
+        shallow(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
 
-    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('.bp-ColorPickerControl-button');
+    const getColorPickerPalette = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ColorPickerPalette"]');
+
+    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ColorPickerControl-button"]');
 
     describe('render', () => {
-        test('should render null if annotationMode is not AnnotationMode.DRAWING', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.REGION });
-
-            expect(wrapper.isEmptyRender()).toBe(true);
-        });
-
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.find('ColorPickerPalette').exists()).toBe(false);
+            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING });
+            const wrapper = getWrapper();
 
             getToggleButton(wrapper).simulate('click');
 
-            expect(wrapper.find('ColorPickerPalette').exists()).toBe(true);
+            expect(getColorPickerPalette(wrapper).exists()).toBe(true);
         });
+    });
 
-        test('should render the toggle button with bp-is-active set to true if isActive is true', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING, isActive: true });
+    describe('handleSelect', () => {
+        test('should close the palette and call onColorSelect if a color is selected', () => {
+            const onColorSelect = jest.fn();
+            const wrapper = getWrapper({ onColorSelect });
 
-            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
+            getToggleButton(wrapper).simulate('click');
+            getColorPickerPalette(wrapper).simulate('select', defaultColor);
+
+            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
+            expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
 });

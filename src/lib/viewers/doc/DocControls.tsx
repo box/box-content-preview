@@ -7,6 +7,10 @@ import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fu
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
+import { AnnotationColor } from '../../AnnotationModule';
+import { AnnotationMode } from '../controls/annotations/types';
+
+const colors = Object.values(AnnotationColor);
 
 export type Props = AnnotationsControlsProps &
     ColorPickerControlProps &
@@ -14,16 +18,19 @@ export type Props = AnnotationsControlsProps &
     FullscreenToggleProps &
     PageControlsProps &
     ThumbnailsToggleProps &
-    ZoomControlsProps;
+    ZoomControlsProps & {
+        onAnnotationColorChange: (color: string) => void;
+    };
 
 export default function DocControls({
+    annotationColor,
     annotationMode,
     hasDrawing,
     hasHighlight,
     hasRegion,
     maxScale,
     minScale,
-    onAnnotationColorClick,
+    onAnnotationColorChange,
     onAnnotationModeClick,
     onAnnotationModeEscape,
     onFindBarToggle,
@@ -57,6 +64,7 @@ export default function DocControls({
                 />
                 <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                 <AnnotationsControls
+                    annotationColor={annotationColor}
                     annotationMode={annotationMode}
                     hasDrawing={hasDrawing}
                     hasHighlight={hasHighlight}
@@ -65,9 +73,15 @@ export default function DocControls({
                     onAnnotationModeEscape={onAnnotationModeEscape}
                 />
             </ControlsBar>
-            <ControlsBar>
-                <ColorPickerControl annotationMode={annotationMode} onAnnotationColorClick={onAnnotationColorClick} />
-            </ControlsBar>
+            {hasDrawing && annotationMode === AnnotationMode.DRAWING && (
+                <ControlsBar>
+                    <ColorPickerControl
+                        activeColor={annotationColor}
+                        colors={colors}
+                        onColorSelect={onAnnotationColorChange}
+                    />
+                </ControlsBar>
+            )}
         </>
     );
 }

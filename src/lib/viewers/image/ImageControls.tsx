@@ -8,6 +8,7 @@ import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 export type Props = AnnotationsControlsProps & FullscreenToggleProps & RotateControlProps & ZoomControlsProps;
 
 export default function ImageControls({
+    annotationColor,
     annotationMode,
     hasDrawing,
     hasHighlight,
@@ -26,6 +27,7 @@ export default function ImageControls({
             <RotateControl onRotateLeft={onRotateLeft} />
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
             <AnnotationsControls
+                annotationColor={annotationColor}
                 annotationMode={annotationMode}
                 hasDrawing={hasDrawing}
                 hasHighlight={hasHighlight}
