@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
 export { default as useFullscreen } from './useFullscreen';
+export { default as usePreventKey } from './usePreventKey';
