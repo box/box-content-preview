@@ -11,5 +11,12 @@ describe('ControlsBar', () => {
             expect(wrapper.contains(children)).toBe(true);
             expect(wrapper.hasClass('bp-ControlsBar')).toBe(true);
         });
+
+        test('should return null if the children property is undefined', () => {
+            const children = undefined;
+            const wrapper = shallow(<ControlsBar>{children}</ControlsBar>);
+
+            expect(wrapper.isEmptyRender()).toBe(true);
+        });
     });
 });

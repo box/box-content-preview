@@ -25,6 +25,7 @@ class ImageViewer extends ImageBaseViewer {
         // Bind context for callbacks
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
+        this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
@@ -407,10 +408,12 @@ class ImageViewer extends ImageBaseViewer {
 
             this.controls.render(
                 <ImageControls
+                    annotationColor={this.annotationModule.getColor()}
                     annotationMode={this.annotationControlsFSM.getMode()}
                     hasDrawing={canDraw}
                     hasHighlight={false}
                     hasRegion={canAnnotate}
+                    onAnnotationColorChange={this.handleAnnotationColorChange}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                     onFullscreenToggle={this.toggleFullscreen}
@@ -547,6 +550,11 @@ class ImageViewer extends ImageBaseViewer {
             scale: this.scale,
             rotationAngle: this.rotationAngle,
         });
+    }
+
+    handleAnnotationColorChange(color) {
+        this.annotationModule.setColor(color);
+        this.renderUI();
     }
 
     /**

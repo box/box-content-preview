@@ -19,6 +19,8 @@ export const AnnotationColor = {
     GRIMACE: bdlGrimace,
 };
 
+export const ANNOTATION_COLORS = Object.values(AnnotationColor);
+
 export default class AnnotationModule {
     private cache: Cache;
 
