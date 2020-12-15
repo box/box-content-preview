@@ -24,11 +24,6 @@ export default function ColorPickerControl({
 
     return (
         <div className="bp-ColorPickerControl">
-            {isColorPickerToggled && (
-                <div className="bp-ColorPickerControl-palette">
-                    <ColorPickerPalette colors={colors} data-testid="bp-ColorPickerPalette" onSelect={handleSelect} />
-                </div>
-            )}
             <button
                 className="bp-ColorPickerControl-button"
                 data-testid="bp-ColorPickerControl-button"
@@ -38,6 +33,11 @@ export default function ColorPickerControl({
             >
                 <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: activeColor }} />
             </button>
+            {isColorPickerToggled && (
+                <div className="bp-ColorPickerControl-palette">
+                    <ColorPickerPalette colors={colors} data-testid="bp-ColorPickerPalette" onSelect={handleSelect} />
+                </div>
+            )}
         </div>
     );
 }
