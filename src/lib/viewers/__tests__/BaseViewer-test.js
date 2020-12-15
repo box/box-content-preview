@@ -1180,6 +1180,7 @@ describe('lib/viewers/BaseViewer', () => {
                 features: {
                     enabledFeature: true,
                 },
+                initialColor: '#000',
             };
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'createAnnotatorOptions');
@@ -1192,9 +1193,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.createAnnotator();
 
             expect(base.options.boxAnnotations.getOptions).toBeCalled();
-            expect(base.createAnnotatorOptions).toBeCalledWith(
-                expect.objectContaining({ ...createOptionsArg, initialColor: '#000' }),
-            );
+            expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining(createOptionsArg));
         });
 
         test('should use default intl lib if annotator options not present ', () => {
