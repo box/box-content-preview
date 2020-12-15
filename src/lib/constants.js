@@ -135,6 +135,7 @@ export const ANNOTATOR_EVENT = {
     fetch: 'annotationsfetched',
     error: 'annotationerror',
     scale: 'scaleannotations',
+    setColor: 'annotations_color_set',
     setVisibility: 'annotations_visible_set',
 };
 

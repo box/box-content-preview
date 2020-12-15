@@ -4,6 +4,7 @@ import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap }
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
 import {
+    ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
@@ -554,6 +555,7 @@ class ImageViewer extends ImageBaseViewer {
 
     handleAnnotationColorChange(color) {
         this.annotationModule.setColor(color);
+        this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
         this.renderUI();
     }
 

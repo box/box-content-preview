@@ -1674,6 +1674,7 @@ class DocBaseViewer extends BaseViewer {
 
     handleAnnotationColorChange(color) {
         this.annotationModule.setColor(color);
+        this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
         this.renderUI();
     }
 

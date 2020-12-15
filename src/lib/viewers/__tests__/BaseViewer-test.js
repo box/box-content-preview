@@ -1135,6 +1135,9 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
+            base.annotationModule.cache = {
+                get: jest.fn().mockReturnValue('#000'),
+            };
             base.options.viewer = { NAME: 'viewerName' };
             base.options.location = { locale: 'en-US' };
             base.options.showAnnotations = true;
@@ -1189,7 +1192,9 @@ describe('lib/viewers/BaseViewer', () => {
             base.createAnnotator();
 
             expect(base.options.boxAnnotations.getOptions).toBeCalled();
-            expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining(createOptionsArg));
+            expect(base.createAnnotatorOptions).toBeCalledWith(
+                expect.objectContaining({ ...createOptionsArg, initialColor: '#000' }),
+            );
         });
 
         test('should use default intl lib if annotator options not present ', () => {
