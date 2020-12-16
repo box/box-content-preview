@@ -1135,6 +1135,9 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
+            base.annotationModule.cache = {
+                get: jest.fn().mockReturnValue('#000'),
+            };
             base.options.viewer = { NAME: 'viewerName' };
             base.options.location = { locale: 'en-US' };
             base.options.showAnnotations = true;
@@ -1177,6 +1180,7 @@ describe('lib/viewers/BaseViewer', () => {
                 features: {
                     enabledFeature: true,
                 },
+                initialColor: '#000',
             };
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'createAnnotatorOptions');

@@ -2949,14 +2949,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.annotationModule = {
                     setColor: jest.fn(),
                 };
+                docBase.annotator = {
+                    emit: jest.fn(),
+                };
                 docBase.renderUI = jest.fn();
             });
 
-            test('should call setColor and renderUI', () => {
+            test('should call setColor and renderUI, and emit color', () => {
                 const color = '#fff';
                 docBase.handleAnnotationColorChange(color);
 
                 expect(docBase.annotationModule.setColor).toBeCalledWith(color);
+                expect(docBase.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setColor, color);
                 expect(docBase.renderUI).toHaveBeenCalled();
             });
         });

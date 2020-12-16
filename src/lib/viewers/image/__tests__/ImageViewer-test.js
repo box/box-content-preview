@@ -6,7 +6,11 @@ import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageControls from '../ImageControls';
 import ImageViewer from '../ImageViewer';
-import { CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN, IMAGE_FTUX_CURSOR_SEEN_KEY } from '../../../constants';
+import {
+    ANNOTATOR_EVENT,
+    CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
+    IMAGE_FTUX_CURSOR_SEEN_KEY,
+} from '../../../constants';
 
 jest.mock('../../controls/controls-root');
 
@@ -712,14 +716,18 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.annotationModule = {
                 setColor: jest.fn(),
             };
+            image.annotator = {
+                emit: jest.fn(),
+            };
             image.renderUI = jest.fn();
         });
 
-        test('should call setColor and renderUI', () => {
+        test('should call setColor and renderUI, and emit color', () => {
             const color = '#fff';
             image.handleAnnotationColorChange(color);
 
             expect(image.annotationModule.setColor).toBeCalledWith(color);
+            expect(image.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setColor, color);
             expect(image.renderUI).toHaveBeenCalled();
         });
     });
