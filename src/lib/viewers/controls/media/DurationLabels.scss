@@ -1,0 +1,17 @@
+@import './styles';
+
+.bp-DurationLabels {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.bp-DurationLabels-label {
+    @include bp-Control--hover;
+
+    padding-right: 4px;
+    padding-left: 4px;
+    color: $white;
+    cursor: default;
+}
