@@ -1,5 +1,4 @@
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../AnnotationControlsFSM';
-import { AnnotationMode } from '../AnnotationControls';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../AnnotationControlsFSM';
 
 describe('lib/AnnotationControlsFSM', () => {
     describe('AnnotationState.NONE', () => {

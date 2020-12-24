@@ -38,8 +38,7 @@ import {
 import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
-import { AnnotationMode } from '../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput } from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
 import Timer from '../Timer';

@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
+import * as util from '../../../util';
 import Api from '../../../api';
-import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
+import ControlsRoot from '../../controls/controls-root';
+import ImageBaseViewer from '../ImageBaseViewer';
 import fullscreen from '../../../Fullscreen';
 import { VIEWER_EVENT } from '../../../events';
-import * as util from '../../../util';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -47,7 +48,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.loadUI();
             imageBase.imageEl.addEventListener('mouseup', imageBase.handleMouseUp);
 
-            jest.spyOn(imageBase.controls, 'destroy');
+            jest.spyOn(imageBase.controls, 'destroy').mockImplementation();
             jest.spyOn(imageBase.imageEl, 'removeEventListener');
 
             Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'destroy', {
@@ -203,11 +204,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('loadUI()', () => {
-        test('should create controls and add control buttons for zoom', () => {
+        test('should create the controls root instance', () => {
             imageBase.loadUI();
 
-            expect(imageBase.controls).toBeDefined();
-            expect(imageBase.zoomControls).toBeDefined();
+            expect(imageBase.controls).toBeInstanceOf(ControlsRoot);
         });
     });
 
@@ -396,7 +396,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('onKeydown', () => {
-        test('should return false when media controls are not ready or are focused', () => {
+        test('should return false when controls are not ready', () => {
             const consumed = imageBase.onKeydown();
 
             expect(consumed).toBe(false);
@@ -522,7 +522,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.loaded = false;
             stubs.zoom = jest.spyOn(imageBase, 'zoom');
             stubs.loadUI = jest.spyOn(imageBase, 'loadUI');
-            stubs.loadUIReact = jest.spyOn(imageBase, 'loadUIReact');
             stubs.setOriginalImageSize = jest.spyOn(imageBase, 'setOriginalImageSize');
             imageBase.options = {
                 file: {
@@ -544,7 +543,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.zoom).not.toBeCalled();
             expect(stubs.setOriginalImageSize).not.toBeCalled();
             expect(stubs.loadUI).not.toBeCalled();
-            expect(stubs.loadUIReact).not.toBeCalled();
         });
 
         test('should load UI if not destroyed', done => {
@@ -554,7 +552,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 expect(imageBase.loaded).toBe(true);
                 expect(stubs.zoom).toBeCalled();
                 expect(stubs.loadUI).toBeCalled();
-                expect(stubs.loadUIReact).not.toBeCalled();
                 done();
             });
 
@@ -562,21 +559,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.finishLoading();
 
             expect(stubs.setOriginalImageSize).toBeCalled();
-        });
-
-        test('should load react UI if option is provided', done => {
-            stubs.setOriginalImageSize.mockResolvedValue(undefined);
-
-            imageBase.on(VIEWER_EVENT.load, () => {
-                expect(imageBase.loaded).toBe(true);
-                expect(stubs.zoom).toBeCalled();
-                expect(stubs.loadUI).not.toBeCalled();
-                expect(stubs.loadUIReact).toBeCalled();
-                done();
-            });
-            imageBase.destroyed = false;
-            imageBase.options.useReactControls = true;
-            imageBase.finishLoading('', true);
         });
     });
 

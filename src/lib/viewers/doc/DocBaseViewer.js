@@ -1,19 +1,15 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
-import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
-import Controls from '../../Controls';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
-import PageControls from '../../PageControls';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
-import ZoomControls from '../../ZoomControls';
-import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
+import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
@@ -34,15 +30,9 @@ import {
     QUERY_PARAM_ENCODING,
     STATUS_SUCCESS,
 } from '../../constants';
-import { checkPermission, getRepresentation } from '../../file';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
-import {
-    ICON_PRINT_CHECKMARK,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_SEARCH,
-    ICON_THUMBNAILS_TOGGLE,
-} from '../../icons/icons';
+import { checkPermission, getRepresentation } from '../../file';
+import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import {
     ERROR_CODE,
@@ -196,10 +186,6 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.printURL) {
             URL.revokeObjectURL(this.printURL);
-        }
-
-        if (this.pageControls) {
-            this.pageControls.removeListener('pagechange', this.setPage);
         }
 
         if (this.controls && typeof this.controls.destroy === 'function') {
@@ -1048,69 +1034,56 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Creates UI for preview controls.
+     * Load controls
      *
-     * @private
+     * @protected
      * @return {void}
      */
     loadUI() {
-        this.controls = new Controls(this.containerEl);
-        this.pageControls = new PageControls(this.controls, this.docEl);
-        this.pageControls.addListener('pagechange', this.setPage);
-        this.zoomControls = new ZoomControls(this.controls);
-
-        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
-            this.annotationControls = new AnnotationControls(this.controls);
-        }
-
-        this.bindControlListeners();
-    }
-
-    loadUIReact() {
         this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
 
+    /**
+     * Render controls
+     *
+     * @protected
+     * @return {void}
+     */
     renderUI() {
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.pdfViewer.currentScale);
+        if (!this.controls) {
+            return;
         }
 
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(this.pdfViewer.currentPageNumber);
-        }
+        const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
+        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
+        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
 
-        if (this.controls && this.options.useReactControls) {
-            const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
-            const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
-            const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-
-            this.controls.render(
-                <DocControls
-                    annotationColor={this.annotationModule.getColor()}
-                    annotationMode={this.annotationControlsFSM.getMode()}
-                    hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
-                    hasHighlight={canAnnotate && canDownload}
-                    hasRegion={canAnnotate}
-                    maxScale={MAX_SCALE}
-                    minScale={MIN_SCALE}
-                    onAnnotationColorChange={this.handleAnnotationColorChange}
-                    onAnnotationModeClick={this.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                    onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onPageChange={this.setPage}
-                    onPageSubmit={this.handlePageSubmit}
-                    onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    pageCount={this.pdfViewer.pagesCount}
-                    pageNumber={this.pdfViewer.currentPageNumber}
-                    scale={this.pdfViewer.currentScale}
-                />,
-            );
-        }
+        this.controls.render(
+            <DocControls
+                annotationColor={this.annotationModule.getColor()}
+                annotationMode={this.annotationControlsFSM.getMode()}
+                hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
+                hasHighlight={canAnnotate && canDownload}
+                hasRegion={canAnnotate}
+                maxScale={MAX_SCALE}
+                minScale={MIN_SCALE}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
+                onAnnotationModeClick={this.handleAnnotationControlsClick}
+                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
+                onFullscreenToggle={this.toggleFullscreen}
+                onPageChange={this.setPage}
+                onPageSubmit={this.handlePageSubmit}
+                onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                pageCount={this.pdfViewer.pagesCount}
+                pageNumber={this.pdfViewer.currentPageNumber}
+                scale={this.pdfViewer.currentScale}
+            />,
+        );
     }
 
     //--------------------------------------------------------------------------
@@ -1153,58 +1126,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Binds listeners for document controls
-     *
-     * @protected
-     * @return {void}
-     */
-    bindControlListeners() {
-        if (this.options.enableThumbnailsSidebar) {
-            this.controls.add(
-                __('toggle_thumbnails'),
-                this.toggleThumbnails,
-                'bp-toggle-thumbnails-icon',
-                ICON_THUMBNAILS_TOGGLE,
-            );
-        }
-
-        if (!this.isFindDisabled()) {
-            this.controls.add(__('toggle_findbar'), this.toggleFindBar, 'bp-toggle-findbar-icon', ICON_SEARCH);
-        }
-
-        this.zoomControls.init(this.pdfViewer.currentScale, {
-            maxZoom: MAX_SCALE,
-            minZoom: MIN_SCALE,
-            zoomInClassName: 'bp-doc-zoom-in-icon',
-            zoomOutClassName: 'bp-doc-zoom-out-icon',
-            onZoomIn: this.zoomIn,
-            onZoomOut: this.zoomOut,
-        });
-
-        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
-
-        this.controls.add(
-            __('enter_fullscreen'),
-            this.toggleFullscreen,
-            'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN,
-        );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-
-        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
-            const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-
-            this.annotationControls.init({
-                fileId: this.options.file.id,
-                onClick: this.handleAnnotationControlsClick,
-                onEscape: this.handleAnnotationControlsEscape,
-                showDrawing: this.options.showAnnotationsDrawingCreate,
-                showHighlightText: canDownload,
-            });
-        }
-    }
-
-    /**
      * Handler for 'pagesinit' event.
      *
      * @private
@@ -1212,12 +1133,7 @@ class DocBaseViewer extends BaseViewer {
      */
     pagesinitHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
-
-        if (this.options.useReactControls) {
-            this.loadUIReact();
-        } else {
-            this.loadUI();
-        }
+        this.loadUI();
 
         const { pagesCount, currentScale } = this.pdfViewer;
 

@@ -27,7 +27,7 @@ class MediaControls extends EventEmitter {
      * @param {HTMLElement} containerEl - container
      * @param {HTMLElement} mediaEl - media element
      * @param {Cache} cache - Cache instance
-     * @return {Controls} Controls instance
+     * @return {MediaControls} Controls instance
      */
     constructor(containerEl, mediaEl, cache) {
         super();

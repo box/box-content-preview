@@ -6,11 +6,8 @@ import ControlsRoot from '../../controls/controls-root';
 import ImageBaseViewer from '../ImageBaseViewer';
 import MultiImageControls from '../MultiImageControls';
 import MultiImageViewer from '../MultiImageViewer';
-import PageControls from '../../../PageControls';
-import ZoomControls from '../../../ZoomControls';
 import fullscreen from '../../../Fullscreen';
 import { CLASS_MULTI_IMAGE_PAGE } from '../../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
 
 jest.mock('../../controls/controls-root');
 
@@ -336,11 +333,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('setScale()', () => {
         test('should set the scale relative to the size of the first image dimensions', () => {
-            multiImage.zoomControls = {
-                setCurrentScale: jest.fn(),
-                removeListener: jest.fn(),
-            };
-
             multiImage.singleImageEls = [
                 {
                     naturalWidth: 1024,
@@ -351,10 +343,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                 },
             ];
             jest.spyOn(multiImage, 'emit');
+            jest.spyOn(multiImage, 'renderUI').mockImplementation();
 
             multiImage.setScale(512, 512);
             expect(multiImage.emit).toBeCalledWith('scale', { scale: 0.5 });
-            expect(multiImage.zoomControls.setCurrentScale).toBeCalledWith(0.5);
+            expect(multiImage.scale).toEqual(0.5);
+            expect(multiImage.renderUI).toBeCalled();
         });
     });
 
@@ -372,32 +366,8 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     });
 
     describe('loadUI()', () => {
-        const zoomInitFunc = ZoomControls.prototype.init;
-
-        beforeEach(() => {
-            Object.defineProperty(ZoomControls.prototype, 'init', { value: jest.fn() });
-        });
-
-        afterEach(() => {
-            Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
-        });
-
-        test('should create page controls and bind the page control listeners', () => {
-            stubs.bindPageControlListeners = jest.spyOn(multiImage, 'bindPageControlListeners');
-
+        test('should create controls root and render the controls', () => {
             multiImage.loadUI();
-            expect(multiImage.pageControls instanceof PageControls).toBe(true);
-            expect(multiImage.pageControls.contentEl).toBe(multiImage.wrapperEl);
-            expect(multiImage.zoomControls instanceof ZoomControls).toBe(true);
-            expect(stubs.bindPageControlListeners).toBeCalled();
-            expect(ZoomControls.prototype.init).toBeCalled();
-        });
-    });
-
-    describe('loadUIReact()', () => {
-        test('should create controls root and render the react controls', () => {
-            multiImage.options.useReactControls = true;
-            multiImage.loadUIReact();
 
             expect(multiImage.controls).toBeInstanceOf(ControlsRoot);
             expect(multiImage.controls.render).toBeCalledWith(
@@ -411,45 +381,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                     pageNumber={multiImage.currentPageNumber}
                     scale={1}
                 />,
-            );
-        });
-    });
-
-    describe('bindPageControlListeners()', () => {
-        beforeEach(() => {
-            multiImage.currentPageNumber = 1;
-            multiImage.pagesCount = 10;
-            multiImage.pageControls = {
-                add: jest.fn(),
-                addListener: jest.fn(),
-            };
-
-            multiImage.controls = {
-                add: jest.fn(),
-            };
-        });
-
-        test('should add the page controls and bind the pagechange listener', () => {
-            multiImage.bindPageControlListeners();
-
-            expect(multiImage.pageControls.add).toBeCalledWith(multiImage.currentPageNumber, multiImage.pagesCount);
-            expect(multiImage.pageControls.addListener).toBeCalledWith('pagechange', multiImage.setPage);
-        });
-
-        test('should finish binding the document controls', () => {
-            multiImage.bindPageControlListeners();
-
-            expect(multiImage.controls.add).toBeCalledWith(
-                __('enter_fullscreen'),
-                multiImage.toggleFullscreen,
-                'bp-enter-fullscreen-icon',
-                ICON_FULLSCREEN_IN,
-            );
-            expect(multiImage.controls.add).toBeCalledWith(
-                __('exit_fullscreen'),
-                multiImage.toggleFullscreen,
-                'bp-exit-fullscreen-icon',
-                ICON_FULLSCREEN_OUT,
             );
         });
     });
@@ -557,11 +488,8 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     describe('updateCurrentPage()', () => {
         beforeEach(() => {
             stubs.isValidPageChange = jest.spyOn(multiImage, 'isValidPageChange');
-            multiImage.pageControls = {
-                updateCurrentPage: jest.fn(),
-            };
-
             stubs.emit = jest.spyOn(multiImage, 'emit');
+            stubs.renderUI = jest.spyOn(multiImage, 'renderUI');
             multiImage.currentPageNumber = 1;
         });
 
@@ -577,7 +505,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.updateCurrentPage(3);
             expect(multiImage.currentPageNumber).toBe(3);
-            expect(multiImage.pageControls.updateCurrentPage).toBeCalledWith(3);
+            expect(multiImage.renderUI).toBeCalled();
         });
 
         test('should emit the pagefocus event', () => {

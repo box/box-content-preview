@@ -1,6 +1,5 @@
 import React from 'react';
-import AnnotationControls, { AnnotationMode } from '../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState, stateModeMap } from '../../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
 import {
@@ -10,7 +9,6 @@ import {
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -357,74 +355,39 @@ class ImageViewer extends ImageBaseViewer {
         });
     }
 
-    /**
-     * Loads controls
-     *
-     * @override
-     * @return {void}
-     */
     loadUI() {
         super.loadUI();
-
-        this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
-        this.controls.add(
-            __('enter_fullscreen'),
-            this.toggleFullscreen,
-            'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN,
-        );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-
-        if (this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission()) {
-            this.annotationControls = new AnnotationControls(this.controls);
-            this.annotationControls.init({
-                fileId: this.options.file.id,
-                initialMode: this.options.enableAnnotationsImageDiscoverability
-                    ? stateModeMap[AnnotationState.REGION_TEMP]
-                    : stateModeMap[AnnotationState.NONE],
-                onClick: this.handleAnnotationControlsClick,
-                onEscape: this.handleAnnotationControlsEscape,
-            });
-        }
-    }
-
-    loadUIReact() {
-        super.loadUIReact();
 
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
 
     renderUI() {
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.scale);
+        if (!this.controls) {
+            return;
         }
 
-        if (this.controls && this.options.useReactControls) {
-            const canAnnotate =
-                this.areNewAnnotationsEnabled() &&
-                this.hasAnnotationCreatePermission() &&
-                this.currentRotationAngle === 0;
-            const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
+        const canAnnotate =
+            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.currentRotationAngle === 0;
+        const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
 
-            this.controls.render(
-                <ImageControls
-                    annotationColor={this.annotationModule.getColor()}
-                    annotationMode={this.annotationControlsFSM.getMode()}
-                    hasDrawing={canDraw}
-                    hasHighlight={false}
-                    hasRegion={canAnnotate}
-                    onAnnotationColorChange={this.handleAnnotationColorChange}
-                    onAnnotationModeClick={this.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onRotateLeft={this.rotateLeft}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    scale={this.scale}
-                />,
-            );
-        }
+        this.controls.render(
+            <ImageControls
+                annotationColor={this.annotationModule.getColor()}
+                annotationMode={this.annotationControlsFSM.getMode()}
+                hasDrawing={canDraw}
+                hasHighlight={false}
+                hasRegion={canAnnotate}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
+                onAnnotationModeClick={this.handleAnnotationControlsClick}
+                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                onFullscreenToggle={this.toggleFullscreen}
+                onRotateLeft={this.rotateLeft}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                scale={this.scale}
+            />,
+        );
     }
 
     /**

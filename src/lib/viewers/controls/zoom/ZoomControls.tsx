@@ -40,7 +40,7 @@ export default function ZoomControls({
             </button>
             <div
                 className="bp-ZoomControls-current"
-                data-testid="current-zoom"
+                data-testid="bp-ZoomControls-current"
                 title={__('zoom_current_scale')}
             >{`${Math.round(currentScale * 100)}%`}</div>
             <button

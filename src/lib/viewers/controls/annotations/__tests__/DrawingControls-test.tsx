@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import DrawingControls from '../DrawingControls';
-import { AnnotationMode } from '../types';
+import { AnnotationMode } from '../../../../types';
 
 describe('DrawingControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>

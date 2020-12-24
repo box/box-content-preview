@@ -1,11 +1,8 @@
 import React from 'react';
 import BaseViewer from '../BaseViewer';
-import Controls from '../../Controls';
 import ControlsRoot from '../controls';
 import TextControls from './TextControls';
-import ZoomControls from '../../ZoomControls';
 import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { checkPermission } from '../../file';
 
 const ZOOM_DEFAULT = 1.0;
@@ -120,54 +117,37 @@ class TextBaseViewer extends BaseViewer {
     }
 
     /**
-     * Loads controls for zooming and fullscreen.
+     * Load controls
      *
      * @return {void}
      * @protected
      */
     loadUI() {
-        this.controls = new Controls(this.containerEl);
-        this.zoomControls = new ZoomControls(this.controls);
-        this.zoomControls.init(this.scale, {
-            maxZoom: ZOOM_MAX,
-            minZoom: ZOOM_MIN,
-            onZoomIn: this.zoomIn,
-            onZoomOut: this.zoomOut,
-            zoomInClassName: 'bp-text-zoom-in-icon',
-            zoomOutClassName: 'bp-text-zoom-out-icon',
-        });
-
-        this.controls.add(
-            __('enter_fullscreen'),
-            this.toggleFullscreen,
-            'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN,
-        );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-    }
-
-    loadUIReact() {
         this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
         this.renderUI();
     }
 
+    /**
+     * Render controls
+     *
+     * @return {void}
+     * @protected
+     */
     renderUI() {
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.scale);
+        if (!this.controls) {
+            return;
         }
 
-        if (this.controls && this.options.useReactControls) {
-            this.controls.render(
-                <TextControls
-                    maxScale={ZOOM_MAX}
-                    minScale={ZOOM_MIN}
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    scale={this.scale}
-                />,
-            );
-        }
+        this.controls.render(
+            <TextControls
+                maxScale={ZOOM_MAX}
+                minScale={ZOOM_MIN}
+                onFullscreenToggle={this.toggleFullscreen}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                scale={this.scale}
+            />,
+        );
     }
 
     /**

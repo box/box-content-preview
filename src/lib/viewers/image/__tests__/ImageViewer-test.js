@@ -1,6 +1,5 @@
 import React from 'react';
-import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationState, stateModeMap } from '../../../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationMode, AnnotationState } from '../../../AnnotationControlsFSM';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
@@ -364,10 +363,8 @@ describe('lib/viewers/image/ImageViewer', () => {
     describe('setScale()', () => {
         test('should emit a scale event with current scale and rotationAngle', () => {
             jest.spyOn(image, 'emit');
-            image.zoomControls = {
-                setCurrentScale: jest.fn(),
-                removeListener: jest.fn(),
-            };
+            jest.spyOn(image, 'renderUI');
+
             image.currentRotationAngle = -90;
             const [width, height] = [100, 100];
 
@@ -376,64 +373,19 @@ describe('lib/viewers/image/ImageViewer', () => {
                 scale: expect.anything(),
                 rotationAngle: expect.any(Number),
             });
-            expect(image.zoomControls.setCurrentScale).toBeCalledWith(expect.any(Number));
+            expect(image.renderUI).toBeCalled();
         });
     });
 
     describe('loadUI()', () => {
-        test('should load UI & controls for zoom', () => {
-            image.scale = 0.5;
-
-            image.loadUI();
-
-            expect(image.controls).toBeDefined();
-            expect(image.controls.buttonRefs.length).toBe(5);
-            expect(image.zoomControls.currentScale).toBe(50);
-            expect(image.annotationControls).toBeUndefined(); // Not enabled by default
-        });
-
-        test('should add annotations controls', () => {
-            jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
-
-            image.loadUI();
-            expect(image.annotationControls).toBeInstanceOf(AnnotationControls);
-        });
-
-        test.each`
-            enableAnnotationsImageDiscoverability | initialMode
-            ${false}                              | ${stateModeMap[AnnotationState.NONE]}
-            ${true}                               | ${stateModeMap[AnnotationState.REGION_TEMP]}
-        `(
-            'should call annotation controls init with $initialMode when enableAnnotationsImageDiscoverability is $enableAnnotationsImageDiscoverability',
-            ({ enableAnnotationsImageDiscoverability, initialMode }) => {
-                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
-                jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(true);
-                jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(true);
-                jest.spyOn(AnnotationControls.prototype, 'init').mockImplementation();
-
-                image.loadUI();
-
-                expect(AnnotationControls.prototype.init).toBeCalledWith({
-                    fileId: image.options.file.id,
-                    initialMode,
-                    onClick: image.handleAnnotationControlsClick,
-                    onEscape: image.handleAnnotationControlsEscape,
-                });
-            },
-        );
-    });
-
-    describe('loadUIReact()', () => {
         beforeEach(() => {
             image.annotationModule = {
                 getColor: jest.fn(),
             };
-            image.options.useReactControls = true;
         });
 
-        test('should create controls root and render the react controls', () => {
-            image.loadUIReact();
+        test('should create controls root and render the controls', () => {
+            image.loadUI();
 
             expect(image.controls).toBeInstanceOf(ControlsRoot);
             expect(image.controls.render).toBeCalledWith(
@@ -465,13 +417,13 @@ describe('lib/viewers/image/ImageViewer', () => {
             ${false}                 | ${true}                       | ${false}   | ${false}
             ${true}                  | ${true}                       | ${true}    | ${true}
         `(
-            'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
+            'should create controls root and render the controls with hasDrawing set to $hasDrawing',
             ({ areNewAnnotationsEnabled, hasAnnotationCreatePermission, hasDrawing, showAnnotationsDrawingCreate }) => {
-                image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
                 jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
                 jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
 
-                image.loadUIReact();
+                image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
+                image.loadUI();
 
                 expect(image.controls).toBeInstanceOf(ControlsRoot);
                 expect(image.controls.render).toBeCalledWith(

@@ -164,12 +164,7 @@ class CSVViewer extends TextBaseViewer {
         this.csvComponent = new BoxCSV(this.csvEl, this.data);
         this.csvComponent.renderCSV();
 
-        if (this.options.useReactControls) {
-            this.loadUIReact();
-        } else {
-            this.loadUI();
-        }
-
+        this.loadUI();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
     }

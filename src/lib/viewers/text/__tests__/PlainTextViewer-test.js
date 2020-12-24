@@ -411,27 +411,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         test('should finish loading, show the text, and emit load', () => {
             jest.spyOn(text, 'loadUI');
-            jest.spyOn(text, 'loadUIReact');
             jest.spyOn(text, 'emit');
 
             text.finishLoading('', true);
 
             expect(text.loadUI).toBeCalled();
-            expect(text.loadUIReact).not.toBeCalled();
             expect(text.emit).toBeCalledWith(VIEWER_EVENT.load);
             expect(text.loaded).toBe(true);
             expect(text.textEl.classList.contains('bp-is-hidden')).toBe(false);
-        });
-
-        test('should finish loading and render react ui if option is enabled', () => {
-            jest.spyOn(text, 'loadUI');
-            jest.spyOn(text, 'loadUIReact');
-
-            text.options.useReactControls = true;
-            text.finishLoading('', true);
-
-            expect(text.loadUI).not.toBeCalled();
-            expect(text.loadUIReact).toBeCalled();
         });
 
         test('should cleanup worker and show truncated download button if needed', () => {

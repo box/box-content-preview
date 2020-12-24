@@ -1,23 +1,19 @@
 /* eslint-disable no-unused-expressions */
-import React from 'react';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
-import Api from '../../../api';
-import AnnotationControls, { AnnotationMode } from '../../../AnnotationControls';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationState } from '../../../AnnotationControlsFSM';
-import ControlsRoot from '../../controls/controls-root';
-import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
-import DocControls from '../DocControls';
-import DocFindBar from '../DocFindBar';
-import Browser from '../../../Browser';
-import BaseViewer from '../../BaseViewer';
-import Controls from '../../../Controls';
-import PageControls from '../../../PageControls';
-import ZoomControls from '../../../ZoomControls';
-import fullscreen from '../../../Fullscreen';
-import DocPreloader from '../DocPreloader';
 import * as file from '../../../file';
 import * as util from '../../../util';
-
+import AnnotationControlsFSM, {
+    AnnotationInput,
+    AnnotationMode,
+    AnnotationState,
+} from '../../../AnnotationControlsFSM';
+import Api from '../../../api';
+import BaseViewer from '../../BaseViewer';
+import Browser from '../../../Browser';
+import ControlsRoot from '../../controls/controls-root';
+import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
+import DocFindBar from '../DocFindBar';
+import DocPreloader from '../DocPreloader';
+import fullscreen from '../../../Fullscreen';
 import {
     ANNOTATOR_EVENT,
     CLASS_HIDDEN,
@@ -34,17 +30,9 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_PRINT_CHECKMARK,
-    ICON_SEARCH,
-    ICON_THUMBNAILS_TOGGLE,
-} from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
-
-jest.mock('../../controls/controls-root');
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1683,116 +1671,90 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('loadUI()', () => {
-            test('should set controls, bind listeners, and init the page number element', () => {
-                const bindControlListenersStub = jest.spyOn(docBase, 'bindControlListeners').mockImplementation();
+            test('should create controls root and render the controls', () => {
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
 
                 docBase.loadUI();
-                expect(bindControlListenersStub).toBeCalled();
-                expect(docBase.controls instanceof Controls).toBe(true);
-                expect(docBase.pageControls instanceof PageControls).toBe(true);
-                expect(docBase.zoomControls instanceof ZoomControls).toBe(true);
-                expect(docBase.pageControls.contentEl).toBe(docBase.docEl);
-            });
-
-            test('should add annotations controls', () => {
-                sandbox.stub(docBase, 'bindControlListeners');
-                sandbox.stub(docBase, 'areNewAnnotationsEnabled').returns(true);
-                sandbox.stub(docBase, 'hasAnnotationCreatePermission').returns(true);
-
-                docBase.loadUI();
-                expect(docBase.annotationControls instanceof AnnotationControls).toBe(true);
-            });
-        });
-
-        describe('loadUIReact()', () => {
-            beforeEach(() => {
-                docBase.pdfViewer = {
-                    pagesCount: 3,
-                    currentPageNumber: 2,
-                    currentScale: 1,
-                };
-                docBase.options.useReactControls = true;
-            });
-
-            test('should create controls root and render the react controls', () => {
-                docBase.loadUIReact();
 
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
-                expect(docBase.controls.render).toBeCalledWith(
-                    <DocControls
-                        annotationColor={bdlBoxBlue}
-                        annotationMode="none"
-                        hasDrawing={false}
-                        hasHighlight={false}
-                        hasRegion={false}
-                        maxScale={10}
-                        minScale={0.1}
-                        onAnnotationColorChange={docBase.handleAnnotationColorChange}
-                        onAnnotationModeClick={docBase.handleAnnotationControlsClick}
-                        onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
-                        onFullscreenToggle={docBase.toggleFullscreen}
-                        onPageChange={docBase.setPage}
-                        onPageSubmit={docBase.handlePageSubmit}
-                        onThumbnailsToggle={docBase.toggleThumbnails}
-                        onZoomIn={docBase.zoomIn}
-                        onZoomOut={docBase.zoomOut}
-                        pageCount={docBase.pdfViewer.pagesCount}
-                        pageNumber={docBase.pdfViewer.currentPageNumber}
-                        scale={1}
-                    />,
-                );
+                expect(docBase.renderUI).toBeCalled();
             });
-
-            test.each`
-                areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
-                ${false}                 | ${false}                      | ${false}   | ${false}
-                ${false}                 | ${false}                      | ${false}   | ${true}
-                ${true}                  | ${true}                       | ${false}   | ${false}
-                ${true}                  | ${false}                      | ${false}   | ${true}
-                ${true}                  | ${false}                      | ${false}   | ${false}
-                ${false}                 | ${true}                       | ${false}   | ${true}
-                ${false}                 | ${true}                       | ${false}   | ${false}
-                ${true}                  | ${true}                       | ${true}    | ${true}
-            `(
-                'should create controls root and render the react controls with hasDrawing set to $hasDrawing',
-                ({
-                    areNewAnnotationsEnabled,
-                    hasAnnotationCreatePermission,
-                    hasDrawing,
-                    showAnnotationsDrawingCreate,
-                }) => {
-                    docBase.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
-                    jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
-                    jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
-                    stubs.checkPermission.mockReturnValue(false);
-
-                    docBase.loadUIReact();
-
-                    expect(docBase.controls).toBeInstanceOf(ControlsRoot);
-                    expect(docBase.controls.render).toBeCalledWith(
-                        expect.objectContaining({
-                            props: expect.objectContaining({
-                                hasDrawing,
-                            }),
-                        }),
-                    );
-                },
-            );
         });
 
         describe('renderUI()', () => {
             const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 
             beforeEach(() => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(true);
+                jest.spyOn(docBase, 'isFindDisabled').mockReturnValue(false);
+
                 docBase.controls = {
                     render: jest.fn(),
                 };
-                docBase.options.useReactControls = true;
                 docBase.pdfViewer = {
                     currentPageNumber: 1,
                     currentScale: 0.9,
                     pagesCount: 4,
                 };
+                stubs.checkPermission.mockReturnValue(true);
+            });
+
+            test('should create all controls with their default values', () => {
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    annotationColor: '#0061d5',
+                    annotationMode: 'none',
+                    hasHighlight: true,
+                    hasRegion: true,
+                    maxScale: 10,
+                    minScale: 0.1,
+                    onAnnotationColorChange: docBase.handleAnnotationColorChange,
+                    onAnnotationModeClick: docBase.handleAnnotationControlsClick,
+                    onAnnotationModeEscape: docBase.handleAnnotationControlsEscape,
+                    onFindBarToggle: docBase.toggleFindBar,
+                    onFullscreenToggle: docBase.toggleFullscreen,
+                    onPageChange: docBase.setPage,
+                    onPageSubmit: docBase.handlePageSubmit,
+                    onThumbnailsToggle: docBase.toggleThumbnails,
+                    onZoomIn: docBase.zoomIn,
+                    onZoomOut: docBase.zoomOut,
+                    pageCount: docBase.pdfViewer.pagesCount,
+                    pageNumber: docBase.pdfViewer.currentPageNumber,
+                    scale: 0.9,
+                });
+            });
+
+            test('should not add annotation controls if missing create permission', () => {
+                docBase.hasAnnotationCreatePermission.mockReturnValue(false);
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                });
+            });
+
+            test('should not add annotation controls if new annotations are not enabled', () => {
+                docBase.areNewAnnotationsEnabled.mockReturnValue(false);
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                });
+            });
+
+            test('should not add highlight control if download permissions are missing', () => {
+                stubs.checkPermission.mockReturnValue(false);
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasHighlight: false,
+                });
             });
 
             test.each([true, false])('should enable or disable the findbar toggle based on its option', option => {
@@ -1900,7 +1862,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('pagesinitHandler()', () => {
             beforeEach(() => {
                 stubs.loadUI = jest.spyOn(docBase, 'loadUI').mockImplementation();
-                stubs.loadUIReact = jest.spyOn(docBase, 'loadUIReact').mockImplementation();
                 stubs.setPage = jest.spyOn(docBase, 'setPage').mockImplementation();
                 stubs.getCachedPage = jest.spyOn(docBase, 'getCachedPage').mockImplementation();
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
@@ -1915,20 +1876,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagesinitHandler();
                 expect(docBase.docEl).toHaveClass('bp-is-scrollable');
                 expect(stubs.loadUI).toBeCalled();
-                expect(stubs.loadUIReact).not.toBeCalled();
                 expect(stubs.setPage).toBeCalled();
                 expect(stubs.setupPages).toBeCalled();
-            });
-
-            test('should load the React UI if the option is enabled', () => {
-                docBase.pdfViewer = {
-                    currentScale: 'unknown',
-                };
-                docBase.options.useReactControls = true;
-                docBase.pagesinitHandler();
-
-                expect(stubs.loadUI).not.toBeCalled();
-                expect(stubs.loadUIReact).toBeCalled();
             });
 
             test("should broadcast that the preview is loaded if it hasn't already", () => {
@@ -1964,18 +1913,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('pagerenderedHandler()', () => {
             beforeEach(() => {
+                docBase.event = {
+                    pageNumber: 1,
+                };
                 docBase.pdfViewer = {
                     currentScale: 0.5,
                     currentScaleValue: 0.5,
                 };
-                docBase.zoomControls = {
-                    setCurrentScale: jest.fn(),
-                    removeListener: jest.fn(),
-                };
-                docBase.event = {
-                    pageNumber: 1,
-                };
-
                 docBase.somePageRendered = false;
                 docBase.startPageRendered = false;
 
@@ -1984,6 +1928,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.initThumbnails = jest.spyOn(docBase, 'initThumbnails').mockImplementation();
                 stubs.hidePreload = jest.spyOn(docBase, 'hidePreload').mockImplementation();
                 stubs.resize = jest.spyOn(docBase, 'resize').mockImplementation();
+                stubs.resize = jest.spyOn(docBase, 'renderUI').mockImplementation();
                 stubs.stop = jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 1000 });
             });
 
@@ -2013,14 +1958,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.hidePreload).toBeCalled();
                 expect(docBase.somePageRendered).toBe(true);
                 expect(docBase.resize).toBeCalled();
-                expect(docBase.zoomControls.setCurrentScale).toBeCalledWith(docBase.pdfViewer.currentScale);
+                expect(docBase.renderUI).toBeCalled();
             });
 
             test('should not init thumbnails if not enabled', () => {
                 docBase.options.enableThumbnailsSidebar = false;
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.initThumbnails).not.toBeCalled();
-                expect(docBase.zoomControls.setCurrentScale).toBeCalledWith(docBase.pdfViewer.currentScale);
+                expect(docBase.renderUI).toBeCalled();
             });
         });
 
@@ -2028,17 +1973,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 stubs.cachePage = jest.spyOn(docBase, 'cachePage').mockImplementation();
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                stubs.renderUI = jest.spyOn(docBase, 'renderUI').mockImplementation();
                 docBase.event = {
                     pageNumber: 1,
                 };
                 docBase.pdfViewer = {
                     pageCount: 1,
                 };
-                docBase.pageControls = {
-                    updateCurrentPage: jest.fn(),
-                    removeListener: jest.fn(),
-                };
-                stubs.updateCurrentPage = docBase.pageControls.updateCurrentPage;
             });
 
             test('should emit the pagefocus event', () => {
@@ -2050,7 +1991,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should update the current page', () => {
                 docBase.pagechangingHandler(docBase.event);
 
-                expect(stubs.updateCurrentPage).toBeCalledWith(docBase.pdfViewer.currentPageNumber);
+                expect(stubs.renderUI);
             });
 
             test('should cache the page if it is loaded', () => {
@@ -2447,157 +2388,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should return undefined if no unit and value is passed', () => {
                 const startAt = {};
                 expect(docBase.getStartPage(startAt)).toBeUndefined();
-            });
-        });
-
-        describe('bindControlListeners()', () => {
-            beforeEach(() => {
-                docBase.pdfViewer = {
-                    pagesCount: 4,
-                    currentPageNumber: 1,
-                    currentScale: 0.9,
-                    cleanup: jest.fn(),
-                };
-
-                docBase.controls = {
-                    add: jest.fn(),
-                    removeListener: jest.fn(),
-                };
-
-                docBase.zoomControls = {
-                    init: jest.fn(),
-                };
-
-                docBase.pageControls = {
-                    add: jest.fn(),
-                    removeListener: jest.fn(),
-                };
-
-                docBase.annotationControls = {
-                    init: jest.fn(),
-                    destroy: jest.fn(),
-                };
-
-                stubs.areNewAnnotationsEnabled = jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
-                stubs.hasCreatePermission = jest.spyOn(docBase, 'hasAnnotationCreatePermission').mockReturnValue(true);
-                stubs.checkPermission.mockReturnValue(true);
-            });
-
-            test('should add the correct controls', () => {
-                docBase.bindControlListeners();
-
-                expect(docBase.controls.add).toBeCalledWith(
-                    __('toggle_thumbnails'),
-                    docBase.toggleThumbnails,
-                    'bp-toggle-thumbnails-icon',
-                    ICON_THUMBNAILS_TOGGLE,
-                );
-
-                expect(docBase.controls.add).toBeCalledWith(
-                    __('toggle_findbar'),
-                    expect.any(Function),
-                    'bp-toggle-findbar-icon',
-                    ICON_SEARCH,
-                );
-
-                expect(docBase.zoomControls.init).toBeCalledWith(0.9, {
-                    maxZoom: 10,
-                    minZoom: 0.1,
-                    zoomInClassName: 'bp-doc-zoom-in-icon',
-                    zoomOutClassName: 'bp-doc-zoom-out-icon',
-                    onZoomIn: docBase.zoomIn,
-                    onZoomOut: docBase.zoomOut,
-                });
-
-                expect(docBase.pageControls.add).toBeCalledWith(1, 4);
-
-                expect(docBase.controls.add).toBeCalledWith(
-                    __('enter_fullscreen'),
-                    docBase.toggleFullscreen,
-                    'bp-enter-fullscreen-icon',
-                    ICON_FULLSCREEN_IN,
-                );
-                expect(docBase.controls.add).toBeCalledWith(
-                    __('exit_fullscreen'),
-                    docBase.toggleFullscreen,
-                    'bp-exit-fullscreen-icon',
-                    ICON_FULLSCREEN_OUT,
-                );
-                expect(docBase.annotationControls.init).toBeCalledWith({
-                    fileId: docBase.options.file.id,
-                    onClick: docBase.handleAnnotationControlsClick,
-                    onEscape: docBase.handleAnnotationControlsEscape,
-                    showHighlightText: true,
-                });
-            });
-
-            test('should not add annotationControls if no create permission', () => {
-                stubs.hasCreatePermission.mockReturnValue(false);
-
-                docBase.bindControlListeners();
-                expect(docBase.annotationControls.init).not.toBeCalled();
-            });
-
-            test('should not add annotationControls if new annotations is not enabled', () => {
-                stubs.areNewAnnotationsEnabled.mockReturnValue(false);
-
-                docBase.bindControlListeners();
-                expect(docBase.annotationControls.init).not.toBeCalled();
-            });
-
-            [true, false].forEach(option =>
-                it(`should init annotationControls with showHighlightText ${option}`, () => {
-                    stubs.checkPermission.mockReturnValue(option);
-
-                    docBase.bindControlListeners();
-
-                    expect(docBase.annotationControls.init).toBeCalledWith(
-                        expect.objectContaining({
-                            showHighlightText: option,
-                        }),
-                    );
-                }),
-            );
-
-            test('should not showHighlightText if file has no download permission', () => {
-                stubs.checkPermission.mockReturnValue(false);
-
-                docBase.bindControlListeners();
-
-                expect(docBase.annotationControls.init).toBeCalledWith(
-                    expect.objectContaining({
-                        showHighlightText: false,
-                    }),
-                );
-            });
-
-            test('should not add the toggle thumbnails control if the option is not enabled', () => {
-                // Create a new instance that has enableThumbnailsSidebar as false
-                docBase.options.enableThumbnailsSidebar = false;
-
-                // Invoke the method to test
-                docBase.bindControlListeners();
-
-                // Check expectations
-                expect(docBase.controls.add).not.toBeCalledWith(
-                    __('toggle_thumbnails'),
-                    docBase.toggleThumbnails,
-                    'bp-toggle-thumbnails-icon',
-                    ICON_THUMBNAILS_TOGGLE,
-                );
-            });
-
-            test('should not add the find controls if find is disabled', () => {
-                jest.spyOn(docBase, 'isFindDisabled').mockReturnValue(true);
-
-                docBase.bindControlListeners();
-
-                expect(docBase.controls.add).not.toBeCalledWith(
-                    __('toggle_findbar'),
-                    expect.objectContaining.func,
-                    'bp-toggle-findbar-icon',
-                    ICON_SEARCH,
-                );
             });
         });
 

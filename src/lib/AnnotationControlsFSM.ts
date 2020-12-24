@@ -1,4 +1,6 @@
-import { AnnotationMode } from './AnnotationControls';
+import { AnnotationMode } from './types';
+
+export * from './types';
 
 export enum AnnotationState {
     DRAWING = 'drawing',
