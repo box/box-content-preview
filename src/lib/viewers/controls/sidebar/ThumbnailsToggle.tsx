@@ -3,10 +3,14 @@ import IconThumbnailsToggle18 from '../icons/IconThumbnailsToggle18';
 import './ThumbnailsToggle.scss';
 
 export type Props = {
-    onThumbnailsToggle: () => void;
+    onThumbnailsToggle?: () => void;
 };
 
-export default function ThumbnailsToggle({ onThumbnailsToggle }: Props): JSX.Element {
+export default function ThumbnailsToggle({ onThumbnailsToggle }: Props): JSX.Element | null {
+    if (!onThumbnailsToggle) {
+        return null;
+    }
+
     return (
         <button
             className="bp-ThumbnailsToggle"
