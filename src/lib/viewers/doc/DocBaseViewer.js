@@ -1082,28 +1082,27 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (this.controls && this.options.useReactControls) {
+            const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
             const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
             const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-            const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
-            const canHighlight = canAnnotate && canDownload;
 
             this.controls.render(
                 <DocControls
                     annotationColor={this.annotationModule.getColor()}
                     annotationMode={this.annotationControlsFSM.getMode()}
-                    hasDrawing={canDraw}
-                    hasHighlight={canHighlight}
+                    hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
+                    hasHighlight={canAnnotate && canDownload}
                     hasRegion={canAnnotate}
                     maxScale={MAX_SCALE}
                     minScale={MIN_SCALE}
                     onAnnotationColorChange={this.handleAnnotationColorChange}
                     onAnnotationModeClick={this.handleAnnotationControlsClick}
                     onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                    onFindBarToggle={this.toggleFindBar}
+                    onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                     onFullscreenToggle={this.toggleFullscreen}
                     onPageChange={this.setPage}
                     onPageSubmit={this.handlePageSubmit}
-                    onThumbnailsToggle={this.toggleThumbnails}
+                    onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
                     onZoomIn={this.zoomIn}
                     onZoomOut={this.zoomOut}
                     pageCount={this.pdfViewer.pagesCount}

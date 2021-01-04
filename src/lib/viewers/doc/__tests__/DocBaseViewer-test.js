@@ -1730,7 +1730,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         onAnnotationColorChange={docBase.handleAnnotationColorChange}
                         onAnnotationModeClick={docBase.handleAnnotationControlsClick}
                         onAnnotationModeEscape={docBase.handleAnnotationControlsEscape}
-                        onFindBarToggle={docBase.toggleFindBar}
                         onFullscreenToggle={docBase.toggleFullscreen}
                         onPageChange={docBase.setPage}
                         onPageSubmit={docBase.handlePageSubmit}
@@ -1779,6 +1778,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     );
                 },
             );
+        });
+
+        describe('renderUI()', () => {
+            const getProps = instance => instance.controls.render.mock.calls[0][0].props;
+
+            beforeEach(() => {
+                docBase.controls = {
+                    render: jest.fn(),
+                };
+                docBase.options.useReactControls = true;
+                docBase.pdfViewer = {
+                    currentPageNumber: 1,
+                    currentScale: 0.9,
+                    pagesCount: 4,
+                };
+            });
+
+            test.each([true, false])('should enable or disable the findbar toggle based on its option', option => {
+                jest.spyOn(docBase, 'isFindDisabled').mockReturnValue(!option);
+
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onFindBarToggle: option ? docBase.toggleFindBar : undefined,
+                });
+            });
+
+            test.each([true, false])('should enable or disable the thumbnail toggle based on its option', option => {
+                docBase.options.enableThumbnailsSidebar = option;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onThumbnailsToggle: option ? docBase.toggleThumbnails : undefined,
+                });
+            });
         });
 
         describe('bindDOMListeners()', () => {
