@@ -1,3 +1,13 @@
+## 2.61.0 (2021-01-05)
+
+* fix(controls): Hide find and thumbnail toggles if options are disabled (#1311) ([46df6e4](https://github.com/box/box-content-preview/commit/46df6e4)), closes [#1311](https://github.com/box/box-content-preview/issues/1311)
+* fix(drawing): fix accessibility for color picker components (#1310) ([97b18c6](https://github.com/box/box-content-preview/commit/97b18c6)), closes [#1310](https://github.com/box/box-content-preview/issues/1310)
+* feat(annotations): Emit annotations color (#1309) ([d1a9e08](https://github.com/box/box-content-preview/commit/d1a9e08)), closes [#1309](https://github.com/box/box-content-preview/issues/1309)
+* feat(controls): Add react versions of core media controls (#1308) ([4adb425](https://github.com/box/box-content-preview/commit/4adb425)), closes [#1308](https://github.com/box/box-content-preview/issues/1308)
+* feat(drawing): add ColorPickerControl for images (#1307) ([0f8d7d9](https://github.com/box/box-content-preview/commit/0f8d7d9)), closes [#1307](https://github.com/box/box-content-preview/issues/1307)
+
+
+
 ## 2.60.0 (2020-12-09)
 
 * Add annotation module (#1305) ([3d2149e](https://github.com/box/box-content-preview/commit/3d2149e)), closes [#1305](https://github.com/box/box-content-preview/issues/1305)
