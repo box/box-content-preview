@@ -5,6 +5,7 @@ $bp-controls-background: fade-out($black, .2);
 @mixin bp-Control--hover {
     opacity: .7;
     transition: opacity 150ms;
+    will-change: opacity; // Prevent flickering in Safari
 
     &:focus,
     &:hover {
