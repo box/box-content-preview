@@ -1123,9 +1123,7 @@ class BaseViewer extends EventEmitter {
             }
         }
 
-        if (mode === AnnotationMode.DRAWING) {
-            this.annotator.emit(ANNOTATOR_EVENT.setColor, this.annotationModule.getColor());
-        }
+        this.annotator.emit(ANNOTATOR_EVENT.setColor, this.annotationModule.getColor());
     };
 
     /**
