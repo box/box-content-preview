@@ -128,7 +128,6 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             };
             jest.spyOn(markdown, 'initRemarkable').mockReturnValue(md);
             jest.spyOn(markdown, 'loadUI');
-            jest.spyOn(markdown, 'loadUIReact');
             jest.spyOn(markdown, 'emit');
 
             markdown.finishLoading('');
@@ -136,21 +135,9 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             expect(markdown.initRemarkable).toBeCalled();
             expect(md.render).toBeCalled();
             expect(markdown.loadUI).toBeCalled();
-            expect(markdown.loadUIReact).not.toBeCalled();
             expect(markdown.emit).toBeCalledWith(VIEWER_EVENT.load);
             expect(markdown.loaded).toBe(true);
             expect(markdown.textEl.classList.contains('bp-is-hidden')).toBe(false);
-        });
-
-        test('should finish loading and render react ui if option is enabled', () => {
-            jest.spyOn(markdown, 'loadUI');
-            jest.spyOn(markdown, 'loadUIReact');
-
-            markdown.options.useReactControls = true;
-            markdown.finishLoading('');
-
-            expect(markdown.loadUI).not.toBeCalled();
-            expect(markdown.loadUIReact).toBeCalled();
         });
 
         test('should show truncated download button if text is truncated', () => {
@@ -168,10 +155,9 @@ describe('lib/viewers/text/MarkdownViewer', () => {
         });
     });
 
-    describe('loadUIReact()', () => {
-        test('should create controls root and render the react controls', () => {
-            markdown.options.useReactControls = true;
-            markdown.loadUIReact();
+    describe('loadUI()', () => {
+        test('should create controls root and render the controls', () => {
+            markdown.loadUI();
 
             expect(markdown.controls).toBeInstanceOf(ControlsRoot);
             expect(markdown.controls.render).toBeCalledWith(

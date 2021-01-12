@@ -86,10 +86,9 @@ describe('Preview Document Thumbnails', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
         // Verify we're on page 1
-        cy.getByTestId('current-page')
+        cy.getByTestId('bp-PageControlsForm-button')
             .as('currentPage')
-            .invoke('text')
-            .should('equal', '1');
+            .should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -99,17 +98,14 @@ describe('Preview Document Thumbnails', () => {
             .click()
             .should('have.class', THUMBNAIL_SELECTED_CLASS);
         getThumbnailWithRenderedImage(1).should('not.have.class', THUMBNAIL_SELECTED_CLASS);
-        cy.get('@currentPage')
-            .invoke('text')
-            .should('equal', '2');
+        cy.get('@currentPage').should('have.text', '2 / 1990');
     });
 
     it('Should reflect the selected page when page is changed', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('current-page')
+        cy.getByTestId('bp-PageControlsForm-button')
             .as('currentPage')
-            .invoke('text')
-            .should('equal', '1');
+            .should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -119,17 +115,14 @@ describe('Preview Document Thumbnails', () => {
 
         getThumbnailWithRenderedImage(2).should('have.class', THUMBNAIL_SELECTED_CLASS);
         getThumbnailWithRenderedImage(1).should('not.have.class', THUMBNAIL_SELECTED_CLASS);
-        cy.get('@currentPage')
-            .invoke('text')
-            .should('equal', '2');
+        cy.get('@currentPage').should('have.text', '2 / 1990');
     });
 
     it('Should reflect the selected page even when thumbnail was not previously in rendered window', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('current-page')
+        cy.getByTestId('bp-PageControlsForm-button')
             .as('currentPage')
-            .invoke('text')
-            .should('equal', '1');
+            .should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -137,7 +130,7 @@ describe('Preview Document Thumbnails', () => {
 
         cy.showControls();
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('page-num-input')
+        cy.getByTestId('bp-PageControlsForm-input')
             .should('be.visible')
             .type('200')
             .blur();
@@ -145,17 +138,14 @@ describe('Preview Document Thumbnails', () => {
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
         getThumbnail(1).should('not.exist');
-        cy.get('@currentPage')
-            .invoke('text')
-            .should('equal', '200');
+        cy.get('@currentPage').should('have.text', '200 / 1990');
     });
 
     it('Should still reflect the current viewed page when thumbnails sidebar is toggled open', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('current-page')
+        cy.getByTestId('bp-PageControlsForm-button')
             .as('currentPage')
-            .invoke('text')
-            .should('equal', '1');
+            .should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -163,7 +153,7 @@ describe('Preview Document Thumbnails', () => {
 
         cy.showControls();
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('page-num-input')
+        cy.getByTestId('bp-PageControlsForm-input')
             .should('be.visible')
             .type('200')
             .blur();
@@ -175,7 +165,7 @@ describe('Preview Document Thumbnails', () => {
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
 
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('page-num-input')
+        cy.getByTestId('bp-PageControlsForm-input')
             .should('be.visible')
             .type('1')
             .blur();
@@ -239,7 +229,7 @@ describe('Preview Document Thumbnails', () => {
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('page-num-input')
+        cy.getByTestId('bp-PageControlsForm-input')
             .should('be.visible')
             .type('50')
             .blur();
@@ -277,17 +267,14 @@ describe('Preview Document Thumbnails', () => {
         getThumbnailWithRenderedImage(2).click();
         cy.focused().type('{downarrow}');
         getThumbnailWithRenderedImage(3).should('have.class', THUMBNAIL_SELECTED_CLASS);
-        cy.getByTestId('current-page')
+        cy.getByTestId('bp-PageControlsForm-button')
             .as('currentPage')
-            .invoke('text')
-            .should('equal', '3');
+            .should('have.text', '3 / 1990');
 
         getThumbnailWithRenderedImage(3).click();
         cy.focused().type('{uparrow}');
 
         getThumbnailWithRenderedImage(2).should('have.class', THUMBNAIL_SELECTED_CLASS);
-        cy.get('@currentPage')
-            .invoke('text')
-            .should('equal', '2');
+        cy.get('@currentPage').should('have.text', '2 / 1990');
     });
 });

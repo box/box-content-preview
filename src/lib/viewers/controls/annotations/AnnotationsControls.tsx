@@ -6,7 +6,7 @@ import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
-import { AnnotationMode } from './types';
+import { AnnotationMode } from '../../../types';
 import './AnnotationsControls.scss';
 
 export type Props = {

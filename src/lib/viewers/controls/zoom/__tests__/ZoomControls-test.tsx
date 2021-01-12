@@ -6,7 +6,8 @@ import ZoomControls from '../ZoomControls';
 describe('ZoomControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<ZoomControls onZoomIn={noop} onZoomOut={noop} {...props} />);
-    const getZoom = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('[data-testid="current-zoom"]');
+    const getZoom = (wrapper: ShallowWrapper): ShallowWrapper =>
+        wrapper.find('[data-testid="bp-ZoomControls-current"]');
     const getZoomIn = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('[data-testid="bp-ZoomControls-in"]');
     const getZoomOut = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('[data-testid="bp-ZoomControls-out"]');
 

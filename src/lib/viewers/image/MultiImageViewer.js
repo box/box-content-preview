@@ -1,9 +1,7 @@
 import React from 'react';
 import ImageBaseViewer from './ImageBaseViewer';
 import MultiImageControls from './MultiImageControls';
-import PageControls from '../../PageControls';
 import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { pageNumberFromScroll } from '../../util';
 import './MultiImage.scss';
 
@@ -66,10 +64,6 @@ class MultiImageViewer extends ImageBaseViewer {
             this.singleImageEls.forEach((el, index) => {
                 this.unbindImageListeners(index);
             });
-        }
-
-        if (this.pageControls) {
-            this.pageControls.removeListener('pagechange', this.setPage);
         }
 
         super.destroy();
@@ -264,65 +258,39 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Adds UI controls
+     * Load controls
      *
      * @override
      * @return {void}
      */
     loadUI() {
         super.loadUI();
-
-        this.pageControls = new PageControls(this.controls, this.wrapperEl);
-        this.bindPageControlListeners();
-    }
-
-    loadUIReact() {
-        super.loadUIReact();
         this.renderUI();
     }
 
-    renderUI() {
-        if (this.zoomControls) {
-            this.zoomControls.setCurrentScale(this.scale);
-        }
-
-        if (this.pageControls) {
-            this.pageControls.updateCurrentPage(this.currentPageNumber);
-        }
-
-        if (this.controls && this.options.useReactControls) {
-            this.controls.render(
-                <MultiImageControls
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onPageChange={this.setPage}
-                    onPageSubmit={this.handlePageSubmit}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    pageCount={this.pagesCount}
-                    pageNumber={this.currentPageNumber}
-                    scale={this.scale}
-                />,
-            );
-        }
-    }
-
     /**
-     * Binds listeners for the page and the rest of the document controls.
+     * Render controls
      *
-     * @protected
+     * @override
      * @return {void}
      */
-    bindPageControlListeners() {
-        this.pageControls.add(this.currentPageNumber, this.pagesCount);
-        this.pageControls.addListener('pagechange', this.setPage);
+    renderUI() {
+        if (!this.controls) {
+            return;
+        }
 
-        this.controls.add(
-            __('enter_fullscreen'),
-            this.toggleFullscreen,
-            'bp-enter-fullscreen-icon',
-            ICON_FULLSCREEN_IN,
+        this.controls.render(
+            <MultiImageControls
+                onFullscreenToggle={this.toggleFullscreen}
+                onPageChange={this.setPage}
+                onPageSubmit={this.handlePageSubmit}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                pageCount={this.pagesCount}
+                pageNumber={this.currentPageNumber}
+                scale={this.scale}
+            />,
         );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

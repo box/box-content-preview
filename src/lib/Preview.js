@@ -937,9 +937,6 @@ class Preview extends EventEmitter {
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
-        // Enable or disable react ui
-        this.options.useReactControls = !!options.useReactControls;
-
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
 

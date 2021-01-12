@@ -6,21 +6,18 @@ describe('Preview Document Controls', () => {
     beforeEach(() => {
         cy.visit('/');
         cy.showPreview(token, fileId);
-        cy.getByTestId('current-page').as('currentPage');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage');
         cy.getPreviewPage(1);
     });
 
     describe('Zoom controls', () => {
         const zoom = inOrOut => {
-            cy.getByTestId('current-zoom')
-                .invoke('text')
-                .then(originalZoom => {
-                    cy.getByTitle(`Zoom ${inOrOut}`).click();
+            cy.getByTestId('bp-ZoomControls-current').then($zoom => {
+                const originalZoom = $zoom.text();
 
-                    cy.getByTestId('current-zoom')
-                        .invoke('text')
-                        .should('not.equal', originalZoom);
-                });
+                cy.getByTitle(`Zoom ${inOrOut}`).click();
+                cy.getByTestId('bp-ZoomControls-current').should('not.have.text', originalZoom);
+            });
         };
 
         it('Should zoom in and out', () => {
@@ -65,48 +62,38 @@ describe('Preview Document Controls', () => {
         it('Should handle page navigation via buttons', () => {
             cy.getPreviewPage(1).should('be.visible');
             cy.contains('The Content Platform for Your Apps');
-            cy.get('@currentPage')
-                .invoke('text')
-                .should('equal', '1');
+            cy.get('@currentPage').should('have.text', '1 / 2');
 
             cy.showControls();
             cy.getByTitle('Next page').click();
 
             cy.getPreviewPage(2).should('be.visible');
             cy.contains('Discover how your business can use Box Platform');
-            cy.get('@currentPage')
-                .invoke('text')
-                .should('equal', '2');
+            cy.get('@currentPage').should('have.text', '2 / 2');
 
             cy.showControls();
             cy.getByTitle('Previous page').click();
 
             cy.getPreviewPage(1).should('be.visible');
             cy.contains('The Content Platform for Your Apps');
-            cy.get('@currentPage')
-                .invoke('text')
-                .should('equal', '1');
+            cy.get('@currentPage').should('have.text', '1 / 2');
         });
 
         it('Should handle page navigation via input', () => {
             cy.getPreviewPage(1).should('be.visible');
             cy.contains('The Content Platform for Your Apps');
-            cy.get('@currentPage')
-                .invoke('text')
-                .should('equal', '1');
+            cy.get('@currentPage').should('have.text', '1 / 2');
 
             cy.showControls();
             cy.getByTitle('Click to enter page number').click();
-            cy.getByTestId('page-num-input')
+            cy.getByTestId('bp-PageControlsForm-input')
                 .should('be.visible')
                 .type('2')
                 .blur();
 
             cy.getPreviewPage(2).should('be.visible');
             cy.contains('Discover how your business can use Box Platform');
-            cy.get('@currentPage')
-                .invoke('text')
-                .should('equal', '2');
+            cy.get('@currentPage').should('have.text', '2 / 2');
         });
     });
 

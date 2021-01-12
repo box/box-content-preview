@@ -11,7 +11,7 @@ import intl from '../../i18n';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
-import { AnnotationMode } from '../../AnnotationControls';
+import { AnnotationMode } from '../../types';
 import { ERROR_CODE, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
 

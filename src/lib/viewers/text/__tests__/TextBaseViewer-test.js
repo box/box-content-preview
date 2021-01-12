@@ -1,11 +1,9 @@
 import React from 'react';
 import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
-import Controls from '../../../Controls';
 import ControlsRoot from '../../controls/controls-root';
 import TextBaseViewer from '../TextBaseViewer';
 import TextControls from '../TextControls';
-import ZoomControls from '../../../ZoomControls';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 jest.mock('../../controls/controls-root');
@@ -58,10 +56,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textEl = document.createElement('div');
             textEl.className = 'bp-text';
             textBase.containerEl.appendChild(textEl);
-            textBase.zoomControls = {
-                setCurrentScale: jest.fn(),
-                removeListener: jest.fn(),
-            };
+            textBase.renderUI = jest.fn();
         });
 
         afterEach(() => {
@@ -72,19 +67,22 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             jest.spyOn(textBase, 'emit');
             textBase.zoom();
             expect(textBase.emit).toBeCalledWith('zoom', { canZoomIn: true, canZoomOut: true, zoom: 1 });
-            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(1.0);
+            expect(textBase.scale).toEqual(1.0);
+            expect(textBase.renderUI).toBeCalled();
         });
 
         test('should increase font size when zooming in', () => {
             textBase.zoom('in');
             expect(textEl.style.fontSize).toBe('110%');
-            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(1.1);
+            expect(textBase.scale).toEqual(1.1);
+            expect(textBase.renderUI).toBeCalled();
         });
 
         test('should decrease font size when zooming out', () => {
             textBase.zoom('out');
             expect(textEl.style.fontSize).toBe('90%');
-            expect(textBase.zoomControls.setCurrentScale).toBeCalledWith(0.9);
+            expect(textBase.scale).toEqual(0.9);
+            expect(textBase.renderUI).toBeCalled();
         });
     });
 
@@ -135,44 +133,8 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     });
 
     describe('loadUI()', () => {
-        const addFunc = Controls.prototype.add;
-        const zoomInitFunc = ZoomControls.prototype.init;
-
-        afterEach(() => {
-            Object.defineProperty(Controls.prototype, 'add', { value: addFunc });
-            Object.defineProperty(ZoomControls.prototype, 'init', { value: zoomInitFunc });
-        });
-
-        test('should setup controls and add click handlers', () => {
-            Object.defineProperty(Controls.prototype, 'add', { value: jest.fn() });
-            Object.defineProperty(ZoomControls.prototype, 'init', { value: jest.fn() });
-
+        test('should create controls root and render the controls', () => {
             textBase.loadUI();
-            expect(textBase.controls).toBeInstanceOf(Controls);
-            expect(Controls.prototype.add).toBeCalledTimes(2);
-            expect(Controls.prototype.add).toBeCalledWith(
-                expect.any(String),
-                textBase.toggleFullscreen,
-                expect.any(String),
-                expect.any(String),
-            );
-
-            expect(textBase.zoomControls).toBeInstanceOf(ZoomControls);
-            expect(ZoomControls.prototype.init).toBeCalledWith(1, {
-                maxZoom: 10,
-                minZoom: 0.1,
-                onZoomIn: textBase.zoomIn,
-                onZoomOut: textBase.zoomOut,
-                zoomInClassName: 'bp-text-zoom-in-icon',
-                zoomOutClassName: 'bp-text-zoom-out-icon',
-            });
-        });
-    });
-
-    describe('loadUIReact()', () => {
-        test('should create controls root and render the react controls', () => {
-            textBase.options.useReactControls = true;
-            textBase.loadUIReact();
 
             expect(textBase.controls).toBeInstanceOf(ControlsRoot);
             expect(textBase.controls.render).toBeCalledWith(

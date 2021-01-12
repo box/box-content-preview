@@ -191,26 +191,13 @@ describe('lib/viewers/text/CSVViewer', () => {
             });
             /* eslint-enable react/prefer-es6-class */
             jest.spyOn(csv, 'loadUI');
-            jest.spyOn(csv, 'loadUIReact');
             jest.spyOn(csv, 'emit');
 
             csv.finishLoading();
 
             expect(csv.loadUI).toBeCalled();
-            expect(csv.loadUIReact).not.toBeCalled();
             expect(csv.loaded).toBe(true);
             expect(csv.emit).toBeCalledWith(VIEWER_EVENT.load);
-        });
-
-        test('should finish loading and render react ui if option is enabled', () => {
-            jest.spyOn(csv, 'loadUI');
-            jest.spyOn(csv, 'loadUIReact');
-
-            csv.options.useReactControls = true;
-            csv.finishLoading();
-
-            expect(csv.loadUI).not.toBeCalled();
-            expect(csv.loadUIReact).toBeCalled();
         });
     });
 

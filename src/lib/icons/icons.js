@@ -1,13 +1,5 @@
-import DROP_DOWN from './arrow_drop_down_24px.svg';
-import DROP_UP from './arrow_drop_up_24px.svg';
-import DELETE from './delete_24px.svg';
 import FULLSCREEN_IN from './full_screen_in_24px.svg';
 import FULLSCREEN_OUT from './full_screen_out_24px.svg';
-import ROTATE_LEFT from './rotate_left_24px.svg';
-import ZOOM_IN from './zoom_in.svg';
-import ZOOM_OUT from './zoom_out.svg';
-import HIGHLIGHT_TEXT from './highlight_text.svg';
-import REGION_COMMENT from './region_comment.svg';
 import ARROW_LEFT from './arrow_left_24px.svg';
 import ARROW_RIGHT from './arrow_right_24px.svg';
 import CHECK_MARK from './checkmark_24px.svg';
@@ -47,18 +39,9 @@ import FIND_DROP_UP from './arrow_drop_up.svg';
 import CLOSE from './close.svg';
 import SEARCH from './search.svg';
 import PRINT_CHECKMARK from './print_checkmark.svg';
-import THUMBNAILS_TOGGLE from './thumbnails-toggle-icon.svg';
 
-export const ICON_DROP_DOWN = DROP_DOWN;
-export const ICON_DROP_UP = DROP_UP;
-export const ICON_DELETE = DELETE;
 export const ICON_FULLSCREEN_IN = FULLSCREEN_IN;
 export const ICON_FULLSCREEN_OUT = FULLSCREEN_OUT;
-export const ICON_ROTATE_LEFT = ROTATE_LEFT;
-export const ICON_ZOOM_IN = ZOOM_IN;
-export const ICON_ZOOM_OUT = ZOOM_OUT;
-export const ICON_HIGHLIGHT_TEXT = HIGHLIGHT_TEXT;
-export const ICON_REGION_COMMENT = REGION_COMMENT;
 export const ICON_ARROW_LEFT = ARROW_LEFT;
 export const ICON_ARROW_RIGHT = ARROW_RIGHT;
 export const ICON_CHECK_MARK = CHECK_MARK;
@@ -74,7 +57,6 @@ export const ICON_FIND_DROP_UP = FIND_DROP_UP;
 export const ICON_CLOSE = CLOSE;
 export const ICON_SEARCH = SEARCH;
 export const ICON_PRINT_CHECKMARK = PRINT_CHECKMARK;
-export const ICON_THUMBNAILS_TOGGLE = THUMBNAILS_TOGGLE;
 
 const FILE_LOADING_ICONS = {
     FILE_AUDIO,

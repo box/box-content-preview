@@ -14,7 +14,6 @@ $thumbnail-sidebar-width: 226px;
 }
 
 .bp {
-    .bp-toggle-thumbnails-icon,
     .bp-ThumbnailsToggle {
         display: none;
     }
@@ -172,7 +171,6 @@ $thumbnail-sidebar-width: 226px;
             }
         }
 
-        .bp-controls-btn.bp-toggle-thumbnails-icon,
         .bp-ThumbnailsToggle {
             display: block;
         }
@@ -377,7 +375,6 @@ $thumbnail-sidebar-width: 226px;
     }
 
     // Hide the toggle thumbnails button when in fullscreen
-    &.bp-is-fullscreen .bp-toggle-thumbnails-icon,
     &.bp-is-fullscreen .bp-ThumbnailsToggle {
         display: none;
     }

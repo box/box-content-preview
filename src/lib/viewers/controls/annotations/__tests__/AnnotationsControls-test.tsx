@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import { ReactWrapper, mount } from 'enzyme';
 import AnnotationsControls from '../AnnotationsControls';
-import { AnnotationMode } from '../types';
+import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
     const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls {...props} />);

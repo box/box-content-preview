@@ -1,7 +1,7 @@
 import React from 'react';
 import ColorPickerControl from '../color-picker';
 import { ANNOTATION_COLORS } from '../../../AnnotationModule';
-import { AnnotationMode } from './types';
+import { AnnotationMode } from '../../../types';
 
 export type Props = {
     annotationColor?: string;

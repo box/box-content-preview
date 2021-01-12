@@ -10,21 +10,21 @@ describe('Preview File Options', () => {
         [fileIdDoc]: {
             startAt: {
                 value: 2,
-                unit: 'pages'
-            }
+                unit: 'pages',
+            },
         },
         [fileIdVideo]: {
             startAt: {
                 value: 15,
-                unit: 'seconds'
-            }
+                unit: 'seconds',
+            },
         },
         [fileIdMp3]: {
             startAt: {
                 value: 3,
-                unit: 'seconds'
-            }
-        }
+                unit: 'seconds',
+            },
+        },
     };
 
     /* eslint-disable */
@@ -45,7 +45,7 @@ describe('Preview File Options', () => {
 
         cy.getPreviewPage(2).should('be.visible');
         cy.contains('Discover how your business can use Box Platform');
-        cy.getByTestId('current-page').invoke('text').should('equal', '2');
+        cy.getByTestId('bp-PageControlsForm-button').should('have.text', '2 / 2');
     });
 
     it('Should open video(DASH) to the specified timestamp', () => {
@@ -55,7 +55,7 @@ describe('Preview File Options', () => {
     });
 
     it('Should open video(MP4) to the specified timestamp', () => {
-        cy.showPreview(token, fileIdVideo, { fileOptions, viewers: { 'Dash': { disabled: true } } });
+        cy.showPreview(token, fileIdVideo, { fileOptions, viewers: { Dash: { disabled: true } } });
 
         showMediaControls().contains('0:15');
     });
