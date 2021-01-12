@@ -529,15 +529,18 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'disableAnnotationControls');
             jest.spyOn(base, 'processAnnotationModeChange');
 
-            base.annotator = {
-                emit: jest.fn(),
-                toggleAnnotationMode: jest.fn(),
-            };
             base.annotationControls = {
                 destroy: jest.fn(),
                 resetControls: jest.fn(),
                 setMode: jest.fn(),
                 toggle: jest.fn(),
+            };
+            base.annotationModule.cache = {
+                get: jest.fn().mockReturnValue('#000'),
+            };
+            base.annotator = {
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
             };
 
             base.handleFullscreenEnter();
@@ -1047,14 +1050,18 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'processAnnotationModeChange');
 
-            base.annotator = {
-                toggleAnnotationMode: jest.fn(),
-            };
             base.annotationControls = {
                 destroy: jest.fn(),
                 resetControls: jest.fn(),
                 setMode: jest.fn(),
                 toggle: jest.fn(),
+            };
+            base.annotationModule.cache = {
+                get: jest.fn().mockReturnValue('#000'),
+            };
+            base.annotator = {
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
             };
 
             base.disableAnnotationControls();
@@ -1779,6 +1786,12 @@ describe('lib/viewers/BaseViewer', () => {
                 destroy: jest.fn(),
                 setMode: jest.fn(),
             };
+            base.annotationModule.cache = {
+                get: jest.fn().mockReturnValue('#000'),
+            };
+            base.annotator = {
+                emit: jest.fn(),
+            };
             base.containerEl = document.createElement('div');
             base.areNewAnnotationsEnabled = jest.fn().mockReturnValue(true);
         });
@@ -1819,6 +1832,14 @@ describe('lib/viewers/BaseViewer', () => {
 
                 expect(base.containerEl).not.toHaveClass(constants.CLASS_ANNOTATIONS_CREATE_REGION);
             });
+        });
+
+        test('should call emit', () => {
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+
+            base.processAnnotationModeChange(AnnotationMode.DRAWING);
+
+            expect(base.annotator.emit).toBeCalledWith(ANNOTATOR_EVENT.setColor, '#000');
         });
     });
 

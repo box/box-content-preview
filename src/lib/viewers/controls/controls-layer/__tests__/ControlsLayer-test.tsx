@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import ControlsLayer, { HIDE_DELAY_MS, SHOW_CLASSNAME } from '../ControlsLayer';
+import ControlsLayer, { Helpers, HIDE_DELAY_MS, SHOW_CLASSNAME } from '../ControlsLayer';
 
 describe('ControlsLayer', () => {
     const children = <div className="TestControls">Controls</div>;
@@ -88,6 +88,21 @@ describe('ControlsLayer', () => {
         });
     });
 
+    describe('unmount', () => {
+        test('should destroy any existing hide timeout', () => {
+            jest.spyOn(window, 'clearTimeout');
+
+            const onMount = (helpers: Helpers): void => {
+                helpers.hide(); // Kick off the hide timeout
+            };
+            const wrapper = getWrapper({ onMount });
+
+            wrapper.unmount();
+
+            expect(window.clearTimeout).toBeCalledTimes(2); // Once on hide, once on unmount
+        });
+    });
+
     describe('render', () => {
         test('should invoke the onMount callback once with the visibility helpers', () => {
             const onMount = jest.fn();
@@ -99,6 +114,7 @@ describe('ControlsLayer', () => {
 
             expect(onMount).toBeCalledTimes(1);
             expect(onMount).toBeCalledWith({
+                clean: expect.any(Function),
                 hide: expect.any(Function),
                 reset: expect.any(Function),
                 show: expect.any(Function),

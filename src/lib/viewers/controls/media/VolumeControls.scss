@@ -1,0 +1,26 @@
+@import './styles';
+
+.bp-VolumeControls {
+    display: flex;
+    align-items: center;
+}
+
+.bp-VolumeControls-flyout {
+    flex: 0 0 auto;
+    max-width: 0;
+    height: $bp-MediaControl-height;
+    overflow: hidden;
+    transition: max-width 200ms ease-in-out;
+
+    &.bp-is-open {
+        max-width: 100px;
+    }
+}
+
+.bp-VolumeControls-slider {
+    width: 100px;
+}
+
+.bp-VolumeControls-toggle {
+    @include bp-MediaButton;
+}

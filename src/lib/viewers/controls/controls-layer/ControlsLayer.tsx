@@ -24,8 +24,11 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
 
     // Visibility helpers
     const helpersRef = React.useRef({
-        hide() {
+        clean() {
             window.clearTimeout(hideTimeoutRef.current);
+        },
+        hide() {
+            helpersRef.current.clean();
 
             hideTimeoutRef.current = window.setTimeout(() => {
                 if (hasCursorRef.current || hasFocusRef.current) {
@@ -40,7 +43,7 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
             hasFocusRef.current = false;
         },
         show() {
-            window.clearTimeout(hideTimeoutRef.current);
+            helpersRef.current.clean();
             setIsShown(true);
         },
     });
@@ -70,6 +73,9 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
     React.useEffect(() => {
         onMount(helpersRef.current);
     }, [onMount]);
+
+    // Destroy timeouts on unmount
+    React.useEffect(() => helpersRef.current.clean, []);
 
     return (
         <div
