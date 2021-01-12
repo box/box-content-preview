@@ -3,8 +3,8 @@
 .bp-DurationLabels {
     display: flex;
     align-items: center;
-    margin-right: 10px;
-    margin-left: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
 .bp-DurationLabels-label {
@@ -13,5 +13,7 @@
     padding-right: 4px;
     padding-left: 4px;
     color: $white;
+    font-size: 12px;
+    line-height: 12px;
     cursor: default;
 }

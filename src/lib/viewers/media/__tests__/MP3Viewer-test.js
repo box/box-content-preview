@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
+import BaseViewer from '../../BaseViewer';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
-import BaseViewer from '../../BaseViewer';
 
 let mp3;
 
@@ -44,6 +44,18 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('destroy()', () => {
+        test('should destroy the viewer controls if they exist', () => {
+            mp3.controls = {
+                destroy: jest.fn(),
+            };
+
+            mp3.destroy();
+
+            expect(mp3.controls.destroy).toBeCalled();
+        });
+    });
+
     describe('loadUI()', () => {
         const loadUIFunc = MediaBaseViewer.prototype.loadUI;
 
@@ -65,6 +77,40 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.mediaControls.resizeTimeScrubber).toBeCalled();
             expect(mp3.mediaControls.show).toBeCalled();
+        });
+    });
+
+    describe('renderUI()', () => {
+        const getProps = instance => instance.controls.render.mock.calls[0][0].props;
+
+        beforeEach(() => {
+            mp3.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+
+            mp3.mediaEl = document.createElement('audio');
+            mp3.mediaEl.duration = 1000;
+        });
+
+        test('should render the react controls with the correct props', () => {
+            mp3.renderUI();
+
+            expect(getProps(mp3)).toMatchObject({
+                bufferedRange: {
+                    end: expect.any(Function),
+                    length: 0,
+                    start: expect.any(Function),
+                },
+                currentTime: 0,
+                durationTime: 1000,
+                isPlaying: true,
+                onMuteChange: mp3.toggleMute,
+                onPlayPause: mp3.togglePlay,
+                onTimeChange: mp3.handleTimeupdateFromMediaControls,
+                onVolumeChange: mp3.setVolume,
+                volume: 1,
+            });
         });
     });
 

@@ -1,4 +1,6 @@
+import React from 'react';
 import MediaBaseViewer from './MediaBaseViewer';
+import MP3Controls from './MP3Controls';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
@@ -23,16 +25,44 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaEl.setAttribute('preload', 'auto');
     }
 
+    destroy() {
+        if (this.controls) {
+            this.controls.destroy();
+        }
+
+        super.destroy();
+    }
+
     /**
-     * Loads the controls
-     *
-     * @private
-     * @return {void}
+     * @inheritdoc
      */
     loadUI() {
         super.loadUI();
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    renderUI() {
+        if (!this.controls) {
+            return;
+        }
+
+        this.controls.render(
+            <MP3Controls
+                bufferedRange={this.mediaEl.buffered}
+                currentTime={this.mediaEl.currentTime}
+                durationTime={this.mediaEl.duration}
+                isPlaying={!this.mediaEl.paused}
+                onMuteChange={this.toggleMute}
+                onPlayPause={this.togglePlay}
+                onTimeChange={this.handleTimeupdateFromMediaControls}
+                onVolumeChange={this.setVolume}
+                volume={this.mediaEl.volume}
+            />,
+        );
     }
 
     /**

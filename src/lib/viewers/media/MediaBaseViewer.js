@@ -3,6 +3,7 @@ import isEmpty from 'lodash/isEmpty';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
+import MediaControlsRoot from './MediaControlsRoot';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
@@ -14,6 +15,7 @@ const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
+const MEDIA_SPEED_CACHE_KEY = 'media-speed';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 const SECONDS_UNIT_NAME = 'seconds';
@@ -244,7 +246,11 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
-        this.loadUI();
+        if (this.getViewerOption('useReactControls')) {
+            this.loadUIReact();
+        } else {
+            this.loadUI();
+        }
 
         if (this.isAutoplayEnabled()) {
             this.autoplay();
@@ -378,7 +384,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleRate() {
-        const speed = this.cache.get('media-speed') - 0;
+        const speed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
@@ -402,6 +408,10 @@ class MediaBaseViewer extends BaseViewer {
         if (this.mediaEl.volume !== volume) {
             this.debouncedEmit('volume', volume);
             this.mediaEl.volume = volume;
+        }
+
+        if (this.controls) {
+            this.renderUI();
         }
     }
 
@@ -464,23 +474,48 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Loads the controls
      *
-     * @private
+     * @protected
      * @return {void}
      */
     loadUI() {
         this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl, this.cache);
 
-        // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
-
-        // Add event listeners for the media element
         this.addEventListenersForMediaElement();
     }
 
     /**
+     * Loads the React controls
+     *
+     * @protected
+     * @return {void}
+     */
+    loadUIReact() {
+        if (!this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY)) {
+            this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, 'Disabled');
+        }
+
+        if (!this.cache.has(MEDIA_SPEED_CACHE_KEY)) {
+            this.cache.set(MEDIA_SPEED_CACHE_KEY, '1.0');
+        }
+
+        this.controls = new MediaControlsRoot({ containerEl: this.containerEl });
+        this.addEventListenersForMediaElement();
+        this.renderUI();
+    }
+
+    /**
+     * Render and/or updated the controls
+     *
+     * @protected
+     * @return {void}
+     */
+    renderUI() {}
+
+    /**
      * Handles timeupdate event for MediaControls
      *
-     * @private
+     * @protected
      * @param {number} time - Time in seconds
      * @return {void}
      */
@@ -512,7 +547,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setTimeCode() {
-        this.mediaControls.setTimeCode(this.mediaEl.currentTime);
+        if (this.mediaControls) {
+            this.mediaControls.setTimeCode(this.mediaEl.currentTime);
+        } else {
+            this.renderUI();
+        }
     }
 
     /**
@@ -526,12 +565,16 @@ class MediaBaseViewer extends BaseViewer {
         if (this.mediaEl && time >= 0 && time <= this.mediaEl.duration) {
             this.mediaEl.currentTime = time;
         }
+
+        if (this.controls) {
+            this.renderUI();
+        }
     }
 
     /**
      * Updates volume
      *
-     * @private
+     * @protected
      * @param {number} volume - Must be a number between [0,1], per HTML5 spec
      * @return {void}
      */
@@ -547,7 +590,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     updateVolumeIcon() {
-        this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
+        if (this.mediaControls) {
+            this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
+        } else {
+            this.renderUI();
+        }
     }
 
     /**
@@ -560,7 +607,12 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     playingHandler() {
-        this.mediaControls.showPauseIcon();
+        if (this.mediaControls) {
+            this.mediaControls.showPauseIcon();
+        } else {
+            this.renderUI();
+        }
+
         this.hideLoadingIcon();
         this.handleRate();
         this.handleVolume();
@@ -574,7 +626,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     progressHandler() {
-        this.mediaControls.updateProgress();
+        if (this.mediaControls) {
+            this.mediaControls.updateProgress();
+        } else {
+            this.renderUI();
+        }
     }
 
     /**
@@ -584,7 +640,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     pauseHandler() {
-        this.mediaControls.showPlayIcon();
+        if (this.mediaControls) {
+            this.mediaControls.showPlayIcon();
+        } else {
+            this.renderUI();
+        }
     }
 
     /**
@@ -656,7 +716,13 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     resetPlayIcon() {
-        this.mediaControls.setTimeCode(0);
+        if (this.mediaControls) {
+            this.mediaControls.setTimeCode(0);
+        } else {
+            this.setMediaTime(0);
+            this.renderUI();
+        }
+
         this.hideLoadingIcon();
         this.pauseHandler();
     }
@@ -748,7 +814,7 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Toggle playback
      *
-     * @private
+     * @protected
      * @return {void}
      */
     togglePlay() {
@@ -762,7 +828,7 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Toggle mute
      *
-     * @private
+     * @protected
      * @return {void}
      */
     toggleMute() {
@@ -778,7 +844,7 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Hides the loading indicator
      *
-     * @private
+     * @protected
      * @return {void}
      */
     hideLoadingIcon() {
@@ -915,13 +981,19 @@ class MediaBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key) {
-        // Return false when media controls are not ready
-        if (!this.mediaControls) {
-            return false;
+        if (this.mediaControls) {
+            return this.handleKeydown(key);
         }
 
-        const k = key.toLowerCase();
-        switch (k) {
+        if (this.controls) {
+            return this.handleKeydownReact(key);
+        }
+
+        return false; // Return false if controls are not ready
+    }
+
+    handleKeydown(key) {
+        switch (key.toLowerCase()) {
             case 'tab':
             case 'shift+tab':
                 this.mediaContainerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
@@ -991,6 +1063,46 @@ class MediaBaseViewer extends BaseViewer {
                 return false;
         }
         this.mediaControls.show();
+        return true;
+    }
+
+    handleKeydownReact(key) {
+        switch (key.toLowerCase()) {
+            case 'space':
+            case 'k':
+                this.togglePlay();
+                break;
+            case 'arrowleft':
+                this.quickSeek(-5);
+                break;
+            case 'j':
+                this.quickSeek(-10);
+                break;
+            case 'arrowright':
+                this.quickSeek(5);
+                break;
+            case 'l':
+                this.quickSeek(10);
+                break;
+            case '0':
+            case 'home':
+                this.setMediaTime(0);
+                this.renderUI();
+                break;
+            case 'arrowup':
+                this.increaseVolume();
+                break;
+            case 'arrowdown':
+                this.decreaseVolume();
+                break;
+            case 'm':
+            case 'shift+m':
+                this.toggleMute();
+                break;
+            default:
+                return false;
+        }
+
         return true;
     }
 

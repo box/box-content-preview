@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
-import BaseViewer from '../../BaseViewer';
+import MediaControlsRoot from '../MediaControlsRoot';
+import PreviewError from '../../../PreviewError';
 import Timer from '../../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../../events';
-import PreviewError from '../../../PreviewError';
 
 const MAX_RETRY_TOKEN = 3; // number of times to retry refreshing token for unauthorized error
 
@@ -147,12 +148,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('loadeddataHandler()', () => {
-        test('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
+        beforeEach(() => {
             jest.spyOn(media, 'handleVolume').mockImplementation();
-            jest.spyOn(media, 'emit').mockImplementation();
-            jest.spyOn(media, 'resize').mockImplementation();
-            jest.spyOn(media, 'showMedia').mockImplementation();
             jest.spyOn(media, 'loadUI').mockImplementation();
+            jest.spyOn(media, 'loadUIReact').mockImplementation();
+            jest.spyOn(media, 'resize').mockImplementation();
+        });
+
+        test('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
+            jest.spyOn(media, 'emit').mockImplementation();
+            jest.spyOn(media, 'getViewerOption').mockReturnValueOnce(false);
+            jest.spyOn(media, 'showMedia').mockImplementation();
 
             media.options.autoFocus = true;
             media.loadeddataHandler();
@@ -163,7 +169,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.resize).toBeCalled();
             expect(media.showMedia).toBeCalled();
             expect(media.loadUI).toBeCalled();
+            expect(media.loadUIReact).not.toBeCalled();
             expect(document.activeElement).toBe(media.mediaContainerEl);
+        });
+
+        test('should finish loading and render react ui if option is enabled', () => {
+            jest.spyOn(media, 'getViewerOption').mockReturnValueOnce(true);
+
+            media.loadeddataHandler();
+
+            expect(media.loadUI).not.toBeCalled();
+            expect(media.loadUIReact).toBeCalled();
         });
 
         test('should autoplay if enabled', () => {
@@ -355,6 +371,41 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('loadUIReact()', () => {
+        beforeEach(() => {
+            jest.spyOn(media, 'addEventListenersForMediaElement').mockImplementation();
+            jest.spyOn(media, 'renderUI').mockImplementation();
+            jest.spyOn(media.cache, 'has').mockImplementation();
+            jest.spyOn(media.cache, 'set').mockImplementation();
+        });
+
+        test('should create controls root and render the react controls', () => {
+            media.loadUIReact();
+
+            expect(media.controls).toBeInstanceOf(MediaControlsRoot);
+            expect(media.addEventListenersForMediaElement).toBeCalled();
+            expect(media.renderUI).toBeCalled();
+        });
+
+        test('should create cache entries for autoplay and speed if they are not available', () => {
+            media.loadUIReact();
+
+            expect(media.cache.has).toBeCalledWith('media-autoplay');
+            expect(media.cache.has).toBeCalledWith('media-speed');
+            expect(media.cache.set).toBeCalledWith('media-autoplay', 'Disabled');
+            expect(media.cache.set).toBeCalledWith('media-speed', '1.0');
+        });
+
+        test('should not set cache entries for autoplay and speed if already set', () => {
+            media.cache.has.mockReturnValue(true);
+
+            media.loadUIReact();
+
+            expect(media.cache.set).not.toBeCalled();
+            expect(media.cache.set).not.toBeCalled();
+        });
+    });
+
     describe('handleTimeupdateFromMediaControls()', () => {
         test('should set media time and remove pause listener', () => {
             jest.spyOn(media, 'setMediaTime');
@@ -380,12 +431,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('setTimeCode()', () => {
         test('should set the current time in controls', () => {
-            const currentTime = 1337;
+            const currentTime = 1000;
             media.mediaEl = { currentTime };
-
             media.setTimeCode();
 
             expect(media.mediaControls.setTimeCode).toBeCalledWith(currentTime);
+        });
+
+        test('should re-render the react controls if they are available', () => {
+            jest.spyOn(media, 'renderUI').mockImplementation();
+
+            media.mediaControls = null;
+            media.setTimeCode();
+
+            expect(media.renderUI).toBeCalled();
         });
     });
 
@@ -414,22 +473,33 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('updateVolumeIcon()', () => {
         test('should update the controls volume icon', () => {
-            const volume = 1337;
+            const volume = 0.5;
             media.mediaEl = { volume };
-
             media.updateVolumeIcon();
 
             expect(media.mediaControls.updateVolumeIcon).toBeCalledWith(volume);
         });
+
+        test('should re-render the react controls if they are available', () => {
+            jest.spyOn(media, 'renderUI').mockImplementation();
+
+            media.mediaControls = null;
+            media.updateVolumeIcon();
+
+            expect(media.renderUI).toBeCalled();
+        });
     });
 
     describe('playingHandler()', () => {
-        test('should show pause icon, hide loading icon, and handle speed and volume', () => {
+        beforeEach(() => {
             jest.spyOn(media, 'emit').mockImplementation();
             jest.spyOn(media, 'handleRate').mockImplementation();
             jest.spyOn(media, 'handleVolume').mockImplementation();
             jest.spyOn(media, 'hideLoadingIcon').mockImplementation();
+            jest.spyOn(media, 'renderUI').mockImplementation();
+        });
 
+        test('should show pause icon, hide loading icon, and handle speed and volume', () => {
             media.playingHandler();
 
             expect(media.mediaControls.showPauseIcon).toBeCalled();
@@ -437,6 +507,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.handleRate).toBeCalled();
             expect(media.handleVolume).toBeCalled();
             expect(media.emit).toBeCalledWith('play');
+        });
+
+        test('should re-render the react controls if they are available', () => {
+            media.mediaControls = null;
+            media.playingHandler();
+
+            expect(media.renderUI).toBeCalled();
         });
     });
 
@@ -446,6 +523,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.mediaControls.updateProgress).toBeCalled();
         });
+
+        test('should re-render the react controls if they are available', () => {
+            jest.spyOn(media, 'renderUI').mockImplementation();
+
+            media.mediaControls = null;
+            media.progressHandler();
+
+            expect(media.renderUI).toBeCalled();
+        });
     });
 
     describe('pauseHandler()', () => {
@@ -453,6 +539,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.pauseHandler();
 
             expect(media.mediaControls.showPlayIcon).toBeCalled();
+        });
+
+        test('should re-render the react controls if they are available', () => {
+            jest.spyOn(media, 'renderUI').mockImplementation();
+
+            media.mediaControls = null;
+            media.pauseHandler();
+
+            expect(media.renderUI).toBeCalled();
         });
     });
 
@@ -852,15 +947,17 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaControls = null;
             expect(media.onKeydown()).toBe(false);
         });
+    });
 
+    describe('handleKeydown', () => {
         test('should add keyboard-focus class on tab and return false', () => {
-            expect(media.onKeydown('Tab')).toBe(false);
+            expect(media.handleKeydown('Tab')).toBe(false);
             expect(media.mediaContainerEl).toHaveClass(CLASS_ELEM_KEYBOARD_FOCUS);
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should add keyboard-focus class on shift+tab and return false', () => {
-            expect(media.onKeydown('Shift+Tab')).toBe(false);
+            expect(media.handleKeydown('Shift+Tab')).toBe(false);
             expect(media.mediaContainerEl).toHaveClass(CLASS_ELEM_KEYBOARD_FOCUS);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -868,7 +965,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should toggle play and return true on Space', () => {
             jest.spyOn(media, 'togglePlay').mockImplementation();
 
-            expect(media.onKeydown('Space')).toBe(true);
+            expect(media.handleKeydown('Space')).toBe(true);
             expect(media.togglePlay).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -876,7 +973,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should toggle play and return true on k', () => {
             jest.spyOn(media, 'togglePlay').mockImplementation();
 
-            expect(media.onKeydown('k')).toBe(true);
+            expect(media.handleKeydown('k')).toBe(true);
             expect(media.togglePlay).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -884,7 +981,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should seek backwards 5 seconds and return true on ArrowLeft', () => {
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowLeft')).toBe(true);
+            expect(media.handleKeydown('ArrowLeft')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(-5);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -893,7 +990,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaControls.isVolumeScrubberFocused = jest.fn(() => true);
             jest.spyOn(media, 'decreaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowLeft')).toBe(true);
+            expect(media.handleKeydown('ArrowLeft')).toBe(true);
             expect(media.decreaseVolume).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -901,7 +998,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should seek backwards 10 seconds and return true on j', () => {
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('j')).toBe(true);
+            expect(media.handleKeydown('j')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(-10);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -909,7 +1006,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should seek forwards 5 seconds and return true on ArrowRight', () => {
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowRight')).toBe(true);
+            expect(media.handleKeydown('ArrowRight')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(5);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -918,7 +1015,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaControls.isVolumeScrubberFocused = jest.fn(() => true);
             jest.spyOn(media, 'increaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowRight')).toBe(true);
+            expect(media.handleKeydown('ArrowRight')).toBe(true);
             expect(media.increaseVolume).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -926,23 +1023,23 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should seek forwards 10 seconds and return true on l', () => {
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('l')).toBe(true);
+            expect(media.handleKeydown('l')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(10);
             expect(media.mediaControls.show).toBeCalled();
         });
 
-        test('should go to beginning of video and return true on 0', () => {
+        test('should go to beginning of media and return true on 0', () => {
             jest.spyOn(media, 'setMediaTime').mockImplementation();
 
-            expect(media.onKeydown('0')).toBe(true);
+            expect(media.handleKeydown('0')).toBe(true);
             expect(media.setMediaTime).toBeCalledWith(0);
             expect(media.mediaControls.show).toBeCalled();
         });
 
-        test('should go to beginning of video and return true on Home', () => {
+        test('should go to beginning of media and return true on Home', () => {
             jest.spyOn(media, 'setMediaTime').mockImplementation();
 
-            expect(media.onKeydown('Home')).toBe(true);
+            expect(media.handleKeydown('Home')).toBe(true);
             expect(media.setMediaTime).toBeCalledWith(0);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -950,7 +1047,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should increase volume and return true on ArrowUp', () => {
             jest.spyOn(media, 'increaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowUp')).toBe(true);
+            expect(media.handleKeydown('ArrowUp')).toBe(true);
             expect(media.increaseVolume).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -959,7 +1056,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaControls.isTimeScrubberFocused = jest.fn(() => true);
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowUp')).toBe(true);
+            expect(media.handleKeydown('ArrowUp')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(5);
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -967,7 +1064,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should decrease volume and return true on ArrowDown', () => {
             jest.spyOn(media, 'decreaseVolume').mockImplementation();
 
-            expect(media.onKeydown('ArrowDown')).toBe(true);
+            expect(media.handleKeydown('ArrowDown')).toBe(true);
             expect(media.decreaseVolume).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -976,31 +1073,31 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaControls.isTimeScrubberFocused = jest.fn(() => true);
             jest.spyOn(media, 'quickSeek').mockImplementation();
 
-            expect(media.onKeydown('ArrowDown')).toBe(true);
+            expect(media.handleKeydown('ArrowDown')).toBe(true);
             expect(media.quickSeek).toBeCalledWith(-5);
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should increase speed and return true on Shift+>', () => {
-            expect(media.onKeydown('Shift+>')).toBe(true);
+            expect(media.handleKeydown('Shift+>')).toBe(true);
             expect(media.mediaControls.increaseSpeed).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should increase speed and return true on Shift+<', () => {
-            expect(media.onKeydown('Shift+<')).toBe(true);
+            expect(media.handleKeydown('Shift+<')).toBe(true);
             expect(media.mediaControls.decreaseSpeed).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should toggle fullscreen and return true on f', () => {
-            expect(media.onKeydown('f')).toBe(true);
+            expect(media.handleKeydown('f')).toBe(true);
             expect(media.mediaControls.toggleFullscreen).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should toggle fullscreen and return true on Shift+F', () => {
-            expect(media.onKeydown('Shift+F')).toBe(true);
+            expect(media.handleKeydown('Shift+F')).toBe(true);
             expect(media.mediaControls.toggleFullscreen).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -1008,7 +1105,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should toggle mute and return true on m', () => {
             jest.spyOn(media, 'toggleMute').mockImplementation();
 
-            expect(media.onKeydown('m')).toBe(true);
+            expect(media.handleKeydown('m')).toBe(true);
             expect(media.toggleMute).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
@@ -1016,26 +1113,122 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should toggle mute and return true on Shift+M', () => {
             jest.spyOn(media, 'toggleMute').mockImplementation();
 
-            expect(media.onKeydown('Shift+M')).toBe(true);
+            expect(media.handleKeydown('Shift+M')).toBe(true);
             expect(media.toggleMute).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should toggle subtitles and return true on c', () => {
-            expect(media.onKeydown('c')).toBe(true);
+            expect(media.handleKeydown('c')).toBe(true);
             expect(media.mediaControls.toggleSubtitles).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should toggle subtitles and return true on Shift+C', () => {
-            expect(media.onKeydown('Shift+C')).toBe(true);
+            expect(media.handleKeydown('Shift+C')).toBe(true);
             expect(media.mediaControls.toggleSubtitles).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
         test('should return false if another key is pressed', () => {
-            expect(media.onKeydown('Esc')).toBe(false);
+            expect(media.handleKeydown('Esc')).toBe(false);
             expect(media.mediaControls.show).toBeCalledTimes(0);
+        });
+    });
+
+    describe('handleKeydownReact', () => {
+        beforeEach(() => {
+            jest.spyOn(media, 'renderUI').mockImplementation();
+        });
+
+        test('should toggle play and return true on Space', () => {
+            jest.spyOn(media, 'togglePlay').mockImplementation();
+
+            expect(media.handleKeydownReact('Space')).toBe(true);
+            expect(media.togglePlay).toBeCalled();
+        });
+
+        test('should toggle play and return true on k', () => {
+            jest.spyOn(media, 'togglePlay').mockImplementation();
+
+            expect(media.handleKeydownReact('k')).toBe(true);
+            expect(media.togglePlay).toBeCalled();
+        });
+
+        test('should seek backwards 5 seconds and return true on ArrowLeft', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
+
+            expect(media.handleKeydownReact('ArrowLeft')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(-5);
+        });
+
+        test('should seek backwards 10 seconds and return true on j', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
+
+            expect(media.handleKeydownReact('j')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(-10);
+        });
+
+        test('should seek forwards 5 seconds and return true on ArrowRight', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
+
+            expect(media.handleKeydownReact('ArrowRight')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(5);
+        });
+
+        test('should seek forwards 10 seconds and return true on l', () => {
+            jest.spyOn(media, 'quickSeek').mockImplementation();
+
+            expect(media.handleKeydownReact('l')).toBe(true);
+            expect(media.quickSeek).toBeCalledWith(10);
+        });
+
+        test('should go to beginning of media and return true on 0', () => {
+            jest.spyOn(media, 'setMediaTime').mockImplementation();
+
+            expect(media.handleKeydownReact('0')).toBe(true);
+            expect(media.setMediaTime).toBeCalledWith(0);
+            expect(media.renderUI).toBeCalled();
+        });
+
+        test('should go to beginning of media and return true on Home', () => {
+            jest.spyOn(media, 'setMediaTime').mockImplementation();
+
+            expect(media.handleKeydownReact('Home')).toBe(true);
+            expect(media.setMediaTime).toBeCalledWith(0);
+            expect(media.renderUI).toBeCalled();
+        });
+
+        test('should increase volume and return true on ArrowUp', () => {
+            jest.spyOn(media, 'increaseVolume').mockImplementation();
+
+            expect(media.handleKeydownReact('ArrowUp')).toBe(true);
+            expect(media.increaseVolume).toBeCalled();
+        });
+
+        test('should decrease volume and return true on ArrowDown', () => {
+            jest.spyOn(media, 'decreaseVolume').mockImplementation();
+
+            expect(media.handleKeydownReact('ArrowDown')).toBe(true);
+            expect(media.decreaseVolume).toBeCalled();
+        });
+
+        test('should toggle mute and return true on m', () => {
+            jest.spyOn(media, 'toggleMute').mockImplementation();
+
+            expect(media.handleKeydownReact('m')).toBe(true);
+            expect(media.toggleMute).toBeCalled();
+        });
+
+        test('should toggle mute and return true on Shift+M', () => {
+            jest.spyOn(media, 'toggleMute').mockImplementation();
+
+            expect(media.handleKeydownReact('Shift+M')).toBe(true);
+            expect(media.toggleMute).toBeCalled();
+        });
+
+        test('should return false if another key is pressed', () => {
+            expect(media.handleKeydownReact('Esc')).toBe(false);
         });
     });
 
