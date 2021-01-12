@@ -119,9 +119,6 @@ describe('lib/Controls', () => {
 
             element.className = '';
             expect(controls.isPreviewControlButton(element)).toBe(false);
-
-            parent.className = 'bp-page-num-wrapper';
-            expect(controls.isPreviewControlButton(element)).toBe(true);
         });
     });
 
@@ -150,18 +147,6 @@ describe('lib/Controls', () => {
             const resetTimeoutStub = jest.spyOn(controls, 'resetTimeout');
             clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
-            expect(resetTimeoutStub).toBeCalled();
-        });
-
-        test('should call resetTimeout again if the page number input is focused', () => {
-            controls.shouldHide = true;
-            const isPageNumFocusedStub = jest.spyOn(controls, 'isPageNumFocused').mockReturnValue(true);
-            controls.resetTimeout();
-
-            const resetTimeoutStub = jest.spyOn(controls, 'resetTimeout');
-            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
-
-            expect(isPageNumFocusedStub).toBeCalled();
             expect(resetTimeoutStub).toBeCalled();
         });
 
@@ -346,18 +331,6 @@ describe('lib/Controls', () => {
             controls.disable();
 
             expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).toBe(true);
-        });
-    });
-
-    describe('isPageNumFocused()', () => {
-        test('should return true if page num element is focused', () => {
-            document.activeElement.classList.add('bp-page-num-input');
-            expect(controls.isPageNumFocused()).toBe(true);
-        });
-
-        test('should return false if page num element is not', () => {
-            document.activeElement.classList.remove('bp-page-num-input');
-            expect(controls.isPageNumFocused()).toBe(false);
         });
     });
 });

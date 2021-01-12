@@ -4,8 +4,6 @@ import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_BUTTON_CLASS = 'bp-controls-btn';
-const CONTROLS_PAGE_NUM_INPUT_CLASS = 'bp-page-num-input';
-const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 2000;
 
 export const CLASS_BOX_CONTROLS_GROUP_BUTTON = 'bp-controls-group-btn';
@@ -81,11 +79,7 @@ class Controls {
      * @return {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
-        return (
-            !!element &&
-            (element.classList.contains(CONTROLS_BUTTON_CLASS) ||
-                element.parentNode.classList.contains(CONTROLS_PAGE_NUM_WRAPPER_CLASS))
-        );
+        return !!element && element.classList.contains(CONTROLS_BUTTON_CLASS);
     }
 
     /**
@@ -97,7 +91,7 @@ class Controls {
         this.controlDisplayTimeoutId = setTimeout(() => {
             clearTimeout(this.controlDisplayTimeoutId);
 
-            if (!this.shouldHide || this.isPageNumFocused()) {
+            if (!this.shouldHide) {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -268,16 +262,6 @@ class Controls {
      */
     disable() {
         this.controlsEl.classList.add(CLASS_HIDDEN);
-    }
-
-    /**
-     * Determines if the page number input is focused.
-     *
-     * @public
-     * @return {boolean} Is the input focused
-     */
-    isPageNumFocused() {
-        return document.activeElement && document.activeElement.classList.contains(CONTROLS_PAGE_NUM_INPUT_CLASS);
     }
 }
 
