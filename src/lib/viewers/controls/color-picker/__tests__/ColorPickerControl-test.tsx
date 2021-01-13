@@ -9,7 +9,7 @@ describe('ColorPickerControl', () => {
         shallow(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
 
     const getColorPickerPalette = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-ColorPickerPalette"]');
+        wrapper.find('[data-testid="bp-ColorPickerControl-palette"]');
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
         wrapper.find('[data-testid="bp-ColorPickerControl-button"]');
@@ -18,7 +18,7 @@ describe('ColorPickerControl', () => {
         test('should not render ColorPickerPalette when the component is first mounted', () => {
             const wrapper = getWrapper();
 
-            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
         });
 
         test('should render ColorPickerPalette when the toggle button is clicked', () => {
@@ -26,7 +26,28 @@ describe('ColorPickerControl', () => {
 
             getToggleButton(wrapper).simulate('click');
 
-            expect(getColorPickerPalette(wrapper).exists()).toBe(true);
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+        });
+
+        test('should close the palette when button is blurred', () => {
+            const wrapper = getWrapper();
+            const toggleButton = getToggleButton(wrapper);
+
+            toggleButton.simulate('click');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            toggleButton.simulate('blur');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
+        });
+
+        test('should not close the palette when palette is active', () => {
+            const wrapper = getWrapper();
+
+            getToggleButton(wrapper).simulate('click');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            getColorPickerPalette(wrapper).simulate('focus');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
         });
     });
 
@@ -36,9 +57,9 @@ describe('ColorPickerControl', () => {
             const wrapper = getWrapper({ onColorSelect });
 
             getToggleButton(wrapper).simulate('click');
-            getColorPickerPalette(wrapper).simulate('select', defaultColor);
+            wrapper.find('[data-testid="bp-ColorPickerPalette"]').simulate('select', defaultColor);
 
-            expect(getColorPickerPalette(wrapper).exists()).toBe(false);
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
