@@ -1,3 +1,14 @@
+## 2.62.0 (2021-01-13)
+
+* fix(annotations): Fix Palette doesn't close when blurred (#1317) ([bd6413b](https://github.com/box/box-content-preview/commit/bd6413b)), closes [#1317](https://github.com/box/box-content-preview/issues/1317)
+* fix(controls): Hide thumbnails toggle on small screens and fullscreen (#1313) ([e34ee42](https://github.com/box/box-content-preview/commit/e34ee42)), closes [#1313](https://github.com/box/box-content-preview/issues/1313)
+* fix(controls): Prevent controls from hiding when already unmounted (#1316) ([c695342](https://github.com/box/box-content-preview/commit/c695342)), closes [#1316](https://github.com/box/box-content-preview/issues/1316)
+* fix(drawing): emit color event when color picker is opened (#1315) ([39bff92](https://github.com/box/box-content-preview/commit/39bff92)), closes [#1315](https://github.com/box/box-content-preview/issues/1315)
+* feat(controls): Add react versions of time and volume scrubbers (#1314) ([800971a](https://github.com/box/box-content-preview/commit/800971a)), closes [#1314](https://github.com/box/box-content-preview/issues/1314)
+* feat(controls): Cleanup legacy controls from non-media viewers (#1312) ([e8a3c57](https://github.com/box/box-content-preview/commit/e8a3c57)), closes [#1312](https://github.com/box/box-content-preview/issues/1312)
+
+
+
 ## 2.61.0 (2021-01-05)
 
 * fix(controls): Hide find and thumbnail toggles if options are disabled (#1311) ([46df6e4](https://github.com/box/box-content-preview/commit/46df6e4)), closes [#1311](https://github.com/box/box-content-preview/issues/1311)
