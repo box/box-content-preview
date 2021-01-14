@@ -38,6 +38,12 @@
     }
 }
 
+.bp-ColorPickerControl-highlight {
+    padding: 8px;
+    background-color: $fours;
+    border-radius: 4px;
+}
+
 .bp-ColorPickerControl-swatch {
     width: 18px;
     height: 18px;
