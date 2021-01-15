@@ -37,14 +37,16 @@ export default function ColorPickerControl({
     return (
         <div className="bp-ColorPickerControl">
             <button
-                className="bp-ColorPickerControl-button"
-                data-testid="bp-ColorPickerControl-button"
+                className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
+                data-testid="bp-ColorPickerControl-toggle"
                 onBlur={handleBlur}
                 onClick={handleClick}
                 type="button"
                 {...rest}
             >
-                <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: activeColor }} />
+                <div className="bp-ColorPickerControl-toggle-background">
+                    <div className="bp-ColorPickerControl-toggle-swatch" style={{ backgroundColor: activeColor }} />
+                </div>
             </button>
             <div
                 className={classNames('bp-ColorPickerControl-palette', { 'bp-is-open': isColorPickerToggled })}

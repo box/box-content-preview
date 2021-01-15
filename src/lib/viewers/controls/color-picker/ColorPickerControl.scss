@@ -7,8 +7,18 @@
     justify-content: center;
 }
 
-.bp-ColorPickerControl-button {
+.bp-ColorPickerControl-toggle {
     @include bp-ControlButton;
+
+    &.bp-is-active,
+    &:focus,
+    &:hover {
+        .bp-ColorPickerControl-toggle-background {
+            padding: 8px;
+            background-color: $fours;
+            border-radius: 4px;
+        }
+    }
 }
 
 .bp-ColorPickerControl-palette {
@@ -38,7 +48,7 @@
     }
 }
 
-.bp-ColorPickerControl-swatch {
+.bp-ColorPickerControl-toggle-swatch {
     width: 18px;
     height: 18px;
     border: 2px solid #fff;

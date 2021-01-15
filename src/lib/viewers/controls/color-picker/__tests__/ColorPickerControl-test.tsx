@@ -12,7 +12,7 @@ describe('ColorPickerControl', () => {
         wrapper.find('[data-testid="bp-ColorPickerControl-palette"]');
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-ColorPickerControl-button"]');
+        wrapper.find('[data-testid="bp-ColorPickerControl-toggle"]');
 
     describe('render', () => {
         test('should not render ColorPickerPalette when the component is first mounted', () => {
@@ -27,6 +27,17 @@ describe('ColorPickerControl', () => {
             getToggleButton(wrapper).simulate('click');
 
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+        });
+
+        test('should apply toggle background when the toggle button is clicked and remove the background when the button is blurred', () => {
+            const wrapper = getWrapper();
+            const toggleButton = getToggleButton(wrapper);
+
+            toggleButton.simulate('click');
+            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
+
+            toggleButton.simulate('blur');
+            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(false);
         });
 
         test('should close the palette when button is blurred', () => {
