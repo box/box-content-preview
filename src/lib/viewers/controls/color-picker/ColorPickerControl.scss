@@ -7,7 +7,7 @@
     justify-content: center;
 }
 
-.bp-ColorPickerControl-button {
+.bp-ColorPickerControl-toggle {
     @include bp-ControlButton;
 
     &.bp-is-active,
@@ -48,7 +48,7 @@
     }
 }
 
-.bp-ColorPickerControl-swatch {
+.bp-ColorPickerControl-toggle-swatch {
     width: 18px;
     height: 18px;
     border: 2px solid #fff;

@@ -12,7 +12,7 @@ describe('ColorPickerControl', () => {
         wrapper.find('[data-testid="bp-ColorPickerControl-palette"]');
 
     const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-ColorPickerControl-button"]');
+        wrapper.find('[data-testid="bp-ColorPickerControl-toggle"]');
 
     describe('render', () => {
         test('should not render ColorPickerPalette when the component is first mounted', () => {
