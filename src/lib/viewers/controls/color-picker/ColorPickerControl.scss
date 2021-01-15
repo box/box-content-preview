@@ -1,5 +1,11 @@
 @import '../styles';
 
+@mixin highlight-style {
+    padding: 8px;
+    background-color: $fours;
+    border-radius: 4px;
+}
+
 .bp-ColorPickerControl {
     position: relative;
     display: flex;
@@ -13,9 +19,7 @@
     &:hover,
     &:focus {
         .bp-ColorPickerControl-highlight {
-            padding: 8px;
-            background-color: $fours;
-            border-radius: 4px;
+            @include highlight-style();
         }
     }
 }
@@ -44,6 +48,12 @@
 
     &.bp-is-open {
         display: block;
+    }
+}
+
+.bp-ColorPickerControl-highlight {
+    &.bp-is-open {
+        @include highlight-style();
     }
 }
 
