@@ -29,6 +29,17 @@ describe('ColorPickerControl', () => {
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
         });
 
+        test('should apply toggle background when the toggle button is clicked and remove the background when the button is blurred', () => {
+            const wrapper = getWrapper();
+            const toggleButton = getToggleButton(wrapper);
+
+            toggleButton.simulate('click');
+            expect(getToggleButton(wrapper).hasClass('bp-is-toggled')).toBe(true);
+
+            toggleButton.simulate('blur');
+            expect(getToggleButton(wrapper).hasClass('bp-is-toggled')).toBe(false);
+        });
+
         test('should close the palette when button is blurred', () => {
             const wrapper = getWrapper();
             const toggleButton = getToggleButton(wrapper);
