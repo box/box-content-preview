@@ -37,7 +37,7 @@ export default function ColorPickerControl({
     return (
         <div className="bp-ColorPickerControl">
             <button
-                className={classNames('bp-ColorPickerControl-button', { 'bp-is-toggled': isColorPickerToggled })}
+                className={classNames('bp-ColorPickerControl-button', { 'bp-is-active': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-button"
                 onBlur={handleBlur}
                 onClick={handleClick}

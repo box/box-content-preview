@@ -34,10 +34,10 @@ describe('ColorPickerControl', () => {
             const toggleButton = getToggleButton(wrapper);
 
             toggleButton.simulate('click');
-            expect(getToggleButton(wrapper).hasClass('bp-is-toggled')).toBe(true);
+            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
 
             toggleButton.simulate('blur');
-            expect(getToggleButton(wrapper).hasClass('bp-is-toggled')).toBe(false);
+            expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(false);
         });
 
         test('should close the palette when button is blurred', () => {

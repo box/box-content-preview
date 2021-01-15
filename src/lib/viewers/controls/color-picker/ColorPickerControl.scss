@@ -10,7 +10,7 @@
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
 
-    &.bp-is-toggled,
+    &.bp-is-active,
     &:focus,
     &:hover {
         .bp-ColorPickerControl-toggle-background {
