@@ -44,7 +44,11 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <div className={classNames('bp-ColorPickerControl-highlight', { 'bp-is-open': isColorPickerToggled })}>
+                <div
+                    className={classNames('bp-ColorPickerControl-highlight', {
+                        'bp-has-attention': isColorPickerToggled,
+                    })}
+                >
                     <div className="bp-ColorPickerControl-swatch" style={{ backgroundColor: activeColor }} />
                 </div>
             </button>

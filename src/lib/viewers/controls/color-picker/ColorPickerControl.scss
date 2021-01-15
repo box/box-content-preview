@@ -1,6 +1,6 @@
 @import '../styles';
 
-@mixin highlight-style {
+@mixin bp-highlight-style {
     padding: 8px;
     background-color: $fours;
     border-radius: 4px;
@@ -19,7 +19,7 @@
     &:hover,
     &:focus {
         .bp-ColorPickerControl-highlight {
-            @include highlight-style();
+            @include bp-highlight-style;
         }
     }
 }
@@ -52,8 +52,8 @@
 }
 
 .bp-ColorPickerControl-highlight {
-    &.bp-is-open {
-        @include highlight-style();
+    &.bp-has-attention {
+        @include bp-highlight-style;
     }
 }
 
