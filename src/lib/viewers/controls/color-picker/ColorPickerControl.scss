@@ -9,6 +9,15 @@
 
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
+
+    &:hover,
+    &:focus {
+        .bp-ColorPickerControl-highlight {
+            padding: 8px;
+            background-color: $fours;
+            border-radius: 4px;
+        }
+    }
 }
 
 .bp-ColorPickerControl-palette {
@@ -36,12 +45,6 @@
     &.bp-is-open {
         display: block;
     }
-}
-
-.bp-ColorPickerControl-highlight {
-    padding: 8px;
-    background-color: $fours;
-    border-radius: 4px;
 }
 
 .bp-ColorPickerControl-swatch {
