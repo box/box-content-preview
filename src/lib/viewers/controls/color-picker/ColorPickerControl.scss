@@ -1,11 +1,5 @@
 @import '../styles';
 
-@mixin bp-highlight-style {
-    padding: 8px;
-    background-color: $fours;
-    border-radius: 4px;
-}
-
 .bp-ColorPickerControl {
     position: relative;
     display: flex;
@@ -16,10 +10,13 @@
 .bp-ColorPickerControl-button {
     @include bp-ControlButton;
 
-    &:hover,
-    &:focus {
-        .bp-ColorPickerControl-highlight {
-            @include bp-highlight-style;
+    &.bp-is-toggled,
+    &:focus,
+    &:hover {
+        .bp-ColorPickerControl-toggle-background {
+            padding: 8px;
+            background-color: $fours;
+            border-radius: 4px;
         }
     }
 }
@@ -48,12 +45,6 @@
 
     &.bp-is-open {
         display: block;
-    }
-}
-
-.bp-ColorPickerControl-highlight {
-    &.bp-has-attention {
-        @include bp-highlight-style;
     }
 }
 
