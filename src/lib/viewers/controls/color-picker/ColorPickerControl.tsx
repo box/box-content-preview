@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
@@ -17,7 +17,8 @@ export default function ColorPickerControl({
     onColorSelect,
     ...rest
 }: Props): JSX.Element | null {
-    const [isColorPickerToggled, setIsColorPickerToggled] = useState(false);
+    const paletteRef = React.useRef<HTMLDivElement>(null);
+    const [isColorPickerToggled, setIsColorPickerToggled] = React.useState(false);
     const [isPaletteActive, handlers] = useAttention();
 
     const handleSelect = (color: string): void => {
@@ -25,10 +26,15 @@ export default function ColorPickerControl({
         onColorSelect(color);
     };
 
-    const handleBlur = (): void => {
-        if (isPaletteActive) {
+    const handleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
+        const { current: paletteEl } = paletteRef;
+        // IE11 does not have relatedTarget but update activeElement before blur
+        const nextTarget = relatedTarget || document.activeElement;
+
+        if (isPaletteActive || (nextTarget && paletteEl && paletteEl.contains(nextTarget as Node))) {
             return;
         }
+
         setIsColorPickerToggled(false);
     };
 
@@ -49,6 +55,7 @@ export default function ColorPickerControl({
                 </div>
             </button>
             <div
+                ref={paletteRef}
                 className={classNames('bp-ColorPickerControl-palette', { 'bp-is-open': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-palette"
                 {...handlers}
