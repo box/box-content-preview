@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { act } from 'react-dom/test-utils';
+import { mount, ReactWrapper } from 'enzyme';
 import ColorPickerControl from '../ColorPickerControl';
 
 describe('ColorPickerControl', () => {
     const defaultColor = '#fff';
 
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
+    const getWrapper = (props = {}): ReactWrapper =>
+        mount(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
 
-    const getColorPickerPalette = (wrapper: ShallowWrapper): ShallowWrapper =>
+    const getColorPickerPalette = (wrapper: ReactWrapper): ReactWrapper =>
         wrapper.find('[data-testid="bp-ColorPickerControl-palette"]');
 
-    const getToggleButton = (wrapper: ShallowWrapper): ShallowWrapper =>
+    const getToggleButton = (wrapper: ReactWrapper): ReactWrapper =>
         wrapper.find('[data-testid="bp-ColorPickerControl-toggle"]');
 
     describe('render', () => {
@@ -36,7 +37,7 @@ describe('ColorPickerControl', () => {
             toggleButton.simulate('click');
             expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(true);
 
-            toggleButton.simulate('blur');
+            toggleButton.simulate('blur', {});
             expect(getToggleButton(wrapper).hasClass('bp-is-active')).toBe(false);
         });
 
@@ -47,7 +48,7 @@ describe('ColorPickerControl', () => {
             toggleButton.simulate('click');
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
 
-            toggleButton.simulate('blur');
+            toggleButton.simulate('blur', {});
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
         });
 
@@ -60,6 +61,20 @@ describe('ColorPickerControl', () => {
             getColorPickerPalette(wrapper).simulate('focus');
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
         });
+
+        test('should not close the palette when next focus is inside palette', () => {
+            const wrapper = getWrapper();
+            const toggleButton = getToggleButton(wrapper);
+
+            toggleButton.simulate('click');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            toggleButton.simulate('blur', {
+                relatedTarget: getColorPickerPalette(wrapper).getDOMNode(),
+            });
+
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+        });
     });
 
     describe('handleSelect', () => {
@@ -68,7 +83,11 @@ describe('ColorPickerControl', () => {
             const wrapper = getWrapper({ onColorSelect });
 
             getToggleButton(wrapper).simulate('click');
-            wrapper.find('[data-testid="bp-ColorPickerPalette"]').simulate('select', defaultColor);
+
+            act(() => {
+                (wrapper.find('[data-testid="bp-ColorPickerPalette"]').prop('onSelect') as Function)(defaultColor);
+            });
+            wrapper.update();
 
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
