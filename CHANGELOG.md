@@ -1,3 +1,10 @@
+## 2.63.0 (2021-01-19)
+
+* fix(annotations): Fix user cannot tab to color picker (#1319) ([e25ab79](https://github.com/box/box-content-preview/commit/e25ab79)), closes [#1319](https://github.com/box/box-content-preview/issues/1319)
+* fix(drawing): show sub-shadow in color picker control button (#1318) ([63f555c](https://github.com/box/box-content-preview/commit/63f555c)), closes [#1318](https://github.com/box/box-content-preview/issues/1318)
+
+
+
 ## 2.62.0 (2021-01-13)
 
 * fix(annotations): Fix Palette doesn't close when blurred (#1317) ([bd6413b](https://github.com/box/box-content-preview/commit/bd6413b)), closes [#1317](https://github.com/box/box-content-preview/issues/1317)
