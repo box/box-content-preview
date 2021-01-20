@@ -44,7 +44,8 @@ export default function ColorPickerControl({
         if (event.currentTarget.focus) {
             // Buttons do not receive focus in Firefox and Safari on MacOS
             event.currentTarget.focus();
-            // When focus() is called, preventDefault must be called to keep the focus from leaving the target
+            // When focus is called within a mousedown handler,
+            // preventDefault must be called to keep the focus from leaving the target
             event.preventDefault();
         }
     };
