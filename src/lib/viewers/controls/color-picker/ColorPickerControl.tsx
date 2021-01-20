@@ -40,6 +40,15 @@ export default function ColorPickerControl({
 
     const handleClick = (): void => setIsColorPickerToggled(!isColorPickerToggled);
 
+    const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>): void => {
+        if (event.currentTarget.focus) {
+            // Buttons do not receive focus in Firefox and Safari on MacOS
+            event.currentTarget.focus();
+            // When focus() is called, preventDefault must be called to keep the focus from leaving the target
+            event.preventDefault();
+        }
+    };
+
     return (
         <div className="bp-ColorPickerControl">
             <button
@@ -47,6 +56,7 @@ export default function ColorPickerControl({
                 data-testid="bp-ColorPickerControl-toggle"
                 onBlur={handleBlur}
                 onClick={handleClick}
+                onMouseDown={handleMouseDown}
                 type="button"
                 {...rest}
             >
