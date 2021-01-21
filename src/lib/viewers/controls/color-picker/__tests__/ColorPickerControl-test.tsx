@@ -75,6 +75,19 @@ describe('ColorPickerControl', () => {
 
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
         });
+
+        test('should call focus and stop propagation when mouse down', () => {
+            const mockEvent = {
+                currentTarget: {
+                    focus: jest.fn(),
+                },
+                preventDefault: jest.fn(),
+            };
+            (getToggleButton(getWrapper()).prop('onMouseDown') as Function)(mockEvent);
+
+            expect(mockEvent.currentTarget.focus).toHaveBeenCalled();
+            expect(mockEvent.preventDefault).toHaveBeenCalled();
+        });
     });
 
     describe('handleSelect', () => {
