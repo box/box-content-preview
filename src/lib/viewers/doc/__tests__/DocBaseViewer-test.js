@@ -255,6 +255,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('destroy()', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase.rootEl, 'removeChild').mockImplementation();
+            });
+
             test('should unbind listeners and clear the print blob', () => {
                 const unbindDomStub = jest.spyOn(docBase, 'unbindDOMListeners').mockImplementation();
                 const unbindEventBusStub = jest.spyOn(docBase, 'unbindEventBusListeners').mockImplementation();
@@ -313,14 +317,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.thumbnailsSidebar = {
                     destroy: jest.fn(),
                 };
-                const thumbnailsSidebarEl = {
-                    remove: jest.fn(),
-                };
-                docBase.thumbnailsSidebarEl = thumbnailsSidebarEl;
+                docBase.thumbnailsSidebarEl = document.createElement('div');
 
                 docBase.destroy();
                 expect(docBase.thumbnailsSidebar.destroy).toBeCalled();
-                expect(thumbnailsSidebarEl.remove).toBeCalled();
+                expect(docBase.rootEl.removeChild).toBeCalled();
                 expect(stubs.classListRemove).toBeCalled();
             });
         });
@@ -2467,6 +2468,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('handleAnnotatorEvents()', () => {
             beforeEach(() => {
+                jest.spyOn(docBase.rootEl, 'removeChild').mockImplementation();
+
                 stubs.classListAdd = jest.fn();
                 stubs.classListRemove = jest.fn();
                 stubs.handleAnnotatorEvents = jest
@@ -2478,7 +2481,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         add: stubs.classListAdd,
                         remove: stubs.classListRemove,
                     },
-                    remove: jest.fn(),
                 };
             });
 
