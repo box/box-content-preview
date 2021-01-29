@@ -33,15 +33,14 @@ describe('VirtualScroller', () => {
 
     describe('destroy()', () => {
         test('should remove the HTML element references', () => {
-            const scrollingEl = { remove: () => {} };
-            jest.spyOn(scrollingEl, 'remove').mockImplementation();
+            jest.spyOn(virtualScroller.anchorEl, 'removeChild').mockImplementation();
 
-            virtualScroller.scrollingEl = scrollingEl;
+            virtualScroller.scrollingEl = document.createElement('div');
             virtualScroller.listEl = {};
 
             virtualScroller.destroy();
 
-            expect(scrollingEl.remove).toBeCalled();
+            expect(virtualScroller.anchorEl.removeChild).toBeCalled();
             expect(virtualScroller.scrollingEl).toBeNull();
             expect(virtualScroller.listEl).toBeNull();
         });
@@ -464,7 +463,7 @@ describe('VirtualScroller', () => {
 
         beforeEach(() => {
             stubs.dispatchEvent = jest.fn();
-            scrollingEl = { remove: () => {}, dispatchEvent: stubs.dispatchEvent };
+            scrollingEl = { dispatchEvent: stubs.dispatchEvent };
 
             virtualScroller.totalItems = 10;
             virtualScroller.itemHeight = 10;
@@ -472,6 +471,7 @@ describe('VirtualScroller', () => {
             virtualScroller.scrollingEl = scrollingEl;
 
             stubs.isVisible = jest.spyOn(virtualScroller, 'isVisible').mockImplementation();
+            stubs.removeChild = jest.spyOn(virtualScroller.anchorEl, 'removeChild').mockImplementation();
             stubs.scrollIntoView = jest.fn();
 
             listEl = {
@@ -555,8 +555,9 @@ describe('VirtualScroller', () => {
 
     describe('isVisible()', () => {
         beforeEach(() => {
-            const scrollingEl = { scrollTop: 100, remove: () => {} };
-            virtualScroller.scrollingEl = scrollingEl;
+            jest.spyOn(virtualScroller.anchorEl, 'removeChild').mockImplementation();
+
+            virtualScroller.scrollingEl = { scrollTop: 100 };
             virtualScroller.containerHeight = 100;
             virtualScroller.itemHeight = 20;
         });
