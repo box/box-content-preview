@@ -1,3 +1,11 @@
+## 2.64.0 (2021-02-02)
+
+* fix(controls): Center thumbnail toggle icon when visible (#1320) ([4c33de0](https://github.com/box/box-content-preview/commit/4c33de0)), closes [#1320](https://github.com/box/box-content-preview/issues/1320)
+* fix(drawing): Fix Safari doesn't focus and blur color picker button (#1321) ([bd66999](https://github.com/box/box-content-preview/commit/bd66999)), closes [#1321](https://github.com/box/box-content-preview/issues/1321)
+* fix(thumbnails): Replace remove method that is unsupported in IE11 (#1323) ([3c37b79](https://github.com/box/box-content-preview/commit/3c37b79)), closes [#1323](https://github.com/box/box-content-preview/issues/1323)
+
+
+
 ## 2.63.0 (2021-01-19)
 
 * fix(annotations): Fix user cannot tab to color picker (#1319) ([e25ab79](https://github.com/box/box-content-preview/commit/e25ab79)), closes [#1319](https://github.com/box/box-content-preview/issues/1319)
