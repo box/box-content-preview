@@ -73,8 +73,8 @@ class VirtualScroller {
      * @return {void}
      */
     destroy() {
-        if (this.scrollingEl) {
-            this.scrollingEl.remove();
+        if (this.anchorEl && this.scrollingEl) {
+            this.anchorEl.removeChild(this.scrollingEl);
         }
 
         this.scrollingEl = null;

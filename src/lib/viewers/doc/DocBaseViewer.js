@@ -227,7 +227,7 @@ class DocBaseViewer extends BaseViewer {
             // Since we are cleaning up make sure the thumbnails open class is
             // removed so that the content div shifts back left
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-            this.thumbnailsSidebarEl.remove();
+            this.rootEl.removeChild(this.thumbnailsSidebarEl);
             this.thumbnailsSidebarEl = null;
         }
 
