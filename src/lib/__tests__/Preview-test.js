@@ -2748,6 +2748,7 @@ describe('lib/Preview', () => {
                 preventDefault: jest.fn(),
                 stopPropagation: jest.fn(),
                 target: {
+                    getAttribute: jest.fn(),
                     nodeName: KEYDOWN_EXCEPTIONS[0],
                 },
             };
@@ -2768,7 +2769,7 @@ describe('lib/Preview', () => {
             expect(stubs.decodeKeydown).not.toBeCalled();
         });
 
-        test('should do nothing if there is no target the target is a keydown exception', () => {
+        test('should do nothing if there is no target or the target is a keydown exception', () => {
             preview.keydownHandler(stubs.event);
             expect(stubs.decodeKeydown).not.toBeCalled();
         });
@@ -2788,6 +2789,15 @@ describe('lib/Preview', () => {
 
             preview.keydownHandler(stubs.event);
             expect(stubs.event.preventDefault).not.toBeCalled();
+        });
+
+        test('should pass the event to the viewer if the target is an input but allows keydown handling', () => {
+            stubs.decodeKeydown.mockReturnValue('M');
+            stubs.event.target.getAttribute = jest.fn(() => true); // data-allow-keydown=true
+            preview.viewer.onKeydown = jest.fn(() => true);
+            preview.keydownHandler(stubs.event);
+
+            expect(preview.viewer.onKeydown).toBeCalledWith('M', stubs.event);
         });
 
         test('should navigate left is key is ArrowLeft and the event has not been consumed', () => {

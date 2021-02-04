@@ -1872,7 +1872,7 @@ class Preview extends EventEmitter {
         // Ignore key events when we are inside certain fields
         if (
             !target ||
-            KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 ||
+            (KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 && !target.getAttribute('data-allow-keydown')) ||
             (target.nodeName === 'DIV' && !!target.getAttribute('contenteditable'))
         ) {
             return;
