@@ -28,6 +28,14 @@ rm -rf ./pdfjs-dist/
 git clone https://github.com/mozilla/pdfjs-dist.git --depth 1 --single-branch --branch ${DOC_STATIC_ASSETS_BRANCH}
 
 echo "-----------------------------------------------------------------------------------"
+echo "Bumping highlightjs version in package.json thirdparty-dependencies"
+echo "-----------------------------------------------------------------------------------"
+PDFJS_VERSION=$(cd pdfjs-dist && ../build/current_version.sh)
+
+echo "Bumping highlightjs version to ${PDFJS_VERSION}"
+sed -i '' "s/\(\"pdfjs\": \)\".*\"/\1\"${PDFJS_VERSION}\"/g" package.json
+
+echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
 \cp -rf pdfjs-dist/es5/build/pdf.js ${DOC_STATIC_ASSETS_PATH}

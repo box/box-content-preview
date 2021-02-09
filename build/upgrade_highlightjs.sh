@@ -24,6 +24,16 @@ build_custom_highlightjs() {
     (cd ${HIGHLIGHTJS_SRC_DIR} && yarn install --frozen-lockfile && node tools/build -t browser ${HIGHLIGHTJS_LANGUAGES}) || return 1
 }
 
+bump_highlightjs_version() {
+    echo "-----------------------------------------------------------------------------------"
+    echo "Bumping highlightjs version in package.json thirdparty-dependencies"
+    echo "-----------------------------------------------------------------------------------"
+    HIGHLIGHTJS_VERSION=$(cd ${HIGHLIGHTJS_SRC_DIR} && ../build/current_version.sh) || return 1
+
+    echo "Bumping highlightjs version to ${HIGHLIGHTJS_VERSION}"
+    sed -i '' "s/\(\"highlightjs\": \)\".*\"/\1\"${HIGHLIGHTJS_VERSION}\"/g" package.json
+}
+
 cleanup_custom_highlightjs() {
     echo "-----------------------------------------------------------------------------------"
     echo "Cleaning up highlightjs repo"
@@ -68,6 +78,9 @@ upgrade_highlightjs() {
 
     # Copy over built assets to target directory
     process_highlightjs_assets || return 1
+
+    # Bump highlightjs version in package.json thirdparty-dependencies
+    bump_highlightjs_version || return 1
 
     # Cleanup highlightjs
     cleanup_custom_highlightjs || return 1

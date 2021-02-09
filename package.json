@@ -157,5 +157,13 @@
     },
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1"
+    },
+    "thirdparty-dependencies": {
+        "highlightjs": "9.7.0",
+        "papaparse": "4.1.2",
+        "pdfjs": "2.2.228",
+        "remarkable": "1.7.1",
+        "shaka-player": "2.5.3",
+        "swfobject": "2.3.2"
     }
 }
