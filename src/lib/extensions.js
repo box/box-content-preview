@@ -1,3 +1,6 @@
+// If changes are made to this file to support more extensions that are "highlightable", then make sure to
+// check if we need to upgrade the highlightjs custom build to add language grammar for that new extension language.
+// See build/upgrade_highlightjs.sh
 export const NON_CODE_EXTENSIONS = ['csv', 'log', 'md', 'tsv', 'txt'];
 
 export const HTML_EXTENSIONS = ['htm', 'html', 'xhtml', 'xml', 'xsd', 'xsl']; // These types do not have an appropriate extracted text representation for preview
