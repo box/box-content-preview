@@ -138,7 +138,9 @@
         "test:watch": "yarn test --watch",
         "upgrade:annotations": "./build/upgrade_annotations.sh",
         "upgrade:highlightjs": "./build/upgrade_highlightjs.sh",
-        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh"
+        "upgrade:papaparse": "./build/upgrade_papaparse.sh",
+        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh",
+        "upgrade:remarkable": "./build/upgrade_remarkable.sh"
     },
     "browserslist": [
         "last 2 Chrome versions",
