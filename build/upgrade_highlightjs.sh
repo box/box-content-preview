@@ -24,6 +24,16 @@ build_custom_highlightjs() {
     (cd ${HIGHLIGHTJS_SRC_DIR} && yarn install --frozen-lockfile && node tools/build -t browser ${HIGHLIGHTJS_LANGUAGES}) || return 1
 }
 
+bump_highlightjs_version() {
+    echo "-----------------------------------------------------------------------------------"
+    echo "Bumping highlightjs version in manifest.json"
+    echo "-----------------------------------------------------------------------------------"
+    HIGHLIGHTJS_VERSION=$(cd ${HIGHLIGHTJS_SRC_DIR} && ../build/current_version.sh) || return 1
+
+    echo "Bumping highlightjs version to ${HIGHLIGHTJS_VERSION}"
+    node build/updateManifest.js ${TEXT_STATIC_ASSETS_VERSION} highlightjs ${HIGHLIGHTJS_VERSION} ${TEXT_STATIC_ASSETS_PATH}/manifest.json || return 1
+}
+
 cleanup_custom_highlightjs() {
     echo "-----------------------------------------------------------------------------------"
     echo "Cleaning up highlightjs repo"
@@ -32,16 +42,22 @@ cleanup_custom_highlightjs() {
 }
 
 prepare_target_directory() {
-    echo "-----------------------------------------------------------------------------------"
-    echo "Creating target directory at $TEXT_STATIC_ASSETS_PATH..."
-    echo "-----------------------------------------------------------------------------------"
+    if [ ! -d $TEXT_STATIC_ASSETS_PATH ]
+    then
+        echo "-----------------------------------------------------------------------------------"
+        echo "Creating target directory at $TEXT_STATIC_ASSETS_PATH..."
+        echo "-----------------------------------------------------------------------------------"
 
-    rm -rf ${TEXT_STATIC_ASSETS_PATH}
-    TEXT_CURRENT_ASSETS_VERSIONS=`ls ${TEXT_BASE_PATH} | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
+        TEXT_CURRENT_ASSETS_VERSIONS=`ls ${TEXT_BASE_PATH} | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
 
-    echo "Using base version from $TEXT_CURRENT_ASSETS_VERSIONS"
-    mkdir -v ${TEXT_STATIC_ASSETS_PATH}
-    cp -pv ${TEXT_BASE_PATH}/${TEXT_CURRENT_ASSETS_VERSIONS}/* ${TEXT_STATIC_ASSETS_PATH}/
+        echo "Using base version from $TEXT_CURRENT_ASSETS_VERSIONS"
+        mkdir -v ${TEXT_STATIC_ASSETS_PATH}
+        cp -pv ${TEXT_BASE_PATH}/${TEXT_CURRENT_ASSETS_VERSIONS}/* ${TEXT_STATIC_ASSETS_PATH}/
+    else
+        echo "-----------------------------------------------------------------------------------"
+        echo "Directory already exists at $TEXT_STATIC_ASSETS_PATH, using it as is..."
+        echo "-----------------------------------------------------------------------------------"
+    fi
 }
 
 process_highlightjs_assets() {
@@ -68,6 +84,9 @@ upgrade_highlightjs() {
 
     # Copy over built assets to target directory
     process_highlightjs_assets || return 1
+
+    # Bump highlightjs version in package.json thirdparty-dependencies
+    bump_highlightjs_version || return 1
 
     # Cleanup highlightjs
     cleanup_custom_highlightjs || return 1
