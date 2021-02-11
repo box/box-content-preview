@@ -1467,8 +1467,9 @@ class Preview extends EventEmitter {
 
         // Respect 'Retry-After' header if present, otherwise retry full jitter
         let timeoutMs = Math.random() * (2 ** this.retryCount * MS_IN_S);
-        if (err.headers) {
-            const retryAfterS = parseInt(err.headers.get('Retry-After'), 10);
+        if (err.headers && err.headers.get) {
+            const retryAfter = err.headers.get('retry-after') || err.headers.get('Retry-After');
+            const retryAfterS = parseInt(retryAfter, 10);
             if (!Number.isNaN(retryAfterS)) {
                 timeoutMs = retryAfterS * MS_IN_S;
             }
