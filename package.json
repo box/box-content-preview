@@ -138,7 +138,7 @@
         "test:watch": "yarn test --watch",
         "upgrade:annotations": "./build/upgrade_annotations.sh",
         "upgrade:pdfjs": "./build/upgrade_pdfjs.sh",
-        "upgrade:viewers:text": "./build/upgrade_dependency.sh"
+        "upgrade:dependency": "./build/upgrade_dependency.sh"
     },
     "browserslist": [
         "last 2 Chrome versions",
