@@ -137,8 +137,8 @@
         "test:e2e:open": "npm-run-all -p -r start:dev cy:open",
         "test:watch": "yarn test --watch",
         "upgrade:annotations": "./build/upgrade_annotations.sh",
-        "upgrade:highlightjs": "./build/upgrade_highlightjs.sh",
-        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh"
+        "upgrade:pdfjs": "./build/upgrade_pdfjs.sh",
+        "upgrade:dependency": "./build/upgrade_dependency.sh"
     },
     "browserslist": [
         "last 2 Chrome versions",
