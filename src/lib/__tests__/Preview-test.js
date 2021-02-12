@@ -2168,27 +2168,30 @@ describe('lib/Preview', () => {
             expect(stubs.load).toBeCalled();
         });
 
-        test('should retry after length specified in Retry-After header if set', () => {
-            preview.file = {
-                id: '0',
-            };
-            stubs.error.headers = {
-                get: sandbox
-                    .stub()
-                    .withArgs('Retry-After')
-                    .returns(5),
-            };
-            preview.open = true;
-            preview.retryCount = 1;
+        test.each(['retry-after', 'Retry-After'])(
+            'should retry after length specified in %s header if set',
+            retryAfter => {
+                preview.file = {
+                    id: '0',
+                };
+                stubs.error.headers = {
+                    get: sandbox
+                        .stub()
+                        .withArgs(retryAfter)
+                        .returns(5),
+                };
+                preview.open = true;
+                preview.retryCount = 1;
 
-            preview.handleFetchError(stubs.error);
+                preview.handleFetchError(stubs.error);
 
-            jest.advanceTimersByTime(4000);
-            expect(stubs.load).not.toBeCalled();
+                jest.advanceTimersByTime(4000);
+                expect(stubs.load).not.toBeCalled();
 
-            jest.advanceTimersByTime(5001);
-            expect(stubs.load).toBeCalled();
-        });
+                jest.advanceTimersByTime(5001);
+                expect(stubs.load).toBeCalled();
+            },
+        );
     });
 
     describe('triggerError()', () => {
