@@ -1,0 +1,10 @@
+{
+    "name": "text",
+    "description": "Third-party static assets used for the Preview text viewers",
+    "version": "2.64.0",
+    "dependencies": {
+        "highlightjs": "9.18.1",
+        "papaparse": "4.1.2",
+        "remarkable": "1.7.1"
+    }
+}
