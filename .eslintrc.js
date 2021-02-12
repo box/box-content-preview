@@ -11,9 +11,11 @@ module.exports = {
         DocumentTouch: false,
         fail: false,
         fixture: false,
+        hljs: false,
         jest: false,
         pdfjsLib: false,
         pdfjsViewer: false,
+        remarkable: false,
         sinon: false,
     },
     rules: {

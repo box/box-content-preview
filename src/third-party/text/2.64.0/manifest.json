@@ -5,6 +5,6 @@
     "dependencies": {
         "highlightjs": "9.18.1",
         "papaparse": "4.1.2",
-        "remarkable": "1.7.1"
+        "remarkable": "2.0.1"
     }
 }
