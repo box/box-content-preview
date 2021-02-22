@@ -105,14 +105,12 @@ class MarkdownViewer extends PlainTextViewer {
      * @return {Remarkable} Remarkable parser instance
      */
     initRemarkable() {
-        /* global Remarkable */
+        const { linkify, Remarkable } = remarkable;
         /* istanbul ignore next */
         const md = new Remarkable({
             breaks: true, // convert '\n' in paragraphs into <br>
-            linkify: true, // automatically URL-like text into links
             linkTarget: '_blank', // open links in new page
             typographer: true,
-            /* global hljs */
             highlight: (str, lang) => {
                 // Syntax highlight with specified language if available
                 if (lang && hljs.getLanguage(lang)) {
@@ -133,7 +131,7 @@ class MarkdownViewer extends PlainTextViewer {
                 // Use default escaping if no highlighting was successful
                 return '';
             },
-        });
+        }).use(linkify); // automatically converts URL-like text into links
 
         // Custom renderer for links to add rel="noopener noreferrer"
         const linkRenderer = md.renderer.rules.link_open;
