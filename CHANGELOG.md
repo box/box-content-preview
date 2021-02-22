@@ -1,3 +1,13 @@
+## 2.65.0 (2021-02-16)
+
+* fix(headers): Add support for case-insensitive http response headers (#1327) ([5ec964e](https://github.com/box/box-content-preview/commit/5ec964e)), closes [#1327](https://github.com/box/box-content-preview/issues/1327)
+* build: add manifest.json in third-party folders (#1325) ([b2e64d8](https://github.com/box/box-content-preview/commit/b2e64d8)), closes [#1325](https://github.com/box/box-content-preview/issues/1325)
+* build: Add upgrade scripts for text assets (#1326) ([95dd3f3](https://github.com/box/box-content-preview/commit/95dd3f3)), closes [#1326](https://github.com/box/box-content-preview/issues/1326)
+* build(highlightjs): Add upgrade script for highlightjs (#1324) ([2fcae6a](https://github.com/box/box-content-preview/commit/2fcae6a)), closes [#1324](https://github.com/box/box-content-preview/issues/1324)
+* feat(controls): Add react version of mp3 controls behind option (#1302) ([e437b13](https://github.com/box/box-content-preview/commit/e437b13)), closes [#1302](https://github.com/box/box-content-preview/issues/1302)
+
+
+
 ## 2.64.0 (2021-02-02)
 
 * fix(controls): Center thumbnail toggle icon when visible (#1320) ([4c33de0](https://github.com/box/box-content-preview/commit/4c33de0)), closes [#1320](https://github.com/box/box-content-preview/issues/1320)
