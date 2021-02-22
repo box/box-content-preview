@@ -5,7 +5,7 @@ import ControlsRoot from '../../controls/controls-root';
 import MarkdownControls from '../MarkdownControls';
 import MarkdownViewer from '../MarkdownViewer';
 import Popup from '../../../Popup';
-import { linkify, Remarkable } from '../../../../third-party/text/2.64.0/remarkable.min.js';
+import { linkify, Remarkable } from '../../../../third-party/text/2.65.0/remarkable.min.js';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
