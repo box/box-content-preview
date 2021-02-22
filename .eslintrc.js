@@ -13,6 +13,7 @@ module.exports = {
         fixture: false,
         hljs: false,
         jest: false,
+        Papa: false,
         pdfjsLib: false,
         pdfjsViewer: false,
         remarkable: false,

@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import createReactClass from 'create-react-class';
-import Papa from '../../../../third-party/text/0.114.0/papaparse.min.js';
+import Papa from '../../../../third-party/text/2.65.0/papaparse.min.js';
 import Api from '../../../api';
+import BaseViewer from '../../BaseViewer';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
-import BaseViewer from '../../BaseViewer';
-import * as util from '../../../util';
 import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
@@ -67,7 +66,7 @@ describe('lib/viewers/text/CSVViewer', () => {
 
         beforeEach(() => {
             jest.spyOn(URL, 'createObjectURL');
-            jest.spyOn(window.Papa, 'parse');
+            jest.spyOn(window.Papa, 'parse').mockImplementation(() => {});
             jest.spyOn(csv, 'setup');
             jest.spyOn(csv, 'loadAssets').mockResolvedValue(undefined);
             jest.spyOn(csv, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
@@ -78,30 +77,14 @@ describe('lib/viewers/text/CSVViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        test('should load papaparse worker and call parent load()', () => {
-            const blob = {};
-            const workerUrl = 'workerUrl';
-            jest.spyOn(stubs.api, 'get').mockResolvedValue(blob);
-            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue(workerUrl));
-
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
-
-            return csv.load().then(() => {
-                expect(URL.createObjectURL).toBeCalledWith(blob);
-                expect(stubs.api.get).toBeCalledWith(workerUrl, { type: 'blob' });
-            });
-        });
-
         /* eslint-disable no-undef */
         test('should parse with Papaparse', () => {
-            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue('someUrl'));
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
 
+            csv.options.file = { extension: 'csv' };
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
-
-            jest.spyOn(stubs.api, 'get').mockResolvedValue(undefined);
 
             const csvUrlWithAuth = `csvUrl/?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`;
 
@@ -109,9 +92,11 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expect(window.Papa.parse).toBeCalledWith(
                     csvUrlWithAuth,
                     expect.objectContaining({
+                        delimiter: ',',
                         download: true,
                         error: expect.any(Function),
                         complete: expect.any(Function),
+                        worker: true,
                     }),
                 );
             });
@@ -119,12 +104,10 @@ describe('lib/viewers/text/CSVViewer', () => {
         /* eslint-enable no-undef */
 
         test('should invoke startLoadTimer()', () => {
-            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn().mockReturnValue('someUrl'));
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
-            jest.spyOn(stubs.api, 'get').mockResolvedValue(undefined);
             jest.spyOn(csv, 'startLoadTimer');
 
             return csv.load().then(() => {
@@ -249,6 +232,17 @@ describe('lib/viewers/text/CSVViewer', () => {
             test(`${name}`, () => {
                 expect(csv.getWorstParseError(errors)).toEqual(expectedError);
             });
+        });
+    });
+
+    describe('getDelimiter()', () => {
+        test.each`
+            extension        | expectedDelimiter
+            ${'csv'}         | ${','}
+            ${'tsv'}         | ${'\t'}
+            ${'somethingsv'} | ${''}
+        `('should return "$expectedDelimiter" given the extension "$extension"', ({ extension, expectedDelimiter }) => {
+            expect(csv.getDelimiter(extension)).toEqual(expectedDelimiter);
         });
     });
 });

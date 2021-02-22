@@ -1,9 +1,8 @@
+import PreviewError from '../../PreviewError';
 import TextBaseViewer from './TextBaseViewer';
-import { createAssetUrlCreator } from '../../util';
+import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
-import { ERROR_CODE, VIEWER_EVENT } from '../../events';
-import PreviewError from '../../PreviewError';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 const PAPAPARSE_ERROR_TYPES = {
@@ -53,41 +52,51 @@ class CSVViewer extends TextBaseViewer {
     load() {
         super.load();
 
-        const { representation, location } = this.options;
+        const {
+            file: { extension },
+            representation,
+        } = this.options;
         const template = representation.content.url_template;
-        const assetUrlCreator = createAssetUrlCreator(location);
-        const papaWorkerUrl = assetUrlCreator(JS[0]);
 
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(() => {
-                this.api.get(papaWorkerUrl, { type: 'blob' }).then(papaWorkerBlob => {
-                    /* global Papa */
-                    const workerSrc = URL.createObjectURL(papaWorkerBlob);
-                    Papa.SCRIPT_PATH = workerSrc;
+                this.startLoadTimer();
+                const urlWithAuth = this.createContentUrlWithAuthParams(template);
+                Papa.parse(urlWithAuth, {
+                    delimiter: this.getDelimiter(extension),
+                    download: true,
+                    error: (err, file, inputElem, reason) => {
+                        const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
+                        this.handleDownloadError(error, urlWithAuth);
+                    },
+                    complete: results => {
+                        if (this.isDestroyed() || !results) {
+                            return;
+                        }
 
-                    this.startLoadTimer();
-                    const urlWithAuth = this.createContentUrlWithAuthParams(template);
-                    Papa.parse(urlWithAuth, {
-                        download: true,
-                        error: (err, file, inputElem, reason) => {
-                            const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
-                            this.handleDownloadError(error, urlWithAuth);
-                        },
-                        complete: results => {
-                            if (this.isDestroyed() || !results) {
-                                return;
-                            }
+                        this.checkForParseErrors(results);
 
-                            this.checkForParseErrors(results);
-
-                            this.data = results.data;
-                            this.finishLoading();
-                            URL.revokeObjectURL(workerSrc);
-                        },
-                    });
+                        this.data = results.data;
+                        this.finishLoading();
+                    },
+                    worker: true,
                 });
             })
             .catch(this.handleAssetError);
+    }
+
+    getDelimiter(extension) {
+        // Papaparse will by default autodetect the delimiter but in cases where the content has many
+        // special characters, it can get confused. Since we have the file extension, rely on that for
+        // the explicit delimiter, otherwise default to the autodetection.
+        switch (extension) {
+            case 'csv':
+                return ',';
+            case 'tsv':
+                return '\t';
+            default:
+                return '';
+        }
     }
 
     /**
