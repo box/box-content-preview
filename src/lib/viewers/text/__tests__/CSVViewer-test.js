@@ -81,7 +81,6 @@ describe('lib/viewers/text/CSVViewer', () => {
         test('should parse with Papaparse', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
 
-            csv.options.file = { extension: 'csv' };
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
@@ -92,7 +91,7 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expect(window.Papa.parse).toBeCalledWith(
                     csvUrlWithAuth,
                     expect.objectContaining({
-                        delimiter: ',',
+                        delimitersToGuess: [',', '\t'],
                         download: true,
                         error: expect.any(Function),
                         complete: expect.any(Function),
@@ -232,17 +231,6 @@ describe('lib/viewers/text/CSVViewer', () => {
             test(`${name}`, () => {
                 expect(csv.getWorstParseError(errors)).toEqual(expectedError);
             });
-        });
-    });
-
-    describe('getDelimiter()', () => {
-        test.each`
-            extension        | expectedDelimiter
-            ${'csv'}         | ${','}
-            ${'tsv'}         | ${'\t'}
-            ${'somethingsv'} | ${''}
-        `('should return "$expectedDelimiter" given the extension "$extension"', ({ extension, expectedDelimiter }) => {
-            expect(csv.getDelimiter(extension)).toEqual(expectedDelimiter);
         });
     });
 });

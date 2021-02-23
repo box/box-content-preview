@@ -52,10 +52,7 @@ class CSVViewer extends TextBaseViewer {
     load() {
         super.load();
 
-        const {
-            file: { extension },
-            representation,
-        } = this.options;
+        const { representation } = this.options;
         const template = representation.content.url_template;
 
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
@@ -63,7 +60,7 @@ class CSVViewer extends TextBaseViewer {
                 this.startLoadTimer();
                 const urlWithAuth = this.createContentUrlWithAuthParams(template);
                 Papa.parse(urlWithAuth, {
-                    delimiter: this.getDelimiter(extension),
+                    delimitersToGuess: [',', '\t'],
                     download: true,
                     error: (err, file, inputElem, reason) => {
                         const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
@@ -83,20 +80,6 @@ class CSVViewer extends TextBaseViewer {
                 });
             })
             .catch(this.handleAssetError);
-    }
-
-    getDelimiter(extension) {
-        // Papaparse will by default autodetect the delimiter but in cases where the content has many
-        // special characters, it can get confused. Since we have the file extension, rely on that for
-        // the explicit delimiter, otherwise default to the autodetection.
-        switch (extension) {
-            case 'csv':
-                return ',';
-            case 'tsv':
-                return '\t';
-            default:
-                return '';
-        }
     }
 
     /**
