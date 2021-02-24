@@ -91,7 +91,6 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expect(window.Papa.parse).toBeCalledWith(
                     csvUrlWithAuth,
                     expect.objectContaining({
-                        delimitersToGuess: [',', '\t'],
                         download: true,
                         error: expect.any(Function),
                         complete: expect.any(Function),

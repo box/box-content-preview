@@ -60,7 +60,6 @@ class CSVViewer extends TextBaseViewer {
                 this.startLoadTimer();
                 const urlWithAuth = this.createContentUrlWithAuthParams(template);
                 Papa.parse(urlWithAuth, {
-                    delimitersToGuess: [',', '\t'],
                     download: true,
                     error: (err, file, inputElem, reason) => {
                         const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
