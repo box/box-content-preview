@@ -1,0 +1,35 @@
+@import './styles';
+
+.bp-MediaSettingsMenuBack {
+    @include bp-MediaSettingsRow;
+
+    &:hover {
+        background-color: $hover-blue-background;
+
+        .bp-MediaSettingsMenuBack-label {
+            color: lighten($blue-steel, 50%);
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-MediaSettingsMenuBack-arrow {
+            fill: $white;
+        }
+
+        .bp-MediaSettingsMenuBack-label {
+            color: $white;
+        }
+    }
+}
+
+.bp-MediaSettingsMenuBack-arrow {
+    @include bp-MediaSettingsRow-cell;
+}
+
+.bp-MediaSettingsMenuBack-label {
+    @include bp-MediaSettingsRow-label;
+
+    text-align: center;
+}

@@ -1,0 +1,42 @@
+@import './styles';
+
+.bp-MediaSettingsMenuItem {
+    @include bp-MediaSettingsRow;
+
+    &:hover {
+        background-color: $hover-blue-background;
+
+        .bp-MediaSettingsMenuItem-label {
+            color: lighten($blue-steel, 50%);
+        }
+
+        .bp-MediaSettingsMenuItem-value {
+            color: $blue-steel;
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-MediaSettingsMenuItem-arrow {
+            fill: $white;
+        }
+
+        .bp-MediaSettingsMenuItem-label,
+        .bp-MediaSettingsMenuItem-value {
+            color: $white;
+        }
+    }
+}
+
+.bp-MediaSettingsMenuItem-arrow {
+    @include bp-MediaSettingsRow-cell;
+}
+
+.bp-MediaSettingsMenuItem-label {
+    @include bp-MediaSettingsRow-label;
+}
+
+.bp-MediaSettingsMenuItem-value {
+    @include bp-MediaSettingsRow-value;
+}
