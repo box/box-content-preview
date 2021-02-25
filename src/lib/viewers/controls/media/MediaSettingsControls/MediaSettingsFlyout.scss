@@ -1,0 +1,31 @@
+@import '../styles';
+
+.bp-MediaSettingsFlyout {
+    position: absolute;
+    right: 16px;
+    bottom: 60px;
+    display: inline-block;
+    max-width: 400px;
+    max-height: 210px;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto; // So scrollbar doesn't show on hover in IE/Edge
+    color: $fours;
+    font-size: 10px;
+    line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    visibility: visible;
+    transition: width .2s, height .2s;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+
+    .bp-MP3Controls & {
+        right: 0;
+        bottom: 68px;
+    }
+}
+
+.bp-MediaSettingsFlyout-in-transition {
+    overflow: hidden; // hide scrollbars during menu -> submenu transition
+}

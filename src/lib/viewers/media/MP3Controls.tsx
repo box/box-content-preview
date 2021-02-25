@@ -1,22 +1,30 @@
 import React from 'react';
 import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
-import SettingsControls from '../controls/media/SettingsControls';
+import { MP3SettingsControls, Props as SettingsControlsProps } from '../controls/media/MediaSettingsControls';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import './MP3Controls.scss';
 
-export type Props = DurationLabelsProps & PlayControlsProps & TimeControlsProps & VolumeControlsProps;
+export type Props = DurationLabelsProps &
+    PlayControlsProps &
+    SettingsControlsProps &
+    TimeControlsProps &
+    VolumeControlsProps;
 
 export default function MP3Controls({
+    autoplay,
     bufferedRange,
     currentTime,
     durationTime,
     isPlaying,
+    onAutoplayChange,
     onMuteChange,
     onPlayPause,
+    onRateChange,
     onTimeChange,
     onVolumeChange,
+    rate,
     volume,
 }: Props): JSX.Element {
     return (
@@ -36,7 +44,12 @@ export default function MP3Controls({
                 </div>
 
                 <div className="bp-MP3Controls-group">
-                    <SettingsControls />
+                    <MP3SettingsControls
+                        autoplay={autoplay}
+                        onAutoplayChange={onAutoplayChange}
+                        onRateChange={onRateChange}
+                        rate={rate}
+                    />
                 </div>
             </div>
         </div>

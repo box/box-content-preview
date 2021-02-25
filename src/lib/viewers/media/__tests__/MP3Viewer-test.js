@@ -88,6 +88,9 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 destroy: jest.fn(),
                 render: jest.fn(),
             };
+            mp3.cache = {
+                get: jest.fn(key => key),
+            };
 
             mp3.mediaEl = document.createElement('audio');
             mp3.mediaEl.duration = 1000;
@@ -97,6 +100,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.renderUI();
 
             expect(getProps(mp3)).toMatchObject({
+                autoplay: 'media-autoplay',
                 bufferedRange: {
                     end: expect.any(Function),
                     length: 0,
@@ -105,10 +109,13 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 currentTime: 0,
                 durationTime: 1000,
                 isPlaying: true,
+                onAutoplayChange: mp3.handleAutoplay,
                 onMuteChange: mp3.toggleMute,
                 onPlayPause: mp3.togglePlay,
+                onRateChange: mp3.handleRate,
                 onTimeChange: mp3.handleTimeupdateFromMediaControls,
                 onVolumeChange: mp3.setVolume,
+                rate: 'media-speed',
                 volume: 1,
             });
         });

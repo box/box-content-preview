@@ -52,14 +52,18 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.controls.render(
             <MP3Controls
+                autoplay={this.cache.get('media-autoplay')}
                 bufferedRange={this.mediaEl.buffered}
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
+                onAutoplayChange={this.handleAutoplay}
                 onMuteChange={this.toggleMute}
                 onPlayPause={this.togglePlay}
+                onRateChange={this.handleRate}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
+                rate={this.cache.get('media-speed')}
                 volume={this.mediaEl.volume}
             />,
         );

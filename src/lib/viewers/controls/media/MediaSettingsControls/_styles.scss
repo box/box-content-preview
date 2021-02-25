@@ -1,0 +1,48 @@
+@import '../styles';
+
+$padding: 8px;
+
+@mixin bp-MediaSettingsMenuItem {
+    display: table-row;
+    height: 26px;
+    padding: $padding / 2;
+    overflow: hidden;
+    white-space: nowrap;
+    outline: 0 none; // will be overridden by our own
+    cursor: pointer;
+}
+
+@mixin bp-MediaSettingsMenuItem-item {
+    display: table-cell;
+    padding: $padding / 2;
+    vertical-align: middle;
+}
+
+@mixin bp-MediaSettingsMenuItem-label {
+    @include bp-MediaSettingsMenuItem-item;
+
+    color: $downtown-grey;
+    font-weight: normal;
+    font-size: 11px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+@mixin bp-MediaSettingsMenuItem-value {
+    @include bp-MediaSettingsMenuItem-item;
+
+    padding-left: 10px;
+    color: $sunset-grey;
+    font-size: 12px;
+    text-align: left;
+}
+
+@mixin bp-MediaSettingsMenuItem-arrow {
+    display: table-cell;
+    vertical-align: middle;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}

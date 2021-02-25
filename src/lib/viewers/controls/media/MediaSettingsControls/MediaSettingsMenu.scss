@@ -1,0 +1,7 @@
+.bp-MediaSettingsMenu {
+    display: none;
+
+    &.bp-is-active {
+        display: table;
+    }
+}

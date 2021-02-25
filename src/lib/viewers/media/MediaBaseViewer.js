@@ -383,13 +383,21 @@ class MediaBaseViewer extends BaseViewer {
      * @emits ratechange
      * @return {void}
      */
-    handleRate() {
+    handleRate(rate) {
+        if (rate) {
+            this.cache.set(MEDIA_SPEED_CACHE_KEY, rate, true);
+        }
+
         const speed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
 
         this.mediaEl.playbackRate = speed;
+
+        if (this.controls) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -422,8 +430,15 @@ class MediaBaseViewer extends BaseViewer {
      * @emits autoplay
      * @return {void}
      */
-    handleAutoplay() {
+    handleAutoplay(autoplay) {
+        if (autoplay) {
+            this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, autoplay, true);
+        }
         this.emit('autoplay', this.isAutoplayEnabled());
+
+        if (this.controls) {
+            this.renderUI();
+        }
     }
 
     /**

@@ -1,0 +1,42 @@
+@import './styles';
+
+.bp-MediaSettingsMenuItem {
+    @include bp-MediaSettingsMenuItem;
+
+    &:hover {
+        background-color: #f6fafd;
+
+        .bp-MediaSettingsMenuItem-label {
+            color: lighten($blue-steel, 50%);
+        }
+
+        .bp-MediaSettingsMenuItem-value {
+            color: $blue-steel;
+        }
+    }
+
+    .bp-has-keyboard-focus &:focus {
+        background-color: $box-blue;
+
+        .bp-MediaSettingsMenuItem-label,
+        .bp-MediaSettingsMenuItem-value {
+            color: $white;
+        }
+
+        svg {
+            fill: $white;
+        }
+    }
+}
+
+.bp-MediaSettingsMenuItem-label {
+    @include bp-MediaSettingsMenuItem-label;
+}
+
+.bp-MediaSettingsMenuItem-value {
+    @include bp-MediaSettingsMenuItem-value;
+}
+
+.bp-MediaSettingsMenuItem-arrow {
+    @include bp-MediaSettingsMenuItem-arrow;
+}
