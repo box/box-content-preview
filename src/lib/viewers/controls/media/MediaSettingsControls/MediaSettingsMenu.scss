@@ -1,0 +1,8 @@
+.bp-MediaSettingsMenu {
+    display: none;
+    padding: 8px;
+
+    &.bp-is-active {
+        display: table;
+    }
+}

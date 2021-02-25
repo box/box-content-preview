@@ -1,7 +1,6 @@
 import React from 'react';
 import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
-import SettingsControls from '../controls/media/SettingsControls';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import './MP3Controls.scss';
@@ -35,9 +34,7 @@ export default function MP3Controls({
                     <DurationLabels currentTime={currentTime} durationTime={durationTime} />
                 </div>
 
-                <div className="bp-MP3Controls-group">
-                    <SettingsControls />
-                </div>
+                <div className="bp-MP3Controls-group">{/* MP3 Settings Controls */}</div>
             </div>
         </div>
     );

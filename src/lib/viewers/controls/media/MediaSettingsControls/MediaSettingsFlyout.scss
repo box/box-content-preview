@@ -1,0 +1,29 @@
+@import '../styles';
+
+.bp-MediaSettingsFlyout {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    display: none;
+    max-width: 400px;
+    max-height: 210px;
+    overflow-x: hidden;
+    overflow-y: auto; // Prevent scrollbar from showing on hover in IE/Edge
+    color: $fours;
+    font-size: 10px;
+    line-height: normal;
+    background-color: $white;
+    border-radius: 2px;
+    box-shadow: 0 0 1px 1px $sf-fog; // Prevent overflow due to global box-sizing: border-box
+    transform: translateY(-100%);
+    transition: width 200ms, height 200ms;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+
+    &.bp-is-open {
+        display: inline-block;
+    }
+
+    &.bp-is-transitioning {
+        overflow-y: hidden; // Hide scrollbar during menu -> submenu transition
+    }
+}
