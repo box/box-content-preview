@@ -15,23 +15,33 @@ describe('AnnotationsControls', () => {
     });
 
     describe('lifecycle', () => {
+        let unmount = (): void => {
+            // placeholder
+        };
+
+        beforeEach(() => {
+            jest.spyOn(React, 'useEffect').mockImplementation(cb => {
+                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+            });
+        });
+
         test('should add and remove its event handlers on mount and unmount', () => {
-            const wrapper = getWrapper({
+            getWrapper({
                 annotationMode: AnnotationMode.REGION,
                 hasHighlight: true,
                 hasRegion: true,
             });
             expect(document.addEventListener).toBeCalledWith('keydown', expect.any(Function));
 
-            wrapper.unmount();
+            unmount();
             expect(document.removeEventListener).toBeCalledWith('keydown', expect.any(Function));
         });
 
         test('should not add a handler if the annotation mode is set to none', () => {
-            const wrapper = getWrapper({ hasHighlight: true, hasRegion: true });
+            getWrapper({ hasHighlight: true, hasRegion: true });
             expect(document.addEventListener).not.toBeCalledWith('keydown', expect.any(Function));
 
-            wrapper.unmount();
+            unmount();
             expect(document.removeEventListener).toBeCalledWith('keydown', expect.any(Function));
         });
     });

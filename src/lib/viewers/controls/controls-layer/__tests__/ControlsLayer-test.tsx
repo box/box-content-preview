@@ -90,14 +90,21 @@ describe('ControlsLayer', () => {
 
     describe('unmount', () => {
         test('should destroy any existing hide timeout', () => {
-            jest.spyOn(window, 'clearTimeout');
-
-            const onMount = (helpers: Helpers): void => {
-                helpers.hide(); // Kick off the hide timeout
+            let unmount = (): void => {
+                // placeholder
             };
-            const wrapper = getWrapper({ onMount });
 
-            wrapper.unmount();
+            jest.spyOn(window, 'clearTimeout');
+            jest.spyOn(React, 'useEffect').mockImplementation(cb => {
+                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+            });
+
+            getWrapper({
+                onMount: (helpers: Helpers): void => {
+                    helpers.hide(); // Kick off the hide timeout
+                },
+            });
+            unmount();
 
             expect(window.clearTimeout).toBeCalledTimes(2); // Once on hide, once on unmount
         });
