@@ -1,9 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import MediaToggle from '../MediaToggle';
-import usePreventKey from '../../hooks/usePreventKey';
-
-jest.mock('../../hooks/usePreventKey');
 
 describe('MediaToggle', () => {
     const getWrapper = (props = {}): ShallowWrapper => shallow(<MediaToggle {...props} />);
@@ -18,10 +15,13 @@ describe('MediaToggle', () => {
             });
         });
 
-        test('should call the usePreventKey hook with specific keys', () => {
-            getWrapper();
+        test.each(['Enter', 'Space'])('should defer to the inner button for the %s key', key => {
+            const wrapper = getWrapper();
+            const event = { key, stopPropagation: jest.fn() };
 
-            expect(usePreventKey).toBeCalledWith({ current: expect.any(Object) }, ['Enter', 'Space']);
+            wrapper.simulate('keydown', event);
+
+            expect(event.stopPropagation).toBeCalled();
         });
     });
 });

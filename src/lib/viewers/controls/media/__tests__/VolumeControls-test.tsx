@@ -7,9 +7,7 @@ import IconVolumeMute24 from '../../icons/IconVolumeMute24';
 import MediaToggle from '../MediaToggle';
 import SliderControl from '../../slider';
 import VolumeControls from '../VolumeControls';
-import usePreventKey from '../../hooks/usePreventKey';
 
-jest.mock('../../hooks/usePreventKey');
 jest.mock('../../slider');
 
 describe('VolumeControls', () => {
@@ -31,10 +29,13 @@ describe('VolumeControls', () => {
             expect(onMuteChange).toBeCalledWith(isMuted);
         });
 
-        test('should defer to the inner input for left/right arrow keys', () => {
-            getWrapper();
+        test.each(['ArrowLeft', 'ArrowRight'])('should defer to the inner input for the %s key', key => {
+            const event = { key, stopPropagation: jest.fn() };
+            const wrapper = getWrapper();
 
-            expect(usePreventKey).toBeCalledWith(expect.any(Object), ['ArrowLeft', 'ArrowRight']);
+            wrapper.find(SliderControl).simulate('keydown', event);
+
+            expect(event.stopPropagation).toBeCalled();
         });
     });
 

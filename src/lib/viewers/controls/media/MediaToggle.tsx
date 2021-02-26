@@ -1,12 +1,16 @@
 import React from 'react';
-import usePreventKey from '../hooks/usePreventKey';
+import { decodeKeydown } from '../../../util';
 
 export type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function MediaToggle(props: Props): JSX.Element {
-    const buttonElRef = React.useRef<HTMLButtonElement>(null);
+    const handleKeydown = (event: React.KeyboardEvent): void => {
+        const key = decodeKeydown(event);
 
-    usePreventKey(buttonElRef, ['Enter', 'Space']);
+        if (key === 'Enter' || key === 'Space') {
+            event.stopPropagation();
+        }
+    };
 
-    return <button ref={buttonElRef} type="button" {...props} />;
+    return <button onKeyDown={handleKeydown} type="button" {...props} />;
 }
