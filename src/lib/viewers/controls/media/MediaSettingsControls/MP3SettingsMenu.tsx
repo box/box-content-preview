@@ -1,30 +1,29 @@
 import React from 'react';
 import classNames from 'classnames';
-import MediaSettingsMenu, { Menu, Props as MediaSettingsMenuProps } from './MediaSettingsMenu';
+import MediaSettingsMenu, {
+    Menu,
+    Props as MediaSettingsMenuProps,
+    Ref as MediaSettingsMenuRef,
+} from './MediaSettingsMenu';
 import MediaSettingsMenuItem from './MediaSettingsMenuItem';
-import { AutoplayOption } from './MP3SettingsFlyout';
 
 export type Props = MediaSettingsMenuProps & {
-    autoplay?: string;
+    autoplay: boolean;
     onMenuChange: (menu: Menu) => void;
-    rate?: string;
+    rate: string;
 };
 
-export default function SettingsMenuMain({ autoplay, className, isActive, onMenuChange, rate }: Props): JSX.Element {
-    // Default values
-    let autoplayValue = __('media_autoplay_disabled');
-    let rateValue = __('media_speed_normal');
+export type Ref = MediaSettingsMenuRef;
 
-    if (autoplay === AutoplayOption.ENABLED) {
-        autoplayValue = __('media_autoplay_enabled');
-    }
-
-    if (rate && rate !== '1.0') {
-        rateValue = rate;
-    }
+function MP3SettingsMenu(
+    { autoplay, className, isActive, onMenuChange, rate }: Props,
+    ref: React.Ref<Ref>,
+): JSX.Element {
+    const autoplayValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
+    const rateValue = rate === '1.0' ? __('media_speed_normal') : rate;
 
     return (
-        <MediaSettingsMenu className={classNames('bp-MP3SettingsMenu', className)} isActive={isActive}>
+        <MediaSettingsMenu ref={ref} className={classNames('bp-MP3SettingsMenu', className)} isActive={isActive}>
             <MediaSettingsMenuItem
                 label={__('media_autoplay')}
                 onClick={(): void => onMenuChange(Menu.AUTOPLAY)}
@@ -38,3 +37,5 @@ export default function SettingsMenuMain({ autoplay, className, isActive, onMenu
         </MediaSettingsMenu>
     );
 }
+
+export default React.forwardRef(MP3SettingsMenu);

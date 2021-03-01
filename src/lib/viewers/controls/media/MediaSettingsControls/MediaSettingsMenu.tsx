@@ -14,14 +14,22 @@ export enum Menu {
     SPEED = 'speed',
 }
 
-export default function MediaSettingsMenu({ children, className, isActive }: Props): JSX.Element | null {
+export type Ref = HTMLDivElement;
+
+function MediaSettingsMenu({ children, className, isActive }: Props, ref: React.Ref<Ref>): JSX.Element | null {
     if (!children) {
         return null;
     }
 
     return (
-        <div className={classNames('bp-MediaSettingsMenu', { 'bp-is-active': isActive }, className)} role="menu">
+        <div
+            ref={ref}
+            className={classNames('bp-MediaSettingsMenu', { 'bp-is-active': isActive }, className)}
+            role="menu"
+        >
             {children}
         </div>
     );
 }
+
+export default React.forwardRef(MediaSettingsMenu);

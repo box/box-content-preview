@@ -1,6 +1,6 @@
 import React from 'react';
-import MP3SettingsFlyout, { Props as MP3SettingsFlyoutProps } from './MP3SettingsFlyout';
 import MediaSettingsControls from './MediaSettingsControls';
+import MP3SettingsFlyout, { Props as MP3SettingsFlyoutProps } from './MP3SettingsFlyout';
 
 export type Props = MP3SettingsFlyoutProps;
 

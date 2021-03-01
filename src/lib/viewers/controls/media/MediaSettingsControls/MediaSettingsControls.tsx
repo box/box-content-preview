@@ -2,7 +2,7 @@ import React from 'react';
 import MediaSettingsToggle from './MediaSettingsToggle';
 
 export type Props = {
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 
 export default function MediaSettingsControls({ children, ...rest }: Props): JSX.Element | null {

@@ -11,13 +11,23 @@ export type Props = {
 };
 
 export default function MediaSettingsMenuItem({ className, onClick, label, value }: Props): JSX.Element {
+    const handleKeydown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        onClick();
+    };
+
     return (
-        // TODO: handle all keyboard events
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
             aria-haspopup="true"
             className={classNames('bp-MediaSettingsMenuItem', className)}
             onClick={onClick}
+            onKeyDown={handleKeydown}
             role="menuitem"
             tabIndex={0}
         >
@@ -26,7 +36,7 @@ export default function MediaSettingsMenuItem({ className, onClick, label, value
             </div>
             <div className="bp-MediaSettingsMenuItem-value">{value}</div>
             <div className="bp-MediaSettingsMenuItem-arrow">
-                <IconArrowRight24 />
+                <IconArrowRight24 className="bp-MediaSettingsMenuItem-arrowIcon" />
             </div>
         </div>
     );

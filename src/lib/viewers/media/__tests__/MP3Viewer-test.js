@@ -100,7 +100,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.renderUI();
 
             expect(getProps(mp3)).toMatchObject({
-                autoplay: 'media-autoplay',
+                autoplay: false,
                 bufferedRange: {
                     end: expect.any(Function),
                     length: 0,
@@ -109,10 +109,10 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 currentTime: 0,
                 durationTime: 1000,
                 isPlaying: true,
-                onAutoplayChange: mp3.handleAutoplay,
+                onAutoplayChange: mp3.handleAutoplayReact,
                 onMuteChange: mp3.toggleMute,
                 onPlayPause: mp3.togglePlay,
-                onRateChange: mp3.handleRate,
+                onRateChange: mp3.handleRateReact,
                 onTimeChange: mp3.handleTimeupdateFromMediaControls,
                 onVolumeChange: mp3.setVolume,
                 rate: 'media-speed',

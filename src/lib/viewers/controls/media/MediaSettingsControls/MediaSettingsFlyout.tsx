@@ -1,51 +1,30 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Menu } from './MediaSettingsMenu';
+import { Menu, Ref as MediaSettingsMenuRef } from './MediaSettingsMenu';
 import './MediaSettingsFlyout.scss';
 
 export type Props = {
     children: React.ReactNode;
     className?: string;
     menu: Menu;
-    menuSelectors: Record<string, string>;
 };
 
 const SETTINGS_MENU_PADDING = 18;
 const SETTINGS_MENU_PADDING_SCROLL = 32;
 const SETTINGS_MENU_MAX_HEIGHT = 210;
 
-export default function MediaSettingsFlyout({ children, className, menu, menuSelectors }: Props): JSX.Element | null {
+export default function MediaSettingsFlyout({ children, className, menu }: Props): JSX.Element | null {
     const [dimension, setDimension] = React.useState({});
-    const flyoutRef = React.useRef<HTMLDivElement>(null);
+    const [isInTransition, setIsInTransition] = React.useState(false);
+    const refs = React.useRef<Array<MediaSettingsMenuRef>>([]);
 
-    const handleTransitionEnd = (): void => {
-        const { current: flyoutEl } = flyoutRef;
-
-        if (flyoutEl) {
-            flyoutEl.classList.remove('bp-MediaSettingsFlyout-in-transition');
-        }
-    };
+    const handleTransitionEnd = (): void => setIsInTransition(false);
 
     React.useEffect(() => {
-        const { current: flyoutEl } = flyoutRef;
+        const nextMenuEl = refs.current.find(ref => ref.classList.contains('bp-is-active'));
 
-        if (flyoutEl) {
-            flyoutEl.addEventListener('transitionend', handleTransitionEnd);
-        }
-
-        return (): void => {
-            if (flyoutEl) {
-                flyoutEl.removeEventListener('transitionend', handleTransitionEnd);
-            }
-        };
-    }, [flyoutRef]);
-
-    React.useEffect(() => {
-        const nextMenuEl = document.querySelector(menuSelectors[menu]);
-        const { current: flyoutEl } = flyoutRef;
-
-        if (nextMenuEl && flyoutEl) {
-            flyoutEl.classList.add('bp-MediaSettingsFlyout-in-transition');
+        if (nextMenuEl) {
+            setIsInTransition(true);
 
             const { width, height } = nextMenuEl.getBoundingClientRect();
             const paddedHeight = height + SETTINGS_MENU_PADDING;
@@ -55,15 +34,36 @@ export default function MediaSettingsFlyout({ children, className, menu, menuSel
                 paddedHeight >= SETTINGS_MENU_MAX_HEIGHT ? SETTINGS_MENU_PADDING_SCROLL : SETTINGS_MENU_PADDING;
             setDimension({ width: width + scrollPadding, height: paddedHeight });
         }
-    }, [menu, menuSelectors]);
+    }, [menu]);
 
     if (!children) {
         return null;
     }
 
     return (
-        <div ref={flyoutRef} className={classNames('bp-MediaSettingsFlyout', className)} style={dimension}>
-            {children}
+        <div
+            className={classNames('bp-MediaSettingsFlyout', { 'is-in-transition': isInTransition }, className)}
+            onTransitionEnd={handleTransitionEnd}
+            style={dimension}
+        >
+            {React.Children.map(children, menuEl => {
+                if (!menuEl) {
+                    return null;
+                }
+
+                if (!React.isValidElement(menuEl)) {
+                    return menuEl;
+                }
+
+                return React.cloneElement(menuEl, {
+                    ref: (ref: MediaSettingsMenuRef) => {
+                        if (refs.current.length < React.Children.count(children)) {
+                            refs.current.push(ref);
+                        }
+                    },
+                    ...menuEl.props,
+                });
+            })}
         </div>
     );
 }
