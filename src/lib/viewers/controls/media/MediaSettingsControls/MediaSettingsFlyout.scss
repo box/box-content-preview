@@ -16,7 +16,7 @@
     background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
-    transform: translateY(-110%);
+    transform: translateY(-100%) translateY(-5px);
     visibility: visible;
     transition: width .2s, height .2s;
     -ms-overflow-style: -ms-autohiding-scrollbar;

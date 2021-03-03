@@ -50,9 +50,12 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
 
+        const autoplay = this.cache.get('media-autoplay') === 'Enabled';
+        const rate = this.cache.get('media-speed') || '1.0';
+
         this.controls.render(
             <MP3Controls
-                autoplay={this.cache.get('media-autoplay') === 'Enabled'}
+                autoplay={autoplay}
                 bufferedRange={this.mediaEl.buffered}
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
@@ -63,7 +66,7 @@ class MP3Viewer extends MediaBaseViewer {
                 onRateChange={this.handleRateReact}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
-                rate={this.cache.get('media-speed') || '1.0'}
+                rate={rate}
                 volume={this.mediaEl.volume}
             />,
         );

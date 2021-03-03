@@ -21,18 +21,7 @@ export default function MP3SettingsFlyout({ autoplay, rate }: Props): JSX.Elemen
     return (
         <MediaSettingsFlyout className="bp-MP3SettingsFlyout" menu={menu}>
             <MP3SettingsMenu autoplay={autoplay} isActive onMenuChange={handleMenuChange} rate={rate} />
-            {/* <MediaSettingsMenuAutoplay
-                autoplay={autoplay}
-                isActive={menu === Menu.AUTOPLAY}
-                onAutoplayChange={onAutoplayChange}
-                onReturn={handleReturn}
-            />
-            <MediaSettingsMenuSpeed
-                isActive={menu === Menu.SPEED}
-                onRateChange={onRateChange}
-                onReturn={handleReturn}
-                rate={rate}
-            /> */}
+            {/* More sub-menus, such as Autoplay and Speed menus  */}
         </MediaSettingsFlyout>
     );
 }

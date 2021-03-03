@@ -15,10 +15,8 @@ export type Props = MediaSettingsMenuProps & {
 
 export type Ref = MediaSettingsMenuRef;
 
-function MP3SettingsMenu(
-    { autoplay, className, isActive, onMenuChange, rate }: Props,
-    ref: React.Ref<Ref>,
-): JSX.Element {
+function MP3SettingsMenu(props: Props, ref: React.Ref<Ref>): JSX.Element {
+    const { autoplay, className, isActive, onMenuChange, rate } = props;
     const autoplayValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' ? __('media_speed_normal') : rate;
 

@@ -16,7 +16,9 @@ export enum Menu {
 
 export type Ref = HTMLDivElement;
 
-function MediaSettingsMenu({ children, className, isActive }: Props, ref: React.Ref<Ref>): JSX.Element | null {
+function MediaSettingsMenu(props: Props, ref: React.Ref<Ref>): JSX.Element | null {
+    const { children, className, isActive } = props;
+
     if (!children) {
         return null;
     }

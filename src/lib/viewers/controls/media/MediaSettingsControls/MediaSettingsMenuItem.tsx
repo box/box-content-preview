@@ -12,7 +12,7 @@ export type Props = {
 
 export default function MediaSettingsMenuItem({ className, onClick, label, value }: Props): JSX.Element {
     const handleKeydown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
-        if (event.key !== 'Enter') {
+        if (event.key !== 'Enter' && event.key !== 'Space') {
             return;
         }
 
