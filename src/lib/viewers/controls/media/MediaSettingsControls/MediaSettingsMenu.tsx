@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import './MediaSettingsMenu.scss';
 
 export type Props = {
-    children?: React.ReactNode;
+    children: React.ReactNode;
     className?: string;
     isActive: boolean;
 };
