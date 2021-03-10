@@ -1,3 +1,10 @@
+## 2.67.0 (2021-03-10)
+
+* chore(deps): Move shaka-player update to 2.66.0 folder (#1337) ([4153bbc](https://github.com/box/box-content-preview/commit/4153bbc)), closes [#1337](https://github.com/box/box-content-preview/issues/1337)
+* chore(deps): Upgrade Shake Player to 3.0.8 (#1335) ([68ec8b8](https://github.com/box/box-content-preview/commit/68ec8b8)), closes [#1335](https://github.com/box/box-content-preview/issues/1335)
+
+
+
 ## 2.66.0 (2021-03-03)
 
 * feat(controls): Add Settings Controls icons (#1333) ([46dc15a](https://github.com/box/box-content-preview/commit/46dc15a)), closes [#1333](https://github.com/box/box-content-preview/issues/1333)
