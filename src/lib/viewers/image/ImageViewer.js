@@ -369,13 +369,12 @@ class ImageViewer extends ImageBaseViewer {
 
         const canAnnotate =
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.currentRotationAngle === 0;
-        const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
 
         this.controls.render(
             <ImageControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
-                hasDrawing={canDraw}
+                hasDrawing={canAnnotate}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
                 onAnnotationColorChange={this.handleAnnotationColorChange}

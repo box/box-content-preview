@@ -1056,7 +1056,7 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
+        const { enableThumbnailsSidebar } = this.options;
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
 
@@ -1064,7 +1064,7 @@ class DocBaseViewer extends BaseViewer {
             <DocControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
-                hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
+                hasDrawing={canAnnotate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}
                 maxScale={MAX_SCALE}

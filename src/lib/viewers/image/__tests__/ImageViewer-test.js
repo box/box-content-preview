@@ -407,22 +407,17 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         test.each`
-            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing | showAnnotationsDrawingCreate
-            ${false}                 | ${false}                      | ${false}   | ${false}
-            ${false}                 | ${false}                      | ${false}   | ${true}
-            ${true}                  | ${true}                       | ${false}   | ${false}
-            ${true}                  | ${false}                      | ${false}   | ${true}
-            ${true}                  | ${false}                      | ${false}   | ${false}
-            ${false}                 | ${true}                       | ${false}   | ${true}
-            ${false}                 | ${true}                       | ${false}   | ${false}
-            ${true}                  | ${true}                       | ${true}    | ${true}
+            areNewAnnotationsEnabled | hasAnnotationCreatePermission | hasDrawing
+            ${false}                 | ${false}                      | ${false}
+            ${true}                  | ${false}                      | ${false}
+            ${false}                 | ${true}                       | ${false}
+            ${true}                  | ${true}                       | ${true}
         `(
             'should create controls root and render the controls with hasDrawing set to $hasDrawing',
-            ({ areNewAnnotationsEnabled, hasAnnotationCreatePermission, hasDrawing, showAnnotationsDrawingCreate }) => {
+            ({ areNewAnnotationsEnabled, hasAnnotationCreatePermission, hasDrawing }) => {
                 jest.spyOn(image, 'areNewAnnotationsEnabled').mockReturnValue(areNewAnnotationsEnabled);
                 jest.spyOn(image, 'hasAnnotationCreatePermission').mockReturnValue(hasAnnotationCreatePermission);
 
-                image.options.showAnnotationsDrawingCreate = showAnnotationsDrawingCreate;
                 image.loadUI();
 
                 expect(image.controls).toBeInstanceOf(ControlsRoot);
