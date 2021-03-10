@@ -1,7 +1,7 @@
 {
     "name": "media",
     "description": "Third-party static assets used for the Preview media viewers",
-    "version": "2.65.0",
+    "version": "2.66.0",
     "dependencies": {
         "shaka-player": "3.0.8"
     }
