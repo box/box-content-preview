@@ -60,7 +60,6 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'finishLoadingSetup');
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
             base.options.showAnnotations = true;
-            base.options.enableAnnotationsDiscoverability = true;
 
             base.setup();
 
@@ -74,7 +73,6 @@ describe('lib/viewers/BaseViewer', () => {
                     },
                 },
                 showAnnotations: true,
-                enableAnnotationsDiscoverability: true,
             });
 
             expect(base.containerEl).toHaveClass(constants.CLASS_BOX_PREVIEW_CONTENT);
@@ -1827,7 +1825,6 @@ describe('lib/viewers/BaseViewer', () => {
 
         [AnnotationMode.NONE, AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING].forEach(mode => {
             test(`should remove create region class if discoverability is enabled and mode is ${mode}`, () => {
-                base.options.enableAnnotationsDiscoverability = true;
                 base.processAnnotationModeChange(mode);
 
                 expect(base.containerEl).not.toHaveClass(constants.CLASS_ANNOTATIONS_CREATE_REGION);

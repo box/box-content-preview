@@ -930,8 +930,6 @@ class Preview extends EventEmitter {
 
         this.options.showAnnotationsDrawingCreate = !!options.showAnnotationsDrawingCreate;
 
-        this.options.enableAnnotationsDiscoverability = !!options.enableAnnotationsDiscoverability;
-
         this.options.enableAnnotationsImageDiscoverability = !!options.enableAnnotationsImageDiscoverability;
 
         // Enable or disable hotkeys

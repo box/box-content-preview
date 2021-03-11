@@ -223,7 +223,7 @@ class BaseViewer extends EventEmitter {
             });
         }
 
-        if (this.options.enableAnnotationsDiscoverability && this.containerEl) {
+        if (this.containerEl) {
             this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 

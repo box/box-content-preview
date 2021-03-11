@@ -1271,7 +1271,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
         super.handleFullscreenExit();
 
-        if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
     }
@@ -1574,7 +1574,7 @@ class DocBaseViewer extends BaseViewer {
 
     // Annotation overrides
     getInitialAnnotationMode() {
-        return this.options.enableAnnotationsDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE;
+        return AnnotationMode.REGION;
     }
 
     initAnnotations() {
@@ -1595,21 +1595,13 @@ class DocBaseViewer extends BaseViewer {
 
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-        this.annotator.toggleAnnotationMode(
-            this.options.enableAnnotationsDiscoverability && nextMode === AnnotationMode.NONE
-                ? AnnotationMode.REGION
-                : nextMode,
-        );
+        this.annotator.toggleAnnotationMode(nextMode === AnnotationMode.NONE ? AnnotationMode.REGION : nextMode);
         this.processAnnotationModeChange(nextMode);
     }
 
     handleAnnotationControlsEscape() {
-        if (this.options.enableAnnotationsDiscoverability) {
-            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
-        } else {
-            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
-        }
+        this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
     }
 
     handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
@@ -1633,11 +1625,10 @@ class DocBaseViewer extends BaseViewer {
 
         const controlsState = this.annotationControlsFSM.getState();
         const isDiscoverable = DISCOVERABILITY_STATES.includes(controlsState);
-        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverable;
 
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
-        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isDiscoverable);
     }
 
     /**
