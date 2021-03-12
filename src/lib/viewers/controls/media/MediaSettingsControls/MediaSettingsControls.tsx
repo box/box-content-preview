@@ -21,7 +21,7 @@ export default function MediaSettingsControls({ children, className, ...rest }: 
         setActiveRect(undefined);
         setIsFocused(false);
         setIsOpen(false);
-    }, [setActiveMenu, setActiveRect, setIsFocused, setIsOpen]);
+    }, []);
 
     const handleClick = (): void => {
         setActiveMenu(Menu.MAIN);

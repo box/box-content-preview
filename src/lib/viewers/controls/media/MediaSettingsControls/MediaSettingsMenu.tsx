@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { decodeKeydown } from '../../../../util';
 import MediaSettingsContext, { Menu } from './MediaSettingsContext';
+import { decodeKeydown } from '../../../../util';
 import './MediaSettingsMenu.scss';
 
 export type Props = React.PropsWithChildren<{
@@ -11,20 +11,20 @@ export type Props = React.PropsWithChildren<{
 
 export default function MediaSettingsMenu({ children, className, name }: Props): JSX.Element | null {
     const [activeIndex, setActiveIndex] = React.useState(0);
+    const [activeItem, setActiveItem] = React.useState<HTMLDivElement | null>(null);
     const { activeMenu, setActiveRect } = React.useContext(MediaSettingsContext);
     const isActive = activeMenu === name;
     const menuElRef = React.useRef<HTMLDivElement>(null);
-    const menuItemElRef = React.useRef<HTMLDivElement>(null);
 
     const handleKeyDown = (event: React.KeyboardEvent): void => {
         const key = decodeKeydown(event);
         const max = React.Children.toArray(children).length - 1;
 
-        if (key === 'ArrowUp' && activeIndex - 1 >= 0) {
+        if (key === 'ArrowUp' && activeIndex > 0) {
             setActiveIndex(activeIndex - 1);
         }
 
-        if (key === 'ArrowDown' && activeIndex + 1 <= max) {
+        if (key === 'ArrowDown' && activeIndex < max) {
             setActiveIndex(activeIndex + 1);
         }
     };
@@ -38,12 +38,10 @@ export default function MediaSettingsMenu({ children, className, name }: Props):
     }, [isActive, setActiveRect]);
 
     React.useEffect(() => {
-        const { current: menuItemEl } = menuItemElRef;
-
-        if (menuItemEl && isActive) {
-            menuItemEl.focus();
+        if (activeItem && isActive) {
+            activeItem.focus();
         }
-    }, [activeIndex, isActive]);
+    }, [activeItem, isActive]);
 
     return (
         <div
@@ -55,7 +53,7 @@ export default function MediaSettingsMenu({ children, className, name }: Props):
         >
             {React.Children.map(children, (menuItem, menuIndex) => {
                 if (React.isValidElement(menuItem) && menuIndex === activeIndex) {
-                    return React.cloneElement(menuItem, { ref: menuItemElRef, ...menuItem.props });
+                    return React.cloneElement(menuItem, { ref: setActiveItem, ...menuItem.props });
                 }
 
                 return menuItem;

@@ -25,17 +25,28 @@ describe('MediaSettingsControls', () => {
             expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(true);
         });
 
-        test('should update the focused state on context based on the key pressed', () => {
+        test.each`
+            key             | isFocused
+            ${'1'}          | ${false}
+            ${'A'}          | ${false}
+            ${'ArrowDown'}  | ${true}
+            ${'ArrowLeft'}  | ${true}
+            ${'ArrowRight'} | ${true}
+            ${'ArrowUp'}    | ${true}
+            ${'Enter'}      | ${true}
+            ${'Space'}      | ${true}
+            ${'Tab'}        | ${true}
+        `('should update the focused state to $isFocused if $key is pressed', ({ key, isFocused }) => {
             const wrapper = getWrapper();
 
             expect(wrapper.childAt(0).hasClass('bp-is-focused')).toBe(false);
 
             act(() => {
-                wrapper.simulate('keydown', { key: 'Enter' });
+                wrapper.simulate('keydown', { key });
             });
             wrapper.update();
 
-            expect(wrapper.childAt(0).hasClass('bp-is-focused')).toBe(true);
+            expect(wrapper.childAt(0).hasClass('bp-is-focused')).toBe(isFocused);
         });
 
         test('should reset the parent context when a click is detected outside the controls', () => {
