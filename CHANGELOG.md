@@ -1,3 +1,19 @@
+## 2.67.0 (2021-03-10)
+
+* chore(deps): Move shaka-player update to 2.66.0 folder (#1337) ([4153bbc](https://github.com/box/box-content-preview/commit/4153bbc)), closes [#1337](https://github.com/box/box-content-preview/issues/1337)
+* chore(deps): Upgrade Shake Player to 3.0.8 (#1335) ([68ec8b8](https://github.com/box/box-content-preview/commit/68ec8b8)), closes [#1335](https://github.com/box/box-content-preview/issues/1335)
+
+
+
+## 2.66.0 (2021-03-03)
+
+* feat(controls): Add Settings Controls icons (#1333) ([46dc15a](https://github.com/box/box-content-preview/commit/46dc15a)), closes [#1333](https://github.com/box/box-content-preview/issues/1333)
+* build(deps): Upgrade highlightjs to 9.18.1 (#1328) ([4f70945](https://github.com/box/box-content-preview/commit/4f70945)), closes [#1328](https://github.com/box/box-content-preview/issues/1328)
+* build(deps): Upgrade Papaparse to 5.0.0 (#1330) ([9e66b55](https://github.com/box/box-content-preview/commit/9e66b55)), closes [#1330](https://github.com/box/box-content-preview/issues/1330)
+* build(deps): Upgrade remarkable to 2.0.1 (#1329) ([df692c4](https://github.com/box/box-content-preview/commit/df692c4)), closes [#1329](https://github.com/box/box-content-preview/issues/1329)
+
+
+
 ## 2.65.0 (2021-02-16)
 
 * fix(headers): Add support for case-insensitive http response headers (#1327) ([5ec964e](https://github.com/box/box-content-preview/commit/5ec964e)), closes [#1327](https://github.com/box/box-content-preview/issues/1327)
