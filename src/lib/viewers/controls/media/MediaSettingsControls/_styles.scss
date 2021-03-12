@@ -1,0 +1,34 @@
+@import '../styles';
+
+@mixin bp-MediaSettingsRow {
+    display: table-row;
+    overflow: hidden;
+    white-space: nowrap;
+    outline: 0 none;
+    cursor: pointer;
+}
+
+@mixin bp-MediaSettingsRow-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+@mixin bp-MediaSettingsRow-label {
+    @include bp-MediaSettingsRow-cell;
+
+    padding: 6px;
+    color: $downtown-grey;
+    font-weight: normal;
+    font-size: 11px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+@mixin bp-MediaSettingsRow-value {
+    @include bp-MediaSettingsRow-cell;
+
+    padding: 6px 6px 6px 10px;
+    color: $sunset-grey;
+    font-size: 12px;
+    text-align: left;
+}
