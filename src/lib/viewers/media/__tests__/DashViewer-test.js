@@ -26,6 +26,7 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     beforeEach(() => {
+        jest.spyOn(shaka.polyfill, 'installAll').mockImplementation();
         fixture.load('viewers/media/__tests__/DashViewer-test.html');
         const containerEl = document.querySelector('.container');
         stubs.api = new Api();
