@@ -5,7 +5,6 @@ import MediaSettingsContext, { Context, Menu } from '../MediaSettingsContext';
 describe('MediaSettingsContext', () => {
     const getContext = (): Context => ({
         activeMenu: Menu.MAIN,
-        activeRect: undefined,
         setActiveMenu: jest.fn(),
         setActiveRect: jest.fn(),
     });
