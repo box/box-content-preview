@@ -1,16 +1,15 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import MediaSettingsControls from '../MediaSettingsControls';
+import MediaSettings from '../MediaSettings';
 import MediaSettingsToggle from '../MediaSettingsToggle';
 import MediaSettingsFlyout from '../MediaSettingsFlyout';
 
-describe('MediaSettingsControls', () => {
+describe('MediaSettings', () => {
     const getHostNode = (): HTMLDivElement => {
         return document.body.appendChild(document.createElement('div'));
     };
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(<MediaSettingsControls {...props} />, { attachTo: getHostNode() });
+    const getWrapper = (props = {}): ReactWrapper => mount(<MediaSettings {...props} />, { attachTo: getHostNode() });
 
     describe('event handlers', () => {
         test('should update the flyout and toggle button isOpen prop when clicked', () => {
@@ -90,7 +89,7 @@ describe('MediaSettingsControls', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettingsControls');
+            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettings');
             expect(wrapper.exists(MediaSettingsFlyout)).toBe(true);
             expect(wrapper.exists(MediaSettingsToggle)).toBe(true);
         });

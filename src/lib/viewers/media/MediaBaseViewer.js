@@ -62,6 +62,8 @@ class MediaBaseViewer extends BaseViewer {
         this.progressHandler = this.progressHandler.bind(this);
         this.resetPlayIcon = this.resetPlayIcon.bind(this);
         this.seekHandler = this.seekHandler.bind(this);
+        this.setAutoplay = this.setAutoplay.bind(this);
+        this.setRate = this.setRate.bind(this);
         this.setTimeCode = this.setTimeCode.bind(this);
         this.setVolume = this.setVolume.bind(this);
         this.handleLoadStart = this.handleLoadStart.bind(this);
@@ -390,6 +392,10 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         this.mediaEl.playbackRate = speed;
+
+        if (this.controls) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -424,6 +430,10 @@ class MediaBaseViewer extends BaseViewer {
      */
     handleAutoplay() {
         this.emit('autoplay', this.isAutoplayEnabled());
+
+        if (this.controls) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -454,7 +464,7 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Determines if autoplay is enabled
      *
-     * @private
+     * @protected
      * @return {boolean} Indicates if autoplay is enabled
      */
     isAutoplayEnabled() {
@@ -541,6 +551,16 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Return the current cached media play rate as a string
+     *
+     * @protected
+     * @return {string}
+     */
+    getRate() {
+        return this.cache.get(MEDIA_SPEED_CACHE_KEY) || '1.0';
+    }
+
+    /**
      * Updates time code.
      *
      * @private
@@ -569,6 +589,30 @@ class MediaBaseViewer extends BaseViewer {
         if (this.controls) {
             this.renderUI();
         }
+    }
+
+    /**
+     * Updates autoplay
+     *
+     * @protected
+     * @param {boolean} autoplay - True if enabled
+     * @return {void}
+     */
+    setAutoplay(autoplay) {
+        this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, autoplay ? 'Enabled' : 'Disabled', true);
+        this.handleAutoplay();
+    }
+
+    /**
+     * Updates play rate
+     *
+     * @protected
+     * @param {string} rate - New play rate
+     * @return {void}
+     */
+    setRate(rate) {
+        this.cache.set(MEDIA_SPEED_CACHE_KEY, rate, true);
+        this.handleRate();
     }
 
     /**
