@@ -2,6 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import MediaSettingsContext, { Menu, Rect } from './MediaSettingsContext';
 import MediaSettingsFlyout from './MediaSettingsFlyout';
+import MediaSettingsMenu from './MediaSettingsMenu';
+import MediaSettingsMenuBack from './MediaSettingsMenuBack';
+import MediaSettingsMenuItem from './MediaSettingsMenuItem';
+import MediaSettingsRadioItem from './MediaSettingsRadioItem';
 import MediaSettingsToggle, { Ref as MediaSettingsToggleRef } from './MediaSettingsToggle';
 import { decodeKeydown } from '../../../../util';
 
@@ -9,7 +13,7 @@ export type Props = React.PropsWithChildren<{
     className?: string;
 }>;
 
-export default function MediaSettingsControls({ children, className, ...rest }: Props): JSX.Element | null {
+export default function MediaSettings({ children, className, ...rest }: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
     const [activeRect, setActiveRect] = React.useState<Rect>();
     const [isFocused, setIsFocused] = React.useState(false);
@@ -69,7 +73,7 @@ export default function MediaSettingsControls({ children, className, ...rest }: 
     return (
         <div
             ref={controlsElRef}
-            className={classNames('bp-MediaSettingsControls', className, { 'bp-is-focused': isFocused })}
+            className={classNames('bp-MediaSettings', className, { 'bp-is-focused': isFocused })}
             onKeyDown={handleKeyDown}
             role="presentation"
             {...rest}
@@ -81,3 +85,9 @@ export default function MediaSettingsControls({ children, className, ...rest }: 
         </div>
     );
 }
+
+MediaSettings.Context = MediaSettingsContext;
+MediaSettings.Menu = MediaSettingsMenu;
+MediaSettings.MenuBack = MediaSettingsMenuBack;
+MediaSettings.MenuItem = MediaSettingsMenuItem;
+MediaSettings.RadioItem = MediaSettingsRadioItem;
