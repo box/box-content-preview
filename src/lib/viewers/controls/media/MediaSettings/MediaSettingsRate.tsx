@@ -10,8 +10,8 @@ export default function MediaSettingsMenuRate({ rate, onRateChange }: Props): JS
     const { setActiveMenu } = React.useContext(MediaSettings.Context);
 
     const handleChange = (value: string): void => {
-        onRateChange(value);
         setActiveMenu(Menu.MAIN);
+        onRateChange(value);
     };
 
     return (

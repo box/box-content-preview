@@ -5,7 +5,7 @@ import MediaSettingsRate, { Props as RateProps } from '../controls/media/MediaSe
 
 export type Props = AutoplayProps & RateProps;
 
-export default function MP3SettingsControls({ autoplay, onAutoplayChange, onRateChange, rate }: Props): JSX.Element {
+export default function MP3Settings({ autoplay, onAutoplayChange, onRateChange, rate }: Props): JSX.Element {
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
 

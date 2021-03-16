@@ -10,8 +10,8 @@ export default function MediaSettingsMenuAutoplay({ autoplay, onAutoplayChange }
     const { setActiveMenu } = React.useContext(MediaSettings.Context);
 
     const handleChange = (value: boolean): void => {
-        onAutoplayChange(value);
         setActiveMenu(Menu.MAIN);
+        onAutoplayChange(value);
     };
 
     return (

@@ -1,6 +1,6 @@
 import React from 'react';
 import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
-import MP3SettingsControls, { Props as MP3SettingsProps } from './MP3SettingsControls';
+import MP3Settings, { Props as MP3SettingsProps } from './MP3Settings';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
@@ -44,7 +44,7 @@ export default function MP3Controls({
                 </div>
 
                 <div className="bp-MP3Controls-group">
-                    <MP3SettingsControls
+                    <MP3Settings
                         autoplay={autoplay}
                         onAutoplayChange={onAutoplayChange}
                         onRateChange={onRateChange}
