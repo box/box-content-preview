@@ -1,3 +1,13 @@
+## 2.68.0 (2021-03-17)
+
+* feat(controls): Add core media settings control components (#1340) ([1d26190](https://github.com/box/box-content-preview/commit/1d26190)), closes [#1340](https://github.com/box/box-content-preview/issues/1340)
+* feat(controls): Add media settings control item components (#1341) ([81ae0c4](https://github.com/box/box-content-preview/commit/81ae0c4)), closes [#1341](https://github.com/box/box-content-preview/issues/1341)
+* feat(controls): Add MP3 settings controls (#1343) ([76f6e1a](https://github.com/box/box-content-preview/commit/76f6e1a)), closes [#1343](https://github.com/box/box-content-preview/issues/1343)
+* fix(dash): Mock shaka.polyfill.installAll (#1342) ([fcbca02](https://github.com/box/box-content-preview/commit/fcbca02)), closes [#1342](https://github.com/box/box-content-preview/issues/1342)
+* chore(deps): Upgrade React dependencies to v17 (#1334) ([5de1252](https://github.com/box/box-content-preview/commit/5de1252)), closes [#1334](https://github.com/box/box-content-preview/issues/1334)
+
+
+
 ## 2.67.0 (2021-03-10)
 
 * chore(deps): Move shaka-player update to 2.66.0 folder (#1337) ([4153bbc](https://github.com/box/box-content-preview/commit/4153bbc)), closes [#1337](https://github.com/box/box-content-preview/issues/1337)
