@@ -24,19 +24,15 @@ import {
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_BOX_PREVIEW_MOBILE,
-    CLASS_HIDDEN,
     FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_CONTENT,
-    SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
-    SELECTOR_BOX_PREVIEW_ICON,
     SELECTOR_BOX_PREVIEW,
     STATUS_SUCCESS,
     STATUS_VIEWABLE,
 } from '../constants';
 import { EXCLUDED_EXTENSIONS } from '../extensions';
-import { getIconFromExtension, getIconFromName } from '../icons/icons';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
@@ -72,8 +68,6 @@ const ANNOTATION_BUTTONS = {
         title: __('annotation_draw_toggle'),
     },
 };
-
-const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';
 
 class BaseViewer extends EventEmitter {
     /** @property {Api} - Api instance used for XHR calls */
@@ -186,12 +180,8 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.options.file) {
-            const fileExt = this.options.file.extension;
-            this.fileLoadingIcon = getIconFromExtension(fileExt);
             this.startAt = getProp(this.options, `fileOptions.${this.options.file.id}.${FILE_OPTION_START}`, {});
         }
-
-        this.finishLoadingSetup();
 
         // Get the container dom element if selector was passed, in tests
         let { container } = this.options;
@@ -228,24 +218,6 @@ class BaseViewer extends EventEmitter {
         }
 
         this.isSetup = true;
-    }
-
-    /**
-     * Removes the crawler and sets the file type specific loading icon
-     *
-     * @return {void}
-     */
-    finishLoadingSetup() {
-        const { container } = this.options;
-        const crawler = container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-        if (crawler) {
-            crawler.classList.add(CLASS_HIDDEN);
-        }
-
-        const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-        if (iconWrapperEl) {
-            iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName(DEFAULT_FILE_ICON_NAME);
-        }
     }
 
     /**

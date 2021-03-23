@@ -1,7 +1,6 @@
 import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
 import Notification from './Notification';
-import { insertTemplate } from './util';
 import {
     CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
@@ -25,7 +24,10 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_CONTENT,
+    SELECTOR_BOX_PREVIEW_ICON,
 } from './constants';
+import { getIconFromName, getIconFromExtension } from './icons/icons';
+import { insertTemplate } from './util';
 
 class PreviewUI {
     /** @property {HTMLElement} - Container element */
@@ -122,10 +124,16 @@ class PreviewUI {
         }
 
         // Setup progress bar
-        this.progressBar = new ProgressBar(this.container);
+        if (options.showProgress) {
+            this.progressBar = new ProgressBar(this.container);
+        }
 
         // Setup loading indicator
-        this.setupLoading();
+        if (options.showLoading) {
+            this.setupLoading();
+        } else {
+            this.destroyLoading();
+        }
 
         // Attach keyboard events
         document.addEventListener('keydown', this.keydownHandler);
@@ -258,7 +266,7 @@ class PreviewUI {
     }
 
     /**
-     * Shows the loading indicator
+     * Shows the loading indicator.
      *
      * @public
      * @return {void}
@@ -281,11 +289,46 @@ class PreviewUI {
         }
 
         this.previewContainer.classList.add(CLASS_PREVIEW_LOADED);
+        this.showCrawler();
+    }
 
-        // Re-show the cralwer for the next preview since it is hidden in finishLoadingSetup() in BaseViewer.js
+    /**
+     * Hides the loading crawler.
+     *
+     * @public
+     * @return {void}
+     */
+    hideCrawler() {
+        const crawler = this.previewContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        if (crawler) {
+            crawler.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Shows the loading crawler.
+     *
+     * @public
+     * @return {void}
+     */
+    showCrawler() {
         const crawler = this.previewContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
         if (crawler) {
             crawler.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Set the icon for the loading indicator based on the file extension.
+     *
+     * @public
+     * @param {string} extension - File extension
+     * @return {void}
+     */
+    setLoadingIcon(extension) {
+        const iconWrapperEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+        if (iconWrapperEl) {
+            iconWrapperEl.innerHTML = getIconFromExtension(extension) || getIconFromName('FILE_DEFAULT');
         }
     }
 
@@ -296,7 +339,9 @@ class PreviewUI {
      * @return {void}
      */
     startProgressBar() {
-        this.progressBar.start();
+        if (this.progressBar) {
+            this.progressBar.start();
+        }
     }
 
     /**
@@ -306,7 +351,9 @@ class PreviewUI {
      * @return {void}
      */
     finishProgressBar() {
-        this.progressBar.finish();
+        if (this.progressBar) {
+            this.progressBar.finish();
+        }
     }
 
     /**
@@ -376,6 +423,21 @@ class PreviewUI {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+    /**
+     * Remove global loading indicators from the shell
+     *
+     * @private
+     * @return {void}
+     */
+    destroyLoading() {
+        const loadingWrapperEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
+        if (!loadingWrapperEl) {
+            return;
+        }
+
+        loadingWrapperEl.parentElement.removeChild(loadingWrapperEl);
+    }
+
     /**
      * Sets up the preview header.
      *

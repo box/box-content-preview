@@ -1310,6 +1310,24 @@ describe('lib/Preview', () => {
             expect(preview.options.showAnnotations).toBe(true);
         });
 
+        test('should set whether to show loading indicators', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showLoading).toBe(true);
+
+            preview.previewOptions.showLoading = false;
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showLoading).toBe(false);
+        });
+
+        test('should set whether to show progress indicators', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showProgress).toBe(true);
+
+            preview.previewOptions.showProgress = false;
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showProgress).toBe(false);
+        });
+
         test('should set whether to skip load from the server and any server updates', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).toBe(false);
@@ -1648,6 +1666,8 @@ describe('lib/Preview', () => {
             stubs.destroy = jest.spyOn(preview, 'destroy');
             stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockReturnValue(true);
             stubs.canDownload = jest.spyOn(file, 'canDownload').mockReturnValue(false);
+            stubs.hideCrawler = jest.spyOn(preview.ui, 'hideCrawler').mockImplementation();
+            stubs.setLoadingIcon = jest.spyOn(preview.ui, 'setLoadingIcon').mockImplementation();
             stubs.showLoadingDownloadButton = jest.spyOn(preview.ui, 'showLoadingDownloadButton').mockImplementation();
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
@@ -1695,14 +1715,25 @@ describe('lib/Preview', () => {
 
         test('should show the loading download button if file can be downloaded', () => {
             stubs.canDownload.mockReturnValue(true);
-            preview.loadViewer({});
+            preview.loadViewer();
             expect(stubs.showLoadingDownloadButton).toBeCalled();
         });
 
         test("should not show the loading download button if file can't be downloaded", () => {
             stubs.canDownload.mockReturnValue(false);
-            preview.loadViewer({});
+            preview.loadViewer();
             expect(stubs.showLoadingDownloadButton).not.toBeCalled();
+        });
+
+        test('should show the file-specific loading icon', () => {
+            preview.file.extension = 'pdf';
+            preview.loadViewer();
+            expect(stubs.setLoadingIcon).toBeCalledWith('pdf');
+        });
+
+        test('should hide the loading crawler', () => {
+            preview.loadViewer();
+            expect(stubs.hideCrawler).toBeCalled();
         });
 
         test('should throw an unsupported error if there is no loader for general file types', () => {
