@@ -59,7 +59,6 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
 
     describe('setup()', () => {
         beforeEach(() => {
-            jest.spyOn(viewer, 'finishLoadingSetup').mockImplementation();
             viewer.setup();
         });
 
@@ -408,8 +407,6 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
                 getBox3D: jest.fn().mockReturnValue(box3d),
                 getScene: jest.fn().mockReturnValue(scene),
             };
-
-            jest.spyOn(viewer, 'finishLoadingSetup').mockImplementation();
 
             viewer.setup();
             viewer.renderer = renderer;

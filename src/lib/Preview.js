@@ -925,6 +925,12 @@ class Preview extends EventEmitter {
         // Whether annotations v2 should be shown
         this.options.showAnnotations = !!options.showAnnotations;
 
+        // Whether the loading indicator should be shown
+        this.options.showLoading = options.showLoading !== false;
+
+        // Whether the progress indicator should be shown
+        this.options.showProgress = options.showProgress !== false;
+
         // Whether annotations v4 buttons should be shown in toolbar
         this.options.showAnnotationsControls = !!options.showAnnotationsControls;
 

@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
 import * as constants from '../../constants';
-import * as icons from '../../icons/icons';
 import * as util from '../../util';
 import Api from '../../api';
 import BaseViewer from '../BaseViewer';
@@ -38,11 +37,13 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            replaceHeader: jest.fn(),
+            hideCrawler: jest.fn(),
             notification: {
                 show: jest.fn(),
                 hide: jest.fn(),
             },
+            replaceHeader: jest.fn(),
+            setLoadingIcon: jest.fn(),
         };
     });
 
@@ -54,10 +55,8 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('setup()', () => {
         test('should set options, a container, bind event listeners, and set timeout', () => {
-            const getIconFromExtensionStub = jest.spyOn(icons, 'getIconFromExtension');
             jest.spyOn(base, 'addCommonListeners');
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(base, 'finishLoadingSetup');
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
             base.options.showAnnotations = true;
             base.options.enableAnnotationsDiscoverability = true;
@@ -80,7 +79,6 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl).toHaveClass(constants.CLASS_BOX_PREVIEW_CONTENT);
             expect(base.containerEl).toHaveClass(constants.CLASS_ANNOTATIONS_DISCOVERABLE);
             expect(base.addCommonListeners).toBeCalled();
-            expect(getIconFromExtensionStub).toBeCalled();
             expect(typeof base.loadTimeout).toBe('number');
             expect(base.annotatorPromise).toBeDefined();
             expect(base.annotatorPromiseResolver).toBeDefined();
@@ -89,7 +87,6 @@ describe('lib/viewers/BaseViewer', () => {
         test('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
-            jest.spyOn(base, 'finishLoadingSetup');
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
 
             base.setup();
@@ -102,7 +99,6 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'addCommonListeners');
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
-            jest.spyOn(base, 'finishLoadingSetup');
             base.options.showAnnotations = false;
 
             base.setup();
@@ -114,7 +110,6 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'addCommonListeners');
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
-            jest.spyOn(base, 'finishLoadingSetup');
             base.options.sharedLink = 'url';
 
             base.setup();
@@ -123,23 +118,14 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('finishLoadingSetup()', () => {
-        test('should hide the crawler and set the file icon into the icon element', () => {
-            const container = {
-                classList: {
-                    add: jest.fn(),
-                },
-                innerHTML: '',
-                removeEventListener: jest.fn(),
-            };
-            base.fileLoadingIcon = 'icon';
+    describe('setupLoading()', () => {
+        test('should hide the crawler and set the file-specific loading icon', () => {
+            base.options.file = { extension: 'pdf' };
 
-            jest.spyOn(containerEl, 'querySelector').mockReturnValue(container);
+            base.setupLoading();
 
-            base.finishLoadingSetup();
-            expect(container.innerHTML).toBe('icon');
-            expect(container.classList.add).toBeCalled();
-            base.options.container = null;
+            expect(base.previewUI.hideCrawler).toBeCalled();
+            expect(base.previewUI.setLoadingIcon).toBeCalledWith('pdf');
         });
     });
 
@@ -620,7 +606,6 @@ describe('lib/viewers/BaseViewer', () => {
         test('should cleanup the base viewer', () => {
             jest.spyOn(base, 'loadAssets').mockResolvedValue(undefined);
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
-            jest.spyOn(base, 'finishLoadingSetup');
             base.setup();
 
             jest.spyOn(fullscreen, 'removeAllListeners').mockImplementation();
@@ -722,7 +707,6 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'loadAssets').mockResolvedValue(undefined);
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
-            jest.spyOn(base, 'finishLoadingSetup');
             base.setup();
             event = {
                 preventDefault: jest.fn(),

@@ -1310,6 +1310,24 @@ describe('lib/Preview', () => {
             expect(preview.options.showAnnotations).toBe(true);
         });
 
+        test('should set whether to show loading indicators', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showLoading).toBe(true);
+
+            preview.previewOptions.showLoading = false;
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showLoading).toBe(false);
+        });
+
+        test('should set whether to show progress indicators', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showProgress).toBe(true);
+
+            preview.previewOptions.showProgress = false;
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.showProgress).toBe(false);
+        });
+
         test('should set whether to skip load from the server and any server updates', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.skipServerUpdate).toBe(false);

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import * as constants from '../constants';
 import PreviewUI from '../PreviewUI';
+import { getIconFromExtension } from '../icons/icons';
 
 const sandbox = sinon.createSandbox();
 let ui;
@@ -19,6 +20,8 @@ describe('lib/PreviewUI', () => {
         containerEl = document.querySelector('.ui');
         options = {
             container: containerEl,
+            showLoading: true,
+            showProgress: true,
         };
     });
 
@@ -62,6 +65,17 @@ describe('lib/PreviewUI', () => {
             expect(loadingWrapperEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
             expect(loadingWrapperEl).toContainHTML('Loading Preview...');
             expect(loadingWrapperEl).toContainHTML('Download File');
+        });
+
+        test('should not setup the progress bar or loading state if their respective option is false', () => {
+            const resultEl = ui.setup({ container: containerEl, showLoading: false, showProgress: false });
+            expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
+
+            // Check loading state
+            expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
+            expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
+            expect(resultEl).not.toContainHTML('Loading Preview...');
+            expect(resultEl).not.toContainHTML('Download File');
         });
 
         test('should setup logo if option specifies', () => {
@@ -231,16 +245,35 @@ describe('lib/PreviewUI', () => {
         });
 
         describe('hideLoadingIndicator()', () => {
+            beforeEach(() => {
+                jest.spyOn(ui, 'showCrawler');
+            });
+
             test('should hide loading indicator', () => {
                 const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).toHaveClass(constants.CLASS_PREVIEW_LOADED);
             });
 
+            test('should show the crawler', () => {
+                ui.hideLoadingIndicator();
+                expect(ui.showCrawler).toBeCalled();
+            });
+        });
+
+        describe('showCrawler()', () => {
             test('should remove the hidden class from the crawler', () => {
                 const crawlerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-                ui.hideLoadingIndicator();
+                ui.showCrawler();
                 expect(crawlerEl).not.toHaveClass(constants.CLASS_HIDDEN);
+            });
+        });
+
+        describe('hideCrawler()', () => {
+            test('should add the hidden class to the crawler', () => {
+                const crawlerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+                ui.hideCrawler();
+                expect(crawlerEl).toHaveClass(constants.CLASS_HIDDEN);
             });
         });
 
@@ -249,6 +282,18 @@ describe('lib/PreviewUI', () => {
                 ui.setupNotification();
                 expect(containerEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
             });
+        });
+    });
+
+    describe('setLoadingIcon()', () => {
+        test('should hide the crawler and set the file icon into the icon element', () => {
+            const iconEl = document.createElement('div');
+            iconEl.innerHTML = getIconFromExtension('pdf');
+
+            ui.setup(options);
+            ui.setLoadingIcon('pdf');
+
+            expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON).innerHTML).toEqual(iconEl.innerHTML);
         });
     });
 
