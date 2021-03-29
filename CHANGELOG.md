@@ -1,3 +1,9 @@
+## 2.69.0 (2021-03-29)
+
+* feat(loading): Add options for loading icon and progress bar (#1344) ([99e3f92](https://github.com/box/box-content-preview/commit/99e3f92)), closes [#1344](https://github.com/box/box-content-preview/issues/1344)
+
+
+
 ## 2.68.0 (2021-03-17)
 
 * feat(controls): Add core media settings control components (#1340) ([1d26190](https://github.com/box/box-content-preview/commit/1d26190)), closes [#1340](https://github.com/box/box-content-preview/issues/1340)
