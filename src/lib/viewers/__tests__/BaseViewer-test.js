@@ -37,11 +37,13 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            replaceHeader: jest.fn(),
+            hideCrawler: jest.fn(),
             notification: {
                 show: jest.fn(),
                 hide: jest.fn(),
             },
+            replaceHeader: jest.fn(),
+            setLoadingIcon: jest.fn(),
         };
     });
 
@@ -113,6 +115,17 @@ describe('lib/viewers/BaseViewer', () => {
             base.setup();
 
             expect(base.loadBoxAnnotations).not.toBeCalled();
+        });
+    });
+
+    describe('setupLoading()', () => {
+        test('should hide the crawler and set the file-specific loading icon', () => {
+            base.options.file = { extension: 'pdf' };
+
+            base.setupLoading();
+
+            expect(base.previewUI.hideCrawler).toBeCalled();
+            expect(base.previewUI.setLoadingIcon).toBeCalledWith('pdf');
         });
     });
 

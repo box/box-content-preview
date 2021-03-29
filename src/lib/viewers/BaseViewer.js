@@ -194,6 +194,9 @@ class BaseViewer extends EventEmitter {
         // From the perspective of viewers bp-content holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
+        // Update the loading indicators
+        this.setupLoading();
+
         // Attach event listeners
         this.addCommonListeners();
 
@@ -218,6 +221,20 @@ class BaseViewer extends EventEmitter {
         }
 
         this.isSetup = true;
+    }
+
+    /**
+     * Removes the crawler and sets the file type specific loading icon
+     *
+     * @return {void}
+     */
+    setupLoading() {
+        const { file = {} } = this.options;
+
+        if (this.previewUI) {
+            this.previewUI.hideCrawler();
+            this.previewUI.setLoadingIcon(file.extension);
+        }
     }
 
     /**

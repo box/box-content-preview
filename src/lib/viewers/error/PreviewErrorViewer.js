@@ -44,7 +44,7 @@ class PreviewErrorViewer extends BaseViewer {
      * @override
      * @return {void}
      */
-    finishLoadingSetup() {
+    setupLoading() {
         /* no op, custom loading logic for errors */
     }
 

@@ -1175,10 +1175,6 @@ class Preview extends EventEmitter {
             this.ui.showLoadingDownloadButton(this.download);
         }
 
-        // Update the loading indicators
-        this.ui.hideCrawler();
-        this.ui.setLoadingIcon(this.file.extension);
-
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
 
