@@ -17,7 +17,7 @@ import {
 
 import { CSS_CLASS_HIDDEN } from '../box3DConstants';
 
-import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../icons/icons';
+import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../icons';
 
 /**
  * Model3dControls

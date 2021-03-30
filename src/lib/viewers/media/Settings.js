@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
-import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
+import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
 import Browser from '../../Browser';
 

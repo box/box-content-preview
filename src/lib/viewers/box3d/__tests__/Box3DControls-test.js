@@ -3,7 +3,7 @@ import Box3DControls from '../Box3DControls';
 import Controls from '../../../Controls';
 import { UIRegistry } from '../Box3DUIUtils';
 import { CLASS_HIDDEN } from '../../../constants';
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../../icons';
 import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from '../box3DConstants';
 
 let containerEl;

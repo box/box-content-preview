@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import { decodeKeydown } from '../../util';
 import { USER_DOCUMENT_FIND_EVENTS, VIEWER_EVENT } from '../../events';
 import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../constants';
-import { ICON_FIND_DROP_DOWN, ICON_FIND_DROP_UP, ICON_CLOSE, ICON_SEARCH } from '../../icons/icons';
+import { ICON_FIND_DROP_DOWN, ICON_FIND_DROP_UP, ICON_CLOSE, ICON_SEARCH } from '../../icons';
 
 const MATCH_SEPARATOR = ' of ';
 const MATCH_OFFSET = 13;

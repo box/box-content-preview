@@ -2,16 +2,27 @@
 
 .bp-error {
     width: 100%; // IE11 flex width bug - https://caniuse.com/#search=flex
-    height: 247px; // Error icon + text + optional download button
     color: $twos;
     font-size: 14px;
     text-align: center;
 
+    .bp-btn {
+        margin: 15px 0 0;
+    }
+
     .bp-error-text {
+        margin: 0;
         padding: 0 80px;
     }
 
-    .bp-btn {
-        margin-top: 20px;
+    .bp-icon-file {
+        width: 160px;
+        height: 160px;
+        margin: 0 auto;
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
     }
 }

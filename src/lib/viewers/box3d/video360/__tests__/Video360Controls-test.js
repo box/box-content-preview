@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Video360Controls from '../Video360Controls';
-import { ICON_3D_VR } from '../../../../icons/icons';
+import { ICON_3D_VR } from '../../../../icons';
 import { EVENT_TOGGLE_VR } from '../../box3DConstants';
 
 describe('lib/viewers/box3d/video360/Video360Controls', () => {

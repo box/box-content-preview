@@ -1,5 +1,5 @@
 import { CLASS_HIDDEN, CLASS_BOX_PREVIEW_NOTIFICATION, CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER } from './constants';
-import { ICON_CLOSE } from './icons/icons';
+import { ICON_CLOSE } from './icons';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 

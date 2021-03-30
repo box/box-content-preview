@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { EVENT_TOGGLE_VR } from '../box3DConstants';
-import { ICON_3D_VR } from '../../../icons/icons';
+import { ICON_3D_VR } from '../../../icons';
 
 const CSS_CLASS_HIDDEN = 'bp-is-hidden';
 const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'bp-media-controls-container';

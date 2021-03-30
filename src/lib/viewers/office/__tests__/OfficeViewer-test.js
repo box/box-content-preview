@@ -5,7 +5,7 @@ import Browser from '../../../Browser';
 import Location from '../../../Location';
 import OfficeViewer from '../OfficeViewer';
 import { CLASS_HIDDEN, SELECTOR_BOX_PREVIEW } from '../../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../../icons';
 
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;

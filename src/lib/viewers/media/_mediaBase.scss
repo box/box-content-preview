@@ -62,11 +62,9 @@
     }
 }
 
-// When lights are lowered, change color of loading text
+// When lights are lowered, change color of error text
 .bp-dark {
-    .bp-error,
-    .bp-loading-text,
-    .bp-btn-loading-download {
+    .bp-error {
         color: $white;
     }
 
@@ -76,28 +74,15 @@
 }
 
 // When media is buffering, show only the crawler
-.bp {
-    &,
-    &.bp-loaded {
-        .bp-is-buffering .bp-loading-wrapper {
-            display: flex;
-            // Show loading indicator immediately
-            animation-name: none;
+.bp.bp-loaded .bp-is-buffering .bp-loading-wrapper {
+    display: flex;
 
-            .bp-icon,
-            .bp-loading-text,
-            .bp-loading-btn-container {
-                display: none;
-            }
+    .bp-crawler-wrapper {
+        display: block;
+    }
 
-            .bp-crawler-wrapper {
-                position: static;
-
-                .bp-crawler div {
-                    background-color: $box-blue;
-                }
-            }
-        }
+    .bp-icon {
+        display: none;
     }
 }
 

@@ -76,17 +76,6 @@ $header-height: 48px;
     }
 }
 
-.bp-icon-file {
-    width: 160px;
-    height: 160px;
-    margin: 0 auto;
-
-    svg {
-        width: 100%;
-        height: 100%;
-    }
-}
-
 // Dark theme for header
 .bp-theme-dark {
     .bp-header {
@@ -112,9 +101,7 @@ $header-height: 48px;
         background-color: $sunset-grey;
     }
 
-    .bp-error,
-    .bp-loading-text,
-    .bp-btn-loading-download {
+    .bp-error {
         color: $white;
     }
 

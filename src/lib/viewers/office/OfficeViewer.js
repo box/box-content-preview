@@ -4,7 +4,7 @@ import Location from '../../Location';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
 

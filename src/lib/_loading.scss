@@ -41,10 +41,7 @@ $spinner-size: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: .25s opacity, .25s transform;
-    animation-name: fadeIn;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
+    transition: .25s opacity;
 
     .bp-loaded & {
         display: none;
@@ -62,25 +59,14 @@ $spinner-size: 15px;
 
 .bp-loading {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: $twos;
-    text-align: center;
 }
 
-.bp-loading-btn-container {
-    padding: 15px 0 27px; // Same height as error viewer
-    text-align: center;
-}
-
-.bp-btn-loading-download {
-    color: $better-black;
-    font-size: 12px;
-}
-
-// This crawler wrapper is used during preview loading
 .bp-crawler-wrapper {
-    position: absolute;
-    top: 72px;
-    width: 100%;
+    display: none;
 
     .bp-crawler {
         transform: scale(1.5);
@@ -91,7 +77,6 @@ $spinner-size: 15px;
     }
 }
 
-// Crawler is 3 short lines pulsing
 .bp-crawler {
     text-align: center;
 
@@ -101,7 +86,7 @@ $spinner-size: 15px;
         height: 10px;
         background-color: $box-blue;
         border-radius: 4px;
-        animation: box-crawler .66s infinite ease-in-out;
+        animation: box-crawler .66s infinite ease-in-out; // Crawler is 3 short lines pulsing
     }
 
     div:nth-child(2) {
