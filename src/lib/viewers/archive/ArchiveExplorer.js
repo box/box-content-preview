@@ -3,15 +3,13 @@ import PropTypes from 'prop-types';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
+import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
-import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table';
+import itemNameCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/itemNameCellRenderer';
+import readableTimeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/readableTimeCellRenderer';
+import sizeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sizeCellRenderer';
+import sortableColumnHeaderRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sortableColumnHeaderRenderer';
 import { AutoSizer, Column, SortDirection } from 'react-virtualized';
-import {
-    itemNameCellRenderer,
-    readableTimeCellRenderer,
-    sizeCellRenderer,
-    sortableColumnHeaderRenderer,
-} from 'box-ui-elements/es/features/virtualized-table-renderers';
 import { addLocaleData } from 'react-intl';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
