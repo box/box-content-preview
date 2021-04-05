@@ -1218,7 +1218,6 @@ describe('lib/Preview', () => {
             previewUIMock.expects('setup');
             previewUIMock.expects('showLoadingIcon');
             previewUIMock.expects('showLoadingIndicator');
-            previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
             previewUIMock.expects('setupNotification');
 
@@ -1318,15 +1317,6 @@ describe('lib/Preview', () => {
             preview.previewOptions.showLoading = false;
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.showLoading).toBe(false);
-        });
-
-        test('should set whether to show progress indicators', () => {
-            preview.parseOptions(preview.previewOptions);
-            expect(preview.options.showProgress).toBe(true);
-
-            preview.previewOptions.showProgress = false;
-            preview.parseOptions(preview.previewOptions);
-            expect(preview.options.showProgress).toBe(false);
         });
 
         test('should set whether to skip load from the server and any server updates', () => {
@@ -1784,11 +1774,6 @@ describe('lib/Preview', () => {
     });
 
     describe('handleViewerEvents()', () => {
-        beforeEach(() => {
-            jest.spyOn(preview.ui, 'startProgressBar').mockImplementation();
-            jest.spyOn(preview.ui, 'finishProgressBar').mockImplementation();
-        });
-
         test('should call download on download event', () => {
             jest.spyOn(preview, 'download').mockImplementation();
             preview.handleViewerEvents({ event: VIEWER_EVENT.download });
@@ -1805,16 +1790,6 @@ describe('lib/Preview', () => {
             jest.spyOn(preview, 'finishLoading').mockImplementation();
             preview.handleViewerEvents({ event: VIEWER_EVENT.load });
             expect(preview.finishLoading).toBeCalled();
-        });
-
-        test('should start progress bar on progressstart event', () => {
-            preview.handleViewerEvents({ event: VIEWER_EVENT.progressStart });
-            expect(preview.ui.startProgressBar).toBeCalled();
-        });
-
-        test('should finish progress bar on progressend event', () => {
-            preview.handleViewerEvents({ event: VIEWER_EVENT.progressEnd });
-            expect(preview.ui.finishProgressBar).toBeCalled();
         });
 
         test('should emit viewerevent when event does not match', () => {
@@ -1867,7 +1842,6 @@ describe('lib/Preview', () => {
             stubs.emit = jest.spyOn(preview, 'emit');
             stubs.logPreviewEvent = jest.spyOn(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = jest.spyOn(preview, 'prefetchNextFiles');
-            stubs.finishProgressBar = jest.spyOn(preview.ui, 'finishProgressBar').mockImplementation();
             stubs.setupNotification = jest.spyOn(preview.ui, 'setupNotification').mockImplementation();
 
             stubs.perf = {
@@ -1968,18 +1942,6 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(callPhantomSpy).toBeCalled();
-        });
-
-        test('should postload if skipPostload is not true', () => {
-            preview.finishLoading();
-            expect(stubs.finishProgressBar).toBeCalled();
-        });
-
-        test('should skip postload if skipPostload is true', () => {
-            preview.finishLoading({
-                endProgress: false,
-            });
-            expect(stubs.finishProgressBar).not.toBeCalled();
         });
 
         test('should focus the viewer container', () => {

@@ -870,10 +870,9 @@ class Preview extends EventEmitter {
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
 
-        // Setup loading UI and progress bar
+        // Setup loading indicator
         this.ui.showLoadingIcon(this.file.extension);
         this.ui.showLoadingIndicator();
-        this.ui.startProgressBar();
 
         // Start the preview duration timer when the user starts to perceive preview's load
         const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
@@ -928,9 +927,6 @@ class Preview extends EventEmitter {
 
         // Whether the loading indicator should be shown
         this.options.showLoading = options.showLoading !== false;
-
-        // Whether the progress indicator should be shown
-        this.options.showProgress = options.showProgress !== false;
 
         // Whether annotations v4 buttons should be shown in toolbar
         this.options.showAnnotationsControls = !!options.showAnnotationsControls;
@@ -1264,12 +1260,6 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.load:
                 this.finishLoading(data.data);
                 break;
-            case VIEWER_EVENT.progressStart:
-                this.ui.startProgressBar();
-                break;
-            case VIEWER_EVENT.progressEnd:
-                this.ui.finishProgressBar();
-                break;
             case VIEWER_EVENT.error:
                 // Do nothing since 'error' event was already caught, and will be emitted
                 // as a 'preview_error' event
@@ -1371,11 +1361,6 @@ class Preview extends EventEmitter {
             if (typeof window.callPhantom === 'function') {
                 window.callPhantom(1);
             }
-        }
-
-        // Finish the progress bar unless instructed not to
-        if (data.endProgress !== false) {
-            this.ui.finishProgressBar();
         }
 
         // Programmatically focus on the viewer after it loads

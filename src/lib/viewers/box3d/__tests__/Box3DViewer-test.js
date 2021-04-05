@@ -16,7 +16,6 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_WEBGL_CONTEXT_RESTORED,
 } from '../box3DConstants';
-import { VIEWER_EVENT } from '../../../events';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
 const sandbox = sinon.createSandbox();
@@ -534,14 +533,6 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('handleContextRestored()', () => {
-        test('should call emit() with params ["progressstart"]', () => {
-            jest.spyOn(box3d, 'emit').mockImplementation();
-
-            box3d.handleContextRestored();
-
-            expect(box3d.emit).toBeCalledWith(VIEWER_EVENT.progressStart);
-        });
-
         test('should call detachEventHandlers', () => {
             const detachHandlers = jest.spyOn(box3d, 'detachEventHandlers');
             box3d.handleContextRestored();

@@ -1,6 +1,5 @@
 import LoadingIcon from './LoadingIcon';
 import Notification from './Notification';
-import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
 import {
     CLASS_BOX_PREVIEW_BASE_HEADER,
@@ -49,9 +48,6 @@ class PreviewUI {
     /** @property {HTMLElement} - Preview container element which houses the sidebar and content */
     previewContainer;
 
-    /** @property {ProgressBar} - Progress bar instance */
-    progressBar;
-
     /**
      * Destroy preview container content.
      *
@@ -59,10 +55,6 @@ class PreviewUI {
      * @return {void}
      */
     cleanup() {
-        if (this.progressBar) {
-            this.progressBar.destroy();
-        }
-
         if (this.previewContainer) {
             this.previewContainer.removeEventListener('mousemove', this.mousemoveHandler);
         }
@@ -129,11 +121,6 @@ class PreviewUI {
         // Destroy the loading icon if disabled
         if (options.showLoading === false) {
             this.destroyLoading();
-        }
-
-        // Setup progress bar
-        if (options.showProgress) {
-            this.progressBar = new ProgressBar(this.container);
         }
 
         // Attach keyboard events
@@ -272,30 +259,6 @@ class PreviewUI {
         }
 
         this.previewContainer.classList.add(CLASS_PREVIEW_LOADED);
-    }
-
-    /**
-     * Shows and starts a progress bar at the top of the preview.
-     *
-     * @public
-     * @return {void}
-     */
-    startProgressBar() {
-        if (this.progressBar) {
-            this.progressBar.start();
-        }
-    }
-
-    /**
-     * Finishes and hides the top progress bar if present.
-     *
-     * @public
-     * @return {void}
-     */
-    finishProgressBar() {
-        if (this.progressBar) {
-            this.progressBar.finish();
-        }
     }
 
     /**

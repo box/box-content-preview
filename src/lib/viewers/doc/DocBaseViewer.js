@@ -1150,7 +1150,6 @@ class DocBaseViewer extends BaseViewer {
             this.emit(VIEWER_EVENT.load, {
                 encoding: this.encoding,
                 numPages: pagesCount,
-                endProgress: false, // Indicate that viewer will end progress later
                 scale: currentScale,
             });
 
@@ -1207,10 +1206,9 @@ class DocBaseViewer extends BaseViewer {
             pageNum: pageNumber,
         });
 
-        // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
+        // Cleanup preload after a page is rendered
         if (!this.somePageRendered) {
             this.hidePreload();
-            this.emit(VIEWER_EVENT.progressEnd);
             this.somePageRendered = true;
 
             if (this.options.enableThumbnailsSidebar) {

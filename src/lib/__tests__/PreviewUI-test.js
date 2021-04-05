@@ -23,7 +23,6 @@ describe('lib/PreviewUI', () => {
         options = {
             container: containerEl,
             showLoading: true,
-            showProgress: true,
         };
     });
 
@@ -33,10 +32,9 @@ describe('lib/PreviewUI', () => {
     });
 
     describe('cleanup()', () => {
-        test('should destroy progress bar, clean up shell, and remove event listeners', () => {
+        test('should clean up shell and remove event listeners', () => {
             const resultEl = ui.setup(options, handler, null, null, handler);
 
-            jest.spyOn(ui.progressBar, 'destroy');
             const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
             sandbox
                 .mock(contentContainerEl)
@@ -49,26 +47,23 @@ describe('lib/PreviewUI', () => {
 
             ui.cleanup();
 
-            expect(ui.progressBar.destroy).toBeCalled();
             expect(resultEl).toBeEmptyDOMElement();
         });
     });
 
     describe('setup()', () => {
-        test('should setup shell structure, header, progress bar, and loading state', () => {
+        test('should setup shell structure, header, and loading state', () => {
             const resultEl = ui.setup(options);
 
             expect(resultEl).toBe(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTAINER));
             expect(resultEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_HEADER);
-            expect(resultEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
             // Check loading state
             expect(resultEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
         });
 
-        test('should not setup the progress bar or loading state if their respective option is false', () => {
-            const resultEl = ui.setup({ container: containerEl, showLoading: false, showProgress: false });
-            expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
+        test('should not setup the loading state if their respective option is false', () => {
+            const resultEl = ui.setup({ container: containerEl, showLoading: false });
             expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
         });
 
@@ -229,28 +224,6 @@ describe('lib/PreviewUI', () => {
 
             expect(ui.loadingIcon).toBeInstanceOf(LoadingIcon);
             expect(ui.loadingIcon.render).toBeCalledWith('pdf');
-        });
-    });
-
-    describe('startProgressBar()', () => {
-        test('should start the progress bar', () => {
-            ui.progressBar = {
-                start: jest.fn(),
-            };
-
-            ui.startProgressBar();
-            expect(ui.progressBar.start).toBeCalled();
-        });
-    });
-
-    describe('finishProgressBar()', () => {
-        test('should finish the progress bar', () => {
-            ui.progressBar = {
-                finish: jest.fn(),
-            };
-
-            ui.finishProgressBar();
-            expect(ui.progressBar.finish).toBeCalled();
         });
     });
 
