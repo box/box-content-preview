@@ -1,7 +1,7 @@
 import BaseViewer from '../BaseViewer';
+import ErrorIcon from './ErrorIcon';
 import PreviewError from '../../PreviewError';
 import { canDownload } from '../../file';
-import { getIconFromExtension, getIconFromName } from '../../icons/icons';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { stripAuthFromString } from '../../util';
 import './PreviewError.scss';
@@ -58,6 +58,10 @@ class PreviewErrorViewer extends BaseViewer {
             this.downloadBtnEl.removeEventListener('click', this.download);
         }
 
+        if (this.errorIcon) {
+            this.errorIcon.destroy();
+        }
+
         super.destroy();
     }
 
@@ -76,23 +80,12 @@ class PreviewErrorViewer extends BaseViewer {
 
         const { displayMessage, details, message } = error;
         const { file } = this.options;
+        const { extension } = file || {};
+        const iconExtension = extension === 'flv' || extension === 'tgz' || extension === 'zip' ? extension : undefined;
 
-        this.icon = getIconFromName('FILE_DEFAULT');
-
-        // Generic errors will not have the file object
-        if (file) {
-            switch (file.extension) {
-                case 'zip':
-                case 'tgz':
-                case 'flv':
-                    this.icon = getIconFromExtension(file.extension);
-                    break;
-                default:
-                // no-op
-            }
-        }
-
-        this.iconEl.innerHTML = this.icon;
+        // Display the default or file-specific error icon
+        this.errorIcon = new ErrorIcon({ containerEl: this.iconEl });
+        this.errorIcon.render(iconExtension);
 
         // Display user-friendly error message
         this.messageEl.textContent = displayMessage;

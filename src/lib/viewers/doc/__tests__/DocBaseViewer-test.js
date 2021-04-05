@@ -30,7 +30,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
 

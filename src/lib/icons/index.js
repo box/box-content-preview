@@ -1,0 +1,17 @@
+export { default as ICON_3D_RESET } from './3D_reset_24px.svg';
+export { default as ICON_3D_VR } from './3D_vr_24px.svg';
+export { default as ICON_ANIMATION } from './animation_24px.svg';
+export { default as ICON_ARROW_LEFT } from './arrow_left_24px.svg';
+export { default as ICON_ARROW_RIGHT } from './arrow_right_24px.svg';
+export { default as ICON_CHECK_MARK } from './checkmark_24px.svg';
+export { default as ICON_CLOSE } from './close.svg';
+export { default as ICON_FIND_DROP_DOWN } from './arrow_drop_down.svg';
+export { default as ICON_FIND_DROP_UP } from './arrow_drop_up.svg';
+export { default as ICON_FULLSCREEN_IN } from './full_screen_in_24px.svg';
+export { default as ICON_FULLSCREEN_OUT } from './full_screen_out_24px.svg';
+export { default as ICON_GEAR } from './gear_24px.svg';
+export { default as ICON_PAUSE } from './pause_24px.svg';
+export { default as ICON_PLAY } from './play_24px.svg';
+export { default as ICON_PLAY_LARGE } from './play_48px.svg';
+export { default as ICON_PRINT_CHECKMARK } from './print_checkmark.svg';
+export { default as ICON_SEARCH } from './search.svg';

@@ -1216,6 +1216,7 @@ describe('lib/Preview', () => {
         test('should setup the shell, update navigation, and show loading/start progress', () => {
             const previewUIMock = sandbox.mock(preview.ui);
             previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIcon');
             previewUIMock.expects('showLoadingIndicator');
             previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
@@ -1666,7 +1667,6 @@ describe('lib/Preview', () => {
             stubs.destroy = jest.spyOn(preview, 'destroy');
             stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockReturnValue(true);
             stubs.canDownload = jest.spyOn(file, 'canDownload').mockReturnValue(false);
-            stubs.showLoadingDownloadButton = jest.spyOn(preview.ui, 'showLoadingDownloadButton').mockImplementation();
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
@@ -1709,18 +1709,6 @@ describe('lib/Preview', () => {
         test('should throw an error if user does not have permission to preview', () => {
             stubs.checkPermission.mockReturnValue(false);
             expect(() => preview.loadViewer()).toThrowError(PreviewError);
-        });
-
-        test('should show the loading download button if file can be downloaded', () => {
-            stubs.canDownload.mockReturnValue(true);
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).toBeCalled();
-        });
-
-        test("should not show the loading download button if file can't be downloaded", () => {
-            stubs.canDownload.mockReturnValue(false);
-            preview.loadViewer({});
-            expect(stubs.showLoadingDownloadButton).not.toBeCalled();
         });
 
         test('should throw an unsupported error if there is no loader for general file types', () => {

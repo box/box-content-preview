@@ -1,11 +1,13 @@
 /* eslint-disable no-unused-expressions */
-import PreviewErrorViewer from '../PreviewErrorViewer';
+import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
+import ErrorIcon from '../ErrorIcon';
 import PreviewError from '../../../PreviewError';
-import * as file from '../../../file';
-import * as icons from '../../../icons/icons';
+import PreviewErrorViewer from '../PreviewErrorViewer';
 import { VIEWER_EVENT } from '../../../events';
+
+jest.mock('../ErrorIcon');
 
 let error;
 let containerEl;
@@ -49,27 +51,18 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
     });
 
     describe('load()', () => {
-        [
-            ['zip', true],
-            ['tgz', true],
-            ['flv', true],
-            ['blah', false],
-        ].forEach(testCase => {
-            test('should set appropriate icon', () => {
-                const getIconFromExtensionStub = jest.spyOn(icons, 'getIconFromExtension');
-                const getIconFromNameStub = jest.spyOn(icons, 'getIconFromName');
-                const extension = testCase[0];
-                const hasCustomIcon = testCase[1];
+        test.each([
+            ['zip', 'zip'],
+            ['tgz', 'tgz'],
+            ['flv', 'flv'],
+            ['blah', undefined],
+        ])('should set appropriate icon', (fileExtension, iconExtension) => {
+            const err = new PreviewError('some_code');
+            error.options.file.extension = fileExtension;
+            error.load(err);
 
-                const err = new PreviewError('some_code');
-                error.options.file.extension = extension;
-                error.load(err);
-
-                expect(getIconFromNameStub).toBeCalled();
-                if (hasCustomIcon) {
-                    expect(getIconFromExtensionStub).toBeCalledWith(extension);
-                }
-            });
+            expect(error.errorIcon).toBeInstanceOf(ErrorIcon);
+            expect(error.errorIcon.render).toBeCalledWith(iconExtension);
         });
 
         test('should add link button if error has linkText and linkUrl defined', () => {

@@ -2,7 +2,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import TextBaseViewer from './TextBaseViewer';
 import { BROWSERS, CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { VIEWER_EVENT } from '../../events';

@@ -232,8 +232,7 @@ class BaseViewer extends EventEmitter {
         const { file = {} } = this.options;
 
         if (this.previewUI) {
-            this.previewUI.hideCrawler();
-            this.previewUI.setLoadingIcon(file.extension);
+            this.previewUI.showLoadingIcon(file.extension);
         }
     }
 

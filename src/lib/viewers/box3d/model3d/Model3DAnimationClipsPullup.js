@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import { CSS_CLASS_ANIMATION_CLIP_PULLUP, CSS_CLASS_HIDDEN, EVENT_SELECT_ANIMATION_CLIP } from './model3DConstants';
 
 import { createPullup, UIRegistry } from '../Box3DUIUtils';
-import { ICON_CHECK_MARK } from '../../../icons/icons';
+import { ICON_CHECK_MARK } from '../../../icons';
 import { createFragment } from '../../../util';
 
 const CLIP_TEMPLATE = `

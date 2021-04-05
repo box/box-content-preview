@@ -1,5 +1,5 @@
 import { CLASS_HIDDEN } from './constants';
-import { ICON_CLOSE } from './icons/icons';
+import { ICON_CLOSE } from './icons';
 import { decodeKeydown } from './util';
 
 class Popup {

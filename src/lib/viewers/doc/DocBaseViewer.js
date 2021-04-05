@@ -32,7 +32,7 @@ import {
 } from '../../constants';
 import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
 import {
     ERROR_CODE,

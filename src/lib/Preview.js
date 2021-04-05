@@ -871,6 +871,7 @@ class Preview extends EventEmitter {
         this.ui.showNavigation(this.file.id, this.collection);
 
         // Setup loading UI and progress bar
+        this.ui.showLoadingIcon(this.file.extension);
         this.ui.showLoadingIndicator();
         this.ui.startProgressBar();
 
@@ -1168,11 +1169,6 @@ class Preview extends EventEmitter {
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
-        }
-
-        // Show loading download button if user can download
-        if (canDownload(this.file, this.options)) {
-            this.ui.showLoadingDownloadButton(this.download);
         }
 
         // Determine the asset loader to use

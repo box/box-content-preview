@@ -1,6 +1,7 @@
+import LoadingIcon from './LoadingIcon';
+import Notification from './Notification';
 import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
-import Notification from './Notification';
 import {
     CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
@@ -8,25 +9,19 @@ import {
     CLASS_BOX_PREVIEW_HEADER,
     CLASS_BOX_PREVIEW_THEME_DARK,
     CLASS_HIDDEN,
-    CLASS_INVISIBLE,
     CLASS_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
-    SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_CONTAINER,
-    SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_HEADER_CONTAINER,
-    SELECTOR_BOX_PREVIEW_LOADING_TEXT,
-    SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
     SELECTOR_BOX_PREVIEW_LOGO_DEFAULT,
     SELECTOR_BOX_PREVIEW,
-    SELECTOR_NAVIGATION_LEFT,
-    SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_CONTENT,
     SELECTOR_BOX_PREVIEW_ICON,
+    SELECTOR_NAVIGATION_LEFT,
+    SELECTOR_NAVIGATION_RIGHT,
 } from './constants';
-import { getIconFromName, getIconFromExtension } from './icons/icons';
 import { insertTemplate } from './util';
 
 class PreviewUI {
@@ -48,6 +43,9 @@ class PreviewUI {
     /** @property {Function} - Keydown handler */
     keydownHandler;
 
+    /** @property {LoadingIcon} - Loading icon instance */
+    loadingIcon;
+
     /** @property {HTMLElement} - Preview container element which houses the sidebar and content */
     previewContainer;
 
@@ -67,6 +65,11 @@ class PreviewUI {
 
         if (this.previewContainer) {
             this.previewContainer.removeEventListener('mousemove', this.mousemoveHandler);
+        }
+
+        if (this.loadingIcon) {
+            this.loadingIcon.destroy();
+            this.loadingIcon = null;
         }
 
         if (this.container) {
@@ -123,16 +126,14 @@ class PreviewUI {
             this.setupHeader(options.header, options.logoUrl);
         }
 
+        // Destroy the loading icon if disabled
+        if (options.showLoading === false) {
+            this.destroyLoading();
+        }
+
         // Setup progress bar
         if (options.showProgress) {
             this.progressBar = new ProgressBar(this.container);
-        }
-
-        // Setup loading indicator
-        if (options.showLoading) {
-            this.setupLoading();
-        } else {
-            this.destroyLoading();
         }
 
         // Attach keyboard events
@@ -248,25 +249,7 @@ class PreviewUI {
     }
 
     /**
-     * Shows the loading download button if the viewers implement download
-     *
-     * @public
-     * @param {Function} handler - Download click handler
-     * @return {void}
-     */
-    showLoadingDownloadButton(handler) {
-        const downloadButtonEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
-        if (!downloadButtonEl) {
-            return;
-        }
-
-        downloadButtonEl.title = __('download');
-        downloadButtonEl.classList.remove(CLASS_INVISIBLE);
-        downloadButtonEl.addEventListener('click', handler);
-    }
-
-    /**
-     * Shows the loading indicator.
+     * Shows the loading indicator
      *
      * @public
      * @return {void}
@@ -289,47 +272,6 @@ class PreviewUI {
         }
 
         this.previewContainer.classList.add(CLASS_PREVIEW_LOADED);
-        this.showCrawler();
-    }
-
-    /**
-     * Hides the loading crawler.
-     *
-     * @public
-     * @return {void}
-     */
-    hideCrawler() {
-        const crawler = this.previewContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-        if (crawler) {
-            crawler.classList.add(CLASS_HIDDEN);
-        }
-    }
-
-    /**
-     * Shows the loading crawler.
-     *
-     * @public
-     * @return {void}
-     */
-    showCrawler() {
-        const crawler = this.previewContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-        if (crawler) {
-            crawler.classList.remove(CLASS_HIDDEN);
-        }
-    }
-
-    /**
-     * Set the icon for the loading indicator based on the file extension.
-     *
-     * @public
-     * @param {string} extension - File extension
-     * @return {void}
-     */
-    setLoadingIcon(extension) {
-        const iconWrapperEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-        if (iconWrapperEl) {
-            iconWrapperEl.innerHTML = getIconFromExtension(extension) || getIconFromName('FILE_DEFAULT');
-        }
     }
 
     /**
@@ -420,22 +362,38 @@ class PreviewUI {
         headerToShow.classList.remove(CLASS_HIDDEN);
     }
 
+    /**
+     * Sets the preview loading icon
+     *
+     * @public
+     * @param {string} extension - File extension to use for loading icon
+     * @return {void}
+     */
+    showLoadingIcon(extension) {
+        const iconEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+
+        if (iconEl) {
+            this.loadingIcon = this.loadingIcon || new LoadingIcon({ containerEl: iconEl });
+            this.loadingIcon.render(extension);
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
     /**
-     * Remove global loading indicators from the shell
+     * Remove global loading indicator from the shell
      *
      * @private
      * @return {void}
      */
     destroyLoading() {
-        const loadingWrapperEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
-        if (!loadingWrapperEl) {
+        const loadingIconEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+        if (!loadingIconEl) {
             return;
         }
 
-        loadingWrapperEl.parentElement.removeChild(loadingWrapperEl);
+        loadingIconEl.parentElement.removeChild(loadingIconEl);
     }
 
     /**
@@ -468,25 +426,6 @@ class PreviewUI {
             customLogoEl.src = logoUrl;
             customLogoEl.classList.remove(CLASS_HIDDEN);
         }
-    }
-
-    /**
-     * Sets up preview loading indicator.
-     *
-     * @private
-     * @return {void}
-     */
-    setupLoading() {
-        const loadingWrapperEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
-        if (!loadingWrapperEl) {
-            return;
-        }
-
-        const loadingTextEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_LOADING_TEXT);
-        loadingTextEl.textContent = __('loading_preview');
-
-        const loadingDownloadButtonEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
-        loadingDownloadButtonEl.textContent = __('download_file');
     }
 }
 

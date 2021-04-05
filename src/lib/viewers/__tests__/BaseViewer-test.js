@@ -37,13 +37,12 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            hideCrawler: jest.fn(),
             notification: {
                 show: jest.fn(),
                 hide: jest.fn(),
             },
             replaceHeader: jest.fn(),
-            setLoadingIcon: jest.fn(),
+            showLoadingIcon: jest.fn(),
         };
     });
 
@@ -124,8 +123,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.setupLoading();
 
-            expect(base.previewUI.hideCrawler).toBeCalled();
-            expect(base.previewUI.setLoadingIcon).toBeCalledWith('pdf');
+            expect(base.previewUI.showLoadingIcon).toBeCalledWith('pdf');
         });
     });
 
