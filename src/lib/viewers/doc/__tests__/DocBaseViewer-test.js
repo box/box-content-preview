@@ -1892,7 +1892,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagesinitHandler();
                 expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
                     encoding: docBase.encoding,
-                    endProgress: false,
                     numPages: 5,
                     scale: 'unknown',
                 });

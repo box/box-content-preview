@@ -9,8 +9,6 @@ export const VIEWER_EVENT = {
     notificationHide: 'notificationhide', // Hide notification modal.
     notificationShow: 'notificationshow', // Show notification modal.
     printSuccess: 'printsuccess', // When printing is successful
-    progressEnd: 'progressend', // Stop using loading indicator.
-    progressStart: 'progressstart', // Begin using loading indicator.
     reload: 'reload', // Reload preview.
     thumbnailsClose: 'thumbnailsClose', // When thumbnails sidebar closes
     thumbnailsOpen: 'thumbnailsOpen', // When thumbnails sidebar opens
