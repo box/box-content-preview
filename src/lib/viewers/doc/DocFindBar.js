@@ -82,6 +82,7 @@ class DocFindBar extends EventEmitter {
         // Find input field
         this.findFieldEl = document.createElement('input');
         this.findFieldEl.classList.add('bp-doc-find-field');
+        this.findFieldEl.setAttribute('aria-label', __('find_label'));
         this.findBarEl.appendChild(this.findFieldEl);
 
         // Match Results Count
