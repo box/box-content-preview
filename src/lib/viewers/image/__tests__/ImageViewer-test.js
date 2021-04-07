@@ -29,6 +29,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             container: containerEl,
             file: {
                 id: '1',
+                name: 'tales.png',
                 file_version: {
                     id: '1',
                 },
@@ -88,6 +89,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         test('should set up layout', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
+            expect(image.imageEl).toHaveAttribute('alt', 'tales.png');
         });
 
         test.each`

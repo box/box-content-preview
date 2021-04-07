@@ -1,4 +1,5 @@
 import React from 'react';
+import getProp from 'lodash/get';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
@@ -80,6 +81,9 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
         this.currentRotationAngle = 0;
+
+        const fileName = getProp(this.options, 'file.name');
+        this.imageEl.setAttribute('alt', fileName);
 
         if (this.options.enableAnnotationsImageDiscoverability) {
             this.addListener('zoom', this.handleZoomEvent);
