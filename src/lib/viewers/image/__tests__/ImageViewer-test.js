@@ -89,7 +89,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         test('should set up layout', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
-            expect(image.imageEl.getAttribute('alt')).toBe('preview image tales');
+            expect(image.imageEl.getAttribute('alt')).toBe('tales.png');
         });
 
         test.each`
