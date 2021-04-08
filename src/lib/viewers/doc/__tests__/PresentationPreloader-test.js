@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import PresentationPreloader from '../PresentationPreloader';
 import * as util from '../../../util';
+import PresentationPreloader from '../PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
 
 let preloader;
@@ -9,15 +9,8 @@ let stubs;
 describe('lib/viewers/doc/PresentationPreloader', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/PresentationPreloader-test.html');
-        preloader = new PresentationPreloader({
-            hideLoadingIndicator: () => {},
-        });
-        preloader.previewUI = {
-            hideLoadingIndicator: jest.fn(),
-        };
-        stubs = {
-            hideLoadingIndicator: preloader.previewUI.hideLoadingIndicator,
-        };
+        preloader = new PresentationPreloader({});
+        stubs = {};
     });
 
     afterEach(() => {
@@ -29,7 +22,7 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
             stubs.checkDocumentLoaded = jest.spyOn(preloader, 'checkDocumentLoaded').mockImplementation();
             stubs.emit = jest.spyOn(preloader, 'emit').mockImplementation();
             stubs.setDimensions = jest.spyOn(util, 'setDimensions').mockImplementation();
-            preloader.imageEl = {};
+            preloader.placeholderEl = document.createElement('div');
             preloader.preloadEl = document.createElement('div');
         });
 
@@ -39,10 +32,9 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
             preloader.scaleAndShowPreload(1, 1, 1);
 
             expect(stubs.setDimensions).not.toBeCalled();
-            expect(stubs.hideLoadingIndicator).not.toBeCalled();
         });
 
-        test('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
+        test('should set preload image dimensions, show preload element, and emit preload event', () => {
             preloader.preloadEl.classList.add(CLASS_INVISIBLE);
 
             const width = 100;
@@ -50,9 +42,7 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
 
             preloader.scaleAndShowPreload(width, height, 1);
 
-            expect(stubs.setDimensions).toBeCalledWith(preloader.imageEl, width, height);
-            expect(stubs.setDimensions).toBeCalledWith(preloader.overlayEl, width, height);
-            expect(stubs.hideLoadingIndicator).toBeCalled();
+            expect(stubs.setDimensions).toBeCalledWith(preloader.placeholderEl, width, height);
             expect(stubs.emit).toBeCalledWith('preload');
             expect(preloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
         });

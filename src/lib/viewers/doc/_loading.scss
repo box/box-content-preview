@@ -1,0 +1,6 @@
+@import '~box-ui-elements/es/styles/constants/colors';
+
+@mixin bp-LoadingGhost {
+    background: $bdl-gray-05 url('../../icons/loading_ghost.gif') repeat-y;
+    background-size: 100% 100%;
+}
