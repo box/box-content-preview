@@ -2,17 +2,18 @@ import EventEmitter from 'events';
 import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
+    CLASS_BOX_PREVIEW_PRELOAD_BACKGROUND,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
-    CLASS_BOX_PREVIEW_PRELOAD_SPINNER,
+    CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
     PDFJS_CSS_UNITS,
+    PDFJS_HEIGHT_PADDING_PX,
     PDFJS_MAX_AUTO_SCALE,
     PDFJS_WIDTH_PADDING_PX,
-    PDFJS_HEIGHT_PADDING_PX,
 } from '../../constants';
 import { setDimensions, handleRepresentationBlobFetch } from '../../util';
 
@@ -23,8 +24,6 @@ const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of
 const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
 
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
-
-const SPINNER_HTML = `<div class="${CLASS_BOX_PREVIEW_PRELOAD_SPINNER}"></div>`;
 
 class DocPreloader extends EventEmitter {
     /** @property {Api} - Api layer used for XHR calls */
@@ -39,11 +38,11 @@ class DocPreloader extends EventEmitter {
     /** @property {HTMLElement} - Maximum auto-zoom scale */
     maxZoomScale = PDFJS_MAX_AUTO_SCALE;
 
-    /** @property {HTMLElement} - Preload overlay element */
-    overlayEl;
-
     /** @property {Object} - The EXIF data for the PDF */
     pdfData;
+
+    /** @property {HTMLElement} - Preload placeholder element */
+    placeholderEl;
 
     /** @property {HTMLElement} - Preload container element */
     preloadEl;
@@ -101,17 +100,18 @@ class DocPreloader extends EventEmitter {
                 this.wrapperEl.className = this.wrapperClassName;
                 this.wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
-                    <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
-                    <div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT} ${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}">
-                        ${SPINNER_HTML}
+                    <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
+                        <div class="${CLASS_BOX_PREVIEW_PRELOAD_BACKGROUND}"></div>
+                        <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
+                        <div class="${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}"></div>
                     </div>
                 </div>
             `.trim();
 
                 this.containerEl.appendChild(this.wrapperEl);
+                this.placeholderEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
                 this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-                this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-                this.overlayEl = this.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
+                this.imageEl = this.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
                 this.bindDOMListeners();
             });
     }
@@ -129,21 +129,17 @@ class DocPreloader extends EventEmitter {
             return;
         }
 
-        // Set image and overlay dimensions
-        setDimensions(this.imageEl, scaledWidth, scaledHeight);
-        setDimensions(this.overlayEl, scaledWidth, scaledHeight);
+        // Set initial placeholder dimensions
+        setDimensions(this.placeholderEl, scaledWidth, scaledHeight);
 
         // Add and scale correct number of placeholder elements
         for (let i = 0; i < numPages - 1; i += 1) {
             const placeholderEl = document.createElement('div');
-            placeholderEl.className = CLASS_BOX_PREVIEW_PRELOAD_CONTENT;
-            placeholderEl.innerHTML = SPINNER_HTML;
+            placeholderEl.className = CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER;
+            placeholderEl.innerHTML = `<div class="${CLASS_BOX_PREVIEW_PRELOAD_BACKGROUND}"></div>`;
             setDimensions(placeholderEl, scaledWidth, scaledHeight);
             this.preloadEl.appendChild(placeholderEl);
         }
-
-        // Hide the preview-level loading indicator
-        this.previewUI.hideLoadingIndicator();
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
@@ -292,7 +288,7 @@ class DocPreloader extends EventEmitter {
 
         const { scaledWidth, scaledHeight } = dimensionData;
         // Scale preload and placeholder elements
-        const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_CONTENT);
+        const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER);
         for (let i = 0; i < preloadEls.length; i += 1) {
             setDimensions(preloadEls[i], scaledWidth, scaledHeight);
         }

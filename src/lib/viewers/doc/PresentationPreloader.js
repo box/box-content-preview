@@ -3,18 +3,10 @@ import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION } from 
 import { setDimensions } from '../../util';
 
 class PresentationPreloader extends DocPreloader {
-    /**
-     * @property {HTMLELement} - Maximum auto-zoom scale, set to 0 for no limit since presentation viewer doesn't
-     * have a maximum zoom scale and scales up to available viewport
-     */
+    /** @inheritdoc */
     maxZoomScale = 0;
 
-    /**
-     * [constructor]
-     *
-     * @param {PreviewUI} previewUI - UI instance
-     * @return {PresentationPreloader} PresentationPreloader instance
-     */
+    /** @inheritdoc */
     constructor(previewUI, options) {
         super(previewUI, options);
 
@@ -35,11 +27,8 @@ class PresentationPreloader extends DocPreloader {
             return;
         }
 
-        setDimensions(this.imageEl, scaledWidth, scaledHeight);
-        setDimensions(this.overlayEl, scaledWidth, scaledHeight);
-
-        // Hide the preview-level loading indicator
-        this.previewUI.hideLoadingIndicator();
+        // Set initial placeholder dimensions
+        setDimensions(this.placeholderEl, scaledWidth, scaledHeight);
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);

@@ -34,21 +34,31 @@
         }
     }
 
-    // Position preload content as if they were blank loading pages
-    .bp-preload-content {
-        position: relative;
-        display: block;
-        margin: 15px auto 30px;
-        padding-left: 1px; // Slight padding to help image text align with real text
-        background-color: $white;
+    .bp-preload-background,
+    .bp-preload-content,
+    .bp-preload-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
 
-        &.bp-preload-overlay {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: rgba(255, 255, 255, .4);
-        }
+    .bp-preload-background {
+        @include bp-Ghost;
+    }
+
+    .bp-preload-content {
+        width: 100%;
+    }
+
+    .bp-preload-overlay {
+        background-color: rgba(255, 255, 255, .4);
+    }
+
+    .bp-preload-placeholder {
+        position: relative;
+        margin: 15px auto 30px;
+        overflow: hidden;
     }
 }

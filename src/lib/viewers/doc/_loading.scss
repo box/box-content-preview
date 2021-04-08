@@ -1,0 +1,35 @@
+@import '~box-ui-elements/es/styles/constants/colors';
+
+@keyframes bp-Ghost-keyframes {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+@mixin bp-Ghost() {
+    overflow: hidden;
+    background-color: $bdl-gray-10;
+
+    &::before {
+        display: block;
+        width: 75%;
+        height: 100%;
+        background-image: linear-gradient(to right, $bdl-gray-10, lighten($bdl-gray-10, 2%) 50%, $bdl-gray-10 100%);
+        background-repeat: no-repeat;
+        transform: translateX(-50%);
+        animation: bp-Ghost-keyframes 1s linear infinite;
+        content: '';
+    }
+
+    .bp-theme-dark & {
+        background-color: $bdl-gray-62;
+
+        &::before {
+            background-image: linear-gradient(to right, $bdl-gray-62, lighten($bdl-gray-62, 2%) 50%, $bdl-gray-62 100%);
+        }
+    }
+}

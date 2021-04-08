@@ -1,12 +1,5 @@
 @import 'boxuiVariables';
 
-$spinner-size: 15px;
-
-@mixin spinner() {
-    background: url('icons/loading.gif') center no-repeat;
-    background-size: $spinner-size $spinner-size;
-}
-
 @keyframes box-crawler {
     0%,
     80%,
@@ -17,17 +10,6 @@ $spinner-size: 15px;
 
     40% {
         transform: scaleY(1.6);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeIn {
-    0%,
-    50% {
-        opacity: 0;
-    }
-
-    100% {
         opacity: 1;
     }
 }
@@ -98,29 +80,5 @@ $spinner-size: 15px;
         left: 8px;
         margin-left: 2px;
         animation-delay: .2s;
-    }
-}
-
-.bp .bp-doc.bp-doc-document,
-.bp .bp-doc.bp-doc-presentation {
-    // Overrides PDF.js loading spinner
-    .pdfViewer .page .loadingIcon {
-        @include spinner;
-    }
-}
-
-.bp-document-preload-wrapper,
-.bp-presentation-preload-wrapper {
-    .bp-preload-spinner {
-        @include spinner;
-
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: $spinner-size;
-        height: $spinner-size;
-        margin: auto;
     }
 }
