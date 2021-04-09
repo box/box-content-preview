@@ -48,6 +48,9 @@ class PreviewUI {
     /** @property {HTMLElement} - Preview container element which houses the sidebar and content */
     previewContainer;
 
+    /** @property {HTMLElement} - Preview container element which houses the custom-logo */
+    customLogoEl;
+
     /**
      * Destroy preview container content.
      *
@@ -112,6 +115,10 @@ class PreviewUI {
         this.container = this.container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
         this.previewContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
+        this.customLogoEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+
+        // Set alternative accesible text
+        this.customLogoEl.setAttribute('alt', __('logo'));
 
         // Setup the header, buttons, and theme
         if (options.header !== 'none') {
@@ -385,9 +392,8 @@ class PreviewUI {
             const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
             defaultLogoEl.classList.add(CLASS_HIDDEN);
 
-            const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
-            customLogoEl.src = logoUrl;
-            customLogoEl.classList.remove(CLASS_HIDDEN);
+            this.customLogoEl.src = logoUrl;
+            this.customLogoEl.classList.remove(CLASS_HIDDEN);
         }
     }
 }
