@@ -369,11 +369,12 @@ class PreviewUI {
      */
     setupHeader(headerTheme, logoUrl) {
         const headerContainerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
-        const customLogoEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+        headerContainerEl.classList.remove(CLASS_HIDDEN);
+
         const headerEl = headerContainerEl.firstElementChild;
         const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
+        const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
 
-        headerContainerEl.classList.remove(CLASS_HIDDEN);
         headerEl.className = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
         this.previewContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
         defaultLogoEl.setAttribute('aria-label', __('logo'));
