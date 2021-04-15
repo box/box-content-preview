@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import ThumbnailsSidebar, { DEFAULT_THUMBNAILS_SIDEBAR_WIDTH } from '../ThumbnailsSidebar';
+import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
 import * as utils from '../util';
 
-const TEST_SCALE = (DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2) / 10;
+const TEST_SCALE = 30;
 
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
@@ -103,7 +103,7 @@ describe('ThumbnailsSidebar', () => {
 
             return pagePromise.then(() => {
                 expect(stubs.getViewport).toBeCalled();
-                expect(thumbnailsSidebar.scale).toBe(DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10);
+                expect(thumbnailsSidebar.scale).toBe(15);
                 expect(thumbnailsSidebar.pageRatio).toBe(1);
                 expect(stubs.vsInit).toBeCalled();
             });
@@ -342,16 +342,6 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.thumbnailClickHandler(evt);
 
             expect(stubs.onThumbnailSelect).toBeCalledWith(3);
-            expect(stubs.focus).toBeCalled();
-            expect(stubs.preventDefault).toBeCalled();
-            expect(stubs.stopImmediatePropagation).toBeCalled();
-        });
-
-        test('should not call the onThumbnailSelect if target is not thumbnail element', () => {
-            targetEl.classList.remove('bp-thumbnail-nav');
-            thumbnailsSidebar.thumbnailClickHandler(evt);
-
-            expect(stubs.onThumbnailSelect).not.toBeCalled();
             expect(stubs.focus).toBeCalled();
             expect(stubs.preventDefault).toBeCalled();
             expect(stubs.stopImmediatePropagation).toBeCalled();
