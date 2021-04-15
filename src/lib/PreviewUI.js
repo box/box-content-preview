@@ -372,8 +372,12 @@ class PreviewUI {
         headerContainerEl.classList.remove(CLASS_HIDDEN);
 
         const headerEl = headerContainerEl.firstElementChild;
+        const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
+        const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+
         headerEl.className = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
         this.previewContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
+        defaultLogoEl.setAttribute('aria-label', __('logo'));
 
         // Setup theme, default is 'light'
         if (headerTheme === 'dark') {
@@ -382,10 +386,9 @@ class PreviewUI {
 
         // Set custom logo
         if (logoUrl) {
-            const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
             defaultLogoEl.classList.add(CLASS_HIDDEN);
+            customLogoEl.setAttribute('alt', __('logo'));
 
-            const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
             customLogoEl.src = logoUrl;
             customLogoEl.classList.remove(CLASS_HIDDEN);
         }
