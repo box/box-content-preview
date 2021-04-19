@@ -9,10 +9,9 @@ const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
-export const DEFAULT_THUMBNAILS_SIDEBAR_WIDTH = 154; // 225px sidebar width - 25px margin right, - 40px for page number - 6px for border
-const THUMBNAIL_IMAGE_WIDTH = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH * 2; // Multiplied by a scaling factor so that we render the image at a higher resolution
+const THUMBNAIL_TOTAL_WIDTH = 150; // 190px sidebar width - 40px margins
+const THUMBNAIL_IMAGE_WIDTH = THUMBNAIL_TOTAL_WIDTH * 2; // Multiplied by a scaling factor so that we render the image at a higher resolution
 const THUMBNAIL_MARGIN = 15;
-const BORDER_WIDTH = 6;
 
 class ThumbnailsSidebar {
     /** @property {HTMLElement} - The anchor element for this ThumbnailsSidebar */
@@ -78,19 +77,11 @@ class ThumbnailsSidebar {
      */
     thumbnailClickHandler(event) {
         const { target } = event;
+        const thumbnailEl = target.parentNode;
+        const thumbnailPage = parseInt(thumbnailEl.dataset.bpPageNum, 10);
 
-        // Only care about clicks on the thumbnail element itself.
-        // The image and page number have pointer-events: none so
-        // any click should be the thumbnail element itself.
-        if (target.classList.contains(CLASS_BOX_PREVIEW_THUMBNAIL_NAV)) {
-            const thumbnailEl = target.parentNode;
-            // Get the page number
-            const { bpPageNum: pageNumStr } = thumbnailEl.dataset;
-            const pageNum = parseInt(pageNumStr, 10);
-
-            if (this.onThumbnailSelect) {
-                this.onThumbnailSelect(pageNum);
-            }
+        if (this.onThumbnailSelect) {
+            this.onThumbnailSelect(thumbnailPage);
         }
 
         // IE 11 will focus a div when it's parent has a tabindex, so we focus the anchorEl to avoid
@@ -189,8 +180,8 @@ class ThumbnailsSidebar {
                 return;
             }
 
-            // Amount to scale down from fullsize to thumbnail size
-            this.scale = DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / width;
+            // Amount to scale down from full-size to thumbnail size
+            this.scale = THUMBNAIL_TOTAL_WIDTH / width;
             // Width : Height ratio of the page
             this.pageRatio = width / height;
             const scaledViewport = page.getViewport({ scale: this.scale });
@@ -199,7 +190,7 @@ class ThumbnailsSidebar {
             this.virtualScroller.init({
                 initialRowIndex: this.currentPage - 1,
                 totalItems: this.pdfViewer.pagesCount,
-                itemHeight: this.thumbnailHeight + BORDER_WIDTH,
+                itemHeight: this.thumbnailHeight,
                 containerHeight: this.getContainerHeight(),
                 margin: THUMBNAIL_MARGIN,
                 renderItemFn: this.createPlaceholderThumbnail,
@@ -255,6 +246,7 @@ class ThumbnailsSidebar {
 
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
+        thumbnailEl.setAttribute('role', 'button');
         thumbnailEl.appendChild(this.createPageNumber(pageNum));
 
         const thumbnailNav = this.createThumbnailNav();
@@ -285,7 +277,6 @@ class ThumbnailsSidebar {
     createThumbnailNav() {
         const thumbnailNav = document.createElement('div');
         thumbnailNav.className = CLASS_BOX_PREVIEW_THUMBNAIL_NAV;
-        thumbnailNav.setAttribute('role', 'button');
         return thumbnailNav;
     }
 
@@ -368,7 +359,7 @@ class ThumbnailsSidebar {
                 if (curPageRatio < this.pageRatio) {
                     // Set the canvas height to that of the thumbnail max height
                     canvas.height = Math.ceil(THUMBNAIL_IMAGE_WIDTH / this.pageRatio);
-                    // Find the canvas width based on the curent page ratio
+                    // Find the canvas width based on the current page ratio
                     canvas.width = canvas.height * curPageRatio;
                 } else {
                     // In case the current page ratio is same as the first page
@@ -402,7 +393,7 @@ class ThumbnailsSidebar {
 
         // Add the height and width to the image to be the same as the thumbnail
         // so that the css `background-image` rules will work
-        imageEl.style.width = `${DEFAULT_THUMBNAILS_SIDEBAR_WIDTH}px`;
+        imageEl.style.width = `${THUMBNAIL_TOTAL_WIDTH}px`;
         imageEl.style.height = `${this.thumbnailHeight}px`;
 
         return imageEl;

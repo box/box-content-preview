@@ -1,0 +1,19 @@
+@import '~box-ui-elements/es/styles/constants/colors';
+
+.custom-theme {
+    .bp .bp-thumbnail.bp-thumbnail-is-selected {
+        .bp-thumbnail-nav {
+            box-shadow: 0 0 0 3px $bdl-gray, 0 4px 5px 0 rgba(0, 0, 0, .08);
+        }
+
+        .bp-thumbnail-page-number {
+            background: $bdl-gray;
+        }
+
+        &.bp-thumbnail-image-loaded {
+            .bp-thumbnail-nav {
+                background-color: $bdl-gray;
+            }
+        }
+    }
+}

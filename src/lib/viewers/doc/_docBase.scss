@@ -1,17 +1,11 @@
 @import '../../boxuiVariables';
 @import './annotations';
+@import './theme';
 
 $pdfjs-highlight: #b400aa !default;
 $pdfjs-highlight-selected: #006400 !default;
-$thumbnail-border-radius: 3px;
-// Accounts for the 1px border on the right so the remaining width is actually 225
-$thumbnail-sidebar-width: 226px;
-
-@mixin bp-breakpoint-medium {
-    @media (min-width: 600px) {
-        @content;
-    }
-}
+$thumbnail-border-radius: 6px;
+$thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
 .bp {
     .bp-ThumbnailsToggle {
@@ -36,50 +30,77 @@ $thumbnail-sidebar-width: 226px;
     .bp-thumbnail {
         position: relative;
         display: flex;
-        flex: 1 0 auto;
-        margin-right: 25px;
-        padding: 0;
-    }
+        margin-right: 20px;
+        margin-left: 20px;
+        cursor: pointer;
 
-    .bp-thumbnail-page-number {
-        flex: 0 0 34px;
-        width: 34px;
-        margin: 4px 6px 0 0;
-        color: $twos;
-        font-size: 11px;
-        line-height: 16px;
-        text-align: right;
-        pointer-events: none;
+        &:focus,
+        &:hover {
+            .bp-thumbnail-page-number {
+                background: $seventy-sixers;
+                opacity: 1;
+            }
+
+            .bp-thumbnail-nav {
+                box-shadow: 0 0 0 1px $seventy-sixers, 0 4px 5px 0 rgba(0, 0, 0, .15);
+            }
+
+            &.bp-thumbnail-image-loaded {
+                .bp-thumbnail-nav {
+                    background-color: $seventy-sixers; // Prevents the default background from showing through the image borders
+                }
+            }
+        }
+
+        &.bp-thumbnail-is-selected {
+            .bp-thumbnail-page-number {
+                background: $box-blue;
+                opacity: 1;
+            }
+
+            .bp-thumbnail-nav {
+                box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgba(0, 0, 0, .08);
+            }
+
+            &.bp-thumbnail-image-loaded {
+                .bp-thumbnail-nav {
+                    background-color: $box-blue; // Prevents the default background from showing through the image borders
+                }
+            }
+        }
     }
 
     .bp-thumbnail-nav {
-        flex: 1 0 154px;
-        padding: 0;
+        width: 150px;
         overflow: hidden;
         background-color: $d-eight;
-        border: $thumbnail-border-radius solid $ffive;
         border-radius: $thumbnail-border-radius;
-        outline: none;
-        cursor: pointer;
+        box-shadow: 0 0 0 1px $off-white, 0 1px 4px 0 rgba(0, 0, 0, .08);
+        transition: box-shadow 50ms ease;
     }
 
-    .bp-thumbnail:not(.bp-thumbnail-is-selected) {
-        .bp-thumbnail-nav:focus,
-        .bp-thumbnail-nav:hover {
-            margin: 2px;
-            border: 1px solid $seesee;
-        }
+    .bp-thumbnail-page-number {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 24px;
+        padding-right: 3px;
+        padding-left: 3px;
+        color: $white;
+        font-size: 13px;
+        border-radius: $thumbnail-border-radius / 2 0 $thumbnail-border-radius 0;
+        box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .2);
+        opacity: 0;
+        transition: background 50ms ease, opacity 50ms ease;
     }
 
     .bp-thumbnail-image {
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain; // Needed for the case of document with portrait and landscape orientations
-        pointer-events: none;
-    }
-
-    .bp-thumbnail.bp-thumbnail-is-selected .bp-thumbnail-nav {
-        border-color: $fours;
+        pointer-events: none; // Allow the parent elements to handle user events
     }
 
     .bp-thumbnails-container--dark {
@@ -87,15 +108,11 @@ $thumbnail-sidebar-width: 226px;
         border-right-color: $black;
 
         .bp-thumbnail-page-number {
-            color: $white;
+            background-color: $fours;
         }
 
         .bp-thumbnail-nav {
             border-color: $fours;
-        }
-
-        .bp-thumbnail-is-selected .bp-thumbnail-nav {
-            border-color: $black;
         }
     }
 
@@ -115,7 +132,7 @@ $thumbnail-sidebar-width: 226px;
         }
     }
 
-    @include bp-breakpoint-medium {
+    @media (min-width: 600px) {
         $bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
 
         &.bp-loaded.bp-thumbnails-open-active,
