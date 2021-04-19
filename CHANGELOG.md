@@ -1,3 +1,17 @@
+## 2.70.0 (2021-04-15)
+
+* chore(deps): Remove unused dependencies (#1346) ([dc46a48](https://github.com/box/box-content-preview/commit/dc46a48)), closes [#1346](https://github.com/box/box-content-preview/issues/1346)
+* chore(deps): Upgarde box-ui-elements to latest available version (#1347) ([910b8a3](https://github.com/box/box-content-preview/commit/910b8a3)), closes [#1347](https://github.com/box/box-content-preview/issues/1347)
+* chore(i18n): Update Translations (#1351) ([a80ab58](https://github.com/box/box-content-preview/commit/a80ab58)), closes [#1351](https://github.com/box/box-content-preview/issues/1351)
+* chore(i18n): Update Translations (#1356) ([9e5dc5d](https://github.com/box/box-content-preview/commit/9e5dc5d)), closes [#1356](https://github.com/box/box-content-preview/issues/1356)
+* chore(loading): Remove sub-header progress bar experience (#1348) ([c40435e](https://github.com/box/box-content-preview/commit/c40435e)), closes [#1348](https://github.com/box/box-content-preview/issues/1348)
+* fix(a11y): Add aria-label to DocFindBar input field (#1350) ([e1ce28b](https://github.com/box/box-content-preview/commit/e1ce28b)), closes [#1350](https://github.com/box/box-content-preview/issues/1350)
+* fix(a11y): Add meaningful alt text to custom logo (#1352) ([4e11fbe](https://github.com/box/box-content-preview/commit/4e11fbe)), closes [#1352](https://github.com/box/box-content-preview/issues/1352)
+* fix(a11y): Add meaningful alt text to image viewer (#1349) ([fc9c662](https://github.com/box/box-content-preview/commit/fc9c662)), closes [#1349](https://github.com/box/box-content-preview/issues/1349)
+* feat(loading): Update loading experience to latest designs (#1345) ([5d248d5](https://github.com/box/box-content-preview/commit/5d248d5)), closes [#1345](https://github.com/box/box-content-preview/issues/1345)
+
+
+
 ## 2.69.0 (2021-03-29)
 
 * feat(loading): Add options for loading icon and progress bar (#1344) ([99e3f92](https://github.com/box/box-content-preview/commit/99e3f92)), closes [#1344](https://github.com/box/box-content-preview/issues/1344)
