@@ -1,6 +1,6 @@
 import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
-import ControlsBar from '../controls/controls-bar';
+import ControlsBar, { ControlsBarGroup } from '../controls/controls-bar';
 import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
@@ -30,18 +30,22 @@ export default function ImageControls({
     return (
         <>
             <ControlsBar>
-                <ZoomControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} scale={scale} />
-                <RotateControl onRotateLeft={onRotateLeft} />
-                <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-                <AnnotationsControls
-                    annotationColor={annotationColor}
-                    annotationMode={annotationMode}
-                    hasDrawing={hasDrawing}
-                    hasHighlight={hasHighlight}
-                    hasRegion={hasRegion}
-                    onAnnotationModeClick={onAnnotationModeClick}
-                    onAnnotationModeEscape={onAnnotationModeEscape}
-                />
+                <ControlsBarGroup isDistinct>
+                    <ZoomControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} scale={scale} />
+                </ControlsBarGroup>
+                <ControlsBarGroup>
+                    <RotateControl onRotateLeft={onRotateLeft} />
+                    <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                    <AnnotationsControls
+                        annotationColor={annotationColor}
+                        annotationMode={annotationMode}
+                        hasDrawing={hasDrawing}
+                        hasHighlight={hasHighlight}
+                        hasRegion={hasRegion}
+                        onAnnotationModeClick={onAnnotationModeClick}
+                        onAnnotationModeEscape={onAnnotationModeEscape}
+                    />
+                </ControlsBarGroup>
             </ControlsBar>
             <ControlsBar>
                 <DrawingControls

@@ -11,7 +11,7 @@ $bp-SliderControl-track-space: 3px;
 }
 
 .bp-SliderControl-input {
-    @include bp-Control--focus;
+    @include bp-Control--outline;
 
     position: absolute;
     width: 100%;

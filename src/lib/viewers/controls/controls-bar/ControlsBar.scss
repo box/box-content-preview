@@ -1,12 +1,16 @@
-@import '~box-ui-elements/es/styles/variables';
+@import '../styles';
 
 .bp-ControlsBar {
     display: flex;
     align-items: center;
-    background: fade-out($black, .2);
-    border-radius: 3px;
+    background: $bp-controls-background;
+    border-radius: $bp-controls-radius-outer;
+
+    &:empty {
+        display: none;
+    }
 
     & + & {
-        margin-left: 6px;
+        margin-left: $bp-controls-spacing;
     }
 }

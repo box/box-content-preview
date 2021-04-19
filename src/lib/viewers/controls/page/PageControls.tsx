@@ -11,7 +11,11 @@ export type Props = {
     pageNumber: number;
 };
 
-export default function PageControls({ onPageChange, onPageSubmit, pageCount, pageNumber }: Props): JSX.Element {
+export default function PageControls({ onPageChange, onPageSubmit, pageCount, pageNumber }: Props): JSX.Element | null {
+    if (pageCount <= 1) {
+        return null;
+    }
+
     return (
         <div className="bp-PageControls">
             <button

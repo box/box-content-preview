@@ -2,8 +2,6 @@
 @import '../styles';
 
 .bp-AnnotationsControls {
-    @include bp-ControlGroup;
-
-    padding-left: 4px;
-    border-left: 1px solid $twos;
+    display: flex;
+    align-items: center;
 }

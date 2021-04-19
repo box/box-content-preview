@@ -50,6 +50,12 @@ describe('PageControls', () => {
             },
         );
 
+        test('should return an empty render if pageCount is less than 2', () => {
+            const wrapper = getWrapper({ pageCount: 1, pageNumber: 1 });
+
+            expect(wrapper.isEmptyRender()).toBe(true);
+        });
+
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 

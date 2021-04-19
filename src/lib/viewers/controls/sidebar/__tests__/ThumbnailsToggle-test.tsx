@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import IconThumbnailsToggle18 from '../../icons/IconThumbnailsToggle18';
+import IconThumbnailsToggle24 from '../../icons/IconThumbnailsToggle24';
 import ThumbnailsToggle from '../ThumbnailsToggle';
 
 describe('ThumbnailsToggle', () => {
@@ -22,7 +22,7 @@ describe('ThumbnailsToggle', () => {
             const wrapper = getWrapper({ onThumbnailsToggle: jest.fn() });
 
             expect(wrapper.hasClass('bp-ThumbnailsToggle')).toBe(true);
-            expect(wrapper.exists(IconThumbnailsToggle18)).toBe(true);
+            expect(wrapper.exists(IconThumbnailsToggle24)).toBe(true);
         });
 
         test('should return an empty wrapper if no callback is defined', () => {

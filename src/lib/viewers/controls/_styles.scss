@@ -1,30 +1,16 @@
-@import '~box-ui-elements/es/styles/variables';
+@import '~box-ui-elements/es/styles/constants/colors';
+@import '~box-ui-elements/es/styles/deprecated';
 
 $bp-controls-background: fade-out($black, .2);
+$bp-controls-opacity: .8;
+$bp-controls-outline: inset 0 0 0 1px fade-out($white, .5), 0 1px 2px fade-out($black, .9);
+$bp-controls-radius-inner: 4px;
+$bp-controls-radius-outer: 6px;
+$bp-controls-size-default: 44px;
+$bp-controls-size-small: 32px;
+$bp-controls-spacing: 6px;
 
-@mixin bp-Control--hover {
-    opacity: .7;
-    transition: opacity 150ms;
-    will-change: opacity; // Prevent flickering in Safari
-
-    &:focus,
-    &:hover {
-        opacity: 1;
-    }
-}
-
-@mixin bp-Control--focus {
-    outline: 0;
-
-    &:focus {
-        box-shadow: inset 0 0 0 1px fade-out($white, .5), 0 1px 2px fade-out($black, .9);
-    }
-}
-
-@mixin bp-ControlButton($height: 48px, $width: 48px) {
-    @include bp-Control--hover;
-    @include bp-Control--focus;
-
+@mixin bp-Control($height: $bp-controls-size-default, $width: $bp-controls-size-default) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,6 +21,7 @@ $bp-controls-background: fade-out($black, .2);
     color: $white;
     background: transparent;
     border: 1px solid transparent;
+    border-radius: $bp-controls-radius-outer;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
@@ -45,11 +32,62 @@ $bp-controls-background: fade-out($black, .2);
         opacity: .2;
         pointer-events: none;
     }
+
+    @include bp-Control--fade;
+    @include bp-Control--outline;
 }
 
-@mixin bp-ControlGroup {
+@mixin bp-Control--expand {
+    margin-top: -$bp-controls-spacing;
+    margin-bottom: -$bp-controls-spacing;
+}
+
+@mixin bp-Control--fade {
+    opacity: $bp-controls-opacity;
+    transition: opacity 150ms;
+    will-change: opacity; // Prevent flickering in Safari
+
+    &:focus,
+    &:hover {
+        opacity: 1; // Show effect for all events in legacy browsers (IE, Safari)
+    }
+
+    &:focus-visible {
+        opacity: 1; // Show effect for keyboard events in modern browsers
+    }
+
+    &:focus:not(:focus-visible) {
+        opacity: $bp-controls-opacity; // Remove effect for mouse events in modern browsers
+    }
+}
+
+@mixin bp-Control--outline {
+    outline: 0;
+
+    &:focus {
+        box-shadow: $bp-controls-outline; // Show effect for all events in legacy browsers (IE, Safari)
+    }
+
+    &:focus-visible {
+        box-shadow: $bp-controls-outline; // Show effect for keyboard events in modern browsers
+    }
+
+    &:focus:not(:focus-visible) {
+        box-shadow: none; // Remove effect for mouse events in modern browsers
+    }
+}
+
+@mixin bp-ControlLabel {
     display: flex;
     align-items: center;
-    margin-right: 4px;
-    margin-left: 4px;
+    justify-content: center;
+    min-width: $bp-controls-size-default;
+    padding-right: 3px;
+    padding-left: 3px;
+    color: $white;
+    font-size: 13px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: $bp-controls-opacity;
+    user-select: none;
 }

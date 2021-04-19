@@ -2,13 +2,13 @@
 @import '../styles';
 
 .bp-AnnotationsButton {
-    @include bp-ControlButton;
+    @include bp-Control;
 
     svg {
         width: 34px;
         height: 32px;
         padding: 4px 5px;
-        border-radius: 4px;
+        border-radius: $bp-controls-radius-inner;
         fill: $white;
     }
 

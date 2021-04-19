@@ -1,19 +1,15 @@
 @import '../styles';
 
 .bp-ZoomControls {
-    @include bp-ControlGroup;
+    display: flex;
+    align-items: center;
 }
 
 .bp-ZoomControls-button {
-    @include bp-ControlButton($width: 32px);
+    @include bp-Control($width: $bp-controls-size-small);
+    @include bp-Control--expand;
 }
 
 .bp-ZoomControls-current {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 48px;
-    color: #fff;
-    font-size: 14px;
-    user-select: none;
+    @include bp-ControlLabel;
 }

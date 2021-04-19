@@ -4,5 +4,5 @@ $bp-MediaControl-height: 40px;
 $bp-MediaControl-width: 36px;
 
 @mixin bp-MediaButton {
-    @include bp-ControlButton($width: $bp-MediaControl-width, $height: $bp-MediaControl-height);
+    @include bp-Control($width: $bp-MediaControl-width, $height: $bp-MediaControl-height);
 }
