@@ -15,6 +15,6 @@
 }
 
 .bp-ControlsBarGroup--distinct {
-    background-color: $bdl-gray-80;
+    background-color: fade-out($bdl-gray-80, .2);
     border-radius: $bp-controls-radius-inner;
 }

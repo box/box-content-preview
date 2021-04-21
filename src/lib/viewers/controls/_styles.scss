@@ -20,7 +20,7 @@ $bp-controls-spacing: 6px;
     padding: 0;
     color: $white;
     background: transparent;
-    border: 1px solid transparent;
+    border: 0;
     border-radius: $bp-controls-radius-outer;
     cursor: pointer;
     user-select: none;
@@ -31,6 +31,13 @@ $bp-controls-spacing: 6px;
         cursor: default;
         opacity: .2;
         pointer-events: none;
+    }
+
+    svg {
+        width: $bp-controls-size-small;
+        height: $bp-controls-size-small;
+        padding: 5px;
+        border-radius: $bp-controls-radius-inner;
     }
 
     @include bp-Control--fade;
@@ -49,15 +56,7 @@ $bp-controls-spacing: 6px;
 
     &:focus,
     &:hover {
-        opacity: 1; // Show effect for all events in legacy browsers (IE, Safari)
-    }
-
-    &:focus-visible {
-        opacity: 1; // Show effect for keyboard events in modern browsers
-    }
-
-    &:focus:not(:focus-visible) {
-        opacity: $bp-controls-opacity; // Remove effect for mouse events in modern browsers
+        opacity: 1;
     }
 }
 
