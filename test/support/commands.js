@@ -3,9 +3,7 @@ Cypress.Commands.add('getByTitle', (title, options = {}) => cy.get(`[title="${ti
 Cypress.Commands.add('getPreviewPage', pageNum => {
     cy.get(`.page[data-page-number=${pageNum}]`)
         .as('previewPage')
-        // Adding timeout here because sometimes it takes more than the Cypress
-        // default timeout to render the preview
-        .find('.loadingIcon', { timeout: 15000 })
+        .find('.loadingIcon')
         .should('not.exist');
 
     return cy.get('@previewPage');

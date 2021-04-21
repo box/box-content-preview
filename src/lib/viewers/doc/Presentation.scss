@@ -53,19 +53,28 @@
         }
     }
 
-    // Absolutely center preload content
-    .bp-preload-content {
+    .bp-preload-content,
+    .bp-preload-overlay,
+    .bp-preload-placeholder {
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
-        left: 1px; // Slight padding to help image text align with real text
-        display: block;
-        margin: auto;
-        background-color: $white;
+        left: 0;
+    }
 
-        &.bp-preload-overlay {
-            background-color: rgba(255, 255, 255, .4);
-        }
+    .bp-preload-content {
+        width: 100%;
+    }
+
+    .bp-preload-overlay {
+        background-color: rgba(255, 255, 255, .4);
+    }
+
+    .bp-preload-placeholder {
+        @include bp-LoadingGhost;
+
+        margin: auto;
+        overflow: hidden;
     }
 }

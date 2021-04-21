@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
+import * as util from '../../../util';
 import Api from '../../../api';
 import DocPreloader from '../DocPreloader';
-import * as util from '../../../util';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
+    CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_INVISIBLE,
     CLASS_PREVIEW_LOADED,
 } from '../../../constants';
@@ -22,10 +23,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
         containerEl = document.querySelector('.container');
         stubs = {};
         stubs.api = new Api();
-        docPreloader = new DocPreloader({ hideLoadingIndicator: () => {} }, { api: stubs.api });
 
+        docPreloader = new DocPreloader({}, { api: stubs.api });
         docPreloader.previewUI = {
-            hideLoadingIndicator: jest.fn(),
             previewContainer: document.createElement('div'),
         };
     });
@@ -56,6 +56,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 expect(docPreloader.wrapperEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
                 expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
                 expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
+                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
                 expect(docPreloader.imageEl.src).toBe(imgSrc);
                 expect(containerEl).toContainElement(docPreloader.wrapperEl);
                 expect(docPreloader.bindDOMListeners).toBeCalled();
@@ -68,7 +69,6 @@ describe('lib/viewers/doc/DocPreloader', () => {
             stubs.checkDocumentLoaded = jest.spyOn(docPreloader, 'checkDocumentLoaded').mockImplementation();
             stubs.emit = jest.spyOn(docPreloader, 'emit').mockImplementation();
             stubs.setDimensions = jest.spyOn(util, 'setDimensions').mockImplementation();
-            stubs.hideLoadingIndicator = docPreloader.previewUI.hideLoadingIndicator;
             docPreloader.imageEl = {};
             docPreloader.preloadEl = document.createElement('div');
         });
@@ -79,10 +79,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.scaleAndShowPreload(1, 1, 1);
 
             expect(stubs.setDimensions).not.toBeCalled();
-            expect(stubs.hideLoadingIndicator).not.toBeCalled();
         });
 
-        test('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
+        test('should set preload image dimensions, show preload element, and emit preload event', () => {
             docPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
 
             const width = 100;
@@ -90,9 +89,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             docPreloader.scaleAndShowPreload(width, height, 1);
 
-            expect(stubs.setDimensions).toBeCalledWith(docPreloader.imageEl, width, height);
-            expect(stubs.setDimensions).toBeCalledWith(docPreloader.overlayEl, width, height);
-            expect(stubs.hideLoadingIndicator).toBeCalled();
+            expect(stubs.setDimensions).toBeCalledWith(docPreloader.placeholderEl, width, height);
             expect(stubs.emit).toBeCalledWith('preload');
             expect(docPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
         });
@@ -102,7 +99,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 docPreloader.scaleAndShowPreload(100, 100, numPages);
 
                 // Should scale 1 preload image, one overlay, and numPages - 1 placeholders
-                expect(stubs.setDimensions).toBeCalledTimes(numPages + 1);
+                expect(stubs.setDimensions).toBeCalledTimes(numPages);
 
                 expect(docPreloader.preloadEl.children.length).toBe(numPages - 1);
             });
@@ -280,12 +277,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
         });
 
         test('should only show up to NUM_PAGES_MAX pages', () => {
-            const NUM_PAGES_MAX = 500;
             stubs.readEXIF.mockReturnValue(
                 Promise.resolve({
                     pdfWidth: 100,
                     pdfHeight: 100,
-                    numPages: NUM_PAGES_MAX + 1, // NUM_PAGES_MAX + 1
+                    numPages: 21, // NUM_PAGES_MAX + 1
                 }),
             );
 
@@ -297,7 +293,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.preloadEl = {};
             docPreloader.imageEl = {};
             return docPreloader.loadHandler().then(() => {
-                expect(stubs.scaleAndShowPreload).toBeCalledWith(200, 200, NUM_PAGES_MAX);
+                expect(stubs.scaleAndShowPreload).toBeCalledWith(200, 200, 20);
             });
         });
 
@@ -567,7 +563,12 @@ describe('lib/viewers/doc/DocPreloader', () => {
             });
             jest.spyOn(util, 'setDimensions').mockImplementation();
             docPreloader.preloadEl = document.createElement('div');
-            docPreloader.preloadEl.innerHTML = `<img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" /><div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" />`;
+            docPreloader.preloadEl.innerHTML = `
+                <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
+                    <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" />
+                    <div class="${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}"></div>
+                </div>
+            `.trim();
         });
 
         test('should short circuit if there is no preload element to resize', () => {
@@ -613,7 +614,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             };
             docPreloader.resize();
             expect(docPreloader.getScaledWidthAndHeight).toBeCalled();
-            expect(util.setDimensions).toBeCalledTimes(2);
+            expect(util.setDimensions).toBeCalledTimes(1);
         });
     });
 

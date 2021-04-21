@@ -88,9 +88,6 @@ class BaseViewer extends EventEmitter {
     /** @property {number} - Zoom scale, if zoomed */
     scale = 1;
 
-    /** @property {string} - Viewer-specific file loading icon */
-    fileLoadingIcon;
-
     /** @property {Object} - Viewer options */
     options;
 

@@ -1,9 +1,11 @@
 @import '../../boxuiVariables';
 @import './annotations';
+@import './loading';
 @import './theme';
 
 $pdfjs-highlight: #b400aa !default;
 $pdfjs-highlight-selected: #006400 !default;
+$pdfjs-page-padding: 15px;
 $thumbnail-border-radius: 6px;
 $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
@@ -67,6 +69,12 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
                     background-color: $box-blue; // Prevents the default background from showing through the image borders
                 }
             }
+        }
+    }
+
+    .bp-thumbnail:not(.bp-thumbnail-image-loaded) {
+        .bp-thumbnail-nav {
+            @include bp-LoadingGhost;
         }
     }
 
@@ -243,15 +251,21 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
-        padding: 15px 0;
+        padding: $pdfjs-page-padding 0;
         overflow: visible;
         border: 0;
         border-image: none;
 
-        // Override loading icon styles from pdf.js - we use a CSS spinner absolutely centered
+        // Override loading icon styles from pdf.js
         .loadingIcon {
-            margin: auto;
+            top: $pdfjs-page-padding;
+            bottom: $pdfjs-page-padding;
             background: none;
+
+            // Display the ghost state only if the page does not already have rendered content (e.g. during a resize)
+            &:first-child {
+                @include bp-LoadingGhost;
+            }
         }
 
         // Fixes annotation icon broken src
@@ -270,7 +284,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .textLayer {
-        top: 15px; // Match 15px padding top on page
+        top: $pdfjs-page-padding;
         bottom: auto;
         opacity: 1;
 
