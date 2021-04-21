@@ -2,17 +2,15 @@
 @import '../styles';
 
 .bp-AnnotationsButton {
-    @include bp-ControlButton;
+    @include bp-Control;
 
     svg {
-        width: 34px;
-        height: 32px;
-        padding: 4px 5px;
-        border-radius: 4px;
         fill: $white;
     }
 
     &.bp-is-active {
+        opacity: 1;
+
         svg {
             background-color: $white;
             fill: $black;

@@ -1,9 +1,11 @@
 @import '../styles';
 
 .bp-PageControls {
-    @include bp-ControlGroup;
+    display: flex;
+    align-items: center;
 }
 
 .bp-PageControls-button {
-    @include bp-ControlButton($width: 32px);
+    @include bp-Control($width: $bp-controls-size-small);
+    @include bp-Control--expand;
 }

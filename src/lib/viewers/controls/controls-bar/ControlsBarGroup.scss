@@ -1,0 +1,20 @@
+@import 'src/lib/viewers/controls/styles';
+
+.bp-ControlsBarGroup {
+    display: flex;
+    align-items: center;
+    margin-left: $bp-controls-spacing;
+
+    &:empty {
+        display: none;
+    }
+
+    &:last-child {
+        margin-right: $bp-controls-spacing;
+    }
+}
+
+.bp-ControlsBarGroup--distinct {
+    background-color: fade-out($bdl-gray-80, .2);
+    border-radius: $bp-controls-radius-inner;
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import ControlsBar from '../controls/controls-bar';
+import ControlsBar, { ControlsBarGroup } from '../controls/controls-bar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
@@ -15,14 +15,18 @@ export default function TextControls({
 }: Props): JSX.Element {
     return (
         <ControlsBar>
-            <ZoomControls
-                maxScale={maxScale}
-                minScale={minScale}
-                onZoomIn={onZoomIn}
-                onZoomOut={onZoomOut}
-                scale={scale}
-            />
-            <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+            <ControlsBarGroup isDistinct>
+                <ZoomControls
+                    maxScale={maxScale}
+                    minScale={minScale}
+                    onZoomIn={onZoomIn}
+                    onZoomOut={onZoomOut}
+                    scale={scale}
+                />
+            </ControlsBarGroup>
+            <ControlsBarGroup>
+                <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+            </ControlsBarGroup>
         </ControlsBar>
     );
 }

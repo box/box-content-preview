@@ -1,7 +1,7 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
-import IconZoomIn10 from '../icons/IconZoomIn10';
-import IconZoomOut10 from '../icons/IconZoomOut10';
+import IconZoomIn24 from '../icons/IconZoomIn24';
+import IconZoomOut24 from '../icons/IconZoomOut24';
 import './ZoomControls.scss';
 
 export type Props = {
@@ -36,7 +36,7 @@ export default function ZoomControls({
                 title={__('zoom_out')}
                 type="button"
             >
-                <IconZoomOut10 />
+                <IconZoomOut24 />
             </button>
             <div
                 className="bp-ZoomControls-current"
@@ -51,7 +51,7 @@ export default function ZoomControls({
                 title={__('zoom_in')}
                 type="button"
             >
-                <IconZoomIn10 />
+                <IconZoomIn24 />
             </button>
         </div>
     );

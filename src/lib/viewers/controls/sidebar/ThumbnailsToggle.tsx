@@ -1,5 +1,5 @@
 import React from 'react';
-import IconThumbnailsToggle18 from '../icons/IconThumbnailsToggle18';
+import IconThumbnailsToggle24 from '../icons/IconThumbnailsToggle24';
 import './ThumbnailsToggle.scss';
 
 export type Props = {
@@ -18,7 +18,7 @@ export default function ThumbnailsToggle({ onThumbnailsToggle }: Props): JSX.Ele
             title={__('toggle_thumbnails')}
             type="button"
         >
-            <IconThumbnailsToggle18 />
+            <IconThumbnailsToggle24 />
         </button>
     );
 }

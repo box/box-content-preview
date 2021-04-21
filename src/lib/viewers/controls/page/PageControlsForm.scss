@@ -3,20 +3,20 @@
 .bp-PageControlsForm {
     // input[type='number'] is needed to raise specificity level to override Annotations styles
     input[type='number'].bp-PageControlsForm-input {
-        width: 44px;
-        margin: 5px;
-        padding: 7px;
-        color: $twos;
-        font-size: 14px;
+        width: $bp-controls-size-default;
+        height: $bp-controls-size-small;
+        padding: $bp-controls-spacing;
+        color: $bdl-gray;
+        font-size: 13px;
         text-align: center;
-        border: 1px solid $seesee;
-        border-radius: 3px;
+        border: 1px solid $bdl-gray;
+        border-radius: 0;
         transition: border-color linear .15s;
-        -webkit-font-smoothing: antialiased;
 
         /* stylelint-disable property-no-vendor-prefix */
         // Removes the spinner for number type inputs in Firefox
         -moz-appearance: textfield;
+        -webkit-font-smoothing: antialiased;
 
         // Removes the spinner for number type inputs in Webkit browsers
         &::-webkit-outer-spin-button,
@@ -27,7 +27,7 @@
         /* stylelint-enable property-no-vendor-prefix */
 
         &:focus {
-            border: 1px solid $primary-color;
+            border: 1px solid $bdl-box-blue;
             outline: 0;
             box-shadow: none;
         }
@@ -35,18 +35,10 @@
 }
 
 .bp-PageControlsForm-button {
-    @include bp-ControlButton($width: auto);
+    @include bp-Control($width: auto);
+    @include bp-Control--expand;
 }
 
 .bp-PageControlsForm-button-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5px;
-    padding: 7px 5px;
-    color: $white;
-    font-size: 14px;
-    white-space: nowrap;
-    background-color: $fours;
-    border-radius: 3px;
+    @include bp-ControlLabel;
 }
