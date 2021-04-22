@@ -79,7 +79,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .bp-thumbnail-nav {
-        width: 150px;
+        flex: 0 0 150px; // IE11 does not respect width within a flex container
         overflow: hidden;
         background-color: $d-eight;
         border-radius: $thumbnail-border-radius;
