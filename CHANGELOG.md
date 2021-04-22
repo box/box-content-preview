@@ -1,3 +1,14 @@
+## 2.71.0 (2021-04-22)
+
+* chore(i18n): Update Translations (#1359) ([91ce7e1](https://github.com/box/box-content-preview/commit/91ce7e1)), closes [#1359](https://github.com/box/box-content-preview/issues/1359)
+* chore(i18n): Update Translations (#1360) ([0849f6e](https://github.com/box/box-content-preview/commit/0849f6e)), closes [#1360](https://github.com/box/box-content-preview/issues/1360)
+* fix(thumbnails): Fix thumbnail widths in IE11 (#1361) ([36fba31](https://github.com/box/box-content-preview/commit/36fba31)), closes [#1361](https://github.com/box/box-content-preview/issues/1361)
+* feat(loading): Update loading ux for pages, thumbnails, preloaders (#1355) ([fa5dd30](https://github.com/box/box-content-preview/commit/fa5dd30)), closes [#1355](https://github.com/box/box-content-preview/issues/1355)
+* feat(thumbnails): Update document thumbnails to latest designs (#1357) ([5e35537](https://github.com/box/box-content-preview/commit/5e35537)), closes [#1357](https://github.com/box/box-content-preview/issues/1357)
+* feat(toolbar): Update control toolbars to latest design (#1358) ([b7ba972](https://github.com/box/box-content-preview/commit/b7ba972)), closes [#1358](https://github.com/box/box-content-preview/issues/1358)
+
+
+
 ## 2.70.0 (2021-04-15)
 
 * chore(deps): Remove unused dependencies (#1346) ([dc46a48](https://github.com/box/box-content-preview/commit/dc46a48)), closes [#1346](https://github.com/box/box-content-preview/issues/1346)
