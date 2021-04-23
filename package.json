@@ -124,7 +124,7 @@
         "release:patch": "./build/release.sh -p",
         "setup": "yarn install",
         "start": "yarn setup && yarn build:dev --watch",
-        "start:linked": "f() { LINKED_LIBS=${@:-box-ui-elements} && yarn link $LINKED_LIBS && LINKED_LIBS=$LINKED_LIBS yarn start; }; f",
+        "start:linked": "f() { LINKED_LIBS=${@:-box-annotations} && yarn link $LINKED_LIBS && LINKED_LIBS=$LINKED_LIBS yarn start; }; f",
         "start:dev": "yarn build:i18n && LANGUAGE=en-US BABEL_ENV=dev NODE_ENV=dev yarn webpack-dev-server --config build/webpack.config.js",
         "start:dev:linked": "f() { LINKED_LIBS=${@:-box-annotations} && yarn link $LINKED_LIBS && LINKED_LIBS=$LINKED_LIBS yarn start:dev; }; f",
         "test": "yarn setup && NODE_ENV=test yarn jest",
