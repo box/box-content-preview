@@ -995,6 +995,9 @@ class Preview extends EventEmitter {
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
 
+        // Add Targeting APIs for experiences in Preview to the preview instance
+        this.options.experiences = options.experiences || {};
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
@@ -1781,6 +1784,21 @@ class Preview extends EventEmitter {
             MOUSEMOVE_THROTTLE_MS - 500,
             true,
         );
+    }
+
+    /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @public
+     * @param {Object} experiences - new experiences prop
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        this.options.experiences = experiences;
+
+        if (this.viewer && this.viewer.updateExperiences) {
+            this.viewer.updateExperiences(experiences);
+        }
     }
 
     /**

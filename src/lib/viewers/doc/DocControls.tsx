@@ -19,6 +19,7 @@ export type Props = AnnotationsControlsProps &
 export default function DocControls({
     annotationColor,
     annotationMode,
+    experiences,
     hasDrawing,
     hasHighlight,
     hasRegion,
@@ -37,6 +38,7 @@ export default function DocControls({
     pageCount,
     pageNumber,
     scale,
+    setWasClosedByUser,
 }: Props): JSX.Element {
     return (
         <>
@@ -67,11 +69,13 @@ export default function DocControls({
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}
+                        experiences={experiences}
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
+                        setWasClosedByUser={setWasClosedByUser}
                     />
                 </ControlsBarGroup>
             </ControlsBar>

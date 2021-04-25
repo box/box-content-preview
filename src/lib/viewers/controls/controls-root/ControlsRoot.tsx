@@ -2,11 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
+import { TargetingApi } from '../../../types';
 import ControlsLayer, { Helpers } from '../controls-layer';
 import './ControlsRoot.scss';
 
 export type Options = {
     containerEl: HTMLElement;
+    experiences?: {
+        [name: string]: TargetingApi;
+    };
     fileId: string;
 };
 
@@ -21,7 +25,15 @@ export default class ControlsRoot {
         show: noop,
     };
 
-    constructor({ containerEl, fileId }: Options) {
+    experiences: {
+        [name: string]: TargetingApi;
+    };
+
+    wasClosedByUser: {
+        [name: string]: boolean;
+    };
+
+    constructor({ containerEl, experiences = {}, fileId }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
@@ -32,6 +44,9 @@ export default class ControlsRoot {
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);
         this.containerEl.addEventListener('touchstart', this.handleTouchStart);
         this.containerEl.appendChild(this.controlsEl);
+
+        this.experiences = experiences;
+        this.wasClosedByUser = {};
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -67,7 +82,32 @@ export default class ControlsRoot {
         this.controlsEl.classList.remove('bp-is-hidden');
     }
 
+    shouldForceShow(): boolean {
+        if (this.wasClosedByUser.tooltipFlowAnnotationsExperience) {
+            return false;
+        }
+
+        if (!this.experiences.tooltipFlowAnnotationsExperience) {
+            return false;
+        }
+
+        return this.experiences.tooltipFlowAnnotationsExperience.canShow;
+    }
+
+    setWasClosedByUser(experienceName: string): void {
+        this.wasClosedByUser[experienceName] = true;
+    }
+
+    updateExperiences(experiences: { [name: string]: TargetingApi }): void {
+        this.experiences = experiences;
+    }
+
     render(controls: JSX.Element): void {
-        ReactDOM.render(<ControlsLayer onMount={this.handleMount}>{controls}</ControlsLayer>, this.controlsEl);
+        ReactDOM.render(
+            <ControlsLayer forceShow={this.shouldForceShow()} onMount={this.handleMount}>
+                {controls}
+            </ControlsLayer>,
+            this.controlsEl,
+        );
     }
 }

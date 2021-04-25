@@ -6,27 +6,33 @@ import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
-import { AnnotationMode } from '../../../types';
+import { AnnotationMode, TargetingApi } from '../../../types';
 import './AnnotationsControls.scss';
 
 export type Props = {
     annotationColor?: string;
     annotationMode?: AnnotationMode;
+    experiences: {
+        [name: string]: TargetingApi;
+    };
     hasDrawing?: boolean;
     hasHighlight?: boolean;
     hasRegion?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     onAnnotationModeEscape?: () => void;
+    setWasClosedByUser?: (experienceName: string | undefined) => void;
 };
 
 export default function AnnotationsControls({
     annotationColor = bdlBoxBlue,
     annotationMode = AnnotationMode.NONE,
+    experiences,
     hasDrawing = false,
     hasHighlight = false,
     hasRegion = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
+    setWasClosedByUser = noop,
 }: Props): JSX.Element | null {
     const isFullscreen = useFullscreen();
     const showDrawing = !isFullscreen && hasDrawing;
@@ -76,7 +82,9 @@ export default function AnnotationsControls({
                 isEnabled={showDrawing}
                 mode={AnnotationMode.DRAWING}
                 onClick={handleModeClick}
+                setWasClosedByUser={setWasClosedByUser}
                 title={__('drawing_comment')}
+                tooltipFlowAnnotationsExperience={experiences.tooltipFlowAnnotationsExperience}
             >
                 <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
             </AnnotationsButton>

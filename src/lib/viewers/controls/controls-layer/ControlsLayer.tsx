@@ -10,13 +10,14 @@ export type Helpers = {
 
 export type Props = {
     children: React.ReactNode;
+    forceShow?: boolean;
     onMount?: (helpers: Helpers) => void;
 };
 
 export const HIDE_DELAY_MS = 2000;
 export const SHOW_CLASSNAME = 'bp-is-visible';
 
-export default function ControlsLayer({ children, onMount = noop }: Props): JSX.Element {
+export default function ControlsLayer({ children, forceShow = false, onMount = noop }: Props): JSX.Element {
     const [isShown, setIsShown] = React.useState(false);
     const hasFocusRef = React.useRef(false);
     const hasCursorRef = React.useRef(false);
@@ -74,12 +75,21 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
         onMount(helpersRef.current);
     }, [onMount]);
 
+    // Hides control layer when forceShow changes to false
+    React.useEffect(() => {
+        helpersRef.current.reset();
+
+        if (!forceShow) {
+            helpersRef.current.hide();
+        }
+    }, [forceShow]);
+
     // Destroy timeouts on unmount
     React.useEffect(() => helpersRef.current.clean, []);
 
     return (
         <div
-            className={`bp-ControlsLayer ${isShown ? SHOW_CLASSNAME : ''}`}
+            className={`bp-ControlsLayer ${isShown || forceShow ? SHOW_CLASSNAME : ''}`}
             onBlur={handleFocusOut}
             onFocus={handleFocusIn}
             onMouseEnter={handleMouseEnter}

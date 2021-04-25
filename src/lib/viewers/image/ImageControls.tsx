@@ -15,6 +15,7 @@ export type Props = AnnotationsControlsProps &
 export default function ImageControls({
     annotationColor,
     annotationMode,
+    experiences,
     hasDrawing,
     hasHighlight,
     hasRegion,
@@ -26,6 +27,7 @@ export default function ImageControls({
     onZoomIn,
     onZoomOut,
     scale,
+    setWasClosedByUser,
 }: Props): JSX.Element {
     return (
         <>
@@ -39,11 +41,13 @@ export default function ImageControls({
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}
+                        experiences={experiences}
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
+                        setWasClosedByUser={setWasClosedByUser}
                     />
                 </ControlsBarGroup>
             </ControlsBar>

@@ -6,7 +6,7 @@ import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls {...props} />);
+    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls experiences={{}} {...props} />);
     const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
 
     beforeEach(() => {
@@ -18,10 +18,14 @@ describe('AnnotationsControls', () => {
         let unmount = (): void => {
             // placeholder
         };
+        let found = false;
 
         beforeEach(() => {
             jest.spyOn(React, 'useEffect').mockImplementation(cb => {
-                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+                if (!found) {
+                    unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+                    found = true;
+                }
             });
         });
 

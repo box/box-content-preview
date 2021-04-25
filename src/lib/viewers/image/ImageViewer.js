@@ -32,6 +32,7 @@ class ImageViewer extends ImageBaseViewer {
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
         this.handleZoomEvent = this.handleZoomEvent.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
+        this.setWasClosedByUser = this.setWasClosedByUser.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
 
@@ -366,6 +367,38 @@ class ImageViewer extends ImageBaseViewer {
         this.renderUI();
     }
 
+    /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @protected
+     * @param {Object} experiences - new experiences prop
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        this.options.experiences = experiences;
+
+        if (this.controls && this.controls.updateExperiences) {
+            this.controls.updateExperiences(experiences);
+        }
+
+        this.renderUI();
+    }
+
+    /**
+     * Keep track of whether user closed tooltip so that we can update UI
+     *
+     * @protected
+     * @param {string} experienceName - name of experience that was closed
+     * @return {void}
+     */
+    setWasClosedByUser(experienceName) {
+        if (this.controls && this.controls.setWasClosedByUser) {
+            this.controls.setWasClosedByUser(experienceName);
+        }
+
+        this.renderUI();
+    }
+
     renderUI() {
         if (!this.controls) {
             return;
@@ -379,6 +412,7 @@ class ImageViewer extends ImageBaseViewer {
             <ImageControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.options.experiences}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
@@ -390,6 +424,7 @@ class ImageViewer extends ImageBaseViewer {
                 onZoomIn={this.zoomIn}
                 onZoomOut={this.zoomOut}
                 scale={this.scale}
+                setWasClosedByUser={this.setWasClosedByUser}
             />,
         );
     }

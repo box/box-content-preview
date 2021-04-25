@@ -196,7 +196,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            experiences: this.options.experiences,
+            fileId: this.options.file.id,
+        });
     }
 
     /**

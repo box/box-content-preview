@@ -116,6 +116,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
         this.setPage = this.setPage.bind(this);
+        this.setWasClosedByUser = this.setWasClosedByUser.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
@@ -1040,8 +1041,44 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            experiences: this.options.experiences,
+            fileId: this.options.file.id,
+        });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
+        this.renderUI();
+    }
+
+    /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @protected
+     * @param {Object} experiences - new experiences prop
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        this.options.experiences = experiences;
+
+        if (this.controls && this.controls.updateExperiences) {
+            this.controls.updateExperiences(experiences);
+        }
+
+        this.renderUI();
+    }
+
+    /**
+     * Keep track of whether user closed tooltip so that we can update UI
+     *
+     * @protected
+     * @param {string} experienceName - name of experience that was closed
+     * @return {void}
+     */
+    setWasClosedByUser(experienceName) {
+        if (this.controls && this.controls.setWasClosedByUser) {
+            this.controls.setWasClosedByUser(experienceName);
+        }
+
         this.renderUI();
     }
 
@@ -1064,6 +1101,7 @@ class DocBaseViewer extends BaseViewer {
             <DocControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.options.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}
@@ -1082,6 +1120,7 @@ class DocBaseViewer extends BaseViewer {
                 pageCount={this.pdfViewer.pagesCount}
                 pageNumber={this.pdfViewer.currentPageNumber}
                 scale={this.pdfViewer.currentScale}
+                setWasClosedByUser={this.setWasClosedByUser}
             />,
         );
     }
