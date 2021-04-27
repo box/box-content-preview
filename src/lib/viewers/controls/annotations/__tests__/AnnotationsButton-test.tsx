@@ -33,7 +33,7 @@ describe('AnnotationsButton', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.hasClass('preview-annotations-tooltip')).toBe(true);
+            expect(wrapper.hasClass('bp-AnnotationsTooltip')).toBe(true);
             expect(wrapper.prop('shouldTarget')).toBe(false);
             expect(wrapper.children().hasClass('bp-AnnotationsButton')).toBe(true);
             expect(wrapper.children().hasClass('bp-is-active')).toBe(false); // Default
@@ -50,7 +50,7 @@ describe('AnnotationsButton', () => {
                 },
             });
 
-            expect(wrapper.hasClass('preview-annotations-tooltip')).toBe(true);
+            expect(wrapper.hasClass('bp-AnnotationsTooltip')).toBe(true);
             expect(wrapper.prop('shouldTarget')).toBe(true);
         });
     });

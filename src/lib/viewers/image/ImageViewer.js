@@ -3,6 +3,7 @@ import getProp from 'lodash/get';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
+import ControlsContext from '../controls/controls-context';
 import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
@@ -409,23 +410,24 @@ class ImageViewer extends ImageBaseViewer {
         const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
 
         this.controls.render(
-            <ImageControls
-                annotationColor={this.annotationModule.getColor()}
-                annotationMode={this.annotationControlsFSM.getMode()}
-                experiences={this.options.experiences}
-                hasDrawing={canDraw}
-                hasHighlight={false}
-                hasRegion={canAnnotate}
-                onAnnotationColorChange={this.handleAnnotationColorChange}
-                onAnnotationModeClick={this.handleAnnotationControlsClick}
-                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                onFullscreenToggle={this.toggleFullscreen}
-                onRotateLeft={this.rotateLeft}
-                onZoomIn={this.zoomIn}
-                onZoomOut={this.zoomOut}
-                scale={this.scale}
-                setWasClosedByUser={this.setWasClosedByUser}
-            />,
+            <ControlsContext.Provider value={{ experiences: this.options.experiences }}>
+                <ImageControls
+                    annotationColor={this.annotationModule.getColor()}
+                    annotationMode={this.annotationControlsFSM.getMode()}
+                    hasDrawing={canDraw}
+                    hasHighlight={false}
+                    hasRegion={canAnnotate}
+                    onAnnotationColorChange={this.handleAnnotationColorChange}
+                    onAnnotationModeClick={this.handleAnnotationControlsClick}
+                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                    onFullscreenToggle={this.toggleFullscreen}
+                    onRotateLeft={this.rotateLeft}
+                    onZoomIn={this.zoomIn}
+                    onZoomOut={this.zoomOut}
+                    scale={this.scale}
+                    setWasClosedByUser={this.setWasClosedByUser}
+                />
+            </ControlsContext.Provider>,
         );
     }
 

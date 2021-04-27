@@ -6,7 +6,7 @@ import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls experiences={{}} {...props} />);
+    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls {...props} />);
     const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
 
     beforeEach(() => {

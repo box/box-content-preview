@@ -19,7 +19,6 @@ export type Props = AnnotationsControlsProps &
 export default function DocControls({
     annotationColor,
     annotationMode,
-    experiences,
     hasDrawing,
     hasHighlight,
     hasRegion,
@@ -69,7 +68,6 @@ export default function DocControls({
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}
-                        experiences={experiences}
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
