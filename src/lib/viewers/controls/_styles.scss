@@ -11,6 +11,9 @@ $bp-controls-size-small: 32px;
 $bp-controls-spacing: 6px;
 
 @mixin bp-Control($height: $bp-controls-size-default, $width: $bp-controls-size-default) {
+    @include bp-Control--fade;
+    @include bp-Control--outline;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,9 +42,6 @@ $bp-controls-spacing: 6px;
         padding: 5px;
         border-radius: $bp-controls-radius-inner;
     }
-
-    @include bp-Control--fade;
-    @include bp-Control--outline;
 }
 
 @mixin bp-Control--expand {
@@ -54,8 +54,8 @@ $bp-controls-spacing: 6px;
     transition: opacity 150ms;
     will-change: opacity; // Prevent flickering in Safari
 
-    &:focus,
-    &:hover {
+    &:focus:not(:disabled),
+    &:hover:not(:disabled) {
         opacity: 1;
     }
 }
@@ -63,11 +63,11 @@ $bp-controls-spacing: 6px;
 @mixin bp-Control--outline {
     outline: 0;
 
-    &:focus {
+    &:focus:not(:disabled) {
         box-shadow: $bp-controls-outline; // Show effect for all events in legacy browsers (IE, Safari)
     }
 
-    &:focus-visible {
+    &:focus-visible:not(:disabled) {
         box-shadow: $bp-controls-outline; // Show effect for keyboard events in modern browsers
     }
 
