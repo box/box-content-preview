@@ -410,3 +410,9 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         display: none;
     }
 }
+
+/* stylelint-disable declaration-no-important */
+.bcpr.bcpr-thumbnails-open .bcpr-navigate-left {
+    left: $thumbnail-sidebar-width !important; // TODO: Move to BUIE once this release is in production
+}
+/* stylelint-enable declaration-no-important */
