@@ -1,14 +1,13 @@
 import React from 'react';
 import noop from 'lodash/noop';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
-import TargetedClickThroughGuideTooltip from 'box-ui-elements/es/features/targeting/TargetedClickThroughGuideTooltip';
 import AnnotationsButton from './AnnotationsButton';
+import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
-import { AnnotationMode, TargetingApi } from '../../../types';
-import ControlsContext from '../controls-context';
+import { AnnotationMode } from '../../../types';
 
 import './AnnotationsControls.scss';
 
@@ -20,7 +19,6 @@ export type Props = {
     hasRegion?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     onAnnotationModeEscape?: () => void;
-    setWasClosedByUser?: (experienceName: string | undefined) => void;
 };
 
 export default function AnnotationsControls({
@@ -31,14 +29,11 @@ export default function AnnotationsControls({
     hasRegion = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
-    setWasClosedByUser = noop,
 }: Props): JSX.Element | null {
     const isFullscreen = useFullscreen();
     const showDrawing = !isFullscreen && hasDrawing;
     const showHighlight = !isFullscreen && hasHighlight;
     const showRegion = !isFullscreen && hasRegion;
-
-    const { experiences } = React.useContext(ControlsContext);
 
     // Component event handlers
     const handleModeClick = (mode: AnnotationMode): void => {
@@ -76,26 +71,7 @@ export default function AnnotationsControls({
 
     return (
         <div className="bp-AnnotationsControls">
-            <TargetedClickThroughGuideTooltip
-                body={__('annotations_tooltip_body')}
-                className="bp-AnnotationsTooltip"
-                shouldTarget={
-                    showDrawing &&
-                    experiences.tooltipFlowAnnotationsExperience &&
-                    experiences.tooltipFlowAnnotationsExperience.canShow
-                }
-                showCloseButton
-                title={__('annotations_tooltip_title')}
-                useTargetingApi={(): TargetingApi => {
-                    return {
-                        ...experiences.tooltipFlowAnnotationsExperience,
-                        onClose: (): void => {
-                            setWasClosedByUser('tooltipFlowAnnotationsExperience');
-                            experiences.tooltipFlowAnnotationsExperience.onClose();
-                        },
-                    };
-                }}
-            >
+            <AnnotationsTargetedTooltip isEnabled={showDrawing}>
                 <AnnotationsButton
                     data-resin-target="draw"
                     data-testid="bp-AnnotationsControls-drawBtn"
@@ -107,7 +83,7 @@ export default function AnnotationsControls({
                 >
                     <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
                 </AnnotationsButton>
-            </TargetedClickThroughGuideTooltip>
+            </AnnotationsTargetedTooltip>
             <AnnotationsButton
                 data-resin-target="highlightRegion"
                 data-testid="bp-AnnotationsControls-regionBtn"

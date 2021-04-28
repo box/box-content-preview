@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 import { AnnotationMode } from '../../../types';
-
 import './AnnotationsButton.scss';
 
 export type Props = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {

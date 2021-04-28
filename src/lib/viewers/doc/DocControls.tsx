@@ -37,7 +37,6 @@ export default function DocControls({
     pageCount,
     pageNumber,
     scale,
-    setWasClosedByUser,
 }: Props): JSX.Element {
     return (
         <>
@@ -73,7 +72,6 @@ export default function DocControls({
                         hasRegion={hasRegion}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
-                        setWasClosedByUser={setWasClosedByUser}
                     />
                 </ControlsBarGroup>
             </ControlsBar>

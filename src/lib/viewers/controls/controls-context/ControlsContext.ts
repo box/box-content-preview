@@ -1,13 +1,9 @@
 import React from 'react';
+import { TargetingApi } from '../../../types';
 
 export type Context = {
     experiences: {
-        [name: string]: {
-            canShow: boolean;
-            onClose: () => void;
-            onComplete: () => void;
-            onShow: () => void;
-        };
+        [name: string]: TargetingApi;
     };
 };
 

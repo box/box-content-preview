@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import noop from 'lodash/noop';
 import AnnotationsButton from '../AnnotationsButton';
 import { AnnotationMode } from '../../../../types';
 
@@ -18,7 +17,7 @@ describe('AnnotationsButton', () => {
             const onClick = jest.fn();
             const wrapper = getWrapper({ mode, onClick });
 
-            wrapper.children().simulate('click');
+            wrapper.simulate('click');
 
             expect(onClick).toBeCalledWith(mode);
         });
@@ -33,25 +32,9 @@ describe('AnnotationsButton', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.hasClass('bp-AnnotationsTooltip')).toBe(true);
-            expect(wrapper.prop('shouldTarget')).toBe(false);
-            expect(wrapper.children().hasClass('bp-AnnotationsButton')).toBe(true);
-            expect(wrapper.children().hasClass('bp-is-active')).toBe(false); // Default
-            expect(wrapper.children().text()).toBe('Test');
-        });
-
-        test('should target tooltip if can show', () => {
-            const wrapper = getWrapper({
-                tooltipFlowAnnotationsExperience: {
-                    canShow: true,
-                    onClose: noop,
-                    onComplete: noop,
-                    onShow: noop,
-                },
-            });
-
-            expect(wrapper.hasClass('bp-AnnotationsTooltip')).toBe(true);
-            expect(wrapper.prop('shouldTarget')).toBe(true);
+            expect(wrapper.hasClass('bp-AnnotationsButton')).toBe(true);
+            expect(wrapper.hasClass('bp-is-active')).toBe(false); // Default
+            expect(wrapper.text()).toBe('Test');
         });
     });
 });

@@ -26,7 +26,6 @@ export default function ImageControls({
     onZoomIn,
     onZoomOut,
     scale,
-    setWasClosedByUser,
 }: Props): JSX.Element {
     return (
         <>
@@ -45,7 +44,6 @@ export default function ImageControls({
                         hasRegion={hasRegion}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
-                        setWasClosedByUser={setWasClosedByUser}
                     />
                 </ControlsBarGroup>
             </ControlsBar>

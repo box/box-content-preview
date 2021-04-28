@@ -1787,7 +1787,7 @@ class Preview extends EventEmitter {
      * Updates experiences option after props have changed in parent app
      *
      * @public
-     * @param {Object} experiences - new experiences prop
+     * @param {Object} experiences - new experiences value
      * @return {void}
      */
     updateExperiences(experiences) {

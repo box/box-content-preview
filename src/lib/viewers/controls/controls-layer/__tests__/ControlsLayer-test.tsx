@@ -106,7 +106,7 @@ describe('ControlsLayer', () => {
             });
             unmount();
 
-            expect(window.clearTimeout).toBeCalledTimes(3); // Twice on hide, once on unmount
+            expect(window.clearTimeout).toBeCalledTimes(2); // Once on hide, once on unmount
         });
     });
 

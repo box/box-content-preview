@@ -3,7 +3,6 @@ import getProp from 'lodash/get';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
-import ControlsContext from '../controls/controls-context';
 import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
@@ -33,8 +32,8 @@ class ImageViewer extends ImageBaseViewer {
         this.handleImageDownloadError = this.handleImageDownloadError.bind(this);
         this.handleZoomEvent = this.handleZoomEvent.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
-        this.setWasClosedByUser = this.setWasClosedByUser.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
+        this.updateExperiences = this.updateExperiences(this);
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
@@ -376,26 +375,11 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     updateExperiences(experiences) {
-        this.options.experiences = experiences;
-
-        if (this.controls && this.controls.updateExperiences) {
-            this.controls.updateExperiences(experiences);
+        if (!this.controls) {
+            return;
         }
 
-        this.renderUI();
-    }
-
-    /**
-     * Keep track of whether user closed tooltip so that we can update UI
-     *
-     * @protected
-     * @param {string} experienceName - name of experience that was closed
-     * @return {void}
-     */
-    setWasClosedByUser(experienceName) {
-        if (this.controls && this.controls.setWasClosedByUser) {
-            this.controls.setWasClosedByUser(experienceName);
-        }
+        this.controls.updateExperiences(experiences);
 
         this.renderUI();
     }
@@ -410,24 +394,21 @@ class ImageViewer extends ImageBaseViewer {
         const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
 
         this.controls.render(
-            <ControlsContext.Provider value={{ experiences: this.options.experiences }}>
-                <ImageControls
-                    annotationColor={this.annotationModule.getColor()}
-                    annotationMode={this.annotationControlsFSM.getMode()}
-                    hasDrawing={canDraw}
-                    hasHighlight={false}
-                    hasRegion={canAnnotate}
-                    onAnnotationColorChange={this.handleAnnotationColorChange}
-                    onAnnotationModeClick={this.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onRotateLeft={this.rotateLeft}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    scale={this.scale}
-                    setWasClosedByUser={this.setWasClosedByUser}
-                />
-            </ControlsContext.Provider>,
+            <ImageControls
+                annotationColor={this.annotationModule.getColor()}
+                annotationMode={this.annotationControlsFSM.getMode()}
+                hasDrawing={canDraw}
+                hasHighlight={false}
+                hasRegion={canAnnotate}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
+                onAnnotationModeClick={this.handleAnnotationControlsClick}
+                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                onFullscreenToggle={this.toggleFullscreen}
+                onRotateLeft={this.rotateLeft}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                scale={this.scale}
+            />,
         );
     }
 

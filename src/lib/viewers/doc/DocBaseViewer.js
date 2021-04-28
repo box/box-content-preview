@@ -3,7 +3,6 @@ import throttle from 'lodash/throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
-import ControlsContext from '../controls/controls-context';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
 import Popup from '../../Popup';
@@ -117,10 +116,10 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
         this.setPage = this.setPage.bind(this);
-        this.setWasClosedByUser = this.setWasClosedByUser.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
+        this.updateExperiences = this.updateExperiences.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
@@ -1059,26 +1058,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     updateExperiences(experiences) {
-        this.options.experiences = experiences;
-
-        if (this.controls && this.controls.updateExperiences) {
-            this.controls.updateExperiences(experiences);
+        if (!this.controls) {
+            return;
         }
 
-        this.renderUI();
-    }
-
-    /**
-     * Keep track of whether user closed tooltip so that we can update UI
-     *
-     * @protected
-     * @param {string} experienceName - name of experience that was closed
-     * @return {void}
-     */
-    setWasClosedByUser(experienceName) {
-        if (this.controls && this.controls.setWasClosedByUser) {
-            this.controls.setWasClosedByUser(experienceName);
-        }
+        this.controls.updateExperiences(experiences);
 
         this.renderUI();
     }
@@ -1099,31 +1083,28 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
 
         this.controls.render(
-            <ControlsContext.Provider value={{ experiences: this.options.experiences }}>
-                <DocControls
-                    annotationColor={this.annotationModule.getColor()}
-                    annotationMode={this.annotationControlsFSM.getMode()}
-                    hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
-                    hasHighlight={canAnnotate && canDownload}
-                    hasRegion={canAnnotate}
-                    maxScale={MAX_SCALE}
-                    minScale={MIN_SCALE}
-                    onAnnotationColorChange={this.handleAnnotationColorChange}
-                    onAnnotationModeClick={this.handleAnnotationControlsClick}
-                    onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                    onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
-                    onFullscreenToggle={this.toggleFullscreen}
-                    onPageChange={this.setPage}
-                    onPageSubmit={this.handlePageSubmit}
-                    onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
-                    onZoomIn={this.zoomIn}
-                    onZoomOut={this.zoomOut}
-                    pageCount={this.pdfViewer.pagesCount}
-                    pageNumber={this.pdfViewer.currentPageNumber}
-                    scale={this.pdfViewer.currentScale}
-                    setWasClosedByUser={this.setWasClosedByUser}
-                />
-            </ControlsContext.Provider>,
+            <DocControls
+                annotationColor={this.annotationModule.getColor()}
+                annotationMode={this.annotationControlsFSM.getMode()}
+                hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
+                hasHighlight={canAnnotate && canDownload}
+                hasRegion={canAnnotate}
+                maxScale={MAX_SCALE}
+                minScale={MIN_SCALE}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
+                onAnnotationModeClick={this.handleAnnotationControlsClick}
+                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
+                onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
+                onFullscreenToggle={this.toggleFullscreen}
+                onPageChange={this.setPage}
+                onPageSubmit={this.handlePageSubmit}
+                onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
+                onZoomIn={this.zoomIn}
+                onZoomOut={this.zoomOut}
+                pageCount={this.pdfViewer.pagesCount}
+                pageNumber={this.pdfViewer.currentPageNumber}
+                scale={this.pdfViewer.currentScale}
+            />,
         );
     }
 

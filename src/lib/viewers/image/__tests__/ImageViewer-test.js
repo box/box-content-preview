@@ -404,7 +404,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                     onZoomIn={image.zoomIn}
                     onZoomOut={image.zoomOut}
                     scale={1}
-                    setWasClosedByUser={image.setWasClosedByUser}
                 />,
             );
         });

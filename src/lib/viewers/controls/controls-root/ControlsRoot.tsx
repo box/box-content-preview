@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
-import { TargetingApi } from '../../../types';
+import ControlsContext from '../controls-context';
 import ControlsLayer, { Helpers } from '../controls-layer';
+import { TargetingApi } from '../../../types';
+
 import './ControlsRoot.scss';
 
 export type Options = {
@@ -29,10 +31,6 @@ export default class ControlsRoot {
         [name: string]: TargetingApi;
     };
 
-    wasClosedByUser: {
-        [name: string]: boolean;
-    };
-
     constructor({ containerEl, experiences = {}, fileId }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-ControlsRoot');
@@ -46,7 +44,6 @@ export default class ControlsRoot {
         this.containerEl.appendChild(this.controlsEl);
 
         this.experiences = experiences;
-        this.wasClosedByUser = {};
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -82,31 +79,15 @@ export default class ControlsRoot {
         this.controlsEl.classList.remove('bp-is-hidden');
     }
 
-    shouldForceShow(): boolean {
-        if (this.wasClosedByUser.tooltipFlowAnnotationsExperience) {
-            return false;
-        }
-
-        if (!this.experiences.tooltipFlowAnnotationsExperience) {
-            return false;
-        }
-
-        return this.experiences.tooltipFlowAnnotationsExperience.canShow;
-    }
-
-    setWasClosedByUser(experienceName: string): void {
-        this.wasClosedByUser[experienceName] = true;
-    }
-
     updateExperiences(experiences: { [name: string]: TargetingApi }): void {
         this.experiences = experiences;
     }
 
     render(controls: JSX.Element): void {
         ReactDOM.render(
-            <ControlsLayer forceShow={this.shouldForceShow()} onMount={this.handleMount}>
-                {controls}
-            </ControlsLayer>,
+            <ControlsContext.Provider value={{ experiences: this.experiences }}>
+                <ControlsLayer onMount={this.handleMount}>{controls}</ControlsLayer>
+            </ControlsContext.Provider>,
             this.controlsEl,
         );
     }
