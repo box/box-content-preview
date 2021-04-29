@@ -1,0 +1,5 @@
+@import 'src/lib/viewers/controls/styles';
+
+.bp-AnimationClipsToggle {
+    @include bp-Control;
+}

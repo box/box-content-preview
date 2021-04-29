@@ -1,5 +1,8 @@
+import React from 'react';
 import Box3DViewer from '../Box3DViewer';
+import ControlsRoot from '../../controls/controls-root';
 import Model3DControls from './Model3DControls';
+import Model3DControlsNew from './Model3DControlsNew';
 import Model3DRenderer from './Model3DRenderer';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -28,8 +31,12 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
  * This is the entry point for the model3d preview.
  */
 class Model3DViewer extends Box3DViewer {
+    animationClips = [];
+
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
+
+    isAnimationPlaying = false;
 
     /** @property {Object} - Tracks up and forward axes for the model alignment in the scene */
     axes = {
@@ -37,9 +44,13 @@ class Model3DViewer extends Box3DViewer {
         forward: null,
     };
 
+    useReactControls = false;
+
     /** @inheritdoc */
     constructor(option) {
         super(option);
+
+        this.useReactControls = !!this.options.useReactControlsModel3D;
 
         this.handleRotateOnAxis = this.handleRotateOnAxis.bind(this);
         this.handleSelectAnimationClip = this.handleSelectAnimationClip.bind(this);
@@ -75,7 +86,9 @@ class Model3DViewer extends Box3DViewer {
      * @inheritdoc
      */
     createSubModules() {
-        this.controls = new Model3DControls(this.wrapperEl);
+        this.controls = this.useReactControls
+            ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
+            : new Model3DControls(this.wrapperEl);
         this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }
 
@@ -85,7 +98,7 @@ class Model3DViewer extends Box3DViewer {
     attachEventHandlers() {
         super.attachEventHandlers();
 
-        if (this.controls) {
+        if (this.controls && !this.useReactControls) {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
@@ -108,7 +121,7 @@ class Model3DViewer extends Box3DViewer {
     detachEventHandlers() {
         super.detachEventHandlers();
 
-        if (this.controls) {
+        if (this.controls && !this.useReactControls) {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
@@ -176,7 +189,11 @@ class Model3DViewer extends Box3DViewer {
             .catch(this.onMetadataError)
             .then(defaults => {
                 if (this.controls) {
-                    this.controls.addUi();
+                    if (this.useReactControls) {
+                        this.renderUI();
+                    } else {
+                        this.controls.addUi();
+                    }
                 }
 
                 this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
@@ -239,15 +256,31 @@ class Model3DViewer extends Box3DViewer {
         if (animations.length > 0) {
             const clipIds = animations[0].getClipIds();
 
-            clipIds.forEach(clipId => {
-                const clip = animations[0].getClip(clipId);
-                const duration = clip.stop - clip.start;
-                this.controls.addAnimationClip(clipId, clip.name, duration);
-            });
+            if (this.useReactControls) {
+                this.animationClips = clipIds.map(clipId => {
+                    const { name, start, stop } = animations[0].getClip(clipId);
+                    const duration = stop - start;
+                    return {
+                        duration,
+                        id: clipId,
+                        name,
+                    };
+                });
 
-            if (clipIds.length > 0) {
-                this.controls.showAnimationControls();
-                this.controls.selectAnimationClip(clipIds[0]);
+                this.renderer.setAnimationClip(this.animationClips[0].id);
+
+                this.renderUI();
+            } else {
+                clipIds.forEach(clipId => {
+                    const clip = animations[0].getClip(clipId);
+                    const duration = clip.stop - clip.start;
+                    this.controls.addAnimationClip(clipId, clip.name, duration);
+                });
+
+                if (clipIds.length > 0) {
+                    this.controls.showAnimationControls();
+                    this.controls.selectAnimationClip(clipIds[0]);
+                }
             }
         }
     }
@@ -260,7 +293,16 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     handleToggleAnimation(play) {
-        this.renderer.toggleAnimation(play);
+        if (this.useReactControls) {
+            this.isAnimationPlaying = !this.isAnimationPlaying;
+            this.renderer.toggleAnimation(this.isAnimationPlaying);
+
+            if (this.controls) {
+                this.renderUI();
+            }
+        } else {
+            this.renderer.toggleAnimation(play);
+        }
     }
 
     /**
@@ -270,7 +312,9 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     handleCanvasClick() {
-        this.controls.hidePullups();
+        if (!this.useReactControls) {
+            this.controls.hidePullups();
+        }
     }
 
     /**
@@ -288,7 +332,9 @@ class Model3DViewer extends Box3DViewer {
     handleReset() {
         super.handleReset();
 
-        if (this.controls) {
+        this.isAnimationPlaying = false;
+
+        if (this.controls && !this.useReactControls) {
             this.controls.handleSetRenderMode(this.renderMode);
             this.controls.setCurrentProjectionMode(this.projection);
             this.controls.handleSetSkeletonsVisible(false);
@@ -300,6 +346,10 @@ class Model3DViewer extends Box3DViewer {
             this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
             this.renderer.stopAnimation();
             this.renderer.resetView();
+        }
+
+        if (this.controls && this.useReactControls) {
+            this.renderUI();
         }
     }
 
@@ -368,6 +418,23 @@ class Model3DViewer extends Box3DViewer {
      */
     handleShowGrid(visible) {
         this.renderer.setGridVisible(visible);
+    }
+
+    renderUI() {
+        if (!this.controls) {
+            return;
+        }
+
+        this.controls.render(
+            <Model3DControlsNew
+                animationClips={this.animationClips}
+                isPlaying={this.isAnimationPlaying}
+                onAnimationClipSelect={this.handleSelectAnimationClip}
+                onFullscreenToggle={this.toggleFullscreen}
+                onPlayPause={this.handleToggleAnimation}
+                onReset={this.handleReset}
+            />,
+        );
     }
 }
 

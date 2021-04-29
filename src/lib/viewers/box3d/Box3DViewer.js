@@ -92,7 +92,8 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     attachEventHandlers() {
-        if (this.controls) {
+        if (this.controls && !this.options.useReactControlsModel3D) {
+            // TODO: This can be removed once Image360 and Video360 controls are migrated to React
             this.controls.on(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
             this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
             this.controls.on(EVENT_RESET, this.handleReset);
@@ -118,7 +119,7 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     detachEventHandlers() {
-        if (this.controls) {
+        if (this.controls && !this.options.useReactControlsModel3D) {
             this.controls.removeListener(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
             this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
             this.controls.removeListener(EVENT_RESET, this.handleReset);
@@ -167,7 +168,7 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     destroySubModules() {
-        if (this.controls) {
+        if (this.controls && !this.options.useReactControlsModel3D) {
             this.controls.destroy();
         }
         if (this.renderer) {
@@ -298,7 +299,7 @@ class Box3DViewer extends BaseViewer {
             this.wrapperEl.classList.remove(CLASS_VR_ENABLED);
         }
 
-        if (this.controls) {
+        if (this.controls && !this.options.useReactControlsModel3D) {
             this.controls.vrEnabled = vrDevice && vrDevice.isPresenting;
         }
     }

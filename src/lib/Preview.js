@@ -995,6 +995,8 @@ class Preview extends EventEmitter {
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
 
+        this.options.useReactControlsModel3D = !!options.useReactControlsModel3D;
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;

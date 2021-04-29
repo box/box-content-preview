@@ -1,0 +1,11 @@
+@import '../styles';
+
+.bp-AnimationControls {
+    display: flex;
+    align-items: center;
+
+    .bp-PlayPauseToggle {
+        width: $bp-controls-size-default;
+        height: $bp-controls-size-default;
+    }
+}
