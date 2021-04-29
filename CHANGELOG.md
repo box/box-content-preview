@@ -1,3 +1,11 @@
+## 2.72.0 (2021-04-29)
+
+* feat(documents): Add drop shadow for document pages and placeholders (#1367) ([0a8f089](https://github.com/box/box-content-preview/commit/0a8f089)), closes [#1367](https://github.com/box/box-content-preview/issues/1367)
+* fix(controls): Avoid showing focus styles for disabled controls (#1365) ([f8e8b8b](https://github.com/box/box-content-preview/commit/f8e8b8b)), closes [#1365](https://github.com/box/box-content-preview/issues/1365)
+* fix(thumbnails): Fix position of ContentPreview navigate button (#1366) ([086752a](https://github.com/box/box-content-preview/commit/086752a)), closes [#1366](https://github.com/box/box-content-preview/issues/1366)
+
+
+
 ## 2.71.0 (2021-04-22)
 
 * chore(i18n): Update Translations (#1359) ([91ce7e1](https://github.com/box/box-content-preview/commit/91ce7e1)), closes [#1359](https://github.com/box/box-content-preview/issues/1359)
