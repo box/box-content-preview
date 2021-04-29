@@ -1,0 +1,10 @@
+@import '~box-ui-elements/es/styles/constants/colors';
+
+@mixin bp-DocGhost {
+    background: $bdl-gray-10 url('../../icons/loading_ghost.gif') repeat-y;
+    background-size: 100% 100%;
+}
+
+@mixin bp-DocShadow {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .1);
+}
