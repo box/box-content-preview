@@ -1,6 +1,6 @@
 @import '../../boxuiVariables';
 @import './annotations';
-@import './loading';
+@import './mixins';
 @import './theme';
 
 $pdfjs-highlight: #b400aa !default;
@@ -74,7 +74,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
     .bp-thumbnail:not(.bp-thumbnail-image-loaded) {
         .bp-thumbnail-nav {
-            @include bp-LoadingGhost;
+            @include bp-DocGhost;
         }
     }
 
@@ -256,6 +256,19 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         border: 0;
         border-image: none;
 
+        // Add shadow to an underlying element to avoid overlapping shadows on canvasWrapper and loadingIcon
+        &::before {
+            @include bp-DocShadow;
+
+            position: absolute;
+            top: $pdfjs-page-padding;
+            right: 0;
+            bottom: $pdfjs-page-padding;
+            left: 0;
+            display: block;
+            content: '';
+        }
+
         // Override loading icon styles from pdf.js
         .loadingIcon {
             top: $pdfjs-page-padding;
@@ -264,7 +277,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
             // Display the ghost state only if the page does not already have rendered content (e.g. during a resize)
             &:first-child {
-                @include bp-LoadingGhost;
+                @include bp-DocGhost;
             }
         }
 
