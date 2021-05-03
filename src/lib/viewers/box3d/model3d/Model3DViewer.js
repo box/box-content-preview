@@ -44,13 +44,9 @@ class Model3DViewer extends Box3DViewer {
         forward: null,
     };
 
-    useReactControls = false;
-
     /** @inheritdoc */
     constructor(option) {
         super(option);
-
-        this.useReactControls = !!this.options.useReactControlsModel3D;
 
         this.handleRotateOnAxis = this.handleRotateOnAxis.bind(this);
         this.handleSelectAnimationClip = this.handleSelectAnimationClip.bind(this);
@@ -86,7 +82,7 @@ class Model3DViewer extends Box3DViewer {
      * @inheritdoc
      */
     createSubModules() {
-        this.controls = this.useReactControls
+        this.controls = this.getViewerOption('useReactControls')
             ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
             : new Model3DControls(this.wrapperEl);
         this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
@@ -98,7 +94,7 @@ class Model3DViewer extends Box3DViewer {
     attachEventHandlers() {
         super.attachEventHandlers();
 
-        if (this.controls && !this.useReactControls) {
+        if (this.controls && !this.getViewerOption('useReactControls')) {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
@@ -121,7 +117,7 @@ class Model3DViewer extends Box3DViewer {
     detachEventHandlers() {
         super.detachEventHandlers();
 
-        if (this.controls && !this.useReactControls) {
+        if (this.controls && !this.getViewerOption('useReactControls')) {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
@@ -189,7 +185,7 @@ class Model3DViewer extends Box3DViewer {
             .catch(this.onMetadataError)
             .then(defaults => {
                 if (this.controls) {
-                    if (this.useReactControls) {
+                    if (this.getViewerOption('useReactControls')) {
                         this.renderUI();
                     } else {
                         this.controls.addUi();
@@ -256,7 +252,7 @@ class Model3DViewer extends Box3DViewer {
         if (animations.length > 0) {
             const clipIds = animations[0].getClipIds();
 
-            if (this.useReactControls) {
+            if (this.getViewerOption('useReactControls')) {
                 this.animationClips = clipIds.map(clipId => {
                     const { name, start, stop } = animations[0].getClip(clipId);
                     const duration = stop - start;
@@ -293,7 +289,7 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     handleToggleAnimation(play) {
-        if (this.useReactControls) {
+        if (this.getViewerOption('useReactControls')) {
             this.isAnimationPlaying = !this.isAnimationPlaying;
             this.renderer.toggleAnimation(this.isAnimationPlaying);
 
@@ -312,7 +308,7 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     handleCanvasClick() {
-        if (!this.useReactControls) {
+        if (!this.getViewerOption('useReactControls')) {
             this.controls.hidePullups();
         }
     }
@@ -334,7 +330,7 @@ class Model3DViewer extends Box3DViewer {
 
         this.isAnimationPlaying = false;
 
-        if (this.controls && !this.useReactControls) {
+        if (this.controls && !this.getViewerOption('useReactControls')) {
             this.controls.handleSetRenderMode(this.renderMode);
             this.controls.setCurrentProjectionMode(this.projection);
             this.controls.handleSetSkeletonsVisible(false);
@@ -348,7 +344,7 @@ class Model3DViewer extends Box3DViewer {
             this.renderer.resetView();
         }
 
-        if (this.controls && this.useReactControls) {
+        if (this.controls && this.getViewerOption('useReactControls')) {
             this.renderUI();
         }
     }

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 function IconAnimation24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
-        <svg focusable="false" height={22} viewBox="0 0 24 22" width={24} {...props}>
+        <svg focusable={false} height={24} width={24} {...props}>
             <g fill="none" fillRule="evenodd">
                 <path d="M0-1h24v24H0" />
                 <path

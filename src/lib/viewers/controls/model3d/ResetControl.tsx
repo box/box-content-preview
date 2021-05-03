@@ -7,14 +7,12 @@ export type Props = {
 };
 
 export default function ResetControl({ onReset }: Props): JSX.Element {
-    const title = __('box3d_reset');
-
     const handleClick = (): void => {
         onReset();
     };
 
     return (
-        <button className="bp-ResetControl" onClick={handleClick} title={title} type="button">
+        <button className="bp-ResetControl" onClick={handleClick} title={__('box3d_reset')} type="button">
             <IconReset24 />
         </button>
     );
