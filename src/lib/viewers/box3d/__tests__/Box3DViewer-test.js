@@ -137,6 +137,13 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
                 expect(onSpy).toBeCalledWith(EVENT_RESET, expect.any(Function));
             });
+
+            test('should not invoke any box3d.controls.on() if using react controls', () => {
+                jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+                box3d.controls = { destroy: jest.fn(), on: jest.fn() };
+                box3d.attachEventHandlers();
+                expect(box3d.controls.on).not.toBeCalled();
+            });
         });
 
         test("should not attach handlers to controls if controls instance doesn't exist", () => {
@@ -215,6 +222,13 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 box3d.detachEventHandlers();
 
                 expect(detachSpy).toBeCalledWith(EVENT_RESET, expect.any(Function));
+            });
+
+            test('should not invoke any box3d.controls.removeListener() if using react controls', () => {
+                jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+                box3d.controls = { destroy: jest.fn(), removeListener: jest.fn() };
+                box3d.detachEventHandlers();
+                expect(box3d.controls.removeListener).not.toBeCalled();
             });
         });
 
@@ -305,6 +319,15 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
         test('should call controls.destroy() if it exists', () => {
             jest.spyOn(box3d.controls, 'destroy');
+
+            box3d.destroy();
+
+            expect(box3d.controls.destroy).toBeCalled();
+        });
+
+        test('should still call controls.destroy() if using react controls', () => {
+            jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+            box3d.controls = { destroy: jest.fn(), on: jest.fn() };
 
             box3d.destroy();
 
@@ -473,6 +496,15 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             expect(box3d.wrapperEl).not.toHaveClass('vr-enabled');
             expect(box3d.controls.vrEnabled).not.toBe(true);
+        });
+
+        test('should not add vr-enabled if use react controls is enabled', () => {
+            jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
+
+            box3d.onVrPresentChange();
+
+            expect(box3d.controls.vrEnabled).toBe(false);
         });
     });
 
