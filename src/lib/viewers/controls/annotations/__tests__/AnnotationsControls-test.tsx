@@ -18,14 +18,10 @@ describe('AnnotationsControls', () => {
         let unmount = (): void => {
             // placeholder
         };
-        let found = false;
 
         beforeEach(() => {
             jest.spyOn(React, 'useEffect').mockImplementation(cb => {
-                if (!found) {
-                    unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
-                    found = true;
-                }
+                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
             });
         });
 

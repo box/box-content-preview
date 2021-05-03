@@ -1,11 +1,9 @@
 import React from 'react';
 import ExperiencesContext from './ExperiencesContext';
-import { TargetingApi } from '../../../types';
+import { Experiences } from '../../../types';
 
 export type Props = React.PropsWithChildren<{
-    experiences?: {
-        [key: string]: TargetingApi;
-    };
+    experiences?: Experiences;
 }>;
 
 export default function ExperiencesProvider({ children, experiences = {} }: Props): JSX.Element {

@@ -21,7 +21,7 @@ export default function AnnotationsTargetedTooltip({ children, isEnabled = false
     );
 
     if (!shouldTarget) {
-        return <div>{children}</div>;
+        return <>{children}</>;
     }
 
     return (

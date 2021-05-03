@@ -8,7 +8,6 @@ import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
 import { AnnotationMode } from '../../../types';
-
 import './AnnotationsControls.scss';
 
 export type Props = {
@@ -71,30 +70,30 @@ export default function AnnotationsControls({
 
     return (
         <div className="bp-AnnotationsControls">
-            <AnnotationsTargetedTooltip isEnabled={showDrawing}>
+            <AnnotationsButton
+                data-resin-target="draw"
+                data-testid="bp-AnnotationsControls-drawBtn"
+                isActive={isDrawingActive}
+                isEnabled={showDrawing}
+                mode={AnnotationMode.DRAWING}
+                onClick={handleModeClick}
+                title={__('drawing_comment')}
+            >
+                <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
+            </AnnotationsButton>
+            <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton
-                    data-resin-target="draw"
-                    data-testid="bp-AnnotationsControls-drawBtn"
-                    isActive={isDrawingActive}
-                    isEnabled={showDrawing}
-                    mode={AnnotationMode.DRAWING}
+                    data-resin-target="highlightRegion"
+                    data-testid="bp-AnnotationsControls-regionBtn"
+                    isActive={annotationMode === AnnotationMode.REGION}
+                    isEnabled={showRegion}
+                    mode={AnnotationMode.REGION}
                     onClick={handleModeClick}
-                    title={__('drawing_comment')}
+                    title={__('region_comment')}
                 >
-                    <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
+                    <IconRegion24 />
                 </AnnotationsButton>
             </AnnotationsTargetedTooltip>
-            <AnnotationsButton
-                data-resin-target="highlightRegion"
-                data-testid="bp-AnnotationsControls-regionBtn"
-                isActive={annotationMode === AnnotationMode.REGION}
-                isEnabled={showRegion}
-                mode={AnnotationMode.REGION}
-                onClick={handleModeClick}
-                title={__('region_comment')}
-            >
-                <IconRegion24 />
-            </AnnotationsButton>
             <AnnotationsButton
                 data-resin-target="highlightText"
                 data-testid="bp-AnnotationsControls-highlightBtn"
