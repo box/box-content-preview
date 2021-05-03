@@ -58,6 +58,7 @@ class Model3DViewer extends Box3DViewer {
         this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
         this.handleToggleHelpers = this.handleToggleHelpers.bind(this);
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
+        this.initViewer = this.initViewer.bind(this);
 
         this.onMetadataError = this.onMetadataError.bind(this);
     }
@@ -183,43 +184,45 @@ class Model3DViewer extends Box3DViewer {
                 return response.response;
             })
             .catch(this.onMetadataError)
-            .then(defaults => {
-                if (this.controls) {
-                    if (this.getViewerOption('useReactControls')) {
-                        this.renderUI();
-                    } else {
-                        this.controls.addUi();
-                    }
-                }
+            .then(this.initViewer);
+    }
 
-                this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
-                this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
-                this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
-                this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
-                if (defaults.renderGrid === 'true') {
-                    this.renderGrid = true;
-                } else if (defaults.renderGrid === 'false') {
-                    this.renderGrid = false;
-                } else {
-                    this.renderGrid = DEFAULT_RENDER_GRID;
-                }
+    initViewer(defaults) {
+        if (this.controls) {
+            if (this.getViewerOption('useReactControls')) {
+                this.renderUI();
+            } else {
+                this.controls.addUi();
+            }
+        }
 
-                if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
-                    this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
-                }
+        this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
+        this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
+        this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
+        this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
+        if (defaults.renderGrid === 'true') {
+            this.renderGrid = true;
+        } else if (defaults.renderGrid === 'false') {
+            this.renderGrid = false;
+        } else {
+            this.renderGrid = DEFAULT_RENDER_GRID;
+        }
 
-                // Update controls ui
-                this.handleReset();
+        if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
+            this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
+        }
 
-                // Initialize animation controls when animations are present.
-                this.populateAnimationControls();
+        // Update controls ui
+        this.handleReset();
 
-                this.showWrapper();
+        // Initialize animation controls when animations are present.
+        this.populateAnimationControls();
 
-                this.emit(EVENT_LOAD);
+        this.showWrapper();
 
-                return true;
-            });
+        this.emit(EVENT_LOAD);
+
+        return true;
     }
 
     /**
