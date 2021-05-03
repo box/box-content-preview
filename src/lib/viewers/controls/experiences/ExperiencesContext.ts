@@ -1,10 +1,8 @@
 import React from 'react';
-import { TargetingApi } from '../../../types';
+import { Experiences } from '../../../types';
 
 export type Context = {
-    experiences: {
-        [name: string]: TargetingApi;
-    };
+    experiences: Experiences;
 };
 
 export default React.createContext<Context>({

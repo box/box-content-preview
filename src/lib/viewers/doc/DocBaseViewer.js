@@ -1041,11 +1041,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({
-            containerEl: this.containerEl,
-            experiences: this.options.experiences,
-            fileId: this.options.file.id,
-        });
+        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
@@ -1058,11 +1054,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     updateExperiences(experiences) {
-        if (!this.controls) {
-            return;
-        }
-
-        this.controls.updateExperiences(experiences);
+        this.experiences = experiences;
 
         this.renderUI();
     }
@@ -1086,6 +1078,7 @@ class DocBaseViewer extends BaseViewer {
             <DocControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}

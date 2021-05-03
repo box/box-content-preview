@@ -2,17 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
-import ControlsContext from '../controls-context';
 import ControlsLayer, { Helpers } from '../controls-layer';
-import { TargetingApi } from '../../../types';
-
 import './ControlsRoot.scss';
 
 export type Options = {
     containerEl: HTMLElement;
-    experiences?: {
-        [name: string]: TargetingApi;
-    };
     fileId: string;
 };
 
@@ -27,11 +21,7 @@ export default class ControlsRoot {
         show: noop,
     };
 
-    experiences: {
-        [name: string]: TargetingApi;
-    };
-
-    constructor({ containerEl, experiences = {}, fileId }: Options) {
+    constructor({ containerEl, fileId }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
@@ -42,8 +32,6 @@ export default class ControlsRoot {
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);
         this.containerEl.addEventListener('touchstart', this.handleTouchStart);
         this.containerEl.appendChild(this.controlsEl);
-
-        this.experiences = experiences;
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -79,16 +67,7 @@ export default class ControlsRoot {
         this.controlsEl.classList.remove('bp-is-hidden');
     }
 
-    updateExperiences(experiences: { [name: string]: TargetingApi }): void {
-        this.experiences = experiences;
-    }
-
     render(controls: JSX.Element): void {
-        ReactDOM.render(
-            <ControlsContext.Provider value={{ experiences: this.experiences }}>
-                <ControlsLayer onMount={this.handleMount}>{controls}</ControlsLayer>
-            </ControlsContext.Provider>,
-            this.controlsEl,
-        );
+        ReactDOM.render(<ControlsLayer onMount={this.handleMount}>{controls}</ControlsLayer>, this.controlsEl);
     }
 }

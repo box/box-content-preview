@@ -33,7 +33,7 @@ class ImageViewer extends ImageBaseViewer {
         this.handleZoomEvent = this.handleZoomEvent.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
-        this.updateExperiences = this.updateExperiences(this);
+        this.updateExperiences = this.updateExperiences.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
@@ -375,11 +375,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     updateExperiences(experiences) {
-        if (!this.controls) {
-            return;
-        }
-
-        this.controls.updateExperiences(experiences);
+        this.experiences = experiences;
 
         this.renderUI();
     }
@@ -397,6 +393,7 @@ class ImageViewer extends ImageBaseViewer {
             <ImageControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.experiences}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}

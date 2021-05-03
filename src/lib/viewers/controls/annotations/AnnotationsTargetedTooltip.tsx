@@ -1,16 +1,17 @@
 import React from 'react';
 import TargetedClickThroughGuideTooltip from 'box-ui-elements/es/features/targeting/TargetedClickThroughGuideTooltip';
-import ControlsContext from '../controls-context';
-
+import { ControlsLayerContext } from '../controls-layer';
+import { ExperiencesContext } from '../experiences';
 import { TargetingApi } from '../../../types';
 
-export type Props = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
-    children: React.ReactNode;
+export type Props = React.PropsWithChildren<{
     isEnabled?: boolean;
-};
+}>;
 
 export default function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
-    const { experiences } = React.useContext(ControlsContext);
+    const { experiences } = React.useContext(ExperiencesContext);
+    const { setIsForced } = React.useContext(ControlsLayerContext);
+    const [wasClosedByUser, setWasClosedByUser] = React.useState(false);
 
     const shouldTarget = !!(
         isEnabled &&
@@ -30,7 +31,25 @@ export default function AnnotationsTargetedTooltip({ children, isEnabled = false
             shouldTarget
             showCloseButton
             title={__('annotations_tooltip_title')}
-            useTargetingApi={(): TargetingApi => experiences.tooltipFlowAnnotationsExperience}
+            useTargetingApi={(): TargetingApi => {
+                return {
+                    ...experiences.tooltipFlowAnnotationsExperience,
+                    onClose: (): void => {
+                        experiences.tooltipFlowAnnotationsExperience.onClose();
+                        setIsForced(false);
+                    },
+                    onShow: (): void => {
+                        experiences.tooltipFlowAnnotationsExperience.onShow();
+
+                        if (wasClosedByUser) {
+                            return;
+                        }
+
+                        setWasClosedByUser(true);
+                        setIsForced(true);
+                    },
+                };
+            }}
         >
             {children}
         </TargetedClickThroughGuideTooltip>
