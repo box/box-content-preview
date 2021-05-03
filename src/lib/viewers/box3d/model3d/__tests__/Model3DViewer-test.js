@@ -286,7 +286,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 });
             });
 
-            describe('with reactcontrols enabled', () => {
+            describe('with react controls enabled', () => {
                 eventBindings.forEach(binding => {
                     test(`should not remove an event listener for ${binding.event} events`, () => {
                         jest.spyOn(m3d, 'getViewerOption').mockImplementation(() => true);

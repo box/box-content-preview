@@ -31,18 +31,20 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
  * This is the entry point for the model3d preview.
  */
 class Model3DViewer extends Box3DViewer {
+    /** @property {Object[]} - List of animation clips for the given Box3D file */
     animationClips = [];
-
-    /** @property {Object[]} - List of Box3D instances added to the scene */
-    instances = [];
-
-    isAnimationPlaying = false;
 
     /** @property {Object} - Tracks up and forward axes for the model alignment in the scene */
     axes = {
         up: null,
         forward: null,
     };
+
+    /** @property {Object[]} - List of Box3D instances added to the scene */
+    instances = [];
+
+    /** @property {boolean} - Boolean indicating whether the animation is playihng */
+    isAnimationPlaying = false;
 
     /** @inheritdoc */
     constructor(option) {
