@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import BaseViewer from '../../../BaseViewer';
 import Box3DRuntime from '../../__mocks__/Box3DRuntime';
+import ControlsRoot from '../../../controls/controls-root';
 import Model3DControls from '../Model3DControls';
 import Model3DRenderer from '../Model3DRenderer';
 import Model3DViewer from '../Model3DViewer';
@@ -135,6 +136,32 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             expect(m3d.controls).toBeInstanceOf(Model3DControls);
             expect(m3d.renderer).toBeInstanceOf(Model3DRenderer);
         });
+
+        test('should create ControlsRoot if using react controls', () => {
+            const m3d = new Model3DViewer({
+                file: {
+                    id: 0,
+                    file_version: {
+                        id: 1,
+                    },
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+            });
+            jest.spyOn(m3d, 'getViewerOption').mockImplementation(() => true);
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+            m3d.containerEl = containerEl;
+            m3d.setup();
+
+            m3d.createSubModules();
+
+            expect(m3d.controls).toBeInstanceOf(ControlsRoot);
+            expect(m3d.renderer).toBeInstanceOf(Model3DRenderer);
+        });
     });
 
     describe('event handlers', () => {
@@ -229,6 +256,17 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     });
                 });
             });
+
+            describe('with react controls enabled', () => {
+                eventBindings.forEach(binding => {
+                    test(`should not create an event listener for ${binding.event} events`, () => {
+                        jest.spyOn(m3d, 'getViewerOption').mockImplementation(() => true);
+                        const onStub = jest.spyOn(m3d.controls, 'on');
+                        m3d.attachEventHandlers();
+                        expect(onStub).not.toBeCalledWith(binding.event, m3d[binding.callback]);
+                    });
+                });
+            });
         });
 
         describe('detachEventHandlers()', () => {
@@ -244,6 +282,17 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                         const removeStub = jest.spyOn(m3d.controls, 'removeListener');
                         m3d.detachEventHandlers();
                         expect(removeStub).toBeCalledWith(binding.event, m3d[binding.callback]);
+                    });
+                });
+            });
+
+            describe('with react controls enabled', () => {
+                eventBindings.forEach(binding => {
+                    test(`should not remove an event listener for ${binding.event} events`, () => {
+                        jest.spyOn(m3d, 'getViewerOption').mockImplementation(() => true);
+                        const removeStub = jest.spyOn(m3d.controls, 'removeListener');
+                        m3d.detachEventHandlers();
+                        expect(removeStub).not.toBeCalledWith(binding.event, m3d[binding.callback]);
                     });
                 });
             });
@@ -301,6 +350,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 };
                 b3dMock = sandbox.mock(model3d.renderer.box3d);
                 controlMock = sandbox.mock(model3d.controls);
+                jest.spyOn(model3d.renderer, 'setAnimationClip').mockImplementation(() => {});
+                jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
             });
 
             afterEach(() => {
@@ -433,6 +484,47 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     .withArgs('1');
 
                 model3d.populateAnimationControls();
+            });
+
+            describe('with react controls enabled', () => {
+                beforeEach(() => {
+                    const animation = {
+                        getClipIds: () => {},
+                        getClip: () => {},
+                    };
+                    const clipOne = {
+                        start: 0,
+                        stop: 1,
+                        name: 'one',
+                    };
+                    const animMock = sandbox.mock(animation);
+                    animMock.expects('getClipIds').returns(['1']);
+                    animMock
+                        .expects('getClip')
+                        .withArgs('1')
+                        .returns(clipOne);
+                    b3dMock.expects('getEntitiesByType').returns([animation]);
+
+                    jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+                });
+
+                test('should call renderUI', () => {
+                    model3d.populateAnimationControls();
+
+                    expect(model3d.renderUI).toBeCalled();
+                });
+
+                test('should set animationClips', () => {
+                    model3d.populateAnimationControls();
+
+                    expect(model3d.animationClips).toEqual([{ duration: 1, id: '1', name: 'one' }]);
+                });
+
+                test('should set first animation clip to the renderer', () => {
+                    model3d.populateAnimationControls();
+
+                    expect(model3d.renderer.setAnimationClip).toBeCalledWith('1');
+                });
             });
         });
     });
@@ -638,6 +730,15 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             sandbox.mock(model3d.controls).expects('hidePullups');
             model3d.handleCanvasClick();
         });
+
+        test('should not invoke controls.hidePullups() if using react controls', () => {
+            jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+            jest.spyOn(model3d.controls, 'hidePullups');
+
+            model3d.handleCanvasClick();
+
+            expect(model3d.controls.hidePullups).not.toBeCalled();
+        });
     });
 
     describe('handleReset()', () => {
@@ -650,6 +751,153 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             const renderMock = sandbox.mock(model3d.renderer);
             renderMock.expects('stopAnimation').once();
             model3d.handleReset();
+        });
+
+        describe('with react controls enabled', () => {
+            beforeEach(() => {
+                jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+                jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+            });
+
+            test('should not reset control settings', () => {
+                jest.spyOn(model3d.controls, 'handleSetRenderMode');
+                jest.spyOn(model3d.controls, 'setCurrentProjectionMode');
+                jest.spyOn(model3d.controls, 'handleSetSkeletonsVisible');
+                jest.spyOn(model3d.controls, 'handleSetWireframesVisible');
+                jest.spyOn(model3d.controls, 'handleSetGridVisible');
+
+                model3d.handleReset();
+
+                expect(model3d.controls.handleSetRenderMode).not.toBeCalled();
+                expect(model3d.controls.setCurrentProjectionMode).not.toBeCalled();
+                expect(model3d.controls.handleSetSkeletonsVisible).not.toBeCalled();
+                expect(model3d.controls.handleSetWireframesVisible).not.toBeCalled();
+                expect(model3d.controls.handleSetGridVisible).not.toBeCalled();
+            });
+
+            test('should reset controls state and call renderUI', () => {
+                model3d.isAnimationPlaying = true;
+
+                model3d.handleReset();
+
+                expect(model3d.isAnimationPlaying).toBe(false);
+                expect(model3d.renderUI).toBeCalled();
+            });
+        });
+    });
+
+    describe('initViewer()', () => {
+        let addUISpy;
+        let renderUISpy;
+        beforeEach(() => {
+            jest.spyOn(model3d, 'handleReset').mockImplementation(() => {});
+            jest.spyOn(model3d, 'handleRotationAxisSet').mockImplementation(() => {});
+            jest.spyOn(model3d, 'populateAnimationControls').mockImplementation(() => {});
+            jest.spyOn(model3d, 'showWrapper').mockImplementation(() => {});
+
+            renderUISpy = jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+            addUISpy = jest.spyOn(model3d.controls, 'addUi').mockImplementation(() => {});
+        });
+
+        test('should add the controls UI', () => {
+            model3d.initViewer({});
+
+            expect(addUISpy).toBeCalled();
+        });
+
+        test('should initialize viewer settings to defaults if meta is empty', () => {
+            model3d.initViewer({});
+
+            expect(model3d.axes.up).toBe('+Y');
+            expect(model3d.axes.forward).toBe('+Z');
+            expect(model3d.renderMode).toBe('Lit');
+            expect(model3d.projection).toBe('Perspective');
+            expect(model3d.renderGrid).toBe(true);
+            expect(model3d.handleRotationAxisSet).not.toBeCalled();
+        });
+
+        test('should initialize viewer settings to provided defaults', () => {
+            const defaults = {
+                cameraProjection: 'Orthographic',
+                defaultRenderMode: 'Unlit',
+                forwardAxis: 'forward',
+                renderGrid: 'false',
+                upAxis: 'up',
+            };
+            model3d.initViewer(defaults);
+
+            expect(model3d.axes.up).toBe(defaults.upAxis);
+            expect(model3d.axes.forward).toBe(defaults.forwardAxis);
+            expect(model3d.renderMode).toBe(defaults.defaultRenderMode);
+            expect(model3d.projection).toBe(defaults.cameraProjection);
+            expect(model3d.renderGrid).toBe(false);
+            expect(model3d.handleRotationAxisSet).toBeCalledWith(defaults.upAxis, defaults.forwardAxis, false);
+        });
+
+        describe('with react controls enabled', () => {
+            beforeEach(() => jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true));
+
+            test('should call renderUI if using react controls', () => {
+                model3d.initViewer({});
+
+                expect(renderUISpy).toBeCalled();
+                expect(addUISpy).not.toBeCalled();
+            });
+        });
+    });
+
+    describe('handleToggleAnimation()', () => {
+        beforeEach(() => {
+            jest.spyOn(model3d.renderer, 'toggleAnimation');
+            jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+        });
+
+        test.each([true, false])('should toggle the animation for the renderer as %s', play => {
+            model3d.handleToggleAnimation(play);
+
+            expect(model3d.renderer.toggleAnimation).toBeCalledWith(play);
+        });
+
+        describe('with react controls enabled', () => {
+            beforeEach(() => {
+                jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+            });
+
+            test.each([true, false])('should toggle the animation when initially %s', isPlaying => {
+                const nextIsPlaying = !isPlaying;
+                model3d.isAnimationPlaying = isPlaying;
+
+                model3d.handleToggleAnimation();
+
+                expect(model3d.isAnimationPlaying).toBe(nextIsPlaying);
+                expect(model3d.renderer.toggleAnimation).toBeCalledWith(nextIsPlaying);
+                expect(model3d.renderUI).toBeCalled();
+            });
+        });
+    });
+
+    describe('renderUI()', () => {
+        const getProps = instance => instance.controls.render.mock.calls[0][0].props;
+
+        beforeEach(() => {
+            jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+            model3d.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+        });
+
+        test('should render react controls with the correct props', () => {
+            model3d.renderUI();
+
+            expect(getProps(model3d)).toMatchObject({
+                animationClips: [],
+                isPlaying: false,
+                onAnimationClipSelect: model3d.handleSelectAnimationClip,
+                onFullscreenToggle: model3d.toggleFullscreen,
+                onPlayPause: model3d.handleToggleAnimation,
+                onReset: model3d.handleReset,
+            });
         });
     });
 });
