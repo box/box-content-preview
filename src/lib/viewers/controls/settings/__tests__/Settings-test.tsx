@@ -1,27 +1,27 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import MediaSettings from '../MediaSettings';
-import MediaSettingsToggle from '../MediaSettingsToggle';
-import MediaSettingsFlyout from '../MediaSettingsFlyout';
+import Settings from '../Settings';
+import SettingsToggle from '../SettingsToggle';
+import SettingsFlyout from '../SettingsFlyout';
 
-describe('MediaSettings', () => {
+describe('Settings', () => {
     const getHostNode = (): HTMLDivElement => {
         return document.body.appendChild(document.createElement('div'));
     };
-    const getWrapper = (props = {}): ReactWrapper => mount(<MediaSettings {...props} />, { attachTo: getHostNode() });
+    const getWrapper = (props = {}): ReactWrapper => mount(<Settings {...props} />, { attachTo: getHostNode() });
 
     describe('event handlers', () => {
         test('should update the flyout and toggle button isOpen prop when clicked', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.find(MediaSettingsFlyout).prop('isOpen')).toBe(false);
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(MediaSettingsToggle).simulate('click');
+            wrapper.find(SettingsToggle).simulate('click');
 
-            expect(wrapper.find(MediaSettingsFlyout).prop('isOpen')).toBe(true);
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(true);
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
         });
 
         test.each`
@@ -56,20 +56,20 @@ describe('MediaSettings', () => {
                 return event;
             };
 
-            wrapper.find(MediaSettingsToggle).simulate('click'); // Open the controls
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(true);
+            wrapper.find(SettingsToggle).simulate('click'); // Open the controls
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
 
             act(() => {
                 document.dispatchEvent(getEvent(document.body)); // Click outside the controls
             });
             wrapper.update();
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(MediaSettingsToggle).simulate('click'); // Re-open the controls
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(true);
+            wrapper.find(SettingsToggle).simulate('click'); // Re-open the controls
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
 
-            wrapper.find(MediaSettingsFlyout).simulate('click'); // Click within the controls
-            expect(wrapper.find(MediaSettingsToggle).prop('isOpen')).toBe(true);
+            wrapper.find(SettingsFlyout).simulate('click'); // Click within the controls
+            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
         });
 
         test('should stop propagation on all keydown events to prevent triggering global event listeners', () => {
@@ -89,9 +89,9 @@ describe('MediaSettings', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettings');
-            expect(wrapper.exists(MediaSettingsFlyout)).toBe(true);
-            expect(wrapper.exists(MediaSettingsToggle)).toBe(true);
+            expect(wrapper.getDOMNode()).toHaveClass('bp-Settings');
+            expect(wrapper.exists(SettingsFlyout)).toBe(true);
+            expect(wrapper.exists(SettingsToggle)).toBe(true);
         });
     });
 });

@@ -1,0 +1,51 @@
+@import './styles';
+
+.bp-SettingsRadioItem {
+    @include bp-SettingsRow;
+
+    &.bp-is-selected {
+        .bp-SettingsRadioItem-check-icon {
+            visibility: visible;
+        }
+
+        .bp-SettingsRadioItem-value {
+            color: $box-blue;
+        }
+    }
+
+    &:hover {
+        background-color: $hover-blue-background;
+
+        .bp-SettingsRadioItem-check-icon {
+            fill: $blue-steel;
+        }
+
+        .bp-SettingsRadioItem-value {
+            color: $blue-steel;
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-SettingsRadioItem-check-icon {
+            fill: $white;
+        }
+
+        .bp-SettingsRadioItem-value {
+            color: $white;
+        }
+    }
+}
+
+.bp-SettingsRadioItem-check {
+    @include bp-SettingsRow-cell;
+}
+
+.bp-SettingsRadioItem-check-icon {
+    visibility: hidden;
+}
+
+.bp-SettingsRadioItem-value {
+    @include bp-SettingsRow-value;
+}

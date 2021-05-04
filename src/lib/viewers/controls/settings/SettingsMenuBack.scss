@@ -1,0 +1,35 @@
+@import './styles';
+
+.bp-SettingsMenuBack {
+    @include bp-SettingsRow;
+
+    &:hover {
+        background-color: $hover-blue-background;
+
+        .bp-SettingsMenuBack-label {
+            color: lighten($blue-steel, 50%);
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-SettingsMenuBack-arrow {
+            fill: $white;
+        }
+
+        .bp-SettingsMenuBack-label {
+            color: $white;
+        }
+    }
+}
+
+.bp-SettingsMenuBack-arrow {
+    @include bp-SettingsRow-cell;
+}
+
+.bp-SettingsMenuBack-label {
+    @include bp-SettingsRow-label;
+
+    text-align: center;
+}

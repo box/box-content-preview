@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import IconCheckMark24 from '../../../icons/IconCheckMark24';
-import MediaSettingsRadioItem from '../MediaSettingsRadioItem';
+import IconCheckMark24 from '../../icons/IconCheckMark24';
+import SettingsRadioItem from '../SettingsRadioItem';
 
-describe('MediaSettingsRadioItem', () => {
+describe('SettingsRadioItem', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<MediaSettingsRadioItem label="1.0" onChange={jest.fn()} value={1} {...props} />);
+        shallow(<SettingsRadioItem label="1.0" onChange={jest.fn()} value={1} {...props} />);
 
     describe('event handlers', () => {
         test('should set the active menu when clicked', () => {
@@ -43,8 +43,8 @@ describe('MediaSettingsRadioItem', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.hasClass('bp-MediaSettingsRadioItem')).toBe(true);
-            expect(wrapper.find('.bp-MediaSettingsRadioItem-value').contains('1.0')).toBe(true);
+            expect(wrapper.hasClass('bp-SettingsRadioItem')).toBe(true);
+            expect(wrapper.find('.bp-SettingsRadioItem-value').contains('1.0')).toBe(true);
             expect(wrapper.exists(IconCheckMark24)).toBe(true); // Rendered, but visually hidden by default
         });
     });

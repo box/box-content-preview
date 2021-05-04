@@ -1,14 +1,14 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import MediaSettingsContext, { Context } from '../MediaSettingsContext';
-import MediaSettingsFlyout from '../MediaSettingsFlyout';
+import SettingsContext, { Context } from '../SettingsContext';
+import SettingsFlyout from '../SettingsFlyout';
 
-describe('MediaSettingsFlyout', () => {
+describe('SettingsFlyout', () => {
     const getContext = (): Partial<Context> => ({ activeRect: undefined });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<MediaSettingsFlyout isOpen={false} {...props} />, {
-            wrappingComponent: MediaSettingsContext.Provider,
+        mount(<SettingsFlyout isOpen={false} {...props} />, {
+            wrappingComponent: SettingsContext.Provider,
             wrappingComponentProps: { value: context },
         });
 
@@ -58,7 +58,7 @@ describe('MediaSettingsFlyout', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettingsFlyout');
+            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsFlyout');
         });
     });
 });

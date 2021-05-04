@@ -1,24 +1,24 @@
 import React from 'react';
 import classNames from 'classnames';
-import MediaSettingsContext, { Menu, Rect } from './MediaSettingsContext';
-import MediaSettingsFlyout from './MediaSettingsFlyout';
-import MediaSettingsMenu from './MediaSettingsMenu';
-import MediaSettingsMenuBack from './MediaSettingsMenuBack';
-import MediaSettingsMenuItem from './MediaSettingsMenuItem';
-import MediaSettingsRadioItem from './MediaSettingsRadioItem';
-import MediaSettingsToggle, { Ref as MediaSettingsToggleRef } from './MediaSettingsToggle';
-import { decodeKeydown } from '../../../../util';
+import SettingsContext, { Menu, Rect } from './SettingsContext';
+import SettingsFlyout from './SettingsFlyout';
+import SettingsMenu from './SettingsMenu';
+import SettingsMenuBack from './SettingsMenuBack';
+import SettingsMenuItem from './SettingsMenuItem';
+import SettingsRadioItem from './SettingsRadioItem';
+import SettingsToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
+import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
 }>;
 
-export default function MediaSettings({ children, className, ...rest }: Props): JSX.Element | null {
+export default function Settings({ children, className, ...rest }: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
     const [activeRect, setActiveRect] = React.useState<Rect>();
     const [isFocused, setIsFocused] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(false);
-    const buttonElRef = React.useRef<MediaSettingsToggleRef>(null);
+    const buttonElRef = React.useRef<SettingsToggleRef>(null);
     const controlsElRef = React.useRef<HTMLDivElement>(null);
     const resetControls = React.useCallback(() => {
         setActiveMenu(Menu.MAIN);
@@ -73,21 +73,21 @@ export default function MediaSettings({ children, className, ...rest }: Props): 
     return (
         <div
             ref={controlsElRef}
-            className={classNames('bp-MediaSettings', className, { 'bp-is-focused': isFocused })}
+            className={classNames('bp-Settings', className, { 'bp-is-focused': isFocused })}
             onKeyDown={handleKeyDown}
             role="presentation"
             {...rest}
         >
-            <MediaSettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
-                <MediaSettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <MediaSettingsFlyout isOpen={isOpen}>{children}</MediaSettingsFlyout>
-            </MediaSettingsContext.Provider>
+            <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
+                <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
+                <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
+            </SettingsContext.Provider>
         </div>
     );
 }
 
-MediaSettings.Context = MediaSettingsContext;
-MediaSettings.Menu = MediaSettingsMenu;
-MediaSettings.MenuBack = MediaSettingsMenuBack;
-MediaSettings.MenuItem = MediaSettingsMenuItem;
-MediaSettings.RadioItem = MediaSettingsRadioItem;
+Settings.Context = SettingsContext;
+Settings.Menu = SettingsMenu;
+Settings.MenuBack = SettingsMenuBack;
+Settings.MenuItem = SettingsMenuItem;
+Settings.RadioItem = SettingsRadioItem;

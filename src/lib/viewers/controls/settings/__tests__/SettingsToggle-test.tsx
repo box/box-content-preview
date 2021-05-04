@@ -1,17 +1,17 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import IconGear24 from '../../../icons/IconGear24';
-import MediaSettingsToggle from '../MediaSettingsToggle';
+import IconGear24 from '../../icons/IconGear24';
+import SettingsToggle from '../SettingsToggle';
 
-describe('MediaSettingsToggle', () => {
+describe('SettingsToggle', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<MediaSettingsToggle isOpen={false} onClick={jest.fn()} {...props} />);
+        shallow(<SettingsToggle isOpen={false} onClick={jest.fn()} {...props} />);
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.hasClass('bp-MediaSettingsToggle')).toBe(true);
+            expect(wrapper.hasClass('bp-SettingsToggle')).toBe(true);
             expect(wrapper.exists(IconGear24)).toBe(true);
             expect(wrapper.prop('title')).toBe('Settings');
         });

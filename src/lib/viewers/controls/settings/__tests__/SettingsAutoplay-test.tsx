@@ -1,31 +1,31 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import MediaSettings, { Context, Menu } from '..';
-import MediaSettingsRate from '../MediaSettingsRate';
+import Settings, { Context, Menu } from '..';
+import SettingsAutoplay from '../SettingsAutoplay';
 
-describe('MediaSettingsRate', () => {
+describe('SettingsAutoplay', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<MediaSettingsRate onRateChange={jest.fn()} rate="1.0" {...props} />, {
-            wrappingComponent: MediaSettings.Context.Provider,
+        mount(<SettingsAutoplay autoplay onAutoplayChange={jest.fn()} {...props} />, {
+            wrappingComponent: Settings.Context.Provider,
             wrappingComponentProps: { value: context },
         });
 
     describe('event handlers', () => {
         test('should surface the selected item on change', () => {
-            const onRateChange = jest.fn();
-            const wrapper = getWrapper({ onRateChange });
+            const onAutoplayChange = jest.fn();
+            const wrapper = getWrapper({ onAutoplayChange });
 
-            wrapper.find({ value: '2.0' }).simulate('click');
+            wrapper.find({ value: true }).simulate('click');
 
-            expect(onRateChange).toBeCalledWith('2.0');
+            expect(onAutoplayChange).toBeCalledWith(true);
         });
 
         test('should reset the active menu on change', () => {
             const context = getContext();
             const wrapper = getWrapper({}, context);
 
-            wrapper.find({ value: '2.0' }).simulate('click');
+            wrapper.find({ value: true }).simulate('click');
 
             expect(context.setActiveMenu).toBeCalledWith(Menu.MAIN);
         });
@@ -35,8 +35,8 @@ describe('MediaSettingsRate', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.exists(MediaSettings.MenuBack)).toBe(true);
-            expect(wrapper.exists(MediaSettings.RadioItem)).toBe(true);
+            expect(wrapper.exists(Settings.MenuBack)).toBe(true);
+            expect(wrapper.exists(Settings.RadioItem)).toBe(true);
         });
     });
 });

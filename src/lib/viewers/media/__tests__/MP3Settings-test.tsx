@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import MediaSettings from '../../controls/media/MediaSettings/MediaSettings';
 import MP3Settings from '../MP3Settings';
-import MediaSettingsMenu from '../../controls/media/MediaSettings/MediaSettingsMenu';
-import MediaSettingsMenuItem from '../../controls/media/MediaSettings/MediaSettingsMenuItem';
+import Settings from '../../controls/settings/Settings';
+import SettingsMenu from '../../controls/settings/SettingsMenu';
+import SettingsMenuItem from '../../controls/settings/SettingsMenuItem';
 
 describe('MP3SettingsControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
@@ -21,9 +21,9 @@ describe('MP3SettingsControls', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.exists(MediaSettings)).toBe(true);
-            expect(wrapper.exists(MediaSettingsMenu)).toBe(true);
-            expect(wrapper.exists(MediaSettingsMenuItem)).toBe(true);
+            expect(wrapper.exists(Settings)).toBe(true);
+            expect(wrapper.exists(SettingsMenu)).toBe(true);
+            expect(wrapper.exists(SettingsMenuItem)).toBe(true);
         });
 
         test.each`
