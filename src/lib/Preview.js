@@ -1784,6 +1784,19 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @public
+     * @param {Object} experiences - new experiences value
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        if (this.viewer && this.viewer.updateExperiences) {
+            this.viewer.updateExperiences(experiences);
+        }
+    }
+
+    /**
      * Shows a preview of a file at the specified index in the current collection.
      *
      * @public

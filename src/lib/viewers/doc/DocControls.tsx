@@ -2,6 +2,7 @@ import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
 import ControlsBar, { ControlsBarGroup } from '../controls/controls-bar';
 import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
+import ExperiencesProvider, { Props as ExperiencesProviderProps } from '../controls/experiences';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import PageControls, { Props as PageControlsProps } from '../controls/page';
@@ -10,6 +11,7 @@ import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
 export type Props = AnnotationsControlsProps &
     DrawingControlsProps &
+    ExperiencesProviderProps &
     FindBarToggleProps &
     FullscreenToggleProps &
     PageControlsProps &
@@ -19,6 +21,7 @@ export type Props = AnnotationsControlsProps &
 export default function DocControls({
     annotationColor,
     annotationMode,
+    experiences,
     hasDrawing,
     hasHighlight,
     hasRegion,
@@ -39,7 +42,7 @@ export default function DocControls({
     scale,
 }: Props): JSX.Element {
     return (
-        <>
+        <ExperiencesProvider experiences={experiences}>
             <ControlsBar>
                 <ControlsBarGroup>
                     <ThumbnailsToggle onThumbnailsToggle={onThumbnailsToggle} />
@@ -82,6 +85,6 @@ export default function DocControls({
                     onAnnotationColorChange={onAnnotationColorChange}
                 />
             </ControlsBar>
-        </>
+        </ExperiencesProvider>
     );
 }
