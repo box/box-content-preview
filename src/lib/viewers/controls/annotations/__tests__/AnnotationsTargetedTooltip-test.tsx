@@ -2,20 +2,6 @@ import React from 'react';
 import { ReactWrapper, mount } from 'enzyme';
 import AnnotationsTargetedTooltip from '../AnnotationsTargetedTooltip';
 
-const mockUseContext = jest.fn().mockImplementation(() => ({
-    experiences: {
-        tooltipFlowAnnotationsExperience: {
-            canShow: true,
-            onClose: jest.fn(),
-            onComplete: jest.fn(),
-            onShow: jest.fn(),
-        },
-    },
-    setIsForced: jest.fn(),
-}));
-
-React.useContext = mockUseContext;
-
 describe('AnnotationsTargetedTooltip', () => {
     const getWrapper = (props = {}): ReactWrapper =>
         mount(
@@ -25,6 +11,20 @@ describe('AnnotationsTargetedTooltip', () => {
         );
 
     describe('render', () => {
+        beforeEach(() => {
+            jest.spyOn(React, 'useContext').mockImplementation(() => ({
+                experiences: {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow: true,
+                        onClose: jest.fn(),
+                        onComplete: jest.fn(),
+                        onShow: jest.fn(),
+                    },
+                },
+                setIsForced: jest.fn(),
+            }));
+        });
+
         test('should return tooltip when is enabled', () => {
             const wrapper = getWrapper({
                 isEnabled: true,

@@ -1,15 +1,13 @@
 import React from 'react';
-import Tooltip from 'box-ui-elements/es/components/tooltip/Tooltip';
-import { withTargetedClickThrough } from 'box-ui-elements/es/features/targeting/hocs';
+import TargetedClickThroughTooltip from '../tooltip';
 import { ControlsLayerContext } from '../controls-layer';
 import { ExperiencesContext } from '../experiences';
 import { TargetingApi } from '../../../types';
 import './AnnotationsTargetedTooltip.scss';
 
-export type Props = {
-    children: React.ReactElement;
+export type Props = React.PropsWithChildren<{
     isEnabled?: boolean;
-};
+}>;
 
 function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
     const { experiences } = React.useContext(ExperiencesContext);
@@ -24,7 +22,7 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
     );
 
     if (!shouldTarget) {
-        return children;
+        return <>{children}</>;
     }
 
     return (
@@ -63,15 +61,5 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
         </TargetedClickThroughTooltip>
     );
 }
-
-const TargetedClickThroughTooltip = withTargetedClickThrough(
-    ({ children, ...props }: { children: React.ReactNode }): JSX.Element => {
-        return (
-            <Tooltip {...props}>
-                <>{children}</>
-            </Tooltip>
-        );
-    },
-);
 
 export default AnnotationsTargetedTooltip;
