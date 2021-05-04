@@ -1,14 +1,14 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import IconArrowRight24 from '../../../icons/IconArrowRight24';
-import MediaSettingsContext, { Menu, Context } from '../MediaSettingsContext';
-import MediaSettingsMenuItem from '../MediaSettingsMenuItem';
+import IconArrowRight24 from '../../icons/IconArrowRight24';
+import SettingsContext, { Menu, Context } from '../SettingsContext';
+import SettingsMenuItem from '../SettingsMenuItem';
 
-describe('MediaSettingsMenuItem', () => {
+describe('SettingsMenuItem', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = {}): ReactWrapper =>
-        mount(<MediaSettingsMenuItem label="Speed" target={Menu.AUTOPLAY} value="Normal" {...props} />, {
-            wrappingComponent: MediaSettingsContext.Provider,
+        mount(<SettingsMenuItem label="Speed" target={Menu.AUTOPLAY} value="Normal" {...props} />, {
+            wrappingComponent: SettingsContext.Provider,
             wrappingComponentProps: { value: context },
         });
 
@@ -42,9 +42,9 @@ describe('MediaSettingsMenuItem', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettingsMenuItem');
-            expect(wrapper.find('.bp-MediaSettingsMenuItem-label').contains('Speed')).toBe(true);
-            expect(wrapper.find('.bp-MediaSettingsMenuItem-value').contains('Normal')).toBe(true);
+            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsMenuItem');
+            expect(wrapper.find('.bp-SettingsMenuItem-label').contains('Speed')).toBe(true);
+            expect(wrapper.find('.bp-SettingsMenuItem-value').contains('Normal')).toBe(true);
             expect(wrapper.exists(IconArrowRight24)).toBe(true);
         });
     });

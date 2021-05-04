@@ -1,10 +1,10 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import MediaSettingsContext, { Context, Menu } from '../MediaSettingsContext';
-import MediaSettingsMenu from '../MediaSettingsMenu';
+import SettingsContext, { Context, Menu } from '../SettingsContext';
+import SettingsMenu from '../SettingsMenu';
 
-describe('MediaSettingsMenu', () => {
+describe('SettingsMenu', () => {
     const getContext = (overrides = {}): Partial<Context> => ({
         activeMenu: Menu.MAIN,
         setActiveRect: jest.fn(),
@@ -15,14 +15,14 @@ describe('MediaSettingsMenu', () => {
     };
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
         mount(
-            <MediaSettingsMenu name={Menu.MAIN} {...props}>
+            <SettingsMenu name={Menu.MAIN} {...props}>
                 <div data-testid="test1" role="menuitem" tabIndex={0} />
                 <div data-testid="test2" role="menuitem" tabIndex={0} />
                 <div data-testid="test3" role="menuitem" tabIndex={0} />
-            </MediaSettingsMenu>,
+            </SettingsMenu>,
             {
                 attachTo: getHostNode(),
-                wrappingComponent: MediaSettingsContext.Provider,
+                wrappingComponent: SettingsContext.Provider,
                 wrappingComponentProps: { value: context },
             },
         );
@@ -86,7 +86,7 @@ describe('MediaSettingsMenu', () => {
             const wrapper = getWrapper();
             const element = wrapper.getDOMNode();
 
-            expect(element).toHaveClass('bp-MediaSettingsMenu');
+            expect(element).toHaveClass('bp-SettingsMenu');
             expect(element).toHaveAttribute('role', 'menu');
         });
     });

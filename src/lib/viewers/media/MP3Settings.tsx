@@ -1,7 +1,8 @@
 import React from 'react';
-import MediaSettings, { Menu } from '../controls/media/MediaSettings';
-import MediaSettingsAutoplay, { Props as AutoplayProps } from '../controls/media/MediaSettings/MediaSettingsAutoplay';
-import MediaSettingsRate, { Props as RateProps } from '../controls/media/MediaSettings/MediaSettingsRate';
+import Settings, { Menu } from '../controls/settings';
+import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from '../controls/media/MediaSettingsMenuAutoplay';
+import MediaSettingsMenuRate, { Props as RateProps } from '../controls/media/MediaSettingsMenuRate';
+import './MP3Settings.scss';
 
 export type Props = AutoplayProps & RateProps;
 
@@ -10,14 +11,14 @@ export default function MP3Settings({ autoplay, onAutoplayChange, onRateChange, 
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
 
     return (
-        <MediaSettings className="bp-MP3Settings">
-            <MediaSettings.Menu name={Menu.MAIN}>
-                <MediaSettings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
-                <MediaSettings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
-            </MediaSettings.Menu>
+        <Settings className="bp-MP3Settings">
+            <Settings.Menu name={Menu.MAIN}>
+                <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
+                <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
+            </Settings.Menu>
 
-            <MediaSettingsAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
-            <MediaSettingsRate onRateChange={onRateChange} rate={rate} />
-        </MediaSettings>
+            <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
+            <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
+        </Settings>
     );
 }

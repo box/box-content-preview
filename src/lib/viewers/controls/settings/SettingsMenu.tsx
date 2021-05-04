@@ -1,18 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
-import MediaSettingsContext, { Menu } from './MediaSettingsContext';
-import { decodeKeydown } from '../../../../util';
-import './MediaSettingsMenu.scss';
+import SettingsContext, { Menu } from './SettingsContext';
+import { decodeKeydown } from '../../../util';
+import './SettingsMenu.scss';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
     name: Menu;
 }>;
 
-export default function MediaSettingsMenu({ children, className, name }: Props): JSX.Element | null {
+export default function SettingsMenu({ children, className, name }: Props): JSX.Element | null {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [activeItem, setActiveItem] = React.useState<HTMLDivElement | null>(null);
-    const { activeMenu, setActiveRect } = React.useContext(MediaSettingsContext);
+    const { activeMenu, setActiveRect } = React.useContext(SettingsContext);
     const isActive = activeMenu === name;
     const menuElRef = React.useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,7 @@ export default function MediaSettingsMenu({ children, className, name }: Props):
     return (
         <div
             ref={menuElRef}
-            className={classNames('bp-MediaSettingsMenu', className, { 'bp-is-active': isActive })}
+            className={classNames('bp-SettingsMenu', className, { 'bp-is-active': isActive })}
             onKeyDown={handleKeyDown}
             role="menu"
             tabIndex={0}

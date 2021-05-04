@@ -1,5 +1,5 @@
 import React from 'react';
-import MediaSettings, { Menu } from '.';
+import Settings, { Menu } from '../settings';
 
 export type Props = {
     autoplay: boolean;
@@ -7,7 +7,7 @@ export type Props = {
 };
 
 export default function MediaSettingsMenuAutoplay({ autoplay, onAutoplayChange }: Props): JSX.Element {
-    const { setActiveMenu } = React.useContext(MediaSettings.Context);
+    const { setActiveMenu } = React.useContext(Settings.Context);
 
     const handleChange = (value: boolean): void => {
         setActiveMenu(Menu.MAIN);
@@ -15,20 +15,20 @@ export default function MediaSettingsMenuAutoplay({ autoplay, onAutoplayChange }
     };
 
     return (
-        <MediaSettings.Menu name={Menu.AUTOPLAY}>
-            <MediaSettings.MenuBack label={__('media_autoplay')} />
-            <MediaSettings.RadioItem
+        <Settings.Menu name={Menu.AUTOPLAY}>
+            <Settings.MenuBack label={__('media_autoplay')} />
+            <Settings.RadioItem
                 isSelected={!autoplay}
                 label={__('media_autoplay_disabled')}
                 onChange={handleChange}
                 value={false}
             />
-            <MediaSettings.RadioItem
+            <Settings.RadioItem
                 isSelected={autoplay}
                 label={__('media_autoplay_enabled')}
                 onChange={handleChange}
                 value
             />
-        </MediaSettings.Menu>
+        </Settings.Menu>
     );
 }

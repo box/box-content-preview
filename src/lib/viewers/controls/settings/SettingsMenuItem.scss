@@ -1,0 +1,42 @@
+@import './styles';
+
+.bp-SettingsMenuItem {
+    @include bp-SettingsRow;
+
+    &:hover {
+        background-color: $hover-blue-background;
+
+        .bp-SettingsMenuItem-label {
+            color: lighten($blue-steel, 50%);
+        }
+
+        .bp-SettingsMenuItem-value {
+            color: $blue-steel;
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-SettingsMenuItem-arrow {
+            fill: $white;
+        }
+
+        .bp-SettingsMenuItem-label,
+        .bp-SettingsMenuItem-value {
+            color: $white;
+        }
+    }
+}
+
+.bp-SettingsMenuItem-arrow {
+    @include bp-SettingsRow-cell;
+}
+
+.bp-SettingsMenuItem-label {
+    @include bp-SettingsRow-label;
+}
+
+.bp-SettingsMenuItem-value {
+    @include bp-SettingsRow-value;
+}

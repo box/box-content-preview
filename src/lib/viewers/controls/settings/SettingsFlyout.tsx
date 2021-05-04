@@ -1,17 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
-import MediaSettingsContext from './MediaSettingsContext';
-import './MediaSettingsFlyout.scss';
+import SettingsContext from './SettingsContext';
+import './SettingsFlyout.scss';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
     isOpen: boolean;
 }>;
 
-export default function MediaSettingsFlyout({ children, className, isOpen }: Props): JSX.Element {
+export default function SettingsFlyout({ children, className, isOpen }: Props): JSX.Element {
     const [isTransitioning, setIsTransitioning] = React.useState(false);
     const flyoutElRef = React.useRef<HTMLDivElement>(null);
-    const { activeRect } = React.useContext(MediaSettingsContext);
+    const { activeRect } = React.useContext(SettingsContext);
     const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     React.useEffect(() => {
@@ -35,7 +35,7 @@ export default function MediaSettingsFlyout({ children, className, isOpen }: Pro
     return (
         <div
             ref={flyoutElRef}
-            className={classNames('bp-MediaSettingsFlyout', className, {
+            className={classNames('bp-SettingsFlyout', className, {
                 'bp-is-open': isOpen,
                 'bp-is-transitioning': isTransitioning,
             })}

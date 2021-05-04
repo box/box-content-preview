@@ -1,16 +1,16 @@
 @import '../styles';
 
-.bp-MediaSettingsToggle {
-    @include bp-MediaButton;
+.bp-SettingsToggle {
+    @include bp-Control;
 
     &.bp-is-open {
-        .bp-MediaSettingsToggle-icon {
+        .bp-SettingsToggle-icon {
             transform: rotate(60deg);
         }
     }
 }
 
-.bp-MediaSettingsToggle-icon {
+.bp-SettingsToggle-icon {
     transform: rotate(0);
     transition: transform 300ms ease;
 }

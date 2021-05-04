@@ -1,14 +1,14 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import IconArrowLeft24 from '../../../icons/IconArrowLeft24';
-import MediaSettingsContext, { Context } from '../MediaSettingsContext';
-import MediaSettingsMenuBack from '../MediaSettingsMenuBack';
+import IconArrowLeft24 from '../../icons/IconArrowLeft24';
+import SettingsContext, { Context } from '../SettingsContext';
+import SettingsMenuBack from '../SettingsMenuBack';
 
-describe('MediaSettingsMenuBack', () => {
+describe('SettingsMenuBack', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = {}): ReactWrapper =>
-        mount(<MediaSettingsMenuBack label="Autoplay" {...props} />, {
-            wrappingComponent: MediaSettingsContext.Provider,
+        mount(<SettingsMenuBack label="Autoplay" {...props} />, {
+            wrappingComponent: SettingsContext.Provider,
             wrappingComponentProps: { value: context },
         });
 
@@ -42,8 +42,8 @@ describe('MediaSettingsMenuBack', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-MediaSettingsMenuBack');
-            expect(wrapper.find('.bp-MediaSettingsMenuBack-label').contains('Autoplay')).toBe(true);
+            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsMenuBack');
+            expect(wrapper.find('.bp-SettingsMenuBack-label').contains('Autoplay')).toBe(true);
             expect(wrapper.exists(IconArrowLeft24)).toBe(true);
         });
     });

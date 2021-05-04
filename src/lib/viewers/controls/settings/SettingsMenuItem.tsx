@@ -1,9 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
-import IconArrowRight24 from '../../icons/IconArrowRight24';
-import MediaSettingsContext, { Menu } from './MediaSettingsContext';
-import { decodeKeydown } from '../../../../util';
-import './MediaSettingsMenuItem.scss';
+import IconArrowRight24 from '../icons/IconArrowRight24';
+import SettingsContext, { Menu } from './SettingsContext';
+import { decodeKeydown } from '../../../util';
+import './SettingsMenuItem.scss';
 
 export type Props = {
     className?: string;
@@ -13,9 +13,9 @@ export type Props = {
 };
 export type Ref = HTMLDivElement;
 
-function MediaSettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
+function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
     const { className, label, target, value } = props;
-    const { setActiveMenu } = React.useContext(MediaSettingsContext);
+    const { setActiveMenu } = React.useContext(SettingsContext);
 
     const handleClick = (): void => {
         setActiveMenu(target);
@@ -35,21 +35,21 @@ function MediaSettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
         <div
             ref={ref}
             aria-haspopup="true"
-            className={classNames('bp-MediaSettingsMenuItem', className)}
+            className={classNames('bp-SettingsMenuItem', className)}
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"
             tabIndex={0}
         >
-            <div aria-label={label} className="bp-MediaSettingsMenuItem-label">
+            <div aria-label={label} className="bp-SettingsMenuItem-label">
                 {label}
             </div>
-            <div className="bp-MediaSettingsMenuItem-value">{value}</div>
-            <div className="bp-MediaSettingsMenuItem-arrow">
+            <div className="bp-SettingsMenuItem-value">{value}</div>
+            <div className="bp-SettingsMenuItem-arrow">
                 <IconArrowRight24 height={18} width={18} />
             </div>
         </div>
     );
 }
 
-export default React.forwardRef(MediaSettingsMenuItem);
+export default React.forwardRef(SettingsMenuItem);

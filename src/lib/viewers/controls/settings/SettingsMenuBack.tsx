@@ -1,16 +1,16 @@
 import React from 'react';
-import IconArrowLeft24 from '../../icons/IconArrowLeft24';
-import MediaSettingsContext, { Menu } from './MediaSettingsContext';
-import { decodeKeydown } from '../../../../util';
-import './MediaSettingsMenuBack.scss';
+import IconArrowLeft24 from '../icons/IconArrowLeft24';
+import SettingsContext, { Menu } from './SettingsContext';
+import { decodeKeydown } from '../../../util';
+import './SettingsMenuBack.scss';
 
 export type Props = {
     label: string;
 };
 export type Ref = HTMLDivElement;
 
-function MediaSettingsMenuBack({ label }: Props, ref: React.Ref<Ref>): JSX.Element {
-    const { setActiveMenu } = React.useContext(MediaSettingsContext);
+function SettingsMenuBack({ label }: Props, ref: React.Ref<Ref>): JSX.Element {
+    const { setActiveMenu } = React.useContext(SettingsContext);
 
     const handleClick = (): void => {
         setActiveMenu(Menu.MAIN);
@@ -29,20 +29,20 @@ function MediaSettingsMenuBack({ label }: Props, ref: React.Ref<Ref>): JSX.Eleme
     return (
         <div
             ref={ref}
-            className="bp-MediaSettingsMenuBack"
+            className="bp-SettingsMenuBack"
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"
             tabIndex={0}
         >
-            <div className="bp-MediaSettingsMenuBack-arrow">
+            <div className="bp-SettingsMenuBack-arrow">
                 <IconArrowLeft24 height={18} width={18} />
             </div>
-            <div aria-label={label} className="bp-MediaSettingsMenuBack-label">
+            <div aria-label={label} className="bp-SettingsMenuBack-label">
                 {label}
             </div>
         </div>
     );
 }
 
-export default React.forwardRef(MediaSettingsMenuBack);
+export default React.forwardRef(SettingsMenuBack);
