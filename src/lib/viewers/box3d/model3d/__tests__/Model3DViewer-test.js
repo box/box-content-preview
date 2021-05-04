@@ -75,6 +75,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             toggleAnimation: () => {},
             load: () => Promise.resolve(),
             initVr: () => {},
+            getAnimationClip: () => {},
             getCamera: () => {},
             initVrGamepadControls: () => {},
             on: () => {},
@@ -867,10 +868,37 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 const nextIsPlaying = !isPlaying;
                 model3d.isAnimationPlaying = isPlaying;
 
-                model3d.handleToggleAnimation();
+                model3d.handleToggleAnimation(nextIsPlaying);
 
                 expect(model3d.isAnimationPlaying).toBe(nextIsPlaying);
                 expect(model3d.renderer.toggleAnimation).toBeCalledWith(nextIsPlaying);
+                expect(model3d.renderUI).toBeCalled();
+            });
+        });
+    });
+
+    describe('handleSelectAnimationClip()', () => {
+        beforeEach(() => {
+            jest.spyOn(model3d.renderer, 'setAnimationClip');
+            jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+        });
+
+        test('should set the clipId to the renderer', () => {
+            model3d.handleSelectAnimationClip('123');
+
+            expect(model3d.renderer.setAnimationClip).toBeCalledWith('123');
+        });
+
+        describe('with react controls enabled', () => {
+            beforeEach(() => {
+                jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+            });
+
+            test('should set the clipId to the renderer and also reset animation state and render the UI', () => {
+                model3d.handleSelectAnimationClip('123');
+
+                expect(model3d.renderer.setAnimationClip).toBeCalledWith('123');
+                expect(model3d.isAnimationPlaying).toBe(false);
                 expect(model3d.renderUI).toBeCalled();
             });
         });
@@ -885,6 +913,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 destroy: jest.fn(),
                 render: jest.fn(),
             };
+            jest.spyOn(model3d.renderer, 'getAnimationClip').mockImplementation(() => '123');
         });
 
         test('should render react controls with the correct props', () => {
@@ -892,6 +921,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             expect(getProps(model3d)).toMatchObject({
                 animationClips: [],
+                currentAnimationClipId: '123',
                 isPlaying: false,
                 onAnimationClipSelect: model3d.handleSelectAnimationClip,
                 onFullscreenToggle: model3d.toggleFullscreen,

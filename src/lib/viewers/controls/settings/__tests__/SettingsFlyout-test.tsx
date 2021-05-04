@@ -60,5 +60,15 @@ describe('SettingsFlyout', () => {
 
             expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsFlyout');
         });
+
+        test('should only return default height and width if disableTransitions is true', () => {
+            const activeRect = { bottom: 0, left: 0, height: 100, right: 0, top: 0, width: 100 };
+            const wrapper = getWrapper({ disableTransitions: true }, { activeRect });
+
+            expect(wrapper.childAt(0).prop('style')).toEqual({
+                height: 'auto',
+                width: 'auto',
+            });
+        });
     });
 });

@@ -93,5 +93,41 @@ describe('Settings', () => {
             expect(wrapper.exists(SettingsFlyout)).toBe(true);
             expect(wrapper.exists(SettingsToggle)).toBe(true);
         });
+
+        describe('disableTransitions prop', () => {
+            test('should default disableTransitions to false', () => {
+                const wrapper = getWrapper();
+
+                expect(wrapper.find(SettingsFlyout).prop('disableTransitions')).toBe(false);
+            });
+
+            test('should pass disableTransitions to along to SettingsFlyout', () => {
+                const wrapper = getWrapper({ disableTransitions: true });
+
+                expect(wrapper.find(SettingsFlyout).prop('disableTransitions')).toBe(true);
+            });
+        });
+
+        describe('icon prop', () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            function CustomIcon({ isOpen, ...rest }: object, ref: React.Ref<HTMLDivElement>): JSX.Element {
+                return <div ref={ref} className="custom-icon" {...rest} />;
+            }
+
+            const CustomIconWithRef = React.forwardRef(CustomIcon);
+
+            test('should default to SettingsToggle icon', () => {
+                const wrapper = getWrapper();
+
+                expect(wrapper.exists(SettingsToggle)).toBe(true);
+            });
+
+            test('should use provided icon', () => {
+                const wrapper = getWrapper({ icon: CustomIconWithRef });
+
+                expect(wrapper.exists(SettingsToggle)).toBe(false);
+                expect(wrapper.exists(CustomIconWithRef)).toBe(true);
+            });
+        });
     });
 });

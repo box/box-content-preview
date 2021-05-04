@@ -514,6 +514,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             };
             animComp = {
                 asset: animAsset,
+                clipId: '123',
                 onUpdate: () => {},
                 pause: () => {},
                 play: () => {},
@@ -689,6 +690,21 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             test('should invoke stop() on the animation and stop it from playing', () => {
                 sandbox.mock(animComp).expects('stop');
                 renderer.stopAnimation();
+            });
+        });
+
+        describe('getAnimationClip()', () => {
+            test('should do nothing if no model instance is present', () => {
+                renderer.instance = undefined;
+                expect(renderer.getAnimationClip()).toBe('');
+            });
+
+            test('should get the animation component on the model instance', () => {
+                sandbox
+                    .mock(renderer.instance)
+                    .expects('getComponentByScriptId')
+                    .returns(animComp);
+                expect(renderer.getAnimationClip()).toBe('123');
             });
         });
     });
