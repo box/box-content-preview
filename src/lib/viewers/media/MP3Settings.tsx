@@ -1,7 +1,7 @@
 import React from 'react';
 import Settings, { Menu } from '../controls/settings';
-import SettingsAutoplay, { Props as AutoplayProps } from '../controls/settings/SettingsAutoplay';
-import SettingsRate, { Props as RateProps } from '../controls/settings/SettingsRate';
+import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from '../controls/media/MediaSettingsMenuAutoplay';
+import MediaSettingsMenuRate, { Props as RateProps } from '../controls/media/MediaSettingsMenuRate';
 
 export type Props = AutoplayProps & RateProps;
 
@@ -16,8 +16,8 @@ export default function MP3Settings({ autoplay, onAutoplayChange, onRateChange, 
                 <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
             </Settings.Menu>
 
-            <SettingsAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
-            <SettingsRate onRateChange={onRateChange} rate={rate} />
+            <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
+            <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
         </Settings>
     );
 }

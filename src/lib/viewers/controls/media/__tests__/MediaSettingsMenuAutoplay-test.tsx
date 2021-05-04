@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import Settings, { Context, Menu } from '..';
-import SettingsAutoplay from '../SettingsAutoplay';
+import MediaSettingsMenu from '../MediaSettingsMenuAutoplay';
+import Settings, { Context, Menu } from '../../settings';
 
-describe('SettingsAutoplay', () => {
+describe('MediaSettingsMenuAutoplay', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<SettingsAutoplay autoplay onAutoplayChange={jest.fn()} {...props} />, {
+        mount(<MediaSettingsMenu autoplay onAutoplayChange={jest.fn()} {...props} />, {
             wrappingComponent: Settings.Context.Provider,
             wrappingComponentProps: { value: context },
         });

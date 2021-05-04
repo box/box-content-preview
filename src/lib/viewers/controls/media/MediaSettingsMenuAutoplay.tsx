@@ -1,12 +1,12 @@
 import React from 'react';
-import Settings, { Menu } from '.';
+import Settings, { Menu } from '../settings';
 
 export type Props = {
     autoplay: boolean;
     onAutoplayChange: (autoplay: boolean) => void;
 };
 
-export default function SettingsMenuAutoplay({ autoplay, onAutoplayChange }: Props): JSX.Element {
+export default function MediaSettingsMenuAutoplay({ autoplay, onAutoplayChange }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
     const handleChange = (value: boolean): void => {

@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import Settings, { Context, Menu } from '..';
-import SettingsRate from '../SettingsRate';
+import MediaSettingsMenuRate from '../MediaSettingsMenuRate';
+import Settings, { Context, Menu } from '../../settings';
 
 describe('SettingsRate', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<SettingsRate onRateChange={jest.fn()} rate="1.0" {...props} />, {
+        mount(<MediaSettingsMenuRate onRateChange={jest.fn()} rate="1.0" {...props} />, {
             wrappingComponent: Settings.Context.Provider,
             wrappingComponentProps: { value: context },
         });

@@ -1,12 +1,12 @@
 import React from 'react';
-import Settings, { Menu } from '.';
+import Settings, { Menu } from '../settings';
 
 export type Props = {
     onRateChange: (rate: string) => void;
     rate: string;
 };
 
-export default function SettingsMenuRate({ rate, onRateChange }: Props): JSX.Element {
+export default function MediaSettingsMenuRate({ rate, onRateChange }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
     const handleChange = (value: string): void => {
