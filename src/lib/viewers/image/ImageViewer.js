@@ -33,6 +33,7 @@ class ImageViewer extends ImageBaseViewer {
         this.handleZoomEvent = this.handleZoomEvent.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
+        this.updateExperiences = this.updateExperiences.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
@@ -366,6 +367,19 @@ class ImageViewer extends ImageBaseViewer {
         this.renderUI();
     }
 
+    /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @protected
+     * @param {Object} experiences - new experiences prop
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        this.experiences = experiences;
+
+        this.renderUI();
+    }
+
     renderUI() {
         if (!this.controls) {
             return;
@@ -379,6 +393,7 @@ class ImageViewer extends ImageBaseViewer {
             <ImageControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.experiences}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}

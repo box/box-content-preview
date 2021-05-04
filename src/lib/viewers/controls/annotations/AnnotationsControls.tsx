@@ -2,6 +2,7 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
+import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconDrawing24 from '../icons/IconDrawing24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
@@ -80,17 +81,19 @@ export default function AnnotationsControls({
             >
                 <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
             </AnnotationsButton>
-            <AnnotationsButton
-                data-resin-target="highlightRegion"
-                data-testid="bp-AnnotationsControls-regionBtn"
-                isActive={annotationMode === AnnotationMode.REGION}
-                isEnabled={showRegion}
-                mode={AnnotationMode.REGION}
-                onClick={handleModeClick}
-                title={__('region_comment')}
-            >
-                <IconRegion24 />
-            </AnnotationsButton>
+            <AnnotationsTargetedTooltip isEnabled={showRegion}>
+                <AnnotationsButton
+                    data-resin-target="highlightRegion"
+                    data-testid="bp-AnnotationsControls-regionBtn"
+                    isActive={annotationMode === AnnotationMode.REGION}
+                    isEnabled={showRegion}
+                    mode={AnnotationMode.REGION}
+                    onClick={handleModeClick}
+                    title={__('region_comment')}
+                >
+                    <IconRegion24 />
+                </AnnotationsButton>
+            </AnnotationsTargetedTooltip>
             <AnnotationsButton
                 data-resin-target="highlightText"
                 data-testid="bp-AnnotationsControls-highlightBtn"

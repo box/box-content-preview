@@ -119,6 +119,7 @@ class DocBaseViewer extends BaseViewer {
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
+        this.updateExperiences = this.updateExperiences.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
@@ -1046,6 +1047,19 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Updates experiences option after props have changed in parent app
+     *
+     * @protected
+     * @param {Object} experiences - new experiences prop
+     * @return {void}
+     */
+    updateExperiences(experiences) {
+        this.experiences = experiences;
+
+        this.renderUI();
+    }
+
+    /**
      * Render controls
      *
      * @protected
@@ -1064,6 +1078,7 @@ class DocBaseViewer extends BaseViewer {
             <DocControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
+                experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}
