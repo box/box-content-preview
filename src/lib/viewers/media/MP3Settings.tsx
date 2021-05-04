@@ -2,6 +2,7 @@ import React from 'react';
 import Settings, { Menu } from '../controls/settings';
 import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from '../controls/media/MediaSettingsMenuAutoplay';
 import MediaSettingsMenuRate, { Props as RateProps } from '../controls/media/MediaSettingsMenuRate';
+import './MP3Settings.scss';
 
 export type Props = AutoplayProps & RateProps;
 
