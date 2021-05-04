@@ -1,14 +1,17 @@
 import React from 'react';
-import TargetedClickThroughGuideTooltip from 'box-ui-elements/es/features/targeting/TargetedClickThroughGuideTooltip';
+import Tooltip from 'box-ui-elements/es/components/tooltip/Tooltip';
+import { withTargetedClickThrough } from 'box-ui-elements/es/features/targeting/hocs';
 import { ControlsLayerContext } from '../controls-layer';
 import { ExperiencesContext } from '../experiences';
 import { TargetingApi } from '../../../types';
+import './AnnotationsTargetedTooltip.scss';
 
-export type Props = React.PropsWithChildren<{
+export type Props = {
+    children: React.ReactElement;
     isEnabled?: boolean;
-}>;
+};
 
-export default function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
+function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
     const { experiences } = React.useContext(ExperiencesContext);
     const { setIsForced } = React.useContext(ControlsLayerContext);
     const [wasClosedByUser, setWasClosedByUser] = React.useState(false);
@@ -21,16 +24,21 @@ export default function AnnotationsTargetedTooltip({ children, isEnabled = false
     );
 
     if (!shouldTarget) {
-        return <>{children}</>;
+        return children;
     }
 
     return (
-        <TargetedClickThroughGuideTooltip
-            body={__('annotations_tooltip_body')}
+        <TargetedClickThroughTooltip
             className="bp-AnnotationsTooltip"
             shouldTarget
             showCloseButton
-            title={__('annotations_tooltip_title')}
+            text={
+                <div>
+                    <h3 className="bp-AnnotationsTooltip-title">{__('annotations_tooltip_title')}</h3>
+                    <p className="bp-AnnotationsTooltip-body">{__('annotations_tooltip_body')}</p>
+                </div>
+            }
+            theme="callout"
             useTargetingApi={(): TargetingApi => {
                 return {
                     ...experiences.tooltipFlowAnnotationsExperience,
@@ -52,6 +60,18 @@ export default function AnnotationsTargetedTooltip({ children, isEnabled = false
             }}
         >
             {children}
-        </TargetedClickThroughGuideTooltip>
+        </TargetedClickThroughTooltip>
     );
 }
+
+const TargetedClickThroughTooltip = withTargetedClickThrough(
+    ({ children, ...props }: { children: React.ReactNode }): JSX.Element => {
+        return (
+            <Tooltip {...props}>
+                <>{children}</>
+            </Tooltip>
+        );
+    },
+);
+
+export default AnnotationsTargetedTooltip;

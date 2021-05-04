@@ -32,8 +32,7 @@ describe('AnnotationsTargetedTooltip', () => {
 
             expect(wrapper.children().text()).not.toBe('Child');
             expect(wrapper.children().prop('shouldTarget')).toBe(true);
-            expect(wrapper.children().prop('body')).toBeTruthy();
-            expect(wrapper.children().prop('title')).toBeTruthy();
+            expect(wrapper.children().prop('theme')).toBe('callout');
             expect(wrapper.children().prop('useTargetingApi')().canShow).toBe(true);
         });
 
