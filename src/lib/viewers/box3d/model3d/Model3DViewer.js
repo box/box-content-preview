@@ -146,6 +146,11 @@ class Model3DViewer extends Box3DViewer {
      */
     handleSelectAnimationClip(clipId) {
         this.renderer.setAnimationClip(clipId);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.setAnimationState(false);
+            this.renderUI();
+        }
     }
 
     /**
@@ -294,16 +299,16 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     handleToggleAnimation(play) {
-        if (this.getViewerOption('useReactControls')) {
-            this.isAnimationPlaying = !this.isAnimationPlaying;
-            this.renderer.toggleAnimation(this.isAnimationPlaying);
+        this.setAnimationState(play);
 
-            if (this.controls) {
-                this.renderUI();
-            }
-        } else {
-            this.renderer.toggleAnimation(play);
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.renderUI();
         }
+    }
+
+    setAnimationState(play) {
+        this.isAnimationPlaying = play;
+        this.renderer.toggleAnimation(this.isAnimationPlaying);
     }
 
     /**
@@ -422,13 +427,14 @@ class Model3DViewer extends Box3DViewer {
     }
 
     renderUI() {
-        if (!this.controls) {
+        if (!this.controls || !this.renderer) {
             return;
         }
 
         this.controls.render(
             <Model3DControlsNew
                 animationClips={this.animationClips}
+                currentAnimationClipId={this.renderer.getAnimationClip()}
                 isPlaying={this.isAnimationPlaying}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
                 onFullscreenToggle={this.toggleFullscreen}

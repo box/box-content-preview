@@ -652,6 +652,20 @@ class Model3DRenderer extends Box3DRenderer {
     initVrGamepadControls() {
         this.vrControls = new Model3DVrControls(this.vrGamepads, this.box3d);
     }
+
+    /**
+     * Gets any selected animation clip
+     *
+     * @return {string} selected animation clip id
+     */
+    getAnimationClip() {
+        if (!this.instance) {
+            return '';
+        }
+
+        const component = this.instance.getComponentByScriptId('animation');
+        return component.clipId;
+    }
 }
 
 export default Model3DRenderer;

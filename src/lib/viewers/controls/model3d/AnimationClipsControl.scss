@@ -1,0 +1,23 @@
+.bp-AnimationClipsControl {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .bp-SettingsFlyout {
+        right: auto;
+        left: 0;
+        max-height: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+.bp-AnimationClipsControl-radioItem {
+    .bp-SettingsRadioItem-value {
+        max-width: 183px;
+        overflow-x: hidden;
+        font-size: 13px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

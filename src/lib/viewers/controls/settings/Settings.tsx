@@ -11,9 +11,17 @@ import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
+    disableTransitions?: boolean;
+    icon?: React.ReactNode;
 }>;
 
-export default function Settings({ children, className, ...rest }: Props): JSX.Element | null {
+export default function Settings({
+    children,
+    className,
+    disableTransitions = false,
+    icon: ToggleIcon = SettingsToggle,
+    ...rest
+}: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
     const [activeRect, setActiveRect] = React.useState<Rect>();
     const [isFocused, setIsFocused] = React.useState(false);
@@ -79,8 +87,10 @@ export default function Settings({ children, className, ...rest }: Props): JSX.E
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
-                <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
+                <ToggleIcon ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
+                <SettingsFlyout disableTransitions={disableTransitions} isOpen={isOpen}>
+                    {children}
+                </SettingsFlyout>
             </SettingsContext.Provider>
         </div>
     );
