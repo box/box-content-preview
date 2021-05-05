@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import AnimationClipsControl, { Props as AnimationClipsControlProps } from '../AnimationClipsControl';
+import AnimationClipsControl, { formatDuration, Props as AnimationClipsControlProps } from '../AnimationClipsControl';
 import AnimationClipsToggle from '../AnimationClipsToggle';
 import Settings from '../../settings';
 
@@ -22,7 +22,7 @@ describe('AnimationClipsControl', () => {
 
             expect(wrapper.find(Settings).props()).toMatchObject({
                 className: 'bp-AnimationClipsControl',
-                icon: AnimationClipsToggle,
+                toggle: AnimationClipsToggle,
             });
             expect(wrapper.exists(Settings.Menu)).toBe(true);
         });
@@ -47,6 +47,19 @@ describe('AnimationClipsControl', () => {
                 onChange: onAnimationClipSelect,
                 value: animationClips[1].id,
             });
+        });
+    });
+
+    describe('formatDuration()', () => {
+        test.each`
+            time    | expectedString
+            ${0}    | ${'00:00:00'}
+            ${59}   | ${'00:00:59'}
+            ${61}   | ${'00:01:01'}
+            ${3599} | ${'00:59:59'}
+            ${3661} | ${'01:01:01'}
+        `('should format $time as $expectedString', ({ time, expectedString }) => {
+            expect(formatDuration(time)).toBe(expectedString);
         });
     });
 });

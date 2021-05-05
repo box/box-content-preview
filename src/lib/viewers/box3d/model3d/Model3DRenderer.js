@@ -664,7 +664,7 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         const component = this.instance.getComponentByScriptId('animation');
-        return component.clipId;
+        return component ? component.clipId : '';
     }
 }
 

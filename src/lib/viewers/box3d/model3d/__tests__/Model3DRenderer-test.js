@@ -694,8 +694,16 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         describe('getAnimationClip()', () => {
-            test('should do nothing if no model instance is present', () => {
+            test('should return empty string if no model instance is present', () => {
                 renderer.instance = undefined;
+                expect(renderer.getAnimationClip()).toBe('');
+            });
+
+            test('should return empty string if no componet is present', () => {
+                sandbox
+                    .mock(renderer.instance)
+                    .expects('getComponentByScriptId')
+                    .returns(undefined);
                 expect(renderer.getAnimationClip()).toBe('');
             });
 

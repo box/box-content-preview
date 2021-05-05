@@ -6,19 +6,18 @@ import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
-import SettingsToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
+import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toggle?: React.ComponentType<any>;
+    toggle?: React.ElementType;
 }>;
 
 export default function Settings({
     children,
     className,
-    toggle: ToggleIcon = SettingsToggle,
+    toggle: SettingsToggle = SettingsGearToggle,
     ...rest
 }: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
@@ -86,7 +85,7 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
-                <ToggleIcon ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
+                <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
                 <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
             </SettingsContext.Provider>
         </div>
