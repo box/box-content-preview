@@ -11,14 +11,12 @@ import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    disableTransitions?: boolean;
     icon?: React.ReactNode;
 }>;
 
 export default function Settings({
     children,
     className,
-    disableTransitions = false,
     icon: ToggleIcon = SettingsToggle,
     ...rest
 }: Props): JSX.Element | null {
@@ -88,9 +86,7 @@ export default function Settings({
         >
             <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
                 <ToggleIcon ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout disableTransitions={disableTransitions} isOpen={isOpen}>
-                    {children}
-                </SettingsFlyout>
+                <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
             </SettingsContext.Provider>
         </div>
     );

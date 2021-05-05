@@ -19,7 +19,7 @@ export const padLeft = (x: number, width: number): string => {
     return x.length >= width ? x : new Array(width - x.length + 1).join('0') + x;
 };
 
-export const formatDurationStr = (duration: number): string => {
+export const formatDuration = (duration: number): string => {
     let secondsLeft = Math.floor(duration);
     const hours = Math.floor(secondsLeft / 3600);
     const hoursStr = padLeft(hours.toString(), 2);
@@ -40,16 +40,15 @@ export default function AnimationClipsControl({
     onAnimationClipSelect,
 }: Props): JSX.Element {
     return (
-        <Settings className="bp-AnimationClipsControl" disableTransitions={false} icon={AnimationClipsToggle}>
+        <Settings className="bp-AnimationClipsControl" icon={AnimationClipsToggle}>
             <Settings.Menu name={Menu.MAIN}>
                 {animationClips.map(({ duration, id, name }) => {
-                    const isSelected = id === currentAnimationClipId;
                     return (
                         <Settings.RadioItem
                             key={id}
                             className="bp-AnimationClipsControl-radioItem"
-                            isSelected={isSelected}
-                            label={`${formatDurationStr(duration)} ${name}`}
+                            isSelected={id === currentAnimationClipId}
+                            label={`${formatDuration(duration)} ${name}`}
                             onChange={onAnimationClipSelect}
                             value={id}
                         />

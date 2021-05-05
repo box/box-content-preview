@@ -146,11 +146,7 @@ class Model3DViewer extends Box3DViewer {
      */
     handleSelectAnimationClip(clipId) {
         this.renderer.setAnimationClip(clipId);
-
-        if (this.controls && this.getViewerOption('useReactControls')) {
-            this.setAnimationState(false);
-            this.renderUI();
-        }
+        this.setAnimationState(false);
     }
 
     /**
@@ -300,15 +296,15 @@ class Model3DViewer extends Box3DViewer {
      */
     handleToggleAnimation(play) {
         this.setAnimationState(play);
-
-        if (this.controls && this.getViewerOption('useReactControls')) {
-            this.renderUI();
-        }
     }
 
     setAnimationState(play) {
         this.isAnimationPlaying = play;
         this.renderer.toggleAnimation(this.isAnimationPlaying);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     /**

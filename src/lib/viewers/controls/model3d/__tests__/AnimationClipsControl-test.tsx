@@ -22,7 +22,6 @@ describe('AnimationClipsControl', () => {
 
             expect(wrapper.find(Settings).props()).toMatchObject({
                 className: 'bp-AnimationClipsControl',
-                disableTransitions: false,
                 icon: AnimationClipsToggle,
             });
             expect(wrapper.exists(Settings.Menu)).toBe(true);

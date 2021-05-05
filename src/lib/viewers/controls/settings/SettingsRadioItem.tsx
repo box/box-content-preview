@@ -16,6 +16,7 @@ export type Value = boolean | number | string;
 
 function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, isSelected, label, onChange, value } = props;
+    const displayedValue = label || value;
 
     const handleClick = (): void => {
         onChange(value);
@@ -46,7 +47,9 @@ function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>
             <div className="bp-SettingsRadioItem-check">
                 <IconCheckMark24 className="bp-SettingsRadioItem-check-icon" height={16} width={16} />
             </div>
-            <div className="bp-SettingsRadioItem-value">{label || value}</div>
+            <div className="bp-SettingsRadioItem-value" title={displayedValue}>
+                {displayedValue}
+            </div>
         </div>
     );
 }

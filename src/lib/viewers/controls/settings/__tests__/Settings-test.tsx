@@ -94,20 +94,6 @@ describe('Settings', () => {
             expect(wrapper.exists(SettingsToggle)).toBe(true);
         });
 
-        describe('disableTransitions prop', () => {
-            test('should default disableTransitions to false', () => {
-                const wrapper = getWrapper();
-
-                expect(wrapper.find(SettingsFlyout).prop('disableTransitions')).toBe(false);
-            });
-
-            test('should pass disableTransitions to along to SettingsFlyout', () => {
-                const wrapper = getWrapper({ disableTransitions: true });
-
-                expect(wrapper.find(SettingsFlyout).prop('disableTransitions')).toBe(true);
-            });
-        });
-
         describe('icon prop', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             function CustomIcon({ isOpen, ...rest }: object, ref: React.Ref<HTMLDivElement>): JSX.Element {

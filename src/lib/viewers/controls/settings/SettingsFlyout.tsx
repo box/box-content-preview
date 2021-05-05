@@ -5,20 +5,14 @@ import './SettingsFlyout.scss';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    disableTransitions?: boolean;
     isOpen: boolean;
 }>;
 
-export default function SettingsFlyout({
-    children,
-    className,
-    disableTransitions = false,
-    isOpen,
-}: Props): JSX.Element {
+export default function SettingsFlyout({ children, className, isOpen }: Props): JSX.Element {
     const [isTransitioning, setIsTransitioning] = React.useState(false);
     const flyoutElRef = React.useRef<HTMLDivElement>(null);
-    const { activeRect = { height: 'auto', width: 'auto' } } = React.useContext(SettingsContext);
-    const { height, width } = disableTransitions ? { height: 'auto', width: 'auto' } : activeRect;
+    const { activeRect } = React.useContext(SettingsContext);
+    const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     React.useEffect(() => {
         const { current: flyoutEl } = flyoutElRef;
