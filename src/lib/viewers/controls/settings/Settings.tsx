@@ -2,18 +2,24 @@ import React from 'react';
 import classNames from 'classnames';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsFlyout from './SettingsFlyout';
+import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
-import SettingsToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
+    toggle?: React.ElementType;
 }>;
 
-export default function Settings({ children, className, ...rest }: Props): JSX.Element | null {
+export default function Settings({
+    children,
+    className,
+    toggle: SettingsToggle = SettingsGearToggle,
+    ...rest
+}: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
     const [activeRect, setActiveRect] = React.useState<Rect>();
     const [isFocused, setIsFocused] = React.useState(false);

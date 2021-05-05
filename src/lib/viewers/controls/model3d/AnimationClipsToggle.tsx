@@ -6,10 +6,20 @@ export type Props = {
     onClick?: () => void;
 };
 
-export default function AnimationClipsToggle({ onClick }: Props): JSX.Element {
+function AnimationClipsToggle(props: Props, ref: React.Ref<HTMLButtonElement>): JSX.Element {
+    const { onClick } = props;
+
     return (
-        <button className="bp-AnimationClipsToggle" onClick={onClick} title={__('box3d_animation_clips')} type="button">
+        <button
+            ref={ref}
+            className="bp-AnimationClipsToggle"
+            onClick={onClick}
+            title={__('box3d_animation_clips')}
+            type="button"
+        >
             <IconAnimation24 />
         </button>
     );
 }
+
+export default React.forwardRef(AnimationClipsToggle);

@@ -2,7 +2,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
 import Settings from '../Settings';
-import SettingsToggle from '../SettingsToggle';
+import SettingsGearToggle from '../SettingsToggle';
 import SettingsFlyout from '../SettingsFlyout';
 
 describe('Settings', () => {
@@ -16,12 +16,12 @@ describe('Settings', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsToggle).simulate('click');
+            wrapper.find(SettingsGearToggle).simulate('click');
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
         });
 
         test.each`
@@ -56,20 +56,20 @@ describe('Settings', () => {
                 return event;
             };
 
-            wrapper.find(SettingsToggle).simulate('click'); // Open the controls
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
+            wrapper.find(SettingsGearToggle).simulate('click'); // Open the controls
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
 
             act(() => {
                 document.dispatchEvent(getEvent(document.body)); // Click outside the controls
             });
             wrapper.update();
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsToggle).simulate('click'); // Re-open the controls
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
+            wrapper.find(SettingsGearToggle).simulate('click'); // Re-open the controls
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
 
             wrapper.find(SettingsFlyout).simulate('click'); // Click within the controls
-            expect(wrapper.find(SettingsToggle).prop('isOpen')).toBe(true);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
         });
 
         test('should stop propagation on all keydown events to prevent triggering global event listeners', () => {
@@ -91,7 +91,32 @@ describe('Settings', () => {
 
             expect(wrapper.getDOMNode()).toHaveClass('bp-Settings');
             expect(wrapper.exists(SettingsFlyout)).toBe(true);
-            expect(wrapper.exists(SettingsToggle)).toBe(true);
+            expect(wrapper.exists(SettingsGearToggle)).toBe(true);
+        });
+
+        describe('toggle prop', () => {
+            function CustomToggle(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                { isOpen, ...rest }: { isOpen: boolean; onClick: () => void },
+                ref: React.Ref<HTMLButtonElement>,
+            ): JSX.Element {
+                return <button ref={ref} className="custom-toggle" type="button" {...rest} />;
+            }
+
+            const CustomToggleWithRef = React.forwardRef(CustomToggle);
+
+            test('should default to SettingsGearToggle toggle', () => {
+                const wrapper = getWrapper();
+
+                expect(wrapper.exists(SettingsGearToggle)).toBe(true);
+            });
+
+            test('should use provided toggle', () => {
+                const wrapper = getWrapper({ toggle: CustomToggleWithRef });
+
+                expect(wrapper.exists(SettingsGearToggle)).toBe(false);
+                expect(wrapper.exists(CustomToggleWithRef)).toBe(true);
+            });
         });
     });
 });
