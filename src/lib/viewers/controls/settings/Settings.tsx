@@ -2,11 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsFlyout from './SettingsFlyout';
+import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
-import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{

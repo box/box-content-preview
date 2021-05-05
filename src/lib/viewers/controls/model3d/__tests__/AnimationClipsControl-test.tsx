@@ -36,14 +36,14 @@ describe('AnimationClipsControl', () => {
             expect(radioItems.at(0).props()).toMatchObject({
                 className: 'bp-AnimationClipsControl-radioItem',
                 isSelected: true,
-                label: expect.any(String),
+                label: '00:00:01 first',
                 onChange: onAnimationClipSelect,
                 value: animationClips[0].id,
             });
             expect(radioItems.at(1).props()).toMatchObject({
                 className: 'bp-AnimationClipsControl-radioItem',
                 isSelected: false,
-                label: expect.any(String),
+                label: '00:00:02 second',
                 onChange: onAnimationClipSelect,
                 value: animationClips[1].id,
             });
