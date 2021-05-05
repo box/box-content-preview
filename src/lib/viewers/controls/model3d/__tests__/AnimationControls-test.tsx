@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import AnimationClipsControl from '../AnimationClipsControl';
-import AnimationControls from '../AnimationControls';
+import AnimationControls, { Props as AnimationControlsProps } from '../AnimationControls';
 import PlayPauseToggle from '../../media/PlayPauseToggle';
 
 describe('AnimationControls', () => {
-    const getDefaults = (): AnimationClipsControlProps => ({
-        animationClips: [{}],
+    const getDefaults = (): AnimationControlsProps => ({
+        animationClips: [{ duration: 1, id: '1', name: 'one' }],
         currentAnimationClipId: '1',
         isPlaying: false,
         onAnimationClipSelect: jest.fn(),

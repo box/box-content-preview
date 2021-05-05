@@ -16,7 +16,7 @@ export type Value = boolean | number | string;
 
 function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, isSelected, label, onChange, value } = props;
-    const displayedValue = label || value;
+    const displayedValue = label || value.toString();
 
     const handleClick = (): void => {
         onChange(value);

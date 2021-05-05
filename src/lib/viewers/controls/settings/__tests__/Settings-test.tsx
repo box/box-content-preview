@@ -94,22 +94,25 @@ describe('Settings', () => {
             expect(wrapper.exists(SettingsToggle)).toBe(true);
         });
 
-        describe('icon prop', () => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            function CustomIcon({ isOpen, ...rest }: object, ref: React.Ref<HTMLDivElement>): JSX.Element {
-                return <div ref={ref} className="custom-icon" {...rest} />;
+        describe('toggle prop', () => {
+            function CustomIcon(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                { isOpen, ...rest }: { isOpen: boolean; onClick: () => void },
+                ref: React.Ref<HTMLDivElement>,
+            ): JSX.Element {
+                return <div ref={ref} className="custom-toggle" {...rest} />;
             }
 
             const CustomIconWithRef = React.forwardRef(CustomIcon);
 
-            test('should default to SettingsToggle icon', () => {
+            test('should default to SettingsToggle toggle', () => {
                 const wrapper = getWrapper();
 
                 expect(wrapper.exists(SettingsToggle)).toBe(true);
             });
 
-            test('should use provided icon', () => {
-                const wrapper = getWrapper({ icon: CustomIconWithRef });
+            test('should use provided toggle', () => {
+                const wrapper = getWrapper({ toggle: CustomIconWithRef });
 
                 expect(wrapper.exists(SettingsToggle)).toBe(false);
                 expect(wrapper.exists(CustomIconWithRef)).toBe(true);

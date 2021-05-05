@@ -15,24 +15,16 @@ export type Props = {
     onAnimationClipSelect: () => void;
 };
 
-export const padLeft = (x: number, width: number): string => {
-    return x.length >= width ? x : new Array(width - x.length + 1).join('0') + x;
-};
+export function formatDuration(time: number): string {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor((time % 3600) % 60);
+    const hour = hours < 10 ? `0${hours.toString()}` : hours.toString();
+    const min = minutes < 10 ? `0${minutes.toString()}` : minutes.toString();
+    const sec = seconds < 10 ? `0${seconds.toString()}` : seconds.toString();
 
-export const formatDuration = (duration: number): string => {
-    let secondsLeft = Math.floor(duration);
-    const hours = Math.floor(secondsLeft / 3600);
-    const hoursStr = padLeft(hours.toString(), 2);
-
-    secondsLeft -= hours * 3600;
-    const minutes = Math.floor(secondsLeft / 60);
-    const minutesStr = padLeft(minutes.toString(), 2);
-
-    secondsLeft -= minutes * 60;
-    const secondsStr = padLeft(secondsLeft.toString(), 2);
-
-    return `${hoursStr}:${minutesStr}:${secondsStr}`;
-};
+    return `${hour}:${min}:${sec}`;
+}
 
 export default function AnimationClipsControl({
     animationClips,
@@ -40,7 +32,7 @@ export default function AnimationClipsControl({
     onAnimationClipSelect,
 }: Props): JSX.Element {
     return (
-        <Settings className="bp-AnimationClipsControl" icon={AnimationClipsToggle}>
+        <Settings className="bp-AnimationClipsControl" toggle={AnimationClipsToggle}>
             <Settings.Menu name={Menu.MAIN}>
                 {animationClips.map(({ duration, id, name }) => {
                     return (

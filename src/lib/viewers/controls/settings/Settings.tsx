@@ -11,13 +11,14 @@ import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    icon?: React.ReactNode;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toggle?: React.ComponentType<any>;
 }>;
 
 export default function Settings({
     children,
     className,
-    icon: ToggleIcon = SettingsToggle,
+    toggle: ToggleIcon = SettingsToggle,
     ...rest
 }: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
