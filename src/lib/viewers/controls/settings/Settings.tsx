@@ -4,6 +4,7 @@ import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsFlyout from './SettingsFlyout';
 import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
+import SettingsListbox from './SettingsListbox';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
@@ -95,6 +96,7 @@ export default function Settings({
 
 Settings.CheckboxItem = SettingsCheckboxItem;
 Settings.Context = SettingsContext;
+Settings.Listbox = SettingsListbox;
 Settings.Menu = SettingsMenu;
 Settings.MenuBack = SettingsMenuBack;
 Settings.MenuItem = SettingsMenuItem;

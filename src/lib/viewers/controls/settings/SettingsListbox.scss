@@ -1,0 +1,95 @@
+@import './styles';
+
+$settings-listbox-spacing: 5px;
+
+.bp-SettingsListbox {
+    position: relative;
+    display: flex;
+    color: $bdl-gray-62;
+}
+
+.bp-SettingsListbox-button {
+    position: relative;
+    height: 34px;
+    margin: $settings-listbox-spacing 0;
+    padding: $settings-listbox-spacing 0 $settings-listbox-spacing $settings-listbox-spacing * 2;
+    color: #808080;
+    font-weight: normal;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-align: left;
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color .05s ease-in-out, border-color .05s ease-in-out;
+
+    &:hover,
+    &:focus {
+        background-color: #f7f7f7;
+    }
+
+    &::after {
+        position: absolute;
+        top: 15px;
+        right: 11px;
+        width: 0;
+        height: 0;
+        border-top: 3px solid $better-black;
+        border-right: 3px solid transparent;
+        border-left: 3px solid transparent;
+        content: '';
+    }
+}
+
+.bp-SettingsListbox-container {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+.bp-SettingsListbox-label {
+    margin: 4px 0;
+}
+
+.bp-SettingsListbox-listoption {
+    display: block;
+    padding: $settings-listbox-spacing 35px $settings-listbox-spacing 15px;
+    color: $better-black;
+    line-height: 20px;
+
+    &.bp-is-active,
+    &:hover,
+    &:focus {
+        color: $dark-cerulean;
+        background: $hover-blue-background;
+        cursor: pointer;
+        fill: $dark-cerulean;
+    }
+}
+
+.bp-SettingsListbox-overlay {
+    position: absolute;
+    bottom: 0;
+    z-index: 90;
+    width: 100%;
+    margin: 0;
+    padding: 8px 0;
+    background: $white;
+    border: 1px solid $sf-fog;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .1);
+    transform: translateY(100%);
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear .075s, opacity .075s, transform .125s;
+    transition-delay: .075s, 0s, 0s;
+    pointer-events: none;
+
+    &.bp-is-open {
+        visibility: visible;
+        opacity: 1;
+        transition-delay: 0s;
+        pointer-events: all;
+    }
+}
