@@ -29,9 +29,10 @@ export default function ImageControls({
     onZoomIn,
     onZoomOut,
     scale,
+    updateModeIfNecessary,
 }: Props): JSX.Element {
     return (
-        <ExperiencesProvider experiences={experiences}>
+        <ExperiencesProvider experiences={experiences} updateModeIfNecessary={updateModeIfNecessary}>
             <ControlsBar>
                 <ControlsBarGroup isDistinct>
                     <ZoomControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} scale={scale} />

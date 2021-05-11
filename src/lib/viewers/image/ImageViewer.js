@@ -3,6 +3,7 @@ import getProp from 'lodash/get';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
+
 import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
@@ -34,6 +35,7 @@ class ImageViewer extends ImageBaseViewer {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
+        this.updateModeIfNecessary = this.updateModeIfNecessary.bind(this);
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
@@ -367,6 +369,24 @@ class ImageViewer extends ImageBaseViewer {
         this.renderUI();
     }
 
+    updateModeIfNecessary() {
+        const experiencesToModes = [['tooltipFlowAnnotationsExperience', AnnotationMode.NONE, AnnotationInput.RESET]];
+        const { experiences } = this;
+
+        for (let i = 0; i < experiencesToModes.length; i += 1) {
+            const [experienceName, mode, input] = experiencesToModes[i];
+
+            const canShow = !!(experiences && experiences[experienceName] && experiences[experienceName].canShow);
+
+            if (canShow && this.annotationControlsFSM.getMode() !== mode) {
+                const nextMode = this.annotationControlsFSM.transition(input);
+                this.annotator.toggleAnnotationMode(nextMode);
+                this.processAnnotationModeChange(nextMode);
+                return;
+            }
+        }
+    }
+
     /**
      * Updates experiences option after props have changed in parent app
      *
@@ -405,6 +425,7 @@ class ImageViewer extends ImageBaseViewer {
                 onZoomIn={this.zoomIn}
                 onZoomOut={this.zoomOut}
                 scale={this.scale}
+                updateModeIfNecessary={this.updateModeIfNecessary}
             />,
         );
     }

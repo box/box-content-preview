@@ -22,6 +22,7 @@ describe('AnnotationsTargetedTooltip', () => {
                     },
                 },
                 setIsForced: jest.fn(),
+                updateModeIfNecessary: jest.fn(),
             }));
         });
 
