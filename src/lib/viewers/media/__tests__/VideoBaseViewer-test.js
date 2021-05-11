@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-expressions */
-import VideoBaseViewer from '../VideoBaseViewer';
-import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
+import ControlsRoot from '../../controls';
+import MediaBaseViewer from '../MediaBaseViewer';
+import VideoBaseViewer from '../VideoBaseViewer';
 
 let containerEl;
 let rootEl;
@@ -102,15 +103,49 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     describe('loadeddataHandler()', () => {
         const loadeddataHandlerFunc = MediaBaseViewer.prototype.loadeddataHandler;
 
+        beforeEach(() => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+        });
+
         afterEach(() => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: loadeddataHandlerFunc });
         });
 
         test('should show the play button', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
             jest.spyOn(videoBase, 'showPlayButton');
             videoBase.loadeddataHandler();
             expect(videoBase.showPlayButton).toBeCalled();
+        });
+
+        test('should show the controls briefly', () => {
+            videoBase.controls = {
+                controlsLayer: {
+                    hide: jest.fn(),
+                    show: jest.fn(),
+                },
+            };
+            videoBase.mediaControls = null;
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.controls.controlsLayer.show).toBeCalled();
+            expect(videoBase.controls.controlsLayer.hide).toBeCalled();
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        beforeEach(() => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadUIReact', { value: jest.fn() });
+            jest.spyOn(videoBase, 'renderUI').mockImplementation();
+        });
+
+        test('should create the controls root and render the controls', () => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.loadUIReact();
+
+            expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(videoBase.controls.handleHide).toEqual(videoBase.handleControlsHide);
+            expect(videoBase.controls.handleShow).toEqual(videoBase.handleControlsShow);
+            expect(videoBase.renderUI).toBeCalled();
         });
     });
 
@@ -246,6 +281,23 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.setVolume).toBeCalledWith(0);
             expect(videoBase.play).toBeCalled();
+        });
+    });
+
+    describe('handleControlsHide()', () => {
+        test('should remove a class name to the media container element', () => {
+            videoBase.handleControlsShow(); // Show the controls to set up the test
+            videoBase.handleControlsHide();
+
+            expect(videoBase.mediaContainerEl.classList).not.toContain('bp-media-controls-is-visible');
+        });
+    });
+
+    describe('handleControlsShow()', () => {
+        test('should add a class name to the media container element', () => {
+            videoBase.handleControlsShow();
+
+            expect(videoBase.mediaContainerEl.classList).toContain('bp-media-controls-is-visible');
         });
     });
 });
