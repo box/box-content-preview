@@ -4,9 +4,9 @@ import './SettingsFlyout.scss';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    height?: string;
+    height?: number | string;
     isOpen: boolean;
-    width?: string;
+    width?: number | string;
 }>;
 
 export default function SettingsFlyout({

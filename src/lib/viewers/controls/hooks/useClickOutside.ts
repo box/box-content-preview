@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-export default function useClickOutside(element: HTMLelement | null, callback: () => void): void {
+export default function useClickOutside(element: React.RefObject<Element> | null, callback: () => void): void {
     React.useEffect(() => {
         const handleDocumentClick = ({ target }: MouseEvent): void => {
-            if (element && element.contains(target as Node)) {
+            if (element && element.current && element.current.contains(target as Node)) {
                 return;
             }
 
@@ -15,5 +15,5 @@ export default function useClickOutside(element: HTMLelement | null, callback: (
         return (): void => {
             document.removeEventListener('click', handleDocumentClick);
         };
-    }, [element, callback]);
+    }, [callback, element]);
 }

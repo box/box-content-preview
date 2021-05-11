@@ -6,13 +6,13 @@ import { decodeKeydown } from '../../../util';
 export type Props = React.PropsWithChildren<{
     className?: string;
     onKeyDown?: (event: React.KeyboardEvent) => void;
-    tag?: string;
-}>;
+}> &
+    React.HTMLAttributes<HTMLDivElement>;
 
-function SettingsList<T extends HTMLElement, LT extends HTMLElement>(props: Props, ref: React.Ref<T>): JSX.Element {
-    const { children, className, onKeyDown = noop, tag: Tag = 'div', ...rest } = props;
+function SettingsList(props: Props, ref: React.Ref<HTMLDivElement>): JSX.Element {
+    const { children, className, onKeyDown = noop, ...rest } = props;
     const [activeIndex, setActiveIndex] = React.useState(0);
-    const [activeItem, setActiveItem] = React.useState<LT | null>(null);
+    const [activeItem, setActiveItem] = React.useState<HTMLDivElement | null>(null);
 
     const handleKeyDown = (event: React.KeyboardEvent): void => {
         const key = decodeKeydown(event);
@@ -36,7 +36,14 @@ function SettingsList<T extends HTMLElement, LT extends HTMLElement>(props: Prop
     }, [activeItem]);
 
     return (
-        <Tag ref={ref} className={classNames('bp-SettingsList', className)} onKeyDown={handleKeyDown} {...rest}>
+        <div
+            ref={ref}
+            className={classNames('bp-SettingsList', className)}
+            onKeyDown={handleKeyDown}
+            role="listbox"
+            tabIndex={0}
+            {...rest}
+        >
             {React.Children.map(children, (listItem, itemIndex) => {
                 if (React.isValidElement(listItem) && itemIndex === activeIndex) {
                     return React.cloneElement(listItem, { ref: setActiveItem, ...listItem.props });
@@ -44,8 +51,8 @@ function SettingsList<T extends HTMLElement, LT extends HTMLElement>(props: Prop
 
                 return listItem;
             })}
-        </Tag>
+        </div>
     );
 }
 
-export default React.forwardRef(SettingsList);
+export default React.forwardRef<HTMLDivElement, Props>(SettingsList);

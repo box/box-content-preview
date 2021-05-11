@@ -1,6 +1,6 @@
 @import './styles';
 
-$settings-listbox-spacing: 5px;
+$bp-SettingsDropdown-spacing: 5px;
 
 .bp-SettingsDropdown {
     position: relative;
@@ -8,25 +8,24 @@ $settings-listbox-spacing: 5px;
     flex: 1 1 auto;
     flex-direction: column;
     color: $bdl-gray-62;
+}
 
-    .bp-SettingsFlyout.bp-SettingsDropdown-flyout {
-        position: absolute;
-        top: initial;
-        right: 0;
-        bottom: 0;
-        z-index: 1;
-        flex: 1 1 auto;
-        padding: 8px 0;
-        transform: none;
-        transform: translateY(100%);
-    }
+.bp-SettingsDropdown-flyout {
+    top: initial;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    flex: 1 1 auto;
+    padding: 8px 0;
+    transform: translateY(100%);
 }
 
 .bp-SettingsDropdown-button {
     position: relative;
     height: 34px;
-    margin: $settings-listbox-spacing 0;
-    padding: $settings-listbox-spacing 0 $settings-listbox-spacing $settings-listbox-spacing * 2;
+    margin: $bp-SettingsDropdown-spacing 0;
+    padding: $bp-SettingsDropdown-spacing 0 $bp-SettingsDropdown-spacing $bp-SettingsDropdown-spacing * 2;
     color: #808080;
     font-weight: normal;
     font-size: 13px;
@@ -68,9 +67,9 @@ $settings-listbox-spacing: 5px;
     margin: 4px 0;
 }
 
-.bp-SettingsDropdown .bp-SettingsDropdown-listitem {
+.bp-SettingsDropdown-listitem {
     display: block;
-    padding: $settings-listbox-spacing 35px $settings-listbox-spacing 15px;
+    padding: $bp-SettingsDropdown-spacing 35px $bp-SettingsDropdown-spacing 15px;
     color: $better-black;
     line-height: 20px;
     outline: none;

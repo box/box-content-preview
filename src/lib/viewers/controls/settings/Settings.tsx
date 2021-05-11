@@ -61,7 +61,7 @@ export default function Settings({
         event.stopPropagation();
     };
 
-    useClickOutside(controlsElRef.current, resetControls);
+    useClickOutside(controlsElRef, resetControls);
 
     const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
@@ -73,9 +73,14 @@ export default function Settings({
             role="presentation"
             {...rest}
         >
-            <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
+            <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
                 <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout height={height} isOpen={isOpen} width={width}>
+                <SettingsFlyout
+                    className={classNames({ [`${className}-flyout`]: className })}
+                    height={height}
+                    isOpen={isOpen}
+                    width={width}
+                >
                     {children}
                 </SettingsFlyout>
             </SettingsContext.Provider>

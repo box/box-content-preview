@@ -16,7 +16,7 @@ export type Props = {
     className?: string;
     label: string;
     listItems: Array<ListItem>;
-    onSelect: () => void;
+    onSelect: (value: string) => void;
     value?: string;
 };
 
@@ -24,11 +24,9 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
     const { current: id } = React.useRef(uniqueId('bp-SettingsDropdown_'));
     const buttonElRef = React.useRef<HTMLButtonElement | null>(null);
     const dropdownElRef = React.useRef<HTMLDivElement | null>(null);
-    const listElRef = React.useRef<HTMLUListElement | null>(null);
+    const listElRef = React.useRef<HTMLDivElement | null>(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const handleButtonClick = (): void => setIsOpen(!isOpen);
-    const handleClickOutside = (): void => setIsOpen(false);
     const handleKeyDown = (event: React.KeyboardEvent): void => {
         const key = decodeKeydown(event);
 
@@ -41,7 +39,7 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
         }
 
         if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'Escape') {
-            event.preventDefault();
+            // Prevent the event from bubbling up and triggering any upstream keydown handling logic
             event.stopPropagation();
         }
     };
@@ -49,13 +47,14 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
         setIsOpen(false);
         onSelect(selectedOption);
     };
-    const createClickHandler = (selectedOption: string) => (event: React.KeyboardEvent): void => {
+    const createClickHandler = (selectedOption: string) => (event: React.MouseEvent<HTMLDivElement>): void => {
         handleSelect(selectedOption);
 
-        event.preventDefault();
+        // Prevent the event from bubbling up and triggering any upstream click handling logic,
+        // i.e. if the dropdown is nested inside a menu flyout
         event.stopPropagation();
     };
-    const createKeyDownHandler = (selectedOption: string) => (event: React.KeyboardEvent): void => {
+    const createKeyDownHandler = (selectedOption: string) => (event: React.KeyboardEvent<HTMLDivElement>): void => {
         const key = decodeKeydown(event);
 
         if (key !== 'Space' && key !== 'Enter') {
@@ -72,7 +71,7 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
         }
     }, [isOpen]);
 
-    useClickOutside(dropdownElRef.current, handleClickOutside);
+    useClickOutside(dropdownElRef, () => setIsOpen(false));
 
     return (
         <div ref={dropdownElRef} className={classNames('bp-SettingsDropdown', className)}>
@@ -86,7 +85,7 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
                 aria-labelledby={`${id}-label ${id}-button`}
                 className={classNames('bp-SettingsDropdown-button', { 'bp-is-open': isOpen })}
                 id={`${id}-button`}
-                onClick={handleButtonClick}
+                onClick={(): void => setIsOpen(!isOpen)}
                 type="button"
             >
                 {value}
@@ -99,11 +98,10 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
                     onKeyDown={handleKeyDown}
                     role="listbox"
                     tabIndex={-1}
-                    tag="ul"
                 >
                     {listItems.map(({ label: itemLabel, value: itemValue }) => {
                         return (
-                            <li
+                            <div
                                 key={itemValue}
                                 aria-selected={value === itemValue}
                                 className="bp-SettingsDropdown-listitem"
@@ -114,7 +112,7 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
                                 tabIndex={0}
                             >
                                 {itemLabel}
-                            </li>
+                            </div>
                         );
                     })}
                 </SettingsList>
