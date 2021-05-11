@@ -3,12 +3,8 @@ import noop from 'lodash/noop';
 import { mount, ReactWrapper } from 'enzyme';
 import useClickOutside from '../useClickOutside';
 
-type Props = {
-    callback?: () => void;
-};
-
 describe('useClickOutside', () => {
-    function TestComponent({ callback = noop }: Props): JSX.Element {
+    function TestComponent({ callback = noop }: { callback?: () => void }): JSX.Element {
         const ref = React.createRef<HTMLButtonElement>();
 
         useClickOutside(ref, callback);
@@ -22,7 +18,7 @@ describe('useClickOutside', () => {
         );
     }
 
-    const getWrapper = (props: Props): ReactWrapper =>
+    const getWrapper = (props: { callback?: () => void }): ReactWrapper =>
         mount(
             <div>
                 <TestComponent {...props} />
@@ -49,7 +45,7 @@ describe('useClickOutside', () => {
             element.click();
         }
 
-        expect(element).toBeTruthy();
+        expect(element).toBeDefined();
         expect(callback.mock.calls.length).toBe(isCalled ? 1 : 0);
     });
 });

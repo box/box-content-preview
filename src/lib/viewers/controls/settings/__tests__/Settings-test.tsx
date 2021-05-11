@@ -4,6 +4,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import Settings from '../Settings';
 import SettingsGearToggle from '../SettingsToggle';
 import SettingsFlyout from '../SettingsFlyout';
+import SettingsContext from '../SettingsContext';
 
 describe('Settings', () => {
     const getHostNode = (): HTMLDivElement => {
@@ -92,6 +93,17 @@ describe('Settings', () => {
             expect(wrapper.getDOMNode()).toHaveClass('bp-Settings');
             expect(wrapper.exists(SettingsFlyout)).toBe(true);
             expect(wrapper.exists(SettingsGearToggle)).toBe(true);
+        });
+
+        describe('flyout dimensions', () => {
+            test('should apply activeRect dimensions if present', () => {
+                const wrapper = getWrapper();
+
+                wrapper.find(SettingsGearToggle).simulate('click');
+
+                expect(wrapper.find(SettingsFlyout).prop('height')).toBe('auto');
+                expect(wrapper.find(SettingsFlyout).prop('width')).toBe('auto');
+            });
         });
 
         describe('toggle prop', () => {

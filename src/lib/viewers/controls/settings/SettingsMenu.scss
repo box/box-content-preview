@@ -1,8 +1,4 @@
 .bp-SettingsMenu {
-    display: none;
+    display: table;
     padding: 8px;
-
-    &.bp-is-active {
-        display: table;
-    }
 }

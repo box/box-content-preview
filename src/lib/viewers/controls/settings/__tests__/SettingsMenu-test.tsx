@@ -69,17 +69,17 @@ describe('SettingsMenu', () => {
     });
 
     describe('render', () => {
-        test('should set classes based on the active menu', () => {
+        test('should render based on the active menu', () => {
             const context = getContext({ activeMenu: Menu.MAIN });
             const wrapper = getWrapper({ name: Menu.MAIN }, context);
 
-            expect(wrapper.childAt(0).hasClass('bp-is-active')).toBe(true);
+            expect(wrapper.exists()).toBe(true);
 
             context.activeMenu = Menu.AUTOPLAY;
             wrapper.setProps({}); // Force re-render
             wrapper.update();
 
-            expect(wrapper.childAt(0).hasClass('bp-is-active')).toBe(false);
+            expect(wrapper.isEmptyRender()).toBe(true);
         });
 
         test('should return a valid wrapper', () => {

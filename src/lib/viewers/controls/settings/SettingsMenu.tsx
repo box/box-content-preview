@@ -27,12 +27,7 @@ export default function SettingsMenu({ children, className, name }: Props): JSX.
     }
 
     return (
-        <SettingsList
-            ref={menuElRef}
-            className={classNames('bp-SettingsMenu', className, { 'bp-is-active': isActive })}
-            role="menu"
-            tabIndex={0}
-        >
+        <SettingsList ref={menuElRef} className={classNames('bp-SettingsMenu', className)} role="menu" tabIndex={0}>
             {children}
         </SettingsList>
     );

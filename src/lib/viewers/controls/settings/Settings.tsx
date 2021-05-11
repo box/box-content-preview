@@ -35,6 +35,7 @@ export default function Settings({
         setIsFocused(false);
         setIsOpen(false);
     }, []);
+    const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     const handleClick = (): void => {
         setActiveMenu(Menu.MAIN);
@@ -63,8 +64,6 @@ export default function Settings({
 
     useClickOutside(controlsElRef, resetControls);
 
-    const { height, width } = activeRect || { height: 'auto', width: 'auto' };
-
     return (
         <div
             ref={controlsElRef}
@@ -74,13 +73,13 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
-                <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout
-                    className={classNames({ [`${className}-flyout`]: className })}
-                    height={height}
+                <SettingsToggle
+                    ref={buttonElRef}
+                    className="bp-Settings-toggle"
                     isOpen={isOpen}
-                    width={width}
-                >
+                    onClick={handleClick}
+                />
+                <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
                     {children}
                 </SettingsFlyout>
             </SettingsContext.Provider>
