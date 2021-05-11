@@ -1,6 +1,6 @@
 @import './styles';
 
-$checkboxItem-spacing: 6px;
+$bp-SettingsCheckboxItem-spacing: 6px;
 
 .bp-SettingsCheckboxItem {
     color: $bdl-gray-62;
@@ -9,10 +9,10 @@ $checkboxItem-spacing: 6px;
 
 .bp-SettingsCheckboxItem-input,
 .bp-SettingsCheckboxItem-label {
-    padding: $checkboxItem-spacing;
+    padding: $bp-SettingsCheckboxItem-spacing;
     user-select: none;
 }
 
 .bp-SettingsCheckboxItem-input {
-    margin: $checkboxItem-spacing 0;
+    margin: $bp-SettingsCheckboxItem-spacing 0;
 }
