@@ -64,13 +64,6 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
         handleSelect(selectedOption);
     };
 
-    React.useEffect(() => {
-        const { current: listEl } = listElRef;
-        if (isOpen && listEl) {
-            listEl.focus();
-        }
-    }, [isOpen]);
-
     useClickOutside(dropdownElRef, () => setIsOpen(false));
 
     return (

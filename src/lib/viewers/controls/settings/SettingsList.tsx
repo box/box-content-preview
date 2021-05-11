@@ -3,11 +3,7 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 import { decodeKeydown } from '../../../util';
 
-export type Props = React.PropsWithChildren<{
-    className?: string;
-    onKeyDown?: (event: React.KeyboardEvent) => void;
-}> &
-    React.HTMLAttributes<HTMLDivElement>;
+export type Props = React.HTMLAttributes<HTMLDivElement>;
 
 function SettingsList(props: Props, ref: React.Ref<HTMLDivElement>): JSX.Element {
     const { children, className, onKeyDown = noop, ...rest } = props;
