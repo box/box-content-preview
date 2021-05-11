@@ -1,16 +1,14 @@
 import React from 'react';
-import classNames from 'classnames';
 import uniqueId from 'lodash/uniqueId';
 import './SettingsCheckboxItem.scss';
 
 export type Props = {
-    className?: string;
     isChecked: boolean;
     label: string;
     onChange: (isChecked: boolean) => void;
 };
 
-export default function SettingsCheckboxItem({ className, isChecked, label, onChange }: Props): JSX.Element {
+export default function SettingsCheckboxItem({ isChecked, label, onChange }: Props): JSX.Element {
     const { current: id } = React.useRef(uniqueId('bp-SettingsCheckboxItem_'));
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -18,7 +16,7 @@ export default function SettingsCheckboxItem({ className, isChecked, label, onCh
     };
 
     return (
-        <div className={classNames('bp-SettingsCheckboxItem', className)}>
+        <div className="bp-SettingsCheckboxItem">
             <input
                 checked={isChecked}
                 className="bp-SettingsCheckboxItem-input"
