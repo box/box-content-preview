@@ -2,13 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
+import SettingsDropdown from './SettingsDropdown';
 import SettingsFlyout from './SettingsFlyout';
 import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
-import SettingsListbox from './SettingsListbox';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
+import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
@@ -60,23 +61,9 @@ export default function Settings({
         event.stopPropagation();
     };
 
-    React.useEffect(() => {
-        const handleDocumentClick = ({ target }: MouseEvent): void => {
-            const { current: controlsEl } = controlsElRef;
+    useClickOutside(controlsElRef.current, resetControls);
 
-            if (controlsEl && controlsEl.contains(target as Node)) {
-                return;
-            }
-
-            resetControls();
-        };
-
-        document.addEventListener('click', handleDocumentClick);
-
-        return (): void => {
-            document.removeEventListener('click', handleDocumentClick);
-        };
-    }, [resetControls]);
+    const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     return (
         <div
@@ -88,7 +75,9 @@ export default function Settings({
         >
             <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
                 <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
+                <SettingsFlyout height={height} isOpen={isOpen} width={width}>
+                    {children}
+                </SettingsFlyout>
             </SettingsContext.Provider>
         </div>
     );
@@ -96,7 +85,7 @@ export default function Settings({
 
 Settings.CheckboxItem = SettingsCheckboxItem;
 Settings.Context = SettingsContext;
-Settings.Listbox = SettingsListbox;
+Settings.Dropdown = SettingsDropdown;
 Settings.Menu = SettingsMenu;
 Settings.MenuBack = SettingsMenuBack;
 Settings.MenuItem = SettingsMenuItem;
