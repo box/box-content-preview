@@ -10,7 +10,7 @@ export type Props = React.PropsWithChildren<{
 }>;
 
 function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
-    const { experiences, updateModeIfNecessary } = React.useContext(ExperiencesContext);
+    const { experiences } = React.useContext(ExperiencesContext);
     const { setIsForced } = React.useContext(ControlsLayerContext);
     const [wasClosedByUser, setWasClosedByUser] = React.useState(false);
     const [shouldTargetAnnotationsShareTooltip, setShouldTargetAnnotationsShareTooltip] = React.useState(true);
@@ -58,7 +58,6 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
 
                         setWasClosedByUser(true);
                         setIsForced(true);
-                        updateModeIfNecessary();
                     },
                 };
             }}

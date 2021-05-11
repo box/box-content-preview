@@ -933,9 +933,15 @@ class Preview extends EventEmitter {
 
         this.options.showAnnotationsDrawingCreate = !!options.showAnnotationsDrawingCreate;
 
-        this.options.enableAnnotationsDiscoverability = !!options.enableAnnotationsDiscoverability;
+        this.options.enableAnnotationsDiscoverability = this.enableDiscoverability(
+            options,
+            'enableAnnotationsDiscoverability',
+        );
 
-        this.options.enableAnnotationsImageDiscoverability = !!options.enableAnnotationsImageDiscoverability;
+        this.options.enableAnnotationsImageDiscoverability = this.enableDiscoverability(
+            options,
+            'enableAnnotationsImageDiscoverability',
+        );
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
@@ -1006,6 +1012,27 @@ class Preview extends EventEmitter {
                 this.enableViewers(viewerName);
             }
         });
+    }
+
+    /**
+     * Determines whether discoverability is enabled
+     *
+     * @private
+     * @param {Object} options - Options specified by show()
+     * @return {boolean} value of whether discoverability is enabled
+     */
+    enableDiscoverability(options, discoverabilityType) {
+        const experiencesToModes = ['tooltipFlowAnnotationsExperience'];
+        const { experiences } = options;
+
+        let canShow = false;
+        for (let i = 0; i < experiencesToModes.length; i += 1) {
+            const experienceName = experiencesToModes[i];
+
+            canShow = canShow || !!(experiences && experiences[experienceName] && experiences[experienceName].canShow);
+        }
+
+        return !canShow && !!options[discoverabilityType];
     }
 
     /**
