@@ -1,4 +1,5 @@
 import React from 'react';
+import isFinite from 'lodash/isFinite';
 import './DurationLabels.scss';
 
 export type Props = {
@@ -7,9 +8,10 @@ export type Props = {
 };
 
 export function formatTime(time: number): string {
-    const hours = Math.floor(time / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
-    const seconds = Math.floor((time % 3600) % 60);
+    const val = isFinite(time) ? time : 0;
+    const hours = Math.floor(val / 3600);
+    const minutes = Math.floor((val % 3600) / 60);
+    const seconds = Math.floor((val % 3600) % 60);
     const hour = hours > 0 ? `${hours.toString()}:` : '';
     const min = hours > 0 && minutes < 10 ? `0${minutes.toString()}` : minutes.toString();
     const sec = seconds < 10 ? `0${seconds.toString()}` : seconds.toString();

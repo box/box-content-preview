@@ -1,17 +1,22 @@
 import React from 'react';
-import Settings, { Menu } from '../controls/settings';
-import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from '../controls/media/MediaSettingsMenuAutoplay';
-import MediaSettingsMenuRate, { Props as RateProps } from '../controls/media/MediaSettingsMenuRate';
-import './MP3Settings.scss';
+import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from './MediaSettingsMenuAutoplay';
+import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
+import Settings, { Menu } from '../settings';
 
-export type Props = AutoplayProps & RateProps;
+export type Props = AutoplayProps & RateProps & { className?: string };
 
-export default function MP3Settings({ autoplay, onAutoplayChange, onRateChange, rate }: Props): JSX.Element {
+export default function MediaSettings({
+    autoplay,
+    className,
+    onAutoplayChange,
+    onRateChange,
+    rate,
+}: Props): JSX.Element {
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
 
     return (
-        <Settings className="bp-MP3Settings">
+        <Settings className={className}>
             <Settings.Menu name={Menu.MAIN}>
                 <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
                 <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />

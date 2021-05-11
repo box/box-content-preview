@@ -25,7 +25,7 @@
 
 .bp-media-container {
     position: relative;
-    min-width: 300px; // Prevent media controls from overflowing on small screens
+    min-width: 360px; // Prevent media controls from overflowing on small screens
     outline: 0 none;
     user-select: none; // Prevents copy paste dialog from appearing on mobile
 }

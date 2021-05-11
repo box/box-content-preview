@@ -6,8 +6,11 @@ import ControlsLayer, { Helpers } from '../controls-layer';
 import './ControlsRoot.scss';
 
 export type Options = {
+    className?: string;
     containerEl: HTMLElement;
     fileId: string;
+    onHide?: () => void;
+    onShow?: () => void;
 };
 
 export default class ControlsRoot {
@@ -21,9 +24,13 @@ export default class ControlsRoot {
         show: noop,
     };
 
-    constructor({ containerEl, fileId }: Options) {
+    handleHide: () => void;
+
+    handleShow: () => void;
+
+    constructor({ className = 'bp-ControlsRoot', containerEl, fileId, onHide = noop, onShow = noop }: Options) {
         this.controlsEl = document.createElement('div');
-        this.controlsEl.setAttribute('class', 'bp-ControlsRoot');
+        this.controlsEl.setAttribute('class', className);
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
         this.controlsEl.setAttribute('data-resin-component', 'toolbar');
         this.controlsEl.setAttribute('data-resin-fileid', fileId);
@@ -32,6 +39,9 @@ export default class ControlsRoot {
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);
         this.containerEl.addEventListener('touchstart', this.handleTouchStart);
         this.containerEl.appendChild(this.controlsEl);
+
+        this.handleHide = onHide;
+        this.handleShow = onShow;
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -68,6 +78,11 @@ export default class ControlsRoot {
     }
 
     render(controls: JSX.Element): void {
-        ReactDOM.render(<ControlsLayer onMount={this.handleMount}>{controls}</ControlsLayer>, this.controlsEl);
+        ReactDOM.render(
+            <ControlsLayer onHide={this.handleHide} onMount={this.handleMount} onShow={this.handleShow}>
+                {controls}
+            </ControlsLayer>,
+            this.controlsEl,
+        );
     }
 }

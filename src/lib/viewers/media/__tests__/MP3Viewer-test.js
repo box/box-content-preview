@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import BaseViewer from '../../BaseViewer';
+import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 
@@ -19,6 +20,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+        mp3.cache = {
+            has: jest.fn(),
+            get: jest.fn(),
+            set: jest.fn(),
+        };
         mp3.containerEl = containerEl;
     });
 
@@ -77,6 +83,21 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.mediaControls.resizeTimeScrubber).toBeCalled();
             expect(mp3.mediaControls.show).toBeCalled();
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        beforeEach(() => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadUIReact', { value: jest.fn() });
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should create the controls root and render the controls', () => {
+            mp3.mediaContainerEl = document.createElement('div');
+            mp3.loadUIReact();
+
+            expect(mp3.controls).toBeInstanceOf(MP3ControlsRoot);
+            expect(mp3.renderUI).toBeCalled();
         });
     });
 

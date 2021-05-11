@@ -11,13 +11,15 @@ export type Helpers = {
 
 export type Props = {
     children: React.ReactNode;
+    onHide?: () => void;
     onMount?: (helpers: Helpers) => void;
+    onShow?: () => void;
 };
 
 export const HIDE_DELAY_MS = 2000;
 export const SHOW_CLASSNAME = 'bp-is-visible';
 
-export default function ControlsLayer({ children, onMount = noop }: Props): JSX.Element {
+export default function ControlsLayer({ children, onHide = noop, onMount = noop, onShow = noop }: Props): JSX.Element {
     const [isForced, setIsForced] = React.useState(false);
     const [isShown, setIsShown] = React.useState(false);
     const hasFocusRef = React.useRef(false);
@@ -38,6 +40,7 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
                 }
 
                 setIsShown(false);
+                onHide();
             }, HIDE_DELAY_MS);
         },
         reset() {
@@ -47,6 +50,7 @@ export default function ControlsLayer({ children, onMount = noop }: Props): JSX.
         show() {
             helpersRef.current.clean();
             setIsShown(true);
+            onShow();
         },
     });
 

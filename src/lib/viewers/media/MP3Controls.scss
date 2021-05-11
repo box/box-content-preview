@@ -1,4 +1,4 @@
-@import '~box-ui-elements/es/styles/variables';
+@import '../controls/media/styles';
 
 .bp-MP3Controls {
     display: flex;
@@ -16,4 +16,11 @@
 .bp-MP3Controls-group {
     display: flex;
     align-items: center;
+}
+
+.bp-MP3Controls-settings {
+    .bp-SettingsToggle {
+        width: $bp-MediaControl-width;
+        height: $bp-MediaControl-height;
+    }
 }

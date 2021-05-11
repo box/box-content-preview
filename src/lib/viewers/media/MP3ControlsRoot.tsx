@@ -1,18 +1,18 @@
 import ReactDOM from 'react-dom';
-import './MediaControlsRoot.scss';
+import './MP3ControlsRoot.scss';
 
 export type Options = {
     containerEl: HTMLElement;
 };
 
-export default class MediaControlsRoot {
+export default class MP3ControlsRoot {
     containerEl: HTMLElement;
 
     controlsEl: HTMLElement;
 
     constructor({ containerEl }: Options) {
         this.controlsEl = document.createElement('div');
-        this.controlsEl.setAttribute('class', 'bp-MediaControlsRoot');
+        this.controlsEl.setAttribute('class', 'bp-MP3ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
 
         this.containerEl = containerEl;

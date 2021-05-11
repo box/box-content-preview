@@ -1,6 +1,7 @@
 import React from 'react';
 import MediaBaseViewer from './MediaBaseViewer';
 import MP3Controls from './MP3Controls';
+import MP3ControlsRoot from './MP3ControlsRoot';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
@@ -40,6 +41,15 @@ class MP3Viewer extends MediaBaseViewer {
         super.loadUI();
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    loadUIReact() {
+        super.loadUIReact();
+        this.controls = new MP3ControlsRoot({ containerEl: this.mediaContainerEl });
+        this.renderUI();
     }
 
     /**
