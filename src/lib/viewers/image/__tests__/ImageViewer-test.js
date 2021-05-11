@@ -43,11 +43,13 @@ describe('lib/viewers/image/ImageViewer', () => {
                     url_template: 'foo',
                 },
             },
+            isDiscoverabilityEnabled: jest.fn().mockReturnValue(false),
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         image.containerEl = containerEl;
         image.options.enableAnnotationsImageDiscoverability = false;
+
         image.cache = {
             get: jest.fn(),
             set: jest.fn(),
@@ -739,6 +741,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                         url_template: 'foo',
                     },
                 },
+                isDiscoverabilityEnabled: jest.fn().mockReturnValue(true),
             });
             image.containerEl = containerEl;
             image.setup();

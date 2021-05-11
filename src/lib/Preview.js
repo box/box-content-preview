@@ -182,6 +182,7 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
+        this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
     }
 
     /**
@@ -933,15 +934,9 @@ class Preview extends EventEmitter {
 
         this.options.showAnnotationsDrawingCreate = !!options.showAnnotationsDrawingCreate;
 
-        this.options.enableAnnotationsDiscoverability = this.enableDiscoverability(
-            options,
-            'enableAnnotationsDiscoverability',
-        );
+        this.options.enableAnnotationsDiscoverability = !!options.enableAnnotationsDiscoverability;
 
-        this.options.enableAnnotationsImageDiscoverability = this.enableDiscoverability(
-            options,
-            'enableAnnotationsImageDiscoverability',
-        );
+        this.options.enableAnnotationsImageDiscoverability = !!options.enableAnnotationsImageDiscoverability;
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
@@ -1018,21 +1013,19 @@ class Preview extends EventEmitter {
      * Determines whether discoverability is enabled
      *
      * @private
-     * @param {Object} options - Options specified by show()
-     * @return {boolean} value of whether discoverability is enabled
+     * @param {string} discoverabilityType
+     * @return {boolean} value of whether discoverability is enabled for givent type
      */
-    enableDiscoverability(options, discoverabilityType) {
-        const experiencesToModes = ['tooltipFlowAnnotationsExperience'];
-        const { experiences } = options;
+    isDiscoverabilityEnabled(discoverabilityType) {
+        const { experiences = {} } = this.previewOptions;
 
         let canShow = false;
-        for (let i = 0; i < experiencesToModes.length; i += 1) {
-            const experienceName = experiencesToModes[i];
 
+        Object.keys(experiences).forEach(experienceName => {
             canShow = canShow || !!(experiences && experiences[experienceName] && experiences[experienceName].canShow);
-        }
+        });
 
-        return !canShow && !!options[discoverabilityType];
+        return !canShow && !!this.options[discoverabilityType];
     }
 
     /**
@@ -1051,6 +1044,7 @@ class Preview extends EventEmitter {
             cache: this.cache,
             ui: this.ui,
             refreshToken: this.refreshToken,
+            isDiscoverabilityEnabled: this.isDiscoverabilityEnabled,
         });
     }
 
