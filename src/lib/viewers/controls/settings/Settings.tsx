@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsFlyout from './SettingsFlyout';
 import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
@@ -92,6 +93,7 @@ export default function Settings({
     );
 }
 
+Settings.CheckboxItem = SettingsCheckboxItem;
 Settings.Context = SettingsContext;
 Settings.Menu = SettingsMenu;
 Settings.MenuBack = SettingsMenuBack;
