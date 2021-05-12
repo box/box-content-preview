@@ -1,14 +1,14 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import MP3Settings from '../MP3Settings';
-import Settings from '../../controls/settings/Settings';
-import SettingsMenu from '../../controls/settings/SettingsMenu';
-import SettingsMenuItem from '../../controls/settings/SettingsMenuItem';
+import MediaSettings from '../MediaSettings';
+import Settings from '../../settings/Settings';
+import SettingsMenu from '../../settings/SettingsMenu';
+import SettingsMenuItem from '../../settings/SettingsMenuItem';
 
-describe('MP3SettingsControls', () => {
+describe('MediaSettings', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(
-            <MP3Settings
+            <MediaSettings
                 autoplay={false}
                 onAutoplayChange={jest.fn()}
                 onRateChange={jest.fn()}

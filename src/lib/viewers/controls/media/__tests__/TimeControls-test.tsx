@@ -42,6 +42,16 @@ describe('TimeControls', () => {
             expect(wrapper.prop('step')).toEqual(0.1);
         });
 
+        test('should not calculate percentage for invalid currentTime value', () => {
+            const wrapper = getWrapper({ currentTime: NaN, durationTime: 100 });
+            expect(wrapper.find(SliderControl).prop('value')).toBe(0);
+        });
+
+        test('should not calculate percentage for invalid durationTime value', () => {
+            const wrapper = getWrapper({ currentTime: 100, durationTime: NaN });
+            expect(wrapper.find(SliderControl).prop('value')).toBe(0);
+        });
+
         test.each`
             currentTime | track                                                                                        | value
             ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #767676 10%, #767676 100%)'}     | ${0}

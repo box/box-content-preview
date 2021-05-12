@@ -6,9 +6,10 @@ import './FullscreenToggle.scss';
 
 export type Props = {
     onFullscreenToggle: (isFullscreen: boolean) => void;
+    onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 };
 
-export default function FullscreenToggle({ onFullscreenToggle }: Props): JSX.Element {
+export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props): JSX.Element {
     const isFullscreen = useFullscreen();
     const Icon = isFullscreen ? IconFullscreenOut24 : IconFullscreenIn24;
     const title = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
@@ -18,7 +19,7 @@ export default function FullscreenToggle({ onFullscreenToggle }: Props): JSX.Ele
     };
 
     return (
-        <button className="bp-FullscreenToggle" onClick={handleClick} title={title} type="button">
+        <button className="bp-FullscreenToggle" onClick={handleClick} title={title} type="button" {...rest}>
             <Icon />
         </button>
     );

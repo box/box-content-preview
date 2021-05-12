@@ -2,7 +2,6 @@
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
-import MediaControlsRoot from '../MediaControlsRoot';
 import PreviewError from '../../../PreviewError';
 import Timer from '../../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
@@ -108,6 +107,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaEl.removeAttribute).toBeCalledWith('src');
             expect(media.mediaEl.load).toBeCalled();
             expect(media.removePauseEventListener).toBeCalledTimes(1);
+        });
+
+        test('should destroy the viewer controls if they exist', () => {
+            media.controls = {
+                destroy: jest.fn(),
+            };
+
+            media.destroy();
+
+            expect(media.controls.destroy).toBeCalled();
         });
     });
 
@@ -379,12 +388,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             jest.spyOn(media.cache, 'set').mockImplementation();
         });
 
-        test('should create controls root and render the react controls', () => {
+        test('should add the base listeners for the media element', () => {
             media.loadUIReact();
 
-            expect(media.controls).toBeInstanceOf(MediaControlsRoot);
             expect(media.addEventListenersForMediaElement).toBeCalled();
-            expect(media.renderUI).toBeCalled();
         });
 
         test('should create cache entries for autoplay and speed if they are not available', () => {

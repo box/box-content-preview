@@ -10,7 +10,12 @@
 
 @mixin bp-SettingsRow-cell {
     display: table-cell;
+    line-height: 1;
     vertical-align: middle;
+
+    svg {
+        display: block;
+    }
 }
 
 @mixin bp-SettingsRow-label {
@@ -27,7 +32,7 @@
 @mixin bp-SettingsRow-value {
     @include bp-SettingsRow-cell;
 
-    padding: 6px 6px 6px 10px;
+    padding: 6px;
     color: $sunset-grey;
     font-size: 12px;
     text-align: left;

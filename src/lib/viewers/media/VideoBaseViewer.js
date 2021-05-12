@@ -1,4 +1,5 @@
 import throttle from 'lodash/throttle';
+import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
@@ -14,6 +15,8 @@ class VideoBaseViewer extends MediaBaseViewer {
         super(options);
 
         // Bind context for handlers
+        this.handleControlsHide = this.handleControlsHide.bind(this);
+        this.handleControlsShow = this.handleControlsShow.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.pointerHandler = this.pointerHandler.bind(this);
         this.waitingHandler = this.waitingHandler.bind(this);
@@ -78,7 +81,13 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadeddataHandler() {
         super.loadeddataHandler();
         this.showPlayButton();
-        this.mediaControls.show();
+
+        if (this.mediaControls) {
+            this.mediaControls.show();
+        } else if (this.controls && this.controls.controlsLayer) {
+            this.controls.controlsLayer.show();
+            this.controls.controlsLayer.hide(); // Show controls briefly after content loads
+        }
     }
 
     /**
@@ -86,6 +95,22 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     loadUI() {
         super.loadUI();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    loadUIReact() {
+        super.loadUIReact();
+
+        this.controls = new ControlsRoot({
+            className: 'bp-VideoControlsRoot',
+            containerEl: this.mediaContainerEl,
+            fileId: this.options.file.id,
+            onHide: this.handleControlsHide,
+            onShow: this.handleControlsShow,
+        });
+        this.renderUI();
     }
 
     /**
@@ -99,7 +124,10 @@ class VideoBaseViewer extends MediaBaseViewer {
             // Prevents 'click' event from firing which would pause the video
             event.preventDefault();
             event.stopPropagation();
-            this.mediaControls.toggle();
+
+            if (this.mediaControls) {
+                this.mediaControls.toggle();
+            }
         } else if (event.type === 'click') {
             this.togglePlay();
         }
@@ -169,10 +197,13 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         /* istanbul ignore next */
         this.mousemoveHandler = throttle(() => {
-            this.mediaControls.show();
+            if (this.mediaControls) {
+                this.mediaControls.show();
+            }
         }, MOUSE_MOVE_TIMEOUT_IN_MILLIS);
 
         this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);
+
         if (this.hasTouch) {
             this.mediaEl.addEventListener('touchstart', this.pointerHandler);
         }
@@ -243,6 +274,14 @@ class VideoBaseViewer extends MediaBaseViewer {
     handleAutoplayFail = () => {
         this.setVolume(0);
         this.play().catch(this.pause);
+    };
+
+    handleControlsHide = () => {
+        this.mediaContainerEl.classList.remove('bp-media-controls-is-visible');
+    };
+
+    handleControlsShow = () => {
+        this.mediaContainerEl.classList.add('bp-media-controls-is-visible');
     };
 }
 
