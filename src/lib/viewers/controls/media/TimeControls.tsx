@@ -1,4 +1,5 @@
 import React from 'react';
+import isFinite from 'lodash/isFinite';
 import { bdlBoxBlue, bdlGray62, white } from 'box-ui-elements/es/styles/variables';
 import SliderControl from '../slider';
 import './TimeControls.scss';
@@ -24,7 +25,7 @@ export default function TimeControls({
     durationTime = 0,
     onTimeChange,
 }: Props): JSX.Element {
-    const currentValue = percent(currentTime, durationTime);
+    const currentValue = isFinite(currentTime) && isFinite(durationTime) ? percent(currentTime, durationTime) : 0;
     const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
     const bufferedValue = percent(bufferedAmount, durationTime);
 

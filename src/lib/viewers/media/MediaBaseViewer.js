@@ -3,7 +3,6 @@ import isEmpty from 'lodash/isEmpty';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
-import MediaControlsRoot from './MediaControlsRoot';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
@@ -149,6 +148,10 @@ class MediaBaseViewer extends BaseViewer {
 
         // Best effort to emit current media metrics as page unloads
         window.removeEventListener('beforeunload', this.processMetrics);
+
+        if (this.controls && this.controls.destroy) {
+            this.controls.destroy();
+        }
 
         if (this.mediaControls) {
             this.mediaControls.removeAllListeners();
@@ -509,9 +512,7 @@ class MediaBaseViewer extends BaseViewer {
             this.cache.set(MEDIA_SPEED_CACHE_KEY, '1.0');
         }
 
-        this.controls = new MediaControlsRoot({ containerEl: this.containerEl });
         this.addEventListenersForMediaElement();
-        this.renderUI();
     }
 
     /**

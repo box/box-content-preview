@@ -15,6 +15,7 @@ describe('DurationLabels', () => {
 
         test.each`
             input    | result
+            ${NaN}   | ${'0:00'}
             ${0}     | ${'0:00'}
             ${9}     | ${'0:09'}
             ${105}   | ${'1:45'}

@@ -1,5 +1,7 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
+import ControlsLayer from '../../controls-layer';
 import ControlsRoot from '../ControlsRoot';
 
 describe('ControlsRoot', () => {
@@ -105,6 +107,26 @@ describe('ControlsRoot', () => {
 
             expect(instance.controlsEl.firstChild).toHaveClass('bp-ControlsLayer');
             expect(instance.controlsEl.firstChild).toContainHTML(ReactDOMServer.renderToStaticMarkup(controls));
+        });
+
+        test('should attach onHide and onShow handlers to the underlying controls layer', () => {
+            jest.spyOn(ReactDOM, 'render');
+
+            const controls = <div className="TestControls">Controls</div>;
+            const onHide = jest.fn();
+            const onShow = jest.fn();
+            const instance = getInstance({ onHide, onShow });
+
+            instance.render(controls);
+
+            expect(instance.handleHide).toEqual(onHide);
+            expect(instance.handleShow).toEqual(onShow);
+            expect(ReactDOM.render).toBeCalledWith(
+                <ControlsLayer onHide={instance.handleHide} onMount={instance.handleMount} onShow={instance.handleShow}>
+                    {controls}
+                </ControlsLayer>,
+                expect.anything(),
+            );
         });
     });
 });
