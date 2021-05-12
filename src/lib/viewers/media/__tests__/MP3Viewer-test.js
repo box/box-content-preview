@@ -50,18 +50,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
-    describe('destroy()', () => {
-        test('should destroy the viewer controls if they exist', () => {
-            mp3.controls = {
-                destroy: jest.fn(),
-            };
-
-            mp3.destroy();
-
-            expect(mp3.controls.destroy).toBeCalled();
-        });
-    });
-
     describe('loadUI()', () => {
         const loadUIFunc = MediaBaseViewer.prototype.loadUI;
 

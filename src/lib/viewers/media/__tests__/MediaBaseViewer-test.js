@@ -108,6 +108,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaEl.load).toBeCalled();
             expect(media.removePauseEventListener).toBeCalledTimes(1);
         });
+
+        test('should destroy the viewer controls if they exist', () => {
+            media.controls = {
+                destroy: jest.fn(),
+            };
+
+            media.destroy();
+
+            expect(media.controls.destroy).toBeCalled();
+        });
     });
 
     describe('load()', () => {

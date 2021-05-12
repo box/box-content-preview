@@ -26,14 +26,6 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaEl.setAttribute('preload', 'auto');
     }
 
-    destroy() {
-        if (this.controls) {
-            this.controls.destroy();
-        }
-
-        super.destroy();
-    }
-
     /**
      * @inheritdoc
      */

@@ -149,6 +149,10 @@ class MediaBaseViewer extends BaseViewer {
         // Best effort to emit current media metrics as page unloads
         window.removeEventListener('beforeunload', this.processMetrics);
 
+        if (this.controls && this.controls.destroy) {
+            this.controls.destroy();
+        }
+
         if (this.mediaControls) {
             this.mediaControls.removeAllListeners();
             this.mediaControls.destroy();
