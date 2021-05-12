@@ -9,7 +9,7 @@ export type Props = React.PropsWithChildren<{
     name: Menu;
 }>;
 
-export default function SettingsMenu({ children, className, name }: Props): JSX.Element | null {
+export default function SettingsMenu({ children, className, name }: Props): JSX.Element {
     const { activeMenu, setActiveRect } = React.useContext(SettingsContext);
     const isActive = activeMenu === name;
     const menuElRef = React.useRef<HTMLDivElement>(null);
@@ -22,12 +22,14 @@ export default function SettingsMenu({ children, className, name }: Props): JSX.
         }
     }, [isActive, setActiveRect]);
 
-    if (!isActive) {
-        return null;
-    }
-
     return (
-        <SettingsList ref={menuElRef} className={classNames('bp-SettingsMenu', className)} role="menu" tabIndex={0}>
+        <SettingsList
+            ref={menuElRef}
+            className={classNames('bp-SettingsMenu', className, { 'bp-is-active': isActive })}
+            isActive={isActive}
+            role="menu"
+            tabIndex={0}
+        >
             {children}
         </SettingsList>
     );

@@ -1,6 +1,6 @@
 import React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
+import { mount, ReactWrapper } from 'enzyme';
 import SettingsList from '../SettingsList';
 
 describe('SettingsList', () => {

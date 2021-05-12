@@ -88,6 +88,7 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
                     ref={listElRef}
                     aria-labelledby={`${id}-label`}
                     className="bp-SettingsDropdown-list"
+                    isActive
                     onKeyDown={handleKeyDown}
                     role="listbox"
                     tabIndex={-1}

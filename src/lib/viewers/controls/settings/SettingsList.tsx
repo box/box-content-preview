@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 import { decodeKeydown } from '../../../util';
 
-export type Props = React.HTMLAttributes<HTMLDivElement>;
+export type Props = React.HTMLAttributes<HTMLDivElement> & { isActive?: boolean };
 
 function SettingsList(props: Props, ref: React.Ref<HTMLDivElement>): JSX.Element {
-    const { children, className, onKeyDown = noop, ...rest } = props;
+    const { children, className, isActive = true, onKeyDown = noop, ...rest } = props;
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [activeItem, setActiveItem] = React.useState<HTMLDivElement | null>(null);
 
@@ -26,10 +26,10 @@ function SettingsList(props: Props, ref: React.Ref<HTMLDivElement>): JSX.Element
     };
 
     React.useEffect(() => {
-        if (activeItem) {
+        if (activeItem && isActive) {
             activeItem.focus();
         }
-    }, [activeItem]);
+    }, [activeItem, isActive]);
 
     return (
         <div

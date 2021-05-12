@@ -4,7 +4,6 @@ import { mount, ReactWrapper } from 'enzyme';
 import Settings from '../Settings';
 import SettingsGearToggle from '../SettingsToggle';
 import SettingsFlyout from '../SettingsFlyout';
-import SettingsContext from '../SettingsContext';
 
 describe('Settings', () => {
     const getHostNode = (): HTMLDivElement => {
