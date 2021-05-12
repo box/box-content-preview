@@ -11,7 +11,7 @@ describe('SettingsDropdown', () => {
         { label: 'second', value: 'second' },
         { label: 'third', value: 'third' },
     ];
-    const getDefaults = (): Props => ({
+    const getDefaults = (): Props<string> => ({
         label: 'Dropdown Label',
         listItems,
         onSelect: jest.fn(),

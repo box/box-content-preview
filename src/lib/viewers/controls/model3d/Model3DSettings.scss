@@ -1,0 +1,24 @@
+.bp-Model3DSettings {
+    position: relative;
+
+    .bp-Settings-flyout {
+        right: auto;
+        left: 0;
+        flex-direction: column;
+        max-height: none;
+
+        &.bp-is-open {
+            display: flex;
+        }
+    }
+
+    .bp-RotateAxisControls {
+        margin-bottom: 10px;
+    }
+}
+
+.bp-Model3DSettings-menu {
+    & > * {
+        margin-top: 8px;
+    }
+}

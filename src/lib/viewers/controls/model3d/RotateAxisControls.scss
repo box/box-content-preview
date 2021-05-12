@@ -1,0 +1,36 @@
+@import '../styles';
+
+$bp-RotateAxisControls-spacing: 4px;
+
+.bp-RotateAxisControls {
+    display: flex;
+    flex-direction: column;
+    color: $bdl-gray-62;
+
+    .bp-RotateAxisControl + .bp-RotateAxisControl {
+        margin-left: $bp-RotateAxisControls-spacing;
+    }
+}
+
+.bp-RotateAxisControls-label {
+    display: flex;
+    align-items: center;
+    margin: $bp-RotateAxisControls-spacing 0;
+}
+
+.bp-RotateAxisControls-controls {
+    display: flex;
+    margin: $bp-RotateAxisControls-spacing 0;
+}
+
+.bp-RotateAxisControls-rotateX {
+    border-bottom-color: #e33d55;
+}
+
+.bp-RotateAxisControls-rotateY {
+    border-bottom-color: #26c281;
+}
+
+.bp-RotateAxisControls-rotateZ {
+    border-bottom-color: #22a7f0;
+}

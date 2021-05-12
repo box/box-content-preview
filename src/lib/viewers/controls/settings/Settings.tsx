@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsDropdown from './SettingsDropdown';
@@ -15,11 +16,15 @@ import { decodeKeydown } from '../../../util';
 export type Props = React.PropsWithChildren<{
     className?: string;
     toggle?: React.ElementType;
+    onClose?: () => void;
+    onOpen?: () => void;
 }>;
 
 export default function Settings({
     children,
     className,
+    onClose = noop,
+    onOpen = noop,
     toggle: SettingsToggle = SettingsGearToggle,
     ...rest
 }: Props): JSX.Element | null {
@@ -34,7 +39,9 @@ export default function Settings({
         setActiveRect(undefined);
         setIsFocused(false);
         setIsOpen(false);
-    }, []);
+
+        onClose();
+    }, [onClose]);
     const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     const handleClick = (): void => {
@@ -42,6 +49,12 @@ export default function Settings({
         setActiveRect(undefined);
         setIsFocused(false);
         setIsOpen(!isOpen);
+
+        if (!isOpen) {
+            onOpen();
+        } else {
+            onClose();
+        }
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
