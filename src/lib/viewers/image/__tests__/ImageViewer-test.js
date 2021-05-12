@@ -913,9 +913,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 };
                 image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
 
-                expect(image.isDiscoverabilityEnabled('enableAnnotationsImageDiscoverability')).toBe(
-                    !canShow && !!enableAnnotationsImageDiscoverability,
-                );
+                expect(image.isDiscoverabilityEnabled()).toBe(!canShow && !!enableAnnotationsImageDiscoverability);
             },
         );
     });
