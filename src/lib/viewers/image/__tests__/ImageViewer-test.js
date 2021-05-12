@@ -43,13 +43,11 @@ describe('lib/viewers/image/ImageViewer', () => {
                     url_template: 'foo',
                 },
             },
-            isDiscoverabilityEnabled: jest.fn().mockReturnValue(false),
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         image.containerEl = containerEl;
         image.options.enableAnnotationsImageDiscoverability = false;
-
         image.cache = {
             get: jest.fn(),
             set: jest.fn(),
@@ -741,7 +739,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                         url_template: 'foo',
                     },
                 },
-                isDiscoverabilityEnabled: jest.fn().mockReturnValue(true),
             });
             image.containerEl = containerEl;
             image.setup();
@@ -896,6 +893,28 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.applyCursorFtux();
 
             expect(image.cache.set).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
+        });
+    });
+
+    describe('isDiscoverabilityEnabled()', () => {
+        [
+            [true, true],
+            [true, false],
+            [false, true],
+            [false, false],
+        ].forEach(([canShow, enableAnnotationsImageDiscoverability]) => {
+            test('should return correct value for isDiscoverabilityEnabled', () => {
+                image.options.experiences = {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow,
+                    },
+                };
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+
+                expect(image.isDiscoverabilityEnabled('enableAnnotationsImageDiscoverability')).toBe(
+                    !canShow && !!enableAnnotationsImageDiscoverability,
+                );
+            });
         });
     });
 });

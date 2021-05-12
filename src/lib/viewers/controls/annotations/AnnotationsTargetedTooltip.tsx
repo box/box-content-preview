@@ -12,8 +12,8 @@ export type Props = React.PropsWithChildren<{
 function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX.Element | null {
     const { experiences } = React.useContext(ExperiencesContext);
     const { setIsForced } = React.useContext(ControlsLayerContext);
+    const [shouldTargetAnnotationsTooltip, setShouldTargetAnnotationsTooltip] = React.useState(true);
     const [wasClosedByUser, setWasClosedByUser] = React.useState(false);
-    const [shouldTargetAnnotationsShareTooltip, setShouldTargetAnnotationsShareTooltip] = React.useState(true);
 
     const shouldTarget = !!(
         isEnabled &&
@@ -29,7 +29,7 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
     return (
         <TargetedClickThroughTooltip
             className="bp-AnnotationsTooltip"
-            shouldTarget={shouldTargetAnnotationsShareTooltip}
+            shouldTarget={shouldTargetAnnotationsTooltip}
             showCloseButton
             text={
                 <div>
@@ -47,7 +47,7 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
                     },
                     onComplete: (): void => {
                         experiences.tooltipFlowAnnotationsExperience.onComplete();
-                        setShouldTargetAnnotationsShareTooltip(false);
+                        setShouldTargetAnnotationsTooltip(false);
                     },
                     onShow: (): void => {
                         experiences.tooltipFlowAnnotationsExperience.onShow();

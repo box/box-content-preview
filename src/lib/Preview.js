@@ -182,7 +182,6 @@ class Preview extends EventEmitter {
         this.navigateLeft = this.navigateLeft.bind(this);
         this.navigateRight = this.navigateRight.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
-        this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
     }
 
     /**
@@ -981,6 +980,8 @@ class Preview extends EventEmitter {
         // have preview permissions (any collaboration role except for `Uploader`).
         this.options.downloadWM = !!options.downloadWM;
 
+        this.options.experiences = options.experiences || {};
+
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 
@@ -1010,25 +1011,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Determines whether discoverability is enabled
-     *
-     * @private
-     * @param {string} discoverabilityType
-     * @return {boolean} value of whether discoverability is enabled for givent type
-     */
-    isDiscoverabilityEnabled(discoverabilityType) {
-        const { experiences = {} } = this.previewOptions;
-
-        let canShow = false;
-
-        Object.keys(experiences).forEach(experienceName => {
-            canShow = canShow || !!(experiences && experiences[experienceName] && experiences[experienceName].canShow);
-        });
-
-        return !canShow && !!this.options[discoverabilityType];
-    }
-
-    /**
      * Creates combined options to give to the viewer
      *
      * @private
@@ -1044,7 +1026,6 @@ class Preview extends EventEmitter {
             cache: this.cache,
             ui: this.ui,
             refreshToken: this.refreshToken,
-            isDiscoverabilityEnabled: this.isDiscoverabilityEnabled,
         });
     }
 

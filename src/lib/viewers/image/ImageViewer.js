@@ -37,7 +37,7 @@ class ImageViewer extends ImageBaseViewer {
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
-            this.options.isDiscoverabilityEnabled('enableAnnotationsImageDiscoverability')
+            this.isDiscoverabilityEnabled('enableAnnotationsImageDiscoverability')
                 ? AnnotationState.REGION_TEMP
                 : AnnotationState.NONE,
         );
@@ -552,7 +552,6 @@ class ImageViewer extends ImageBaseViewer {
      */
     handleAnnotationControlsClick({ mode }) {
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-
         this.annotator.toggleAnnotationMode(nextMode);
         this.processAnnotationModeChange(nextMode);
     }
