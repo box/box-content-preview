@@ -94,6 +94,17 @@ describe('Settings', () => {
             expect(wrapper.exists(SettingsGearToggle)).toBe(true);
         });
 
+        describe('flyout dimensions', () => {
+            test('should apply activeRect dimensions if present', () => {
+                const wrapper = getWrapper();
+
+                wrapper.find(SettingsGearToggle).simulate('click');
+
+                expect(wrapper.find(SettingsFlyout).prop('height')).toBe('auto');
+                expect(wrapper.find(SettingsFlyout).prop('width')).toBe('auto');
+            });
+        });
+
         describe('toggle prop', () => {
             function CustomToggle(
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars

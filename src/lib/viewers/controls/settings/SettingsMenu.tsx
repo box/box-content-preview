@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import SettingsContext, { Menu } from './SettingsContext';
-import { decodeKeydown } from '../../../util';
+import SettingsList from './SettingsList';
 import './SettingsMenu.scss';
 
 export type Props = React.PropsWithChildren<{
@@ -9,25 +9,10 @@ export type Props = React.PropsWithChildren<{
     name: Menu;
 }>;
 
-export default function SettingsMenu({ children, className, name }: Props): JSX.Element | null {
-    const [activeIndex, setActiveIndex] = React.useState(0);
-    const [activeItem, setActiveItem] = React.useState<HTMLDivElement | null>(null);
+export default function SettingsMenu({ children, className, name }: Props): JSX.Element {
     const { activeMenu, setActiveRect } = React.useContext(SettingsContext);
     const isActive = activeMenu === name;
     const menuElRef = React.useRef<HTMLDivElement>(null);
-
-    const handleKeyDown = (event: React.KeyboardEvent): void => {
-        const key = decodeKeydown(event);
-        const max = React.Children.toArray(children).length - 1;
-
-        if (key === 'ArrowUp' && activeIndex > 0) {
-            setActiveIndex(activeIndex - 1);
-        }
-
-        if (key === 'ArrowDown' && activeIndex < max) {
-            setActiveIndex(activeIndex + 1);
-        }
-    };
 
     React.useEffect(() => {
         const { current: menuEl } = menuElRef;
@@ -37,27 +22,15 @@ export default function SettingsMenu({ children, className, name }: Props): JSX.
         }
     }, [isActive, setActiveRect]);
 
-    React.useEffect(() => {
-        if (activeItem && isActive) {
-            activeItem.focus();
-        }
-    }, [activeItem, isActive]);
-
     return (
-        <div
+        <SettingsList
             ref={menuElRef}
             className={classNames('bp-SettingsMenu', className, { 'bp-is-active': isActive })}
-            onKeyDown={handleKeyDown}
+            isActive={isActive}
             role="menu"
             tabIndex={0}
         >
-            {React.Children.map(children, (menuItem, menuIndex) => {
-                if (React.isValidElement(menuItem) && menuIndex === activeIndex) {
-                    return React.cloneElement(menuItem, { ref: setActiveItem, ...menuItem.props });
-                }
-
-                return menuItem;
-            })}
-        </div>
+            {children}
+        </SettingsList>
     );
 }

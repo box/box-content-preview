@@ -1,0 +1,85 @@
+@import './styles';
+
+$bp-SettingsDropdown-spacing: 5px;
+
+.bp-SettingsDropdown {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    color: $bdl-gray-62;
+}
+
+.bp-SettingsDropdown-flyout {
+    top: initial;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    flex: 1 1 auto;
+    padding: 8px 0;
+    transform: translateY(100%);
+}
+
+.bp-SettingsDropdown-button {
+    position: relative;
+    height: 34px;
+    margin: $bp-SettingsDropdown-spacing 0;
+    padding: $bp-SettingsDropdown-spacing 0 $bp-SettingsDropdown-spacing $bp-SettingsDropdown-spacing * 2;
+    color: #808080;
+    font-weight: normal;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-align: left;
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color .05s ease-in-out, border-color .05s ease-in-out;
+
+    &:hover,
+    &:focus {
+        background-color: #f7f7f7;
+    }
+
+    &::after {
+        position: absolute;
+        top: 15px;
+        right: 11px;
+        width: 0;
+        height: 0;
+        border-top: 3px solid $better-black;
+        border-right: 3px solid transparent;
+        border-left: 3px solid transparent;
+        transform: rotate(0);
+        transition: transform 200ms linear;
+        content: '';
+    }
+
+    &.bp-is-open {
+        &::after {
+            transform: rotate(-180deg);
+        }
+    }
+}
+
+.bp-SettingsDropdown-label {
+    margin: 4px 0;
+}
+
+.bp-SettingsDropdown-listitem {
+    display: block;
+    padding: $bp-SettingsDropdown-spacing 35px $bp-SettingsDropdown-spacing 15px;
+    color: $better-black;
+    line-height: 20px;
+    outline: none;
+
+    &.bp-is-active,
+    &:hover,
+    &:focus {
+        color: $dark-cerulean;
+        background: $hover-blue-background;
+        cursor: pointer;
+        fill: $dark-cerulean;
+    }
+}

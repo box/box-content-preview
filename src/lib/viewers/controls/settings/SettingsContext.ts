@@ -3,7 +3,6 @@ import noop from 'lodash/noop';
 
 export type Context = {
     activeMenu: Menu;
-    activeRect?: Rect;
     setActiveMenu: (menu: Menu) => void;
     setActiveRect: (activeRect: Rect) => void;
 };
