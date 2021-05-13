@@ -37,6 +37,9 @@ class Box3DViewer extends BaseViewer {
     /** @property {Notification} - Used to notify users of WebGL context issues */
     contextNotification;
 
+    /** @property {boolean} - Used to show the VR button in the controls */
+    showVrButton = false;
+
     /** @inheritdoc */
     constructor(options) {
         super(options);
