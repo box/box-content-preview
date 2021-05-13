@@ -18,7 +18,8 @@
 }
 
 .bp-Model3DSettings-menu {
-    & > * {
-        margin-top: 8px;
+    & .bp-SettingsCheckboxItem,
+    & .bp-SettingsDropdown {
+        margin-top: 10px;
     }
 }

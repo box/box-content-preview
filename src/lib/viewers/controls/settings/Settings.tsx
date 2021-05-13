@@ -15,9 +15,9 @@ import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    toggle?: React.ElementType;
     onClose?: () => void;
     onOpen?: () => void;
+    toggle?: React.ElementType;
 }>;
 
 export default function Settings({
