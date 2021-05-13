@@ -895,4 +895,26 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.cache.set).toBeCalledWith(IMAGE_FTUX_CURSOR_SEEN_KEY, true, true);
         });
     });
+
+    describe('isDiscoverabilityEnabled()', () => {
+        test.each`
+            canShow  | enableAnnotationsImageDiscoverability | result
+            ${true}  | ${true}                               | ${false}
+            ${true}  | ${false}                              | ${false}
+            ${false} | ${true}                               | ${true}
+            ${false} | ${false}                              | ${false}
+        `(
+            'should return correct value for isDiscoverabilityEnabled',
+            ({ canShow, enableAnnotationsImageDiscoverability, result }) => {
+                image.options.experiences = {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow,
+                    },
+                };
+                image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
+
+                expect(image.isDiscoverabilityEnabled()).toBe(result);
+            },
+        );
+    });
 });

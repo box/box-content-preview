@@ -980,6 +980,9 @@ class Preview extends EventEmitter {
         // have preview permissions (any collaboration role except for `Uploader`).
         this.options.downloadWM = !!options.downloadWM;
 
+        // Object with ftux experience data that can determine whether specific experiences can show
+        this.options.experiences = options.experiences || {};
+
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 

@@ -37,7 +37,7 @@ class ImageViewer extends ImageBaseViewer {
         this.updatePannability = this.updatePannability.bind(this);
 
         this.annotationControlsFSM = new AnnotationControlsFSM(
-            this.options.enableAnnotationsImageDiscoverability ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
+            this.isDiscoverabilityEnabled() ? AnnotationState.REGION_TEMP : AnnotationState.NONE,
         );
 
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
@@ -54,7 +54,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
-        if (this.options.enableAnnotationsImageDiscoverability) {
+        if (this.isDiscoverabilityEnabled()) {
             this.removeListener('zoom', this.handleZoomEvent);
         }
 
@@ -86,7 +86,7 @@ class ImageViewer extends ImageBaseViewer {
         const fileName = getProp(this.options, 'file.name');
         this.imageEl.setAttribute('alt', fileName);
 
-        if (this.options.enableAnnotationsImageDiscoverability) {
+        if (this.isDiscoverabilityEnabled()) {
             this.addListener('zoom', this.handleZoomEvent);
         }
 
@@ -189,7 +189,7 @@ class ImageViewer extends ImageBaseViewer {
 
     // Annotation overrides
     getInitialAnnotationMode() {
-        return this.options.enableAnnotationsImageDiscoverability ? AnnotationMode.REGION : AnnotationMode.NONE;
+        return this.isDiscoverabilityEnabled() ? AnnotationMode.REGION : AnnotationMode.NONE;
     }
 
     /**
@@ -576,7 +576,7 @@ class ImageViewer extends ImageBaseViewer {
         }
 
         const isDiscoverable = this.annotationControlsFSM.getState() === AnnotationState.REGION_TEMP;
-        const isUsingDiscoverability = this.options.enableAnnotationsImageDiscoverability && isDiscoverable;
+        const isUsingDiscoverability = this.isDiscoverabilityEnabled() && isDiscoverable;
 
         // For tracking purposes, set property to true when the annotation controls are in a state
         // in which the default discoverability experience is enabled
