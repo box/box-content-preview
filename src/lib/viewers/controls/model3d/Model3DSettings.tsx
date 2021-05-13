@@ -1,6 +1,6 @@
 import React from 'react';
-import Settings, { Menu, Props as SettingsProps } from '../settings';
 import RotateAxisControls from './RotateAxisControls';
+import Settings, { Menu, Props as SettingsProps } from '../settings';
 import { AxisChange } from './RotateAxisControl';
 import './Model3DSettings.scss';
 

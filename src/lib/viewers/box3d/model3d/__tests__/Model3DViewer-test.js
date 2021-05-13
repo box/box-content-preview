@@ -786,11 +786,6 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
     describe('handleReset()', () => {
         test('should reset control settings', () => {
-            sandbox.mock(model3d.controls).expects('handleSetRenderMode');
-            sandbox.mock(model3d.controls).expects('setCurrentProjectionMode');
-            sandbox.mock(model3d.controls).expects('handleSetSkeletonsVisible');
-            sandbox.mock(model3d.controls).expects('handleSetWireframesVisible');
-            sandbox.mock(model3d.controls).expects('handleSetGridVisible');
             const renderMock = sandbox.mock(model3d.renderer);
             renderMock.expects('stopAnimation').once();
             model3d.handleReset();
@@ -824,6 +819,11 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 model3d.handleReset();
 
                 expect(model3d.isAnimationPlaying).toBe(false);
+                expect(model3d.projection).toBe('Perspective');
+                expect(model3d.renderMode).toBe('Lit');
+                expect(model3d.showGrid).toBe(true);
+                expect(model3d.showSkeletons).toBe(false);
+                expect(model3d.showWireframes).toBe(false);
                 expect(model3d.renderUI).toBeCalled();
             });
         });

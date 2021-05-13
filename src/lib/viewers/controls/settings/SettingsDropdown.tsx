@@ -7,12 +7,14 @@ import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
 import './SettingsDropdown.scss';
 
-export type ListItem<V> = {
+export type Value = boolean | number | string;
+
+export type ListItem<V extends Value = string> = {
     label: string;
     value: V;
 };
 
-export type Props<V> = {
+export type Props<V extends Value = string> = {
     className?: string;
     label: string;
     listItems: Array<ListItem<V>>;
@@ -20,7 +22,7 @@ export type Props<V> = {
     value?: V;
 };
 
-export default function SettingsDropdown<V extends string>({
+export default function SettingsDropdown<V extends Value = string>({
     className,
     label,
     listItems,
@@ -100,12 +102,13 @@ export default function SettingsDropdown<V extends string>({
                     tabIndex={-1}
                 >
                     {listItems.map(({ label: itemLabel, value: itemValue }) => {
+                        const itemValueString = itemValue.toString();
                         return (
                             <div
-                                key={itemValue}
+                                key={itemValueString}
                                 aria-selected={value === itemValue}
                                 className="bp-SettingsDropdown-listitem"
-                                id={itemValue}
+                                id={itemValueString}
                                 onClick={createClickHandler(itemValue)}
                                 onKeyDown={createKeyDownHandler(itemValue)}
                                 role="option"

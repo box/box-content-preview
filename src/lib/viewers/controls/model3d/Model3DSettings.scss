@@ -18,8 +18,9 @@
 }
 
 .bp-Model3DSettings-menu {
-    & .bp-SettingsCheckboxItem,
-    & .bp-SettingsDropdown {
+    .bp-SettingsCheckboxItem,
+    .bp-SettingsDropdown,
+    .bp-RotateAxisControls {
         margin-top: 10px;
     }
 }

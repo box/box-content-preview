@@ -350,21 +350,11 @@ class Model3DViewer extends Box3DViewer {
         super.handleReset();
 
         this.setAnimationState(false);
+        this.handleSetCameraProjection(this.projection);
+        this.handleSetRenderMode(this.renderMode);
         this.handleShowGrid(true);
         this.handleShowSkeletons(false);
         this.handleShowWireframes(false);
-
-        if (this.controls) {
-            if (this.getViewerOption('useReactControls')) {
-                this.renderUI();
-            } else {
-                this.controls.handleSetRenderMode(this.renderMode);
-                this.controls.setCurrentProjectionMode(this.projection);
-                this.controls.handleSetSkeletonsVisible(false);
-                this.controls.handleSetWireframesVisible(false);
-                this.controls.handleSetGridVisible(this.showGrid);
-            }
-        }
 
         if (this.renderer) {
             this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);

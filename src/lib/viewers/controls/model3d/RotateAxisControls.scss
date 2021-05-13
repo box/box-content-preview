@@ -6,10 +6,10 @@ $bp-RotateAxisControls-spacing: 4px;
     display: flex;
     flex-direction: column;
     color: $bdl-gray-62;
+}
 
-    .bp-RotateAxisControl + .bp-RotateAxisControl {
-        margin-left: $bp-RotateAxisControls-spacing;
-    }
+.bp-RotateAxisControl + .bp-RotateAxisControl {
+    margin-left: $bp-RotateAxisControls-spacing;
 }
 
 .bp-RotateAxisControls-label {
