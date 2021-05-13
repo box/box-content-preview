@@ -46,6 +46,9 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Boolean indicating whether the animation is playing */
     isAnimationPlaying = false;
 
+    /** @property {string} - string indicating what the camera projection is */
+    projection = CAMERA_PROJECTION_PERSPECTIVE;
+
     /** @property {string} - string indicating what the render mode is */
     renderMode = RENDER_MODE_LIT;
 
@@ -409,7 +412,7 @@ class Model3DViewer extends Box3DViewer {
         this.renderer.setCameraProjection(projection);
 
         if (this.controls && this.getViewerOption('useReactControls')) {
-            this.cameraProjection = projection;
+            this.projection = projection;
             this.renderUI();
         }
     }

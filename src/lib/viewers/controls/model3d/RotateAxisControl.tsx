@@ -22,9 +22,21 @@ export default function RotateAxisControl({ axis, className, onRotateOnAxisChang
 
     return (
         <div className={classNames('bp-RotateAxisControl', className)}>
-            <button className="bp-RotateAxisControl-left" onClick={handleClickLeft} type="button" />
-            <span className="bp-RotateAxisControl-label">{axis}</span>
-            <button className="bp-RotateAxisControl-right" onClick={handleClickRight} type="button" />
+            <button
+                className="bp-RotateAxisControl-left"
+                data-testid="bp-RotateAxisControl-left"
+                onClick={handleClickLeft}
+                type="button"
+            />
+            <span className="bp-RotateAxisControl-label" data-testid="bp-RotateAxisControl-label">
+                {axis}
+            </span>
+            <button
+                className="bp-RotateAxisControl-right"
+                data-testid="bp-RotateAxisControl-right"
+                onClick={handleClickRight}
+                type="button"
+            />
         </div>
     );
 }
