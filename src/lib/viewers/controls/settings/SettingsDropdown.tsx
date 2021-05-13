@@ -7,20 +7,28 @@ import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
 import './SettingsDropdown.scss';
 
-export type ListItem = {
+export type Value = boolean | number | string;
+
+export type ListItem<V extends Value = string> = {
     label: string;
-    value: string;
+    value: V;
 };
 
-export type Props = {
+export type Props<V extends Value = string> = {
     className?: string;
     label: string;
-    listItems: Array<ListItem>;
-    onSelect: (value: string) => void;
-    value?: string;
+    listItems: Array<ListItem<V>>;
+    onSelect: (value: V) => void;
+    value?: V;
 };
 
-export default function SettingsDropdown({ className, label, listItems, onSelect, value }: Props): JSX.Element {
+export default function SettingsDropdown<V extends Value = string>({
+    className,
+    label,
+    listItems,
+    onSelect,
+    value,
+}: Props<V>): JSX.Element {
     const { current: id } = React.useRef(uniqueId('bp-SettingsDropdown_'));
     const buttonElRef = React.useRef<HTMLButtonElement | null>(null);
     const dropdownElRef = React.useRef<HTMLDivElement | null>(null);
@@ -43,18 +51,18 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
             event.stopPropagation();
         }
     };
-    const handleSelect = (selectedOption: string): void => {
+    const handleSelect = (selectedOption: V): void => {
         setIsOpen(false);
         onSelect(selectedOption);
     };
-    const createClickHandler = (selectedOption: string) => (event: React.MouseEvent<HTMLDivElement>): void => {
+    const createClickHandler = (selectedOption: V) => (event: React.MouseEvent<HTMLDivElement>): void => {
         handleSelect(selectedOption);
 
         // Prevent the event from bubbling up and triggering any upstream click handling logic,
         // i.e. if the dropdown is nested inside a menu flyout
         event.stopPropagation();
     };
-    const createKeyDownHandler = (selectedOption: string) => (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    const createKeyDownHandler = (selectedOption: V) => (event: React.KeyboardEvent<HTMLDivElement>): void => {
         const key = decodeKeydown(event);
 
         if (key !== 'Space' && key !== 'Enter') {
@@ -94,12 +102,13 @@ export default function SettingsDropdown({ className, label, listItems, onSelect
                     tabIndex={-1}
                 >
                     {listItems.map(({ label: itemLabel, value: itemValue }) => {
+                        const itemValueString = itemValue.toString();
                         return (
                             <div
-                                key={itemValue}
+                                key={itemValueString}
                                 aria-selected={value === itemValue}
                                 className="bp-SettingsDropdown-listitem"
-                                id={itemValue}
+                                id={itemValueString}
                                 onClick={createClickHandler(itemValue)}
                                 onKeyDown={createKeyDownHandler(itemValue)}
                                 role="option"
