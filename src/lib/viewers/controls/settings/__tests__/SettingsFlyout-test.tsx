@@ -5,7 +5,7 @@ import SettingsContext, { Context } from '../SettingsContext';
 import SettingsFlyout from '../SettingsFlyout';
 
 describe('SettingsFlyout', () => {
-    const getContext = (): Partial<Context> => ({ activeRect: undefined });
+    const getContext = (): Partial<Context> => ({});
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
         mount(<SettingsFlyout isOpen={false} {...props} />, {
             wrappingComponent: SettingsContext.Provider,
@@ -36,9 +36,9 @@ describe('SettingsFlyout', () => {
             expect(wrapper.childAt(0).hasClass('bp-is-open')).toBe(isOpen);
         });
 
-        test('should set styles based on the activeRect, if present', () => {
+        test('should set styles based on the provided height and width, if present', () => {
             const activeRect = { bottom: 0, left: 0, height: 100, right: 0, top: 0, width: 100 };
-            const wrapper = getWrapper({}, { activeRect });
+            const wrapper = getWrapper({ height: activeRect.height, width: activeRect.width }, {});
 
             expect(wrapper.childAt(0).prop('style')).toEqual({
                 height: 100,
@@ -46,7 +46,7 @@ describe('SettingsFlyout', () => {
             });
         });
 
-        test('should set styles based on defaults if activeRect is not present', () => {
+        test('should set styles based on defaults if height and width is not present', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.childAt(0).prop('style')).toEqual({

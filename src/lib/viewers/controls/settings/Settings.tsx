@@ -2,12 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
+import SettingsDropdown from './SettingsDropdown';
 import SettingsFlyout from './SettingsFlyout';
 import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
+import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
 
 export type Props = React.PropsWithChildren<{
@@ -33,6 +35,7 @@ export default function Settings({
         setIsFocused(false);
         setIsOpen(false);
     }, []);
+    const { height, width } = activeRect || { height: 'auto', width: 'auto' };
 
     const handleClick = (): void => {
         setActiveMenu(Menu.MAIN);
@@ -59,23 +62,7 @@ export default function Settings({
         event.stopPropagation();
     };
 
-    React.useEffect(() => {
-        const handleDocumentClick = ({ target }: MouseEvent): void => {
-            const { current: controlsEl } = controlsElRef;
-
-            if (controlsEl && controlsEl.contains(target as Node)) {
-                return;
-            }
-
-            resetControls();
-        };
-
-        document.addEventListener('click', handleDocumentClick);
-
-        return (): void => {
-            document.removeEventListener('click', handleDocumentClick);
-        };
-    }, [resetControls]);
+    useClickOutside(controlsElRef, resetControls);
 
     return (
         <div
@@ -85,9 +72,16 @@ export default function Settings({
             role="presentation"
             {...rest}
         >
-            <SettingsContext.Provider value={{ activeMenu, activeRect, setActiveMenu, setActiveRect }}>
-                <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
-                <SettingsFlyout isOpen={isOpen}>{children}</SettingsFlyout>
+            <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
+                <SettingsToggle
+                    ref={buttonElRef}
+                    className="bp-Settings-toggle"
+                    isOpen={isOpen}
+                    onClick={handleClick}
+                />
+                <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
+                    {children}
+                </SettingsFlyout>
             </SettingsContext.Provider>
         </div>
     );
@@ -95,6 +89,7 @@ export default function Settings({
 
 Settings.CheckboxItem = SettingsCheckboxItem;
 Settings.Context = SettingsContext;
+Settings.Dropdown = SettingsDropdown;
 Settings.Menu = SettingsMenu;
 Settings.MenuBack = SettingsMenuBack;
 Settings.MenuItem = SettingsMenuItem;
