@@ -8,9 +8,13 @@ export type Props = {
 };
 
 export default function VrToggleControl({ isVrShown, onVrToggle }: Props): JSX.Element | null {
-    return isVrShown ? (
+    if (!isVrShown) {
+        return null;
+    }
+
+    return (
         <button className="bp-VrToggleControl" onClick={onVrToggle} title={__('box3d_toggle_vr')} type="button">
             <IconVr24 />
         </button>
-    ) : null;
+    );
 }
