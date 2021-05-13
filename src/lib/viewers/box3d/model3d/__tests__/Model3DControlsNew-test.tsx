@@ -3,8 +3,9 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import AnimationControls from '../../../controls/model3d/AnimationControls';
 import FullscreenToggle from '../../../controls/fullscreen';
 import Model3DControls, { Props } from '../Model3DControlsNew';
-import ResetControl from '../../../controls/model3d/ResetControl';
 import Model3DSettings, { CameraProjection, RenderMode } from '../../../controls/model3d/Model3DSettings';
+import ResetControl from '../../../controls/model3d/ResetControl';
+import VrToggleControl from '../../../controls/model3d/VrToggleControl';
 
 describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
     const getDefaults = (): Props => ({
@@ -12,6 +13,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
         cameraProjection: CameraProjection.PERSPECTIVE,
         currentAnimationClipId: '123',
         isPlaying: false,
+        isVrShown: false,
         onAnimationClipSelect: jest.fn(),
         onCameraProjectionChange: jest.fn(),
         onFullscreenToggle: jest.fn(),
@@ -24,6 +26,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
         onShowGridToggle: jest.fn(),
         onShowSkeletonsToggle: jest.fn(),
         onShowWireframesToggle: jest.fn(),
+        onVrToggle: jest.fn(),
         renderMode: RenderMode.LIT,
         showGrid: true,
         showSkeletons: false,
@@ -47,6 +50,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
             const onShowGridToggle = jest.fn();
             const onShowSkeletonsToggle = jest.fn();
             const onShowWireframesToggle = jest.fn();
+            const onVrToggle = jest.fn();
 
             const wrapper = getWrapper({
                 onAnimationClipSelect,
@@ -61,6 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                 onShowGridToggle,
                 onShowSkeletonsToggle,
                 onShowWireframesToggle,
+                onVrToggle,
             });
 
             expect(wrapper.find(ResetControl).props()).toMatchObject({
@@ -72,6 +77,10 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                 isPlaying: false,
                 onAnimationClipSelect,
                 onPlayPause,
+            });
+            expect(wrapper.find(VrToggleControl).props()).toMatchObject({
+                isVrShown: false,
+                onVrToggle,
             });
             expect(wrapper.find(Model3DSettings).props()).toMatchObject({
                 cameraProjection: CameraProjection.PERSPECTIVE,
@@ -89,17 +98,6 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                 showWireframes: false,
             });
             expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
-        });
-    });
-
-    describe('onReset()', () => {
-        test('should call onReset prop when reset button is clicked', () => {
-            const onReset = jest.fn();
-            const wrapper = getWrapper({ onReset });
-
-            wrapper.find(ResetControl).prop('onReset')();
-
-            expect(onReset).toBeCalled();
         });
     });
 });

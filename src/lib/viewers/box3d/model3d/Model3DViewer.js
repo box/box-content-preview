@@ -471,9 +471,8 @@ class Model3DViewer extends Box3DViewer {
      * @inheritdoc
      */
     handleShowVrButton() {
-        this.showVrButton = true;
-
         if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showVrButton = true;
             this.renderUI();
         } else {
             this.controls.showVrButton();

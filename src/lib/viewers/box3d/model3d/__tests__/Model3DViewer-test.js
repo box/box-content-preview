@@ -65,6 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             on: () => {},
             selectAnimationClip: () => {},
             showAnimationControls: () => {},
+            showVrButton: () => {},
             hidePullups: () => {},
             removeListener: () => {},
             removeAllListeners: () => {},
@@ -676,6 +677,11 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             model3d.handleShowGrid(true);
         });
 
+        test('should invoke controls.showVrButton() when calling handleShowVrButton()', () => {
+            sandbox.mock(model3d.controls).expects('showVrButton');
+            model3d.handleShowVrButton();
+        });
+
         describe('with react controls', () => {
             beforeEach(() => {
                 jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
@@ -714,6 +720,13 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 model3d.handleShowGrid(false);
 
                 expect(model3d.showGrid).toBe(false);
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update showVrButton and invoke renderUI when calling handleShowVrButton()', () => {
+                model3d.handleShowVrButton();
+
+                expect(model3d.showVrButton).toBe(true);
                 expect(model3d.renderUI).toBeCalled();
             });
         });
@@ -971,6 +984,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 cameraProjection: 'Perspective',
                 currentAnimationClipId: '123',
                 isPlaying: false,
+                isVrShown: false,
                 onAnimationClipSelect: model3d.handleSelectAnimationClip,
                 onCameraProjectionChange: model3d.handleSetCameraProjection,
                 onFullscreenToggle: model3d.toggleFullscreen,
@@ -983,6 +997,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 onShowGridToggle: model3d.handleShowGrid,
                 onShowSkeletonsToggle: model3d.handleShowSkeletons,
                 onShowWireframesToggle: model3d.handleShowWireframes,
+                onVrToggle: model3d.handleToggleVr,
                 renderMode: 'Lit',
                 showGrid: true,
                 showSkeletons: false,
