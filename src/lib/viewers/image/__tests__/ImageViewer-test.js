@@ -898,14 +898,14 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('isDiscoverabilityEnabled()', () => {
         test.each`
-            canShow  | enableAnnotationsImageDiscoverability
-            ${true}  | ${true}
-            ${true}  | ${false}
-            ${false} | ${true}
-            ${false} | ${false}
+            canShow  | enableAnnotationsImageDiscoverability | result
+            ${true}  | ${true}                               | ${false}
+            ${true}  | ${false}                              | ${false}
+            ${false} | ${true}                               | ${true}
+            ${false} | ${false}                              | ${false}
         `(
             'should return correct value for isDiscoverabilityEnabled',
-            ({ canShow, enableAnnotationsImageDiscoverability }) => {
+            ({ canShow, enableAnnotationsImageDiscoverability, result }) => {
                 image.options.experiences = {
                     tooltipFlowAnnotationsExperience: {
                         canShow,
@@ -913,7 +913,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 };
                 image.options.enableAnnotationsImageDiscoverability = enableAnnotationsImageDiscoverability;
 
-                expect(image.isDiscoverabilityEnabled()).toBe(!canShow && !!enableAnnotationsImageDiscoverability);
+                expect(image.isDiscoverabilityEnabled()).toBe(result);
             },
         );
     });

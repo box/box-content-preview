@@ -145,10 +145,10 @@ class ImageBaseViewer extends BaseViewer {
      * @return {boolean} value of whether discoverability is enabled for given type
      */
     isDiscoverabilityEnabled() {
-        const { experiences = {} } = this.options;
+        const { enableAnnotationsImageDiscoverability, experiences = {} } = this.options;
         const canShow = Object.values(experiences).some(experience => experience.canShow);
 
-        return !canShow && !!this.options.enableAnnotationsImageDiscoverability;
+        return !canShow && !!enableAnnotationsImageDiscoverability;
     }
 
     /**
