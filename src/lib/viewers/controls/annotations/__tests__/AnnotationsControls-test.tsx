@@ -20,8 +20,12 @@ describe('AnnotationsControls', () => {
         };
 
         beforeEach(() => {
+            let found = false; // we want to find the first use of useEffect
             jest.spyOn(React, 'useEffect').mockImplementation(cb => {
-                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+                if (!found) {
+                    found = true;
+                    unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
+                }
             });
         });
 

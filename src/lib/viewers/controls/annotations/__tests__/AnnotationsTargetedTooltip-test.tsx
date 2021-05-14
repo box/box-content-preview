@@ -42,7 +42,7 @@ describe('AnnotationsTargetedTooltip', () => {
             });
 
             expect(wrapper.children().text()).toBe('Child');
-            expect(wrapper.children().prop('shouldTarget')).toBe(undefined);
+            expect(wrapper.children().prop('shouldTarget')).toBe(false);
         });
     });
 });
