@@ -833,6 +833,11 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             test('should reset controls state and call renderUI', () => {
                 model3d.isAnimationPlaying = true;
+                model3d.projection = 'Orthographic';
+                model3d.renderMode = 'Normals';
+                model3d.showGrid = false;
+                model3d.showSkeletons = true;
+                model3d.showWireframes = true;
 
                 model3d.handleReset();
 
