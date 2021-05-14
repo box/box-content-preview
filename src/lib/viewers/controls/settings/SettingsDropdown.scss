@@ -2,13 +2,18 @@
 
 $bp-SettingsDropdown-spacing: 5px;
 
-.bp-SettingsDropdown,
-.bp-SettingsDropdown-container {
-    position: relative;
+.bp-SettingsDropdown {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     color: $bdl-gray-62;
+}
+
+.bp-SettingsDropdown-toggle {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
 }
 
 .bp-SettingsDropdown-flyout {

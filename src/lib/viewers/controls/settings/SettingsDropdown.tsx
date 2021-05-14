@@ -29,7 +29,6 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
     const { current: id } = React.useRef(uniqueId('bp-SettingsDropdown_'));
     const buttonElRef = React.useRef<HTMLButtonElement | null>(null);
     const dropdownElRef = React.useRef<HTMLDivElement | null>(null);
-    const listElRef = React.useRef<HTMLDivElement | null>(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
     const handleKeyDown = (event: React.KeyboardEvent): void => {
@@ -89,7 +88,7 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
             <div className="bp-SettingsDropdown-label" id={`${id}-label`}>
                 {label}
             </div>
-            <div ref={dropdownElRef} className="bp-SettingsDropdown-container">
+            <div ref={dropdownElRef} className="bp-SettingsDropdown-toggle">
                 <button
                     ref={buttonElRef}
                     aria-expanded={isOpen}
@@ -104,7 +103,6 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
                 </button>
                 <SettingsFlyout className="bp-SettingsDropdown-flyout" isOpen={isOpen}>
                     <SettingsList
-                        ref={listElRef}
                         aria-labelledby={`${id}-label`}
                         className="bp-SettingsDropdown-list"
                         isActive
