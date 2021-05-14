@@ -22,13 +22,10 @@ export type Props<V extends Value = string> = {
     value?: V;
 };
 
-export default function SettingsDropdown<V extends Value = string>({
-    className,
-    label,
-    listItems,
-    onSelect,
-    value,
-}: Props<V>): JSX.Element {
+export type SettingsDropdownRef = Pick<HTMLButtonElement, 'focus'>;
+
+function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.Ref<SettingsDropdownRef>): JSX.Element {
+    const { className, label, listItems, onSelect, value } = props;
     const { current: id } = React.useRef(uniqueId('bp-SettingsDropdown_'));
     const buttonElRef = React.useRef<HTMLButtonElement | null>(null);
     const dropdownElRef = React.useRef<HTMLDivElement | null>(null);
@@ -74,52 +71,69 @@ export default function SettingsDropdown<V extends Value = string>({
 
     useClickOutside(dropdownElRef, () => setIsOpen(false));
 
+    // Customize the forwarded ref to combine usage with the ref internal to this component
+    React.useImperativeHandle(
+        ref,
+        () => ({
+            focus: (): void => {
+                if (buttonElRef.current) {
+                    buttonElRef.current.focus();
+                }
+            },
+        }),
+        [],
+    );
+
     return (
-        <div ref={dropdownElRef} className={classNames('bp-SettingsDropdown', className)}>
+        <div className={classNames('bp-SettingsDropdown', className)}>
             <div className="bp-SettingsDropdown-label" id={`${id}-label`}>
                 {label}
             </div>
-            <button
-                ref={buttonElRef}
-                aria-expanded={isOpen}
-                aria-haspopup="listbox"
-                aria-labelledby={`${id}-label ${id}-button`}
-                className={classNames('bp-SettingsDropdown-button', { 'bp-is-open': isOpen })}
-                id={`${id}-button`}
-                onClick={(): void => setIsOpen(!isOpen)}
-                type="button"
-            >
-                {value}
-            </button>
-            <SettingsFlyout className="bp-SettingsDropdown-flyout" isOpen={isOpen}>
-                <SettingsList
-                    ref={listElRef}
-                    aria-labelledby={`${id}-label`}
-                    className="bp-SettingsDropdown-list"
-                    isActive
-                    onKeyDown={handleKeyDown}
-                    role="listbox"
-                    tabIndex={-1}
+            <div ref={dropdownElRef} className="bp-SettingsDropdown-container">
+                <button
+                    ref={buttonElRef}
+                    aria-expanded={isOpen}
+                    aria-haspopup="listbox"
+                    aria-labelledby={`${id}-label ${id}-button`}
+                    className={classNames('bp-SettingsDropdown-button', { 'bp-is-open': isOpen })}
+                    id={`${id}-button`}
+                    onClick={(): void => setIsOpen(!isOpen)}
+                    type="button"
                 >
-                    {listItems.map(({ label: itemLabel, value: itemValue }) => {
-                        const itemValueString = itemValue.toString();
-                        return (
-                            <div
-                                key={itemValueString}
-                                aria-selected={value === itemValue}
-                                className="bp-SettingsDropdown-listitem"
-                                id={itemValueString}
-                                onClick={createClickHandler(itemValue)}
-                                onKeyDown={createKeyDownHandler(itemValue)}
-                                role="option"
-                                tabIndex={0}
-                            >
-                                {itemLabel}
-                            </div>
-                        );
-                    })}
-                </SettingsList>
-            </SettingsFlyout>
+                    {value}
+                </button>
+                <SettingsFlyout className="bp-SettingsDropdown-flyout" isOpen={isOpen}>
+                    <SettingsList
+                        ref={listElRef}
+                        aria-labelledby={`${id}-label`}
+                        className="bp-SettingsDropdown-list"
+                        isActive
+                        onKeyDown={handleKeyDown}
+                        role="listbox"
+                        tabIndex={-1}
+                    >
+                        {listItems.map(({ label: itemLabel, value: itemValue }) => {
+                            const itemValueString = itemValue.toString();
+                            return (
+                                <div
+                                    key={itemValueString}
+                                    aria-selected={value === itemValue}
+                                    className="bp-SettingsDropdown-listitem"
+                                    id={itemValueString}
+                                    onClick={createClickHandler(itemValue)}
+                                    onKeyDown={createKeyDownHandler(itemValue)}
+                                    role="option"
+                                    tabIndex={0}
+                                >
+                                    {itemLabel}
+                                </div>
+                            );
+                        })}
+                    </SettingsList>
+                </SettingsFlyout>
+            </div>
         </div>
     );
 }
+
+export default React.forwardRef(SettingsDropdown);

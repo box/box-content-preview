@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import SettingsDropdown, { Props } from '../SettingsDropdown';
+import SettingsDropdown, { Props, SettingsDropdownRef } from '../SettingsDropdown';
 import SettingsFlyout from '../SettingsFlyout';
 import SettingsList from '../SettingsList';
 
@@ -183,6 +183,27 @@ describe('SettingsDropdown', () => {
             wrapper.update();
 
             expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        });
+    });
+
+    describe('ref', () => {
+        const TestComponent = (): JSX.Element => {
+            const ref = React.useRef<SettingsDropdownRef | null>(null);
+
+            React.useEffect(() => {
+                if (ref.current) {
+                    ref.current.focus();
+                }
+            }, []);
+            return <SettingsDropdown ref={ref} {...getDefaults()} />;
+        };
+
+        test('should be able to focus on the dropdown button', () => {
+            const wrapper = mount(<TestComponent />, {
+                attachTo: getHostNode(),
+            });
+
+            expect(wrapper.find('.bp-SettingsDropdown-button').getDOMNode()).toHaveFocus();
         });
     });
 
