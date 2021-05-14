@@ -43,8 +43,23 @@ class Model3DViewer extends Box3DViewer {
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
 
-    /** @property {boolean} - Boolean indicating whether the animation is playihng */
+    /** @property {boolean} - Boolean indicating whether the animation is playing */
     isAnimationPlaying = false;
+
+    /** @property {string} - string indicating what the camera projection is */
+    projection = CAMERA_PROJECTION_PERSPECTIVE;
+
+    /** @property {string} - string indicating what the render mode is */
+    renderMode = RENDER_MODE_LIT;
+
+    /** @property {boolean} - Boolean indicating whether the grid is showing */
+    showGrid = DEFAULT_RENDER_GRID;
+
+    /** @property {boolean} - Boolean indicating whether the skeletons are showing */
+    showSkeletons = false;
+
+    /** @property {boolean} - Boolean indicating whether the wireframes are showing */
+    showWireframes = false;
 
     /** @inheritdoc */
     constructor(option) {
@@ -204,11 +219,11 @@ class Model3DViewer extends Box3DViewer {
         this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
         this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
         if (defaults.renderGrid === 'true') {
-            this.renderGrid = true;
+            this.showGrid = true;
         } else if (defaults.renderGrid === 'false') {
-            this.renderGrid = false;
+            this.showGrid = false;
         } else {
-            this.renderGrid = DEFAULT_RENDER_GRID;
+            this.showGrid = DEFAULT_RENDER_GRID;
         }
 
         if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
@@ -334,7 +349,12 @@ class Model3DViewer extends Box3DViewer {
     handleReset() {
         super.handleReset();
 
-        this.isAnimationPlaying = false;
+        this.setAnimationState(false);
+        this.handleSetCameraProjection(this.projection);
+        this.handleSetRenderMode(this.renderMode);
+        this.handleShowGrid(true);
+        this.handleShowSkeletons(false);
+        this.handleShowWireframes(false);
 
         if (this.controls) {
             if (this.getViewerOption('useReactControls')) {
@@ -344,7 +364,7 @@ class Model3DViewer extends Box3DViewer {
                 this.controls.setCurrentProjectionMode(this.projection);
                 this.controls.handleSetSkeletonsVisible(false);
                 this.controls.handleSetWireframesVisible(false);
-                this.controls.handleSetGridVisible(this.renderGrid);
+                this.controls.handleSetGridVisible(this.showGrid);
             }
         }
 
@@ -363,6 +383,11 @@ class Model3DViewer extends Box3DViewer {
      */
     handleSetRenderMode(mode = 'Lit') {
         this.renderer.setRenderMode(mode);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.renderMode = mode;
+            this.renderUI();
+        }
     }
 
     /**
@@ -387,6 +412,11 @@ class Model3DViewer extends Box3DViewer {
      */
     handleSetCameraProjection(projection) {
         this.renderer.setCameraProjection(projection);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.projection = projection;
+            this.renderUI();
+        }
     }
 
     /**
@@ -398,6 +428,11 @@ class Model3DViewer extends Box3DViewer {
      */
     handleShowSkeletons(visible) {
         this.renderer.setSkeletonsVisible(visible);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showSkeletons = visible;
+            this.renderUI();
+        }
     }
 
     /**
@@ -409,6 +444,11 @@ class Model3DViewer extends Box3DViewer {
      */
     handleShowWireframes(visible) {
         this.renderer.setWireframesVisible(visible);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showWireframes = visible;
+            this.renderUI();
+        }
     }
 
     /**
@@ -420,6 +460,23 @@ class Model3DViewer extends Box3DViewer {
      */
     handleShowGrid(visible) {
         this.renderer.setGridVisible(visible);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showGrid = visible;
+            this.renderUI();
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    handleShowVrButton() {
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showVrButton = true;
+            this.renderUI();
+        } else {
+            this.controls.showVrButton();
+        }
     }
 
     renderUI() {
@@ -430,12 +487,27 @@ class Model3DViewer extends Box3DViewer {
         this.controls.render(
             <Model3DControlsNew
                 animationClips={this.animationClips}
+                cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
                 isPlaying={this.isAnimationPlaying}
+                isVrShown={this.showVrButton}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
+                onCameraProjectionChange={this.handleSetCameraProjection}
                 onFullscreenToggle={this.toggleFullscreen}
                 onPlayPause={this.handleToggleAnimation}
+                onRenderModeChange={this.handleSetRenderMode}
                 onReset={this.handleReset}
+                onRotateOnAxisChange={this.handleRotateOnAxis}
+                onSettingsClose={() => this.handleToggleHelpers(false)}
+                onSettingsOpen={() => this.handleToggleHelpers(true)}
+                onShowGridToggle={this.handleShowGrid}
+                onShowSkeletonsToggle={this.handleShowSkeletons}
+                onShowWireframesToggle={this.handleShowWireframes}
+                onVrToggle={this.handleToggleVr}
+                renderMode={this.renderMode}
+                showGrid={this.showGrid}
+                showSkeletons={this.showSkeletons}
+                showWireframes={this.showWireframes}
             />,
         );
     }

@@ -29,6 +29,7 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -135,6 +136,19 @@ class ImageBaseViewer extends BaseViewer {
 
         this.isPanning = true;
         this.emit('panstart');
+    }
+
+    /**
+     * Determines whether discoverability is enabled
+     *
+     * @private
+     * @return {boolean} value of whether discoverability is enabled for given type
+     */
+    isDiscoverabilityEnabled() {
+        const { enableAnnotationsImageDiscoverability, experiences = {} } = this.options;
+        const canShow = Object.values(experiences).some(experience => experience.canShow);
+
+        return !canShow && !!enableAnnotationsImageDiscoverability;
     }
 
     /**

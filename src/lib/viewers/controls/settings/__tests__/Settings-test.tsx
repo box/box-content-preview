@@ -85,6 +85,66 @@ describe('Settings', () => {
         });
     });
 
+    describe('open/close callbacks', () => {
+        test('should call the onOpen callback when the flyout opens', () => {
+            const onClose = jest.fn();
+            const onOpen = jest.fn();
+            const wrapper = getWrapper({ onClose, onOpen });
+
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
+
+            wrapper.find(SettingsGearToggle).simulate('click');
+
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
+            expect(onOpen).toBeCalledTimes(1);
+            expect(onClose).not.toBeCalled();
+        });
+
+        test('should call the onClose callback when the flyout closes', () => {
+            const onClose = jest.fn();
+            const onOpen = jest.fn();
+            const wrapper = getWrapper({ onClose, onOpen });
+
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
+
+            wrapper.find(SettingsGearToggle).simulate('click');
+
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
+            expect(onOpen).toBeCalledTimes(1);
+            expect(onClose).not.toBeCalled();
+
+            wrapper.find(SettingsGearToggle).simulate('click');
+
+            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
+            expect(onOpen).toBeCalledTimes(1);
+            expect(onClose).toBeCalledTimes(1);
+        });
+
+        test('should call the onClose callback when the flyout is closed by clicking outside', () => {
+            const onClose = jest.fn();
+            const onOpen = jest.fn();
+            const wrapper = getWrapper({ onClose, onOpen });
+            const getEvent = (target: HTMLElement): MouseEvent => {
+                const event = new MouseEvent('click');
+                Object.defineProperty(event, 'target', { enumerable: true, value: target });
+                return event;
+            };
+
+            wrapper.find(SettingsGearToggle).simulate('click'); // Open the controls
+            expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
+
+            act(() => {
+                document.dispatchEvent(getEvent(document.body)); // Click outside the controls
+            });
+            wrapper.update();
+
+            expect(onOpen).toBeCalledTimes(1);
+            expect(onClose).toBeCalledTimes(1);
+        });
+    });
+
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();

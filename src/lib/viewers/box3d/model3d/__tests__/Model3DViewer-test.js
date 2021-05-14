@@ -65,6 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             on: () => {},
             selectAnimationClip: () => {},
             showAnimationControls: () => {},
+            showVrButton: () => {},
             hidePullups: () => {},
             removeListener: () => {},
             removeAllListeners: () => {},
@@ -675,6 +676,60 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 .withArgs(true);
             model3d.handleShowGrid(true);
         });
+
+        test('should invoke controls.showVrButton() when calling handleShowVrButton()', () => {
+            sandbox.mock(model3d.controls).expects('showVrButton');
+            model3d.handleShowVrButton();
+        });
+
+        describe('with react controls', () => {
+            beforeEach(() => {
+                jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+                jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+            });
+
+            test('should update renderMode and invoke renderUI when calling handleSetRenderMode()', () => {
+                model3d.handleSetRenderMode('Unlit');
+
+                expect(model3d.renderMode).toBe('Unlit');
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update cameraProjection and invoke renderUI when calling handleSetCameraProjection()', () => {
+                model3d.handleSetCameraProjection('Orthographic');
+
+                expect(model3d.projection).toBe('Orthographic');
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update showSkeletons and invoke renderUI when calling handleShowSkeletons()', () => {
+                model3d.handleShowSkeletons(true);
+
+                expect(model3d.showSkeletons).toBe(true);
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update showWireframes and invoke renderUI when calling handleShowWireframes()', () => {
+                model3d.handleShowWireframes(true);
+
+                expect(model3d.showWireframes).toBe(true);
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update showGrid and invoke renderUI when calling handleShowGrid()', () => {
+                model3d.handleShowGrid(false);
+
+                expect(model3d.showGrid).toBe(false);
+                expect(model3d.renderUI).toBeCalled();
+            });
+
+            test('should update showVrButton and invoke renderUI when calling handleShowVrButton()', () => {
+                model3d.handleShowVrButton();
+
+                expect(model3d.showVrButton).toBe(true);
+                expect(model3d.renderUI).toBeCalled();
+            });
+        });
     });
 
     describe('scene load errors', () => {
@@ -782,6 +837,11 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 model3d.handleReset();
 
                 expect(model3d.isAnimationPlaying).toBe(false);
+                expect(model3d.projection).toBe('Perspective');
+                expect(model3d.renderMode).toBe('Lit');
+                expect(model3d.showGrid).toBe(true);
+                expect(model3d.showSkeletons).toBe(false);
+                expect(model3d.showWireframes).toBe(false);
                 expect(model3d.renderUI).toBeCalled();
             });
         });
@@ -813,7 +873,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             expect(model3d.axes.forward).toBe('+Z');
             expect(model3d.renderMode).toBe('Lit');
             expect(model3d.projection).toBe('Perspective');
-            expect(model3d.renderGrid).toBe(true);
+            expect(model3d.showGrid).toBe(true);
             expect(model3d.handleRotationAxisSet).not.toBeCalled();
         });
 
@@ -831,7 +891,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             expect(model3d.axes.forward).toBe(defaults.forwardAxis);
             expect(model3d.renderMode).toBe(defaults.defaultRenderMode);
             expect(model3d.projection).toBe(defaults.cameraProjection);
-            expect(model3d.renderGrid).toBe(false);
+            expect(model3d.showGrid).toBe(false);
             expect(model3d.handleRotationAxisSet).toBeCalledWith(defaults.upAxis, defaults.forwardAxis, false);
         });
 
@@ -921,12 +981,27 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             expect(getProps(model3d)).toMatchObject({
                 animationClips: [],
+                cameraProjection: 'Perspective',
                 currentAnimationClipId: '123',
                 isPlaying: false,
+                isVrShown: false,
                 onAnimationClipSelect: model3d.handleSelectAnimationClip,
+                onCameraProjectionChange: model3d.handleSetCameraProjection,
                 onFullscreenToggle: model3d.toggleFullscreen,
                 onPlayPause: model3d.handleToggleAnimation,
+                onRenderModeChange: model3d.handleSetRenderMode,
                 onReset: model3d.handleReset,
+                onRotateOnAxisChange: model3d.handleRotateOnAxis,
+                onSettingsClose: expect.any(Function),
+                onSettingsOpen: expect.any(Function),
+                onShowGridToggle: model3d.handleShowGrid,
+                onShowSkeletonsToggle: model3d.handleShowSkeletons,
+                onShowWireframesToggle: model3d.handleShowWireframes,
+                onVrToggle: model3d.handleToggleVr,
+                renderMode: 'Lit',
+                showGrid: true,
+                showSkeletons: false,
+                showWireframes: false,
             });
         });
     });
