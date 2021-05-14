@@ -467,6 +467,18 @@ class Model3DViewer extends Box3DViewer {
         }
     }
 
+    /**
+     * @inheritdoc
+     */
+    handleShowVrButton() {
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showVrButton = true;
+            this.renderUI();
+        } else {
+            this.controls.showVrButton();
+        }
+    }
+
     renderUI() {
         if (!this.controls || !this.renderer) {
             return;
@@ -478,6 +490,7 @@ class Model3DViewer extends Box3DViewer {
                 cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
                 isPlaying={this.isAnimationPlaying}
+                isVrShown={this.showVrButton}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
                 onCameraProjectionChange={this.handleSetCameraProjection}
                 onFullscreenToggle={this.toggleFullscreen}
@@ -490,6 +503,7 @@ class Model3DViewer extends Box3DViewer {
                 onShowGridToggle={this.handleShowGrid}
                 onShowSkeletonsToggle={this.handleShowSkeletons}
                 onShowWireframesToggle={this.handleShowWireframes}
+                onVrToggle={this.handleToggleVr}
                 renderMode={this.renderMode}
                 showGrid={this.showGrid}
                 showSkeletons={this.showSkeletons}

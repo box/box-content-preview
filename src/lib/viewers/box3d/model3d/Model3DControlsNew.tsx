@@ -4,11 +4,13 @@ import ControlsBar from '../../controls/controls-bar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls/fullscreen';
 import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/model3d/Model3DSettings';
 import ResetControl, { Props as ResetControlProps } from '../../controls/model3d/ResetControl';
+import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/model3d/VrToggleControl';
 
 export type Props = AnimationControlsProps &
     FullscreenToggleProps &
     Model3DSettingsProps &
-    ResetControlProps & {
+    ResetControlProps &
+    VrToggleControlProps & {
         onSettingsClose: () => void;
         onSettingsOpen: () => void;
     };
@@ -18,6 +20,7 @@ export default function Model3DControls({
     cameraProjection,
     currentAnimationClipId,
     isPlaying,
+    isVrShown,
     onAnimationClipSelect,
     onCameraProjectionChange,
     onFullscreenToggle,
@@ -30,6 +33,7 @@ export default function Model3DControls({
     onShowGridToggle,
     onShowSkeletonsToggle,
     onShowWireframesToggle,
+    onVrToggle,
     renderMode,
     showGrid,
     showSkeletons,
@@ -45,7 +49,7 @@ export default function Model3DControls({
                 onAnimationClipSelect={onAnimationClipSelect}
                 onPlayPause={onPlayPause}
             />
-            {/* TODO: VR button */}
+            <VrToggleControl isVrShown={isVrShown} onVrToggle={onVrToggle} />
             <Model3DSettings
                 cameraProjection={cameraProjection}
                 onCameraProjectionChange={onCameraProjectionChange}

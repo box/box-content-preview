@@ -21,6 +21,7 @@
     // For VR mode
     &.vr-enabled {
         // Hide this NO MATTER WHAT
+        .bp-ControlsRoot,
         .bp-controls {
             opacity: 0 !important; // stylelint-disable-line declaration-no-important
         }
