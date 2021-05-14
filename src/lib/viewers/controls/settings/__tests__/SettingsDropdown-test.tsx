@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
-import SettingsDropdown, { Props, SettingsDropdownRef } from '../SettingsDropdown';
+import SettingsDropdown, { Props, Ref as SettingsDropdownRef } from '../SettingsDropdown';
 import SettingsFlyout from '../SettingsFlyout';
 import SettingsList from '../SettingsList';
 

@@ -22,9 +22,9 @@ export type Props<V extends Value = string> = {
     value?: V;
 };
 
-export type SettingsDropdownRef = Pick<HTMLButtonElement, 'focus'>;
+export type Ref = HTMLButtonElement | null;
 
-function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.Ref<SettingsDropdownRef>): JSX.Element {
+function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, label, listItems, onSelect, value } = props;
     const { current: id } = React.useRef(uniqueId('bp-SettingsDropdown_'));
     const buttonElRef = React.useRef<HTMLButtonElement | null>(null);
@@ -71,24 +71,14 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
     useClickOutside(dropdownElRef, () => setIsOpen(false));
 
     // Customize the forwarded ref to combine usage with the ref internal to this component
-    React.useImperativeHandle(
-        ref,
-        () => ({
-            focus: (): void => {
-                if (buttonElRef.current) {
-                    buttonElRef.current.focus();
-                }
-            },
-        }),
-        [],
-    );
+    React.useImperativeHandle(ref, () => buttonElRef.current, []);
 
     return (
         <div className={classNames('bp-SettingsDropdown', className)}>
             <div className="bp-SettingsDropdown-label" id={`${id}-label`}>
                 {label}
             </div>
-            <div ref={dropdownElRef} className="bp-SettingsDropdown-toggle">
+            <div ref={dropdownElRef} className="bp-SettingsDropdown-content">
                 <button
                     ref={buttonElRef}
                     aria-expanded={isOpen}

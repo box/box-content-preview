@@ -8,9 +8,9 @@ export type Props = {
     onChange: (isChecked: boolean) => void;
 };
 
-export type SettingsCheckboxItemRef = HTMLInputElement;
+export type Ref = HTMLInputElement;
 
-function SettingsCheckboxItem(props: Props, ref: React.Ref<SettingsCheckboxItemRef>): JSX.Element {
+function SettingsCheckboxItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
     const { isChecked, label, onChange } = props;
     const { current: id } = React.useRef(uniqueId('bp-SettingsCheckboxItem_'));
 
