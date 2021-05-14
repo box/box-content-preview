@@ -8,7 +8,10 @@ export type Props = {
     onChange: (isChecked: boolean) => void;
 };
 
-export default function SettingsCheckboxItem({ isChecked, label, onChange }: Props): JSX.Element {
+export type Ref = HTMLInputElement;
+
+function SettingsCheckboxItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
+    const { isChecked, label, onChange } = props;
     const { current: id } = React.useRef(uniqueId('bp-SettingsCheckboxItem_'));
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -18,6 +21,7 @@ export default function SettingsCheckboxItem({ isChecked, label, onChange }: Pro
     return (
         <div className="bp-SettingsCheckboxItem">
             <input
+                ref={ref}
                 checked={isChecked}
                 className="bp-SettingsCheckboxItem-input"
                 id={id}
@@ -30,3 +34,5 @@ export default function SettingsCheckboxItem({ isChecked, label, onChange }: Pro
         </div>
     );
 }
+
+export default React.forwardRef(SettingsCheckboxItem);
