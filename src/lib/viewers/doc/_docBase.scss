@@ -256,17 +256,25 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         border: 0;
         border-image: none;
 
-        // Add shadow to an underlying element to avoid overlapping shadows on canvasWrapper and loadingIcon
-        &::before {
-            @include bp-DocShadow;
+        // Avoid showing loading states on invisible pages due to performance issues in Safari
+        &:not(.bp-is-invisible) {
+            // Add shadow to an underlying element to avoid overlapping shadows on canvasWrapper and loadingIcon
+            &::before {
+                @include bp-DocShadow;
 
-            position: absolute;
-            top: $pdfjs-page-padding;
-            right: 0;
-            bottom: $pdfjs-page-padding;
-            left: 0;
-            display: block;
-            content: '';
+                position: absolute;
+                top: $pdfjs-page-padding;
+                right: 0;
+                bottom: $pdfjs-page-padding;
+                left: 0;
+                display: block;
+                content: '';
+            }
+
+            // Display the ghost state only if the page does not already have rendered content (e.g. during a resize)
+            .loadingIcon:first-child {
+                @include bp-DocGhost;
+            }
         }
 
         // Override loading icon styles from pdf.js
@@ -274,11 +282,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             top: $pdfjs-page-padding;
             bottom: $pdfjs-page-padding;
             background: none;
-
-            // Display the ghost state only if the page does not already have rendered content (e.g. during a resize)
-            &:first-child {
-                @include bp-DocGhost;
-            }
         }
 
         // Fixes annotation icon broken src
