@@ -18,6 +18,7 @@ function AnnotationsTargetedTooltip({ children, isEnabled = false }: Props): JSX
             className="bp-AnnotationsTooltip"
             shouldTarget={isEnabled}
             showCloseButton
+            tetherElementClassName="bp-AnnotationsTooltipTether"
             text={
                 <div>
                     <h3 className="bp-AnnotationsTooltip-title">{__('annotations_tooltip_title')}</h3>
