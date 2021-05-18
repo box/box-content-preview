@@ -1,3 +1,27 @@
+## 2.73.0 (2021-05-18)
+
+* feat(annotations tooltip): Add class for specific styles to element (#1385) ([fd74923](https://github.com/box/box-content-preview/commit/fd74923)), closes [#1385](https://github.com/box/box-content-preview/issues/1385)
+* feat(annotations): fix annotations tooltip (#1383) ([87e36b3](https://github.com/box/box-content-preview/commit/87e36b3)), closes [#1383](https://github.com/box/box-content-preview/issues/1383)
+* feat(annotations): tooltip (#1364) ([d030fe3](https://github.com/box/box-content-preview/commit/d030fe3)), closes [#1364](https://github.com/box/box-content-preview/issues/1364)
+* feat(annotations): update mode if necessary for experiences (#1375) ([a3eb40c](https://github.com/box/box-content-preview/commit/a3eb40c)), closes [#1375](https://github.com/box/box-content-preview/issues/1375)
+* feat(controls): Add Checkbox component for settings (#1376) ([b103cd5](https://github.com/box/box-content-preview/commit/b103cd5)), closes [#1376](https://github.com/box/box-content-preview/issues/1376)
+* feat(controls): Add react controls for mp4 viewer (#1374) ([29a6487](https://github.com/box/box-content-preview/commit/29a6487)), closes [#1374](https://github.com/box/box-content-preview/issues/1374)
+* feat(controls): Add Settings menu to Model3D (#1377) ([e37e30b](https://github.com/box/box-content-preview/commit/e37e30b)), closes [#1377](https://github.com/box/box-content-preview/issues/1377)
+* feat(controls): Add VR button to Model3D controls (#1379) ([d84e12d](https://github.com/box/box-content-preview/commit/d84e12d)), closes [#1379](https://github.com/box/box-content-preview/issues/1379)
+* feat(model3d): Add flyout for animation clips (#1369) ([09eefd9](https://github.com/box/box-content-preview/commit/09eefd9)), closes [#1369](https://github.com/box/box-content-preview/issues/1369)
+* feat(model3d): Basic React controls (#1368) ([528b065](https://github.com/box/box-content-preview/commit/528b065)), closes [#1368](https://github.com/box/box-content-preview/issues/1368)
+* feat(settings): Add Dropdown component (#1373) ([8b2044d](https://github.com/box/box-content-preview/commit/8b2044d)), closes [#1373](https://github.com/box/box-content-preview/issues/1373)
+* fix(controls): Add forwardRef to Dropdown and Checkbox (#1381) ([79fbd40](https://github.com/box/box-content-preview/commit/79fbd40)), closes [#1381](https://github.com/box/box-content-preview/issues/1381)
+* fix(loading): Fix presentation performance issues in Big Sur Safari (#1382) ([b6dd0da](https://github.com/box/box-content-preview/commit/b6dd0da)), closes [#1382](https://github.com/box/box-content-preview/issues/1382)
+* fix(model3d): Fix react controls to reset to defaults (#1384) ([f305ea7](https://github.com/box/box-content-preview/commit/f305ea7)), closes [#1384](https://github.com/box/box-content-preview/issues/1384)
+* chore(deps): Upgarde box-ui-elements to latest available version (#1380) ([1bc9f6f](https://github.com/box/box-content-preview/commit/1bc9f6f)), closes [#1380](https://github.com/box/box-content-preview/issues/1380)
+* chore(i18n): Update Translations (#1370) ([8a83f34](https://github.com/box/box-content-preview/commit/8a83f34)), closes [#1370](https://github.com/box/box-content-preview/issues/1370)
+* chore(i18n): Update Translations (#1372) ([16a1dc4](https://github.com/box/box-content-preview/commit/16a1dc4)), closes [#1372](https://github.com/box/box-content-preview/issues/1372)
+* chore(i18n): Update Translations (#1378) ([179decb](https://github.com/box/box-content-preview/commit/179decb)), closes [#1378](https://github.com/box/box-content-preview/issues/1378)
+* refactor(media): Renaming MediaSetting to Settings (#1371) ([3164ac3](https://github.com/box/box-content-preview/commit/3164ac3)), closes [#1371](https://github.com/box/box-content-preview/issues/1371)
+
+
+
 ## 2.72.0 (2021-04-29)
 
 * feat(documents): Add drop shadow for document pages and placeholders (#1367) ([0a8f089](https://github.com/box/box-content-preview/commit/0a8f089)), closes [#1367](https://github.com/box/box-content-preview/issues/1367)
