@@ -529,12 +529,41 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             box3d.handleSceneLoaded();
             expect(box3d.controls.addUi).toBeCalled();
         });
+
+        describe('With react controls', () => {
+            beforeEach(() => {
+                jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+            });
+
+            test('should not call addUi', () => {
+                box3d.handleSceneLoaded();
+
+                expect(box3d.controls.addUi).not.toBeCalled();
+            });
+        });
     });
 
     describe('handleShowVrButton()', () => {
-        test('should call controls.showVrButton()', () => {
+        beforeEach(() => {
             box3d.controls.showVrButton = jest.fn();
+        });
+
+        test('should call controls.showVrButton()', () => {
             box3d.handleShowVrButton();
+
+            expect(box3d.controls.showVrButton).toBeCalled();
+        });
+
+        describe('With react controls', () => {
+            beforeEach(() => {
+                jest.spyOn(box3d, 'getViewerOption').mockImplementation(() => true);
+            });
+
+            test('should not call addUi', () => {
+                box3d.handleShowVrButton();
+
+                expect(box3d.controls.showVrButton).not.toBeCalled();
+            });
         });
     });
 
