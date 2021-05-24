@@ -45,14 +45,20 @@ class Image360Viewer extends Box3DViewer {
     handleSceneLoaded() {
         super.handleSceneLoaded();
 
-        this.renderUI();
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     /**
      * @inheritdoc
      */
     handleShowVrButton() {
-        if (this.controls && this.getViewerOption('useReactControls')) {
+        if (!this.controls) {
+            return;
+        }
+
+        if (this.getViewerOption('useReactControls')) {
             this.showVrButton = true;
             this.renderUI();
         } else {

@@ -2,7 +2,7 @@
 import Image360Viewer from '../Image360Viewer';
 import BaseViewer from '../../../BaseViewer';
 import Box3DControls from '../../Box3DControls';
-import ControlsRoot from '../../../controls/controls-root';
+import ControlsRoot from '../../../controls';
 import Image360Renderer from '../Image360Renderer';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../../constants';
 
@@ -77,10 +77,25 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
     });
 
     describe('handleSceneLoaded()', () => {
-        test('should render the react UI', () => {
+        beforeEach(() => {
+            jest.spyOn(viewer, 'getViewerOption').mockImplementation(() => true);
             jest.spyOn(viewer, 'renderUI');
+        });
+
+        test('should render the react UI', () => {
             viewer.handleSceneLoaded();
             expect(viewer.renderUI).toBeCalled();
+        });
+
+        describe('Without react controls', () => {
+            beforeEach(() => {
+                jest.spyOn(viewer, 'getViewerOption').mockImplementation(() => false);
+            });
+
+            test('should render the react UI', () => {
+                viewer.handleSceneLoaded();
+                expect(viewer.renderUI).not.toBeCalled();
+            });
         });
     });
 
