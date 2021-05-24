@@ -1,10 +1,10 @@
 import React from 'react';
-import AnimationControls, { Props as AnimationControlsProps } from '../../controls/model3d/AnimationControls';
+import AnimationControls, { Props as AnimationControlsProps } from '../../controls/box3d/AnimationControls';
 import ControlsBar from '../../controls/controls-bar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls/fullscreen';
-import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/model3d/Model3DSettings';
-import ResetControl, { Props as ResetControlProps } from '../../controls/model3d/ResetControl';
-import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/model3d/VrToggleControl';
+import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/box3d/Model3DSettings';
+import ResetControl, { Props as ResetControlProps } from '../../controls/box3d/ResetControl';
+import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
 
 export type Props = AnimationControlsProps &
     FullscreenToggleProps &

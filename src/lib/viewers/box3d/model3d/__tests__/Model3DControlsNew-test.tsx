@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import AnimationControls from '../../../controls/model3d/AnimationControls';
+import AnimationControls from '../../../controls/box3d/AnimationControls';
 import FullscreenToggle from '../../../controls/fullscreen';
 import Model3DControls, { Props } from '../Model3DControlsNew';
-import Model3DSettings, { CameraProjection, RenderMode } from '../../../controls/model3d/Model3DSettings';
-import ResetControl from '../../../controls/model3d/ResetControl';
-import VrToggleControl from '../../../controls/model3d/VrToggleControl';
+import Model3DSettings, { CameraProjection, RenderMode } from '../../../controls/box3d/Model3DSettings';
+import ResetControl from '../../../controls/box3d/ResetControl';
+import VrToggleControl from '../../../controls/box3d/VrToggleControl';
 
 describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
     const getDefaults = (): Props => ({
