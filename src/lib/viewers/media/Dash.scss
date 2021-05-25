@@ -25,6 +25,10 @@
             cursor: pointer;
         }
     }
+
+    .bp-VideoControlsRoot {
+        @include bp-VideoControlsRoot;
+    }
 }
 
 .bp-media-filmstrip-container {

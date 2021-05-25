@@ -1,5 +1,48 @@
 @import '../../boxuiVariables';
 @import './MediaControls';
+@import '../controls/media/styles';
+
+@mixin bp-VideoControlsRoot {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+}
+
+@mixin bp-VideoControls {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
+
+    .bp-FullscreenToggle {
+        width: $bp-MediaControl-width;
+        height: $bp-MediaControl-height;
+    }
+}
+
+@mixin bp-VideoControls-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px 5px;
+}
+
+@mixin bp-VideoControls-group {
+    display: flex;
+    align-items: center;
+}
+
+@mixin bp-VideoControls-settings {
+    .bp-SettingsFlyout {
+        right: 15px;
+    }
+
+    .bp-SettingsToggle {
+        width: $bp-MediaControl-width;
+        height: $bp-MediaControl-height;
+    }
+}
 
 .bp-media {
     position: absolute;

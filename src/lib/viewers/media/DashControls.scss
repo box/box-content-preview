@@ -1,17 +1,17 @@
 @import './mediaBase';
 
-.bp-MP4Controls {
+.bp-DashControls {
     @include bp-VideoControls;
 }
 
-.bp-MP4Controls-bar {
+.bp-DashControls-bar {
     @include bp-VideoControls-bar;
 }
 
-.bp-MP4Controls-group {
+.bp-DashControls-group {
     @include bp-VideoControls-group;
 }
 
-.bp-MP4Controls-settings {
+.bp-DashControls-settings {
     @include bp-VideoControls-settings;
 }
