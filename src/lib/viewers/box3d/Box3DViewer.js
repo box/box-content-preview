@@ -313,7 +313,7 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     handleSceneLoaded() {
-        if (this.controls) {
+        if (this.controls && !this.getViewerOption('useReactControls')) {
             this.controls.addUi();
         }
         this.emit(EVENT_LOAD);
@@ -326,7 +326,9 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     handleShowVrButton() {
-        this.controls.showVrButton();
+        if (this.controls && !this.getViewerOption('useReactControls')) {
+            this.controls.showVrButton();
+        }
     }
 
     /**
