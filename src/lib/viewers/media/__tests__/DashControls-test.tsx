@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import audioTracks from '../../controls/media/__mocks__/audioTracks';
 import DashControls from '../DashControls';
 import MediaFullscreenToggle from '../../controls/media/MediaFullscreenToggle';
 import MediaSettings from '../../controls/media/MediaSettings';
@@ -10,6 +11,7 @@ import VolumeControls from '../../controls/media/VolumeControls';
 describe('DashControls', () => {
     describe('render', () => {
         test('should return a valid wrapper', () => {
+            const onAudioTrackChange = jest.fn();
             const onAutoplayChange = jest.fn();
             const onFullscreenToggle = jest.fn();
             const onMuteChange = jest.fn();
@@ -19,7 +21,10 @@ describe('DashControls', () => {
             const onVolumeChange = jest.fn();
             const wrapper = shallow(
                 <DashControls
+                    audioTrack={1}
+                    audioTracks={audioTracks}
                     autoplay={false}
+                    onAudioTrackChange={onAudioTrackChange}
                     onAutoplayChange={onAutoplayChange}
                     onFullscreenToggle={onFullscreenToggle}
                     onMuteChange={onMuteChange}
@@ -33,6 +38,7 @@ describe('DashControls', () => {
 
             expect(wrapper.hasClass('bp-DashControls')).toBe(true);
             expect(wrapper.find(MediaFullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
+            expect(wrapper.find(MediaSettings).prop('onAudioTrackChange')).toEqual(onAudioTrackChange);
             expect(wrapper.find(MediaSettings).prop('onAutoplayChange')).toEqual(onAutoplayChange);
             expect(wrapper.find(MediaSettings).prop('onRateChange')).toEqual(onRateChange);
             expect(wrapper.find(PlayPauseToggle).prop('onPlayPause')).toEqual(onPlayPause);

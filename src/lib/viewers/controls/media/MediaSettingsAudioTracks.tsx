@@ -2,16 +2,16 @@ import React from 'react';
 import Settings, { Menu } from '../settings';
 
 export type AudioTrack = {
-    id: string;
+    id: number;
     label: string;
     language: string;
     role: string;
 };
 
 export type Props = {
-    audioTrack?: string;
+    audioTrack?: number;
     audioTracks: Array<AudioTrack>;
-    onAudioTrackChange: (language: string) => void;
+    onAudioTrackChange: (id: number) => void;
 };
 
 export default function MediaSettingsMenuAudioTracks({
@@ -21,7 +21,7 @@ export default function MediaSettingsMenuAudioTracks({
 }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
-    const handleChange = (value: string): void => {
+    const handleChange = (value: number): void => {
         setActiveMenu(Menu.MAIN);
         onAudioTrackChange(value);
     };
