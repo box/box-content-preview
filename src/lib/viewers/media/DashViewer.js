@@ -21,15 +21,6 @@ const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
-const generateAudioTrackLabel = (language, index) => {
-    let label = `${__('track')} ${index + 1}`;
-    if (language !== 'und') {
-        label = `${label} (${getLanguageName(language) || language})`;
-    }
-
-    return label;
-};
-
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
     autoCaptionDisplayer;
@@ -678,9 +669,8 @@ class DashViewer extends VideoBaseViewer {
             }
         }
 
-        this.audioTracks = uniqueAudioVariants.map((track, index) => ({
+        this.audioTracks = uniqueAudioVariants.map(track => ({
             id: track.audioId,
-            label: generateAudioTrackLabel(track.language, index),
             language: track.language,
             role: track.roles[0],
         }));
@@ -953,7 +943,7 @@ class DashViewer extends VideoBaseViewer {
      */
     setAudioTrack(audioTrackId) {
         const newAudioTrack = this.audioTracks.find(({ id }) => audioTrackId === id);
-        if (newAudioTrack !== undefined) {
+        if (newAudioTrack) {
             this.enableAudioId(newAudioTrack.role);
             this.selectedAudioTrack = audioTrackId;
             this.renderUI();
@@ -970,6 +960,7 @@ class DashViewer extends VideoBaseViewer {
 
         this.controls.render(
             <DashControls
+                audioTrack={this.selectedAudioTrack}
                 audioTracks={this.audioTracks}
                 autoplay={this.isAutoplayEnabled()}
                 bufferedRange={this.mediaEl.buffered}
@@ -985,7 +976,6 @@ class DashViewer extends VideoBaseViewer {
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
                 rate={this.getRate()}
-                selectedAudioTrack={this.selectedAudioTrack}
                 volume={this.mediaEl.volume}
             />,
         );

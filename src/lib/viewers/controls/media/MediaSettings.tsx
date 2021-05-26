@@ -1,26 +1,47 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import MediaSettingsMenuAudioTracks, { Props as AudioTracksProps } from './MediaSettingsAudioTracks';
+import getLanguageName from '../../../lang';
+import MediaSettingsMenuAudioTracks, { AudioTrack, Props as AudioTracksProps } from './MediaSettingsAudioTracks';
 import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from './MediaSettingsMenuAutoplay';
 import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
 import Settings, { Menu } from '../settings';
 
 export type Props = Partial<AudioTracksProps> & AutoplayProps & RateProps & { className?: string };
 
+const generateAudioTrackLabel = (language: string, index: number): string => {
+    let label = `${__('track')} ${index + 1}`;
+    if (language !== 'und') {
+        label = `${label} (${getLanguageName(language) || language})`;
+    }
+
+    return label;
+};
+
+const addLabels = (audioTracks: Array<AudioTrack>): Array<AudioTrack> =>
+    audioTracks.map((track, index) => {
+        const { language } = track;
+        const label = generateAudioTrackLabel(language, index);
+        return {
+            ...track,
+            label,
+        };
+    });
+
 export default function MediaSettings({
+    audioTrack,
+    audioTracks = [],
     autoplay,
     className,
-    audioTracks = [],
     onAudioTrackChange = noop,
     onAutoplayChange,
     onRateChange,
     rate,
-    selectedAudioTrack,
 }: Props): JSX.Element {
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
-    const hydratedSelectedAudioTrack = audioTracks.find(({ id }) => selectedAudioTrack === id);
-    const selectedAudioTrackLabel = hydratedSelectedAudioTrack ? hydratedSelectedAudioTrack.label : '';
+    const labelledAudioTracks = React.useMemo(() => addLabels(audioTracks), [audioTracks]);
+    const hydratedSelectedAudioTrack = labelledAudioTracks.find(({ id }) => audioTrack === id);
+    const audioTrackLabel = hydratedSelectedAudioTrack ? hydratedSelectedAudioTrack.label : '';
     const showAudioTrackItems = audioTracks.length > 1;
 
     return (
@@ -29,7 +50,7 @@ export default function MediaSettings({
                 <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
                 <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
                 {showAudioTrackItems && (
-                    <Settings.MenuItem label={__('media_audio')} target={Menu.AUDIO} value={selectedAudioTrackLabel} />
+                    <Settings.MenuItem label={__('media_audio')} target={Menu.AUDIO} value={audioTrackLabel} />
                 )}
             </Settings.Menu>
 
@@ -37,9 +58,9 @@ export default function MediaSettings({
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
             {showAudioTrackItems && (
                 <MediaSettingsMenuAudioTracks
-                    audioTracks={audioTracks}
+                    audioTrack={audioTrack}
+                    audioTracks={labelledAudioTracks}
                     onAudioTrackChange={onAudioTrackChange}
-                    selectedAudioTrack={selectedAudioTrack}
                 />
             )}
         </Settings>

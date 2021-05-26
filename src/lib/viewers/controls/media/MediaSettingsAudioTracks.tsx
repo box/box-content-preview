@@ -9,15 +9,15 @@ export type AudioTrack = {
 };
 
 export type Props = {
-    selectedAudioTrack?: string;
+    audioTrack?: string;
     audioTracks: Array<AudioTrack>;
     onAudioTrackChange: (language: string) => void;
 };
 
 export default function MediaSettingsMenuAudioTracks({
+    audioTrack,
     audioTracks,
     onAudioTrackChange,
-    selectedAudioTrack,
 }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
@@ -29,17 +29,15 @@ export default function MediaSettingsMenuAudioTracks({
     return (
         <Settings.Menu name={Menu.AUDIO}>
             <Settings.MenuBack label={__('media_audio')} />
-            {audioTracks.map(({ id, label }) => {
-                return (
-                    <Settings.RadioItem
-                        key={id}
-                        isSelected={selectedAudioTrack === id}
-                        label={label}
-                        onChange={handleChange}
-                        value={id}
-                    />
-                );
-            })}
+            {audioTracks.map(({ id, label }) => (
+                <Settings.RadioItem
+                    key={id}
+                    isSelected={audioTrack === id}
+                    label={label}
+                    onChange={handleChange}
+                    value={id}
+                />
+            ))}
         </Settings.Menu>
     );
 }

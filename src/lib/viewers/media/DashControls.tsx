@@ -15,6 +15,7 @@ export type Props = DurationLabelsProps &
     VolumeControlsProps;
 
 export default function DashControls({
+    audioTrack,
     audioTracks,
     autoplay,
     bufferedRange,
@@ -30,7 +31,6 @@ export default function DashControls({
     onTimeChange,
     onVolumeChange,
     rate,
-    selectedAudioTrack,
     volume,
 }: Props): JSX.Element {
     return (
@@ -52,6 +52,7 @@ export default function DashControls({
                 <div className="bp-DashControls-group">
                     {/* CC Toggle */}
                     <MediaSettings
+                        audioTrack={audioTrack}
                         audioTracks={audioTracks}
                         autoplay={autoplay}
                         className="bp-DashControls-settings"
@@ -59,7 +60,6 @@ export default function DashControls({
                         onAutoplayChange={onAutoplayChange}
                         onRateChange={onRateChange}
                         rate={rate}
-                        selectedAudioTrack={selectedAudioTrack}
                     />
                     <MediaFullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                 </div>
