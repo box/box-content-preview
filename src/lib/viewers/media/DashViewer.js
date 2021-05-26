@@ -1,12 +1,14 @@
-import VideoBaseViewer from './VideoBaseViewer';
-import PreviewError from '../../PreviewError';
+import React from 'react';
+import DashControls from './DashControls';
 import fullscreen from '../../Fullscreen';
+import getLanguageName from '../../lang';
+import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
+import VideoBaseViewer from './VideoBaseViewer';
 import { appendQueryParams, getProp } from '../../util';
+import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
-import getLanguageName from '../../lang';
-import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
 import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -685,18 +687,26 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.calculateVideoDimensions();
-        this.loadUI();
+        if (this.getViewerOption('useReactControls')) {
+            this.loadUIReact();
+        } else {
+            this.loadUI();
+        }
 
         if (this.isAutoplayEnabled()) {
             this.autoplay();
         }
 
-        this.loadFilmStrip();
+        if (!this.getViewerOption('useReactControls')) {
+            this.loadFilmStrip();
+        }
         this.resize();
         this.handleVolume();
         this.startBandwidthTracking();
-        this.loadSubtitles();
-        this.loadAlternateAudio();
+        if (!this.getViewerOption('useReactControls')) {
+            this.loadSubtitles();
+            this.loadAlternateAudio();
+        }
         this.showPlayButton();
 
         this.loaded = true;
@@ -704,7 +714,9 @@ class DashViewer extends VideoBaseViewer {
 
         // Make media element visible after resize
         this.showMedia();
-        this.mediaControls.show();
+        if (!this.getViewerOption('useReactControls')) {
+            this.mediaControls.show();
+        }
 
         if (this.options.autoFocus) {
             this.mediaContainerEl.focus();
@@ -910,6 +922,34 @@ class DashViewer extends VideoBaseViewer {
         }
 
         return super.onKeydown(key);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    renderUI() {
+        if (!this.controls) {
+            return;
+        }
+
+        this.controls.render(
+            <DashControls
+                autoplay={this.isAutoplayEnabled()}
+                bufferedRange={this.mediaEl.buffered}
+                currentTime={this.mediaEl.currentTime}
+                durationTime={this.mediaEl.duration}
+                isPlaying={!this.mediaEl.paused}
+                onAutoplayChange={this.setAutoplay}
+                onFullscreenToggle={this.toggleFullscreen}
+                onMuteChange={this.toggleMute}
+                onPlayPause={this.togglePlay}
+                onRateChange={this.setRate}
+                onTimeChange={this.handleTimeupdateFromMediaControls}
+                onVolumeChange={this.setVolume}
+                rate={this.getRate()}
+                volume={this.mediaEl.volume}
+            />,
+        );
     }
 }
 

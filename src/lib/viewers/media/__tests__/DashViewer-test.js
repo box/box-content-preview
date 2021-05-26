@@ -665,6 +665,29 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.mediaControls.show).toBeCalled();
             expect(dash.loadUI).toBeCalled();
         });
+
+        describe('With react controls', () => {
+            beforeEach(() => {
+                jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
+                jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
+                jest.spyOn(dash, 'loadAlternateAudio').mockImplementation();
+                jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
+                jest.spyOn(dash, 'loadSubtitles').mockImplementation();
+                jest.spyOn(dash, 'loadUIReact').mockImplementation();
+                jest.spyOn(dash, 'loadUI').mockImplementation();
+                jest.spyOn(dash, 'resize').mockImplementation();
+            });
+
+            test('should call loadUIReact', () => {
+                dash.loadeddataHandler();
+
+                expect(dash.loadUIReact).toBeCalled();
+                expect(dash.loadUI).not.toBeCalled();
+                expect(dash.loadFilmStrip).not.toBeCalled();
+                expect(dash.loadSubtitles).not.toBeCalled();
+                expect(dash.loadAlternateAudio).not.toBeCalled();
+            });
+        });
     });
 
     describe('loadUI()', () => {
@@ -1440,6 +1463,37 @@ describe('lib/viewers/media/DashViewer', () => {
             };
 
             expect(dash.determineWatchLength()).toBe(10000);
+        });
+    });
+
+    describe('renderUI()', () => {
+        const getProps = instance => instance.controls.render.mock.calls[0][0].props;
+
+        beforeEach(() => {
+            jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
+            dash.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+        });
+
+        test('should render react controls with the correct props', () => {
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({
+                autoplay: false,
+                currentTime: expect.any(Number),
+                isPlaying: expect.any(Boolean),
+                onAutoplayChange: dash.setAutoplay,
+                onFullscreenToggle: dash.toggleFullscreen,
+                onMuteChange: dash.toggleMute,
+                onPlayPause: dash.togglePlay,
+                onRateChange: dash.setRate,
+                onTimeChange: dash.handleTimeupdateFromMediaControls,
+                onVolumeChange: dash.setVolume,
+                rate: '1.0',
+                volume: expect.any(Number),
+            });
         });
     });
 });
