@@ -9,8 +9,11 @@ export type Context = {
 
 export enum Menu {
     MAIN = 'main',
+    AUDIO = 'audio',
     AUTOPLAY = 'autoplay',
+    QUALITY = 'quality',
     RATE = 'rate',
+    SUBTITLES = 'subtitles',
 }
 
 export type Rect = ClientRect;
