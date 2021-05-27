@@ -1,3 +1,15 @@
+## 2.74.0 (2021-05-27)
+
+* fix(model3d): Save defaults returned from metadata (#1392) ([d027f10](https://github.com/box/box-content-preview/commit/d027f10)), closes [#1392](https://github.com/box/box-content-preview/issues/1392)
+* feat(annotations tooltip): Close on click outside to avoid UI issues (#1387) ([9d76b1e](https://github.com/box/box-content-preview/commit/9d76b1e)), closes [#1387](https://github.com/box/box-content-preview/issues/1387)
+* feat(controls): Add React controls for Image360 (#1388) ([09fadfa](https://github.com/box/box-content-preview/commit/09fadfa)), closes [#1388](https://github.com/box/box-content-preview/issues/1388)
+* feat(controls): Audio tracks menu for Dash viewer (#1391) ([688aa03](https://github.com/box/box-content-preview/commit/688aa03)), closes [#1391](https://github.com/box/box-content-preview/issues/1391)
+* feat(controls): Base React controls for Dash (#1390) ([6954be0](https://github.com/box/box-content-preview/commit/6954be0)), closes [#1390](https://github.com/box/box-content-preview/issues/1390)
+* refactor(controls): Rename controls model3d -> box3d (#1389) ([9604879](https://github.com/box/box-content-preview/commit/9604879)), closes [#1389](https://github.com/box/box-content-preview/issues/1389)
+* chore(i18n): Update Translations (#1386) ([725ae47](https://github.com/box/box-content-preview/commit/725ae47)), closes [#1386](https://github.com/box/box-content-preview/issues/1386)
+
+
+
 ## 2.73.0 (2021-05-18)
 
 * feat(annotations tooltip): Add class for specific styles to element (#1385) ([fd74923](https://github.com/box/box-content-preview/commit/fd74923)), closes [#1385](https://github.com/box/box-content-preview/issues/1385)
