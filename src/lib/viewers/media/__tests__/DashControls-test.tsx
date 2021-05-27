@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import audioTracks from '../../controls/media/__mocks__/audioTracks';
 import DashControls from '../DashControls';
 import MediaFullscreenToggle from '../../controls/media/MediaFullscreenToggle';
 import MediaSettings from '../../controls/media/MediaSettings';
@@ -22,7 +21,7 @@ describe('DashControls', () => {
             const wrapper = shallow(
                 <DashControls
                     audioTrack={1}
-                    audioTracks={audioTracks}
+                    audioTracks={[]}
                     autoplay={false}
                     onAudioTrackChange={onAudioTrackChange}
                     onAutoplayChange={onAutoplayChange}
