@@ -40,6 +40,13 @@ class Model3DViewer extends Box3DViewer {
         forward: null,
     };
 
+    /** @property {Object} - Stores the defaults for the model settings */
+    defaults = {
+        projection: CAMERA_PROJECTION_PERSPECTIVE,
+        renderMode: RENDER_MODE_LIT,
+        showGrid: true,
+    };
+
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
 
@@ -226,6 +233,13 @@ class Model3DViewer extends Box3DViewer {
             this.showGrid = DEFAULT_RENDER_GRID;
         }
 
+        // Save the defaults so handleReset will change the values appropriately
+        this.defaults = {
+            projection: this.projection,
+            renderMode: this.renderMode,
+            showGrid: this.showGrid,
+        };
+
         if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
             this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
         }
@@ -347,12 +361,14 @@ class Model3DViewer extends Box3DViewer {
      * @inheritdoc
      */
     handleReset() {
+        const { projection, renderMode, showGrid } = this.defaults;
+
         super.handleReset();
 
         this.setAnimationState(false);
-        this.handleSetCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
-        this.handleSetRenderMode(RENDER_MODE_LIT);
-        this.handleShowGrid(true);
+        this.handleSetCameraProjection(projection);
+        this.handleSetRenderMode(renderMode);
+        this.handleShowGrid(showGrid);
         this.handleShowSkeletons(false);
         this.handleShowWireframes(false);
 
@@ -360,11 +376,11 @@ class Model3DViewer extends Box3DViewer {
             if (this.getViewerOption('useReactControls')) {
                 this.renderUI();
             } else {
-                this.controls.handleSetRenderMode(RENDER_MODE_LIT);
-                this.controls.setCurrentProjectionMode(CAMERA_PROJECTION_PERSPECTIVE);
+                this.controls.handleSetRenderMode(renderMode);
+                this.controls.setCurrentProjectionMode(projection);
                 this.controls.handleSetSkeletonsVisible(false);
                 this.controls.handleSetWireframesVisible(false);
-                this.controls.handleSetGridVisible(this.showGrid);
+                this.controls.handleSetGridVisible(showGrid);
             }
         }
 
