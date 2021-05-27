@@ -25,6 +25,12 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
     autoCaptionDisplayer;
 
+    /** @property {Array<Object>} - Array of audio tracks for the video */
+    audioTracks = [];
+
+    /** @property {string} - ID of the selected audio track */
+    selectedAudioTrack;
+
     /**
      * @inheritdoc
      */
@@ -34,15 +40,16 @@ class DashViewer extends VideoBaseViewer {
         this.api = options.api;
         // Bind context for callbacks
         this.adaptationHandler = this.adaptationHandler.bind(this);
-        this.handleBuffering = this.handleBuffering.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
+        this.handleBuffering = this.handleBuffering.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
-        this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
+        this.setAudioTrack = this.setAudioTrack.bind(this);
+        this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
     }
 
     /**
@@ -663,6 +670,7 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.audioTracks = uniqueAudioVariants.map(track => ({
+            id: track.audioId,
             language: track.language,
             role: track.roles[0],
         }));
@@ -670,7 +678,11 @@ class DashViewer extends VideoBaseViewer {
         if (this.audioTracks.length > 1) {
             // translate the language first
             const languages = this.audioTracks.map(track => getLanguageName(track.language) || track.language);
-            this.mediaControls.initAlternateAudio(languages);
+            this.selectedAudioTrack = this.audioTracks[0].id;
+
+            if (!this.getViewerOption('useReactControls')) {
+                this.mediaControls.initAlternateAudio(languages);
+            }
         }
     }
 
@@ -705,8 +717,8 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         if (!this.getViewerOption('useReactControls')) {
             this.loadSubtitles();
-            this.loadAlternateAudio();
         }
+        this.loadAlternateAudio();
         this.showPlayButton();
 
         this.loaded = true;
@@ -925,6 +937,20 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Updates the selected audio track
+     * @param {string} audioTrackId - The selected audio track id
+     * @return {void}
+     */
+    setAudioTrack(audioTrackId) {
+        const newAudioTrack = this.audioTracks.find(({ id }) => audioTrackId === id);
+        if (newAudioTrack) {
+            this.enableAudioId(newAudioTrack.role);
+            this.selectedAudioTrack = audioTrackId;
+            this.renderUI();
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     renderUI() {
@@ -934,11 +960,14 @@ class DashViewer extends VideoBaseViewer {
 
         this.controls.render(
             <DashControls
+                audioTrack={this.selectedAudioTrack}
+                audioTracks={this.audioTracks}
                 autoplay={this.isAutoplayEnabled()}
                 bufferedRange={this.mediaEl.buffered}
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
+                onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}

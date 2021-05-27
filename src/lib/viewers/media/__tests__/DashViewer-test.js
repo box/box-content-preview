@@ -685,7 +685,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 expect(dash.loadUI).not.toBeCalled();
                 expect(dash.loadFilmStrip).not.toBeCalled();
                 expect(dash.loadSubtitles).not.toBeCalled();
-                expect(dash.loadAlternateAudio).not.toBeCalled();
+                expect(dash.loadAlternateAudio).toBeCalled();
             });
         });
     });
@@ -936,8 +936,8 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadAlternateAudio();
 
             expect(dash.audioTracks).toEqual([
-                { language: 'eng', role: 'audio0' },
-                { language: 'rus', role: 'audio1' },
+                { id: 0, language: 'eng', role: 'audio0' },
+                { id: 1, language: 'rus', role: 'audio1' },
             ]);
         });
 
@@ -965,7 +965,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.loadAlternateAudio();
 
-            expect(dash.audioTracks).toEqual([{ language: 'eng', role: 'audio0' }]);
+            expect(dash.audioTracks).toEqual([{ id: 0, language: 'eng', role: 'audio0' }]);
         });
     });
 
@@ -1466,6 +1466,36 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('setAudioTrack()', () => {
+        beforeEach(() => {
+            jest.spyOn(dash, 'enableAudioId').mockImplementation();
+            jest.spyOn(dash, 'renderUI').mockImplementation();
+            dash.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+            dash.audioTracks = [
+                { id: 0, language: 'eng', role: 'audio0' },
+                { id: 1, language: 'rus', role: 'audio1' },
+            ];
+        });
+
+        test('should do nothing if the audioTrackId is not found', () => {
+            dash.setAudioTrack(-1);
+
+            expect(dash.enableAudioId).not.toBeCalled();
+            expect(dash.renderUI).not.toBeCalled();
+        });
+
+        test('should update the UI', () => {
+            dash.setAudioTrack(1);
+
+            expect(dash.enableAudioId).toBeCalled();
+            expect(dash.renderUI).toBeCalled();
+            expect(dash.selectedAudioTrack).toBe(1);
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 
@@ -1481,9 +1511,12 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.renderUI();
 
             expect(getProps(dash)).toMatchObject({
+                audioTrack: undefined,
+                audioTracks: [],
                 autoplay: false,
                 currentTime: expect.any(Number),
                 isPlaying: expect.any(Boolean),
+                onAudioTrackChange: dash.setAudioTrack,
                 onAutoplayChange: dash.setAutoplay,
                 onFullscreenToggle: dash.toggleFullscreen,
                 onMuteChange: dash.toggleMute,

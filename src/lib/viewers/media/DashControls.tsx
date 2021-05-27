@@ -15,11 +15,14 @@ export type Props = DurationLabelsProps &
     VolumeControlsProps;
 
 export default function DashControls({
+    audioTrack,
+    audioTracks,
     autoplay,
     bufferedRange,
     currentTime,
     durationTime,
     isPlaying,
+    onAudioTrackChange,
     onAutoplayChange,
     onFullscreenToggle,
     onMuteChange,
@@ -49,8 +52,11 @@ export default function DashControls({
                 <div className="bp-DashControls-group">
                     {/* CC Toggle */}
                     <MediaSettings
+                        audioTrack={audioTrack}
+                        audioTracks={audioTracks}
                         autoplay={autoplay}
                         className="bp-DashControls-settings"
+                        onAudioTrackChange={onAudioTrackChange}
                         onAutoplayChange={onAutoplayChange}
                         onRateChange={onRateChange}
                         rate={rate}
