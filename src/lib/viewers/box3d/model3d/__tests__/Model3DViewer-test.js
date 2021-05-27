@@ -6,16 +6,20 @@ import Model3DControls from '../Model3DControls';
 import Model3DRenderer from '../Model3DRenderer';
 import Model3DViewer from '../Model3DViewer';
 import {
+    CAMERA_PROJECTION_ORTHOGRAPHIC,
+    CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CANVAS_CLICK,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
-    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
+    RENDER_MODE_NORMALS,
+    RENDER_MODE_UNLIT,
 } from '../model3DConstants';
 
 const sandbox = sinon.createSandbox();
@@ -798,12 +802,29 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     });
 
     describe('handleReset()', () => {
+        beforeEach(() => {
+            model3d.defaults = {
+                projection: CAMERA_PROJECTION_ORTHOGRAPHIC,
+                renderMode: RENDER_MODE_NORMALS,
+                showGrid: false,
+            };
+        });
+
         test('should reset control settings', () => {
-            sandbox.mock(model3d.controls).expects('handleSetRenderMode');
-            sandbox.mock(model3d.controls).expects('setCurrentProjectionMode');
+            sandbox
+                .mock(model3d.controls)
+                .expects('handleSetRenderMode')
+                .withArgs(RENDER_MODE_NORMALS);
+            sandbox
+                .mock(model3d.controls)
+                .expects('setCurrentProjectionMode')
+                .withArgs(CAMERA_PROJECTION_ORTHOGRAPHIC);
             sandbox.mock(model3d.controls).expects('handleSetSkeletonsVisible');
             sandbox.mock(model3d.controls).expects('handleSetWireframesVisible');
-            sandbox.mock(model3d.controls).expects('handleSetGridVisible');
+            sandbox
+                .mock(model3d.controls)
+                .expects('handleSetGridVisible')
+                .withArgs(false);
             const renderMock = sandbox.mock(model3d.renderer);
             renderMock.expects('stopAnimation').once();
             model3d.handleReset();
@@ -833,18 +854,18 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             test('should reset controls state and call renderUI', () => {
                 model3d.isAnimationPlaying = true;
-                model3d.projection = 'Orthographic';
-                model3d.renderMode = 'Normals';
-                model3d.showGrid = false;
+                model3d.projection = CAMERA_PROJECTION_PERSPECTIVE;
+                model3d.renderMode = RENDER_MODE_UNLIT;
+                model3d.showGrid = true;
                 model3d.showSkeletons = true;
                 model3d.showWireframes = true;
 
                 model3d.handleReset();
 
                 expect(model3d.isAnimationPlaying).toBe(false);
-                expect(model3d.projection).toBe('Perspective');
-                expect(model3d.renderMode).toBe('Lit');
-                expect(model3d.showGrid).toBe(true);
+                expect(model3d.projection).toBe(CAMERA_PROJECTION_ORTHOGRAPHIC);
+                expect(model3d.renderMode).toBe(RENDER_MODE_NORMALS);
+                expect(model3d.showGrid).toBe(false);
                 expect(model3d.showSkeletons).toBe(false);
                 expect(model3d.showWireframes).toBe(false);
                 expect(model3d.renderUI).toBeCalled();
@@ -986,7 +1007,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
             expect(getProps(model3d)).toMatchObject({
                 animationClips: [],
-                cameraProjection: 'Perspective',
+                cameraProjection: CAMERA_PROJECTION_PERSPECTIVE,
                 currentAnimationClipId: '123',
                 isPlaying: false,
                 isVrShown: false,
