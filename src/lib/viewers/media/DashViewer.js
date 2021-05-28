@@ -28,6 +28,9 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
+    /** @property {string} - Video playback quality */
+    selectedQuality = 'sd';
+
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
 
@@ -49,6 +52,7 @@ class DashViewer extends VideoBaseViewer {
         this.requestFilter = this.requestFilter.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
         this.setAudioTrack = this.setAudioTrack.bind(this);
+        this.setQuality = this.setQuality.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
     }
 
@@ -425,7 +429,7 @@ class DashViewer extends VideoBaseViewer {
      */
     handleQuality() {
         // If there is no HD rep, use the standard definition option
-        const quality = this.hdVideoId !== -1 ? this.cache.get('media-quality') : 'sd';
+        const quality = this.hasHD() ? this.cache.get('media-quality') : 'sd';
 
         switch (quality) {
             case 'hd':
@@ -447,6 +451,10 @@ class DashViewer extends VideoBaseViewer {
         if (quality) {
             this.emit('qualitychange', quality);
         }
+
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -457,9 +465,9 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     showGearHdIcon(activeTrack = {}) {
-        const isPlayingHD = activeTrack.videoId === this.hdVideoId;
+        this.isPlayingHD = activeTrack.videoId === this.hdVideoId;
 
-        if (isPlayingHD) {
+        if (this.isPlayingHD) {
             this.wrapperEl.classList.add(CSS_CLASS_HD);
         } else {
             this.wrapperEl.classList.remove(CSS_CLASS_HD);
@@ -485,6 +493,10 @@ class DashViewer extends VideoBaseViewer {
             this.emit('adaptation', activeTrack.bandwidth);
         }
         this.hideLoadingIcon();
+
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -741,9 +753,19 @@ class DashViewer extends VideoBaseViewer {
     loadUI() {
         super.loadUI();
 
-        if (this.hdVideoId !== -1) {
+        if (this.hasHD()) {
             this.mediaControls.enableHDSettings();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    loadUIReact() {
+        super.loadUIReact();
+
+        this.selectedQuality = this.cache.get('media-quality') || 'auto';
+        this.handleQuality();
     }
 
     /**
@@ -950,6 +972,17 @@ class DashViewer extends VideoBaseViewer {
         }
     }
 
+    setQuality(quality) {
+        this.cache.set('media-quality', quality, true);
+        this.selectedQuality = quality;
+
+        this.handleQuality();
+    }
+
+    hasHD() {
+        return this.hdVideoId !== -1;
+    }
+
     /**
      * @inheritdoc
      */
@@ -967,15 +1000,19 @@ class DashViewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
+                isPlayingHD={this.isPlayingHD}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}
                 onPlayPause={this.togglePlay}
+                onQualityChange={this.setQuality}
                 onRateChange={this.setRate}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
+                quality={this.selectedQuality}
                 rate={this.getRate()}
+                showQuality={this.hasHD()}
                 volume={this.mediaEl.volume}
             />,
         );

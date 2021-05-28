@@ -1,0 +1,41 @@
+@import '../styles';
+
+.bp-HDSettingsToggle {
+    position: relative;
+
+    &.bp-is-open {
+        .bp-HDSettingsToggle-icon {
+            transform: rotate(60deg);
+        }
+    }
+
+    &.bp-is-hd {
+        .bp-HDSettingsToggle-badge {
+            display: flex;
+        }
+    }
+}
+
+.bp-HDSettingsToggle-button {
+    @include bp-Control;
+}
+
+.bp-HDSettingsToggle-icon {
+    transform: rotate(0);
+    transition: transform 300ms ease;
+}
+
+.bp-HDSettingsToggle-badge {
+    position: absolute;
+    top: 10px;
+    left: 22px;
+    display: none;
+    align-items: center;
+    padding: 2px 2px 2px 3px;
+    color: $white;
+    font-weight: bold;
+    font-size: 8px;
+    letter-spacing: .1em;
+    background-color: $bdl-box-blue;
+    border-radius: 3px;
+}
