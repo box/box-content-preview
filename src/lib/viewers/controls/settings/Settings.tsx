@@ -12,19 +12,22 @@ import SettingsMenuItem from './SettingsMenuItem';
 import SettingsRadioItem from './SettingsRadioItem';
 import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
+import './Settings.scss';
 
 export type Props = React.PropsWithChildren<{
+    badge?: React.ReactElement;
     className?: string;
     onClose?: () => void;
     onOpen?: () => void;
-    toggle?: React.ReactElement;
+    toggle?: React.ElementType;
 }>;
 export default function Settings({
+    badge,
     children,
     className,
     onClose = noop,
     onOpen = noop,
-    toggle = <SettingsGearToggle />,
+    toggle: SettingsToggle = SettingsGearToggle,
     ...rest
 }: Props): JSX.Element | null {
     const [activeMenu, setActiveMenu] = React.useState(Menu.MAIN);
@@ -85,14 +88,10 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
-                {toggle &&
-                    React.cloneElement(toggle, {
-                        ref: buttonElRef,
-                        className: 'bp-Settings-toggle',
-                        isOpen,
-                        onClick: handleClick,
-                        ...toggle.props,
-                    })}
+                <div className="bp-Settings-toggle">
+                    <SettingsToggle ref={buttonElRef} isOpen={isOpen} onClick={handleClick} />
+                    {React.isValidElement(badge) && <div className="bp-Settings-toggleBadge">{badge}</div>}
+                </div>
                 <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
                     {children}
                 </SettingsFlyout>

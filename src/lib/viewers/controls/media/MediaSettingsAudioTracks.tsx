@@ -1,4 +1,5 @@
 import React from 'react';
+import getLanguageName from '../../../lang';
 import Settings, { Menu } from '../settings';
 
 export type AudioTrack = {
@@ -12,6 +13,31 @@ export type Props = {
     audioTrack?: number;
     audioTracks: Array<AudioTrack>;
     onAudioTrackChange: (id: number) => void;
+};
+
+export const generateAudioTrackLabel = (language: string, index: number): string => {
+    let label = `${__('track')} ${index + 1}`;
+    if (language !== 'und') {
+        label = `${label} (${getLanguageName(language) || language})`;
+    }
+
+    return label;
+};
+
+export const addLabels = (audioTracks: Array<AudioTrack>): Array<AudioTrack> =>
+    audioTracks.map((track, index) => {
+        const { language } = track;
+        const label = generateAudioTrackLabel(language, index);
+        return {
+            ...track,
+            label,
+        };
+    });
+
+export const QUALITY_LABEL_MAP: Record<string, string> = {
+    auto: __('media_quality_auto'),
+    hd: '1080p',
+    sd: '480p',
 };
 
 export default function MediaSettingsMenuAudioTracks({

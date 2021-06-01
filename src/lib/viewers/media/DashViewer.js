@@ -28,6 +28,9 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
+    /** @property {Boolean} - Flag indicating whether the active track is the HD track */
+    isPlayingHD = false;
+
     /** @property {string} - Video playback quality */
     selectedQuality = 'sd';
 
@@ -429,7 +432,7 @@ class DashViewer extends VideoBaseViewer {
      */
     handleQuality() {
         // If there is no HD rep, use the standard definition option
-        const quality = this.hasHD() ? this.cache.get('media-quality') : 'sd';
+        const quality = this.hdVideoId !== -1 ? this.cache.get('media-quality') : 'sd';
 
         switch (quality) {
             case 'hd':
@@ -446,14 +449,12 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        this.showGearHdIcon(this.getActiveTrack());
+        if (!this.getViewerOption('useReactControls')) {
+            this.showGearHdIcon(this.getActiveTrack());
+        }
 
         if (quality) {
             this.emit('qualitychange', quality);
-        }
-
-        if (this.getViewerOption('useReactControls')) {
-            this.renderUI();
         }
     }
 
@@ -753,7 +754,7 @@ class DashViewer extends VideoBaseViewer {
     loadUI() {
         super.loadUI();
 
-        if (this.hasHD()) {
+        if (this.hdVideoId !== -1) {
             this.mediaControls.enableHDSettings();
         }
     }
@@ -764,8 +765,9 @@ class DashViewer extends VideoBaseViewer {
     loadUIReact() {
         super.loadUIReact();
 
-        this.selectedQuality = this.cache.get('media-quality') || 'auto';
-        this.handleQuality();
+        const isHDSupported = this.hdVideoId !== -1;
+        this.selectedQuality = isHDSupported ? this.cache.get('media-quality') || 'auto' : 'sd';
+        this.setQuality(this.selectedQuality);
     }
 
     /**
@@ -976,11 +978,26 @@ class DashViewer extends VideoBaseViewer {
         this.cache.set('media-quality', quality, true);
         this.selectedQuality = quality;
 
-        this.handleQuality();
-    }
+        switch (quality) {
+            case 'hd':
+                this.enableAdaptation(false);
+                this.enableVideoId(this.hdVideoId);
+                break;
+            case 'sd':
+                this.enableAdaptation(false);
+                this.enableVideoId(this.sdVideoId);
+                break;
+            case 'auto':
+            default:
+                this.enableAdaptation(true);
+                break;
+        }
 
-    hasHD() {
-        return this.hdVideoId !== -1;
+        if (quality) {
+            this.emit('qualitychange', quality);
+        }
+
+        this.renderUI();
     }
 
     /**
@@ -1012,7 +1029,6 @@ class DashViewer extends VideoBaseViewer {
                 onVolumeChange={this.setVolume}
                 quality={this.selectedQuality}
                 rate={this.getRate()}
-                showQuality={this.hasHD()}
                 volume={this.mediaEl.volume}
             />,
         );

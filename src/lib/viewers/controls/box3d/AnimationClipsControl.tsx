@@ -32,7 +32,7 @@ export default function AnimationClipsControl({
     onAnimationClipSelect,
 }: Props): JSX.Element {
     return (
-        <Settings className="bp-AnimationClipsControl" toggle={<AnimationClipsToggle />}>
+        <Settings className="bp-AnimationClipsControl" toggle={AnimationClipsToggle}>
             <Settings.Menu name={Menu.MAIN}>
                 {animationClips.map(({ duration, id, name }) => {
                     return (

@@ -1,7 +1,10 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import getLanguageName from '../../../lang';
-import MediaSettingsMenuAudioTracks, { AudioTrack, Props as AudioTracksProps } from './MediaSettingsAudioTracks';
+import MediaSettingsMenuAudioTracks, {
+    addLabels,
+    Props as AudioTracksProps,
+    QUALITY_LABEL_MAP,
+} from './MediaSettingsAudioTracks';
 import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from './MediaSettingsMenuAutoplay';
 import MediaSettingsMenuQuality, { Props as QualityProps } from './MediaSettingsMenuQuality';
 import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
@@ -11,37 +14,13 @@ export type Props = Partial<AudioTracksProps> &
     Partial<QualityProps> &
     Partial<SettingsProps> &
     AutoplayProps &
-    RateProps & { className?: string; showQuality?: boolean };
-
-const generateAudioTrackLabel = (language: string, index: number): string => {
-    let label = `${__('track')} ${index + 1}`;
-    if (language !== 'und') {
-        label = `${label} (${getLanguageName(language) || language})`;
-    }
-
-    return label;
-};
-
-const addLabels = (audioTracks: Array<AudioTrack>): Array<AudioTrack> =>
-    audioTracks.map((track, index) => {
-        const { language } = track;
-        const label = generateAudioTrackLabel(language, index);
-        return {
-            ...track,
-            label,
-        };
-    });
-
-const QUALITY_LABEL_MAP: Record<string, string> = {
-    auto: __('media_quality_auto'),
-    hd: '1080p',
-    sd: '480p',
-};
+    RateProps & { className?: string };
 
 export default function MediaSettings({
     audioTrack,
     audioTracks = [],
     autoplay,
+    badge,
     className,
     onAudioTrackChange = noop,
     onAutoplayChange,
@@ -49,7 +28,6 @@ export default function MediaSettings({
     onRateChange,
     quality,
     rate,
-    showQuality = false,
     toggle,
 }: Props): JSX.Element {
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
@@ -60,11 +38,11 @@ export default function MediaSettings({
     const showAudioTrackItems = audioTracks.length > 1;
 
     return (
-        <Settings className={className} toggle={toggle}>
+        <Settings badge={badge} className={className} toggle={toggle}>
             <Settings.Menu name={Menu.MAIN}>
                 <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
                 <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
-                {showQuality && quality && (
+                {quality && (
                     <Settings.MenuItem
                         label={__('media_quality')}
                         target={Menu.QUALITY}
@@ -78,7 +56,7 @@ export default function MediaSettings({
 
             <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
-            {showQuality && <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />}
+            {quality && <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />}
             {showAudioTrackItems && (
                 <MediaSettingsMenuAudioTracks
                     audioTrack={audioTrack}
