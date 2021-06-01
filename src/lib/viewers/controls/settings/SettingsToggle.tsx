@@ -1,16 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 import IconGear24 from '../icons/IconGear24';
 import './SettingsToggle.scss';
 
 export type Props = {
-    isOpen: boolean;
-    onClick: () => void;
+    isOpen?: boolean;
+    onClick?: () => void;
 };
 
 export type Ref = HTMLButtonElement;
 
-function SettingsToggle({ isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
+function SettingsToggle({ isOpen = false, onClick = noop }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
         <button
             ref={ref}

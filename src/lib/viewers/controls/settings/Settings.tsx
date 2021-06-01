@@ -17,9 +17,8 @@ export type Props = React.PropsWithChildren<{
     className?: string;
     onClose?: () => void;
     onOpen?: () => void;
-    toggle?: React.ReactNode;
+    toggle?: React.ReactElement;
 }>;
-
 export default function Settings({
     children,
     className,
@@ -86,13 +85,14 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
-                {React.cloneElement(toggle, {
-                    ref: buttonElRef,
-                    className: 'bp-Settings-toggle',
-                    isOpen,
-                    onClick: handleClick,
-                    ...toggle.props,
-                })}
+                {toggle &&
+                    React.cloneElement(toggle, {
+                        ref: buttonElRef,
+                        className: 'bp-Settings-toggle',
+                        isOpen,
+                        onClick: handleClick,
+                        ...toggle.props,
+                    })}
                 <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
                     {children}
                 </SettingsFlyout>

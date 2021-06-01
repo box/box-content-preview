@@ -1,12 +1,13 @@
 import React from 'react';
+import noop from 'lodash/noop';
 import Settings, { Menu } from '../settings';
 
 export type Props = {
-    onQualityChange: (quality: string) => void;
-    quality: string;
+    onQualityChange?: (quality: string) => void;
+    quality?: string;
 };
 
-export default function MediaSettingsMenuQuality({ onQualityChange, quality }: Props): JSX.Element {
+export default function MediaSettingsMenuQuality({ onQualityChange = noop, quality }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
     const handleChange = (value: string): void => {

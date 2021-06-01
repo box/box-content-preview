@@ -1,17 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 import IconGear24 from '../icons/IconGear24';
 import './HDSettingsToggle.scss';
 
 export type Props = {
     isHD?: boolean;
-    isOpen: boolean;
-    onClick: () => void;
+    isOpen?: boolean;
+    onClick?: () => void;
 };
 
 export type Ref = HTMLButtonElement;
 
-function HDSettingsToggle({ isHD = false, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
+function HDSettingsToggle({ isHD = false, isOpen = false, onClick = noop }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
         <div className={classNames('bp-HDSettingsToggle', { 'bp-is-open': isOpen, 'bp-is-hd': isHD })}>
             <button

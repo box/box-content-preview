@@ -8,9 +8,9 @@ import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRa
 import Settings, { Menu, Props as SettingsProps } from '../settings';
 
 export type Props = Partial<AudioTracksProps> &
+    Partial<QualityProps> &
     Partial<SettingsProps> &
     AutoplayProps &
-    QualityProps &
     RateProps & { className?: string; showQuality?: boolean };
 
 const generateAudioTrackLabel = (language: string, index: number): string => {
@@ -32,7 +32,7 @@ const addLabels = (audioTracks: Array<AudioTrack>): Array<AudioTrack> =>
         };
     });
 
-const QUALITY_LABEL_MAP = {
+const QUALITY_LABEL_MAP: Record<string, string> = {
     auto: __('media_quality_auto'),
     hd: '1080p',
     sd: '480p',
@@ -64,7 +64,7 @@ export default function MediaSettings({
             <Settings.Menu name={Menu.MAIN}>
                 <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
                 <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
-                {showQuality && (
+                {showQuality && quality && (
                     <Settings.MenuItem
                         label={__('media_quality')}
                         target={Menu.QUALITY}

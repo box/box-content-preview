@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import AnimationClipsControl, { formatDuration, Props as AnimationClipsControlProps } from '../AnimationClipsControl';
-import AnimationClipsToggle from '../AnimationClipsToggle';
 import Settings from '../../settings';
 
 describe('AnimationClipsControl', () => {
@@ -22,7 +21,7 @@ describe('AnimationClipsControl', () => {
 
             expect(wrapper.find(Settings).props()).toMatchObject({
                 className: 'bp-AnimationClipsControl',
-                toggle: AnimationClipsToggle,
+                toggle: expect.any(Object),
             });
             expect(wrapper.exists(Settings.Menu)).toBe(true);
         });

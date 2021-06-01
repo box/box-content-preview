@@ -168,7 +168,7 @@ describe('Settings', () => {
         describe('toggle prop', () => {
             function CustomToggle(
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                { isOpen, ...rest }: { isOpen: boolean; onClick: () => void },
+                { isOpen, ...rest }: { isOpen?: boolean; onClick?: () => void },
                 ref: React.Ref<HTMLButtonElement>,
             ): JSX.Element {
                 return <button ref={ref} className="custom-toggle" type="button" {...rest} />;
@@ -183,7 +183,7 @@ describe('Settings', () => {
             });
 
             test('should use provided toggle', () => {
-                const wrapper = getWrapper({ toggle: CustomToggleWithRef });
+                const wrapper = getWrapper({ toggle: <CustomToggleWithRef /> });
 
                 expect(wrapper.exists(SettingsGearToggle)).toBe(false);
                 expect(wrapper.exists(CustomToggleWithRef)).toBe(true);
