@@ -18,7 +18,10 @@ describe('Settings', () => {
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsGearToggle).simulate('click');
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
@@ -56,7 +59,10 @@ describe('Settings', () => {
                 return event;
             };
 
-            wrapper.find(SettingsGearToggle).simulate('click'); // Open the controls
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
 
             act(() => {
@@ -65,7 +71,11 @@ describe('Settings', () => {
             wrapper.update();
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsGearToggle).simulate('click'); // Re-open the controls
+            // Re-open the controls
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
 
             wrapper.find(SettingsFlyout).simulate('click'); // Click within the controls
@@ -94,7 +104,10 @@ describe('Settings', () => {
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsGearToggle).simulate('click');
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
             expect(onOpen).toBeCalledTimes(1);
@@ -109,13 +122,19 @@ describe('Settings', () => {
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(false);
 
-            wrapper.find(SettingsGearToggle).simulate('click');
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
             expect(onOpen).toBeCalledTimes(1);
             expect(onClose).not.toBeCalled();
 
-            wrapper.find(SettingsGearToggle).simulate('click');
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update();
 
             expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
             expect(onOpen).toBeCalledTimes(1);
@@ -132,7 +151,10 @@ describe('Settings', () => {
                 return event;
             };
 
-            wrapper.find(SettingsGearToggle).simulate('click'); // Open the controls
+            act(() => {
+                wrapper.find(SettingsGearToggle).prop('onClick')();
+            });
+            wrapper.update(); // Open the controls
             expect(wrapper.find(SettingsGearToggle).prop('isOpen')).toBe(true);
 
             act(() => {
@@ -158,7 +180,10 @@ describe('Settings', () => {
             test('should apply activeRect dimensions if present', () => {
                 const wrapper = getWrapper();
 
-                wrapper.find(SettingsGearToggle).simulate('click');
+                act(() => {
+                    wrapper.find(SettingsGearToggle).prop('onClick')();
+                });
+                wrapper.update();
 
                 expect(wrapper.find(SettingsFlyout).prop('height')).toBe('auto');
                 expect(wrapper.find(SettingsFlyout).prop('width')).toBe('auto');
@@ -187,6 +212,24 @@ describe('Settings', () => {
 
                 expect(wrapper.exists(SettingsGearToggle)).toBe(false);
                 expect(wrapper.exists(CustomToggleWithRef)).toBe(true);
+            });
+        });
+
+        describe('badge prop', () => {
+            function CustomBadge(): JSX.Element {
+                return <div className="custom-badge">custom</div>;
+            }
+
+            test('should not show badge if not provided', () => {
+                const wrapper = getWrapper();
+
+                expect(wrapper.exists('.bp-Settings-toggleBadge')).toBe(false);
+            });
+
+            test('should show badge if provided', () => {
+                const badge = <CustomBadge />;
+                const wrapper = getWrapper({ badge });
+                expect(wrapper.exists('CustomBadge')).toBe(true);
             });
         });
     });

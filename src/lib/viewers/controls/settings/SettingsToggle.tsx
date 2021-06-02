@@ -4,23 +4,28 @@ import IconGear24 from '../icons/IconGear24';
 import './SettingsToggle.scss';
 
 export type Props = {
+    badge?: React.ReactElement;
+    className?: string;
     isOpen: boolean;
     onClick: () => void;
 };
 
 export type Ref = HTMLButtonElement;
 
-function SettingsToggle({ isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
+function SettingsToggle({ badge, className, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
-        <button
-            ref={ref}
-            className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}
-            onClick={onClick}
-            title={__('media_settings')}
-            type="button"
-        >
-            <IconGear24 className="bp-SettingsToggle-icon" />
-        </button>
+        <div className={classNames('bp-SettingsToggle', className, { 'bp-is-open': isOpen })}>
+            <button
+                ref={ref}
+                className="bp-SettingsToggle-button"
+                onClick={onClick}
+                title={__('media_settings')}
+                type="button"
+            >
+                <IconGear24 className="bp-SettingsToggle-icon" />
+            </button>
+            {React.isValidElement(badge) && <div className="bp-SettingsToggle-badge">{badge}</div>}
+        </div>
     );
 }
 

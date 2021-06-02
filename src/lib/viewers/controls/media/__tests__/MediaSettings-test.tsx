@@ -6,6 +6,7 @@ import Settings from '../../settings/Settings';
 import SettingsMenu from '../../settings/SettingsMenu';
 import SettingsMenuItem from '../../settings/SettingsMenuItem';
 import MediaSettingsMenuAudioTracks from '../MediaSettingsAudioTracks';
+import MediaSettingsMenuQuality from '../MediaSettingsMenuQuality';
 
 describe('MediaSettings', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
@@ -19,6 +20,8 @@ describe('MediaSettings', () => {
             />,
         );
 
+    const CustomToggle = (): JSX.Element => <button type="button">custom button</button>;
+
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
@@ -28,12 +31,24 @@ describe('MediaSettings', () => {
             expect(wrapper.exists(SettingsMenuItem)).toBe(true);
         });
 
+        test('should pass optional props to Settings', () => {
+            const badge = <div className="custom-badge">custom</div>;
+            const wrapper = getWrapper({ badge, toggle: CustomToggle });
+            const settings = wrapper.find(Settings);
+
+            expect(settings.prop('badge')).toEqual(badge);
+            expect(settings.prop('toggle')).toEqual(CustomToggle);
+        });
+
         test.each`
-            menuItem      | value    | displayValue
-            ${'autoplay'} | ${true}  | ${'Enabled'}
-            ${'autoplay'} | ${false} | ${'Disabled'}
-            ${'rate'}     | ${'1.0'} | ${'Normal'}
-            ${'rate'}     | ${'2.0'} | ${'2.0'}
+            menuItem      | value     | displayValue
+            ${'autoplay'} | ${true}   | ${__('media_autoplay_enabled')}
+            ${'autoplay'} | ${false}  | ${__('media_autoplay_disabled')}
+            ${'rate'}     | ${'1.0'}  | ${__('media_speed_normal')}
+            ${'rate'}     | ${'2.0'}  | ${'2.0'}
+            ${'quality'}  | ${'auto'} | ${__('media_quality_auto')}
+            ${'quality'}  | ${'sd'}   | ${'480p'}
+            ${'quality'}  | ${'hd'}   | ${'1080p'}
         `('should display $displayValue for the $menuItem value $value', ({ displayValue, menuItem, value }) => {
             const wrapper = getWrapper({ [menuItem]: value });
 
@@ -63,6 +78,16 @@ describe('MediaSettings', () => {
             const wrapper = getWrapper({ audioTrack: 1, audioTracks });
             const expectedLabel = `${__('track')} 2 (English)`;
             expect(wrapper.find({ target: 'audio' }).prop('value')).toBe(expectedLabel);
+        });
+
+        test('should not render the quality menu item if no quality is provided', () => {
+            const wrapper = getWrapper();
+            expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(false);
+        });
+
+        test('should render the quality menu if the quality is provided', () => {
+            const wrapper = getWrapper({ quality: 'auto', onQualityChange: jest.fn() });
+            expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(true);
         });
     });
 });

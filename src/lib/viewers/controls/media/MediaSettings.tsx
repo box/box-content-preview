@@ -1,12 +1,11 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import MediaSettingsMenuAudioTracks, {
-    addLabels,
-    Props as AudioTracksProps,
-    QUALITY_LABEL_MAP,
-} from './MediaSettingsAudioTracks';
+import MediaSettingsMenuAudioTracks, { addLabels, Props as AudioTracksProps } from './MediaSettingsAudioTracks';
 import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from './MediaSettingsMenuAutoplay';
-import MediaSettingsMenuQuality, { Props as QualityProps } from './MediaSettingsMenuQuality';
+import MediaSettingsMenuQuality, {
+    getLabel as getQualityLabel,
+    Props as QualityProps,
+} from './MediaSettingsMenuQuality';
 import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
 import Settings, { Menu, Props as SettingsProps } from '../settings';
 
@@ -46,7 +45,7 @@ export default function MediaSettings({
                     <Settings.MenuItem
                         label={__('media_quality')}
                         target={Menu.QUALITY}
-                        value={QUALITY_LABEL_MAP[quality]}
+                        value={getQualityLabel(quality)}
                     />
                 )}
                 {showAudioTrackItems && (
@@ -56,7 +55,9 @@ export default function MediaSettings({
 
             <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
-            {quality && <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />}
+            {quality && onQualityChange && (
+                <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
+            )}
             {showAudioTrackItems && (
                 <MediaSettingsMenuAudioTracks
                     audioTrack={audioTrack}

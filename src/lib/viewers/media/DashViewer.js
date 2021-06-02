@@ -28,9 +28,6 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
-    /** @property {Boolean} - Flag indicating whether the active track is the HD track */
-    isPlayingHD = false;
-
     /** @property {string} - Video playback quality */
     selectedQuality = 'sd';
 
@@ -466,13 +463,22 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     showGearHdIcon(activeTrack = {}) {
-        this.isPlayingHD = activeTrack.videoId === this.hdVideoId;
+        const isPlayingHD = activeTrack.videoId === this.hdVideoId;
 
-        if (this.isPlayingHD) {
+        if (isPlayingHD) {
             this.wrapperEl.classList.add(CSS_CLASS_HD);
         } else {
             this.wrapperEl.classList.remove(CSS_CLASS_HD);
         }
+    }
+
+    /**
+     * Determines whether the player is playing HD currently
+     * @returns {Boolean}
+     */
+    isPlayingHD() {
+        const activeTrack = this.getActiveTrack();
+        return activeTrack.videoId === this.hdVideoId;
     }
 
     /**
@@ -485,7 +491,9 @@ class DashViewer extends VideoBaseViewer {
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
 
-        this.showGearHdIcon(activeTrack);
+        if (!this.getViewerOption('useReactControls')) {
+            this.showGearHdIcon(activeTrack);
+        }
 
         if (!this.isLoaded()) {
             return;
@@ -974,11 +982,17 @@ class DashViewer extends VideoBaseViewer {
         }
     }
 
+    /**
+     * Updates the selected quality and updates the player accordingly
+     * @param {string} quality - 'sd', 'hd', or 'auto'
+     * @return {void}
+     */
     setQuality(quality) {
-        this.cache.set('media-quality', quality, true);
-        this.selectedQuality = quality;
+        const newQuality = quality !== 'sd' && quality !== 'hd' ? 'auto' : quality;
+        this.cache.set('media-quality', newQuality, true);
+        this.selectedQuality = newQuality;
 
-        switch (quality) {
+        switch (newQuality) {
             case 'hd':
                 this.enableAdaptation(false);
                 this.enableVideoId(this.hdVideoId);
@@ -993,8 +1007,8 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        if (quality) {
-            this.emit('qualitychange', quality);
+        if (newQuality) {
+            this.emit('qualitychange', newQuality);
         }
 
         this.renderUI();
@@ -1017,7 +1031,7 @@ class DashViewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
-                isPlayingHD={this.isPlayingHD}
+                isPlayingHD={this.isPlayingHD()}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}

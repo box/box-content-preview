@@ -34,12 +34,6 @@ export const addLabels = (audioTracks: Array<AudioTrack>): Array<AudioTrack> =>
         };
     });
 
-export const QUALITY_LABEL_MAP: Record<string, string> = {
-    auto: __('media_quality_auto'),
-    hd: '1080p',
-    sd: '480p',
-};
-
 export default function MediaSettingsMenuAudioTracks({
     audioTrack,
     audioTracks,
