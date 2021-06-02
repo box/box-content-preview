@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import Settings, { Context, Menu } from '../../settings';
 import MediaSettingsMenuQuality, { Quality } from '../MediaSettingsMenuQuality';
+import Settings, { Context, Menu } from '../../settings';
 
 describe('MediaSettingsMenuQuality', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<MediaSettingsMenuQuality onQualityChange={jest.fn()} quality={Quality.auto} {...props} />, {
+        mount(<MediaSettingsMenuQuality onQualityChange={jest.fn()} quality={Quality.AUTO} {...props} />, {
             wrappingComponent: Settings.Context.Provider,
             wrappingComponentProps: { value: context },
         });

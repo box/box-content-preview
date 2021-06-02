@@ -30,7 +30,7 @@ describe('DashControls', () => {
             onRateChange: jest.fn(),
             onTimeChange: jest.fn(),
             onVolumeChange: jest.fn(),
-            quality: Quality.auto,
+            quality: Quality.AUTO,
             rate: '1.0',
         });
         const getWrapper = (props = {}): ShallowWrapper => shallow(<DashControls {...getDefaults()} {...props} />);

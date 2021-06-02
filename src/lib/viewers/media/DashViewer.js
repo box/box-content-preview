@@ -985,6 +985,7 @@ class DashViewer extends VideoBaseViewer {
     /**
      * Updates the selected quality and updates the player accordingly
      * @param {string} quality - 'sd', 'hd', or 'auto'
+     * @emits qualitychange
      * @return {void}
      */
     setQuality(quality) {

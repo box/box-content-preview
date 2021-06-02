@@ -87,13 +87,7 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
-                <SettingsToggle
-                    ref={buttonElRef}
-                    badge={badge}
-                    className="bp-Settings-toggle"
-                    isOpen={isOpen}
-                    onClick={handleClick}
-                />
+                <SettingsToggle ref={buttonElRef} badge={badge} isOpen={isOpen} onClick={handleClick} />
                 <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
                     {children}
                 </SettingsFlyout>

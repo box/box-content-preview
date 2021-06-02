@@ -8,15 +8,15 @@ export type Props = {
 };
 
 export enum Quality {
-    auto = 'auto',
-    hd = 'hd',
-    sd = 'sd',
+    AUTO = 'auto',
+    HD = 'hd',
+    SD = 'sd',
 }
 
 const QUALITY_LABEL_MAP: Record<Quality, string> = {
-    [Quality.auto]: __('media_quality_auto') as string,
-    [Quality.hd]: '1080p',
-    [Quality.sd]: '480p',
+    [Quality.AUTO]: __('media_quality_auto') as string,
+    [Quality.HD]: '1080p',
+    [Quality.SD]: '480p',
 };
 
 export const getLabel = (quality: Quality): string => QUALITY_LABEL_MAP[quality];
@@ -33,22 +33,22 @@ export default function MediaSettingsMenuQuality({ onQualityChange = noop, quali
         <Settings.Menu name={Menu.QUALITY}>
             <Settings.MenuBack label={__('media_quality')} />
             <Settings.RadioItem<Quality>
-                isSelected={quality === 'sd'}
+                isSelected={quality === Quality.SD}
                 label="480p"
                 onChange={handleChange}
-                value={Quality.sd}
+                value={Quality.SD}
             />
             <Settings.RadioItem<Quality>
-                isSelected={quality === 'hd'}
+                isSelected={quality === Quality.HD}
                 label="1080p"
                 onChange={handleChange}
-                value={Quality.hd}
+                value={Quality.HD}
             />
             <Settings.RadioItem<Quality>
-                isSelected={quality === 'auto'}
+                isSelected={quality === Quality.AUTO}
                 label={__('media_quality_auto')}
                 onChange={handleChange}
-                value={Quality.auto}
+                value={Quality.AUTO}
             />
         </Settings.Menu>
     );

@@ -5,16 +5,15 @@ import './SettingsToggle.scss';
 
 export type Props = {
     badge?: React.ReactElement;
-    className?: string;
     isOpen: boolean;
     onClick: () => void;
 };
 
 export type Ref = HTMLButtonElement;
 
-function SettingsToggle({ badge, className, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
+function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
-        <div className={classNames('bp-SettingsToggle', className, { 'bp-is-open': isOpen })}>
+        <div className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}>
             <button
                 ref={ref}
                 className="bp-SettingsToggle-button"
