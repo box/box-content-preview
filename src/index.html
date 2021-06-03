@@ -39,6 +39,13 @@
                 height: 90vh;
                 width: 100vw;
             }
+
+            @media only screen and (max-width: 375px) {
+                /* Hide the collections fields when the viewport is small so the E2E tests don't fail */
+                #collection {
+                    display: none;
+                }
+            }
         </style>
     </head>
 
@@ -56,6 +63,14 @@
                 <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
             </div>
 
+            <div class="container" id="collection">
+                <div>Collection: <span id="collection-display"></span></div>
+                <input id="collection-set" data-testid="collection" placeholder="Enter list of file ids" />
+                <button onClick="setProperty('collection')" data-testid="collection-set">Set new collection</button>
+                <button onClick="clearProperty('collection')" data-testid="collection-clear">Clear</button>
+                <div>Enter 2+ comma separated list of file ids</div>
+            </div>
+
             <div class="container" id="load">
                 <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
             </div>
@@ -66,6 +81,14 @@
             // Create preview first so events can be bound before 'show'
             /* global Box */
             preview = new Box.Preview();
+
+            function clearProperty(selector) {
+                var inputEl = document.getElementById(selector + '-set');
+                var displayEl = document.getElementById(selector + '-display');
+                inputEl.value = '';
+                displayEl.textContent = '';
+                localStorage.setItem(selector, '');
+            }
 
             function setProperty(selector) {
                 // Get new value, fallback to local storage
@@ -87,12 +110,20 @@
             function loadPreview(options) {
                 var token = localStorage.getItem('token');
                 var fileid = localStorage.getItem('fileid');
+                var fileidList = localStorage.getItem('collection') || '';
 
                 if (!token || !fileid) {
                     return;
                 }
 
+                var collection =
+                    fileidList &&
+                    fileidList.split(',').map(function(fileid) {
+                        return fileid.trim();
+                    });
+
                 var previewOptions = options || {
+                    collection,
                     enableThumbnailsSidebar: true,
                     showAnnotations: true,
                     showDownload: true,
@@ -105,6 +136,7 @@
             // Try to load all properties from storage on page load
             setProperty('token');
             setProperty('fileid');
+            setProperty('collection');
             loadPreview();
         </script>
     </body>
