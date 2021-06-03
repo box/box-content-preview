@@ -954,7 +954,10 @@ class DashViewer extends VideoBaseViewer {
      * @inheritdoc
      */
     renderUI() {
-        if (!this.controls) {
+        // Extra guard for `render` is needed because Video360Viewer extends DashViewer
+        // and creates and assigns the 360 control to this.controls which usually has
+        // been reserved for new React controls
+        if (!this.controls || !this.controls.render) {
             return;
         }
 
