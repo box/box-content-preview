@@ -28,6 +28,9 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
+    /** @property {string} - Video playback quality */
+    selectedQuality = 'sd';
+
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
 
@@ -49,6 +52,7 @@ class DashViewer extends VideoBaseViewer {
         this.requestFilter = this.requestFilter.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
         this.setAudioTrack = this.setAudioTrack.bind(this);
+        this.setQuality = this.setQuality.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
     }
 
@@ -442,7 +446,9 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        this.showGearHdIcon(this.getActiveTrack());
+        if (!this.getViewerOption('useReactControls')) {
+            this.showGearHdIcon(this.getActiveTrack());
+        }
 
         if (quality) {
             this.emit('qualitychange', quality);
@@ -467,6 +473,15 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Determines whether the player is playing HD currently
+     * @returns {Boolean}
+     */
+    isPlayingHD() {
+        const activeTrack = this.getActiveTrack();
+        return activeTrack.videoId === this.hdVideoId;
+    }
+
+    /**
      * Handles adaptation changes
      *
      * @private
@@ -476,7 +491,9 @@ class DashViewer extends VideoBaseViewer {
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
 
-        this.showGearHdIcon(activeTrack);
+        if (!this.getViewerOption('useReactControls')) {
+            this.showGearHdIcon(activeTrack);
+        }
 
         if (!this.isLoaded()) {
             return;
@@ -485,6 +502,10 @@ class DashViewer extends VideoBaseViewer {
             this.emit('adaptation', activeTrack.bandwidth);
         }
         this.hideLoadingIcon();
+
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     /**
@@ -747,6 +768,17 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * @inheritdoc
+     */
+    loadUIReact() {
+        super.loadUIReact();
+
+        const isHDSupported = this.hdVideoId !== -1;
+        this.selectedQuality = isHDSupported ? this.cache.get('media-quality') || 'auto' : 'sd';
+        this.setQuality(this.selectedQuality);
+    }
+
+    /**
      * Loads the film strip
      *
      * @private
@@ -951,6 +983,39 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Updates the selected quality and updates the player accordingly
+     * @param {string} quality - 'sd', 'hd', or 'auto'
+     * @emits qualitychange
+     * @return {void}
+     */
+    setQuality(quality) {
+        const newQuality = quality !== 'sd' && quality !== 'hd' ? 'auto' : quality;
+        this.cache.set('media-quality', newQuality, true);
+        this.selectedQuality = newQuality;
+
+        switch (newQuality) {
+            case 'hd':
+                this.enableAdaptation(false);
+                this.enableVideoId(this.hdVideoId);
+                break;
+            case 'sd':
+                this.enableAdaptation(false);
+                this.enableVideoId(this.sdVideoId);
+                break;
+            case 'auto':
+            default:
+                this.enableAdaptation(true);
+                break;
+        }
+
+        if (newQuality) {
+            this.emit('qualitychange', newQuality);
+        }
+
+        this.renderUI();
+    }
+
+    /**
      * @inheritdoc
      */
     renderUI() {
@@ -967,14 +1032,17 @@ class DashViewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
+                isPlayingHD={this.isPlayingHD()}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}
                 onPlayPause={this.togglePlay}
+                onQualityChange={this.setQuality}
                 onRateChange={this.setRate}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
+                quality={this.selectedQuality}
                 rate={this.getRate()}
                 volume={this.mediaEl.volume}
             />,

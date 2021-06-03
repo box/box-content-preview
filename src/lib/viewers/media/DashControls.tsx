@@ -1,5 +1,6 @@
 import React from 'react';
 import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
+import HDBadge from '../controls/media/HDBadge';
 import MediaFullscreenToggle, { Props as MediaFullscreenToggleProps } from '../controls/media/MediaFullscreenToggle';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
@@ -12,7 +13,7 @@ export type Props = DurationLabelsProps &
     MediaSettingsProps &
     PlayControlsProps &
     TimeControlsProps &
-    VolumeControlsProps;
+    VolumeControlsProps & { isPlayingHD?: boolean };
 
 export default function DashControls({
     audioTrack,
@@ -22,14 +23,17 @@ export default function DashControls({
     currentTime,
     durationTime,
     isPlaying,
+    isPlayingHD,
     onAudioTrackChange,
     onAutoplayChange,
     onFullscreenToggle,
     onMuteChange,
     onPlayPause,
+    onQualityChange,
     onRateChange,
     onTimeChange,
     onVolumeChange,
+    quality,
     rate,
     volume,
 }: Props): JSX.Element {
@@ -55,10 +59,13 @@ export default function DashControls({
                         audioTrack={audioTrack}
                         audioTracks={audioTracks}
                         autoplay={autoplay}
+                        badge={isPlayingHD ? <HDBadge /> : undefined}
                         className="bp-DashControls-settings"
                         onAudioTrackChange={onAudioTrackChange}
                         onAutoplayChange={onAutoplayChange}
+                        onQualityChange={onQualityChange}
                         onRateChange={onRateChange}
+                        quality={quality}
                         rate={rate}
                     />
                     <MediaFullscreenToggle onFullscreenToggle={onFullscreenToggle} />

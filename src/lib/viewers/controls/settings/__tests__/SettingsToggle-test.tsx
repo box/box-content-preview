@@ -13,7 +13,7 @@ describe('SettingsToggle', () => {
 
             expect(wrapper.hasClass('bp-SettingsToggle')).toBe(true);
             expect(wrapper.exists(IconGear24)).toBe(true);
-            expect(wrapper.prop('title')).toBe('Settings');
+            expect(wrapper.find('button').prop('title')).toBe(__('media_settings'));
         });
 
         test.each([true, false])('should add or remove class based on isOpen prop', isOpen => {

@@ -493,6 +493,16 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.adapt).toBeCalledWith(false);
             expect(dash.emit).toBeCalledWith('qualitychange', 'sd');
         });
+
+        describe('With React controls', () => {
+            test('should not call showGearHdIcon', () => {
+                jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
+
+                dash.handleQuality();
+
+                expect(dash.showGearHdIcon).not.toBeCalled();
+            });
+        });
     });
 
     describe('adaptationHandler()', () => {
@@ -537,6 +547,15 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.adaptationHandler();
             expect(dash.emit).not.toBeCalled();
             expect(stubs.hide).toBeCalled();
+        });
+
+        describe('With React controls', () => {
+            test('should call renderUI', () => {
+                jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
+                jest.spyOn(dash, 'renderUI').mockImplementation();
+                dash.adaptationHandler();
+                expect(dash.renderUI).toBeCalled();
+            });
         });
     });
 
@@ -717,6 +736,39 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.hdVideoId = -1;
             dash.loadUI();
             expect(dash.mediaControls.enableHDSettings).not.toBeCalled();
+        });
+    });
+
+    describe('loadUIReact()', () => {
+        beforeEach(() => {
+            dash.hdVideoId = 123;
+            jest.spyOn(dash, 'setQuality').mockImplementation();
+            jest.spyOn(VideoBaseViewer.prototype, 'loadUIReact').mockImplementation();
+        });
+
+        test('should set quality to sd if HD is not supported', () => {
+            dash.hdVideoId = -1;
+
+            dash.loadUIReact();
+
+            expect(dash.selectedQuality).toBe('sd');
+            expect(dash.setQuality).toBeCalledWith('sd');
+        });
+
+        test('should set quality to auto if HD is supported and cache has no entry', () => {
+            dash.loadUIReact();
+
+            expect(dash.selectedQuality).toBe('auto');
+            expect(dash.setQuality).toBeCalledWith('auto');
+        });
+
+        test('should set quality to cache value if HD is supported and cache has an entry', () => {
+            jest.spyOn(dash.cache, 'get').mockReturnValue('hd');
+
+            dash.loadUIReact();
+
+            expect(dash.selectedQuality).toBe('hd');
+            expect(dash.setQuality).toBeCalledWith('hd');
         });
     });
 
@@ -1496,11 +1548,61 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('setQuality()', () => {
+        const HD_VIDEO_ID = 1;
+        const SD_VIDEO_ID = -1;
+
+        beforeEach(() => {
+            dash.hdVideoId = HD_VIDEO_ID;
+            dash.sdVideoId = SD_VIDEO_ID;
+            jest.spyOn(dash, 'emit').mockImplementation();
+            jest.spyOn(dash, 'enableVideoId').mockImplementation();
+            jest.spyOn(dash, 'enableAdaptation').mockImplementation();
+            jest.spyOn(dash, 'renderUI').mockImplementation();
+            jest.spyOn(dash.cache, 'set').mockImplementation();
+        });
+
+        test.each`
+            quality | videoId
+            ${'sd'} | ${SD_VIDEO_ID}
+            ${'hd'} | ${HD_VIDEO_ID}
+        `('should set the quality to $quality', ({ quality, videoId }) => {
+            dash.setQuality(quality);
+            expect(dash.selectedQuality).toBe(quality);
+            expect(dash.cache.set).toBeCalledWith('media-quality', quality, true);
+            expect(dash.enableAdaptation).toBeCalledWith(false);
+            expect(dash.enableVideoId).toBeCalledWith(videoId);
+            expect(dash.emit).toBeCalledWith('qualitychange', quality);
+            expect(dash.renderUI).toBeCalled();
+        });
+
+        test('should set the quality to auto', () => {
+            dash.setQuality('auto');
+            expect(dash.selectedQuality).toBe('auto');
+            expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', true);
+            expect(dash.enableAdaptation).toBeCalledWith(true);
+            expect(dash.enableVideoId).not.toBeCalled();
+            expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
+            expect(dash.renderUI).toBeCalled();
+        });
+
+        test('should set unknown quality to auto', () => {
+            dash.setQuality('unknown');
+            expect(dash.selectedQuality).toBe('auto');
+            expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', true);
+            expect(dash.enableAdaptation).toBeCalledWith(true);
+            expect(dash.enableVideoId).not.toBeCalled();
+            expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
+            expect(dash.renderUI).toBeCalled();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 
         beforeEach(() => {
             jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
+            jest.spyOn(dash, 'isPlayingHD').mockImplementation(() => false);
             dash.controls = {
                 destroy: jest.fn(),
                 render: jest.fn(),
@@ -1516,14 +1618,17 @@ describe('lib/viewers/media/DashViewer', () => {
                 autoplay: false,
                 currentTime: expect.any(Number),
                 isPlaying: expect.any(Boolean),
+                isPlayingHD: false,
                 onAudioTrackChange: dash.setAudioTrack,
                 onAutoplayChange: dash.setAutoplay,
                 onFullscreenToggle: dash.toggleFullscreen,
                 onMuteChange: dash.toggleMute,
                 onPlayPause: dash.togglePlay,
+                onQualityChange: dash.setQuality,
                 onRateChange: dash.setRate,
                 onTimeChange: dash.handleTimeupdateFromMediaControls,
                 onVolumeChange: dash.setVolume,
+                quality: 'sd',
                 rate: '1.0',
                 volume: expect.any(Number),
             });

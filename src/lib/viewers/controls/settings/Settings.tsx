@@ -5,7 +5,7 @@ import SettingsCheckboxItem from './SettingsCheckboxItem';
 import SettingsContext, { Menu, Rect } from './SettingsContext';
 import SettingsDropdown from './SettingsDropdown';
 import SettingsFlyout from './SettingsFlyout';
-import SettingsGearToggle, { Ref as SettingsToggleRef } from './SettingsToggle';
+import SettingsGearToggle, { Props as SettingsGearToggleProps, Ref as SettingsToggleRef } from './SettingsToggle';
 import SettingsMenu from './SettingsMenu';
 import SettingsMenuBack from './SettingsMenuBack';
 import SettingsMenuItem from './SettingsMenuItem';
@@ -13,14 +13,15 @@ import SettingsRadioItem from './SettingsRadioItem';
 import useClickOutside from '../hooks/useClickOutside';
 import { decodeKeydown } from '../../../util';
 
-export type Props = React.PropsWithChildren<{
-    className?: string;
-    onClose?: () => void;
-    onOpen?: () => void;
-    toggle?: React.ElementType;
-}>;
-
+export type Props = Pick<SettingsGearToggleProps, 'badge'> &
+    React.PropsWithChildren<{
+        className?: string;
+        onClose?: () => void;
+        onOpen?: () => void;
+        toggle?: React.ElementType;
+    }>;
 export default function Settings({
+    badge,
     children,
     className,
     onClose = noop,
@@ -86,12 +87,7 @@ export default function Settings({
             {...rest}
         >
             <SettingsContext.Provider value={{ activeMenu, setActiveMenu, setActiveRect }}>
-                <SettingsToggle
-                    ref={buttonElRef}
-                    className="bp-Settings-toggle"
-                    isOpen={isOpen}
-                    onClick={handleClick}
-                />
+                <SettingsToggle ref={buttonElRef} badge={badge} isOpen={isOpen} onClick={handleClick} />
                 <SettingsFlyout className="bp-Settings-flyout" height={height} isOpen={isOpen} width={width}>
                     {children}
                 </SettingsFlyout>

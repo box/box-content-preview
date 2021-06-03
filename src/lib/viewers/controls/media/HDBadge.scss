@@ -1,0 +1,11 @@
+@import '../styles';
+
+.bp-HDBadge {
+    padding: 2px 2px 2px 3px;
+    color: $white;
+    font-weight: bold;
+    font-size: 8px;
+    letter-spacing: .1em;
+    background-color: $bdl-box-blue;
+    border-radius: 3px;
+}

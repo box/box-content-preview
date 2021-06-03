@@ -1,7 +1,7 @@
 @import '../styles';
 
 .bp-SettingsToggle {
-    @include bp-Control;
+    position: relative;
 
     &.bp-is-open {
         .bp-SettingsToggle-icon {
@@ -10,7 +10,20 @@
     }
 }
 
+.bp-SettingsToggle-button {
+    @include bp-Control;
+}
+
 .bp-SettingsToggle-icon {
     transform: rotate(0);
     transition: transform 300ms ease;
+}
+
+.bp-SettingsToggle-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    transform: translateY(-100%);
 }
