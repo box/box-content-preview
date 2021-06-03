@@ -1,3 +1,9 @@
+## <small>2.74.1 (2021-06-03)</small>
+
+* fix(video360): Add guard clause for controls.render (#1396) ([2e41c47](https://github.com/box/box-content-preview/commit/2e41c47)), closes [#1396](https://github.com/box/box-content-preview/issues/1396)
+
+
+
 ## 2.74.0 (2021-05-27)
 
 * fix(model3d): Save defaults returned from metadata (#1392) ([d027f10](https://github.com/box/box-content-preview/commit/d027f10)), closes [#1392](https://github.com/box/box-content-preview/issues/1392)
