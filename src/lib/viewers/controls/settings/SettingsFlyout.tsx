@@ -44,6 +44,7 @@ export default function SettingsFlyout({
                 'bp-is-open': isOpen,
                 'bp-is-transitioning': isTransitioning,
             })}
+            data-testid="bp-settings-flyout"
             style={{ height, width }}
         >
             {isOpen && children}

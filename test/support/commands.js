@@ -31,3 +31,10 @@ Cypress.Commands.add('showControls', () => {
     cy.getByTestId('bp').trigger('mouseover');
     cy.getByTestId('bp-controls').should('be.visible');
 });
+
+Cypress.Commands.add('showMediaControls', () => {
+    // Hover over the preview to trigger the controls
+    cy.getByTestId('bp').trigger('mouseover');
+    // Assert that the controls are shown
+    return cy.getByTestId('media-controls-wrapper').should('be.visible');
+});

@@ -38,7 +38,7 @@ export default function DashControls({
     volume,
 }: Props): JSX.Element {
     return (
-        <div className="bp-DashControls">
+        <div className="bp-DashControls" data-testid="media-controls-wrapper">
             <TimeControls
                 bufferedRange={bufferedRange}
                 currentTime={currentTime}
