@@ -5,7 +5,7 @@ import SettingsContext, { Menu } from './SettingsContext';
 import { decodeKeydown } from '../../../util';
 import './SettingsMenuItem.scss';
 
-export type Props = {
+export type Props = React.RefAttributes<HTMLDivElement> & {
     className?: string;
     label: string;
     target: Menu;
@@ -14,7 +14,7 @@ export type Props = {
 export type Ref = HTMLDivElement;
 
 function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
-    const { className, label, target, value } = props;
+    const { className, label, target, value, ...rest } = props;
     const { setActiveMenu } = React.useContext(SettingsContext);
 
     const handleClick = (): void => {
@@ -40,6 +40,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             onKeyDown={handleKeydown}
             role="menuitem"
             tabIndex={0}
+            {...rest}
         >
             <div aria-label={label} className="bp-SettingsMenuItem-label">
                 {label}

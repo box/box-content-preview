@@ -28,7 +28,7 @@ export default function MP3Controls({
     volume,
 }: Props): JSX.Element {
     return (
-        <div className="bp-MP3Controls">
+        <div className="bp-MP3Controls" data-testid="media-controls-wrapper">
             <TimeControls
                 bufferedRange={bufferedRange}
                 currentTime={currentTime}

@@ -39,17 +39,33 @@ export default function MediaSettings({
     return (
         <Settings badge={badge} className={className} toggle={toggle}>
             <Settings.Menu name={Menu.MAIN}>
-                <Settings.MenuItem label={__('media_autoplay')} target={Menu.AUTOPLAY} value={autoValue} />
-                <Settings.MenuItem label={__('media_speed')} target={Menu.RATE} value={rateValue} />
+                <Settings.MenuItem
+                    data-testid="bp-media-settings-autoplay"
+                    label={__('media_autoplay')}
+                    target={Menu.AUTOPLAY}
+                    value={autoValue}
+                />
+                <Settings.MenuItem
+                    data-testid="bp-media-settings-speed"
+                    label={__('media_speed')}
+                    target={Menu.RATE}
+                    value={rateValue}
+                />
                 {quality && (
                     <Settings.MenuItem
+                        data-testid="bp-media-settings-quality"
                         label={__('media_quality')}
                         target={Menu.QUALITY}
                         value={getQualityLabel(quality)}
                     />
                 )}
                 {showAudioTrackItems && (
-                    <Settings.MenuItem label={__('media_audio')} target={Menu.AUDIO} value={audioTrackLabel} />
+                    <Settings.MenuItem
+                        data-testid="bp-media-settings-audiotracks"
+                        label={__('media_audio')}
+                        target={Menu.AUDIO}
+                        value={audioTrackLabel}
+                    />
                 )}
             </Settings.Menu>
 

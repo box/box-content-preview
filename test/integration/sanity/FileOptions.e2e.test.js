@@ -27,15 +27,6 @@ describe('Preview File Options', () => {
         },
     };
 
-    /* eslint-disable */
-    const showMediaControls = () => {
-        // Hover over the preview to trigger the controls
-        cy.getByTestId('bp').trigger('mouseover');
-        // Assert that the controls are shown
-        return cy.getByTestId('media-controls-wrapper').should('be.visible');
-    };
-    /* eslint-enable */
-
     beforeEach(() => {
         cy.visit('/');
     });
@@ -51,18 +42,18 @@ describe('Preview File Options', () => {
     it('Should open video(DASH) to the specified timestamp', () => {
         cy.showPreview(token, fileIdVideo, { fileOptions });
 
-        showMediaControls().contains('0:15');
+        cy.showMediaControls().contains('0:15');
     });
 
     it('Should open video(MP4) to the specified timestamp', () => {
         cy.showPreview(token, fileIdVideo, { fileOptions, viewers: { Dash: { disabled: true } } });
 
-        showMediaControls().contains('0:15');
+        cy.showMediaControls().contains('0:15');
     });
 
     it('Should open MP3 to the specified timestamp', () => {
         cy.showPreview(token, fileIdMp3, { fileOptions });
 
-        showMediaControls().contains('0:03');
+        cy.showMediaControls().contains('0:03');
     });
 });

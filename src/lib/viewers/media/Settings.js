@@ -26,29 +26,29 @@ const SETTINGS_MENU_PADDING = 18;
 const SETTINGS_MENU_PADDING_SCROLL = 32;
 const SETTINGS_MENU_MAX_HEIGHT = 210;
 
-const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
+const SETTINGS_TEMPLATE = `<div class="bp-media-settings" data-testid="bp-settings-flyout">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
-        <div class="bp-media-settings-item bp-media-settings-item-autoplay" data-type="autoplay" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-autoplay" data-testid="bp-media-settings-autoplay" data-type="autoplay" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_autoplay')}">${__('media_autoplay')}</div>
             <div class="bp-media-settings-value">${__('media_autoplay_disabled')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
-        <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-speed" data-testid="bp-media-settings-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
             <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
-        <div class="bp-media-settings-item bp-media-settings-item-quality" data-type="quality" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-quality" data-testid="bp-media-settings-quality" data-type="quality" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
-        <div class="bp-media-settings-item bp-media-settings-item-subtitles bp-media-settings-is-hidden" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-subtitles data-testid="bp-media-settings-subtitles" bp-media-settings-is-hidden" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('subtitles')}/CC">${__('subtitles')}/CC</div>
             <div class="bp-media-settings-value">${__('off')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
-        <div class="bp-media-settings-item bp-media-settings-item-audiotracks bp-media-settings-is-hidden" data-type="audiotracks" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-audiotracks bp-media-settings-is-hidden" data-testid="bp-media-settings-audiotracks" data-type="audiotracks" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_audio')}">${__('media_audio')}</div>
             <div class="bp-media-settings-value"></div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>

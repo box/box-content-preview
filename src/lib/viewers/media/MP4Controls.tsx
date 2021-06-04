@@ -31,7 +31,7 @@ export default function MP4Controls({
     volume,
 }: Props): JSX.Element {
     return (
-        <div className="bp-MP4Controls">
+        <div className="bp-MP4Controls" data-testid="media-controls-wrapper">
             <TimeControls
                 bufferedRange={bufferedRange}
                 currentTime={currentTime}
