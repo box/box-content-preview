@@ -9,17 +9,18 @@
         <style>
             * {
                 box-sizing: border-box;
-                font-family: sans-serif;
                 margin: 0;
                 padding: 0;
+                font-family: sans-serif;
             }
 
             .setters-container {
                 display: flex;
-                font-size: 75%;
+                flex-direction: column;
                 height: 10vh;
-                justify-content: space-around;
                 padding: 20px;
+                overflow: auto;
+                font-size: 75%;
             }
 
             .setters-container button,
@@ -28,6 +29,7 @@
             }
 
             .container {
+                flex: 1 1 auto;
                 text-align: center;
             }
 
@@ -36,14 +38,29 @@
             }
 
             .preview-container {
-                height: 90vh;
                 width: 100vw;
+                height: 90vh;
+            }
+
+            .primary-setters,
+            .secondary-setters {
+                display: flex;
+            }
+
+            .secondary-setters {
+                margin-top: 10px;
             }
 
             @media only screen and (max-width: 375px) {
-                /* Hide the collections fields when the viewport is small so the E2E tests don't fail */
-                #collection {
-                    display: none;
+                .setters-container {
+                    padding: 0;
+                }
+
+                .input-display {
+                    max-width: 150px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
                 }
             }
         </style>
@@ -51,28 +68,32 @@
 
     <body>
         <div class="setters-container">
-            <div class="container" id="token">
-                <div>Token: <span id="token-display"></span></div>
-                <input id="token-set" data-testid="token" placeholder="Enter token" />
-                <button onClick="setProperty('token')" data-testid="token-set">Set new token</button>
+            <div class="primary-setters">
+                <div class="container" id="token">
+                    <div class="input-display">Token: <span id="token-display"></span></div>
+                    <input id="token-set" data-testid="token" placeholder="Enter token" />
+                    <button onClick="setProperty('token')" data-testid="token-set">Set new token</button>
+                </div>
+
+                <div class="container" id="file">
+                    <div class="input-display">File ID: <span id="fileid-display"></span></div>
+                    <input id="fileid-set" placeholder="Enter file ID" data-testid="fileid" />
+                    <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
+                </div>
+
+                <div class="container" id="load">
+                    <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
+                </div>
             </div>
 
-            <div class="container" id="file">
-                <div>File ID: <span id="fileid-display"></span></div>
-                <input id="fileid-set" placeholder="Enter file ID" data-testid="fileid" />
-                <button onClick="setProperty('fileid')" data-testid="fileid-set">Set new file ID</button>
-            </div>
-
-            <div class="container" id="collection">
-                <div>Collection: <span id="collection-display"></span></div>
-                <input id="collection-set" data-testid="collection" placeholder="Enter list of file ids" />
-                <button onClick="setProperty('collection')" data-testid="collection-set">Set new collection</button>
-                <button onClick="clearProperty('collection')" data-testid="collection-clear">Clear</button>
-                <div>Enter 2+ comma separated list of file ids</div>
-            </div>
-
-            <div class="container" id="load">
-                <button onClick="loadPreview()" data-testid="load-preview">Load Preview</button>
+            <div class="secondary-setters">
+                <div class="container" id="collection">
+                    <div class="input-display">Collection: <span id="collection-display"></span></div>
+                    <input id="collection-set" data-testid="collection" placeholder="Enter list of file ids" />
+                    <button onClick="setProperty('collection')" data-testid="collection-set">Set new collection</button>
+                    <button onClick="clearProperty('collection')" data-testid="collection-clear">Clear</button>
+                    <div>Enter 2+ comma separated list of file ids</div>
+                </div>
             </div>
         </div>
 
