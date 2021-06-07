@@ -11,6 +11,11 @@ describe('MP4 Viewer', () => {
                 cy.showPreview(token, fileIdVideo, {
                     viewers: { Dash: { disabled: true }, MP4: { useReactControls: false } },
                 });
+
+                cy.showMediaControls();
+
+                // Open the menu
+                cy.getByTitle('Settings').click({ force: true });
             });
 
             runBaseMediaSettingsTests();
@@ -22,6 +27,11 @@ describe('MP4 Viewer', () => {
                 cy.showPreview(token, fileIdVideo, {
                     viewers: { Dash: { disabled: true }, MP4: { useReactControls: true } },
                 });
+
+                cy.showMediaControls();
+
+                // Open the menu
+                cy.getByTitle('Settings').click({ force: true });
             });
 
             runBaseMediaSettingsTests();
