@@ -11,6 +11,11 @@ describe('MP3 Viewer', () => {
                 cy.showPreview(token, fileIdMP3, {
                     viewers: { MP3: { useReactControls: false } },
                 });
+
+                cy.showMediaControls();
+
+                // Open the menu
+                cy.getByTitle('Settings').click({ force: true });
             });
 
             runBaseMediaSettingsTests();
@@ -22,6 +27,11 @@ describe('MP3 Viewer', () => {
                 cy.showPreview(token, fileIdMP3, {
                     viewers: { MP3: { useReactControls: true } },
                 });
+
+                cy.showMediaControls();
+
+                // Open the menu
+                cy.getByTitle('Settings').click({ force: true });
             });
 
             runBaseMediaSettingsTests();

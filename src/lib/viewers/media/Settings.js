@@ -43,7 +43,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings" data-testid="bp-settin
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
-        <div class="bp-media-settings-item bp-media-settings-item-subtitles data-testid="bp-media-settings-subtitles" bp-media-settings-is-hidden" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
+        <div class="bp-media-settings-item bp-media-settings-item-subtitles bp-media-settings-is-hidden" data-testid="bp-media-settings-subtitles" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('subtitles')}/CC">${__('subtitles')}/CC</div>
             <div class="bp-media-settings-value">${__('off')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
