@@ -7,11 +7,13 @@ import MediaSettingsMenuQuality, {
     Props as QualityProps,
 } from './MediaSettingsMenuQuality';
 import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
+import MediaSettingsMenuSubtitles, { Props as SubtitlesProps } from './MediaSettingsMenuSubtitles';
 import Settings, { Menu, Props as SettingsProps } from '../settings';
 
 export type Props = Partial<AudioTracksProps> &
     Partial<QualityProps> &
     Partial<SettingsProps> &
+    Partial<SubtitlesProps> &
     AutoplayProps &
     RateProps & { className?: string };
 
@@ -25,16 +27,23 @@ export default function MediaSettings({
     onAutoplayChange,
     onQualityChange,
     onRateChange,
+    onSubtitleChange,
     quality,
     rate,
+    subtitle,
+    subtitles = [],
     toggle,
 }: Props): JSX.Element {
+    const { displayLanguage: subtitleDisplayLanguage } = subtitles.find(({ id }) => subtitle === id) || {
+        displayLanguage: __('off'),
+    };
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
     const labelledAudioTracks = React.useMemo(() => addLabels(audioTracks), [audioTracks]);
     const hydratedSelectedAudioTrack = labelledAudioTracks.find(({ id }) => audioTrack === id);
     const audioTrackLabel = hydratedSelectedAudioTrack ? hydratedSelectedAudioTrack.label : '';
     const showAudioTrackItems = audioTracks.length > 1;
+    const showSubtitles = subtitles.length > 0;
 
     return (
         <Settings badge={badge} className={className} toggle={toggle}>
@@ -59,6 +68,14 @@ export default function MediaSettings({
                         value={getQualityLabel(quality)}
                     />
                 )}
+                {showSubtitles && (
+                    <Settings.MenuItem
+                        data-testid="bp-media-settings-subtitles"
+                        label={`${__('subtitles')}/CC`}
+                        target={Menu.SUBTITLES}
+                        value={subtitleDisplayLanguage}
+                    />
+                )}
                 {showAudioTrackItems && (
                     <Settings.MenuItem
                         data-testid="bp-media-settings-audiotracks"
@@ -73,6 +90,13 @@ export default function MediaSettings({
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
             {quality && onQualityChange && (
                 <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
+            )}
+            {showSubtitles && onSubtitleChange && (
+                <MediaSettingsMenuSubtitles
+                    onSubtitleChange={onSubtitleChange}
+                    subtitle={subtitle}
+                    subtitles={subtitles}
+                />
             )}
             {showAudioTrackItems && (
                 <MediaSettingsMenuAudioTracks
