@@ -84,7 +84,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         background-color: $d-eight;
         border-radius: $thumbnail-border-radius;
         box-shadow: 0 0 0 1px $off-white, 0 1px 4px 0 rgba(0, 0, 0, .08);
-        transition: box-shadow 50ms ease;
     }
 
     .bp-thumbnail-page-number {
@@ -101,7 +100,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         border-radius: $thumbnail-border-radius / 2 0 $thumbnail-border-radius 0;
         box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .2);
         opacity: 0;
-        transition: background 50ms ease, opacity 50ms ease;
     }
 
     .bp-thumbnail-image {
