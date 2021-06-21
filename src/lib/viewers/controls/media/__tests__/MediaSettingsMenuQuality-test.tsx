@@ -32,6 +32,18 @@ describe('MediaSettingsMenuQuality', () => {
     });
 
     describe('render', () => {
+        test('should not render if no quality is provided', () => {
+            const wrapper = getWrapper({ quality: undefined });
+
+            expect(wrapper.isEmptyRender()).toBe(true);
+        });
+
+        test('should not render if no callback is provided', () => {
+            const wrapper = getWrapper({ onQualityChange: undefined });
+
+            expect(wrapper.isEmptyRender()).toBe(true);
+        });
+
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
             const radioItems = wrapper.find(Settings.RadioItem);

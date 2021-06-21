@@ -41,6 +41,12 @@ describe('MediaSettingsAudioTracks', () => {
     });
 
     describe('render', () => {
+        test('should not render if audiotracks is <= 1', () => {
+            const wrapper = getWrapper({ audioTracks: [] });
+
+            expect(wrapper.isEmptyRender()).toBe(true);
+        });
+
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 

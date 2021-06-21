@@ -9,11 +9,11 @@ export type Subtitle = {
 
 export type Props = {
     subtitle?: number;
-    subtitles: Array<Subtitle>;
-    onSubtitleChange: (id: number) => void;
+    subtitles?: Array<Subtitle>;
+    onSubtitleChange?: (id: number) => void;
 };
 
-export const getDisplayLanguage = (subtitle: string, subtitles: Array<Subtitle>): string => {
+export const getDisplayLanguage = (subtitle?: number, subtitles: Array<Subtitle> = []): string => {
     const { displayLanguage } = subtitles.find(({ id }) => subtitle === id) || {
         displayLanguage: __('off'),
     };
@@ -23,7 +23,7 @@ export const getDisplayLanguage = (subtitle: string, subtitles: Array<Subtitle>)
 
 export default function MediaSettingsMenuSubtitles({
     subtitle,
-    subtitles,
+    subtitles = [],
     onSubtitleChange,
 }: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);

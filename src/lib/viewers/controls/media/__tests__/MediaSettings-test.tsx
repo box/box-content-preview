@@ -58,19 +58,6 @@ describe('MediaSettings', () => {
         });
 
         describe('audiotracks menu', () => {
-            test('should not render the audio menu item if no audio tracks are provided', () => {
-                const wrapper = getWrapper();
-                expect(wrapper.exists({ target: 'audio' })).toBe(false);
-                expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(false);
-            });
-
-            test('should not render the audio menu item if only 1 audio track is present', () => {
-                const singleAudioTrack = [{ id: 0, language: 'und' }];
-                const wrapper = getWrapper({ audioTracks: singleAudioTrack });
-                expect(wrapper.exists({ target: 'audio' })).toBe(false);
-                expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(false);
-            });
-
             test('should render the audio menu if > 1 audio tracks are present', () => {
                 const wrapper = getWrapper({ audioTracks });
                 expect(wrapper.exists({ target: 'audio' })).toBe(true);
@@ -85,11 +72,6 @@ describe('MediaSettings', () => {
         });
 
         describe('quality menu', () => {
-            test('should not render the quality menu item if no quality is provided', () => {
-                const wrapper = getWrapper();
-                expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(false);
-            });
-
             test('should render the quality menu if the quality is provided', () => {
                 const wrapper = getWrapper({ quality: 'auto', onQualityChange: jest.fn() });
                 expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(true);
@@ -97,13 +79,6 @@ describe('MediaSettings', () => {
         });
 
         describe('subtitles menu', () => {
-            test('should not render the subtitles menu item if no subtitles tracks are provided', () => {
-                const onSubtitleChange = jest.fn();
-                const wrapper = getWrapper({ onSubtitleChange });
-                expect(wrapper.exists({ target: 'subtitles' })).toBe(false);
-                expect(wrapper.exists(MediaSettingsMenuSubtitles)).toBe(false);
-            });
-
             test('should render the subtitles menu item if only 1 subtitles track is present', () => {
                 const onSubtitleChange = jest.fn();
                 const singleSubtitle = [{ id: 0, displayLanguage: 'English' }];

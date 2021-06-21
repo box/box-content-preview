@@ -1,10 +1,9 @@
 import React from 'react';
-import noop from 'lodash/noop';
 import Settings, { Menu } from '../settings';
 
 export type Props = {
-    onQualityChange: (quality: Quality) => void;
-    quality: Quality;
+    onQualityChange?: (quality: Quality) => void;
+    quality?: Quality;
 };
 
 export enum Quality {
@@ -21,7 +20,7 @@ const QUALITY_LABEL_MAP: Record<Quality, string> = {
 
 export const getLabel = (quality: Quality): string => QUALITY_LABEL_MAP[quality];
 
-export default function MediaSettingsMenuQuality({ onQualityChange = noop, quality }: Props): JSX.Element | null {
+export default function MediaSettingsMenuQuality({ onQualityChange, quality }: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
     if (!quality || !onQualityChange) {

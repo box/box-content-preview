@@ -6,14 +6,14 @@ import './SubtitlesToggle.scss';
 
 export type Props = {
     isShowingSubtitles?: boolean;
-    onSubtitlesToggle: (isShowingSubtitles: boolean) => void;
-    subtitles: Array<Subtitle>;
+    onSubtitlesToggle?: (isShowingSubtitles: boolean) => void;
+    subtitles?: Array<Subtitle>;
 };
 
 export default function SubtitlesToggle({
     isShowingSubtitles,
     onSubtitlesToggle = noop,
-    subtitles,
+    subtitles = [],
 }: Props): JSX.Element | null {
     if (subtitles.length <= 0) {
         return null;

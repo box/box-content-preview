@@ -2,10 +2,11 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import MediaToggle from '../MediaToggle';
 import SubtitlesToggle from '../SubtitlesToggle';
+import subtitles from '../__mocks__/subtitles';
 
 describe('SubtitlesToggle', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<SubtitlesToggle isShowingSubtitles onSubtitlesToggle={jest.fn()} {...props} />);
+        shallow(<SubtitlesToggle isShowingSubtitles onSubtitlesToggle={jest.fn()} subtitles={subtitles} {...props} />);
 
     describe('event handlers', () => {
         test('should toggle isShowingSubtitles when clicked', () => {
@@ -23,6 +24,12 @@ describe('SubtitlesToggle', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.hasClass('bp-SubtitlesToggle')).toBe(true);
+        });
+
+        test('should return null if no subtitles are passed in', () => {
+            const wrapper = getWrapper({ subtitles: [] });
+
+            expect(wrapper.isEmptyRender()).toBe(true);
         });
 
         test.each([true, false])(

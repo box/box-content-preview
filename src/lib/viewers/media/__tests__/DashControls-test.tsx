@@ -77,7 +77,6 @@ describe('DashControls', () => {
             expect(wrapper.find(TimeControls).prop('onTimeChange')).toEqual(onTimeChange);
             expect(wrapper.find(VolumeControls).prop('onMuteChange')).toEqual(onMuteChange);
             expect(wrapper.find(VolumeControls).prop('onVolumeChange')).toEqual(onVolumeChange);
-            expect(wrapper.exists(SubtitlesToggle)).toBe(false);
         });
 
         test('should not pass along badge if not playing HD', () => {
