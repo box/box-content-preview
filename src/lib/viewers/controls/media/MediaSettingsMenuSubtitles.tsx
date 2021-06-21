@@ -1,7 +1,6 @@
 import React from 'react';
 import Settings, { Menu } from '../settings';
-
-export const SUBTITLES_OFF = -1;
+import { SUBTITLES_OFF } from '../../../constants';
 
 export type Subtitle = {
     displayLanguage: string;
@@ -14,8 +13,24 @@ export type Props = {
     onSubtitleChange: (id: number) => void;
 };
 
-export default function MediaSettingsMenuSubtitles({ subtitle, subtitles, onSubtitleChange }: Props): JSX.Element {
+export const getDisplayLanguage = (subtitle: string, subtitles: Array<Subtitle>): string => {
+    const { displayLanguage } = subtitles.find(({ id }) => subtitle === id) || {
+        displayLanguage: __('off'),
+    };
+
+    return displayLanguage;
+};
+
+export default function MediaSettingsMenuSubtitles({
+    subtitle,
+    subtitles,
+    onSubtitleChange,
+}: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
+
+    if (subtitles.length < 1 || !onSubtitleChange) {
+        return null;
+    }
 
     const handleChange = (value: number): void => {
         setActiveMenu(Menu.MAIN);

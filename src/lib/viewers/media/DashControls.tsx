@@ -7,7 +7,7 @@ import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/P
 import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/media/SubtitlesToggle';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
-import { SUBTITLES_OFF } from '../controls/media/MediaSettingsMenuSubtitles';
+import { SUBTITLES_OFF } from '../../constants';
 import './DashControls.scss';
 
 export type Props = DurationLabelsProps &
@@ -44,8 +44,6 @@ export default function DashControls({
     subtitles = [],
     volume,
 }: Props): JSX.Element {
-    const showSubtitlesToggle = subtitles.length > 0;
-
     return (
         <div className="bp-DashControls" data-testid="media-controls-wrapper">
             <TimeControls
@@ -63,12 +61,11 @@ export default function DashControls({
                 </div>
 
                 <div className="bp-DashControls-group">
-                    {showSubtitlesToggle && (
-                        <SubtitlesToggle
-                            isShowingSubtitles={subtitle !== SUBTITLES_OFF}
-                            onSubtitlesToggle={onSubtitlesToggle}
-                        />
-                    )}
+                    <SubtitlesToggle
+                        isShowingSubtitles={subtitle !== SUBTITLES_OFF}
+                        onSubtitlesToggle={onSubtitlesToggle}
+                        subtitles={subtitles}
+                    />
                     <MediaSettings
                         audioTrack={audioTrack}
                         audioTracks={audioTracks}

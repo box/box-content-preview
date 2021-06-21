@@ -7,7 +7,7 @@ import MediaSettingsMenuQuality, {
     Props as QualityProps,
 } from './MediaSettingsMenuQuality';
 import MediaSettingsMenuRate, { Props as RateProps } from './MediaSettingsMenuRate';
-import MediaSettingsMenuSubtitles, { Props as SubtitlesProps } from './MediaSettingsMenuSubtitles';
+import MediaSettingsMenuSubtitles, { getDisplayLanguage, Props as SubtitlesProps } from './MediaSettingsMenuSubtitles';
 import Settings, { Menu, Props as SettingsProps } from '../settings';
 
 export type Props = Partial<AudioTracksProps> &
@@ -34,16 +34,14 @@ export default function MediaSettings({
     subtitles = [],
     toggle,
 }: Props): JSX.Element {
-    const { displayLanguage: subtitleDisplayLanguage } = subtitles.find(({ id }) => subtitle === id) || {
-        displayLanguage: __('off'),
-    };
+    const subtitleDisplayLanguage = getDisplayLanguage(subtitle, subtitles);
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
     const labelledAudioTracks = React.useMemo(() => addLabels(audioTracks), [audioTracks]);
     const hydratedSelectedAudioTrack = labelledAudioTracks.find(({ id }) => audioTrack === id);
     const audioTrackLabel = hydratedSelectedAudioTrack ? hydratedSelectedAudioTrack.label : '';
     const showAudioTrackItems = audioTracks.length > 1;
-    const showSubtitles = subtitles.length > 0;
+    const showSubtitles = subtitles.length > 0 && onSubtitleChange;
 
     return (
         <Settings badge={badge} className={className} toggle={toggle}>
@@ -88,23 +86,13 @@ export default function MediaSettings({
 
             <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
-            {quality && onQualityChange && (
-                <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
-            )}
-            {showSubtitles && onSubtitleChange && (
-                <MediaSettingsMenuSubtitles
-                    onSubtitleChange={onSubtitleChange}
-                    subtitle={subtitle}
-                    subtitles={subtitles}
-                />
-            )}
-            {showAudioTrackItems && (
-                <MediaSettingsMenuAudioTracks
-                    audioTrack={audioTrack}
-                    audioTracks={labelledAudioTracks}
-                    onAudioTrackChange={onAudioTrackChange}
-                />
-            )}
+            <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
+            <MediaSettingsMenuSubtitles onSubtitleChange={onSubtitleChange} subtitle={subtitle} subtitles={subtitles} />
+            <MediaSettingsMenuAudioTracks
+                audioTrack={audioTrack}
+                audioTracks={labelledAudioTracks}
+                onAudioTrackChange={onAudioTrackChange}
+            />
         </Settings>
     );
 }

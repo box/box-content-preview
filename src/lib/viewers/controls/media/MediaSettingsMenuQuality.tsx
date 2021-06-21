@@ -21,8 +21,12 @@ const QUALITY_LABEL_MAP: Record<Quality, string> = {
 
 export const getLabel = (quality: Quality): string => QUALITY_LABEL_MAP[quality];
 
-export default function MediaSettingsMenuQuality({ onQualityChange = noop, quality }: Props): JSX.Element {
+export default function MediaSettingsMenuQuality({ onQualityChange = noop, quality }: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
+
+    if (!quality || !onQualityChange) {
+        return null;
+    }
 
     const handleChange = (value: Quality): void => {
         setActiveMenu(Menu.MAIN);
