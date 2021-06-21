@@ -5,9 +5,12 @@ import HDBadge from '../../controls/media/HDBadge';
 import MediaFullscreenToggle from '../../controls/media/MediaFullscreenToggle';
 import MediaSettings from '../../controls/media/MediaSettings';
 import PlayPauseToggle from '../../controls/media/PlayPauseToggle';
+import subtitles from '../../controls/media/__mocks__/subtitles';
+import SubtitlesToggle from '../../controls/media/SubtitlesToggle';
 import TimeControls from '../../controls/media/TimeControls';
 import VolumeControls from '../../controls/media/VolumeControls';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
+import { SUBTITLES_OFF } from '../../../constants';
 
 describe('DashControls', () => {
     describe('render', () => {
@@ -74,6 +77,7 @@ describe('DashControls', () => {
             expect(wrapper.find(TimeControls).prop('onTimeChange')).toEqual(onTimeChange);
             expect(wrapper.find(VolumeControls).prop('onMuteChange')).toEqual(onMuteChange);
             expect(wrapper.find(VolumeControls).prop('onVolumeChange')).toEqual(onVolumeChange);
+            expect(wrapper.exists(SubtitlesToggle)).toBe(false);
         });
 
         test('should not pass along badge if not playing HD', () => {
@@ -84,6 +88,24 @@ describe('DashControls', () => {
         test('should pass along badge if playing HD', () => {
             const wrapper = getWrapper({ isPlayingHD: true });
             expect(wrapper.find(MediaSettings).prop('badge')).toEqual(<HDBadge />);
+        });
+
+        describe('Subtitles', () => {
+            test('should render SubtitlesToggle if subtitles exist', () => {
+                const onSubtitlesToggle = jest.fn();
+                const wrapper = getWrapper({ onSubtitlesToggle, subtitles });
+                expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
+                    isShowingSubtitles: true,
+                    onSubtitlesToggle,
+                });
+            });
+
+            test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
+                const wrapper = getWrapper({ subtitle: SUBTITLES_OFF, subtitles });
+                expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
+                    isShowingSubtitles: false,
+                });
+            });
         });
     });
 });
