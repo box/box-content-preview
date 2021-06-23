@@ -634,6 +634,12 @@ class DashViewer extends VideoBaseViewer {
      */
     initSubtitles() {
         const clientLanguage = getLanguageName(this.options.location.locale.substring(0, 2));
+        const showSubtitles = this.cache.get('media-subtitles-toggle');
+
+        // If no entry in the cache (nor localstorage) default to showing CC
+        if (showSubtitles === undefined) {
+            this.cache.set('media-subtitles-toggle', true, true);
+        }
 
         this.textTracks = this.textTracks.map(track => ({
             ...track,
