@@ -6,7 +6,7 @@ export function runBaseMediaSettingsTests() {
             cy.getByTestId('bp-media-settings-speed').contains('Normal');
 
             // Close the menu
-            cy.getByTitle('Settings').click({ force: true });
+            cy.getByTitle('Settings').click();
             cy.getByTestId('bp-settings-flyout').should('not.be.visible');
         });
 
