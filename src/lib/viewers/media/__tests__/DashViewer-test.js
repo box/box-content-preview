@@ -1644,6 +1644,8 @@ describe('lib/viewers/media/DashViewer', () => {
         beforeEach(() => {
             jest.spyOn(dash, 'getSubtitleId').mockImplementation();
             jest.spyOn(dash, 'setSubtitle').mockImplementation();
+            jest.spyOn(dash.cache, 'get').mockImplementation();
+            jest.spyOn(dash.cache, 'set').mockImplementation();
 
             const english = { language: 'eng', id: 5 };
             const russian = { language: 'rus', id: 4 };
@@ -1690,6 +1692,12 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.initSubtitles();
 
             expect(dash.selectedSubtitle).toBe(4);
+        });
+
+        test('should set media-subtitles-toggle to true by default', () => {
+            dash.initSubtitles();
+
+            expect(dash.cache.set).toBeCalledWith('media-subtitles-toggle', true, true);
         });
     });
 

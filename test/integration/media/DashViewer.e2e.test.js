@@ -50,6 +50,8 @@ describe('Dash Viewer', () => {
             runQualityMenuTests();
 
             runAudioTracksTests();
+
+            runSubtitlesTests();
         });
     });
 });
