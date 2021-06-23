@@ -12,6 +12,10 @@
         bottom: 0;
         left: 0;
         margin: auto;
+
+        &.bp-is-invisible {
+            opacity: 0; // Combine with visibility: hidden to improve large file performance in Safari
+        }
     }
 
     &.overflow-x {
