@@ -38,8 +38,12 @@ export default function MediaSettingsMenuAudioTracks({
     audioTrack,
     audioTracks,
     onAudioTrackChange,
-}: Props): JSX.Element {
+}: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
+
+    if (audioTracks.length <= 1) {
+        return null;
+    }
 
     const handleChange = (value: number): void => {
         setActiveMenu(Menu.MAIN);
