@@ -15,7 +15,7 @@ export default function SubtitlesToggle({
     onSubtitlesToggle = noop,
     subtitles = [],
 }: Props): JSX.Element | null {
-    if (subtitles.length <= 0) {
+    if (!subtitles.length) {
         return null;
     }
 

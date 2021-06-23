@@ -89,21 +89,19 @@ describe('DashControls', () => {
             expect(wrapper.find(MediaSettings).prop('badge')).toEqual(<HDBadge />);
         });
 
-        describe('Subtitles', () => {
-            test('should render SubtitlesToggle if subtitles exist', () => {
-                const onSubtitlesToggle = jest.fn();
-                const wrapper = getWrapper({ onSubtitlesToggle, subtitles });
-                expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                    isShowingSubtitles: true,
-                    onSubtitlesToggle,
-                });
+        test('should render SubtitlesToggle if subtitles exist', () => {
+            const onSubtitlesToggle = jest.fn();
+            const wrapper = getWrapper({ onSubtitlesToggle, subtitles });
+            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
+                isShowingSubtitles: true,
+                onSubtitlesToggle,
             });
+        });
 
-            test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
-                const wrapper = getWrapper({ subtitle: SUBTITLES_OFF, subtitles });
-                expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                    isShowingSubtitles: false,
-                });
+        test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
+            const wrapper = getWrapper({ subtitle: SUBTITLES_OFF, subtitles });
+            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
+                isShowingSubtitles: false,
             });
         });
     });

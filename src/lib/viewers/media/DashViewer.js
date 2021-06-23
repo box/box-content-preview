@@ -28,12 +28,6 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
-    /** @property {string} - Tracks the ID of the text track that should be used when CC are toggled on */
-    cachedSubtitle;
-
-    /** @property {boolean} - Flag indicating whether to show subtitles */
-    showSubtitles;
-
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
 
@@ -1076,7 +1070,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     setSubtitle(subtitle) {
-        const subtitleIdx = this.textTracks.findIndex(({ id }) => id === subtitle);
+        const subtitleIndex = this.textTracks.findIndex(({ id }) => id === subtitle);
 
         if (subtitle !== SUBTITLES_OFF) {
             this.cache.set('media-subtitles', subtitle, true);
@@ -1087,14 +1081,14 @@ class DashViewer extends VideoBaseViewer {
         }
 
         // Auto-generated index 0 ==> turn auto-generated text track on
-        if (this.autoCaptionDisplayer && subtitleIdx === 0) {
+        if (this.autoCaptionDisplayer && subtitleIndex === 0) {
             // Manually set text visibility with the custom Shaka Text Displayer
             this.autoCaptionDisplayer.setTextVisibility(true);
             this.emit('subtitlechange', __('auto_generated'));
 
             // Valid non-auto-generated index ==> turn specified text track on
-        } else if (this.textTracks[subtitleIdx] !== undefined) {
-            const track = this.textTracks[subtitleIdx];
+        } else if (this.textTracks[subtitleIndex] !== undefined) {
+            const track = this.textTracks[subtitleIndex];
             this.player.selectTextTrack(track);
             this.player.setTextTrackVisibility(true);
             this.emit('subtitlechange', track.language);

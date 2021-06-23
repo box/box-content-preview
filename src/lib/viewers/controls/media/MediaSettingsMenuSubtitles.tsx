@@ -8,9 +8,9 @@ export type Subtitle = {
 };
 
 export type Props = {
+    onSubtitleChange?: (id: number) => void;
     subtitle?: number;
     subtitles?: Array<Subtitle>;
-    onSubtitleChange?: (id: number) => void;
 };
 
 export const getDisplayLanguage = (subtitle?: number, subtitles: Array<Subtitle> = []): string => {
@@ -22,13 +22,13 @@ export const getDisplayLanguage = (subtitle?: number, subtitles: Array<Subtitle>
 };
 
 export default function MediaSettingsMenuSubtitles({
+    onSubtitleChange,
     subtitle,
     subtitles = [],
-    onSubtitleChange,
 }: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
-    if (subtitles.length < 1 || !onSubtitleChange) {
+    if (!subtitles.length || !onSubtitleChange) {
         return null;
     }
 
