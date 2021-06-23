@@ -15,7 +15,7 @@ describe('MP4 Viewer', () => {
                 cy.showMediaControls();
 
                 // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
+                cy.getByTitle('Settings').click();
             });
 
             runBaseMediaSettingsTests();
@@ -31,7 +31,7 @@ describe('MP4 Viewer', () => {
                 cy.showMediaControls();
 
                 // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
+                cy.getByTitle('Settings').click();
             });
 
             runBaseMediaSettingsTests();

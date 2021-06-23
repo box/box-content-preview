@@ -22,8 +22,8 @@ function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>):
                 type="button"
             >
                 <IconGear24 className="bp-SettingsToggle-icon" />
+                {React.isValidElement(badge) && <div className="bp-SettingsToggle-badge">{badge}</div>}
             </button>
-            {React.isValidElement(badge) && <div className="bp-SettingsToggle-badge">{badge}</div>}
         </div>
     );
 }
