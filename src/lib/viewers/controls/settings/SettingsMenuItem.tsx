@@ -8,23 +8,28 @@ import './SettingsMenuItem.scss';
 export type Props = React.RefAttributes<HTMLDivElement> & {
     className?: string;
     label: string;
+    isDisabled?: boolean;
     target: Menu;
     value: string;
 };
 export type Ref = HTMLDivElement;
 
 function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
-    const { className, label, target, value, ...rest } = props;
+    const { className, label, isDisabled = false, target, value, ...rest } = props;
     const { setActiveMenu } = React.useContext(SettingsContext);
 
     const handleClick = (): void => {
+        if (isDisabled) {
+            return;
+        }
+
         setActiveMenu(target);
     };
 
     const handleKeydown = (event: React.KeyboardEvent<Ref>): void => {
         const key = decodeKeydown(event);
 
-        if (key !== 'ArrowRight' && key !== 'Enter' && key !== 'Space') {
+        if (isDisabled || (key !== 'ArrowRight' && key !== 'Enter' && key !== 'Space')) {
             return;
         }
 
@@ -34,6 +39,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
         <div
             ref={ref}
+            aria-disabled={isDisabled}
             aria-haspopup="true"
             className={classNames('bp-SettingsMenuItem', className)}
             onClick={handleClick}
@@ -47,7 +53,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             </div>
             <div className="bp-SettingsMenuItem-value">{value}</div>
             <div className="bp-SettingsMenuItem-arrow">
-                <IconArrowRight24 height={18} width={18} />
+                {!isDisabled && <IconArrowRight24 height={18} width={18} />}
             </div>
         </div>
     );

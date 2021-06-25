@@ -36,6 +36,29 @@ describe('SettingsMenuItem', () => {
 
             expect(context.setActiveMenu).toBeCalledTimes(calledTimes);
         });
+
+        test('should not set the active menu when clicked while disabled', () => {
+            const context = getContext();
+            const wrapper = getWrapper({ isDisabled: true }, context);
+
+            wrapper.simulate('click');
+
+            expect(context.setActiveMenu).not.toBeCalled();
+        });
+
+        test.each`
+            key
+            ${'ArrowRight'}
+            ${'Enter'}
+            ${'Space'}
+        `('should not set the active menu when $key is pressed while disabled', ({ key }) => {
+            const context = getContext();
+            const wrapper = getWrapper({ isDisabled: true }, context);
+
+            wrapper.simulate('keydown', { key });
+
+            expect(context.setActiveMenu).not.toBeCalled();
+        });
     });
 
     describe('render', () => {
@@ -43,9 +66,17 @@ describe('SettingsMenuItem', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsMenuItem');
+            expect(wrapper.getDOMNode().getAttribute('aria-disabled')).toBe('false');
             expect(wrapper.find('.bp-SettingsMenuItem-label').contains('Speed')).toBe(true);
             expect(wrapper.find('.bp-SettingsMenuItem-value').contains('Normal')).toBe(true);
             expect(wrapper.exists(IconArrowRight24)).toBe(true);
+        });
+
+        test('should render as disabled when isDisabled is true', () => {
+            const wrapper = getWrapper({ isDisabled: true });
+
+            expect(wrapper.getDOMNode().getAttribute('aria-disabled')).toBe('true');
+            expect(wrapper.exists(IconArrowRight24)).toBe(false);
         });
     });
 });

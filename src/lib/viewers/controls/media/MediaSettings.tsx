@@ -15,7 +15,7 @@ export type Props = Partial<AudioTracksProps> &
     Partial<SettingsProps> &
     Partial<SubtitlesProps> &
     AutoplayProps &
-    RateProps & { className?: string };
+    RateProps & { className?: string; isHDSupported?: boolean };
 
 export default function MediaSettings({
     audioTrack,
@@ -23,6 +23,7 @@ export default function MediaSettings({
     autoplay,
     badge,
     className,
+    isHDSupported,
     onAudioTrackChange = noop,
     onAutoplayChange,
     onQualityChange,
@@ -61,6 +62,7 @@ export default function MediaSettings({
                 {quality && (
                     <Settings.MenuItem
                         data-testid="bp-media-settings-quality"
+                        isDisabled={!isHDSupported}
                         label={__('media_quality')}
                         target={Menu.QUALITY}
                         value={getQualityLabel(quality)}

@@ -752,14 +752,14 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('sd');
-            expect(dash.setQuality).toBeCalledWith('sd');
+            expect(dash.setQuality).toBeCalledWith('sd', false);
         });
 
         test('should set quality to auto if HD is supported and cache has no entry', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('auto');
-            expect(dash.setQuality).toBeCalledWith('auto');
+            expect(dash.setQuality).toBeCalledWith('auto', false);
         });
 
         test('should set quality to cache value if HD is supported and cache has an entry', () => {
@@ -768,7 +768,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('hd');
-            expect(dash.setQuality).toBeCalledWith('hd');
+            expect(dash.setQuality).toBeCalledWith('hd', false);
         });
     });
 
@@ -1637,6 +1637,11 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.enableVideoId).not.toBeCalled();
             expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
             expect(dash.renderUI).toBeCalled();
+        });
+
+        test('should not save to cache if saveToCache is false', () => {
+            dash.setQuality('auto', false);
+            expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', false);
         });
     });
 
