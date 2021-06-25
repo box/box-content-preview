@@ -20,7 +20,7 @@ describe('Dash Viewer', () => {
                 cy.showMediaControls();
 
                 // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
+                cy.getByTitle('Settings').click();
             });
 
             runBaseMediaSettingsTests();
@@ -42,7 +42,7 @@ describe('Dash Viewer', () => {
                 cy.showMediaControls();
 
                 // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
+                cy.getByTitle('Settings').click();
             });
 
             runBaseMediaSettingsTests();
@@ -50,6 +50,8 @@ describe('Dash Viewer', () => {
             runQualityMenuTests();
 
             runAudioTracksTests();
+
+            runSubtitlesTests();
         });
     });
 });

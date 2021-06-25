@@ -1,19 +1,14 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import audioTracks from '../__mocks__/audioTracks';
-import MediaSettingsAudioTracks from '../MediaSettingsAudioTracks';
+import MediaSettingsMenuSubtitles from '../MediaSettingsMenuSubtitles';
 import Settings, { Context, Menu } from '../../settings';
+import subtitles from '../__mocks__/subtitles';
 
-describe('MediaSettingsAudioTracks', () => {
+describe('MediaSettingsSubtitles', () => {
     const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
         mount(
-            <MediaSettingsAudioTracks
-                audioTrack={1}
-                audioTracks={audioTracks}
-                onAudioTrackChange={jest.fn()}
-                {...props}
-            />,
+            <MediaSettingsMenuSubtitles onSubtitleChange={jest.fn()} subtitle={1} subtitles={subtitles} {...props} />,
             {
                 wrappingComponent: Settings.Context.Provider,
                 wrappingComponentProps: { value: context },
@@ -22,12 +17,12 @@ describe('MediaSettingsAudioTracks', () => {
 
     describe('event handlers', () => {
         test('should surface the selected item on change', () => {
-            const onAudioTrackChange = jest.fn();
-            const wrapper = getWrapper({ onAudioTrackChange });
+            const onSubtitleChange = jest.fn();
+            const wrapper = getWrapper({ onSubtitleChange });
 
             wrapper.find({ value: 0 }).simulate('click');
 
-            expect(onAudioTrackChange).toBeCalledWith(0);
+            expect(onSubtitleChange).toBeCalledWith(0);
         });
 
         test('should reset the active menu on change', () => {
@@ -41,17 +36,14 @@ describe('MediaSettingsAudioTracks', () => {
     });
 
     describe('render', () => {
-        test('should not render if audiotracks is <= 1', () => {
-            const wrapper = getWrapper({ audioTracks: [] });
-
-            expect(wrapper.isEmptyRender()).toBe(true);
-        });
-
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
+            const radioItems = wrapper.find(Settings.RadioItem);
 
-            expect(wrapper.exists(Settings.MenuBack)).toBe(true);
-            expect(wrapper.exists(Settings.RadioItem)).toBe(true);
+            expect(wrapper.find(Settings.MenuBack).prop('label')).toBe(`${__('subtitles')}/CC`);
+            expect(radioItems.at(0).prop('label')).toBe(__('off'));
+            expect(radioItems.at(1).prop('label')).toBe('English');
+            expect(radioItems.at(2).prop('label')).toBe('Spanish');
         });
     });
 });

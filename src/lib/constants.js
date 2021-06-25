@@ -148,3 +148,5 @@ export const ERROR_CODE_403_FORBIDDEN_BY_POLICY = 'forbidden_by_policy';
 // LocalStorage Keys
 export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-document';
 export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-image';
+
+export const SUBTITLES_OFF = -1;

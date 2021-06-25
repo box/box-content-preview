@@ -21,5 +21,12 @@ describe('SettingsToggle', () => {
 
             expect(wrapper.hasClass('bp-is-open')).toBe(isOpen);
         });
+
+        test('should render badge if provided', () => {
+            const Badge = (): JSX.Element => <div className="badge">Badge</div>;
+            const wrapper = getWrapper({ badge: <Badge /> });
+
+            expect(wrapper.exists(Badge)).toBe(true);
+        });
     });
 });

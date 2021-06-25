@@ -6,7 +6,7 @@ export function runBaseMediaSettingsTests() {
             cy.getByTestId('bp-media-settings-speed').contains('Normal');
 
             // Close the menu
-            cy.getByTitle('Settings').click({ force: true });
+            cy.getByTitle('Settings').click();
             cy.getByTestId('bp-settings-flyout').should('not.be.visible');
         });
 
@@ -110,7 +110,7 @@ export function runSubtitlesTests() {
             cy.getByTestId('bp-media-settings-subtitles').contains('Spanish');
         });
 
-        it('Should be able to turn off subtitles via the button', () => {
+        it('Toggle CC button should turn off and on subtitles', () => {
             cy.getByTitle('Subtitles/Closed Captions')
                 .as('subtitlesBtn')
                 .should('be.visible')
@@ -122,7 +122,18 @@ export function runSubtitlesTests() {
                 .click()
                 .should('have.attr', 'aria-pressed', 'false');
 
+            cy.getByTitle('Settings').click();
+
             cy.getByTestId('bp-media-settings-subtitles').contains('Off');
+
+            // Toggling CC back on should restore the previously used text track
+            cy.get('@subtitlesBtn')
+                .click()
+                .should('have.attr', 'aria-pressed', 'true');
+
+            cy.getByTitle('Settings').click();
+
+            cy.getByTestId('bp-media-settings-subtitles').contains('English');
         });
 
         it('Should be able to turn off subtitles via the menu', () => {
@@ -142,6 +153,18 @@ export function runSubtitlesTests() {
             cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'false');
 
             cy.getByTestId('bp-media-settings-subtitles').contains('Off');
+
+            // Toggling CC back on should restore the previously used text track
+            cy.getByTitle('Subtitles/Closed Captions')
+                .as('subtitlesBtn')
+                .should('be.visible')
+                .should('have.attr', 'aria-pressed', 'false')
+                .click()
+                .should('have.attr', 'aria-pressed', 'true');
+
+            cy.getByTitle('Settings').click();
+
+            cy.getByTestId('bp-media-settings-subtitles').contains('English');
         });
     });
 }
