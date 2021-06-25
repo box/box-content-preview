@@ -76,6 +76,18 @@ export function runQualityMenuTests() {
     });
 }
 
+export function runLowQualityMenuTests() {
+    describe('Non HD Video', () => {
+        it('Should not have the Quality settings menu enabled', () => {
+            cy.getByTestId('bp-media-settings-quality')
+                .contains('480p')
+                .click({ force: true });
+
+            cy.getByTestId('bp-media-controls-hd').should('not.be.visible');
+        });
+    });
+}
+
 export function runAudioTracksTests() {
     describe('Audiotracks Menu', () => {
         it('Should be able to change the Audiotrack setting', () => {
