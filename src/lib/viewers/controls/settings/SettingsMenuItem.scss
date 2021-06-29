@@ -3,6 +3,10 @@
 .bp-SettingsMenuItem {
     @include bp-SettingsRow;
 
+    &[aria-disabled='true'] {
+        cursor: default;
+    }
+
     &:hover {
         background-color: $hover-blue-background;
 
