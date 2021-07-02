@@ -40,12 +40,16 @@ export default function DocControls({
     pageCount,
     pageNumber,
     scale,
+    thumbnailsSidebarIsOpen,
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
             <ControlsBar>
                 <ControlsBarGroup>
-                    <ThumbnailsToggle onThumbnailsToggle={onThumbnailsToggle} />
+                    <ThumbnailsToggle
+                        onThumbnailsToggle={onThumbnailsToggle}
+                        thumbnailsSidebarIsOpen={thumbnailsSidebarIsOpen}
+                    />
                     <FindBarToggle onFindBarToggle={onFindBarToggle} />
                 </ControlsBarGroup>
                 <ControlsBarGroup isDistinct>
