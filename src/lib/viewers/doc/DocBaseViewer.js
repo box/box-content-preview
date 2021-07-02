@@ -1097,7 +1097,7 @@ class DocBaseViewer extends BaseViewer {
                 pageCount={this.pdfViewer.pagesCount}
                 pageNumber={this.pdfViewer.currentPageNumber}
                 scale={this.pdfViewer.currentScale}
-                thumbnailsSidebarIsOpen={this.thumbnailsSidebar ? this.thumbnailsSidebar.isOpen : undefined}
+                thumbnailsSidebarIsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
             />,
         );
     }
