@@ -4,17 +4,17 @@ import './ThumbnailsToggle.scss';
 
 export type Props = {
     onThumbnailsToggle?: () => void;
-    thumbnailsSidebarIsOpen?: boolean;
+    isThumbnailsOpen?: boolean;
 };
 
-export default function ThumbnailsToggle({ onThumbnailsToggle, thumbnailsSidebarIsOpen }: Props): JSX.Element | null {
+export default function ThumbnailsToggle({ onThumbnailsToggle, isThumbnailsOpen }: Props): JSX.Element | null {
     if (!onThumbnailsToggle) {
         return null;
     }
 
     return (
         <button
-            aria-expanded={thumbnailsSidebarIsOpen}
+            aria-expanded={isThumbnailsOpen}
             className="bp-ThumbnailsToggle"
             onClick={onThumbnailsToggle}
             title={__('toggle_thumbnails')}
