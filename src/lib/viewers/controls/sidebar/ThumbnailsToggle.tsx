@@ -3,8 +3,8 @@ import IconThumbnailsToggle24 from '../icons/IconThumbnailsToggle24';
 import './ThumbnailsToggle.scss';
 
 export type Props = {
-    onThumbnailsToggle?: () => void;
     isThumbnailsOpen?: boolean;
+    onThumbnailsToggle?: () => void;
 };
 
 export default function ThumbnailsToggle({ onThumbnailsToggle, isThumbnailsOpen }: Props): JSX.Element | null {
