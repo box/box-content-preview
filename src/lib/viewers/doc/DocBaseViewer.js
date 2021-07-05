@@ -1082,6 +1082,7 @@ class DocBaseViewer extends BaseViewer {
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}
+                isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
@@ -1097,7 +1098,6 @@ class DocBaseViewer extends BaseViewer {
                 pageCount={this.pdfViewer.pagesCount}
                 pageNumber={this.pdfViewer.currentPageNumber}
                 scale={this.pdfViewer.currentScale}
-                thumbnailsSidebarIsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
             />,
         );
     }
