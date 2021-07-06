@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+import Filmstrip from '../Filmstrip';
 import SliderControl from '../../slider';
 import TimeControls from '../TimeControls';
 
@@ -11,6 +12,30 @@ describe('TimeControls', () => {
     });
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<TimeControls currentTime={0} durationTime={10000} onTimeChange={jest.fn()} {...props} />);
+
+    describe('event handlers', () => {
+        test('should update the slider hover state on mousemove', () => {
+            const wrapper = getWrapper({ filmstripInterval: 1 });
+
+            wrapper.find(SliderControl).simulate('move', 100, 1000, 10000); // Time, position, max position
+
+            expect(wrapper.find(Filmstrip).props()).toMatchObject({
+                position: 1000,
+                positionMax: 10000,
+                time: 100,
+            });
+        });
+
+        test('should update the slider hover state on mouseover and mouseout', () => {
+            const wrapper = getWrapper({ filmstripInterval: 1 });
+
+            wrapper.find(SliderControl).simulate('mouseover');
+            expect(wrapper.find(Filmstrip).prop('isShown')).toBe(true);
+
+            wrapper.find(SliderControl).simulate('mouseout');
+            expect(wrapper.find(Filmstrip).prop('isShown')).toBe(false);
+        });
+    });
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
@@ -46,6 +71,29 @@ describe('TimeControls', () => {
             const buffer = getBuffer(1000, 0); // 10% buffered
             const wrapper = getWrapper({ bufferedRange: buffer, currentTime });
             expect(wrapper.find(SliderControl).prop('track')).toEqual(track);
+        });
+
+        test('should render the filmstrip with the correct props', () => {
+            const wrapper = getWrapper({
+                aspectRatio: 1.5,
+                filmstripInterval: 2,
+                filmstripUrl: 'https://app.box.com',
+            });
+
+            expect(wrapper.find(Filmstrip).props()).toMatchObject({
+                aspectRatio: 1.5,
+                imageUrl: 'https://app.box.com',
+                interval: 2,
+            });
+        });
+
+        test('should not render the filmstrip if the interval is missing', () => {
+            const wrapper = getWrapper({
+                aspectRatio: 1.5,
+                imageUrl: 'https://app.box.com',
+            });
+
+            expect(wrapper.exists(Filmstrip)).toBe(false);
         });
     });
 });
