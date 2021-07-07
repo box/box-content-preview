@@ -8,7 +8,6 @@ import IconVolumeMute24 from '../icons/IconVolumeMute24';
 import MediaToggle from './MediaToggle';
 import SliderControl from '../slider';
 import useAttention from '../hooks/useAttention';
-import { decodeKeydown } from '../../../util';
 import './VolumeControls.scss';
 
 export type Props = {
@@ -38,22 +37,16 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
     const title = isMuted ? __('media_unmute') : __('media_mute');
     const value = Math.round(volume * 100);
 
-    const handleKeydown = (event: React.KeyboardEvent): void => {
-        const key = decodeKeydown(event);
-
-        // Allow the range input to handle its own left/right keydown events
-        if (key === 'ArrowLeft' || key === 'ArrowRight') {
-            event.stopPropagation(); // Prevents global key handling
-        }
-    };
-
-    const handleMute = (): void => {
+    const handleMute = React.useCallback((): void => {
         onMuteChange(!isMuted);
-    };
+    }, [isMuted, onMuteChange]);
 
-    const handleVolume = (newValue: number): void => {
-        onVolumeChange(newValue / 100);
-    };
+    const handleVolume = React.useCallback(
+        (newValue: number): void => {
+            onVolumeChange(newValue / 100);
+        },
+        [onVolumeChange],
+    );
 
     return (
         <div className="bp-VolumeControls">
@@ -64,8 +57,9 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
             <div className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isActive })}>
                 <SliderControl
                     className="bp-VolumeControls-slider"
-                    onChange={handleVolume}
-                    onKeyDown={handleKeydown}
+                    max={100}
+                    onUpdate={handleVolume}
+                    step={1}
                     title={__('media_volume_slider')}
                     track={`linear-gradient(to right, ${bdlBoxBlue} ${value}%, ${white} ${value}%)`}
                     value={value}

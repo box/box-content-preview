@@ -1,35 +1,31 @@
-@import '../slider/styles';
-
-$bp-TimeControls-size: 18px; // Divisible by 3px (default) and 6px (hovered) for better vertical centering
-$bp-TimeControls-space: 10px;
+@import '../styles';
 
 .bp-TimeControls {
-    height: $bp-TimeControls-size;
+    position: relative;
+    margin-right: 10px;
+    margin-left: 10px;
+}
 
-    .bp-SliderControl-input {
-        padding-right: $bp-TimeControls-space;
-        padding-left: $bp-TimeControls-space;
+.bp-TimeControls-slider {
+    height: 18px; // Divisible by 3px (default) and 6px (hovered) for better vertical centering
 
-        @include bp-SliderThumb {
-            transform: scale(0);
-            transition: transform 100ms ease;
-            will-change: transform; // Prevent flickering in Safari
-        }
+    .bp-SliderControl-thumb {
+        transform: scale(0);
+        transition: transform 100ms ease;
+        will-change: transform; // Prevent flickering in Safari
     }
 
     .bp-SliderControl-track {
-        margin-right: $bp-TimeControls-space;
-        margin-left: $bp-TimeControls-space;
         backface-visibility: hidden; // Prevent jank in Firefox
         transition: transform 100ms ease;
         will-change: transform; // Prevent flickering in Safari
     }
 
+    &.bp-is-scrubbing,
+    &:focus,
     &:hover {
-        .bp-SliderControl-input {
-            @include bp-SliderThumb {
-                transform: scale(1);
-            }
+        .bp-SliderControl-thumb {
+            transform: scale(1);
         }
 
         .bp-SliderControl-track {

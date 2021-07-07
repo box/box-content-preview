@@ -1,0 +1,25 @@
+@import './styles';
+
+.bp-Filmstrip {
+    position: absolute;
+    bottom: 100%;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: 0 0 1px $sunset-grey;
+}
+
+.bp-Filmstrip-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+}
+
+.bp-Filmstrip-time {
+    height: 20px;
+    color: $white;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+    background-color: $twos;
+}
