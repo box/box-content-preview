@@ -8,7 +8,7 @@ import VideoBaseViewer from './VideoBaseViewer';
 import { appendQueryParams, getProp } from '../../util';
 import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
 import { getRepresentation } from '../../file';
-import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
+import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -28,11 +28,17 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of audio tracks for the video */
     audioTracks = [];
 
+    /** @property {string} - ID of the selected audio track */
+    selectedAudioTrack;
+
     /** @property {string} - Video playback quality */
     selectedQuality = 'sd';
 
-    /** @property {string} - ID of the selected audio track */
-    selectedAudioTrack;
+    /** @property {string} - ID of the selected text track */
+    selectedSubtitle = SUBTITLES_OFF;
+
+    /** @property {Array<Object>} - Array of text tracks for the video */
+    textTracks = [];
 
     /**
      * @inheritdoc
@@ -53,7 +59,9 @@ class DashViewer extends VideoBaseViewer {
         this.restartPlayback = this.restartPlayback.bind(this);
         this.setAudioTrack = this.setAudioTrack.bind(this);
         this.setQuality = this.setQuality.bind(this);
+        this.setSubtitle = this.setSubtitle.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
+        this.toggleSubtitles = this.toggleSubtitles.bind(this);
     }
 
     /**
@@ -595,12 +603,60 @@ class DashViewer extends VideoBaseViewer {
     loadSubtitles() {
         // Load subtitles from video, if available
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
+
         if (this.textTracks.length > 0) {
-            this.mediaControls.initSubtitles(
-                this.textTracks.map(track => getLanguageName(track.language) || track.language),
-                getLanguageName(this.options.location.locale.substring(0, 2)),
-            );
+            if (this.getViewerOption('useReactControls')) {
+                this.initSubtitles();
+            } else {
+                this.mediaControls.initSubtitles(
+                    this.textTracks.map(track => getLanguageName(track.language) || track.language),
+                    getLanguageName(this.options.location.locale.substring(0, 2)),
+                );
+            }
         }
+    }
+
+    /**
+     * Gets the subtitle track ID based on whether subtitles are being shown
+     *
+     * @returns {number}
+     */
+    getSubtitleId() {
+        // If subtitles are being shown, then return the ID of the selected audio track. If not, then return
+        // the subtitles off ID
+        return this.cache.get('media-subtitles-toggle') ? this.selectedSubtitle : SUBTITLES_OFF;
+    }
+
+    /**
+     * Initializes the subtitles to the appropriate text track, if applicable
+     *
+     * @return {void}
+     */
+    initSubtitles() {
+        const clientLanguage = getLanguageName(this.options.location.locale.substring(0, 2));
+        const showSubtitles = this.cache.get('media-subtitles-toggle');
+
+        // If no entry in the cache (nor localstorage) default to showing CC
+        if (showSubtitles === undefined) {
+            this.cache.set('media-subtitles-toggle', true, true);
+        }
+
+        this.textTracks = this.textTracks.map(track => ({
+            ...track,
+            displayLanguage: getLanguageName(track.language) || track.language,
+        }));
+
+        // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
+        // Use the previewer's locale to determine preferred language
+        const clientTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === clientLanguage);
+        // Fall back to English if user's language doesn't exist
+        const englishTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === 'English');
+        // Fall back to first subtitle in list
+        const defaultTextTrack = this.textTracks[0];
+
+        this.selectedSubtitle = (clientTextTrack || englishTextTrack || defaultTextTrack).id;
+
+        this.setSubtitle(this.getSubtitleId());
     }
 
     /**
@@ -633,12 +689,18 @@ class DashViewer extends VideoBaseViewer {
             this.autoCaptionDisplayer.setTextVisibility(areAutoCaptionsVisible);
         } else {
             this.setupAutoCaptionDisplayer(textCues);
-            // Update the subtitles/caption button to reflect auto-translation
-            this.mediaControls.setLabel(this.mediaControls.subtitlesButtonEl, __('media_auto_generated_captions'));
-            this.mediaControls.initSubtitles(
-                [__('auto_generated')],
-                getLanguageName(this.options.location.locale.substring(0, 2)),
-            );
+
+            if (this.getViewerOption('useReactControls')) {
+                this.textTracks = [{ id: 0, language: __('auto_generated') }];
+                this.initSubtitles();
+            } else {
+                // Update the subtitles/caption button to reflect auto-translation
+                this.mediaControls.setLabel(this.mediaControls.subtitlesButtonEl, __('media_auto_generated_captions'));
+                this.mediaControls.initSubtitles(
+                    [__('auto_generated')],
+                    getLanguageName(this.options.location.locale.substring(0, 2)),
+                );
+            }
         }
     }
 
@@ -736,9 +798,7 @@ class DashViewer extends VideoBaseViewer {
         this.resize();
         this.handleVolume();
         this.startBandwidthTracking();
-        if (!this.getViewerOption('useReactControls')) {
-            this.loadSubtitles();
-        }
+        this.loadSubtitles();
         this.loadAlternateAudio();
         this.showPlayButton();
 
@@ -775,7 +835,7 @@ class DashViewer extends VideoBaseViewer {
 
         const isHDSupported = this.hdVideoId !== -1;
         this.selectedQuality = isHDSupported ? this.cache.get('media-quality') || 'auto' : 'sd';
-        this.setQuality(this.selectedQuality);
+        this.setQuality(this.selectedQuality, false);
     }
 
     /**
@@ -985,12 +1045,13 @@ class DashViewer extends VideoBaseViewer {
     /**
      * Updates the selected quality and updates the player accordingly
      * @param {string} quality - 'sd', 'hd', or 'auto'
+     * @param {boolean} [saveToCache] - Whether to save this value to the cache, defaults to true
      * @emits qualitychange
      * @return {void}
      */
-    setQuality(quality) {
+    setQuality(quality, saveToCache = true) {
         const newQuality = quality !== 'sd' && quality !== 'hd' ? 'auto' : quality;
-        this.cache.set('media-quality', newQuality, true);
+        this.cache.set('media-quality', newQuality, saveToCache);
         this.selectedQuality = newQuality;
 
         switch (newQuality) {
@@ -1016,6 +1077,58 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Updates the selected subtitle and updates the player accordingly
+     * @param {number} subtitle - ID of the subtitle track
+     * @emits subtitlechange
+     * @return {void}
+     */
+    setSubtitle(subtitle) {
+        const subtitleIndex = this.textTracks.findIndex(({ id }) => id === subtitle);
+
+        if (subtitle !== SUBTITLES_OFF) {
+            this.cache.set('media-subtitles', subtitle, true);
+            this.cache.set('media-subtitles-toggle', true, true);
+            this.selectedSubtitle = subtitle;
+        } else {
+            this.cache.set('media-subtitles-toggle', false, true);
+        }
+
+        // Auto-generated index 0 ==> turn auto-generated text track on
+        if (this.autoCaptionDisplayer && subtitleIndex === 0) {
+            // Manually set text visibility with the custom Shaka Text Displayer
+            this.autoCaptionDisplayer.setTextVisibility(true);
+            this.emit('subtitlechange', __('auto_generated'));
+
+            // Valid non-auto-generated index ==> turn specified text track on
+        } else if (this.textTracks[subtitleIndex] !== undefined) {
+            const track = this.textTracks[subtitleIndex];
+            this.player.selectTextTrack(track);
+            this.player.setTextTrackVisibility(true);
+            this.emit('subtitlechange', track.language);
+
+            // Index -1 ==> turn subtitles/captions off
+        } else {
+            if (this.autoCaptionDisplayer) {
+                this.autoCaptionDisplayer.setTextVisibility(false);
+            }
+
+            this.player.setTextTrackVisibility(false);
+            this.emit('subtitlechange', null);
+        }
+
+        this.renderUI();
+    }
+
+    /**
+     * Toggles the subtitles on or off
+     * @param {boolean} showSubtitles - Boolean indicating whether to hide or show the subtitles
+     * @return {void}
+     */
+    toggleSubtitles(showSubtitles) {
+        this.setSubtitle(showSubtitles ? this.selectedSubtitle : SUBTITLES_OFF);
+    }
+
+    /**
      * @inheritdoc
      */
     renderUI() {
@@ -1034,6 +1147,8 @@ class DashViewer extends VideoBaseViewer {
                 bufferedRange={this.mediaEl.buffered}
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
+                isAutoGeneratedSubtitles={!!this.autoCaptionDisplayer}
+                isHDSupported={this.hdVideoId !== -1}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
                 onAudioTrackChange={this.setAudioTrack}
@@ -1043,10 +1158,14 @@ class DashViewer extends VideoBaseViewer {
                 onPlayPause={this.togglePlay}
                 onQualityChange={this.setQuality}
                 onRateChange={this.setRate}
+                onSubtitleChange={this.setSubtitle}
+                onSubtitlesToggle={this.toggleSubtitles}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
                 quality={this.selectedQuality}
                 rate={this.getRate()}
+                subtitle={this.getSubtitleId()}
+                subtitles={this.textTracks}
                 volume={this.mediaEl.volume}
             />,
         );

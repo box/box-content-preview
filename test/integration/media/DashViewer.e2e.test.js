@@ -1,6 +1,7 @@
 import {
     runAudioTracksTests,
     runBaseMediaSettingsTests,
+    runLowQualityMenuTests,
     runQualityMenuTests,
     runSubtitlesTests,
 } from '../../support/mediaSettingsTests';
@@ -8,48 +9,61 @@ import {
 describe('Dash Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileIdVideo = Cypress.env('FILE_ID_VIDEO_SUBTITLES_TRACKS');
+    const fileIdVideoSmall = Cypress.env('FILE_ID_VIDEO_SMALL');
 
-    describe('Media Settings Controls', () => {
-        describe('Without react controls', () => {
-            beforeEach(() => {
-                cy.visit('/');
-                cy.showPreview(token, fileIdVideo, {
-                    viewers: { Dash: { useReactControls: false } },
-                });
-
-                cy.showMediaControls();
-
-                // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
-            });
-
-            runBaseMediaSettingsTests();
-
-            runQualityMenuTests();
-
-            runAudioTracksTests();
-
-            runSubtitlesTests();
+    const setupTest = (fileId, useReactControls) => {
+        cy.visit('/');
+        cy.showPreview(token, fileId, {
+            viewers: { Dash: { useReactControls } },
         });
 
-        describe('With react controls', () => {
-            beforeEach(() => {
-                cy.visit('/');
-                cy.showPreview(token, fileIdVideo, {
-                    viewers: { Dash: { useReactControls: true } },
-                });
+        cy.showMediaControls();
 
-                cy.showMediaControls();
+        // Open the menu
+        cy.getByTitle('Settings').click();
+    };
 
-                // Open the menu
-                cy.getByTitle('Settings').click({ force: true });
+    describe('HD Video with Subtitles', () => {
+        describe('Media Settings Controls', () => {
+            describe('Without react controls', () => {
+                beforeEach(() => setupTest(fileIdVideo, false));
+
+                runBaseMediaSettingsTests();
+
+                runQualityMenuTests();
+
+                runAudioTracksTests();
+
+                runSubtitlesTests();
             });
 
-            runBaseMediaSettingsTests();
+            describe('With react controls', () => {
+                beforeEach(() => setupTest(fileIdVideo, true));
 
-            runQualityMenuTests();
+                runBaseMediaSettingsTests();
 
-            runAudioTracksTests();
+                runQualityMenuTests();
+
+                runAudioTracksTests();
+
+                runSubtitlesTests();
+            });
+        });
+    });
+
+    describe('Non HD Video', () => {
+        describe('Media Settings Controls', () => {
+            describe('Without react controls', () => {
+                beforeEach(() => setupTest(fileIdVideoSmall, false));
+
+                runLowQualityMenuTests();
+            });
+
+            describe('With react controls', () => {
+                beforeEach(() => setupTest(fileIdVideoSmall, true));
+
+                runLowQualityMenuTests();
+            });
         });
     });
 });

@@ -1,0 +1,26 @@
+@import './styles';
+
+.bp-SubtitlesToggle {
+    @include bp-MediaButton;
+
+    &[aria-pressed='true'] {
+        .bp-SubtitlesToggle-text {
+            color: $white;
+            background-color: $box-blue;
+        }
+    }
+}
+
+.bp-SubtitlesToggle-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: $white;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: .1em;
+    background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
+    border-radius: 4px;
+}

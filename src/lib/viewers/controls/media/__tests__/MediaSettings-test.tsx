@@ -5,8 +5,10 @@ import MediaSettings from '../MediaSettings';
 import Settings from '../../settings/Settings';
 import SettingsMenu from '../../settings/SettingsMenu';
 import SettingsMenuItem from '../../settings/SettingsMenuItem';
+import subtitles from '../__mocks__/subtitles';
 import MediaSettingsMenuAudioTracks from '../MediaSettingsAudioTracks';
 import MediaSettingsMenuQuality from '../MediaSettingsMenuQuality';
+import MediaSettingsMenuSubtitles from '../MediaSettingsMenuSubtitles';
 
 describe('MediaSettings', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
@@ -55,39 +57,53 @@ describe('MediaSettings', () => {
             expect(wrapper.find({ target: menuItem }).prop('value')).toBe(displayValue);
         });
 
-        test('should not render the audio menu item if no audio tracks are provided', () => {
-            const wrapper = getWrapper();
-            expect(wrapper.exists({ target: 'audio' })).toBe(false);
-            expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(false);
+        describe('audiotracks menu', () => {
+            test('should render the audio menu if > 1 audio tracks are present', () => {
+                const wrapper = getWrapper({ audioTracks });
+                expect(wrapper.exists({ target: 'audio' })).toBe(true);
+                expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(true);
+            });
+
+            test('should display the generated track label for the selected audio track', () => {
+                const wrapper = getWrapper({ audioTrack: 1, audioTracks });
+                const expectedLabel = `${__('track')} 2 (English)`;
+                expect(wrapper.find({ target: 'audio' }).prop('value')).toBe(expectedLabel);
+            });
         });
 
-        test('should not render the audio menu item if only 1 audio track is present', () => {
-            const singleAudioTrack = [{ id: 0, language: 'und' }];
-            const wrapper = getWrapper({ audioTracks: singleAudioTrack });
-            expect(wrapper.exists({ target: 'audio' })).toBe(false);
-            expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(false);
+        describe('quality menu', () => {
+            test('should render the quality menu if the quality is provided', () => {
+                const wrapper = getWrapper({ quality: 'auto', onQualityChange: jest.fn() });
+                expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(true);
+            });
+
+            test('should render with isDisabled based on isHDSupported prop', () => {
+                const wrapper = getWrapper({ isHDSupported: false, quality: 'auto', onQualityChange: jest.fn() });
+                expect(wrapper.find({ target: 'quality' }).prop('isDisabled')).toBe(true);
+            });
         });
 
-        test('should render the audio menu if > 1 audio tracks are present', () => {
-            const wrapper = getWrapper({ audioTracks });
-            expect(wrapper.exists({ target: 'audio' })).toBe(true);
-            expect(wrapper.exists(MediaSettingsMenuAudioTracks)).toBe(true);
-        });
+        describe('subtitles menu', () => {
+            test('should render the subtitles menu item if only 1 subtitles track is present', () => {
+                const onSubtitleChange = jest.fn();
+                const singleSubtitle = [{ id: 0, displayLanguage: 'English' }];
+                const wrapper = getWrapper({ onSubtitleChange, subtitles: singleSubtitle });
+                expect(wrapper.exists({ target: 'subtitles' })).toBe(true);
+                expect(wrapper.exists(MediaSettingsMenuSubtitles)).toBe(true);
+            });
 
-        test('should display the generated track label for the selected audio track', () => {
-            const wrapper = getWrapper({ audioTrack: 1, audioTracks });
-            const expectedLabel = `${__('track')} 2 (English)`;
-            expect(wrapper.find({ target: 'audio' }).prop('value')).toBe(expectedLabel);
-        });
+            test('should render the subtitle menu if > 1 subtitles are present', () => {
+                const onSubtitleChange = jest.fn();
+                const wrapper = getWrapper({ onSubtitleChange, subtitles });
+                expect(wrapper.exists({ target: 'subtitles' })).toBe(true);
+                expect(wrapper.exists(MediaSettingsMenuSubtitles)).toBe(true);
+            });
 
-        test('should not render the quality menu item if no quality is provided', () => {
-            const wrapper = getWrapper();
-            expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(false);
-        });
-
-        test('should render the quality menu if the quality is provided', () => {
-            const wrapper = getWrapper({ quality: 'auto', onQualityChange: jest.fn() });
-            expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(true);
+            test('should display the subtitle language for the selected audio track', () => {
+                const onSubtitleChange = jest.fn();
+                const wrapper = getWrapper({ onSubtitleChange, subtitle: 1, subtitles });
+                expect(wrapper.find({ target: 'subtitles' }).prop('value')).toBe('Spanish');
+            });
         });
     });
 });
