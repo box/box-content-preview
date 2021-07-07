@@ -25,6 +25,7 @@ export default function DocControls({
     hasDrawing,
     hasHighlight,
     hasRegion,
+    isThumbnailsOpen,
     maxScale,
     minScale,
     onAnnotationColorChange,
@@ -40,7 +41,6 @@ export default function DocControls({
     pageCount,
     pageNumber,
     scale,
-    isThumbnailsOpen,
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
