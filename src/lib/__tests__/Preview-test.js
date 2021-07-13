@@ -2762,15 +2762,6 @@ describe('lib/Preview', () => {
             expect(stubs.event.preventDefault).not.toBeCalled();
         });
 
-        test('should pass the event to the viewer if the target is an input but allows keydown handling', () => {
-            stubs.decodeKeydown.mockReturnValue('M');
-            stubs.event.target.getAttribute = jest.fn(() => true); // data-allow-keydown=true
-            preview.viewer.onKeydown = jest.fn(() => true);
-            preview.keydownHandler(stubs.event);
-
-            expect(preview.viewer.onKeydown).toBeCalledWith('M', stubs.event);
-        });
-
         test('should navigate left is key is ArrowLeft and the event has not been consumed', () => {
             preview.viewer.onKeydown = jest.fn(() => false);
             stubs.event.target.nodeName = 'ArrowLeft';

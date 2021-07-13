@@ -25,22 +25,24 @@ export default function TimeControls({
     durationTime = 0,
     onTimeChange,
 }: Props): JSX.Element {
-    const currentValue = isFinite(currentTime) && isFinite(durationTime) ? percent(currentTime, durationTime) : 0;
+    const currentValue = isFinite(currentTime) ? currentTime : 0;
+    const durationValue = isFinite(durationTime) ? durationTime : 0;
+    const currentPercentage = percent(currentValue, durationValue);
     const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
-    const bufferedValue = percent(bufferedAmount, durationTime);
-
-    const handleChange = (newValue: number): void => {
-        onTimeChange(round(durationTime * (newValue / 100)));
-    };
+    const bufferedPercentage = percent(bufferedAmount, durationValue);
 
     return (
-        <SliderControl
-            className="bp-TimeControls"
-            onChange={handleChange}
-            step={0.1}
-            title={__('media_time_slider')}
-            track={`linear-gradient(to right, ${bdlBoxBlue} ${currentValue}%, ${white} ${currentValue}%, ${white} ${bufferedValue}%, ${bdlGray62} ${bufferedValue}%, ${bdlGray62} 100%)`}
-            value={currentValue}
-        />
+        <div className="bp-TimeControls">
+            <SliderControl
+                className="bp-TimeControls-slider"
+                max={durationValue}
+                min={0}
+                onUpdate={onTimeChange}
+                step={5}
+                title={__('media_time_slider')}
+                track={`linear-gradient(to right, ${bdlBoxBlue} ${currentPercentage}%, ${white} ${currentPercentage}%, ${white} ${bufferedPercentage}%, ${bdlGray62} ${bufferedPercentage}%, ${bdlGray62} 100%)`}
+                value={currentValue}
+            />
+        </div>
     );
 }
