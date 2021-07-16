@@ -18,7 +18,10 @@
 }
 
 .bp-VolumeControls-slider {
-    width: 100px;
+    width: 100px - $bp-SliderControl-thumb-size;
+    height: 100%;
+    margin-right: $bp-SliderControl-thumb-radius;
+    margin-left: $bp-SliderControl-thumb-radius;
 }
 
 .bp-VolumeControls-toggle {

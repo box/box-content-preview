@@ -12,61 +12,40 @@ describe('TimeControls', () => {
     const getWrapper = (props = {}): ShallowWrapper =>
         shallow(<TimeControls currentTime={0} durationTime={10000} onTimeChange={jest.fn()} {...props} />);
 
-    describe('event handlers', () => {
-        test.each`
-            percentage | value
-            ${0}       | ${0}
-            ${20}      | ${1111}
-            ${33}      | ${1833.15}
-            ${33.3333} | ${1851.6648}
-            ${100}     | ${5555}
-        `(
-            'should calculate the absolute value $value based on the relative slider percentage $percentage',
-            ({ percentage, value }) => {
-                const onChange = jest.fn();
-                const wrapper = getWrapper({ durationTime: 5555, onTimeChange: onChange });
-                const slider = wrapper.find(SliderControl);
-
-                slider.simulate('change', percentage);
-
-                expect(onChange).toBeCalledWith(value);
-            },
-        );
-    });
-
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.hasClass('bp-TimeControls')).toBe(true);
-            expect(wrapper.prop('step')).toEqual(0.1);
+            expect(wrapper.find(SliderControl).props()).toMatchObject({
+                max: 10000,
+                min: 0,
+                step: 5,
+                value: 0,
+            });
         });
 
-        test('should not calculate percentage for invalid currentTime value', () => {
-            const wrapper = getWrapper({ currentTime: NaN, durationTime: 100 });
+        test('should not default to zero for invalid currentTime value', () => {
+            const wrapper = getWrapper({ currentTime: NaN });
             expect(wrapper.find(SliderControl).prop('value')).toBe(0);
         });
 
-        test('should not calculate percentage for invalid durationTime value', () => {
-            const wrapper = getWrapper({ currentTime: 100, durationTime: NaN });
-            expect(wrapper.find(SliderControl).prop('value')).toBe(0);
+        test('should default to zero for invalid durationTime value', () => {
+            const wrapper = getWrapper({ durationTime: NaN });
+            expect(wrapper.find(SliderControl).prop('max')).toBe(0);
         });
 
         test.each`
-            currentTime | track                                                                                        | value
-            ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #767676 10%, #767676 100%)'}     | ${0}
-            ${50}       | ${'linear-gradient(to right, #0061d5 0.5%, #fff 0.5%, #fff 10%, #767676 10%, #767676 100%)'} | ${0.5}
-            ${1000}     | ${'linear-gradient(to right, #0061d5 10%, #fff 10%, #fff 10%, #767676 10%, #767676 100%)'}   | ${10}
-            ${2500}     | ${'linear-gradient(to right, #0061d5 25%, #fff 25%, #fff 10%, #767676 10%, #767676 100%)'}   | ${25}
-            ${10000}    | ${'linear-gradient(to right, #0061d5 100%, #fff 100%, #fff 10%, #767676 10%, #767676 100%)'} | ${100}
-        `('should render the correct track and value for currentTime $currentTime', ({ currentTime, track, value }) => {
+            currentTime | track
+            ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #767676 10%, #767676 100%)'}
+            ${50}       | ${'linear-gradient(to right, #0061d5 0.5%, #fff 0.5%, #fff 10%, #767676 10%, #767676 100%)'}
+            ${1000}     | ${'linear-gradient(to right, #0061d5 10%, #fff 10%, #fff 10%, #767676 10%, #767676 100%)'}
+            ${2500}     | ${'linear-gradient(to right, #0061d5 25%, #fff 25%, #fff 10%, #767676 10%, #767676 100%)'}
+            ${10000}    | ${'linear-gradient(to right, #0061d5 100%, #fff 100%, #fff 10%, #767676 10%, #767676 100%)'}
+        `('should render the correct track for currentTime $currentTime', ({ currentTime, track }) => {
             const buffer = getBuffer(1000, 0); // 10% buffered
             const wrapper = getWrapper({ bufferedRange: buffer, currentTime });
-
-            expect(wrapper.find(SliderControl).props()).toMatchObject({
-                track,
-                value,
-            });
+            expect(wrapper.find(SliderControl).prop('track')).toEqual(track);
         });
     });
 });
