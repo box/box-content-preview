@@ -702,7 +702,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
                 expect(dash.loadUIReact).toBeCalled();
                 expect(dash.loadUI).not.toBeCalled();
-                expect(dash.loadFilmStrip).not.toBeCalled();
+                expect(dash.loadFilmStrip).toBeCalled();
                 expect(dash.loadSubtitles).toBeCalled();
                 expect(dash.loadAlternateAudio).toBeCalled();
             });
@@ -789,6 +789,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 },
             };
             stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams');
+            stubs.renderUI = jest.spyOn(dash, 'renderUI');
             jest.spyOn(dash, 'getRepStatus');
         });
 
@@ -829,6 +830,29 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should load the film strip', () => {
             dash.loadFilmStrip();
             expect(stubs.createUrl).toBeCalled();
+        });
+
+        test('should render the controls again after the filmstrip is ready', done => {
+            const mockPromise = Promise.resolve();
+
+            jest.spyOn(dash, 'getViewerOption').mockReturnValueOnce(true);
+            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
+                destroy: jest.fn(),
+                getPromise: () => mockPromise,
+            });
+
+            dash.options.file.representations.entries[1] = {
+                representation: 'filmstrip',
+                content: { url_template: 'https://api.box.com' },
+                metadata: { interval: 1 },
+                status: { state: 'ready' },
+            };
+            dash.loadFilmStrip();
+
+            mockPromise.then(() => {
+                expect(stubs.renderUI).toBeCalled();
+                done();
+            });
         });
     });
 
