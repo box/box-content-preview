@@ -1,3 +1,13 @@
+## 2.76.0 (2021-07-19)
+
+* feat(dash): Add react version of filmstrip controls (#1408) ([7fc29a3](https://github.com/box/box-content-preview/commit/7fc29a3)), closes [#1408](https://github.com/box/box-content-preview/issues/1408)
+* feat(preview): Add preview support for indesign file extensions (#1411) ([762ac35](https://github.com/box/box-content-preview/commit/762ac35)), closes [#1411](https://github.com/box/box-content-preview/issues/1411)
+* feat(slider): Migrate to custom slider due to range input limitations (#1410) ([19722e6](https://github.com/box/box-content-preview/commit/19722e6)), closes [#1410](https://github.com/box/box-content-preview/issues/1410)
+* chore(i18n): Update Translations (#1409) ([e1d5280](https://github.com/box/box-content-preview/commit/e1d5280)), closes [#1409](https://github.com/box/box-content-preview/issues/1409)
+* fix(controls): Add aria-expanded to sidebar toggle button (#1407) ([9187577](https://github.com/box/box-content-preview/commit/9187577)), closes [#1407](https://github.com/box/box-content-preview/issues/1407)
+
+
+
 ## 2.75.0 (2021-06-29)
 
 * fix(controls): color correction on contols (#1402) ([6291777](https://github.com/box/box-content-preview/commit/6291777)), closes [#1402](https://github.com/box/box-content-preview/issues/1402)
