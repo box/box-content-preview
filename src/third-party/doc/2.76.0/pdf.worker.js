@@ -35724,10 +35724,9 @@ var Font = function FontClosure() {
     },
 
     exportData: function Font_exportData() {
-      var data = Object.create(null);
-      var that = this, value;
+      var data = Object.create(null), that = this;
       EXPORT_DATA_PROPERTIES.forEach(function (property) {
-        value = that[property];
+        var value = that[property];
         // Ignore properties that haven't been explicitly set.
         if (value !== undefined) {
             data[property] = value;
