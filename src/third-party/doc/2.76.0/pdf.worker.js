@@ -34739,6 +34739,48 @@ var PRIVATE_USE_AREAS = [[0xE000, 0xF8FF], [0x100000, 0x10FFFD]];
 var PDF_GLYPH_SPACE_UNITS = 1000;
 var SEAC_ANALYSIS_ENABLED = true;
 exports.SEAC_ANALYSIS_ENABLED = SEAC_ANALYSIS_ENABLED;
+var EXPORT_DATA_PROPERTIES = [
+    "_shadowWidth",
+    "ascent",
+    "bbox",
+    "black",
+    "bold",
+    "cMap",
+    "charProcOperatorList",
+    "charsCache",
+    "cidEncoding",
+    "composite",
+    "data",
+    "defaultEncoding",
+    "defaultVMetrics",
+    "defaultWidth",
+    "descent",
+    "differences",
+    "fallbackName",
+    "fallbackToUnicode",
+    "fontMatrix",
+    "fontType",
+    "glyphCache",
+    "isMonospace",
+    "isOpenType",
+    "isSerifFont",
+    "isSymbolicFont",
+    "isType3Font",
+    "italic",
+    "loadedName",
+    "mimetype",
+    "missingFile",
+    "name",
+    "remeasure",
+    "seacMap",
+    "subtype",
+    "toFontChar",
+    "toUnicode",
+    "type",
+    "vertical",
+    "vmetrics",
+];
+exports.EXPORT_DATA_PROPERTIES = EXPORT_DATA_PROPERTIES;
 var FontFlags = {
   FixedPitch: 1,
   Serif: 2,
@@ -35682,11 +35724,13 @@ var Font = function FontClosure() {
     },
 
     exportData: function Font_exportData() {
-      var data = {};
-
-      for (var i in this) {
-        if (this.hasOwnProperty(i)) {
-          data[i] = this[i];
+      const data = Object.create(null);
+      let property, value;
+      for (property of EXPORT_DATA_PROPERTIES) {
+        value = this[property];
+        // Ignore properties that haven't been explicitly set.
+        if (value !== undefined) {
+            data[property] = value;
         }
       }
 
