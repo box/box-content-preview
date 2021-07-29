@@ -35725,14 +35725,14 @@ var Font = function FontClosure() {
 
     exportData: function Font_exportData() {
       var data = Object.create(null);
-      var property, value;
-      for (property of EXPORT_DATA_PROPERTIES) {
-        value = this[property];
+      var that = this, value;
+      EXPORT_DATA_PROPERTIES.forEach(function (property) {
+        value = that[property];
         // Ignore properties that haven't been explicitly set.
         if (value !== undefined) {
             data[property] = value;
         }
-      }
+      });
 
       return data;
     },
