@@ -1,3 +1,11 @@
+## 2.77.0 (2021-07-29)
+
+* docs(pdfjs): Adding comment to upgrade script (#1415) ([5c83224](https://github.com/box/box-content-preview/commit/5c83224)), closes [#1415](https://github.com/box/box-content-preview/issues/1415)
+* fix(pdfjs): Use allowlist for exporting font data (#1414) ([8dea22e](https://github.com/box/box-content-preview/commit/8dea22e)), closes [#1414](https://github.com/box/box-content-preview/issues/1414)
+* refactor(pdfjs): Copy assets from 2.16.0 to 2.76.0 (#1413) ([ea95b91](https://github.com/box/box-content-preview/commit/ea95b91)), closes [#1413](https://github.com/box/box-content-preview/issues/1413)
+
+
+
 ## 2.76.0 (2021-07-19)
 
 * feat(dash): Add react version of filmstrip controls (#1408) ([7fc29a3](https://github.com/box/box-content-preview/commit/7fc29a3)), closes [#1408](https://github.com/box/box-content-preview/issues/1408)
