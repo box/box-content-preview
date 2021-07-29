@@ -51,6 +51,11 @@ echo "Enabling e-signature rendering without validation..."
 echo "-----------------------------------------------------------------------------------"
 sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.js
 
+# Fix for Courier font PDF not rendering applied to src/third-party/doc/2.76.0/pdf.worker*.js which is PDFJS v2.2.228
+# Link to issue: https://github.com/mozilla/pdf.js/issues/13771
+# This fix may not need to be applied if next upgrade is >= 2.5.x
+# See https://github.com/box/box-content-preview/pull/1414 for more details
+
 # Minify using Google Closure Compiler, options:
 # Output to ES5 (Box supports Chrome, Edge, IE11, Firefox, Safari, and newer versions of iOS, Android)
 # Do not minify pdf.js or pdf.worker.js, as the closure compiler will mangle function names and cause bugs
