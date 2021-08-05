@@ -254,6 +254,7 @@ class ThumbnailsSidebar {
 
         if (pageNum === this.currentPage) {
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
+            thumbnailEl.setAttribute('aria-current', true);
         }
 
         // If image is already in cache, then use it instead of waiting for
