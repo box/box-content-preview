@@ -9,9 +9,11 @@ import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import Timer from '../../Timer';
 import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_EVENT,
+    BROWSERS,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -42,7 +44,7 @@ import {
     USER_DOCUMENT_THUMBNAIL_EVENTS,
     VIEWER_EVENT,
 } from '../../events';
-import Timer from '../../Timer';
+import { EXCEL_EXTENSIONS } from '../../extensions';
 
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
@@ -377,6 +379,14 @@ class DocBaseViewer extends BaseViewer {
         this.showPreload();
 
         const template = this.options.representation.content.url_template;
+        const { extension } = this.options.file;
+        const isExcelExtension = EXCEL_EXTENSIONS.indexOf(extension) !== -1;
+        const isIE = Browser.getName() === BROWSERS.INTERNET_EXPLORER;
+
+        if (isExcelExtension && isIE) {
+            this.options.ui.showNotification(__('error_internet_explorer_office_online'), null, true);
+        }
+
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
