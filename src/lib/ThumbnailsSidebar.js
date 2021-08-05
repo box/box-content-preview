@@ -440,8 +440,10 @@ class ThumbnailsSidebar {
             const parsedPageNum = parseInt(thumbnailEl.dataset.bpPageNum, 10);
             if (parsedPageNum === this.currentPage) {
                 thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
+                thumbnailEl.setAttribute('aria-current', true);
             } else {
                 thumbnailEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED);
+                thumbnailEl.removeAttribute('aria-current');
             }
         });
     }
