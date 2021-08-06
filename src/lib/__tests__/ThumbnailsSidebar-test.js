@@ -435,10 +435,16 @@ describe('ThumbnailsSidebar', () => {
 
     describe('applyCurrentPageSelection()', () => {
         let thumbnails;
+        let parentEl;
 
         beforeEach(() => {
             stubs.addClass = jest.fn();
             stubs.removeClass = jest.fn();
+            stubs.addAriaAttribute = jest.fn();
+            stubs.removeAriaAttribute = jest.fn();
+
+            parentEl = document.createElement('div');
+            parentEl.dataset.bpPageNum = '3';
 
             // eslint-disable-next-line
             const createTestThumbnail = pageNum => {
@@ -446,6 +452,8 @@ describe('ThumbnailsSidebar', () => {
                 thumbnail.dataset.bpPageNum = pageNum;
                 thumbnail.classList.add = stubs.addClass;
                 thumbnail.classList.remove = stubs.removeClass;
+                thumbnail.setAttribute = stubs.addAriaAttribute;
+                thumbnail.removeAttribute = stubs.removeAriaAttribute;
                 return thumbnail;
             };
 
@@ -474,6 +482,14 @@ describe('ThumbnailsSidebar', () => {
 
             expect(stubs.removeClass).toBeCalledTimes(2);
             expect(stubs.addClass).toBeCalledTimes(1);
+        });
+
+        test('should add the aria-current attribute when thumbnail is selected', () => {
+            thumbnailsSidebar.currentPage = 2;
+
+            thumbnailsSidebar.applyCurrentPageSelection();
+
+            expect(stubs.addAriaAttribute).toBeCalledTimes(1);
         });
     });
 
