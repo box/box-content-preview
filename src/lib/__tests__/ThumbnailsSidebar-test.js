@@ -440,6 +440,7 @@ describe('ThumbnailsSidebar', () => {
             stubs.addClass = jest.fn();
             stubs.removeClass = jest.fn();
             stubs.addAriaAttribute = jest.fn();
+            stubs.removeAriaAttribute = jest.fn();
 
             // eslint-disable-next-line
             const createTestThumbnail = pageNum => {
@@ -448,6 +449,7 @@ describe('ThumbnailsSidebar', () => {
                 thumbnail.classList.add = stubs.addClass;
                 thumbnail.classList.remove = stubs.removeClass;
                 thumbnail.setAttribute = stubs.addAriaAttribute;
+                thumbnail.removeAttribute = stubs.removeAriaAttribute;
                 return thumbnail;
             };
 
@@ -484,6 +486,14 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.applyCurrentPageSelection();
 
             expect(stubs.addAriaAttribute).toBeCalledTimes(1);
+        });
+
+        test('should remove the aria-current attribute when thumbnail is not selected', () => {
+            thumbnailsSidebar.currentPage = 2;
+
+            thumbnailsSidebar.applyCurrentPageSelection();
+
+            expect(stubs.removeAriaAttribute).toBeCalledTimes(2);
         });
     });
 
