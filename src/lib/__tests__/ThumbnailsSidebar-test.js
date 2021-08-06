@@ -435,16 +435,11 @@ describe('ThumbnailsSidebar', () => {
 
     describe('applyCurrentPageSelection()', () => {
         let thumbnails;
-        let parentEl;
 
         beforeEach(() => {
             stubs.addClass = jest.fn();
             stubs.removeClass = jest.fn();
             stubs.addAriaAttribute = jest.fn();
-            stubs.removeAriaAttribute = jest.fn();
-
-            parentEl = document.createElement('div');
-            parentEl.dataset.bpPageNum = '3';
 
             // eslint-disable-next-line
             const createTestThumbnail = pageNum => {
@@ -453,7 +448,6 @@ describe('ThumbnailsSidebar', () => {
                 thumbnail.classList.add = stubs.addClass;
                 thumbnail.classList.remove = stubs.removeClass;
                 thumbnail.setAttribute = stubs.addAriaAttribute;
-                thumbnail.removeAttribute = stubs.removeAriaAttribute;
                 return thumbnail;
             };
 
