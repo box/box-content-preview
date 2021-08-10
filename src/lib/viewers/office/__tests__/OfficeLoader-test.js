@@ -2,7 +2,6 @@ import * as file from '../../../file';
 import Browser from '../../../Browser';
 import OfficeLoader from '../OfficeLoader';
 import OfficeViewer from '../OfficeViewer';
-import { BROWSERS } from '../../../constants';
 
 const FIVE_MB = 5242880;
 
@@ -90,7 +89,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
             });
 
             test('should not return a viewer if the browser is internet explorer', () => {
-                jest.spyOn(Browser, 'getName').mockImplementation(() => BROWSERS.INTERNET_EXPLORER);
+                jest.spyOn(Browser, 'isIE').mockImplementation(() => true);
                 const viewer = OfficeLoader.determineViewer(fakeFile, []);
                 expect(viewer).toBeUndefined();
             });
