@@ -1,5 +1,6 @@
 import getProp from 'lodash/get';
 import AssetLoader from '../AssetLoader';
+import Browser from '../../Browser';
 import OfficeViewer from './OfficeViewer';
 import { checkPermission } from '../../file';
 import { ORIGINAL_REP_NAME, PERMISSION_DOWNLOAD } from '../../constants';
@@ -39,7 +40,8 @@ class OfficeLoader extends AssetLoader {
         if (
             !checkPermission(file, PERMISSION_DOWNLOAD) ||
             file.size > maxFileSize ||
-            isDisabledDueToPasswordProtectedSharedLink
+            isDisabledDueToPasswordProtectedSharedLink ||
+            Browser.isIE() // Disable Office viewer if browser is Internet Explorer due to EOL
         ) {
             disabledViewers.push(OFFICE_VIEWER_NAME);
         }
