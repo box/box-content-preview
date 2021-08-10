@@ -352,6 +352,14 @@ class Browser {
             },
         };
     }
+
+    /**
+     * Returns whether the browser is Internet Explorer
+     * @returns {boolean} - Whether the browser is Internet Explorer
+     */
+    static isIE() {
+        return Browser.getName() === BROWSERS.INTERNET_EXPLORER;
+    }
 }
 
 export default Browser;

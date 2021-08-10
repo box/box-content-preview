@@ -16,20 +16,19 @@ import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
     ANNOTATOR_EVENT,
-    BROWSERS,
-    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
-    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_HIDDEN,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
-    ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
-    QUERY_PARAM_ENCODING,
-    SELECTOR_BOX_PREVIEW_CONTENT,
-    SELECTOR_BOX_PREVIEW,
     STATUS_ERROR,
     STATUS_PENDING,
     STATUS_SUCCESS,
+    QUERY_PARAM_ENCODING,
+    ENCODING_TYPES,
+    SELECTOR_BOX_PREVIEW_CONTENT,
+    CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
+    SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
@@ -599,7 +598,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('load()', () => {
             const loadFunc = BaseViewer.prototype.load;
 
-            beforeEach(() => {
+            afterEach(() => {
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
+            });
+
+            test('should load a document', () => {
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 jest.spyOn(docBase, 'setup').mockImplementation();
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
@@ -608,29 +611,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
                 jest.spyOn(docBase, 'loadAssets').mockImplementation();
                 jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
-            });
 
-            afterEach(() => {
-                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
-            });
-
-            test('should load a document', () => {
                 return docBase.load().then(() => {
                     expect(docBase.loadAssets).toBeCalled();
                     expect(docBase.setup).not.toBeCalled();
                     expect(docBase.createContentUrlWithAuthParams).toBeCalledWith('foo');
                     expect(docBase.handleAssetAndRepLoad).toBeCalled();
-                });
-            });
-
-            test('should show notification if file has excel extension and is internet explorer', () => {
-                const showNotification = jest.fn();
-                docBase.options.ui = { showNotification };
-                docBase.options.file.extension = 'xlsx';
-                jest.spyOn(Browser, 'getName').mockImplementation(() => BROWSERS.INTERNET_EXPLORER);
-
-                return docBase.load().then(() => {
-                    expect(showNotification).toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
                 });
             });
         });
