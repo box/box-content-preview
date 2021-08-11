@@ -1,3 +1,11 @@
+## 2.78.0 (2021-08-11)
+
+* chore(i18n): Update Translations (#1418) ([0c37748](https://github.com/box/box-content-preview/commit/0c37748)), closes [#1418](https://github.com/box/box-content-preview/issues/1418)
+* feat(office): Preview PDF rep if using internet explorer (#1416) ([c104cd2](https://github.com/box/box-content-preview/commit/c104cd2)), closes [#1416](https://github.com/box/box-content-preview/issues/1416)
+* fix(ThumbnailsSidebar): A11Y - add aria-current to ThumbnailsSidebar (#1417) ([75ede5e](https://github.com/box/box-content-preview/commit/75ede5e)), closes [#1417](https://github.com/box/box-content-preview/issues/1417)
+
+
+
 ## 2.77.0 (2021-07-29)
 
 * docs(pdfjs): Adding comment to upgrade script (#1415) ([5c83224](https://github.com/box/box-content-preview/commit/5c83224)), closes [#1415](https://github.com/box/box-content-preview/issues/1415)
