@@ -1,3 +1,9 @@
+## <small>2.78.1 (2021-08-16)</small>
+
+* chore(i18n): Update Translations (#1419) ([04b2ee2](https://github.com/box/box-content-preview/commit/04b2ee2)), closes [#1419](https://github.com/box/box-content-preview/issues/1419)
+
+
+
 ## 2.78.0 (2021-08-11)
 
 * chore(i18n): Update Translations (#1418) ([0c37748](https://github.com/box/box-content-preview/commit/0c37748)), closes [#1418](https://github.com/box/box-content-preview/issues/1418)
