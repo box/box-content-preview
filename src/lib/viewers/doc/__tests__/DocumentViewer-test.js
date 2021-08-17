@@ -6,6 +6,7 @@ import DocBaseViewer from '../DocBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
+import { OFFICE_ONLINE_EXTENSIONS } from '../../../extensions';
 
 let containerEl;
 let doc;
@@ -107,7 +108,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'load', { value: docBaseLoadFunc });
         });
 
-        test.each(['xls', 'xlsm', 'xlsx'])(
+        test.each(OFFICE_ONLINE_EXTENSIONS)(
             'should show notification if file has excel extension %s and is internet explorer',
             extension => {
                 const showNotification = jest.fn();
@@ -121,7 +122,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             },
         );
 
-        test.each(['xls', 'xlsm', 'xlsx'])(
+        test.each(OFFICE_ONLINE_EXTENSIONS)(
             'should not show notification if file has excel extension %s but is not internet explorer',
             extension => {
                 const showNotification = jest.fn();
