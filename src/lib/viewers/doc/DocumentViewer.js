@@ -2,7 +2,7 @@ import Browser from '../../Browser';
 import DocBaseViewer from './DocBaseViewer';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';
-import { EXCEL_EXTENSIONS } from '../../extensions';
+import { OFFICE_ONLINE_EXTENSIONS } from '../../extensions';
 import './Document.scss';
 
 class DocumentViewer extends DocBaseViewer {
@@ -42,9 +42,9 @@ class DocumentViewer extends DocBaseViewer {
         super.load();
 
         const { extension } = this.options.file;
-        const isExcelExtension = EXCEL_EXTENSIONS.includes(extension);
+        const isOfficeOnlineExtension = OFFICE_ONLINE_EXTENSIONS.includes(extension);
 
-        if (isExcelExtension && Browser.isIE()) {
+        if (isOfficeOnlineExtension && Browser.isIE()) {
             this.options.ui.showNotification(__('error_internet_explorer_office_online'), null, true);
         }
     }

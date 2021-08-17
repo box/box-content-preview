@@ -56,6 +56,7 @@ export const CODE_EXTENSIONS = [
 export const EXCEL_EXTENSIONS = ['xls', 'xlsm', 'xlsx'];
 export const EXCLUDED_EXTENSIONS = EXCEL_EXTENSIONS.concat(['numbers']);
 export const INDESIGN_EXTENSIONS = ['indb', 'indd', 'indl', 'indt', 'idml', 'inx', 'pmd'];
+export const OFFICE_ONLINE_EXTENSIONS = ['xlsx', 'xlsm', 'xlsb'];
 
 export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
     .concat(HTML_EXTENSIONS)
