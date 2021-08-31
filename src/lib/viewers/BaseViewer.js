@@ -191,6 +191,9 @@ class BaseViewer extends EventEmitter {
         // From the perspective of viewers bp-content holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
+        // Set an aria-label for all files
+        this.containerEl.setAttribute('aria-label', __('file_preview_label'));
+
         // Update the loading indicators
         this.setupLoading();
 
