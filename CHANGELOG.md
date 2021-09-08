@@ -1,3 +1,14 @@
+## 2.79.0 (2021-09-08)
+
+* chore(i18n): Update Translations (#1423) ([59bbd40](https://github.com/box/box-content-preview/commit/59bbd40)), closes [#1423](https://github.com/box/box-content-preview/issues/1423)
+* chore(i18n): Update Translations (#1424) ([a210418](https://github.com/box/box-content-preview/commit/a210418)), closes [#1424](https://github.com/box/box-content-preview/issues/1424)
+* chore(i18n): Update Translations (#1425) ([6f11969](https://github.com/box/box-content-preview/commit/6f11969)), closes [#1425](https://github.com/box/box-content-preview/issues/1425)
+* fix: add descriptive attributes (#1421) ([01b497b](https://github.com/box/box-content-preview/commit/01b497b)), closes [#1421](https://github.com/box/box-content-preview/issues/1421)
+* fix(a11y): Add keyboard support for highlight comment flow (#1422) ([5df2dd2](https://github.com/box/box-content-preview/commit/5df2dd2)), closes [#1422](https://github.com/box/box-content-preview/issues/1422)
+* fix(doc): Show IE11 banner for office online exts (#1420) ([55df0a0](https://github.com/box/box-content-preview/commit/55df0a0)), closes [#1420](https://github.com/box/box-content-preview/issues/1420)
+
+
+
 ## 2.78.0 (2021-08-11)
 
 * chore(i18n): Update Translations (#1418) ([0c37748](https://github.com/box/box-content-preview/commit/0c37748)), closes [#1418](https://github.com/box/box-content-preview/issues/1418)
