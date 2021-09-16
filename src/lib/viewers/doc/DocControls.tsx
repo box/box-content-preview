@@ -25,6 +25,7 @@ export default function DocControls({
     hasDrawing,
     hasHighlight,
     hasRegion,
+    isThumbnailsOpen,
     maxScale,
     minScale,
     onAnnotationColorChange,
@@ -45,7 +46,7 @@ export default function DocControls({
         <ExperiencesProvider experiences={experiences}>
             <ControlsBar>
                 <ControlsBarGroup>
-                    <ThumbnailsToggle onThumbnailsToggle={onThumbnailsToggle} />
+                    <ThumbnailsToggle isThumbnailsOpen={isThumbnailsOpen} onThumbnailsToggle={onThumbnailsToggle} />
                     <FindBarToggle onFindBarToggle={onFindBarToggle} />
                 </ControlsBarGroup>
                 <ControlsBarGroup isDistinct>

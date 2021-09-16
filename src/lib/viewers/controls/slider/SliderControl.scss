@@ -1,98 +1,32 @@
-@import './styles';
-
-$bp-SliderControl-thumb-size: 12px;
-$bp-SliderControl-track-size: 3px;
-$bp-SliderControl-track-space: 3px;
+@import '../styles';
+@import './variables';
 
 .bp-SliderControl {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.bp-SliderControl-input {
     @include bp-Control--outline;
 
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    padding: 0 $bp-SliderControl-track-space;
-    background: transparent;
+    position: relative;
     cursor: pointer;
-    appearance: none;
+}
 
-    @include bp-SliderThumb {
-        width: $bp-SliderControl-thumb-size;
-        height: $bp-SliderControl-thumb-size;
-        background: $box-blue;
-        border: 0;
-        border-radius: $bp-SliderControl-thumb-size;
-        cursor: pointer;
-    }
-
-    @include bp-SliderTrack {
-        width: 100%;
-        height: $bp-SliderControl-track-size;
-        background: transparent;
-        border: 0;
-        cursor: pointer;
-    }
-
-    // Thumb Button
-    &::-ms-thumb {
-        margin-top: 0;
-    }
-
-    &::-webkit-slider-thumb {
-        margin-top: -5px;
-        appearance: none;
-    }
-
-    // Track
-    &::-ms-fill-lower {
-        background: transparent;
-    }
-
-    &::-ms-fill-upper {
-        background: transparent;
-    }
-
-    &::-ms-track {
-        color: transparent;
-        border-color: transparent;
-        border-width: 5px 0;
-    }
-
-    // Tooltip
-    &::-ms-tooltip {
-        display: none;
-    }
-
-    // Overrides
-    @supports (-ms-ime-align: auto) {
-        & {
-            margin: 0; // Edge starts the margin from the thumb, not the track
-        }
-
-        &::-webkit-slider-thumb {
-            margin-top: 0;
-        }
-    }
+.bp-SliderControl-thumb {
+    position: absolute;
+    top: calc(50% - #{$bp-SliderControl-thumb-radius});
+    width: $bp-SliderControl-thumb-size;
+    height: $bp-SliderControl-thumb-size;
+    margin-left: -#{$bp-SliderControl-thumb-radius};
+    background: $box-blue;
+    border: 0;
+    border-radius: $bp-SliderControl-thumb-size;
+    cursor: pointer;
 }
 
 .bp-SliderControl-track {
     position: absolute;
     top: 0;
-    right: $bp-SliderControl-thumb-size / 2; // Allow the thumb to fully dock to edge of the track
+    right: 0;
     bottom: 0;
-    left: $bp-SliderControl-thumb-size / 2; // Allow the thumb to fully dock to edge of the track
+    left: 0;
     height: $bp-SliderControl-track-size;
-    margin: auto $bp-SliderControl-track-space; // Center the track within the slider
+    margin: auto $bp-SliderControl-track-space; // Center and allow the thumb to fully dock to edge of the track
     background: transparent linear-gradient($white, $white) no-repeat center border-box;
-
-    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-        & {
-            transition: background-image 100ms ease; // Match the transition IE applies to thumb movement
-        }
-    }
 }

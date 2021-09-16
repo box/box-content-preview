@@ -76,6 +76,11 @@ describe('MediaSettings', () => {
                 const wrapper = getWrapper({ quality: 'auto', onQualityChange: jest.fn() });
                 expect(wrapper.exists(MediaSettingsMenuQuality)).toBe(true);
             });
+
+            test('should render with isDisabled based on isHDSupported prop', () => {
+                const wrapper = getWrapper({ isHDSupported: false, quality: 'auto', onQualityChange: jest.fn() });
+                expect(wrapper.find({ target: 'quality' }).prop('isDisabled')).toBe(true);
+            });
         });
 
         describe('subtitles menu', () => {

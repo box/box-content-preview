@@ -1,6 +1,7 @@
+import * as file from '../../../file';
+import Browser from '../../../Browser';
 import OfficeLoader from '../OfficeLoader';
 import OfficeViewer from '../OfficeViewer';
-import * as file from '../../../file';
 
 const FIVE_MB = 5242880;
 
@@ -85,6 +86,12 @@ describe('lib/viewers/office/OfficeLoader', () => {
                 const editedFakeFile = { ...fakeFile, size: FIVE_MB + 1 };
                 const viewer = OfficeLoader.determineViewer(editedFakeFile, [], viewerOptions);
                 expect(viewer).toBeDefined();
+            });
+
+            test('should not return a viewer if the browser is internet explorer', () => {
+                jest.spyOn(Browser, 'isIE').mockImplementation(() => true);
+                const viewer = OfficeLoader.determineViewer(fakeFile, []);
+                expect(viewer).toBeUndefined();
             });
         });
     });

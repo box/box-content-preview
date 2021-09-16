@@ -702,7 +702,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
                 expect(dash.loadUIReact).toBeCalled();
                 expect(dash.loadUI).not.toBeCalled();
-                expect(dash.loadFilmStrip).not.toBeCalled();
+                expect(dash.loadFilmStrip).toBeCalled();
                 expect(dash.loadSubtitles).toBeCalled();
                 expect(dash.loadAlternateAudio).toBeCalled();
             });
@@ -752,14 +752,14 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('sd');
-            expect(dash.setQuality).toBeCalledWith('sd');
+            expect(dash.setQuality).toBeCalledWith('sd', false);
         });
 
         test('should set quality to auto if HD is supported and cache has no entry', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('auto');
-            expect(dash.setQuality).toBeCalledWith('auto');
+            expect(dash.setQuality).toBeCalledWith('auto', false);
         });
 
         test('should set quality to cache value if HD is supported and cache has an entry', () => {
@@ -768,7 +768,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadUIReact();
 
             expect(dash.selectedQuality).toBe('hd');
-            expect(dash.setQuality).toBeCalledWith('hd');
+            expect(dash.setQuality).toBeCalledWith('hd', false);
         });
     });
 
@@ -789,6 +789,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 },
             };
             stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams');
+            stubs.renderUI = jest.spyOn(dash, 'renderUI');
             jest.spyOn(dash, 'getRepStatus');
         });
 
@@ -829,6 +830,29 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should load the film strip', () => {
             dash.loadFilmStrip();
             expect(stubs.createUrl).toBeCalled();
+        });
+
+        test('should render the controls again after the filmstrip is ready', done => {
+            const mockPromise = Promise.resolve();
+
+            jest.spyOn(dash, 'getViewerOption').mockReturnValueOnce(true);
+            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
+                destroy: jest.fn(),
+                getPromise: () => mockPromise,
+            });
+
+            dash.options.file.representations.entries[1] = {
+                representation: 'filmstrip',
+                content: { url_template: 'https://api.box.com' },
+                metadata: { interval: 1 },
+                status: { state: 'ready' },
+            };
+            dash.loadFilmStrip();
+
+            mockPromise.then(() => {
+                expect(stubs.renderUI).toBeCalled();
+                done();
+            });
         });
     });
 
@@ -1637,6 +1661,11 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.enableVideoId).not.toBeCalled();
             expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
             expect(dash.renderUI).toBeCalled();
+        });
+
+        test('should not save to cache if saveToCache is false', () => {
+            dash.setQuality('auto', false);
+            expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', false);
         });
     });
 

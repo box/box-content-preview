@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-expressions */
+import Api from '../../../api';
+import Browser from '../../../Browser';
 import DocumentViewer from '../DocumentViewer';
 import DocBaseViewer from '../DocBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
+import { OFFICE_ONLINE_EXTENSIONS } from '../../../extensions';
 
 let containerEl;
 let doc;
@@ -14,6 +17,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocumentViewer-test.html');
+
+        stubs.api = new Api();
 
         containerEl = document.querySelector('.container');
         doc = new DocumentViewer({
@@ -80,6 +85,76 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             };
             doc.destroy();
             doc = null; // Don't call destroy again during cleanup
+        });
+    });
+
+    describe('load()', () => {
+        const docBaseLoadFunc = DocBaseViewer.prototype.load;
+
+        beforeEach(() => {
+            jest.spyOn(stubs.api, 'get').mockImplementation();
+            jest.spyOn(doc, 'setup').mockImplementation();
+            Object.defineProperty(DocBaseViewer.prototype, 'load', {
+                value: jest.fn().mockImplementation(() => Promise.resolve()),
+            });
+            jest.spyOn(doc, 'createContentUrlWithAuthParams').mockImplementation();
+            jest.spyOn(doc, 'handleAssetAndRepLoad').mockImplementation();
+            jest.spyOn(doc, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(doc, 'loadAssets').mockImplementation();
+            jest.spyOn(doc, 'loadBoxAnnotations').mockImplementation();
+        });
+
+        afterEach(() => {
+            Object.defineProperty(DocBaseViewer.prototype, 'load', { value: docBaseLoadFunc });
+        });
+
+        test.each(OFFICE_ONLINE_EXTENSIONS)(
+            'should show notification if file has excel extension %s and is internet explorer',
+            extension => {
+                const showNotification = jest.fn();
+                doc.options.ui = { showNotification };
+                doc.options.file.extension = extension;
+                jest.spyOn(Browser, 'isIE').mockImplementation(() => true);
+
+                doc.load();
+
+                expect(showNotification).toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+            },
+        );
+
+        test.each(OFFICE_ONLINE_EXTENSIONS)(
+            'should not show notification if file has excel extension %s but is not internet explorer',
+            extension => {
+                const showNotification = jest.fn();
+                doc.options.ui = { showNotification };
+                doc.options.file.extension = extension;
+                jest.spyOn(Browser, 'isIE').mockImplementation(() => false);
+
+                doc.load();
+
+                expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+            },
+        );
+
+        test('should not show notification if file is not excel extension', () => {
+            const showNotification = jest.fn();
+            doc.options.ui = { showNotification };
+            doc.options.file.extension = 'pdf';
+
+            doc.load();
+
+            expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+        });
+
+        test('should not show notification if file is not excel extension and is internet explorer', () => {
+            const showNotification = jest.fn();
+            doc.options.ui = { showNotification };
+            doc.options.file.extension = 'pdf';
+            jest.spyOn(Browser, 'isIE').mockImplementation(() => true);
+
+            doc.load();
+
+            expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
         });
     });
 

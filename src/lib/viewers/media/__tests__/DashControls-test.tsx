@@ -79,6 +79,11 @@ describe('DashControls', () => {
             expect(wrapper.find(VolumeControls).prop('onVolumeChange')).toEqual(onVolumeChange);
         });
 
+        test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', isHDSupported => {
+            const wrapper = getWrapper({ isHDSupported });
+            expect(wrapper.find(MediaSettings).prop('isHDSupported')).toBe(isHDSupported);
+        });
+
         test('should not pass along badge if not playing HD', () => {
             const wrapper = getWrapper({ badge: <CustomBadge /> });
             expect(wrapper.find(MediaSettings).prop('badge')).toBeUndefined();

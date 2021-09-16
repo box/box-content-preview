@@ -28,15 +28,6 @@ describe('VolumeControls', () => {
             toggle.simulate('click');
             expect(onMuteChange).toBeCalledWith(isMuted);
         });
-
-        test.each(['ArrowLeft', 'ArrowRight'])('should defer to the inner input for the %s key', key => {
-            const event = { key, stopPropagation: jest.fn() };
-            const wrapper = getWrapper();
-
-            wrapper.find(SliderControl).simulate('keydown', event);
-
-            expect(event.stopPropagation).toBeCalled();
-        });
     });
 
     describe('render', () => {

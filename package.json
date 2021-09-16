@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "2.74.0",
+    "version": "2.79.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -35,7 +35,7 @@
         "babel-loader": "^8.0.6",
         "babel-plugin-transform-require-ignore": "^0.1.1",
         "box-annotations": "^2.3.0",
-        "box-ui-elements": "^13.1.0-beta.8",
+        "box-ui-elements": "^13.1.0-beta.62",
         "chai": "^4.2.0",
         "classnames": "^2.2.6",
         "conventional-changelog-cli": "^2.0.28",

@@ -1788,6 +1788,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.hasTouch = false;
                 docBase.bindDOMListeners();
 
+                expect(stubs.addEventListener).toBeCalledWith('keydown', docBase.handleDocElKeydown);
                 expect(stubs.addEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
                 expect(stubs.addEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
                 expect(stubs.addEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
@@ -1812,6 +1813,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should remove the docBase element listeners if the docBase element exists', () => {
                 docBase.unbindDOMListeners();
+
+                expect(stubs.removeEventListener).toBeCalledWith('keydown', docBase.handleDocElKeydown);
                 expect(stubs.removeEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
             });
 
@@ -2006,6 +2009,32 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.cachePage).not.toBeCalled();
+            });
+        });
+
+        describe.only('handleDocElKeydown()', () => {
+            test.each(['Enter', 'Escape', 'Space'])('should ignore %s key events', key => {
+                const event = { key, stopPropagation: jest.fn() };
+
+                docBase.handleDocElKeydown(event);
+
+                expect(event.stopPropagation).not.toBeCalled();
+            });
+
+            test.each(['Left', 'Right', 'Up', 'Down'])('should ignore %s key events without alt', key => {
+                const event = { altKey: false, key, stopPropagation: jest.fn() };
+
+                docBase.handleDocElKeydown(event);
+
+                expect(event.stopPropagation).not.toBeCalled();
+            });
+
+            test.each(['Left', 'Right', 'Up', 'Down'])('should stop propagation for %s key events with alt', key => {
+                const event = { altKey: true, key, stopPropagation: jest.fn() };
+
+                docBase.handleDocElKeydown(event);
+
+                expect(event.stopPropagation).toBeCalled();
             });
         });
 

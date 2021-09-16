@@ -30,7 +30,14 @@ import {
     QUERY_PARAM_ENCODING,
     STATUS_SUCCESS,
 } from '../../constants';
-import { appendQueryParams, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
+import {
+    appendQueryParams,
+    createAssetUrlCreator,
+    decodeKeydown,
+    getClosestPageToPinch,
+    getDistance,
+    getMidpoint,
+} from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { JS, PRELOAD_JS, CSS } from './docAssets';
@@ -106,6 +113,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
+        this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -140,6 +148,7 @@ class DocBaseViewer extends BaseViewer {
         super.setup();
 
         this.docEl = this.createViewer(document.createElement('div'));
+        this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
         this.docEl.tabIndex = '0';
 
@@ -163,9 +172,10 @@ class DocBaseViewer extends BaseViewer {
         this.startPageNum = this.getStartPage(this.startAt);
 
         if (this.options.enableThumbnailsSidebar) {
-            this.thumbnailsSidebarEl = document.createElement('div');
+            this.thumbnailsSidebarEl = document.createElement('nav');
             this.thumbnailsSidebarEl.className = `${CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER}`;
             this.thumbnailsSidebarEl.setAttribute('data-testid', 'thumbnails-sidebar');
+            this.thumbnailsSidebarEl.setAttribute('aria-label', __('thumbnail_label'));
             this.thumbnailsSidebarEl.tabIndex = 0;
             this.rootEl.insertBefore(this.thumbnailsSidebarEl, this.containerEl);
         }
@@ -1083,6 +1093,7 @@ class DocBaseViewer extends BaseViewer {
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
                 hasHighlight={canAnnotate && canDownload}
                 hasRegion={canAnnotate}
+                isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
@@ -1113,7 +1124,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindDOMListeners() {
-        // Detects scroll so an event can be fired
+        this.docEl.addEventListener('keydown', this.handleDocElKeydown);
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         if (this.hasTouch) {
@@ -1131,6 +1142,7 @@ class DocBaseViewer extends BaseViewer {
      */
     unbindDOMListeners() {
         if (this.docEl) {
+            this.docEl.removeEventListener('keydown', this.handleDocElKeydown);
             this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
 
             if (this.hasTouch) {
@@ -1272,6 +1284,22 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.emit('pagefocus', pageNumber);
+    }
+
+    /**
+     * Handler for 'keydown' event on the bp-doc element. These conditions cannot be managed in onKeydown, as
+     * it listens for events on the top-level document element.
+     *
+     * @private
+     * @param {KeyboardEvent} event - Keydown event
+     * @return {void}
+     */
+    handleDocElKeydown(event) {
+        const key = decodeKeydown(event);
+
+        if (event.altKey && key.includes('Arrow')) {
+            event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
+        }
     }
 
     /** @inheritDoc */

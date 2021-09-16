@@ -30,5 +30,15 @@ describe('ThumbnailsToggle', () => {
 
             expect(wrapper.isEmptyRender()).toBe(true);
         });
+
+        test('should have a property aria-expanded setted to false', () => {
+            const wrapper = getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: false });
+            expect(wrapper.prop('aria-expanded')).toBe(false);
+        });
+
+        test('should have a property aria-expanded setted to true', () => {
+            const wrapper = getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: true });
+            expect(wrapper.prop('aria-expanded')).toBe(true);
+        });
     });
 });
