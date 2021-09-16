@@ -400,8 +400,9 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleFindBarClose() {
-        if (this.docEl) {
-            this.docEl.focus(); // Prevent focus from transferring to the root document element
+        const el = document.querySelector('.bp-FindBarToggle'); // Transferring focus to the findBarToggle Button
+        if (el) {
+            el.focus();
         }
     }
 
