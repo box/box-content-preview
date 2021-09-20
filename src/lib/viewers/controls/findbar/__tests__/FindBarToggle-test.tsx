@@ -9,9 +9,10 @@ describe('FindBarToggle', () => {
     describe('event handlers', () => {
         test('should forward the click from the button', () => {
             const onToggle = jest.fn();
+            const mockedEvent = { target: {} };
             const wrapper = getWrapper({ onFindBarToggle: onToggle });
 
-            wrapper.simulate('click');
+            wrapper.simulate('click', mockedEvent);
 
             expect(onToggle).toBeCalled();
         });
