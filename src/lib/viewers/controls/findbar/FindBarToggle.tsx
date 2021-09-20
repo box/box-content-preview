@@ -3,7 +3,7 @@ import IconSearch24 from '../icons/IconSearch24';
 import './FindBarToggle.scss';
 
 export type Props = {
-    onFindBarToggle: (buttonElement: HTMLDivElement | null) => void;
+    onFindBarToggle?: (buttonElement: HTMLDivElement | null) => void;
 };
 
 export default function FindBarToggle({ onFindBarToggle }: Props): JSX.Element | null {
