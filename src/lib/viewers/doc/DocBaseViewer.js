@@ -410,8 +410,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleFindBarClose() {
-        if (this.findBarToggleElement && this.findBarToggleElement.focus) {
-            this.findBarToggleElement.focus();
+        if (this.findBarToggleEl && this.findBarToggleEl.focus) {
+            this.findBarToggleEl.focus();
         }
     }
 
@@ -1483,8 +1483,8 @@ class DocBaseViewer extends BaseViewer {
         this.pinchPage = null;
     }
 
-    toggleFindBar(elementToFocus) {
-        this.findBarToggleElement = elementToFocus;
+    toggleFindBar(findBarToggleEl) {
+        this.findBarToggleEl = findBarToggleEl;
         this.findBar.toggle();
     }
 
