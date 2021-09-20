@@ -410,8 +410,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleFindBarClose() {
-        if (this.docEl) {
-            this.docEl.focus(); // Prevent focus from transferring to the root document element
+        if (this.findBarToggleElement) {
+            this.findBarToggleElement.focus();
         }
     }
 
@@ -1483,7 +1483,8 @@ class DocBaseViewer extends BaseViewer {
         this.pinchPage = null;
     }
 
-    toggleFindBar() {
+    toggleFindBar(elementToFocus) {
+        this.findBarToggleElement = elementToFocus;
         this.findBar.toggle();
     }
 
