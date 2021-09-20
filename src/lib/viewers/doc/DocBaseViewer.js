@@ -410,7 +410,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleFindBarClose() {
-        if (this.findBarToggleElement) {
+        if (this.findBarToggleElement && this.findBarToggleElement.focus) {
             this.findBarToggleElement.focus();
         }
     }
