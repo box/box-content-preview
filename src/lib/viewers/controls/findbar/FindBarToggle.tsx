@@ -14,7 +14,7 @@ export default function FindBarToggle({ onFindBarToggle }: Props): JSX.Element |
     return (
         <button
             className="bp-FindBarToggle"
-            onClick={(event): void => onFindBarToggle(event.target)}
+            onClick={({ target }): void => onFindBarToggle(target)}
             title={__('toggle_findbar')}
             type="button"
         >
