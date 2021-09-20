@@ -12,15 +12,12 @@ export default function FindBarToggle({ onFindBarToggle }: Props): JSX.Element |
     if (!onFindBarToggle) {
         return null;
     }
-    const onClickHandler = () => {
-        onFindBarToggle(buttonReference.current);
-    };
 
     return (
         <button
             ref={buttonReference}
             className="bp-FindBarToggle"
-            onClick={onClickHandler}
+            onClick={(): void => onFindBarToggle(buttonReference.current)}
             title={__('toggle_findbar')}
             type="button"
         >
