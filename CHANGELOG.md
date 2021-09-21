@@ -1,3 +1,12 @@
+## 2.80.0 (2021-09-21)
+
+* ci(mergify): Add check for pull request title (#1430) ([8964227](https://github.com/box/box-content-preview/commit/8964227)), closes [#1430](https://github.com/box/box-content-preview/issues/1430)
+* Wrong focus on close findbar (#1429) ([8b6aff7](https://github.com/box/box-content-preview/commit/8b6aff7)), closes [#1429](https://github.com/box/box-content-preview/issues/1429)
+* build(env): Upgrade node to v14 and yarn to v1.22 (#1427) ([88c55d8](https://github.com/box/box-content-preview/commit/88c55d8)), closes [#1427](https://github.com/box/box-content-preview/issues/1427)
+* fix(preview): Update supported indesign extensions (#1426) ([9758340](https://github.com/box/box-content-preview/commit/9758340)), closes [#1426](https://github.com/box/box-content-preview/issues/1426)
+
+
+
 ## 2.79.0 (2021-09-08)
 
 * chore(i18n): Update Translations (#1423) ([59bbd40](https://github.com/box/box-content-preview/commit/59bbd40)), closes [#1423](https://github.com/box/box-content-preview/issues/1423)
