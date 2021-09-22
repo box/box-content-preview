@@ -17,7 +17,7 @@ export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props)
     return (
         <button
             className="bp-FullscreenToggle"
-            onClick={({ target }) => onFullscreenToggle(!isFullscreen, target)}
+            onClick={({ target }): void => onFullscreenToggle(!isFullscreen, target)}
             title={title}
             type="button"
             {...rest}
