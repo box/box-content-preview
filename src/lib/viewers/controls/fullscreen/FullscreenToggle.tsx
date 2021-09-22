@@ -14,8 +14,8 @@ export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props)
     const Icon = isFullscreen ? IconFullscreenOut24 : IconFullscreenIn24;
     const title = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        onFullscreenToggle(!isFullscreen, event.target);
+    const handleClick = ({ target }: React.MouseEvent): void => {
+        onFullscreenToggle(!isFullscreen, target);
     };
 
     return (
