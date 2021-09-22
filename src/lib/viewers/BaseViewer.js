@@ -553,7 +553,8 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @return {void}
      */
-    toggleFullscreen() {
+    toggleFullscreen(isFullscreen, fullscreenToggleEl) {
+        this.fullscreenToggleEl = fullscreenToggleEl;
         fullscreen.toggle(this.containerEl);
     }
 
@@ -568,6 +569,9 @@ class BaseViewer extends EventEmitter {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
             this.disableAnnotationControls();
+        }
+        if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
+            this.fullscreenToggleEl.focus();
         }
     }
 
