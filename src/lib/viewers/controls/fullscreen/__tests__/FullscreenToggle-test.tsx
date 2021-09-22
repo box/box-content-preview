@@ -34,10 +34,11 @@ describe('FullscreenToggle', () => {
 
         test('should invoke onFullscreenToggle prop on click', () => {
             const onToggle = jest.fn();
+            const mockedEvent = { target: document.createElement('button') };
             const wrapper = getWrapper({ onFullscreenToggle: onToggle });
 
-            wrapper.simulate('click');
-            expect(onToggle).toBeCalledWith(true);
+            wrapper.simulate('click', mockedEvent);
+            expect(onToggle).toBeCalledWith(true, mockedEvent.target);
         });
     });
 
