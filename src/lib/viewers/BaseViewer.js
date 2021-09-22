@@ -191,6 +191,9 @@ class BaseViewer extends EventEmitter {
         // From the perspective of viewers bp-content holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
+        // Element to focus when fullscreen is toggled.
+        this.fullscreenToggleEl = null;
+
         // Set an aria-label for all files
         this.containerEl.setAttribute('aria-label', __('file_preview_label'));
 
@@ -551,6 +554,8 @@ class BaseViewer extends EventEmitter {
      * Enters or exits fullscreen
      *
      * @protected
+     * @param {boolean} [isFullscreen] - flag to allow fullscreen
+     * @param {HTMLElement} element - Element to be focused after fullscreen toggle
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {

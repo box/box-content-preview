@@ -14,14 +14,12 @@ export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props)
     const Icon = isFullscreen ? IconFullscreenOut24 : IconFullscreenIn24;
     const title = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
 
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+        onFullscreenToggle(!isFullscreen, event.target);
+    };
+
     return (
-        <button
-            className="bp-FullscreenToggle"
-            onClick={({ target }): void => onFullscreenToggle(!isFullscreen, target)}
-            title={title}
-            type="button"
-            {...rest}
-        >
+        <button className="bp-FullscreenToggle" onClick={handleClick} title={title} type="button" {...rest}>
             <Icon />
         </button>
     );
