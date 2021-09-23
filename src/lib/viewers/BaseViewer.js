@@ -121,6 +121,9 @@ class BaseViewer extends EventEmitter {
     /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
     containerEl;
 
+    /** @property {HTMLButtonElement} - The button which will be focus when fullscreen is toggle */
+    fullscreenToggleEl;
+
     /** @property {boolean} - Stores whether the Viewer has been setup yet. */
     isSetup = false;
 
