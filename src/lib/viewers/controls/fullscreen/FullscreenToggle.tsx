@@ -5,7 +5,7 @@ import useFullscreen from '../hooks/useFullscreen';
 import './FullscreenToggle.scss';
 
 export type Props = {
-    onFullscreenToggle: (isFullscreen: boolean, toggleFullscreen: EventTarget | null) => void;
+    onFullscreenToggle: (isFullscreen: boolean, toggleFullscreenEl: EventTarget | null) => void;
     onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 };
 
