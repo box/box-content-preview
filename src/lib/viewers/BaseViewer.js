@@ -121,6 +121,9 @@ class BaseViewer extends EventEmitter {
     /** @property {HTMLElement} - The .bp-content which is the container for the viewer's content */
     containerEl;
 
+    /** @property {HTMLButtonElement} - The button which will be focus when fullscreen is toggle */
+    fullscreenToggleEl;
+
     /** @property {boolean} - Stores whether the Viewer has been setup yet. */
     isSetup = false;
 
@@ -278,6 +281,7 @@ class BaseViewer extends EventEmitter {
         this.annotatorPromise = null;
         this.annotatorPromiseResolver = null;
         this.emittedMetrics = null;
+        this.fullscreenToggleEl = null;
         this.emit('destroy');
     }
 
@@ -551,9 +555,12 @@ class BaseViewer extends EventEmitter {
      * Enters or exits fullscreen
      *
      * @protected
+     * @param {boolean} [isFullscreen] - flag to allow fullscreen
+     * @param {HTMLElement} element - Element to be focused after fullscreen toggle
      * @return {void}
      */
-    toggleFullscreen() {
+    toggleFullscreen(isFullscreen, fullscreenToggleEl) {
+        this.fullscreenToggleEl = fullscreenToggleEl;
         fullscreen.toggle(this.containerEl);
     }
 
@@ -568,6 +575,9 @@ class BaseViewer extends EventEmitter {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, false);
             this.disableAnnotationControls();
+        }
+        if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
+            this.fullscreenToggleEl.focus();
         }
     }
 
