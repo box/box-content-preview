@@ -281,6 +281,7 @@ class BaseViewer extends EventEmitter {
         this.annotatorPromise = null;
         this.annotatorPromiseResolver = null;
         this.emittedMetrics = null;
+        this.fullscreenToggleEl = null;
         this.emit('destroy');
     }
 
