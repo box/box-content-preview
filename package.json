@@ -98,7 +98,7 @@
         "webpack": "^4.36.1",
         "webpack-bundle-analyzer": "^3.3.2",
         "webpack-cli": "^3.3.6",
-        "webpack-dev-server": "^3.7.2"
+        "webpack-dev-server": "^3.11.2"
     },
     "engines": {
         "node": ">=10.x",
