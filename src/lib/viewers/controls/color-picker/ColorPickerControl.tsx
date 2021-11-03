@@ -18,35 +18,31 @@ export default function ColorPickerControl({
     ...rest
 }: Props): JSX.Element | null {
     const paletteRef = React.useRef<HTMLDivElement>(null);
+    const toggleRef = React.useRef<HTMLButtonElement>(null);
     const [isColorPickerToggled, setIsColorPickerToggled] = React.useState(false);
+    const [handlers] = useAttention();
     const { current: paletteEl } = paletteRef;
-
-    const handlePaletteBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
-        const targetElement = relatedTarget as HTMLButtonElement;
-        if (targetElement.parentElement && targetElement.parentElement.parentElement !== paletteEl) {
-            setIsColorPickerToggled(false);
-        }
-    };
-
-    const [isPaletteActive, handlers] = useAttention({ onBlur: handlePaletteBlur });
+    const { current: toggleEl } = toggleRef;
 
     const handleSelect = (color: string): void => {
         setIsColorPickerToggled(false);
         onColorSelect(color);
     };
 
-    const handleToggleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
+    const handleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
         // IE11 does not have relatedTarget but update activeElement before blur
         const nextTarget = relatedTarget || document.activeElement;
 
-        if (isPaletteActive || (nextTarget && paletteEl && paletteEl.contains(nextTarget as Node))) {
+        if ((nextTarget && paletteEl && paletteEl.contains(nextTarget as Node)) || toggleEl === (nextTarget as Node)) {
             return;
         }
 
         setIsColorPickerToggled(false);
     };
 
-    const handleClick = (): void => setIsColorPickerToggled(!isColorPickerToggled);
+    const handleClick = (): void => {
+        setIsColorPickerToggled(!isColorPickerToggled);
+    };
 
     const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>): void => {
         if (event.currentTarget.focus) {
@@ -61,9 +57,10 @@ export default function ColorPickerControl({
     return (
         <div className="bp-ColorPickerControl">
             <button
+                ref={toggleRef}
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-toggle"
-                onBlur={handleToggleBlur}
+                onBlur={handleBlur}
                 onClick={handleClick}
                 onMouseDown={handleMouseDown}
                 type="button"
@@ -79,7 +76,12 @@ export default function ColorPickerControl({
                 data-testid="bp-ColorPickerControl-palette"
                 {...handlers}
             >
-                <ColorPickerPalette colors={colors} data-testid="bp-ColorPickerPalette" onSelect={handleSelect} />
+                <ColorPickerPalette
+                    colors={colors}
+                    data-testid="bp-ColorPickerPalette"
+                    onBlur={handleBlur}
+                    onSelect={handleSelect}
+                />
             </div>
         </div>
     );
