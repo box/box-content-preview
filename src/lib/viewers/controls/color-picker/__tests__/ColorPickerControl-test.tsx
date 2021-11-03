@@ -79,12 +79,13 @@ describe('ColorPickerControl', () => {
         test('should close the palette when focus is outside palette', () => {
             const wrapper = getWrapper();
             const toggleButton = getToggleButton(wrapper);
+            const divNode = document.createElement('div');
 
             toggleButton.simulate('click');
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
 
             toggleButton.simulate('blur', {
-                relatedTarget: toggleButton.getDOMNode(),
+                relatedTarget: divNode,
             });
 
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
