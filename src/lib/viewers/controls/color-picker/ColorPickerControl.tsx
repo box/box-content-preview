@@ -19,15 +19,23 @@ export default function ColorPickerControl({
 }: Props): JSX.Element | null {
     const paletteRef = React.useRef<HTMLDivElement>(null);
     const [isColorPickerToggled, setIsColorPickerToggled] = React.useState(false);
-    const [isPaletteActive, handlers] = useAttention();
+    const { current: paletteEl } = paletteRef;
+
+    const handlePaletteBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
+        const targetElement = relatedTarget as HTMLButtonElement;
+        if (targetElement.parentElement && targetElement.parentElement.parentElement !== paletteEl) {
+            setIsColorPickerToggled(false);
+        }
+    };
+
+    const [isPaletteActive, handlers] = useAttention({ onBlur: handlePaletteBlur });
 
     const handleSelect = (color: string): void => {
         setIsColorPickerToggled(false);
         onColorSelect(color);
     };
 
-    const handleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
-        const { current: paletteEl } = paletteRef;
+    const handleToggleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
         // IE11 does not have relatedTarget but update activeElement before blur
         const nextTarget = relatedTarget || document.activeElement;
 
@@ -55,7 +63,7 @@ export default function ColorPickerControl({
             <button
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-toggle"
-                onBlur={handleBlur}
+                onBlur={handleToggleBlur}
                 onClick={handleClick}
                 onMouseDown={handleMouseDown}
                 type="button"
