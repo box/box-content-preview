@@ -76,6 +76,34 @@ describe('ColorPickerControl', () => {
             expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
         });
 
+        test('should close the palette when focus is outside palette and button', () => {
+            const wrapper = getWrapper();
+            const toggleButton = getToggleButton(wrapper);
+            const colorPaletteChild = getColorPickerPalette(wrapper).getDOMNode().firstChild;
+            const divEl = document.createElement('div');
+
+            toggleButton.simulate('click');
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            toggleButton.simulate('blur', {
+                relatedTarget: colorPaletteChild,
+            });
+
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            toggleButton.simulate('blur', {
+                relatedTarget: toggleButton.getDOMNode(),
+            });
+
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(true);
+
+            toggleButton.simulate('blur', {
+                relatedTarget: divEl,
+            });
+
+            expect(getColorPickerPalette(wrapper).hasClass('bp-is-open')).toBe(false);
+        });
+
         test('should call focus and stop propagation when mouse down', () => {
             const mockEvent = {
                 currentTarget: {

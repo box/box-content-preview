@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
-import useAttention from '../hooks/useAttention';
 import './ColorPickerControl.scss';
 
 export type Props = {
@@ -18,8 +17,8 @@ export default function ColorPickerControl({
     ...rest
 }: Props): JSX.Element | null {
     const paletteRef = React.useRef<HTMLDivElement>(null);
+    const toggleRef = React.useRef<HTMLButtonElement>(null);
     const [isColorPickerToggled, setIsColorPickerToggled] = React.useState(false);
-    const [isPaletteActive, handlers] = useAttention();
 
     const handleSelect = (color: string): void => {
         setIsColorPickerToggled(false);
@@ -28,10 +27,14 @@ export default function ColorPickerControl({
 
     const handleBlur = ({ relatedTarget }: React.FocusEvent<HTMLButtonElement>): void => {
         const { current: paletteEl } = paletteRef;
+        const { current: toggleEl } = toggleRef;
         // IE11 does not have relatedTarget but update activeElement before blur
         const nextTarget = relatedTarget || document.activeElement;
+        const nextEl = nextTarget ? (nextTarget as Node) : null;
+        const isNextInPalette = paletteEl && paletteEl.contains(nextEl);
+        const isNextToggle = toggleEl && toggleEl === nextEl;
 
-        if (isPaletteActive || (nextTarget && paletteEl && paletteEl.contains(nextTarget as Node))) {
+        if (isNextInPalette || isNextToggle) {
             return;
         }
 
@@ -53,6 +56,7 @@ export default function ColorPickerControl({
     return (
         <div className="bp-ColorPickerControl">
             <button
+                ref={toggleRef}
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-toggle"
                 onBlur={handleBlur}
@@ -69,9 +73,13 @@ export default function ColorPickerControl({
                 ref={paletteRef}
                 className={classNames('bp-ColorPickerControl-palette', { 'bp-is-open': isColorPickerToggled })}
                 data-testid="bp-ColorPickerControl-palette"
-                {...handlers}
             >
-                <ColorPickerPalette colors={colors} data-testid="bp-ColorPickerPalette" onSelect={handleSelect} />
+                <ColorPickerPalette
+                    colors={colors}
+                    data-testid="bp-ColorPickerPalette"
+                    onBlur={handleBlur}
+                    onSelect={handleSelect}
+                />
             </div>
         </div>
     );
