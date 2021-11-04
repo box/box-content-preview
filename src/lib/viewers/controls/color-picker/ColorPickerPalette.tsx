@@ -7,7 +7,7 @@ export type Props = {
     onSelect: (color: string) => void;
 };
 
-export default function ColorPickerPalette({ colors, onSelect, onBlur }: Props): JSX.Element {
+export default function ColorPickerPalette({ colors, onBlur, onSelect }: Props): JSX.Element {
     return (
         <div className="bp-ColorPickerPalette">
             {colors.map(color => {
