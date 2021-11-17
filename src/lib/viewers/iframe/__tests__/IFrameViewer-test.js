@@ -1,4 +1,3 @@
-import IFrameLoader from '../IFrameLoader';
 import IFrameViewer from '../IFrameViewer';
 import BaseViewer from '../../BaseViewer';
 
@@ -16,13 +15,6 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             file: {
                 id: '123',
                 extension: 'boxnote',
-                representations: {
-                    entries: [
-                        {
-                            representation: 'ORIGINAL',
-                        },
-                    ],
-                },
             },
         });
 
@@ -89,66 +81,6 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
             iframe.load();
         });
-
-        test('should not return a viewer if file is a boxdicom and the open_with_ambra FF is enabled', () => {
-            iframe.options.file.extension = 'boxdicom';
-
-            const viewerOptions = {
-                IFrame: {
-                    disableDicom: true,
-                },
-            };
-            const viewer = IFrameLoader.determineViewer(iframe, [], viewerOptions);
-            expect(viewer).toBeUndefined();
-        });
-
-        test('should return a viewer if file is a boxnote and open_with_ambra FF is enabled', () => {
-            iframe.options.file.extension = 'boxnote';
-
-            const viewerOptions = {
-                IFrame: {
-                    disableDicom: true,
-                },
-            };
-            const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
-            expect(viewer).toBeDefined();
-        });
-
-        test('should return a viewer if open_with_ambra FF is disabled', () => {
-            iframe.options.file.extension = 'boxdicom';
-
-            const viewerOptions = {
-                IFrame: {
-                    disableDicom: false,
-                },
-            };
-            const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
-            expect(viewer).toBeDefined();
-        });
-
-        test.each([
-            // disableDicom, fileType, viewerDefined
-            [true, 'boxdicom', false],
-            [true, 'boxnote', true],
-            [false, 'boxdicom', true],
-        ])(
-            'should return correct result depending on the disableDicom viewer option and file type',
-            (disableDicom, fileType, viewerDefined) => {
-                iframe.options.file.extension = fileType;
-
-                const viewerOptions = {
-                    IFrame: {
-                        disableDicom,
-                    },
-                };
-                const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
-                if (viewerDefined) {
-                    expect(viewer).toBeDefined();
-                } else {
-                    expect(viewer).toBeUndefined();
-                }
-            },
-        );
 
         test('should invoke startLoadTimer()', () => {
             const stub = jest.spyOn(iframe, 'startLoadTimer');
