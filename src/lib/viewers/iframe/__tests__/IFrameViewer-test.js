@@ -1,6 +1,6 @@
+import IFrameLoader from '../IFrameLoader';
 import IFrameViewer from '../IFrameViewer';
 import BaseViewer from '../../BaseViewer';
-import IFrameLoader from '../IFrameLoader';
 
 let containerEl;
 let iframe;
@@ -95,7 +95,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
             const viewerOptions = {
                 IFrame: {
-                    openWithAmbra: true,
+                    disableDicom: true,
                 },
             };
             const viewer = IFrameLoader.determineViewer(iframe, [], viewerOptions);
@@ -107,7 +107,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
             const viewerOptions = {
                 IFrame: {
-                    openWithAmbra: true,
+                    disableDicom: true,
                 },
             };
             const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
@@ -119,12 +119,36 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
 
             const viewerOptions = {
                 IFrame: {
-                    openWithAmbra: false,
+                    disableDicom: false,
                 },
             };
             const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
             expect(viewer).toBeDefined();
         });
+
+        test.each([
+            // disableDicom, fileType, viewerDefined
+            [true, 'boxdicom', false],
+            [true, 'boxnote', true],
+            [false, 'boxdicom', true],
+        ])(
+            'should return correct result depending on the disableDicom viewer option and file type',
+            (disableDicom, fileType, viewerDefined) => {
+                iframe.options.file.extension = fileType;
+
+                const viewerOptions = {
+                    IFrame: {
+                        disableDicom,
+                    },
+                };
+                const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
+                if (viewerDefined) {
+                    expect(viewer).toBeDefined();
+                } else {
+                    expect(viewer).toBeUndefined();
+                }
+            },
+        );
 
         test('should invoke startLoadTimer()', () => {
             const stub = jest.spyOn(iframe, 'startLoadTimer');

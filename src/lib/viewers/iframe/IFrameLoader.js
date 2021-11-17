@@ -28,10 +28,10 @@ class IFrameLoader extends AssetLoader {
      * @inheritdoc
      */
     determineViewer(file, disabledViewers = [], viewerOptions = {}) {
-        const isDicomFile = file.name === 'Dicom.boxdicom' || file.extension === 'boxdicom';
-        const openWithAmbraEnabled = getProp(viewerOptions, 'IFrame.openWithAmbra');
-        // The IFrame viewer is disabled when the file is a Boxdicom file and Open_with_Ambra FF is enabled
-        if (openWithAmbraEnabled && isDicomFile) {
+        const isDicomFile = file.extension === 'boxdicom';
+        const disableDicom = getProp(viewerOptions, 'IFrame.disableDicom');
+        // The IFrame viewer is disabled when the file is a Boxdicom file and the disableDicom viewer option is enabled
+        if (disableDicom && isDicomFile) {
             disabledViewers.push('IFrame');
         }
 
