@@ -1,8 +1,6 @@
 import IFrameLoader from '../IFrameLoader';
 import IFrameViewer from '../IFrameViewer';
 
-const sandbox = sinon.createSandbox();
-
 describe('lib/viewers/iframe/IFrameLoader', () => {
     const iframe = new IFrameViewer({
         file: {
@@ -18,10 +16,6 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
         },
     });
 
-    afterEach(() => {
-        sandbox.verifyAndRestore();
-    });
-
     test('should have the correct viewer', () => {
         const iframeViewer = IFrameLoader.viewers[0];
         expect(iframeViewer).toEqual({
@@ -32,14 +26,14 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
         });
     });
 
-    test.each([
-        // disableDicom, fileType, viewerInstance
-        [true, 'boxdicom', undefined],
-        [true, 'boxnote', IFrameLoader.viewers[0]],
-        [false, 'boxdicom', IFrameLoader.viewers[0]],
-    ])(
+    test.each`
+        disableDicom | fileType      | viewerInstance
+        ${true}      | ${'boxdicom'} | ${undefined}
+        ${true}      | ${'boxnote'}  | ${IFrameLoader.viewers[0]}
+        ${false}     | ${'boxdicom'} | ${IFrameLoader.viewers[0]}
+    `(
         'should return correct result depending on the disableDicom viewer option and file type',
-        (disableDicom, fileType, viewerInstance) => {
+        ({ disableDicom, fileType, viewerInstance }) => {
             iframe.options.file.extension = fileType;
 
             const viewerOptions = {
