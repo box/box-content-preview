@@ -1,3 +1,4 @@
+import getProp from 'lodash/get';
 import AssetLoader from '../AssetLoader';
 import IFrameViewer from './IFrameViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
@@ -21,6 +22,20 @@ class IFrameLoader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    determineViewer(file, disabledViewers = [], viewerOptions = {}) {
+        const isDicomFile = file.extension === 'boxdicom';
+        const disableDicom = getProp(viewerOptions, 'IFrame.disableDicom');
+        // The IFrame viewer is disabled when the file is a Boxdicom file and the disableDicom viewer option is enabled
+        if (disableDicom && isDicomFile) {
+            disabledViewers.push('IFrame');
+        }
+
+        return super.determineViewer(file, disabledViewers);
     }
 }
 
