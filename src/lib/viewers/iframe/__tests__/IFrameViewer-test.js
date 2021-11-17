@@ -1,5 +1,6 @@
 import IFrameViewer from '../IFrameViewer';
 import BaseViewer from '../../BaseViewer';
+import IFrameLoader from '../IFrameLoader';
 
 let containerEl;
 let iframe;
@@ -15,6 +16,13 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             file: {
                 id: '123',
                 extension: 'boxnote',
+                representations: {
+                    entries: [
+                        {
+                            representation: 'ORIGINAL',
+                        },
+                    ],
+                },
             },
         });
 
@@ -80,6 +88,42 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             });
 
             iframe.load();
+        });
+
+        test('should not return a viewer if file is a boxdicom and the open_with_ambra FF is enabled', () => {
+            iframe.options.file.extension = 'boxdicom';
+
+            const viewerOptions = {
+                IFrame: {
+                    openWithAmbra: true,
+                },
+            };
+            const viewer = IFrameLoader.determineViewer(iframe, [], viewerOptions);
+            expect(viewer).toBeUndefined();
+        });
+
+        test('should return a viewer if file is a boxnote and open_with_ambra FF is enabled', () => {
+            iframe.options.file.extension = 'boxnote';
+
+            const viewerOptions = {
+                IFrame: {
+                    openWithAmbra: true,
+                },
+            };
+            const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
+            expect(viewer).toBeDefined();
+        });
+
+        test('should return a viewer if open_with_ambra FF is disabled', () => {
+            iframe.options.file.extension = 'boxdicom';
+
+            const viewerOptions = {
+                IFrame: {
+                    openWithAmbra: false,
+                },
+            };
+            const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
+            expect(viewer).toBeDefined();
         });
 
         test('should invoke startLoadTimer()', () => {
