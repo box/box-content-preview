@@ -33,6 +33,12 @@ class IFrameLoader extends AssetLoader {
         // The IFrame viewer is disabled when the file is a Boxdicom file and the disableDicom viewer option is enabled
         if (disableDicom && isDicomFile) {
             disabledViewers.push('IFrame');
+
+            // Removes boxdicom as a supported extension
+            const iframeViewer = this.viewers[0].EXT;
+            if (iframeViewer) {
+                this.viewers[0].EXT = iframeViewer.filter(extension => extension !== 'boxdicom');
+            }
         }
 
         return super.determineViewer(file, disabledViewers);

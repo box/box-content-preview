@@ -27,13 +27,13 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
     });
 
     test.each`
-        disableDicom | fileType      | viewerInstance
-        ${true}      | ${'boxdicom'} | ${undefined}
-        ${true}      | ${'boxnote'}  | ${IFrameLoader.viewers[0]}
-        ${false}     | ${'boxdicom'} | ${IFrameLoader.viewers[0]}
+        disableDicom | fileType      | viewerInstance             | viewerExtensions
+        ${false}     | ${'boxdicom'} | ${IFrameLoader.viewers[0]} | ${['boxnote', 'boxdicom']}
+        ${true}      | ${'boxdicom'} | ${undefined}               | ${['boxnote']}
+        ${true}      | ${'boxnote'}  | ${IFrameLoader.viewers[0]} | ${['boxnote']}
     `(
         'should return correct result depending on the disableDicom viewer option and file type',
-        ({ disableDicom, fileType, viewerInstance }) => {
+        ({ disableDicom, fileType, viewerInstance, viewerExtensions }) => {
             iframe.options.file.extension = fileType;
 
             const viewerOptions = {
@@ -43,6 +43,7 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
             };
             const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
             expect(viewer).toEqual(viewerInstance);
+            expect(IFrameLoader.getViewers()[0].EXT).toMatchObject(viewerExtensions);
         },
     );
 });
