@@ -34,10 +34,9 @@ class IFrameLoader extends AssetLoader {
      * @inheritdoc
      */
     determineViewer(file, disabledViewers = [], viewerOptions = {}) {
-        const isDicomFile = file.extension === 'boxdicom';
         const disableDicom = getProp(viewerOptions, 'IFrame.disableDicom');
         // Removes boxdicom as a supported extension when the file is a Boxdicom file and the disableDicom viewer option is enabled
-        if (disableDicom && isDicomFile) {
+        if (disableDicom) {
             this.viewers = this.viewers.filter(viewer => !viewer.EXT.includes('boxdicom'));
         }
 
