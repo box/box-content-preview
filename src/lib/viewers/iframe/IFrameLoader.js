@@ -9,7 +9,13 @@ const VIEWERS = [
         NAME: 'IFrame',
         CONSTRUCTOR: IFrameViewer,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['boxnote', 'boxdicom'],
+        EXT: ['boxdicom'],
+    },
+    {
+        NAME: 'IFrame',
+        CONSTRUCTOR: IFrameViewer,
+        REP: ORIGINAL_REP_NAME,
+        EXT: ['boxnote'],
     },
 ];
 
@@ -30,15 +36,9 @@ class IFrameLoader extends AssetLoader {
     determineViewer(file, disabledViewers = [], viewerOptions = {}) {
         const isDicomFile = file.extension === 'boxdicom';
         const disableDicom = getProp(viewerOptions, 'IFrame.disableDicom');
-        // The IFrame viewer is disabled when the file is a Boxdicom file and the disableDicom viewer option is enabled
+        // Removes boxdicom as a supported extension when the file is a Boxdicom file and the disableDicom viewer option is enabled
         if (disableDicom && isDicomFile) {
-            disabledViewers.push('IFrame');
-
-            // Removes boxdicom as a supported extension
-            const iframeViewer = this.viewers[0].EXT;
-            if (iframeViewer) {
-                this.viewers[0].EXT = iframeViewer.filter(extension => extension !== 'boxdicom');
-            }
+            this.viewers = this.viewers.filter(viewer => !viewer.EXT.includes('boxdicom'));
         }
 
         return super.determineViewer(file, disabledViewers);
