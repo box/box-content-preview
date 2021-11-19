@@ -16,21 +16,29 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
         },
     });
 
-    test('should have the correct viewer', () => {
-        const iframeViewer = IFrameLoader.viewers[0];
-        expect(iframeViewer).toEqual({
-            NAME: 'IFrame',
-            CONSTRUCTOR: IFrameViewer,
-            REP: 'ORIGINAL',
-            EXT: ['boxnote', 'boxdicom'],
-        });
+    test('should have the correct viewers', () => {
+        const iframeViewers = IFrameLoader.viewers;
+        expect(iframeViewers).toEqual([
+            {
+                NAME: 'IFrame',
+                CONSTRUCTOR: IFrameViewer,
+                REP: 'ORIGINAL',
+                EXT: ['boxdicom'],
+            },
+            {
+                NAME: 'IFrame',
+                CONSTRUCTOR: IFrameViewer,
+                REP: 'ORIGINAL',
+                EXT: ['boxnote'],
+            },
+        ]);
     });
 
     test.each`
         disableDicom | fileType      | viewerInstance
+        ${false}     | ${'boxdicom'} | ${IFrameLoader.viewers.find(v => v.EXT.includes('boxdicom'))}
         ${true}      | ${'boxdicom'} | ${undefined}
-        ${true}      | ${'boxnote'}  | ${IFrameLoader.viewers[0]}
-        ${false}     | ${'boxdicom'} | ${IFrameLoader.viewers[0]}
+        ${true}      | ${'boxnote'}  | ${IFrameLoader.viewers.find(v => v.EXT.includes('boxnote'))}
     `(
         'should return correct result depending on the disableDicom viewer option and file type',
         ({ disableDicom, fileType, viewerInstance }) => {
@@ -43,6 +51,7 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
             };
             const viewer = IFrameLoader.determineViewer(iframe.options.file, [], viewerOptions);
             expect(viewer).toEqual(viewerInstance);
+            expect(IFrameLoader.getViewers().some(v => v.EXT.includes('boxdicom'))).toEqual(!disableDicom);
         },
     );
 });
