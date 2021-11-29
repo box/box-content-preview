@@ -1,3 +1,15 @@
+## 2.81.0 (2021-11-29)
+
+* feat(viewer): Add support for disabling .boxdicom file type (#1436) ([8b9a4a8](https://github.com/box/box-content-preview/commit/8b9a4a8)), closes [#1436](https://github.com/box/box-content-preview/issues/1436)
+* feat(viewer): use unsupported file type error message for .boxdicom (#1437) ([7af11c4](https://github.com/box/box-content-preview/commit/7af11c4)), closes [#1437](https://github.com/box/box-content-preview/issues/1437)
+* fix(a11y): wrong focus selection on toggleFullscreen method (#1431) ([8153de6](https://github.com/box/box-content-preview/commit/8153de6)), closes [#1431](https://github.com/box/box-content-preview/issues/1431)
+* fix(preview): Close color palette when tabbed out of the palette focus (#1435) ([0a2b990](https://github.com/box/box-content-preview/commit/0a2b990)), closes [#1435](https://github.com/box/box-content-preview/issues/1435)
+* fix(security): Upgrade axios to address security issues (#1433) ([542243a](https://github.com/box/box-content-preview/commit/542243a)), closes [#1433](https://github.com/box/box-content-preview/issues/1433)
+* fix(security): Upgrade webpack-dev-server to address security issues (#1434) ([681624b](https://github.com/box/box-content-preview/commit/681624b)), closes [#1434](https://github.com/box/box-content-preview/issues/1434)
+* chore(i18n): Update Translations (#1432) ([3b22630](https://github.com/box/box-content-preview/commit/3b22630)), closes [#1432](https://github.com/box/box-content-preview/issues/1432)
+
+
+
 ## 2.80.0 (2021-09-21)
 
 * ci(mergify): Add check for pull request title (#1430) ([8964227](https://github.com/box/box-content-preview/commit/8964227)), closes [#1430](https://github.com/box/box-content-preview/issues/1430)
