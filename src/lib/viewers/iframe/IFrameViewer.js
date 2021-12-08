@@ -22,7 +22,7 @@ class IFrameViewer extends BaseViewer {
     }
 
     /**
-     * Loads a boxnote or boxdicom file
+     * Loads a boxnote
      *
      * @return {void}
      */
@@ -40,8 +40,6 @@ class IFrameViewer extends BaseViewer {
                 const sharedName = sharedLink.substr(sharedNameIndex + 3); // shared name starts after /s/
                 src = `${src}&s=${sharedName}`;
             }
-        } else if (extension === 'boxdicom') {
-            src = `${appHost}/dicom_viewer/${file.id}`;
         }
 
         // Note that the load time for this will be negligible
