@@ -265,6 +265,10 @@ class BaseViewer extends EventEmitter {
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 
+        if (this.focusTrap) {
+            this.focusTrap.destroy();
+        }
+
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
@@ -279,10 +283,6 @@ class BaseViewer extends EventEmitter {
             } catch (error) {
                 // No-op, as annotator was likely never initialized in the first place
             }
-        }
-
-        if (this.focusTrap) {
-            this.focusTrap.destroy();
         }
 
         this.destroyed = true;
@@ -589,11 +589,10 @@ class BaseViewer extends EventEmitter {
             this.fullscreenToggleEl.focus();
         }
 
-        if (this.focusTrap) {
-            this.focusTrap.destroy();
+        if (!this.focusTrap) {
+            this.focusTrap = new FocusTrap(this.containerEl);
         }
 
-        this.focusTrap = new FocusTrap(this.containerEl);
         this.focusTrap.enable();
     }
 

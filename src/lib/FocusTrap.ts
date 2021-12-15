@@ -1,14 +1,22 @@
 import { decodeKeydown } from './util';
 
 const FOCUSABLE_ELEMENTS = [
-    'a[href]:not([disabled])',
-    'button:not([disabled])',
-    'textarea:not([disabled])',
-    'input[type="text"]:not([disabled])',
-    'input[type="radio"]:not([disabled])',
-    'input[type="checkbox"]:not([disabled])',
-    'select:not([disabled])',
+    'a[href]',
+    'button',
+    'textarea',
+    'input[type="text"]',
+    'input[type="radio"]',
+    'input[type="checkbox"]',
+    'select',
 ];
+const ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"'];
+const FOCUSABLE_ELEMENTS_SELECTOR = FOCUSABLE_ELEMENTS.map(element => {
+    let selector = element;
+    ATTRIBUTES.forEach(attribute => {
+        selector += `:not([${attribute}])`;
+    });
+    return selector;
+}).join(', ');
 
 function isButton(element: HTMLElement): boolean {
     return element.tagName.toLowerCase() === 'button';
@@ -34,6 +42,10 @@ class FocusTrap {
     trapFocusableElement: HTMLElement | null = null;
 
     constructor(element: HTMLElement) {
+        if (!element) {
+            throw new Error('FocusTrap needs an HTMLElement passed into the constructor');
+        }
+
         this.element = element;
     }
 
@@ -42,10 +54,6 @@ class FocusTrap {
     }
 
     focusFirstElement = (): void => {
-        if (!this.element) {
-            return;
-        }
-
         const focusableElements = this.getFocusableElements();
         if (focusableElements.length > 0) {
             focusableElements[0].focus();
@@ -55,10 +63,6 @@ class FocusTrap {
     };
 
     focusLastElement = (): void => {
-        if (!this.element) {
-            return;
-        }
-
         const focusableElements = this.getFocusableElements();
         if (focusableElements.length > 0) {
             focusableElements[focusableElements.length - 1].focus();
@@ -69,9 +73,9 @@ class FocusTrap {
 
     getFocusableElements = (): Array<HTMLElement> => {
         // Look for focusable elements
-        const foundElements = this.element.querySelectorAll(FOCUSABLE_ELEMENTS.join(', '));
+        const foundElements = this.element.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS_SELECTOR);
         // Filter out the elements that are preview control buttons and not visible
-        return Array.prototype.slice.call(foundElements).filter(el => (isButton(el) && isVisible(el)) || !isButton(el));
+        return Array.from(foundElements).filter(el => (isButton(el) && isVisible(el)) || !isButton(el));
     };
 
     handleTrapKeydown = (event: KeyboardEvent): void => {
@@ -108,7 +112,7 @@ class FocusTrap {
         this.lastFocusableElement.addEventListener('focus', this.focusFirstElement);
         this.trapFocusableElement.addEventListener('keydown', this.handleTrapKeydown);
 
-        this.element.prepend(this.firstFocusableElement);
+        this.element.insertBefore(this.firstFocusableElement, this.element.firstElementChild);
         this.element.append(this.lastFocusableElement);
         this.element.append(this.trapFocusableElement);
     }
