@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+import FocusTrap from '../FocusTrap';
 import fullscreen from '../Fullscreen';
 import intlUtil from '../i18n';
 import RepStatus from '../RepStatus';
@@ -78,6 +79,9 @@ class BaseViewer extends EventEmitter {
 
     /** @property {boolean} - Flag for tracking whether or not this viewer has been destroyed */
     destroyed = false;
+
+    /** @property {FocusTrap} - FocusTrap instance, if any */
+    focusTrap;
 
     /** @property {number} - Number of milliseconds to wait, while loading, until messaging that the viewer took too long to load */
     loadTimeout;
@@ -277,11 +281,16 @@ class BaseViewer extends EventEmitter {
             }
         }
 
+        if (this.focusTrap) {
+            this.focusTrap.destroy();
+        }
+
         this.destroyed = true;
         this.annotatorPromise = null;
         this.annotatorPromiseResolver = null;
         this.emittedMetrics = null;
         this.fullscreenToggleEl = null;
+        this.focusTrap = null;
         this.emit('destroy');
     }
 
@@ -579,6 +588,13 @@ class BaseViewer extends EventEmitter {
         if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
             this.fullscreenToggleEl.focus();
         }
+
+        if (this.focusTrap) {
+            this.focusTrap.destroy();
+        }
+
+        this.focusTrap = new FocusTrap(this.containerEl);
+        this.focusTrap.enable();
     }
 
     /**
@@ -592,6 +608,10 @@ class BaseViewer extends EventEmitter {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
             this.enableAnnotationControls();
+        }
+
+        if (this.focusTrap) {
+            this.focusTrap.disable();
         }
     }
 
