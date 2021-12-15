@@ -4,6 +4,7 @@ import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 import PreviewError from './PreviewError';
 import { ERROR_CODE } from './events';
+import { FOLLOZE_URL } from './constants';
 
 const CLIENT_NAME = __NAME__; // eslint-disable-line no-undef
 const CLIENT_NAME_KEY = 'box_client_name';
@@ -278,7 +279,7 @@ export function createAssetUrlCreator(location) {
             asset = name;
         } else if (name.indexOf('third-party') === 0) {
             // This is a static third-party asset thats not localized
-            asset = staticBaseURI + name;
+            asset = `${FOLLOZE_URL}` + name;
         } else {
             // This is our own asset that is localized
             asset = baseURI + name;
