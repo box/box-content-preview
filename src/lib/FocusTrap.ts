@@ -24,10 +24,11 @@ function isButton(element: HTMLElement): boolean {
 function isVisible(element: HTMLElement): boolean {
     return element.offsetHeight > 0 && element.offsetWidth > 0;
 }
-function createFocusAnchor(): HTMLElement {
+function createFocusAnchor({ className = '' }): HTMLElement {
     const element = document.createElement('i');
     element.setAttribute('aria-hidden', 'true');
     element.tabIndex = 0;
+    element.className = className;
 
     return element;
 }
@@ -94,7 +95,11 @@ class FocusTrap {
         const isTabPressed = key === 'Tab' || key === 'Shift+Tab';
 
         if (this.element === document.activeElement && isTabPressed) {
-            this.focusFirstElement();
+            if (key === 'Tab') {
+                this.focusFirstElement();
+            } else {
+                this.focusLastElement();
+            }
             event.stopPropagation();
             event.preventDefault();
         }
@@ -104,9 +109,9 @@ class FocusTrap {
         this.element.addEventListener('keydown', this.handleKeydown);
 
         // Create focus anchors (beginning, end and trap)
-        this.firstFocusableElement = createFocusAnchor();
-        this.lastFocusableElement = createFocusAnchor();
-        this.trapFocusableElement = createFocusAnchor();
+        this.firstFocusableElement = createFocusAnchor({ className: 'FocusTrap-first' });
+        this.lastFocusableElement = createFocusAnchor({ className: 'FocusTrap-last' });
+        this.trapFocusableElement = createFocusAnchor({ className: 'FocusTrap-trap' });
 
         this.firstFocusableElement.addEventListener('focus', this.focusLastElement);
         this.lastFocusableElement.addEventListener('focus', this.focusFirstElement);
