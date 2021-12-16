@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+import FocusTrap from '../FocusTrap';
 import fullscreen from '../Fullscreen';
 import intlUtil from '../i18n';
 import RepStatus from '../RepStatus';
@@ -78,6 +79,9 @@ class BaseViewer extends EventEmitter {
 
     /** @property {boolean} - Flag for tracking whether or not this viewer has been destroyed */
     destroyed = false;
+
+    /** @property {FocusTrap} - FocusTrap instance, if any */
+    focusTrap;
 
     /** @property {number} - Number of milliseconds to wait, while loading, until messaging that the viewer took too long to load */
     loadTimeout;
@@ -261,6 +265,10 @@ class BaseViewer extends EventEmitter {
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 
+        if (this.focusTrap) {
+            this.focusTrap.destroy();
+        }
+
         if (this.containerEl) {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
@@ -282,6 +290,7 @@ class BaseViewer extends EventEmitter {
         this.annotatorPromiseResolver = null;
         this.emittedMetrics = null;
         this.fullscreenToggleEl = null;
+        this.focusTrap = null;
         this.emit('destroy');
     }
 
@@ -579,6 +588,17 @@ class BaseViewer extends EventEmitter {
         if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
             this.fullscreenToggleEl.focus();
         }
+
+        try {
+            if (!this.focusTrap) {
+                this.focusTrap = new FocusTrap(this.containerEl);
+            }
+
+            this.focusTrap.enable();
+        } catch (error) {
+            // eslint-disable-next-line
+            console.error('Unable to enable focus trap around Preview content');
+        }
     }
 
     /**
@@ -592,6 +612,10 @@ class BaseViewer extends EventEmitter {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.emit(ANNOTATOR_EVENT.setVisibility, true);
             this.enableAnnotationControls();
+        }
+
+        if (this.focusTrap) {
+            this.focusTrap.disable();
         }
     }
 
