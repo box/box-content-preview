@@ -547,8 +547,8 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleFullscreenEnter();
 
-            expect(FocusTrap.prototype.constructor).toHaveBeenCalledWith(base.containerEl);
-            expect(FocusTrap.prototype.enable).toHaveBeenCalled();
+            expect(FocusTrap.prototype.constructor).toBeCalledWith(base.containerEl);
+            expect(FocusTrap.prototype.enable).toBeCalled();
         });
 
         test('should reuse any existing focus trap', () => {
@@ -559,8 +559,8 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleFullscreenEnter();
 
-            expect(FocusTrap.prototype.constructor).not.toHaveBeenCalledWith(base.containerEl);
-            expect(mockFocusTrap.enable).toHaveBeenCalled();
+            expect(FocusTrap.prototype.constructor).not.toBeCalledWith(base.containerEl);
+            expect(mockFocusTrap.enable).toBeCalled();
         });
     });
 
@@ -598,7 +598,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.handleFullscreenExit();
 
-            expect(mockFocusTrap.disable).toHaveBeenCalled();
+            expect(mockFocusTrap.disable).toBeCalled();
         });
     });
 
@@ -695,7 +695,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.focusTrap = mockFocusTrap;
             base.destroy();
 
-            expect(mockFocusTrap.destroy).toHaveBeenCalled();
+            expect(mockFocusTrap.destroy).toBeCalled();
         });
     });
 

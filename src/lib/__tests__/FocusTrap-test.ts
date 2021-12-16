@@ -1,5 +1,9 @@
 import FocusTrap from '../FocusTrap';
 
+declare const fixture: {
+    load: (path: string) => void;
+};
+
 describe('lib/FocusTrap', () => {
     beforeEach(() => {
         // Fixture has 2 input elements as children
@@ -49,63 +53,83 @@ describe('lib/FocusTrap', () => {
     });
 
     describe('focus management', () => {
-        let children: Array<HTMLElement>;
+        let anchorFirstElement: HTMLElement;
+        let anchorLastElement: HTMLElement;
+        let anchorTrapElement: HTMLElement;
+        let firstInput: HTMLElement;
         let focusTrap;
+        let secondInput: HTMLElement;
+
+        const getTestElement = (selector: string): HTMLElement =>
+            getContainerElement().querySelector<HTMLElement>(selector) as HTMLElement;
 
         beforeEach(() => {
-            jest.spyOn(Event.prototype, 'stopPropagation');
-            jest.spyOn(Event.prototype, 'preventDefault');
-
             focusTrap = getFocusTrap();
             focusTrap.enable();
 
-            children = Array.from(getContainerElement().children) as Array<HTMLElement>;
+            anchorFirstElement = getTestElement('.bp-FocusTrap-first');
+            anchorLastElement = getTestElement('.bp-FocusTrap-last');
+            anchorTrapElement = getTestElement('.bp-FocusTrap-trap');
+            firstInput = getTestElement('.firstInput');
+            secondInput = getTestElement('.secondInput');
         });
 
         test('should redirect focus from first anchor to last focusable element', () => {
-            children[1].focus(); // first input
-            expect(document.activeElement).toBe(children[1]);
+            firstInput.focus();
+            expect(document.activeElement).toBe(firstInput);
 
-            children[0].focus(); // first focus anchor element
-            expect(document.activeElement).toBe(children[2]);
+            anchorFirstElement.focus();
+            expect(document.activeElement).toBe(secondInput);
         });
 
         test('should redirect focus from last anchor to first focusable element', () => {
-            children[2].focus(); // second input
-            expect(document.activeElement).toBe(children[2]);
+            secondInput.focus();
+            expect(document.activeElement).toBe(secondInput);
 
-            children[3].focus(); // last focus anchor element
-            expect(document.activeElement).toBe(children[1]);
+            anchorLastElement.focus();
+            expect(document.activeElement).toBe(firstInput);
         });
 
         test('should keep focus trapped on trap anchor when Tab is pressed', () => {
-            children[4].focus(); // trap focus anchor element
-            expect(document.activeElement).toBe(children[4]);
+            anchorTrapElement.focus();
+            expect(document.activeElement).toBe(anchorTrapElement);
 
-            children[4].dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
-            expect(document.activeElement).toBe(children[4]);
-            expect(Event.prototype.stopPropagation).toHaveBeenCalled();
-            expect(Event.prototype.preventDefault).toHaveBeenCalled();
+            const mockEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+            jest.spyOn(mockEvent, 'stopPropagation');
+            jest.spyOn(mockEvent, 'preventDefault');
+
+            anchorTrapElement.dispatchEvent(mockEvent);
+            expect(document.activeElement).toBe(anchorTrapElement);
+            expect(mockEvent.stopPropagation).toBeCalled();
+            expect(mockEvent.preventDefault).toBeCalled();
         });
 
         test('should keep focus trapped on trap anchor when Shift+Tab is pressed', () => {
-            children[4].focus(); // trap focus anchor element
-            expect(document.activeElement).toBe(children[4]);
+            anchorTrapElement.focus();
+            expect(document.activeElement).toBe(anchorTrapElement);
 
-            children[4].dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }));
-            expect(document.activeElement).toBe(children[4]);
-            expect(Event.prototype.stopPropagation).toHaveBeenCalled();
-            expect(Event.prototype.preventDefault).toHaveBeenCalled();
+            const mockEvent = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
+            jest.spyOn(mockEvent, 'stopPropagation');
+            jest.spyOn(mockEvent, 'preventDefault');
+
+            anchorTrapElement.dispatchEvent(mockEvent);
+            expect(document.activeElement).toBe(anchorTrapElement);
+            expect(mockEvent.stopPropagation).toBeCalled();
+            expect(mockEvent.preventDefault).toBeCalled();
         });
 
         test.each(['Enter', 'Escape', 'ArrowDown'])('should do nothing if key %s is pressed', key => {
-            children[4].focus(); // trap focus anchor element
-            expect(document.activeElement).toBe(children[4]);
+            anchorTrapElement.focus();
+            expect(document.activeElement).toBe(anchorTrapElement);
 
-            children[4].dispatchEvent(new KeyboardEvent('keydown', { key }));
-            expect(document.activeElement).toBe(children[4]);
-            expect(Event.prototype.stopPropagation).not.toHaveBeenCalled();
-            expect(Event.prototype.preventDefault).not.toHaveBeenCalled();
+            const mockEvent = new KeyboardEvent('keydown', { key });
+            jest.spyOn(mockEvent, 'stopPropagation');
+            jest.spyOn(mockEvent, 'preventDefault');
+
+            anchorTrapElement.dispatchEvent(mockEvent);
+            expect(document.activeElement).toBe(anchorTrapElement);
+            expect(mockEvent.stopPropagation).not.toBeCalled();
+            expect(mockEvent.preventDefault).not.toBeCalled();
         });
 
         test('should focus first element if Tab is pressed when container element has focus', () => {
@@ -113,10 +137,14 @@ describe('lib/FocusTrap', () => {
             container.focus();
             expect(document.activeElement).toBe(container);
 
-            container.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
-            expect(document.activeElement).toBe(children[1]);
-            expect(Event.prototype.stopPropagation).toHaveBeenCalled();
-            expect(Event.prototype.preventDefault).toHaveBeenCalled();
+            const mockEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+            jest.spyOn(mockEvent, 'stopPropagation');
+            jest.spyOn(mockEvent, 'preventDefault');
+
+            container.dispatchEvent(mockEvent);
+            expect(document.activeElement).toBe(firstInput);
+            expect(mockEvent.stopPropagation).toBeCalled();
+            expect(mockEvent.preventDefault).toBeCalled();
         });
 
         test('should focus first element if Tab is pressed when container element has focus', () => {
@@ -124,10 +152,14 @@ describe('lib/FocusTrap', () => {
             container.focus();
             expect(document.activeElement).toBe(container);
 
-            container.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }));
-            expect(document.activeElement).toBe(children[2]);
-            expect(Event.prototype.stopPropagation).toHaveBeenCalled();
-            expect(Event.prototype.preventDefault).toHaveBeenCalled();
+            const mockEvent = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
+            jest.spyOn(mockEvent, 'stopPropagation');
+            jest.spyOn(mockEvent, 'preventDefault');
+
+            container.dispatchEvent(mockEvent);
+            expect(document.activeElement).toBe(secondInput);
+            expect(mockEvent.stopPropagation).toBeCalled();
+            expect(mockEvent.preventDefault).toBeCalled();
         });
 
         test.each(['Enter', 'Escape', 'ArrowDown'])(
@@ -137,10 +169,14 @@ describe('lib/FocusTrap', () => {
                 container.focus();
                 expect(document.activeElement).toBe(container);
 
-                container.dispatchEvent(new KeyboardEvent('keydown', { key }));
+                const mockEvent = new KeyboardEvent('keydown', { key });
+                jest.spyOn(mockEvent, 'stopPropagation');
+                jest.spyOn(mockEvent, 'preventDefault');
+
+                container.dispatchEvent(mockEvent);
                 expect(document.activeElement).toBe(container);
-                expect(Event.prototype.stopPropagation).not.toHaveBeenCalled();
-                expect(Event.prototype.preventDefault).not.toHaveBeenCalled();
+                expect(mockEvent.stopPropagation).not.toBeCalled();
+                expect(mockEvent.preventDefault).not.toBeCalled();
             },
         );
     });

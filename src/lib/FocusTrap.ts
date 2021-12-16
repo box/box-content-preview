@@ -110,10 +110,9 @@ class FocusTrap {
     enable(): void {
         this.element.addEventListener('keydown', this.handleKeydown);
 
-        // Create focus anchors (beginning, end and trap)
-        this.firstFocusableElement = createFocusAnchor({ className: 'FocusTrap-first' });
-        this.lastFocusableElement = createFocusAnchor({ className: 'FocusTrap-last' });
-        this.trapFocusableElement = createFocusAnchor({ className: 'FocusTrap-trap' });
+        this.firstFocusableElement = createFocusAnchor({ className: 'bp-FocusTrap-first' });
+        this.lastFocusableElement = createFocusAnchor({ className: 'bp-FocusTrap-last' });
+        this.trapFocusableElement = createFocusAnchor({ className: 'bp-FocusTrap-trap' });
 
         this.firstFocusableElement.addEventListener('focus', this.focusLastElement);
         this.lastFocusableElement.addEventListener('focus', this.focusFirstElement);

@@ -589,11 +589,16 @@ class BaseViewer extends EventEmitter {
             this.fullscreenToggleEl.focus();
         }
 
-        if (!this.focusTrap) {
-            this.focusTrap = new FocusTrap(this.containerEl);
-        }
+        try {
+            if (!this.focusTrap) {
+                this.focusTrap = new FocusTrap(this.containerEl);
+            }
 
-        this.focusTrap.enable();
+            this.focusTrap.enable();
+        } catch (error) {
+            // eslint-disable-next-line
+            console.error('Unable to enable focus trap around Preview content');
+        }
     }
 
     /**
