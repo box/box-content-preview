@@ -120,8 +120,8 @@ class FocusTrap {
         this.trapFocusableElement.addEventListener('keydown', this.handleTrapKeydown);
 
         this.element.insertBefore(this.firstFocusableElement, this.element.firstElementChild);
-        this.element.append(this.lastFocusableElement);
-        this.element.append(this.trapFocusableElement);
+        this.element.appendChild(this.lastFocusableElement);
+        this.element.appendChild(this.trapFocusableElement);
     }
 
     disable(): void {
