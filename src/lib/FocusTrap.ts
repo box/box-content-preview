@@ -1,6 +1,6 @@
 import { decodeKeydown } from './util';
 
-const FOCUSABLE_ELEMENTS = [
+const FOCUSABLE_ELEMENT_SELECTORS = [
     'a[href]',
     'button',
     'textarea',
@@ -9,10 +9,10 @@ const FOCUSABLE_ELEMENTS = [
     'input[type="checkbox"]',
     'select',
 ];
-const ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"'];
-const FOCUSABLE_ELEMENTS_SELECTOR = FOCUSABLE_ELEMENTS.map(element => {
+const EXCLUDED_SELECTOR_ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"'];
+const FOCUSABLE_ELEMENTS_SELECTOR = FOCUSABLE_ELEMENT_SELECTORS.map(element => {
     let selector = element;
-    ATTRIBUTES.forEach(attribute => {
+    EXCLUDED_SELECTOR_ATTRIBUTES.forEach(attribute => {
         selector += `:not([${attribute}])`;
     });
     return selector;
@@ -75,7 +75,7 @@ class FocusTrap {
     getFocusableElements = (): Array<HTMLElement> => {
         // Look for focusable elements
         const foundElements = this.element.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS_SELECTOR);
-        // Filter out the elements that are preview control buttons and not visible
+        // Filter out the buttons that are invisible (in case display: 'none' is used for hidden buttons)
         return Array.from(foundElements).filter(el => (isButton(el) && isVisible(el)) || !isButton(el));
     };
 
@@ -94,15 +94,17 @@ class FocusTrap {
         const key = decodeKeydown(event);
         const isTabPressed = key === 'Tab' || key === 'Shift+Tab';
 
-        if (this.element === document.activeElement && isTabPressed) {
-            if (key === 'Tab') {
-                this.focusFirstElement();
-            } else {
-                this.focusLastElement();
-            }
-            event.stopPropagation();
-            event.preventDefault();
+        if (this.element !== document.activeElement || !isTabPressed) {
+            return;
         }
+
+        if (key === 'Tab') {
+            this.focusFirstElement();
+        } else {
+            this.focusLastElement();
+        }
+        event.stopPropagation();
+        event.preventDefault();
     };
 
     enable(): void {

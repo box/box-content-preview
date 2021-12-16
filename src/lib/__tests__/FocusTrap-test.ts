@@ -6,24 +6,26 @@ describe('lib/FocusTrap', () => {
         fixture.load('__tests__/FocusTrap-test.html');
     });
 
-    const getFocusTrap = (): FocusTrap => new FocusTrap(document.querySelector('#test-container'));
+    const getContainerElement = (): HTMLElement =>
+        document.querySelector<HTMLElement>('#test-container') as HTMLElement;
+    const getFocusTrap = (): FocusTrap => new FocusTrap(getContainerElement());
 
     describe('constructor', () => {
         test('should save reference to element', () => {
             const focusTrap = getFocusTrap();
 
-            expect(focusTrap.element).toBe(document.querySelector('#test-container'));
+            expect(focusTrap.element).toBe(getContainerElement());
         });
     });
 
     describe('enable()', () => {
         test('should add 3 focus anchor elements', () => {
             const focusTrap = getFocusTrap();
-            expect(document.querySelector('#test-container').children.length).toBe(2);
+            expect(getContainerElement().children.length).toBe(2);
 
             focusTrap.enable();
 
-            const children = Array.from(document.querySelector('#test-container').children);
+            const children = Array.from(getContainerElement().children);
             expect(children.length).toBe(5);
             expect(children[0].tagName.toLowerCase()).toBe('i');
             expect(children[1].tagName.toLowerCase()).toBe('input');
@@ -36,18 +38,18 @@ describe('lib/FocusTrap', () => {
     describe('disable()', () => {
         test('should remove the 3 focus anchor elements', () => {
             const focusTrap = getFocusTrap();
-            expect(document.querySelector('#test-container').children.length).toBe(2);
+            expect(getContainerElement().children.length).toBe(2);
 
             focusTrap.enable();
-            expect(document.querySelector('#test-container').children.length).toBe(5);
+            expect(getContainerElement().children.length).toBe(5);
 
             focusTrap.disable();
-            expect(document.querySelector('#test-container').children.length).toBe(2);
+            expect(getContainerElement().children.length).toBe(2);
         });
     });
 
     describe('focus management', () => {
-        let children;
+        let children: Array<HTMLElement>;
         let focusTrap;
 
         beforeEach(() => {
@@ -57,7 +59,7 @@ describe('lib/FocusTrap', () => {
             focusTrap = getFocusTrap();
             focusTrap.enable();
 
-            children = Array.from<HTMLElement>(document.querySelector<HTMLElement>('#test-container').children);
+            children = Array.from(getContainerElement().children) as Array<HTMLElement>;
         });
 
         test('should redirect focus from first anchor to last focusable element', () => {
@@ -107,7 +109,7 @@ describe('lib/FocusTrap', () => {
         });
 
         test('should focus first element if Tab is pressed when container element has focus', () => {
-            const container = document.querySelector<HTMLElement>('#test-container');
+            const container = getContainerElement();
             container.focus();
             expect(document.activeElement).toBe(container);
 
@@ -118,7 +120,7 @@ describe('lib/FocusTrap', () => {
         });
 
         test('should focus first element if Tab is pressed when container element has focus', () => {
-            const container = document.querySelector<HTMLElement>('#test-container');
+            const container = getContainerElement();
             container.focus();
             expect(document.activeElement).toBe(container);
 
@@ -131,7 +133,7 @@ describe('lib/FocusTrap', () => {
         test.each(['Enter', 'Escape', 'ArrowDown'])(
             'should do nothing if %s is pressed when container element has focus',
             key => {
-                const container = document.querySelector<HTMLElement>('#test-container');
+                const container = getContainerElement();
                 container.focus();
                 expect(document.activeElement).toBe(container);
 
