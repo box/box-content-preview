@@ -1,3 +1,9 @@
+## 2.82.0 (2021-12-16)
+
+* feat(viewer): Add focus trap for fullscreen (#1439) ([b09b349](https://github.com/box/box-content-preview/commit/b09b349)), closes [#1439](https://github.com/box/box-content-preview/issues/1439)
+
+
+
 ## 2.81.0 (2021-11-29)
 
 * feat(viewer): Add support for disabling .boxdicom file type (#1436) ([8b9a4a8](https://github.com/box/box-content-preview/commit/8b9a4a8)), closes [#1436](https://github.com/box/box-content-preview/issues/1436)
