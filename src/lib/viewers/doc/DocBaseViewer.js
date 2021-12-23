@@ -22,7 +22,6 @@ import {
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
-    DOC_STATIC_ASSETS_VERSION,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
@@ -40,7 +39,7 @@ import {
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { JS, PRELOAD_JS, CSS } from './docAssets';
+import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, WORKER } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -711,7 +710,7 @@ class DocBaseViewer extends BaseViewer {
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
         this.pdfLoadingTask = this.pdfjsLib.getDocument({
             cMapPacked: true,
-            cMapUrl: assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`),
+            cMapUrl: assetUrlCreator(CMAP),
             disableCreateObjectURL,
             disableFontFace,
             disableRange,
@@ -770,19 +769,20 @@ class DocBaseViewer extends BaseViewer {
      */
     initPdfViewerClass(PdfViewerClass) {
         const { file, location } = this.options;
+        const { AnnotationMode: PDFAnnotationMode = {} } = this.pdfjsLib;
         const assetUrlCreator = createAssetUrlCreator(location);
         const hasDownload = checkPermission(file, PERMISSION_DOWNLOAD);
         const hasTextLayer = hasDownload && !this.getViewerOption('disableTextLayer');
         const textLayerMode = this.isMobile ? PDFJS_TEXT_LAYER_MODE.ENABLE : PDFJS_TEXT_LAYER_MODE.ENABLE_ENHANCE;
 
         return new PdfViewerClass({
+            annotationMode: PDFAnnotationMode.ENABLE, // Show annotations, but not forms
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
-            imageResourcesPath: assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`),
+            imageResourcesPath: assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
-            renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? textLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
     }
@@ -912,9 +912,8 @@ class DocBaseViewer extends BaseViewer {
         // Set pdf.js worker source location
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
-        const workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
 
-        this.pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+        this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
     }
 
     /**
