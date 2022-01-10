@@ -1,3 +1,8 @@
+queue_rules:
+    - name: default
+      conditions:
+        - status-success=Travis CI - Pull Request
+
 pull_request_rules:
   - name: Automatic strict merge
     conditions:
@@ -10,6 +15,6 @@ pull_request_rules:
       - label!=do-not-merge
       - title~=^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?:\s.+$
     actions:
-      merge:
+      queue:
         method: squash
-        strict: smart
+        name: default
