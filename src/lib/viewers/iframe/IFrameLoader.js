@@ -1,16 +1,9 @@
-import getProp from 'lodash/get';
 import AssetLoader from '../AssetLoader';
 import IFrameViewer from './IFrameViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
-    {
-        NAME: 'IFrame',
-        CONSTRUCTOR: IFrameViewer,
-        REP: ORIGINAL_REP_NAME,
-        EXT: ['boxdicom'],
-    },
     {
         NAME: 'IFrame',
         CONSTRUCTOR: IFrameViewer,
@@ -28,19 +21,6 @@ class IFrameLoader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    determineViewer(file, disabledViewers = [], viewerOptions = {}) {
-        const disableDicom = getProp(viewerOptions, 'IFrame.disableDicom');
-        // Removes boxdicom as a supported extension when the disableDicom viewer option is enabled
-        if (disableDicom) {
-            this.viewers = this.viewers.filter(viewer => !viewer.EXT.includes('boxdicom'));
-        }
-
-        return super.determineViewer(file, disabledViewers);
     }
 }
 

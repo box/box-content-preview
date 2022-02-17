@@ -71,17 +71,6 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             iframe.load();
         });
 
-        test('should load a boxdicom and fire load event', done => {
-            iframe.options.file.extension = 'boxdicom';
-
-            iframe.on('load', () => {
-                expect(iframe.iframeEl.src).toEqual('https://app.box.com/dicom_viewer/123');
-                done();
-            });
-
-            iframe.load();
-        });
-
         test('should invoke startLoadTimer()', () => {
             const stub = jest.spyOn(iframe, 'startLoadTimer');
             iframe.load();
