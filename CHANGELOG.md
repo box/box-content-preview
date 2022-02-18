@@ -1,3 +1,10 @@
+## 2.83.0 (2022-02-18)
+
+* feat(viewer): remove traces of boxdicom support (#1438) ([6c39352](https://github.com/box/box-content-preview/commit/6c39352)), closes [#1438](https://github.com/box/box-content-preview/issues/1438)
+* chore: Remove deprecated strict merge rules from mergify config (#1442) ([1edbfff](https://github.com/box/box-content-preview/commit/1edbfff)), closes [#1442](https://github.com/box/box-content-preview/issues/1442)
+
+
+
 ## 2.82.0 (2021-12-16)
 
 * feat(viewer): Add focus trap for fullscreen (#1439) ([b09b349](https://github.com/box/box-content-preview/commit/b09b349)), closes [#1439](https://github.com/box/box-content-preview/issues/1439)
