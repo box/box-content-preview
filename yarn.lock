@@ -1164,6 +1164,18 @@
   resolved "https://registry.yarnpkg.com/@box/languages/-/languages-1.0.0.tgz#e59b259b34b1b4c399778682732c3d0038864284"
   integrity sha512-VdrUJK8tICkE4KrgN9FcRmqI+I72vPiDeRnlzX0Ua06etEzNPUa5E3tBnuZleWfZiBshhSScXfEbZdNCWkDHtQ==
 
+"@box/react-virtualized@9.22.3-rc-box.2":
+  version "9.22.3-rc-box.2"
+  resolved "https://registry.yarnpkg.com/@box/react-virtualized/-/react-virtualized-9.22.3-rc-box.2.tgz#51eaa43865ea07636418e72f2333d57d964d7d1b"
+  integrity sha512-PNgjVpdfODpEEnMAAkfB1CiLmMGfb1vsYPiqiSMASFUjLBMvZ46X9TwAlwgNAyCS1ez8V+20cYwHH1cbE/Mfgw==
+  dependencies:
+    "@babel/runtime" "^7.7.2"
+    clsx "^1.0.4"
+    dom-helpers "^5.1.3"
+    loose-envify "^1.4.0"
+    prop-types "^15.7.2"
+    react-lifecycles-compat "^3.0.4"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -2957,10 +2969,10 @@ box-annotations@^2.3.0:
   resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
   integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
 
-box-ui-elements@^13.1.0-beta.62:
-  version "13.1.0-beta.62"
-  resolved "https://registry.yarnpkg.com/box-ui-elements/-/box-ui-elements-13.1.0-beta.62.tgz#d10d76f8b904547d043376e238860b7021af4552"
-  integrity sha512-NzhnfznDNvDdWJMmktIgGluD9SuU9+E70Fp6iadF2eXXm9MI8Z+nLS1ncBuoywRsluzfs+LD/fW8Mmu38p+5gQ==
+box-ui-elements@^15.0.0-beta.49:
+  version "15.0.0-beta.49"
+  resolved "https://registry.yarnpkg.com/box-ui-elements/-/box-ui-elements-15.0.0-beta.49.tgz#79d1c7808b16e873a4a9a13cec410f1a35021394"
+  integrity sha512-xjmWuydoEKZxXagSHzKhp6To8DZDiIUIU+3TgtaGNQ3aRr0ewutoP8wQkwH/VfG9ehB3h+2kIu0cjdCzbYUXvg==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
