@@ -9,7 +9,7 @@ import itemNameCellRenderer from 'box-ui-elements/es/features/virtualized-table-
 import readableTimeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/readableTimeCellRenderer';
 import sizeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sizeCellRenderer';
 import sortableColumnHeaderRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sortableColumnHeaderRenderer';
-import { AutoSizer, Column, SortDirection } from 'react-virtualized';
+import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
 import { addLocaleData } from 'react-intl';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';

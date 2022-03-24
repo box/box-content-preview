@@ -10,6 +10,7 @@ module.exports = {
     moduleNameMapper: {
         '\\.(css|scss|less)$': '<rootDir>/build/jest/styleMock.js',
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/build/jest/fileMock.js',
+        '@box/react-virtualized/dist/es': '@box/react-virtualized/dist/commonjs',
         'box-elements-messages': '<rootDir>/build/jest/i18nMock.js',
         'react-intl': '<rootDir>/build/jest/react-intl-mock.js',
         'react-intl-locale-data': '<rootDir>/node_modules/react-intl/locale-data/en.js',
