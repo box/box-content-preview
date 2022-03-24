@@ -1,3 +1,9 @@
+## 2.84.0 (2022-03-24)
+
+* feat(docuworks): Add support for docuworks file types (#1444) ([61a1713](https://github.com/box/box-content-preview/commit/61a1713)), closes [#1444](https://github.com/box/box-content-preview/issues/1444)
+
+
+
 ## 2.83.0 (2022-02-18)
 
 * feat(viewer): remove traces of boxdicom support (#1438) ([6c39352](https://github.com/box/box-content-preview/commit/6c39352)), closes [#1438](https://github.com/box/box-content-preview/issues/1438)
