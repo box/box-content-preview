@@ -3,8 +3,6 @@ import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import VirtualScroller from '../VirtualScroller';
 import * as utils from '../util';
 
-const TEST_SCALE = 30;
-
 describe('ThumbnailsSidebar', () => {
     let thumbnailsSidebar;
     let stubs = {};
@@ -58,7 +56,6 @@ describe('ThumbnailsSidebar', () => {
         fixture.cleanup();
 
         if (thumbnailsSidebar && typeof thumbnailsSidebar.destroy === 'function') {
-            thumbnailsSidebar.thumbnailImageCache = null;
             thumbnailsSidebar.destroy();
         }
 
@@ -70,17 +67,12 @@ describe('ThumbnailsSidebar', () => {
         test('should initialize properties', () => {
             expect(thumbnailsSidebar.anchorEl.id).toBe('test-thumbnails-sidebar');
             expect(thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
-            expect(thumbnailsSidebar.thumbnailImageCache.cache).toEqual({});
-            expect(thumbnailsSidebar.scale).toBeUndefined();
-            expect(thumbnailsSidebar.pageRatio).toBeUndefined();
         });
     });
 
     describe('destroy()', () => {
         test('should clean up the instance properties', () => {
             thumbnailsSidebar.destroy();
-
-            expect(thumbnailsSidebar.thumbnailImageCache).toBeNull();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
         });
 
@@ -90,60 +82,29 @@ describe('ThumbnailsSidebar', () => {
 
             expect(stubs.vsDestroy).toBeCalled();
             expect(thumbnailsSidebar.virtualScroller).toBeNull();
-            expect(thumbnailsSidebar.thumbnailImageCache).toBeNull();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
         });
     });
 
     describe('init()', () => {
         test('should initialize the render properties', () => {
-            stubs.getViewport.mockReturnValue({ width: 10, height: 10 });
-
+            const thumbHeightPromise = Promise.resolve(10);
+            stubs.thumbnailInit = jest.fn(() => thumbHeightPromise);
+            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockImplementation(stubs.thumbnailInit);
             thumbnailsSidebar.init();
-
-            return pagePromise.then(() => {
-                expect(stubs.getViewport).toBeCalled();
-                expect(thumbnailsSidebar.scale).toBe(15);
-                expect(thumbnailsSidebar.pageRatio).toBe(1);
+            return thumbHeightPromise.then(() => {
                 expect(stubs.vsInit).toBeCalled();
             });
         });
 
         test('should not initialize the render properties if viewport does not return width', () => {
-            stubs.getViewport.mockReturnValue({ width: undefined, height: 10 });
+            const thumbHeightPromise = Promise.resolve(null);
+            stubs.thumbnailInit = jest.fn(() => thumbHeightPromise);
+            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockImplementation(stubs.thumbnailInit);
 
             thumbnailsSidebar.init();
 
             return pagePromise.then(() => {
-                expect(stubs.getViewport).toBeCalled();
-                expect(thumbnailsSidebar.scale).toBeUndefined();
-                expect(thumbnailsSidebar.pageRatio).toBeUndefined();
-                expect(stubs.vsInit).not.toBeCalled();
-            });
-        });
-
-        test('should not initialize the render properties if viewport does not return height', () => {
-            stubs.getViewport.mockReturnValue({ width: 10, height: undefined });
-
-            thumbnailsSidebar.init();
-
-            return pagePromise.then(() => {
-                expect(stubs.getViewport).toBeCalled();
-                expect(thumbnailsSidebar.scale).toBeUndefined();
-                expect(thumbnailsSidebar.pageRatio).toBeUndefined();
-                expect(stubs.vsInit).not.toBeCalled();
-            });
-        });
-
-        test('should not initialize the render properties if viewport does not return non zero width & height', () => {
-            stubs.getViewport.mockReturnValue({ width: 0, height: 0 });
-
-            thumbnailsSidebar.init();
-
-            return pagePromise.then(() => {
-                expect(stubs.getViewport).toBeCalled();
-                expect(thumbnailsSidebar.scale).toBeUndefined();
-                expect(thumbnailsSidebar.pageRatio).toBeUndefined();
                 expect(stubs.vsInit).not.toBeCalled();
             });
         });
@@ -206,8 +167,8 @@ describe('ThumbnailsSidebar', () => {
             const imageEl = {};
             const createImagePromise = Promise.resolve(imageEl);
             stubs.createThumbnailImage = jest
-                .spyOn(thumbnailsSidebar, 'createThumbnailImage')
-                .mockReturnValue(createImagePromise);
+                .spyOn(thumbnailsSidebar.thumbnail, 'createThumbnailImage')
+                .mockReturnValue(Promise.resolve(createImagePromise));
             stubs.appendChild = jest.fn();
             stubs.addClass = jest.fn();
             stubs.renderNextThumbnailImage = jest
@@ -220,91 +181,10 @@ describe('ThumbnailsSidebar', () => {
             };
 
             thumbnailsSidebar.requestThumbnailImage(0, thumbnailEl);
-
+            expect(stubs.createThumbnailImage).toBeCalled();
             return createImagePromise.then(() => {
                 expect(stubs.appendChild).toBeCalled();
                 expect(stubs.addClass).toBeCalled();
-            });
-        });
-    });
-
-    describe('createThumbnailImage', () => {
-        beforeEach(() => {
-            stubs.getThumbnailDataURL = jest
-                .spyOn(thumbnailsSidebar, 'getThumbnailDataURL')
-                .mockResolvedValue(undefined);
-            stubs.createImageEl = jest.spyOn(thumbnailsSidebar, 'createImageEl').mockImplementation();
-            stubs.getCacheEntry = jest.spyOn(thumbnailsSidebar.thumbnailImageCache, 'get').mockImplementation();
-            stubs.setCacheEntry = jest.spyOn(thumbnailsSidebar.thumbnailImageCache, 'set').mockImplementation();
-        });
-
-        test('should resolve immediately if the image is in cache', () => {
-            const cachedImage = {};
-            stubs.getCacheEntry.mockReturnValue({ image: cachedImage });
-
-            return thumbnailsSidebar.createThumbnailImage(1).then(() => {
-                expect(stubs.createImageEl).not.toBeCalled();
-            });
-        });
-
-        test('should create an image element if not in cache', () => {
-            const cachedImage = {};
-            stubs.createImageEl.mockReturnValue(cachedImage);
-
-            return thumbnailsSidebar.createThumbnailImage(0).then(imageEl => {
-                expect(stubs.createImageEl).toBeCalled();
-                expect(stubs.setCacheEntry).toBeCalledWith(0, { inProgress: false, image: imageEl });
-            });
-        });
-
-        test('should resolve with null if cache entry inProgress is true', () => {
-            const cachedImage = {};
-            stubs.getCacheEntry.mockReturnValue({ inProgress: true });
-            stubs.createImageEl.mockReturnValue(cachedImage);
-
-            return thumbnailsSidebar.createThumbnailImage(0).then(imageEl => {
-                expect(stubs.createImageEl).not.toBeCalled();
-                expect(imageEl).toBeNull();
-            });
-        });
-    });
-
-    describe('getThumbnailDataURL()', () => {
-        beforeEach(() => {
-            stubs.getCacheEntry = jest.spyOn(thumbnailsSidebar.thumbnailImageCache, 'get').mockImplementation();
-            stubs.setCacheEntry = jest.spyOn(thumbnailsSidebar.thumbnailImageCache, 'set').mockImplementation();
-            thumbnailsSidebar.thumbnailImageCache = { get: stubs.getCacheEntry, set: stubs.setCacheEntry };
-        });
-
-        test('should scale canvas the same as the first page if page ratio is the same', () => {
-            const cachedImage = {};
-            stubs.getCacheEntry.mockReturnValue(cachedImage);
-            thumbnailsSidebar.pageRatio = 1;
-
-            // Current page has same ratio
-            stubs.getViewport.mockReturnValue({ width: 10, height: 10 });
-
-            const expScale = TEST_SCALE; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10
-
-            return thumbnailsSidebar.getThumbnailDataURL(1).then(() => {
-                expect(stubs.getPage).toBeCalled();
-                expect(stubs.getViewport).toBeCalledWith({ scale: expScale });
-            });
-        });
-
-        test('should handle non-uniform page ratios', () => {
-            const cachedImage = {};
-            stubs.getCacheEntry.mockReturnValue(cachedImage);
-            thumbnailsSidebar.pageRatio = 1;
-
-            // Current page has ratio of 0.5 instead of 1
-            stubs.getViewport.mockReturnValue({ width: 10, height: 20 });
-
-            const expScale = TEST_SCALE / 2; // Should be DEFAULT_THUMBNAILS_SIDEBAR_WIDTH / 10 / 2
-
-            return thumbnailsSidebar.getThumbnailDataURL(0).then(() => {
-                expect(stubs.getPage).toBeCalled();
-                expect(stubs.getViewport).toBeCalledWith({ scale: expScale });
             });
         });
     });

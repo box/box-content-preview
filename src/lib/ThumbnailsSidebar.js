@@ -1,16 +1,13 @@
-import isFinite from 'lodash/isFinite';
 import VirtualScroller from './VirtualScroller';
-import BoundedCache from './BoundedCache';
 import { decodeKeydown } from './util';
+import Thumbnail from './Thumbnail';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
-const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
-const THUMBNAIL_TOTAL_WIDTH = 150; // 190px sidebar width - 40px margins
-const THUMBNAIL_IMAGE_WIDTH = THUMBNAIL_TOTAL_WIDTH * 2; // Multiplied by a scaling factor so that we render the image at a higher resolution
+export const THUMBNAIL_TOTAL_WIDTH = 150; // 190px sidebar width - 40px margins
 const THUMBNAIL_MARGIN = 15;
 
 class ThumbnailsSidebar {
@@ -35,8 +32,10 @@ class ThumbnailsSidebar {
     /** @property {number} - The percentage (0-1) to scale down from the full page to thumbnail size */
     scale;
 
-    /** @property {Object} - Cache for the thumbnail image elements */
-    thumbnailImageCache;
+    /** @property {Thumbnail} */
+    thumbnail;
+
+    virtualScroller;
 
     /** @property {Array<number>} - The ID values returned by the call to window.requestAnimationFrame() */
     animationFrameRequestIds;
@@ -52,14 +51,11 @@ class ThumbnailsSidebar {
         this.anchorEl = element;
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
-        this.thumbnailImageCache = new BoundedCache();
+        this.thumbnail = new Thumbnail(this.pdfViewer);
         this.isOpen = false;
 
-        this.createImageEl = this.createImageEl.bind(this);
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
-        this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
-        this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
         this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
@@ -136,11 +132,6 @@ class ThumbnailsSidebar {
             this.virtualScroller = null;
         }
 
-        if (this.thumbnailImageCache) {
-            this.thumbnailImageCache.destroy();
-            this.thumbnailImageCache = null;
-        }
-
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
@@ -168,35 +159,19 @@ class ThumbnailsSidebar {
             this.isOpen = !!options.isOpen;
         }
 
-        // Get the first page of the document, and use its dimensions
-        // to set the thumbnails size of the thumbnails sidebar
-        this.pdfViewer.pdfDocument.getPage(1).then(page => {
-            const { width, height } = page.getViewport({ scale: 1 });
-
-            // If the dimensions of the page are invalid then don't proceed further
-            if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
-                // eslint-disable-next-line
-                console.error('Page dimensions invalid when initializing the thumbnails sidebar');
-                return;
+        this.thumbnail.init().then(thumbnailHeight => {
+            if (thumbnailHeight) {
+                this.virtualScroller.init({
+                    initialRowIndex: this.currentPage - 1,
+                    totalItems: this.pdfViewer.pagesCount,
+                    itemHeight: thumbnailHeight,
+                    containerHeight: this.getContainerHeight(),
+                    margin: THUMBNAIL_MARGIN,
+                    renderItemFn: this.createPlaceholderThumbnail,
+                    onScrollEnd: this.generateThumbnailImages,
+                    onInit: this.generateThumbnailImages,
+                });
             }
-
-            // Amount to scale down from full-size to thumbnail size
-            this.scale = THUMBNAIL_TOTAL_WIDTH / width;
-            // Width : Height ratio of the page
-            this.pageRatio = width / height;
-            const scaledViewport = page.getViewport({ scale: this.scale });
-            this.thumbnailHeight = Math.ceil(scaledViewport.height);
-
-            this.virtualScroller.init({
-                initialRowIndex: this.currentPage - 1,
-                totalItems: this.pdfViewer.pagesCount,
-                itemHeight: this.thumbnailHeight,
-                containerHeight: this.getContainerHeight(),
-                margin: THUMBNAIL_MARGIN,
-                renderItemFn: this.createPlaceholderThumbnail,
-                onScrollEnd: this.generateThumbnailImages,
-                onInit: this.generateThumbnailImages,
-            });
         });
     }
 
@@ -259,7 +234,7 @@ class ThumbnailsSidebar {
 
         // If image is already in cache, then use it instead of waiting for
         // the second render image pass
-        const cachedImage = this.thumbnailImageCache.get(itemIndex);
+        const cachedImage = this.thumbnail.getImageFromCache(itemIndex);
         if (cachedImage && !cachedImage.inProgress) {
             thumbnailNav.appendChild(cachedImage.image);
             thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
@@ -291,7 +266,7 @@ class ThumbnailsSidebar {
     requestThumbnailImage(itemIndex, thumbnailEl) {
         const requestId = requestAnimationFrame(() => {
             this.animationFrameRequestIds = this.animationFrameRequestIds.filter(id => id !== requestId);
-            this.createThumbnailImage(itemIndex).then(imageEl => {
+            this.thumbnail.createThumbnailImage(itemIndex).then(imageEl => {
                 // Promise will resolve with null if create image request was already in progress
                 if (imageEl) {
                     // Appends to the thumbnail nav element
@@ -305,99 +280,6 @@ class ThumbnailsSidebar {
         });
 
         this.animationFrameRequestIds.push(requestId);
-    }
-
-    /**
-     * Make a thumbnail image element
-     *
-     * @param {number} itemIndex - the item index for the overall list (0 indexed)
-     * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
-     */
-    createThumbnailImage(itemIndex) {
-        const cacheEntry = this.thumbnailImageCache.get(itemIndex);
-
-        // If this thumbnail has already been cached, use it
-        if (cacheEntry && cacheEntry.image) {
-            return Promise.resolve(cacheEntry.image);
-        }
-
-        // If this thumbnail has already been requested, resolve with null
-        if (cacheEntry && cacheEntry.inProgress) {
-            return Promise.resolve(null);
-        }
-
-        // Update the cache entry to be in progress
-        this.thumbnailImageCache.set(itemIndex, { ...cacheEntry, inProgress: true });
-
-        return this.getThumbnailDataURL(itemIndex + 1)
-            .then(this.createImageEl)
-            .then(imageEl => {
-                // Cache this image element for future use
-                this.thumbnailImageCache.set(itemIndex, { inProgress: false, image: imageEl });
-
-                return imageEl;
-            });
-    }
-
-    /**
-     * Given a page number, generates the image data URL for the image of the page
-     * @param {number} pageNum  - The page number of the document
-     * @return {string} The data URL of the page image
-     */
-    getThumbnailDataURL(pageNum) {
-        const canvas = document.createElement('canvas');
-
-        return this.pdfViewer.pdfDocument
-            .getPage(pageNum)
-            .then(page => {
-                const { width, height } = page.getViewport({ scale: 1 });
-                // Get the current page w:h ratio in case it differs from the first page
-                const curPageRatio = width / height;
-
-                // Handle the case where the current page's w:h ratio is less than the
-                // `pageRatio` which means that this page is probably more portrait than
-                // landscape
-                if (curPageRatio < this.pageRatio) {
-                    // Set the canvas height to that of the thumbnail max height
-                    canvas.height = Math.ceil(THUMBNAIL_IMAGE_WIDTH / this.pageRatio);
-                    // Find the canvas width based on the current page ratio
-                    canvas.width = canvas.height * curPageRatio;
-                } else {
-                    // In case the current page ratio is same as the first page
-                    // or in case it's larger (which means that it's wider), keep
-                    // the width at the max thumbnail width
-                    canvas.width = THUMBNAIL_IMAGE_WIDTH;
-                    // Find the height based on the current page ratio
-                    canvas.height = Math.ceil(THUMBNAIL_IMAGE_WIDTH / curPageRatio);
-                }
-
-                // The amount for which to scale down the current page
-                const { width: canvasWidth } = canvas;
-                const scale = canvasWidth / width;
-                return page.render({
-                    canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport({ scale }),
-                }).promise;
-            })
-            .then(() => canvas.toDataURL());
-    }
-
-    /**
-     * Creates the image element
-     * @param {string} dataUrl - The image data URL for the thumbnail
-     * @return {HTMLElement} - The image element
-     */
-    createImageEl(dataUrl) {
-        const imageEl = document.createElement('div');
-        imageEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE);
-        imageEl.style.backgroundImage = `url('${dataUrl}')`;
-
-        // Add the height and width to the image to be the same as the thumbnail
-        // so that the css `background-image` rules will work
-        imageEl.style.width = `${THUMBNAIL_TOTAL_WIDTH}px`;
-        imageEl.style.height = `${this.thumbnailHeight}px`;
-
-        return imageEl;
     }
 
     /**
