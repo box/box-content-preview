@@ -11,6 +11,8 @@ const getLocale = lang => {
     return lang.substr(0, lang.indexOf('-'));
 };
 
+const currentLocale = getLocale(language);
+
 /**
  * Creates Intl object used by annotations
  *
@@ -25,4 +27,4 @@ const createAnnotatorIntl = () => {
     };
 };
 
-export default { createAnnotatorIntl };
+export default { createAnnotatorIntl, currentLocale };

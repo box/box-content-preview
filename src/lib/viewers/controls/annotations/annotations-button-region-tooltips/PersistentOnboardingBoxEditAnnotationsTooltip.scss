@@ -1,0 +1,39 @@
+@import '~box-ui-elements/es/styles/variables';
+
+.bp-PersistentOnboardingBoxEditAnnotationsTooltip-image {
+    // Size of the actual image file
+    $image-file-width: 704px;
+    $image-file-height: 396px;
+    // Size of the tooltip image on the user's screen
+    $image-screen-height: 151px;
+    $image-screen-width: $image-screen-height * ($image-file-width / $image-file-height);
+
+    display: flex;
+    justify-content: center;
+
+    /* 4px to compensate for tooltip image container not spanning the whole
+     * tooltip width. */
+    width: calc(100% + 4px);
+    background-color: $bdl-box-blue-05;
+
+    /* The element with the image. Needs a separate element to be able to
+     * apply border radius. */
+    &::after {
+        display: block;
+        box-sizing: content-box;
+        width: $image-screen-width;
+        height: $image-screen-height;
+        margin-top: 25px;
+        background-image: url('https://cdn01.boxcdn.net/app-assets/product-adoption/persistent-onboarding/annotations-english.gif');
+        background-repeat: no-repeat;
+        background-position: top center;
+        background-size: cover;
+        border-radius: ($bdl-grid-unit * 4) ($bdl-grid-unit * 4) 0 0;
+        box-shadow: 0 8px 24px 0 rgba(0, 0, 0, .08);
+        content: '';
+
+        &.bp-is-localized {
+            background-image: url('https://cdn01.boxcdn.net/app-assets/product-adoption/persistent-onboarding/annotations-localized.gif');
+        }
+    }
+}
