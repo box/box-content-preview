@@ -937,6 +937,9 @@ class Preview extends EventEmitter {
 
         this.options.enableAnnotationsImageDiscoverability = !!options.enableAnnotationsImageDiscoverability;
 
+        // Enable annotations-only control bar when selecting any annotation
+        this.options.enableAnnotationsOnlyControls = !!options.enableAnnotationsOnlyControls;
+
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 

@@ -24,6 +24,7 @@ import {
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
+    CLASS_ANNOTATIONS_ONLY_CONTROLS,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -227,6 +228,10 @@ class BaseViewer extends EventEmitter {
             this.containerEl.classList.add(CLASS_ANNOTATIONS_DISCOVERABLE);
         }
 
+        if (this.options.enableAnnotationsOnlyControls && this.containerEl) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_ONLY_CONTROLS);
+        }
+
         this.isSetup = true;
     }
 
@@ -273,6 +278,7 @@ class BaseViewer extends EventEmitter {
             this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
             this.containerEl.classList.remove(CLASS_ANNOTATIONS_DISCOVERABLE);
+            this.containerEl.classList.remove(CLASS_ANNOTATIONS_ONLY_CONTROLS);
         }
 
         // Destroy the annotator

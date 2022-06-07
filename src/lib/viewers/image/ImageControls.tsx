@@ -39,6 +39,8 @@ export default function ImageControls({
                 <ControlsBarGroup>
                     <RotateControl onRotateLeft={onRotateLeft} />
                     <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                </ControlsBarGroup>
+                <ControlsBarGroup className="bp-ControlsBarGroup-annotations">
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}

@@ -68,6 +68,8 @@ export default function DocControls({
                 </ControlsBarGroup>
                 <ControlsBarGroup>
                     <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                </ControlsBarGroup>
+                <ControlsBarGroup className="bp-ControlsBarGroup-annotations">
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}

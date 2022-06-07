@@ -400,6 +400,20 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
     }
 
+    &.bp-annotations-only-controls {
+        &.bp-annotations-create--drawing,
+        &.bp-annotations-create--highlight,
+        &.bp-annotations-create--region {
+            .bp-AnnotationsControls-exitBtn {
+                display: block;
+            }
+
+            .bp-ControlsBarGroup:not(.bp-ControlsBarGroup-annotations) {
+                display: none;
+            }
+        }
+    }
+
     &.bp-annotations-create--highlight,
     &.bp-annotations-create--region {
         @include bp-annotations-create-base;
