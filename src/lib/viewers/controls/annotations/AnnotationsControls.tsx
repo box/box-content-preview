@@ -4,6 +4,7 @@ import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconDrawing24 from '../icons/IconDrawing24';
+import IconExit24 from '../icons/IconExit24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
@@ -29,6 +30,12 @@ export default function AnnotationsControls({
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
+    const annotationBtnRefs = {
+        [AnnotationMode.DRAWING]: React.useRef<HTMLButtonElement | null>(null),
+        [AnnotationMode.REGION]: React.useRef<HTMLButtonElement | null>(null),
+        [AnnotationMode.HIGHLIGHT]: React.useRef<HTMLButtonElement | null>(null),
+        [AnnotationMode.NONE]: React.useRef<HTMLButtonElement | null>(null),
+    };
     const isFullscreen = useFullscreen();
     const showDrawing = !isFullscreen && hasDrawing;
     const showHighlight = !isFullscreen && hasHighlight;
@@ -37,6 +44,15 @@ export default function AnnotationsControls({
     // Component event handlers
     const handleModeClick = (mode: AnnotationMode): void => {
         onAnnotationModeClick({ mode: annotationMode === mode ? AnnotationMode.NONE : mode });
+    };
+
+    const handleExitClick = (): void => {
+        const btnRef = annotationBtnRefs[annotationMode];
+        if (btnRef.current !== null) {
+            btnRef.current.focus();
+        }
+
+        handleModeClick(AnnotationMode.NONE);
     };
 
     // Global event handlers
@@ -71,6 +87,18 @@ export default function AnnotationsControls({
     return (
         <div className="bp-AnnotationsControls">
             <AnnotationsButton
+                ref={annotationBtnRefs[AnnotationMode.NONE]}
+                className="bp-AnnotationsControls-exitBtn"
+                data-resin-target="exit"
+                data-testid="bp-AnnotationsControls-exitBtn"
+                mode={AnnotationMode.NONE}
+                onClick={handleExitClick}
+                title={__('exit_annotations')}
+            >
+                <IconExit24 />
+            </AnnotationsButton>
+            <AnnotationsButton
+                ref={annotationBtnRefs[AnnotationMode.DRAWING]}
                 data-resin-target="draw"
                 data-testid="bp-AnnotationsControls-drawBtn"
                 isActive={isDrawingActive}
@@ -83,6 +111,7 @@ export default function AnnotationsControls({
             </AnnotationsButton>
             <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton
+                    ref={annotationBtnRefs[AnnotationMode.REGION]}
                     data-resin-target="highlightRegion"
                     data-testid="bp-AnnotationsControls-regionBtn"
                     isActive={annotationMode === AnnotationMode.REGION}
@@ -95,6 +124,7 @@ export default function AnnotationsControls({
                 </AnnotationsButton>
             </AnnotationsTargetedTooltip>
             <AnnotationsButton
+                ref={annotationBtnRefs[AnnotationMode.HIGHLIGHT]}
                 data-resin-target="highlightText"
                 data-testid="bp-AnnotationsControls-highlightBtn"
                 isActive={annotationMode === AnnotationMode.HIGHLIGHT}

@@ -62,6 +62,7 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
             base.options.showAnnotations = true;
             base.options.enableAnnotationsDiscoverability = true;
+            base.options.enableAnnotationsOnlyControls = true;
 
             base.setup();
 
@@ -76,10 +77,12 @@ describe('lib/viewers/BaseViewer', () => {
                 },
                 showAnnotations: true,
                 enableAnnotationsDiscoverability: true,
+                enableAnnotationsOnlyControls: true,
             });
 
             expect(base.containerEl).toHaveClass(constants.CLASS_BOX_PREVIEW_CONTENT);
             expect(base.containerEl).toHaveClass(constants.CLASS_ANNOTATIONS_DISCOVERABLE);
+            expect(base.containerEl).toHaveClass(constants.CLASS_ANNOTATIONS_ONLY_CONTROLS);
             expect(base.addCommonListeners).toBeCalled();
             expect(typeof base.loadTimeout).toBe('number');
             expect(base.annotatorPromise).toBeDefined();
@@ -652,6 +655,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.removeAllListeners).toBeCalled();
             expect(base.removeAllListeners).toBeCalled();
             expect(base.containerEl.innerHTML).toBe('');
+            expect(base.containerEl.classList.contains(constants.CLASS_ANNOTATIONS_DISCOVERABLE)).toBe(false);
+            expect(base.containerEl.classList.contains(constants.CLASS_ANNOTATIONS_ONLY_CONTROLS)).toBe(false);
             expect(base.destroyed).toBe(true);
             expect(base.emit).toBeCalledWith('destroy');
         });

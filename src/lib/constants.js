@@ -3,6 +3,7 @@ export const CLASS_ANNOTATIONS_CREATE_DRAWING = 'bp-annotations-create--drawing'
 export const CLASS_ANNOTATIONS_CREATE_HIGHLIGHT = 'bp-annotations-create--highlight';
 export const CLASS_ANNOTATIONS_CREATE_REGION = 'bp-annotations-create--region';
 export const CLASS_ANNOTATIONS_DISCOVERABLE = 'bp-annotations-discoverable';
+export const CLASS_ANNOTATIONS_ONLY_CONTROLS = 'bp-annotations-only-controls';
 export const CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN = 'bp-annotations-ftux-image-cursor-seen';
 export const CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN = 'bp-annotations-ftux-document-cursor-seen';
 export const CLASS_NAVIGATION_VISIBILITY = 'bp-is-navigation-visible';

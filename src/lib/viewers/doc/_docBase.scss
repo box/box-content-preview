@@ -400,6 +400,26 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
     }
 
+    &.bp-annotations-only-controls {
+        &.bp-annotations-create--drawing,
+        &.bp-annotations-create--highlight,
+        &.bp-annotations-create--region {
+            // Show exit button when annotation-only controls is active
+            .bp-AnnotationsControls-exitBtn {
+                display: block;
+            }
+
+            // Hide all ControlBarGroups except for last instance which contains AnnotationsControls
+            // and hide all direct children of the group that isn't AnnotationControls
+            .bp-ControlsBarGroup {
+                &:not(:last-child),
+                > *:not(.bp-AnnotationsControls) {
+                    display: none;
+                }
+            }
+        }
+    }
+
     &.bp-annotations-create--highlight,
     &.bp-annotations-create--region {
         @include bp-annotations-create-base;

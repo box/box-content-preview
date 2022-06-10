@@ -13,21 +13,16 @@ export type Props = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick
     onClick?: (mode: AnnotationMode) => void;
 };
 
-export default function AnnotationsButton({
-    children,
-    className,
-    isActive = false,
-    isEnabled = true,
-    mode,
-    onClick = noop,
-    ...rest
-}: Props): JSX.Element | null {
+function AnnotationsButton(props: Props, ref: React.Ref<HTMLButtonElement>): JSX.Element | null {
+    const { children, className, isActive = false, isEnabled = true, mode, onClick = noop, ...rest } = props;
+
     if (!isEnabled) {
         return null;
     }
 
     return (
         <button
+            ref={ref}
             className={classNames('bp-AnnotationsButton', className, {
                 'bp-is-active': isActive,
             })}
@@ -39,3 +34,5 @@ export default function AnnotationsButton({
         </button>
     );
 }
+
+export default React.forwardRef(AnnotationsButton);
