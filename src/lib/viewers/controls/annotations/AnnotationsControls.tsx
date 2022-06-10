@@ -30,16 +30,16 @@ export default function AnnotationsControls({
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
-    const isFullscreen = useFullscreen();
-    const showDrawing = !isFullscreen && hasDrawing;
-    const showHighlight = !isFullscreen && hasHighlight;
-    const showRegion = !isFullscreen && hasRegion;
     const annotationBtnRefs = {
         [AnnotationMode.DRAWING]: React.useRef<HTMLButtonElement | null>(null),
         [AnnotationMode.REGION]: React.useRef<HTMLButtonElement | null>(null),
         [AnnotationMode.HIGHLIGHT]: React.useRef<HTMLButtonElement | null>(null),
-        [AnnotationMode.NONE]: null,
+        [AnnotationMode.NONE]: React.useRef<HTMLButtonElement | null>(null),
     };
+    const isFullscreen = useFullscreen();
+    const showDrawing = !isFullscreen && hasDrawing;
+    const showHighlight = !isFullscreen && hasHighlight;
+    const showRegion = !isFullscreen && hasRegion;
 
     // Component event handlers
     const handleModeClick = (mode: AnnotationMode): void => {
@@ -48,7 +48,7 @@ export default function AnnotationsControls({
 
     const handleExitClick = (): void => {
         const btnRef = annotationBtnRefs[annotationMode];
-        if (btnRef && btnRef.current !== null) {
+        if (btnRef.current !== null) {
             btnRef.current.focus();
         }
 
@@ -87,6 +87,7 @@ export default function AnnotationsControls({
     return (
         <div className="bp-AnnotationsControls">
             <AnnotationsButton
+                ref={annotationBtnRefs[AnnotationMode.NONE]}
                 className="bp-AnnotationsControls-exitBtn"
                 data-resin-target="exit"
                 data-testid="bp-AnnotationsControls-exitBtn"

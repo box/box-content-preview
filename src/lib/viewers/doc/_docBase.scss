@@ -413,7 +413,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             // and hide all direct children of the group that isn't AnnotationControls
             .bp-ControlsBarGroup {
                 &:not(:last-child),
-                & > *:not(.bp-AnnotationsControls) {
+                > *:not(.bp-AnnotationsControls) {
                     display: none;
                 }
             }

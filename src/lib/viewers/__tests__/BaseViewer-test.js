@@ -655,6 +655,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.removeAllListeners).toBeCalled();
             expect(base.removeAllListeners).toBeCalled();
             expect(base.containerEl.innerHTML).toBe('');
+            expect(base.containerEl.classList.contains(constants.CLASS_ANNOTATIONS_DISCOVERABLE)).toBe(false);
+            expect(base.containerEl.classList.contains(constants.CLASS_ANNOTATIONS_ONLY_CONTROLS)).toBe(false);
             expect(base.destroyed).toBe(true);
             expect(base.emit).toBeCalledWith('destroy');
         });

@@ -6,7 +6,11 @@ import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}): ReactWrapper => mount(<AnnotationsControls {...props} />);
+    const getWrapper = (props = {}): ReactWrapper => {
+        const parentEl = document.createElement('div');
+        document.body.appendChild(parentEl);
+        return mount(<AnnotationsControls {...props} />, { attachTo: parentEl });
+    };
     const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
 
     beforeEach(() => {
@@ -107,6 +111,29 @@ describe('AnnotationsControls', () => {
 
             expect(onEscape).not.toBeCalled();
         });
+
+        test.each`
+            current                     | selector
+            ${AnnotationMode.REGION}    | ${'bp-AnnotationsControls-regionBtn'}
+            ${AnnotationMode.HIGHLIGHT} | ${'bp-AnnotationsControls-highlightBtn'}
+            ${AnnotationMode.DRAWING}   | ${'bp-AnnotationsControls-drawBtn'}
+        `(
+            'while in $current mode, should focus on $current button when exit button is clicked',
+            ({ current, selector }) => {
+                const wrapper = getWrapper({
+                    annotationMode: current,
+                    hasDrawing: true,
+                    hasHighlight: true,
+                    hasRegion: true,
+                });
+
+                wrapper.find('button[data-testid="bp-AnnotationsControls-exitBtn"]').simulate('click');
+
+                expect(wrapper.find(`button[data-testid="${selector}"]`).getDOMNode() === document.activeElement).toBe(
+                    true,
+                );
+            },
+        );
     });
 
     describe('render', () => {
