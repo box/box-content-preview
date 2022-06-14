@@ -207,6 +207,12 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 }
 
+@include breakpoint($medium-screen) {
+    .bp-is-mobile .bp-ZoomControls {
+        display: none;
+    }
+}
+
 .bp-theme-dark {
     .bp {
         .bp-thumbnails-container {
