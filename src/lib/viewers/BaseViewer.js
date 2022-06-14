@@ -25,6 +25,7 @@ import {
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_ANNOTATIONS_ONLY_CONTROLS,
+    CLASS_BOX_PREVIEW_FULLSCREEN,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -145,6 +146,7 @@ class BaseViewer extends EventEmitter {
         this.cache = options.cache;
         this.previewUI = options.ui;
         this.repStatuses = [];
+        this.isFullScreenSupported = fullscreen.isSupported();
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
 
@@ -210,6 +212,11 @@ class BaseViewer extends EventEmitter {
 
         // Timeout for loading the preview
         this.loadTimeout = LOAD_TIMEOUT_MS;
+
+        // Add class for devices that do not support fullscreen API
+        if (this.isFullScreenSupported) {
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_FULLSCREEN);
+        }
 
         // For mobile browsers add mobile class just in case viewers need it
         if (this.isMobile) {

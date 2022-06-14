@@ -11,6 +11,12 @@ $thumbnail-border-radius: 6px;
 $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
 .bp {
+    &:not(.bp-has-fullscreen) {
+        .bp-FullscreenToggle {
+            display: none;
+        }
+    }
+
     .bp-ThumbnailsToggle {
         display: none;
     }

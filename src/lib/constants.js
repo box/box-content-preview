@@ -14,6 +14,7 @@ export const CLASS_BOX_PREVIEW_BUTTON = 'bp-btn';
 export const CLASS_BOX_PREVIEW_CONTAINER = 'bp-container';
 export const CLASS_BOX_PREVIEW_CONTENT = 'bp-content';
 export const CLASS_BOX_PREVIEW_FIND_BAR = 'bp-find-bar';
+export const CLASS_BOX_PREVIEW_FULLSCREEN = 'bp-has-fullscreen';
 export const CLASS_BOX_PREVIEW_HAS_HEADER = 'bp-has-header';
 export const CLASS_BOX_PREVIEW_HAS_NAVIGATION = 'bp-has-navigation';
 export const CLASS_BOX_PREVIEW_HEADER = 'bp-header';

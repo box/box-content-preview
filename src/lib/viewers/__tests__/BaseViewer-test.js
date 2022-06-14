@@ -89,6 +89,17 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotatorPromiseResolver).toBeDefined();
         });
 
+        test('should add class to container if fullscreen API on browser supported', () => {
+            base.isFullScreenSupported = true;
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+
+            base.setup();
+
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
+            expect(container).toHaveClass('bp-has-fullscreen');
+        });
+
         test('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
             jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
