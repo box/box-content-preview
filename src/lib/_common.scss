@@ -1,3 +1,4 @@
+@import '~box-ui-elements/es/styles/variables';
 @import 'boxui';
 
 $header-height: 48px;
@@ -125,15 +126,6 @@ $header-height: 48px;
     outline: none;
     -webkit-overflow-scrolling: touch;
 
-    // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
-    &.bp-fullscreen-unsupported {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
-
     &.bp-dark {
         background-color: $black;
     }
@@ -148,6 +140,12 @@ $header-height: 48px;
         flex: 1 1 auto;
         align-items: center;
         outline: none;
+
+        // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
+        &.bp-fullscreen-unsupported {
+            position: fixed;
+            z-index: $overlay-z-index;
+        }
     }
 
     .bp-content.bp-is-fullscreen {
