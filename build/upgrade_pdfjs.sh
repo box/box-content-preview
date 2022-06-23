@@ -42,7 +42,7 @@ rm -rf ./pdfjs-dist/
 echo "-----------------------------------------------------------------------------------"
 echo "Decreasing # of cached pages on mobile web..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js
+sed -e 's@const DEFAULT_CACHE_SIZE = 10;@const DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js
 
 # Render e-signatures without validation
 echo "-----------------------------------------------------------------------------------"
@@ -50,16 +50,11 @@ echo "Enabling e-signature rendering without validation..."
 echo "-----------------------------------------------------------------------------------"
 sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.js
 
-# Fix for Courier font PDF not rendering applied to src/third-party/doc/2.76.0/pdf.worker*.js which is PDFJS v2.2.228
-# Link to issue: https://github.com/mozilla/pdf.js/issues/13771
-# This fix may not need to be applied if next upgrade is >= 2.5.x
-# See https://github.com/box/box-content-preview/pull/1414 for more details
-
 # Minify using Babel
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files with Babel"
 echo "-----------------------------------------------------------------------------------"
-babel ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --out-file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
+./node_modules/@babel/cli/bin/babel.js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --out-file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
 
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"

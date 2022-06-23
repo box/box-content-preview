@@ -664,7 +664,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfLinkService = new this.pdfjsViewer.PDFLinkService({
             eventBus: this.pdfEventBus,
             externalLinkRel: 'noopener noreferrer nofollow', // Prevent referrer hijacking
-            externalLinkTarget: this.pdfjsLib.LinkTarget.BLANK, // Open links in new tab
+            externalLinkTarget: Browser.isIE() ? this.pdfjsLib.LinkTarget.BLANK : this.pdfjsViewer.LinkTarget.BLANK, // Open links in new tab
         });
 
         this.pdfFindController = new this.pdfjsViewer.PDFFindController({
@@ -783,6 +783,7 @@ class DocBaseViewer extends BaseViewer {
             imageResourcesPath: assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? textLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
     }

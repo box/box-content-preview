@@ -322,6 +322,7 @@ class PresentationViewer extends DocBaseViewer {
 
             return {
                 first: currentPageObj,
+                ids: new Set([currentPageObj.id]),
                 last: currentPageObj,
                 views: visible,
             };

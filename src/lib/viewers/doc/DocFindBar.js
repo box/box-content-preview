@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import Browser from '../../Browser';
 import { decodeKeydown } from '../../util';
 import { USER_DOCUMENT_FIND_EVENTS, VIEWER_EVENT } from '../../events';
 import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../constants';
@@ -137,12 +138,15 @@ class DocFindBar extends EventEmitter {
      * @return {void}
      */
     dispatchFindEvent(type, findPrev) {
-        this.findController.executeCommand(type, {
+        const options = {
             query: this.findFieldEl.value,
             phraseSearch: true, // true by default
             highlightAll: true, // true by default
             findPrevious: findPrev,
-        });
+        };
+        return Browser.isIE()
+            ? this.findController.executeCommand(type, options)
+            : this.eventBus.dispatch(type, options);
     }
 
     /**
