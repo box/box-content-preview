@@ -30,12 +30,12 @@ git clone https://github.com/mozilla/pdfjs-dist.git --depth 1 --single-branch --
 echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-\cp -rf pdfjs-dist/es5/build/pdf.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.min.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.worker.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.worker.min.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/web/pdf_viewer.css ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/web/pdf_viewer.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/build/pdf.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/build/pdf.min.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/build/pdf.worker.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/build/pdf.worker.min.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/web/pdf_viewer.css ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/legacy/web/pdf_viewer.js ${DOC_STATIC_ASSETS_PATH}
 \cp -rf pdfjs-dist/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
 rm -rf ./pdfjs-dist/
 

@@ -101,7 +101,8 @@ export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_
 export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
 export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
 
-export const DOC_STATIC_ASSETS_VERSION = '2.76.0';
+export const DOC_LEGACY_STATIC_ASSETS_VERSION = '2.76.0'; // IE11 only
+export const DOC_STATIC_ASSETS_VERSION = '2.84.0'; // Modern browsers
 export const MEDIA_STATIC_ASSETS_VERSION = '2.66.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
