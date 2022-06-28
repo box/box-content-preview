@@ -1,7 +1,6 @@
 #!/bin/bash
 # Run with specific branch/tag (e.g. ./upgrade_pdfjs.sh tags/v2.2.228) or with no arguments to use master
 
-DOC_COMPILER_BINARY="build/closure-compiler-v20200719.jar"
 DOC_STATIC_ASSETS_BRANCH=${1:-master}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}"
@@ -30,12 +29,12 @@ git clone https://github.com/mozilla/pdfjs-dist.git --depth 1 --single-branch --
 echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-\cp -rf pdfjs-dist/es5/build/pdf.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.min.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.worker.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/build/pdf.worker.min.js ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/web/pdf_viewer.css ${DOC_STATIC_ASSETS_PATH}
-\cp -rf pdfjs-dist/es5/web/pdf_viewer.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/build/pdf.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/build/pdf.min.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/build/pdf.worker.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/build/pdf.worker.min.js ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/web/pdf_viewer.css ${DOC_STATIC_ASSETS_PATH}
+\cp -rf pdfjs-dist/web/pdf_viewer.js ${DOC_STATIC_ASSETS_PATH}
 \cp -rf pdfjs-dist/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
 rm -rf ./pdfjs-dist/
 
@@ -56,13 +55,11 @@ sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH
 # This fix may not need to be applied if next upgrade is >= 2.5.x
 # See https://github.com/box/box-content-preview/pull/1414 for more details
 
-# Minify using Google Closure Compiler, options:
-# Output to ES5 (Box supports Chrome, Edge, IE11, Firefox, Safari, and newer versions of iOS, Android)
-# Do not minify pdf.js or pdf.worker.js, as the closure compiler will mangle function names and cause bugs
+# Minify using Babels
 echo "-----------------------------------------------------------------------------------"
-echo "Minifying pdf.js files with Google Closure... Warnings are okay!"
+echo "Minifying pdf.js files with Babel"
 echo "-----------------------------------------------------------------------------------"
-java -jar ${DOC_COMPILER_BINARY} --rewrite_polyfills false --language_out ECMASCRIPT5 --js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --js_output_file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
+babel ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --out-file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
 
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"
