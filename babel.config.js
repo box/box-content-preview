@@ -7,6 +7,8 @@ module.exports = api => {
                 '@babel/preset-env',
                 {
                     modules: false,
+                    include: ['@babel/plugin-proposal-unicode-property-regex'],
+                    exclude: ['@babel/plugin-transform-unicode-regex'],
                 },
             ],
             '@babel/preset-react',
@@ -14,6 +16,7 @@ module.exports = api => {
         plugins: [
             '@babel/plugin-proposal-class-properties',
             '@babel/plugin-proposal-object-rest-spread',
+            '@babel/plugin-proposal-private-methods',
             '@babel/plugin-transform-object-assign',
         ],
         overrides: [
