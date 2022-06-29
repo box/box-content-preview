@@ -6,8 +6,6 @@ module.exports = api => {
             [
                 '@babel/preset-env',
                 {
-                    exclude: ['@babel/plugin-transform-unicode-regex'],
-                    include: ['@babel/plugin-proposal-unicode-property-regex'],
                     modules: false,
                 },
             ],
@@ -28,6 +26,18 @@ module.exports = api => {
                         {
                             isTSX: true,
                             allExtensions: true,
+                        },
+                    ],
+                ],
+            },
+            {
+                test: ['./src/third-party/doc/2.84.0/**'],
+                presets: [
+                    [
+                        '@babel/preset-env',
+                        {
+                            exclude: ['@babel/plugin-transform-unicode-regex'],
+                            include: ['@babel/plugin-proposal-unicode-property-regex'],
                         },
                     ],
                 ],
