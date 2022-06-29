@@ -55,7 +55,7 @@ sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH
 # This fix may not need to be applied if next upgrade is >= 2.5.x
 # See https://github.com/box/box-content-preview/pull/1414 for more details
 
-# Minify using Babels
+# Minify using Babel
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files with Babel"
 echo "-----------------------------------------------------------------------------------"

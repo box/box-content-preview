@@ -31,7 +31,7 @@ module.exports = api => {
                 ],
             },
             {
-                test: ['./src/third-party/doc/2.84.0/**'],
+                test: ['./src/third-party/doc/**'],
                 presets: [
                     [
                         '@babel/preset-env',
