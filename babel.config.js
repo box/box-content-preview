@@ -14,7 +14,6 @@ module.exports = api => {
         plugins: [
             '@babel/plugin-proposal-class-properties',
             '@babel/plugin-proposal-object-rest-spread',
-            '@babel/plugin-proposal-private-methods',
             '@babel/plugin-transform-object-assign',
         ],
         overrides: [
@@ -32,6 +31,7 @@ module.exports = api => {
             },
             {
                 test: ['./src/third-party/doc/**'],
+                plugins: ['@babel/plugin-proposal-private-methods'],
                 presets: [
                     [
                         '@babel/preset-env',
