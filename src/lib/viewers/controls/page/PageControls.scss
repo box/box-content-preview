@@ -1,3 +1,4 @@
+@import '~box-ui-elements/es/styles/variables';
 @import '../styles';
 
 .bp-PageControls {
@@ -8,4 +9,10 @@
 .bp-PageControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
+}
+
+@include breakpoint($medium-screen) {
+    .bp-PageControls-button {
+        display: none;
+    }
 }

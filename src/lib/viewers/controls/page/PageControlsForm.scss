@@ -1,3 +1,4 @@
+@import '~box-ui-elements/es/styles/variables';
 @import '../styles';
 
 .bp-PageControlsForm {
@@ -41,4 +42,11 @@
 
 .bp-PageControlsForm-button-label {
     @include bp-ControlLabel;
+}
+
+@include breakpoint($medium-screen) {
+    .bp-PageControlsForm-input,
+    .bp-PageControlsForm-button-label {
+        min-width: $bp-controls-size-large;
+    }
 }
