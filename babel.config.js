@@ -29,19 +29,6 @@ module.exports = api => {
                     ],
                 ],
             },
-            {
-                test: ['./src/third-party/doc/**'],
-                plugins: ['@babel/plugin-proposal-private-methods'],
-                presets: [
-                    [
-                        '@babel/preset-env',
-                        {
-                            exclude: ['@babel/plugin-transform-unicode-regex'],
-                            include: ['@babel/plugin-proposal-unicode-property-regex'],
-                        },
-                    ],
-                ],
-            },
         ],
         env: {
             test: {
