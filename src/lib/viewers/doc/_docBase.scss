@@ -139,7 +139,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
     }
 
-    @media (min-width: 600px) {
+    @media (min-width: $size-large-min) {
         $bp-thumbnails-animation: 300ms cubic-bezier(.4, 0, .2, 1);
 
         &.bp-loaded.bp-thumbnails-open-active,
