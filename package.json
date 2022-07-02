@@ -38,7 +38,7 @@
         "babel-loader": "^8.0.6",
         "babel-plugin-transform-require-ignore": "^0.1.1",
         "box-annotations": "^2.3.0",
-        "box-ui-elements": "15.0.0-beta.50",
+        "box-ui-elements": "15.1.0-beta.21",
         "chai": "^4.2.0",
         "classnames": "^2.2.6",
         "conventional-changelog-cli": "^2.0.28",
