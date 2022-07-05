@@ -4,7 +4,6 @@ describe('Presentation Viewer', () => {
     const fileId = Cypress.env('FILE_ID_PRESENTATION');
     const fileWithLinksId = Cypress.env('FILE_ID_PRESENTATION_WITH_LINKS');
 
-
     beforeEach(() => {
         cy.visit('/');
     });
@@ -13,7 +12,8 @@ describe('Presentation Viewer', () => {
         cy.showPreview(token, fileId);
 
         // Assert document content is present
-        cy.contains('For Teaching Economics');
+        cy.contains('For');
+        cy.contains('Teaching Economics');
 
         cy.showControls();
 
@@ -24,7 +24,6 @@ describe('Presentation Viewer', () => {
         cy.reload();
 
         cy.getPreviewPage(2).should('be.visible');
-
     });
 
     it('Should navigate to a specified page when an internal link is clicked', () => {
@@ -32,12 +31,12 @@ describe('Presentation Viewer', () => {
 
         // Assert document content is present and clickable
         cy.contains('LINK TO PAGE 3');
-        
+
         // Internal links should be rendered with <a> tags by PDF.js
-        cy.getByTestId('bp-content').find('a').click();
+        cy.getByTestId('bp-content')
+            .find('a')
+            .click();
 
         cy.getPreviewPage(3).should('be.visible');
-
     });
-
 });

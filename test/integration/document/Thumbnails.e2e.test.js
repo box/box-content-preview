@@ -31,7 +31,7 @@ describe('Preview Document Thumbnails', () => {
     const showDocumentPreview = ({ enableThumbnailsSidebar } = {}) => {
         cy.showPreview(token, fileId, { enableThumbnailsSidebar });
         cy.getPreviewPage(1);
-        cy.contains('IN  THE  HOUSE  OF  REPRESENTATIVES');
+        cy.contains('IN THE HOUSE OF REPRESENTATIVES');
     };
 
     /**
