@@ -1,3 +1,17 @@
+## 2.85.0 (2022-07-06)
+
+* chore(i18n): Update Translations (#1447) ([b111cf2](https://github.com/box/box-content-preview/commit/b111cf2)), closes [#1447](https://github.com/box/box-content-preview/issues/1447)
+* chore(i18n): Update Translations (#1454) ([7ebcd4e](https://github.com/box/box-content-preview/commit/7ebcd4e)), closes [#1454](https://github.com/box/box-content-preview/issues/1454)
+* feat(annotations): Add annotations-only controls (#1446) ([5150b0c](https://github.com/box/box-content-preview/commit/5150b0c)), closes [#1446](https://github.com/box/box-content-preview/issues/1446)
+* feat(annotations): hide page steppers on small-medium widths (#1450) ([fb500bd](https://github.com/box/box-content-preview/commit/fb500bd)), closes [#1450](https://github.com/box/box-content-preview/issues/1450)
+* feat(annotations): remove thumbnail toggle on small modalities (#1449) ([952a7bf](https://github.com/box/box-content-preview/commit/952a7bf)), closes [#1449](https://github.com/box/box-content-preview/issues/1449)
+* feat(annotations): remove zoom ctrls on mobile (#1451) ([7e92795](https://github.com/box/box-content-preview/commit/7e92795)), closes [#1451](https://github.com/box/box-content-preview/issues/1451)
+* feat(annotations): responsive media queries for annotations-only ctrls (#1448) ([4385fbc](https://github.com/box/box-content-preview/commit/4385fbc)), closes [#1448](https://github.com/box/box-content-preview/issues/1448)
+* feat(pdf): Update closure compiler to Babel (#1458) ([9d35e22](https://github.com/box/box-content-preview/commit/9d35e22)), closes [#1458](https://github.com/box/box-content-preview/issues/1458)
+* fix(fullscreen): fix fullscreen mode for ios/iphone combo (#1453) ([8345f7b](https://github.com/box/box-content-preview/commit/8345f7b)), closes [#1453](https://github.com/box/box-content-preview/issues/1453)
+
+
+
 ## 2.84.0 (2022-03-24)
 
 * feat(docuworks): Add support for docuworks file types (#1444) ([61a1713](https://github.com/box/box-content-preview/commit/61a1713)), closes [#1444](https://github.com/box/box-content-preview/issues/1444)
