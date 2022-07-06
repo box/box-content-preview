@@ -172,10 +172,11 @@ describe('lib/viewers/doc/DocFindBar', () => {
                 phraseSearch: true,
                 highlightAll: true,
                 findPrevious: 'test',
+                type: 'string',
             };
 
             docFindBar.dispatchFindEvent('string', 'test');
-            expect(eventBus.dispatch).toBeCalledWith('string', params);
+            expect(eventBus.dispatch).toBeCalledWith('find', params);
         });
     });
 

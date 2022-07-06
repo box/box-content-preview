@@ -146,7 +146,7 @@ class DocFindBar extends EventEmitter {
         };
         return Browser.isIE()
             ? this.findController.executeCommand(type, options)
-            : this.eventBus.dispatch(type, options);
+            : this.eventBus.dispatch('find', { ...options, type });
     }
 
     /**
@@ -339,7 +339,8 @@ class DocFindBar extends EventEmitter {
             if (!clicked) {
                 this.findNextButtonEl.focus();
             } else {
-                this.dispatchFindEvent('findagain', false);
+                const type = Browser.isIE() ? 'findagain' : 'again';
+                this.dispatchFindEvent(type, false);
             }
 
             // Emit a metric that the user navigated forward in the find bar
@@ -361,7 +362,8 @@ class DocFindBar extends EventEmitter {
             if (!clicked) {
                 this.findPreviousButtonEl.focus();
             } else {
-                this.dispatchFindEvent('findagain', true);
+                const type = Browser.isIE() ? 'findagain' : 'again';
+                this.dispatchFindEvent(type, true);
             }
 
             // Emit a metric that the user navigated back in the find bar
