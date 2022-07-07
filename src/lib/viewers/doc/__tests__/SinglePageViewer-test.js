@@ -51,6 +51,7 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
             stubs.pdfViewerClass = jest.fn(() => stubs.pdfViewer);
             stubs.urlCreator = jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => 'asset');
 
+            doc.pdfjsLib = {};
             doc.pdfjsViewer = {
                 PDFSinglePageViewer: stubs.pdfViewerClass,
             };

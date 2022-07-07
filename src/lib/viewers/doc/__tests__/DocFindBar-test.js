@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as util from '../../../util';
+import Browser from '../../../Browser';
 import DocFindBar from '../DocFindBar';
 import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../../constants';
 import { VIEWER_EVENT, USER_DOCUMENT_FIND_EVENTS } from '../../../events';
@@ -24,7 +25,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
         fixture.load('viewers/doc/__tests__/DocFindBar-test.html');
 
         containerEl = document.querySelector('.test-container');
-        eventBus = { off: jest.fn(), on: jest.fn() };
+        eventBus = { dispatch: jest.fn(), off: jest.fn(), on: jest.fn() };
         findController = {
             executeCommand: jest.fn(),
             linkService: {},
@@ -149,7 +150,8 @@ describe('lib/viewers/doc/DocFindBar', () => {
     });
 
     describe('dispatchFindEvent()', () => {
-        test('should execute the find controller command with the given params', () => {
+        test('should execute the find controller command with the given params on IE', () => {
+            jest.spyOn(Browser, 'isIE').mockImplementation(() => true);
             docFindBar.findFieldEl.value = 'value';
             const params = {
                 query: docFindBar.findFieldEl.value,
@@ -160,6 +162,21 @@ describe('lib/viewers/doc/DocFindBar', () => {
 
             docFindBar.dispatchFindEvent('string', 'test');
             expect(findController.executeCommand).toBeCalledWith('string', params);
+        });
+
+        test('should execute the find controller command with the given params on modern browsers', () => {
+            jest.spyOn(Browser, 'isIE').mockImplementation(() => false);
+            docFindBar.findFieldEl.value = 'value';
+            const params = {
+                query: docFindBar.findFieldEl.value,
+                phraseSearch: true,
+                highlightAll: true,
+                findPrevious: 'test',
+                type: 'string',
+            };
+
+            docFindBar.dispatchFindEvent('string', 'test');
+            expect(eventBus.dispatch).toBeCalledWith('find', params);
         });
     });
 
