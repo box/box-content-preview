@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+
+        <script src="/dist/dev/en-US/preview.js"></script>
+        <script src="/dist/third-party/text/0.114.0/papaparse.min.js"></script>
+        <script src="/dist/third-party/model3d/1.12.0/three.min.js"></script>
+        <link rel="stylesheet" href="/dist/2.84.0/en-US/preview.css" />
+
+        <style type="text/css">
+            html,
+            body {
+                height: 100%;
+            }
+            .preview-container {
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="preview-container"></div>
+
+        <script>
+            const token = 'rqv3AG13bxhh96FbMToz2hXtvvM97paM';
+            var preview = new Box.Preview();
+
+            preview.show('907999296134', token, {
+                container: '.preview-container',
+            });
+        </script>
+    </body>
+</html>

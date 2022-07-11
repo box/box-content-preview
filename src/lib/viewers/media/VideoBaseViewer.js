@@ -49,6 +49,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
         this.lowerLights();
+        this.addReactForms();
     }
 
     /**
@@ -70,6 +71,12 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         super.destroy();
+    }
+
+    addReactForms() {
+        const script = document.head.appendChild(document.createElement('script'));
+        script.src = 'http://127.0.0.1:9000/react-forms.js';
+        script.onload = () => addReactForms(this.mediaContainerEl, window.my_token);
     }
 
     /**

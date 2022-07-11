@@ -250,6 +250,8 @@ class Preview extends EventEmitter {
 
         // Load the preview
         this.load(fileIdOrFile);
+
+        this.fetchUserName(token);
     }
 
     /**
@@ -673,6 +675,8 @@ class Preview extends EventEmitter {
                 content: !preload,
             });
         }
+
+        this.fetchUserName(token);
     }
 
     /**
@@ -820,6 +824,24 @@ class Preview extends EventEmitter {
                 .then(this.handleTokenResponse)
                 .catch(this.handleFetchError);
         }
+    }
+
+    fetchUserName(token) {
+        if (localStorage.getItem('username')) {
+            return;
+        }
+
+        fetch('https://api.box.com/2.0/users/me', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'content-type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(result => result.name)
+            .then(userName => {
+                localStorage.setItem('username', userName);
+            });
     }
 
     /**
