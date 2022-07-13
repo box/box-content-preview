@@ -1,3 +1,9 @@
+## 2.86.0 (2022-07-13)
+
+* feat(viewer): Upgrade pdf.js to latest for modern browsers (#1441) ([18eed4f](https://github.com/box/box-content-preview/commit/18eed4f)), closes [#1441](https://github.com/box/box-content-preview/issues/1441)
+
+
+
 ## 2.85.0 (2022-07-06)
 
 * chore(i18n): Update Translations (#1447) ([b111cf2](https://github.com/box/box-content-preview/commit/b111cf2)), closes [#1447](https://github.com/box/box-content-preview/issues/1447)
