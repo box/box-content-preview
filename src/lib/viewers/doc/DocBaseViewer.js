@@ -1162,8 +1162,6 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
         this.loadUI();
 
-        const { pagesCount, currentScale } = this.pdfViewer;
-
         // Set page to the user-defined page, previously opened page, or first page
         const startPage = this.startPageNum || this.getCachedPage();
         this.setPage(startPage);
@@ -1174,11 +1172,6 @@ class DocBaseViewer extends BaseViewer {
         // Broadcast that preview has 'loaded' when page structure is available
         if (!this.loaded) {
             this.loaded = true;
-            this.emit(VIEWER_EVENT.load, {
-                encoding: this.encoding,
-                numPages: pagesCount,
-                scale: currentScale,
-            });
 
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
@@ -1237,6 +1230,14 @@ class DocBaseViewer extends BaseViewer {
         if (!this.somePageRendered) {
             this.hidePreload();
             this.somePageRendered = true;
+
+            const { pagesCount, currentScale } = this.pdfViewer;
+
+            this.emit(VIEWER_EVENT.load, {
+                encoding: this.encoding,
+                numPages: pagesCount,
+                scale: currentScale,
+            });
 
             if (this.options.enableThumbnailsSidebar) {
                 this.initThumbnails();
