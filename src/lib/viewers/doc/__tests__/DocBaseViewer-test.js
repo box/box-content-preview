@@ -1044,10 +1044,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfjsLib = {
                     disableRange: false,
                     getDocument: stubs.getDocument,
-                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
+                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 }, // Legacy PDFJS
                 };
                 docBase.pdfjsViewer = {
                     EventBus: jest.fn(() => stubs.pdfEventBus),
+                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
                     PDFFindController: jest.fn(() => ({
                         setLinkService: jest.fn(),
                     })),
@@ -2012,7 +2013,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        describe.only('handleDocElKeydown()', () => {
+        describe('handleDocElKeydown()', () => {
             test.each(['Enter', 'Escape', 'Space'])('should ignore %s key events', key => {
                 const event = { key, stopPropagation: jest.fn() };
 
