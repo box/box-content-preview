@@ -1,3 +1,9 @@
+## 2.87.0 (2022-08-02)
+
+* fix(document): Re-enable DocBaseViewer tests (#1461) ([24b7967](https://github.com/box/box-content-preview/commit/24b7967)), closes [#1461](https://github.com/box/box-content-preview/issues/1461)
+
+
+
 ## 2.86.0 (2022-07-13)
 
 * feat(viewer): Upgrade pdf.js to latest for modern browsers (#1441) ([18eed4f](https://github.com/box/box-content-preview/commit/18eed4f)), closes [#1441](https://github.com/box/box-content-preview/issues/1441)
