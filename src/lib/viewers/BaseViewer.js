@@ -216,9 +216,8 @@ class BaseViewer extends EventEmitter {
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
-        // Creates a promise that the annotator will be constructed if annotations are
-        // enabled and the expiring embed is not a shared link
-        if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
+        // Creates a promise that the annotator will be constructed if annotations are enabled
+        if (this.areAnnotationsEnabled()) {
             this.annotatorPromise = new Promise(resolve => {
                 this.annotatorPromiseResolver = resolve;
             });
