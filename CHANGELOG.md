@@ -1,3 +1,9 @@
+## 2.88.0 (2022-10-13)
+
+* feat(annotations): Allow annotations for editable shared links (#1462) ([96306c9](https://github.com/box/box-content-preview/commit/96306c9)), closes [#1462](https://github.com/box/box-content-preview/issues/1462)
+
+
+
 ## 2.87.0 (2022-08-02)
 
 * fix(document): Re-enable DocBaseViewer tests (#1461) ([24b7967](https://github.com/box/box-content-preview/commit/24b7967)), closes [#1461](https://github.com/box/box-content-preview/issues/1461)
