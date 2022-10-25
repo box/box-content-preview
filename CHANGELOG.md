@@ -1,3 +1,9 @@
+## <small>2.85.1 (2022-10-25)</small>
+
+* feat(annotations): Allow annotations for editable shared links (#1462) ([a25bc71](https://github.com/box/box-content-preview/commit/a25bc71)), closes [#1462](https://github.com/box/box-content-preview/issues/1462)
+
+
+
 ## 2.85.0 (2022-07-06)
 
 * chore(i18n): Update Translations (#1447) ([b111cf2](https://github.com/box/box-content-preview/commit/b111cf2)), closes [#1447](https://github.com/box/box-content-preview/issues/1447)
