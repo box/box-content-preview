@@ -1995,7 +1995,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScale: 'unknown',
                 };
-                docBase.pageTracker = new PageTracker({ config: { isActive: true } });
+                docBase.pageTracker = new PageTracker({ isActive: true });
                 stubs.setCurrentPage = jest.spyOn(docBase.pageTracker, 'setCurrentPage').mockImplementation();
                 stubs.setFileLength = jest.spyOn(docBase.pageTracker, 'setFileLength').mockImplementation();
                 docBase.pagesinitHandler();
@@ -2017,7 +2017,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentScale: 'unknown',
                 };
-                docBase.pageTracker = new PageTracker({ config: { isActive: true } });
+                docBase.pageTracker = new PageTracker({ isActive: true });
                 stubs.pageTrackerInit = jest.spyOn(docBase.pageTracker, 'init');
                 docBase.pagesinitHandler();
                 expect(stubs.pageTrackerInit).toBeCalled();
@@ -2122,7 +2122,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should call the PageTracker handler page change', () => {
-                docBase.pageTracker = new PageTracker({ config: { isActive: true } });
+                docBase.pageTracker = new PageTracker({ isActive: true });
                 stubs.handleViewerPageChange = jest.spyOn(docBase.pageTracker, 'handleViewerPageChange');
                 docBase.pagechangingHandler(docBase.event);
                 expect(stubs.handleViewerPageChange).toBeCalled();

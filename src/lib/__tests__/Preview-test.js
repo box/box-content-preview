@@ -2073,7 +2073,7 @@ describe('lib/Preview', () => {
         test('should add the sessionId prop to the event payload', () => {
             preview.file.id = 1234;
             preview.viewer = {
-                pageTracker: new PageTracker({ config: { isActive: true } }, preview.file),
+                pageTracker: new PageTracker({ isActive: true }, preview.file),
                 getSessionId: null,
             };
             preview.viewer.pageTracker.init();
@@ -2932,11 +2932,7 @@ describe('lib/Preview', () => {
             };
 
             preview.previewOptions = {
-                contentInsights: {
-                    config: {
-                        isActive: false,
-                    },
-                },
+                contentInsights: { isActive: false },
             };
 
             preview.viewer = {
@@ -2944,11 +2940,7 @@ describe('lib/Preview', () => {
             };
 
             stubs.updateOptions = jest.spyOn(preview.viewer.pageTracker, 'updateOptions');
-            const options = {
-                config: {
-                    isActive: true,
-                },
-            };
+            const options = { isActive: true };
 
             preview.updateContentInsightsOptions(options);
             expect(preview.previewOptions.contentInsights).toBe(options);

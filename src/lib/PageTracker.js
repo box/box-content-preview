@@ -365,12 +365,12 @@ class PageTracker extends EventEmitter {
      * @param {Object} options - Content Insights options
      * @return {void}
      */
-    setOptions({ ownerEId, userEId, userId, config = {} }) {
+    setOptions({ ownerEId, userEId, userId, isActive = false }) {
         // Set User and file information
         this.ownerEId = ownerEId;
         this.userEId = userEId;
         this.userId = userId;
-        this.isAdvancedInsightsActive = config.isActive || false;
+        this.isAdvancedInsightsActive = isActive;
     }
 
     /**

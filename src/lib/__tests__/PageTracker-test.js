@@ -12,9 +12,7 @@ describe('lib/PageTracker', () => {
             userEId: '123',
             ownerEId: '1234',
             userId: '12345',
-            config: {
-                isActive: true,
-            },
+            isActive: true,
         };
         stubs.file = {
             id: '1234',
@@ -103,7 +101,7 @@ describe('lib/PageTracker', () => {
     describe('isActive()', () => {
         test('should get the content insights active status', () => {
             pageTracker = new PageTracker(stubs.contentInsights);
-            expect(pageTracker.isActive()).toBe(stubs.contentInsights.config.isActive);
+            expect(pageTracker.isActive()).toBe(stubs.contentInsights.isActive);
         });
     });
 
@@ -494,12 +492,10 @@ describe('lib/PageTracker', () => {
                 userEId: '356',
                 ownerEId: '5678',
                 userId: '5678',
-                config: {
-                    isActive: false,
-                },
+                isActive: false,
             };
             pageTracker.setOptions(stubs.updatedOptions);
-            expect(pageTracker.isAdvancedInsightsActive).toBe(stubs.updatedOptions.config.isActive);
+            expect(pageTracker.isAdvancedInsightsActive).toBe(stubs.updatedOptions.isActive);
             expect(pageTracker.ownerEId).toBe(stubs.updatedOptions.ownerEId);
             expect(pageTracker.userEId).toBe(stubs.updatedOptions.userEId);
             expect(pageTracker.userId).toBe(stubs.updatedOptions.userId);
@@ -518,13 +514,13 @@ describe('lib/PageTracker', () => {
             pageTracker = new PageTracker(stubs.contentInsights);
             stubs.init = jest.spyOn(pageTracker, 'init');
             stubs.stopTracking = jest.spyOn(pageTracker, 'stopTracking');
-            pageTracker.updateOptions({ config: { isActive: false } });
+            pageTracker.updateOptions({ isActive: false });
             expect(stubs.init).not.toBeCalled();
             expect(stubs.stopTracking).toBeCalled();
         });
 
         test('should  call the init tracking method if isActive is set to true', () => {
-            pageTracker = new PageTracker({ config: { isActive: false } });
+            pageTracker = new PageTracker({ isActive: false });
             stubs.init = jest.spyOn(pageTracker, 'init');
             stubs.startTracking = jest.spyOn(pageTracker, 'startTracking');
             pageTracker.updateOptions(stubs.contentInsights);
