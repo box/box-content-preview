@@ -191,7 +191,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.updateDiscoverabilityResinTag();
-        if (this.options.advancedContentInsights && this.options.advancedContentInsights.enabled) {
+        if (this.options.advancedContentInsights) {
             this.pageTracker = new PageTracker(this.options.advancedContentInsights, this.options.file);
         }
     }

@@ -269,9 +269,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     id: '0',
                     extension: 'ppt',
                 },
-                advancedContentInsights: {
-                    enabled: true,
-                },
+                advancedContentInsights: {},
             });
             docBase.containerEl = containerEl;
             docBase.rootEl = rootEl;
