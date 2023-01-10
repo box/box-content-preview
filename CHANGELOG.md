@@ -1,3 +1,9 @@
+## 2.89.0 (2023-01-10)
+
+* fix(iframe): Allow hyperlinks to be opened (#1464) ([7c07e57](https://github.com/box/box-content-preview/commit/7c07e57)), closes [#1464](https://github.com/box/box-content-preview/issues/1464)
+
+
+
 ## 2.88.0 (2022-10-13)
 
 * feat(annotations): Allow annotations for editable shared links (#1462) ([96306c9](https://github.com/box/box-content-preview/commit/96306c9)), closes [#1462](https://github.com/box/box-content-preview/issues/1462)
