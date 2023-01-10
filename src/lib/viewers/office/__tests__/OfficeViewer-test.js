@@ -269,7 +269,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(iframeEl.height).toBe('100%');
             expect(iframeEl.frameBorder).toBe('0');
             expect(iframeEl.getAttribute('sandbox')).toBe(
-                'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads',
+                'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox',
             );
         });
 
