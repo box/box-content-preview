@@ -1583,6 +1583,8 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
+        const { elapsed: contentLoadTimeDuration, end: meaningfulContentTimestamp } = contentLoadTime;
+
         this.emitLogEvent(PREVIEW_METRIC, {
             encoding,
             event_name: LOAD_METRIC.previewLoadEvent,
@@ -1590,7 +1592,8 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.fileInfoTime]: infoTime.elapsed || 0,
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
-            [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
+            [LOAD_METRIC.contentLoadTime]: contentLoadTimeDuration || 0,
+            [LOAD_METRIC.meaningfulContentTimestamp]: meaningfulContentTimestamp,
         });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);

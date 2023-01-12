@@ -59,6 +59,7 @@ export const LOAD_METRIC = {
     convertTime: 'convert_time', // Time it took from receiving file info to being able to request the rep.
     downloadResponseTime: 'download_response_time', // Time it took for TTFB when requesting a rep.
     fileInfoTime: 'file_info_time', // Round trip time from file info request to received file info.
+    meaningfulContentTimestamp: 'meaningful_content_timestamp', // Timestamp of when meaningful content was loaded
     preloadTime: 'preload_time', // How long it takes to preload the document.
     previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
     previewLoadTime: 'preview_loading', // Total preview load time. Maps to "value" of load event

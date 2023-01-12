@@ -1885,23 +1885,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.setupPages).toBeCalled();
             });
 
-            test("should broadcast that the preview is loaded if it hasn't already", () => {
-                docBase.pdfViewer = {
-                    currentScale: 'unknown',
-                };
-                docBase.loaded = false;
-                docBase.pdfViewer.pagesCount = 5;
-                docBase.encoding = 'gzip';
-
-                docBase.pagesinitHandler();
-                expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
-                    encoding: docBase.encoding,
-                    numPages: 5,
-                    scale: 'unknown',
-                });
-                expect(docBase.loaded).toBe(true);
-            });
-
             test('should set the start page based', () => {
                 const START_PAGE_NUM = 2;
                 const PAGES_COUNT = 3;
@@ -1970,6 +1953,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.initThumbnails).not.toBeCalled();
                 expect(docBase.renderUI).toBeCalled();
+            });
+
+            test("should broadcast that the preview is loaded if it hasn't already", () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.loaded = false;
+                docBase.pdfViewer.pagesCount = 5;
+                docBase.encoding = 'gzip';
+
+                docBase.pagerenderedHandler(docBase.event);
+                expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
+                    encoding: docBase.encoding,
+                    numPages: 5,
+                    scale: 'unknown',
+                });
+                expect(docBase.somePageRendered).toBe(true);
             });
         });
 

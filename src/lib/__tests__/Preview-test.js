@@ -2350,6 +2350,7 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: fileId,
             };
+            jest.spyOn(Timer, 'get').mockImplementation(() => ({ elapsed: 10, end: 123 }));
         });
 
         afterEach(() => {
@@ -2386,6 +2387,7 @@ describe('lib/Preview', () => {
                 expect(metric[LOAD_METRIC.convertTime]).toBeDefined();
                 expect(metric[LOAD_METRIC.downloadResponseTime]).toBeDefined();
                 expect(metric[LOAD_METRIC.contentLoadTime]).toBeDefined();
+                expect(metric[LOAD_METRIC.meaningfulContentTimestamp]).toBeDefined();
                 expect(metric.value).toBeDefined();
                 done();
             });
