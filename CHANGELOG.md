@@ -1,3 +1,10 @@
+## 2.90.0 (2023-01-25)
+
+* revert package.json change (#1469) ([96b9198](https://github.com/box/box-content-preview/commit/96b9198)), closes [#1469](https://github.com/box/box-content-preview/issues/1469)
+* fix(pdf): fix for blurry/pixelated images (#1466) ([b749108](https://github.com/box/box-content-preview/commit/b749108)), closes [#1466](https://github.com/box/box-content-preview/issues/1466)
+
+
+
 ## 2.89.0 (2023-01-10)
 
 * fix(iframe): Allow hyperlinks to be opened (#1464) ([7c07e57](https://github.com/box/box-content-preview/commit/7c07e57)), closes [#1464](https://github.com/box/box-content-preview/issues/1464)
