@@ -108,3 +108,5 @@ export const MEDIA_METRIC_EVENTS = {
     bufferFill: 'media_metric_buffer_fill',
     endPlayback: 'media_metric_end_playback',
 };
+
+export const REPORT_ACI = 'advanced_insights_report';

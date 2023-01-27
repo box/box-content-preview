@@ -31,8 +31,10 @@ import {
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
-import { LOAD_METRIC, RENDER_EVENT, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
+import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
+import Thumbnail from '../../../Thumbnail';
+import PageTracker from '../../../PageTracker';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -222,6 +224,58 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             expect(stubs.classListAdd).not.toBeCalledWith(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
         });
+
+        test('should not create a new Page Tracker object', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+                enableThumbnailsSidebar: true,
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+            expect(docBase.pageTracker === undefined).toBe(true);
+        });
+
+        test('should create a new Page Tracker object', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+                advancedContentInsights: {},
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+            expect(docBase.pageTracker).toBeInstanceOf(PageTracker);
+        });
     });
 
     describe('Non setup methods', () => {
@@ -323,6 +377,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.thumbnailsSidebar.destroy).toBeCalled();
                 expect(docBase.rootEl.removeChild).toBeCalled();
                 expect(stubs.classListRemove).toBeCalled();
+            });
+
+            test('should destroy the page tracker object', () => {
+                docBase.pageTracker = new PageTracker();
+                jest.spyOn(docBase.pageTracker, 'destroy').mockImplementation();
+                docBase.destroy();
+                expect(docBase.pageTracker.destroy).toBeCalled();
             });
         });
 
@@ -1359,6 +1420,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.resize).toBeCalled();
                 });
             });
+
+            test('should bind the listeners if the page tracker object exists', () => {
+                docBase.addListener = jest.fn();
+                docBase.pageTracker = new PageTracker();
+                const previewTrackerAddListener = jest.spyOn(docBase.pageTracker, 'addListener').mockImplementation();
+                docBase.initViewer('url');
+                expect(docBase.addListener).toBeCalledWith('preview_event_report', docBase.handlePreviewEventReport);
+                expect(previewTrackerAddListener).toBeCalledWith(
+                    'page_tracker_report',
+                    docBase.handleAdvancedInsightsReport,
+                );
+            });
         });
 
         describe('resize()', () => {
@@ -1892,12 +1965,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.loaded = false;
                 docBase.pdfViewer.pagesCount = 5;
                 docBase.encoding = 'gzip';
+                docBase.startPageNum = 1;
 
                 docBase.pagesinitHandler();
                 expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
                     encoding: docBase.encoding,
                     numPages: 5,
                     scale: 'unknown',
+                    currentPage: 1,
                 });
                 expect(docBase.loaded).toBe(true);
             });
@@ -1912,6 +1987,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagesinitHandler();
 
                 expect(stubs.setPage).toBeCalledWith(START_PAGE_NUM);
+            });
+
+            test('should set the current page and file length', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.pageTracker = new PageTracker({ isActive: true });
+                stubs.setCurrentPage = jest.spyOn(docBase.pageTracker, 'setCurrentPage').mockImplementation();
+                stubs.setFileLength = jest.spyOn(docBase.pageTracker, 'setFileLength').mockImplementation();
+                docBase.pagesinitHandler();
+                expect(stubs.setCurrentPage).toBeCalled();
+                expect(stubs.setFileLength).toBeCalled();
+            });
+
+            test('should not call the PageTracker init function', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.pageTracker = new PageTracker({});
+                stubs.pageTrackerInit = jest.spyOn(docBase.pageTracker, 'init');
+                docBase.pagesinitHandler();
+                expect(stubs.pageTrackerInit).not.toBeCalled();
+            });
+
+            test('should call the PageTracker init function', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.pageTracker = new PageTracker({ isActive: true });
+                stubs.pageTrackerInit = jest.spyOn(docBase.pageTracker, 'init');
+                docBase.pagesinitHandler();
+                expect(stubs.pageTrackerInit).toBeCalled();
             });
         });
 
@@ -2010,6 +2117,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagechangingHandler(docBase.event);
 
                 expect(stubs.cachePage).not.toBeCalled();
+            });
+
+            test('should call the PageTracker handler page change', () => {
+                docBase.pageTracker = new PageTracker({ isActive: true });
+                stubs.handleViewerPageChange = jest.spyOn(docBase.pageTracker, 'handleViewerPageChange');
+                docBase.pagechangingHandler(docBase.event);
+                expect(stubs.handleViewerPageChange).toBeCalled();
             });
         });
 
@@ -2943,6 +3057,81 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.applyCursorFtux();
 
                 expect(docBase.cache.set).toBeCalledWith(DOCUMENT_FTUX_CURSOR_SEEN_KEY, true, true);
+            });
+        });
+
+        describe('getSessionId()', () => {
+            test('should return null if the page tracker object does not exists', () => {
+                const sessionId = docBase.getSessionId();
+                expect(sessionId).toBe(null);
+            });
+
+            test('should return a string the page tracker object exists', () => {
+                docBase.pageTracker = new PageTracker();
+                docBase.pageTracker.init();
+                const sessionId = docBase.getSessionId();
+                expect(sessionId).toEqual(expect.any(String));
+            });
+        });
+
+        describe('getThumbnail()', () => {
+            beforeEach(() => {
+                docBase.pdfViewer = {
+                    pdfDocument: {
+                        getPage: jest.fn(),
+                    },
+                };
+                stubs.promiseResolve = Promise.resolve({
+                    getViewport: jest.fn().mockReturnValue({ width: 0, height: 0 }),
+                    render: jest.fn().mockReturnValue(Promise.resolve()),
+                });
+                jest.spyOn(docBase.pdfViewer.pdfDocument, 'getPage').mockReturnValue(stubs.promiseResolve);
+            });
+
+            test('should call createThumbnailImage on the Thumbnail', () => {
+                docBase.advancedInsightsThumbs = new Thumbnail(docBase.pdfViewer);
+                stubs.createThumb = jest
+                    .spyOn(docBase.advancedInsightsThumbs, 'createThumbnailImage')
+                    .mockReturnValue(stubs.promiseResolve);
+                docBase.getThumbnail();
+                expect(stubs.createThumb).toBeCalled();
+            });
+
+            test('should create a new Thumbnail instance', () => {
+                expect(docBase.advancedInsightsThumbs).toBe(undefined);
+                docBase.getThumbnail();
+                expect(docBase.advancedInsightsThumbs).toBeInstanceOf(Thumbnail);
+            });
+        });
+
+        describe('handleAdvancedInsightsReport()', () => {
+            test('should call the emit event', () => {
+                const data = {
+                    page: 1,
+                };
+                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
+                docBase.handleAdvancedInsightsReport(data);
+                expect(stubs.emit).toBeCalledWith(REPORT_ACI, data);
+            });
+        });
+
+        describe('handlePreviewEventReport()', () => {
+            test('should set the preview event report flag on the page tracker if the preview event was succesfully reported', () => {
+                docBase.pageTracker = new PageTracker();
+                stubs.previewEventReported = jest.spyOn(docBase.pageTracker, 'setPreviewEventReported');
+
+                docBase.handlePreviewEventReport(true);
+                expect(stubs.previewEventReported).toBeCalled();
+                expect(docBase.pageTracker.previewEventReported).toBe(true);
+            });
+
+            test('should destroy the page tracker if the preview event fails', () => {
+                docBase.pageTracker = new PageTracker();
+                stubs.previewEventReported = jest.spyOn(docBase.pageTracker, 'setPreviewEventReported');
+
+                docBase.handlePreviewEventReport(false);
+                expect(stubs.previewEventReported).not.toBeCalled();
+                expect(docBase.pageTracker).toBe(null);
             });
         });
     });

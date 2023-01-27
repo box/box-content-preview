@@ -12,6 +12,7 @@ import Timer from '../Timer';
 import loaders from '../loaders';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
+import PageTracker from '../PageTracker';
 
 jest.mock('../Logger');
 jest.mock('../util', () => ({
@@ -2003,6 +2004,16 @@ describe('lib/Preview', () => {
             stubs.promiseResolve = Promise.resolve({});
             stubs.getHeaders = jest.spyOn(util, 'getHeaders');
             stubs.url = `${API_HOST}/2.0/events`;
+            preview.previewOptions = {
+                contentInsights: {},
+            };
+            stubs.eventObjectWithSession = {
+                additional_information: {
+                    view_session: {
+                        session_id: expect.anything(),
+                    },
+                },
+            };
         });
 
         test('should get the headers for the post request', () => {
@@ -2043,6 +2054,65 @@ describe('lib/Preview', () => {
             return stubs.promiseResolve.catch(() => {
                 expect(preview.logRetryCount).toBe(4);
                 expect(preview.logRetryTimeout).toBeDefined();
+            });
+        });
+
+        test('should not add the sessionId prop to the event payload', () => {
+            preview.viewer = {};
+            jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
+            preview.logPreviewEvent(0, { apiHost: API_HOST });
+            return stubs.promiseResolve.then(() => {
+                expect(Api.prototype.post).toBeCalledWith(
+                    `${API_HOST}/2.0/events`,
+                    expect.not.objectContaining(stubs.eventObjectWithSession),
+                    expect.any(Object),
+                );
+            });
+        });
+
+        test('should add the sessionId prop to the event payload', () => {
+            preview.file.id = 1234;
+            preview.viewer = {
+                pageTracker: new PageTracker({ isActive: true }, preview.file),
+                getSessionId: null,
+            };
+            preview.viewer.pageTracker.init();
+            preview.viewer.getSessionId = jest.fn().mockReturnValue(preview.viewer.pageTracker.getSessionId());
+            jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
+            preview.logPreviewEvent(0, { apiHost: API_HOST });
+
+            return stubs.promiseResolve.then(() => {
+                expect(Api.prototype.post).toBeCalledWith(
+                    `${API_HOST}/2.0/events`,
+                    expect.objectContaining(stubs.eventObjectWithSession),
+                    expect.any(Object),
+                );
+            });
+        });
+
+        test('should fire the preview_event_report success event on a successful access stats post', () => {
+            preview.viewer = {
+                emit: jest.fn(),
+            };
+            stubs.emit = jest.spyOn(preview.viewer, 'emit');
+            jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
+            preview.logPreviewEvent(0, {});
+            return stubs.promiseResolve.then(() => {
+                expect(stubs.emit).toBeCalledWith('preview_event_report', true);
+            });
+        });
+
+        test('should fire the preview_event_report failed event if the post fails and retry limit has been reached', () => {
+            preview.viewer = {
+                emit: jest.fn(),
+            };
+            stubs.emit = jest.spyOn(preview.viewer, 'emit');
+            jest.spyOn(stubs.api, 'post').mockRejectedValue({});
+            preview.logRetryCount = 3;
+            preview.logRetryTimeout = true;
+            preview.logPreviewEvent(0, {});
+            return stubs.promiseResolve.catch(() => {
+                expect(stubs.emit).toBeCalledWith('preview_event_report', false);
             });
         });
     });
@@ -2852,6 +2922,29 @@ describe('lib/Preview', () => {
                 expect(error.message).toBe('Token is not a function and cannot be refreshed.');
                 done();
             });
+        });
+    });
+
+    describe('updateContentInsightsOptions()', () => {
+        test('should update the content insights options', () => {
+            preview.options = {
+                enableAdvancedContentInsights: true,
+            };
+
+            preview.previewOptions = {
+                contentInsights: { isActive: false },
+            };
+
+            preview.viewer = {
+                pageTracker: new PageTracker(),
+            };
+
+            stubs.updateOptions = jest.spyOn(preview.viewer.pageTracker, 'updateOptions');
+            const options = { isActive: true };
+
+            preview.updateContentInsightsOptions(options);
+            expect(preview.previewOptions.contentInsights).toBe(options);
+            expect(stubs.updateOptions).toBeCalledWith(options);
         });
     });
 });
