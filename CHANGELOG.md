@@ -1,3 +1,9 @@
+## 2.91.0 (2023-03-24)
+
+* feat(content-insights): Added ACI support to track per page time spent (#1455) ([a05e504](https://github.com/box/box-content-preview/commit/a05e504)), closes [#1455](https://github.com/box/box-content-preview/issues/1455)
+
+
+
 ## 2.90.0 (2023-01-25)
 
 * revert package.json change (#1469) ([96b9198](https://github.com/box/box-content-preview/commit/96b9198)), closes [#1469](https://github.com/box/box-content-preview/issues/1469)
