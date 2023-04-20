@@ -1423,14 +1423,18 @@ class Preview extends EventEmitter {
             .then(() => {
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
-                this.viewer.emit('preview_event_report', true);
+                if (this.viewer) {
+                    this.viewer.emit('preview_event_report', true);
+                }
             })
             .catch(() => {
                 // Don't retry more than the retry limit
                 this.logRetryCount += 1;
                 if (this.logRetryCount > LOG_RETRY_COUNT) {
                     this.logRetryCount = 0;
-                    this.viewer.emit('preview_event_report', false);
+                    if (this.viewer) {
+                        this.viewer.emit('preview_event_report', false);
+                    }
                     return;
                 }
 
