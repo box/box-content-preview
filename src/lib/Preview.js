@@ -1385,6 +1385,19 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Emits event in order to notify PageTracker if the Access Stats preview event was successfully reported
+     *
+     * @private
+     * @param {boolean} success - state of the request
+     * @return {void}
+     */
+    pageTrackerReporter(success = true) {
+        if (this.viewer && typeof this.viewer.emit === 'function') {
+            this.viewer.emit('preview_event_report', success);
+        }
+    }
+
+    /**
      * Logs 'preview' event via the Events API. This is used for logging that a
      * preview happened for access stats, unlike the Logger, which logs preview
      * errors and performance metrics.
@@ -1421,20 +1434,16 @@ class Preview extends EventEmitter {
         this.api
             .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
+                this.pageTrackerReporter(true);
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
-                if (this.viewer) {
-                    this.viewer.emit('preview_event_report', true);
-                }
             })
             .catch(() => {
                 // Don't retry more than the retry limit
                 this.logRetryCount += 1;
                 if (this.logRetryCount > LOG_RETRY_COUNT) {
+                    this.pageTrackerReporter(false);
                     this.logRetryCount = 0;
-                    if (this.viewer) {
-                        this.viewer.emit('preview_event_report', false);
-                    }
                     return;
                 }
 

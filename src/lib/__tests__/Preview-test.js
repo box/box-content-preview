@@ -2115,6 +2115,21 @@ describe('lib/Preview', () => {
                 expect(stubs.emit).toBeCalledWith('preview_event_report', false);
             });
         });
+        test('should not call emit viewer event on logPreviewEvent if preview was hidden and viewer was destroyed', () => {
+            preview.viewer = {
+                emit: jest.fn(),
+                destroy: jest.fn(),
+            };
+
+            stubs.emit = jest.spyOn(preview.viewer, 'emit');
+            stubs.destroy = jest.spyOn(preview.viewer, 'destroy');
+
+            preview.hide();
+            preview.pageTrackerReporter(true);
+
+            expect(stubs.destroy).toBeCalled();
+            expect(stubs.emit).not.toBeCalled();
+        });
     });
 
     describe('handleFetchError()', () => {
