@@ -1444,6 +1444,7 @@ class Preview extends EventEmitter {
                 if (this.logRetryCount > LOG_RETRY_COUNT) {
                     this.pageTrackerReporter(false);
                     this.logRetryCount = 0;
+                    clearTimeout(this.logRetryTimeout);
                     return;
                 }
 
