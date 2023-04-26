@@ -1,3 +1,11 @@
+## 2.92.0 (2023-04-26)
+
+* fix(content-insights): events recurrent request issue (#1472) ([7797b3e](https://github.com/box/box-content-preview/commit/7797b3e)), closes [#1472](https://github.com/box/box-content-preview/issues/1472)
+* fix(version): revert package.json version (#1471) ([5d01bb4](https://github.com/box/box-content-preview/commit/5d01bb4)), closes [#1471](https://github.com/box/box-content-preview/issues/1471)
+* chore(release): 2.91.0 ([fd503db](https://github.com/box/box-content-preview/commit/fd503db))
+
+
+
 ## 2.91.0 (2023-03-24)
 
 * feat(content-insights): Added ACI support to track per page time spent (#1455) ([a05e504](https://github.com/box/box-content-preview/commit/a05e504)), closes [#1455](https://github.com/box/box-content-preview/issues/1455)
