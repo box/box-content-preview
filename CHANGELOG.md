@@ -1,3 +1,9 @@
+## 2.93.0 (2023-05-05)
+
+* fix(media): upgrade shaka player version (#1473) ([6d07ebb](https://github.com/box/box-content-preview/commit/6d07ebb)), closes [#1473](https://github.com/box/box-content-preview/issues/1473)
+
+
+
 ## 2.92.0 (2023-04-26)
 
 * fix(content-insights): events recurrent request issue (#1472) ([7797b3e](https://github.com/box/box-content-preview/commit/7797b3e)), closes [#1472](https://github.com/box/box-content-preview/issues/1472)
