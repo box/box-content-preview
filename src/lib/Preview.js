@@ -66,6 +66,7 @@ import {
     VIEWER_EVENT,
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
+import Split, { TREATMENTS } from './SplitIO';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -144,6 +145,9 @@ class Preview extends EventEmitter {
     /** @property {PreviewUI} - Preview's UI instance */
     ui;
 
+    /** @property {Object}  - Split.io instance */
+    split;
+
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -215,6 +219,8 @@ class Preview extends EventEmitter {
             this.viewer.destroy();
         }
 
+        if (this.split && typeof this.split.destroySplit === 'function') this.split.destroySplit();
+
         this.viewer = undefined;
     }
 
@@ -247,6 +253,18 @@ class Preview extends EventEmitter {
 
         // Parse the preview options
         this.parseOptions(this.previewOptions);
+
+        // TODO
+        // - Consider where it should/can be initiated
+        // - Pass splitio apiKey and current user eid in the options ?
+        this.split = new Split(this.previewOptions.split?.apiKey, this.previewOptions.split?.eid);
+        if (!this.split.isSDKReady) {
+            this.split.client.ready().then(() => {
+                this.isAdvancedContentInsightsEnabled = this.split.applyFeatureFlag(TREATMENTS.ACI_ACTIVITY);
+            });
+        } else {
+            this.isAdvancedContentInsightsEnabled = this.split.applyFeatureFlag(TREATMENTS.ACI_ACTIVITY);
+        }
 
         // Load the preview
         this.load(fileIdOrFile);

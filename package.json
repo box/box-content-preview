@@ -153,5 +153,8 @@
     },
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1"
+    },
+    "dependencies": {
+        "@splitsoftware/splitio": "^10.22.4"
     }
 }
