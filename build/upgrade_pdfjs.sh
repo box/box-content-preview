@@ -61,7 +61,7 @@ sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files with Google Closure... Warnings are okay!"
 echo "-----------------------------------------------------------------------------------"
-java -jar ${DOC_COMPILER_BINARY} --rewrite_polyfills false --language_out ECMASCRIPT6 --js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --js_output_file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
+java -jar ${DOC_COMPILER_BINARY} --rewrite_polyfills false --language_in ECMASCRIPT_2020 --language_out ECMASCRIPT_2018 --js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --js_output_file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
 
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"
