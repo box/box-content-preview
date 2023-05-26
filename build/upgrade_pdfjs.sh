@@ -1,6 +1,10 @@
 #!/bin/bash
 # Run with specific branch/tag (e.g. ./upgrade_pdfjs.sh tags/v2.2.228) or with no arguments to use master
 
+#IMPORTANT!!!! See https://github.com/box/box-content-preview/pull/1466 and make sure any updated version of pdf.js includes
+#this fix or fixes it on it's own
+
+
 DOC_COMPILER_BINARY="build/closure-compiler-v20200719.jar"
 DOC_STATIC_ASSETS_BRANCH=${1:-master}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
@@ -57,7 +61,7 @@ sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files with Google Closure... Warnings are okay!"
 echo "-----------------------------------------------------------------------------------"
-java -jar ${DOC_COMPILER_BINARY} --rewrite_polyfills false --language_out ECMASCRIPT5 --js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --js_output_file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
+java -jar ${DOC_COMPILER_BINARY} --rewrite_polyfills false --language_in ECMASCRIPT_2020 --language_out ECMASCRIPT_2018 --js ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.js --js_output_file ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.js
 
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"
@@ -67,3 +71,7 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------"
 echo "Successfully updated and minified pdf.js files!"
 echo "-----------------------------------------------------------------------------------"
+
+echo "------------------------------------------------------------------------------------"
+echo "please see https://github.com/box/box-content-preview/pull/1466 and make sure your version of pdf.js includes this fix"
+echo "------------------------------------------------------------------------------------"
