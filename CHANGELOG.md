@@ -1,3 +1,9 @@
+## 2.94.0 (2023-05-26)
+
+* fix(pdf): upgrade pdfjs to 3.6.172 (#1476) ([118ec64](https://github.com/box/box-content-preview/commit/118ec64)), closes [#1476](https://github.com/box/box-content-preview/issues/1476)
+
+
+
 ## 2.93.0 (2023-05-05)
 
 * fix(media): upgrade shaka player version (#1473) ([6d07ebb](https://github.com/box/box-content-preview/commit/6d07ebb)), closes [#1473](https://github.com/box/box-content-preview/issues/1473)
