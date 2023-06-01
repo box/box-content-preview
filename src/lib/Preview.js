@@ -892,6 +892,13 @@ class Preview extends EventEmitter {
         // Reset all options
         this.options = {};
 
+        // Features
+        /* NOTES:
+         - This makes features available everywhere that features is passed which includes
+         all of the viewers for different files
+        */
+        this.options.features = options.features;
+
         // Container for preview
         this.options.container = options.container;
 

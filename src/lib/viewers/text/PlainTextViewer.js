@@ -6,6 +6,7 @@ import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { VIEWER_EVENT } from '../../events';
+import { isFeatureEnabled, getFeatureConfig } from '../../featureChecking';
 import './PlainText.scss';
 
 // Inline web worker JS
@@ -47,6 +48,26 @@ class PlainTextViewer extends TextBaseViewer {
      */
     load() {
         super.load();
+
+        /* NOTES:
+         - This is an example of getting the features. An example could be putting a
+         new feature of the plain text viewer behind a feature to better control roll-out.
+          - The output below will show up in the browser console
+        */
+        const newPlainTextEnabled = isFeatureEnabled(this.options.features, 'newPlainText.enabled');
+        // eslint-disable-next-line no-console
+        console.log('***** Feature *****');
+        // eslint-disable-next-line no-console
+        console.log(
+            'Is plain text viewer feature on:',
+            newPlainTextEnabled,
+            '; value type:',
+            typeof newPlainTextEnabled,
+        );
+        // eslint-disable-next-line no-console
+        console.log('Feature config:');
+        // eslint-disable-next-line no-console
+        console.log(getFeatureConfig(this.options.features, 'newPlainText'));
 
         const loadAssetsPromise = this.loadAssets(this.getJS(), this.getCSS());
         return Promise.all([loadAssetsPromise, this.getRepStatus().getPromise()])
