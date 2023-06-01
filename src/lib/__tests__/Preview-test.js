@@ -133,19 +133,6 @@ describe('lib/Preview', () => {
             preview.destroy();
             expect(preview.viewer).toBeUndefined();
         });
-
-        test('should cleanup features if it exists', () => {
-            preview.previewOptions = {
-                features,
-            };
-            preview.parseOptions(preview.previewOptions);
-
-            expect(global.Box.previewFeatures).toEqual(features);
-
-            preview.destroy();
-
-            expect(global.Box.previewFeatures).toBeUndefined();
-        });
     });
 
     describe('show()', () => {
@@ -1404,12 +1391,12 @@ describe('lib/Preview', () => {
             expect(preview.options.responseInterceptor).toBe(responseInterceptor);
         });
 
-        test('should set features in the Box global object', () => {
+        test('should set features to the Preview options field', () => {
+            expect(preview.options.features).toBeUndefined();
+
             preview.parseOptions(preview.previewOptions);
 
-            expect(preview.options.features).toBeUndefined();
-            expect(preview.options.previewFeatures).toBeUndefined();
-            expect(window.Box.previewFeatures).toEqual(features);
+            expect(preview.options.features).toEqual(features);
         });
     });
 
