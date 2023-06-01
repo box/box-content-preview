@@ -38,6 +38,8 @@ let preview;
 let containerEl;
 
 describe('lib/Preview', () => {
+    const features = { shouldUseBatman: { enabled: true } };
+
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
@@ -130,6 +132,19 @@ describe('lib/Preview', () => {
         test('should clear the viewer', () => {
             preview.destroy();
             expect(preview.viewer).toBeUndefined();
+        });
+
+        test('should cleanup features if it exists', () => {
+            preview.previewOptions = {
+                features,
+            };
+            preview.parseOptions(preview.previewOptions);
+
+            expect(global.Box.previewFeatures).toEqual(features);
+
+            preview.destroy();
+
+            expect(global.Box.previewFeatures).toBeUndefined();
         });
     });
 
@@ -1242,6 +1257,7 @@ describe('lib/Preview', () => {
                 sharedLinkPassword: stubs.sharedLinkPassword,
                 apiHost: stubs.apiHost,
                 appHost: stubs.appHost,
+                features,
                 header: stubs.header,
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
@@ -1386,6 +1402,14 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
 
             expect(preview.options.responseInterceptor).toBe(responseInterceptor);
+        });
+
+        test('should set features in the Box global object', () => {
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.features).toBeUndefined();
+            expect(preview.options.previewFeatures).toBeUndefined();
+            expect(window.Box.previewFeatures).toEqual(features);
         });
     });
 

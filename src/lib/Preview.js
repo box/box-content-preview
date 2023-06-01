@@ -216,6 +216,11 @@ class Preview extends EventEmitter {
         }
 
         this.viewer = undefined;
+
+        // Cleanup the features object that was created
+        if (global.Box.previewFeatures) {
+            delete global.Box.previewFeatures;
+        }
     }
 
     /**
@@ -1015,6 +1020,13 @@ class Preview extends EventEmitter {
                 this.enableViewers(viewerName);
             }
         });
+
+        // Features
+        // This makes the features object available globally so instances outside of the viewers can leverage
+        // feature flips.
+        if (global.Box) {
+            global.Box.previewFeatures = options.features;
+        }
     }
 
     /**
