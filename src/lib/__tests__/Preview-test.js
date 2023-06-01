@@ -38,7 +38,7 @@ let preview;
 let containerEl;
 
 describe('lib/Preview', () => {
-    const features = { shouldUseBatman: { enabled: true } };
+    const features = { shouldUseFeature: { enabled: true } };
 
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
@@ -1397,6 +1397,14 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
 
             expect(preview.options.features).toEqual(features);
+        });
+
+        test('should default Preview options features to {} when theres no features passed in', () => {
+            expect(preview.options.features).toBeUndefined();
+
+            preview.parseOptions({ ...preview.previewOptions, features: undefined });
+
+            expect(preview.options.features).toEqual({});
         });
     });
 
