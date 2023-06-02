@@ -1004,6 +1004,11 @@ class Preview extends EventEmitter {
         // Advanced Content Insights
         this.options.advancedContentInsights = options.advancedContentInsights;
 
+        // Features
+        // This makes features available everywhere that features is passed in, which includes
+        // all of the viewers for different files
+        this.options.features = options.features || {};
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;

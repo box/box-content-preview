@@ -38,6 +38,8 @@ let preview;
 let containerEl;
 
 describe('lib/Preview', () => {
+    const features = { shouldUseFeature: { enabled: true } };
+
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
@@ -1242,6 +1244,7 @@ describe('lib/Preview', () => {
                 sharedLinkPassword: stubs.sharedLinkPassword,
                 apiHost: stubs.apiHost,
                 appHost: stubs.appHost,
+                features,
                 header: stubs.header,
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
@@ -1386,6 +1389,22 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
 
             expect(preview.options.responseInterceptor).toBe(responseInterceptor);
+        });
+
+        test('should set features to the Preview options field', () => {
+            expect(preview.options.features).toBeUndefined();
+
+            preview.parseOptions(preview.previewOptions);
+
+            expect(preview.options.features).toEqual(features);
+        });
+
+        test('should default Preview options features to {} when theres no features passed in', () => {
+            expect(preview.options.features).toBeUndefined();
+
+            preview.parseOptions({ ...preview.previewOptions, features: undefined });
+
+            expect(preview.options.features).toEqual({});
         });
     });
 
