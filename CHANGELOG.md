@@ -1,3 +1,11 @@
+## 2.95.0 (2023-06-08)
+
+* chore(sass): replace node-sass with sass (#1479) ([46c63e9](https://github.com/box/box-content-preview/commit/46c63e9)), closes [#1479](https://github.com/box/box-content-preview/issues/1479)
+* feat(feature-toggles): Add feature object to standardize feature toggles (#1477) ([27792bb](https://github.com/box/box-content-preview/commit/27792bb)), closes [#1477](https://github.com/box/box-content-preview/issues/1477)
+* fix(e2e-tests): Update doc assets to 2.90 (#1478) ([0f172a8](https://github.com/box/box-content-preview/commit/0f172a8)), closes [#1478](https://github.com/box/box-content-preview/issues/1478)
+
+
+
 ## 2.94.0 (2023-05-26)
 
 * fix(pdf): upgrade pdfjs to 3.6.172 (#1476) ([118ec64](https://github.com/box/box-content-preview/commit/118ec64)), closes [#1476](https://github.com/box/box-content-preview/issues/1476)
