@@ -3,6 +3,8 @@ import { act } from 'react-dom/test-utils';
 import { mount, ReactWrapper } from 'enzyme';
 import ColorPickerControl from '../ColorPickerControl';
 
+type CallbackFunction = (arg: unknown) => void;
+
 describe('ColorPickerControl', () => {
     const defaultColor = '#fff';
 
@@ -111,7 +113,7 @@ describe('ColorPickerControl', () => {
                 },
                 preventDefault: jest.fn(),
             };
-            (getToggleButton(getWrapper()).prop('onMouseDown') as Function)(mockEvent);
+            (getToggleButton(getWrapper()).prop('onMouseDown') as CallbackFunction)(mockEvent);
 
             expect(mockEvent.currentTarget.focus).toHaveBeenCalled();
             expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -126,7 +128,9 @@ describe('ColorPickerControl', () => {
             getToggleButton(wrapper).simulate('click');
 
             act(() => {
-                (wrapper.find('[data-testid="bp-ColorPickerPalette"]').prop('onSelect') as Function)(defaultColor);
+                (wrapper.find('[data-testid="bp-ColorPickerPalette"]').prop('onSelect') as CallbackFunction)(
+                    defaultColor,
+                );
             });
             wrapper.update();
 

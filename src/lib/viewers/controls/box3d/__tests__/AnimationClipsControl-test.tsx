@@ -6,8 +6,8 @@ import Settings from '../../settings';
 
 describe('AnimationClipsControl', () => {
     const animationClips = [
-        { duration: 1, id: '1', name: 'first' },
-        { duration: 2, id: '2', name: 'second' },
+        { duration: 1, id: '1', title: 'first' },
+        { duration: 2, id: '2', title: 'second' },
     ];
     const getDefaults = (): AnimationClipsControlProps => ({
         animationClips,

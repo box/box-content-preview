@@ -1,16 +1,16 @@
 import React from 'react';
 import Settings, { Menu } from '../settings';
 
-export type Props = {
-    onQualityChange?: (quality: Quality) => void;
-    quality?: Quality;
-};
-
 export enum Quality {
     AUTO = 'auto',
     HD = 'hd',
     SD = 'sd',
 }
+
+export type Props = {
+    onQualityChange?: (quality: Quality) => void;
+    quality?: Quality;
+};
 
 const QUALITY_LABEL_MAP: Record<Quality, string> = {
     [Quality.AUTO]: __('media_quality_auto') as string,
@@ -33,7 +33,7 @@ export default function MediaSettingsMenuQuality({ onQualityChange, quality }: P
     };
 
     return (
-        <Settings.Menu name={Menu.QUALITY}>
+        <Settings.Menu title={Menu.QUALITY}>
             <Settings.MenuBack label={__('media_quality')} />
             <Settings.RadioItem<Quality>
                 isSelected={quality === Quality.SD}

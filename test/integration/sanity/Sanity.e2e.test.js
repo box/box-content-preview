@@ -17,10 +17,15 @@ describe('Preview Sanity', () => {
         cy.showPreview(token, fileId);
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
+        cy.get('.bp-thumbnail').each($ele => {
+            cy.wrap($ele).should('have.class', 'bp-thumbnail-image-loaded');
+        });
 
-        cy.window().then((win) => {
+        cy.window().then(win => {
             win.preview.reload(true);
-            cy.getByTestId('bp-content').find('.bp-loading-wrapper').should('be.visible');
+            cy.getByTestId('bp-content')
+                .find('.bp-loading-wrapper')
+                .should('be.visible');
             cy.getPreviewPage(1);
             cy.contains('The Content Platform for Your Apps');
             cy.get('@getFileInfo.all').should('have.length', 1);
@@ -31,8 +36,11 @@ describe('Preview Sanity', () => {
         cy.showPreview(token, fileId);
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
+        cy.get('.bp-thumbnail').each($ele => {
+            cy.wrap($ele).should('have.class', 'bp-thumbnail-image-loaded');
+        });
 
-        cy.window().then((win) => {
+        cy.window().then(win => {
             win.preview.reload();
             cy.getPreviewPage(1);
             cy.contains('The Content Platform for Your Apps');

@@ -59,7 +59,7 @@ describe('Preview Document Thumbnails', () => {
         showDocumentPreview({ enableThumbnailsSidebar: false });
 
         cy.showControls();
-        cy.getByTitle('Toggle thumbnails').should('not.be.visible');
+        cy.getByTitle('Toggle thumbnails').should('not.exist');
     });
 
     it('Should see the sidebar button if enabled', () => {
@@ -130,10 +130,9 @@ describe('Preview Document Thumbnails', () => {
 
         cy.showControls();
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('bp-PageControlsForm-input')
-            .should('be.visible')
-            .type('200')
-            .blur();
+        cy.getByTestId('bp-PageControlsForm-input').should('be.visible');
+        cy.getByTestId('bp-PageControlsForm-input').type('200');
+        cy.getByTestId('bp-PageControlsForm-input').blur();
 
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
 
@@ -153,10 +152,9 @@ describe('Preview Document Thumbnails', () => {
 
         cy.showControls();
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('bp-PageControlsForm-input')
-            .should('be.visible')
-            .type('200')
-            .blur();
+        cy.getByTestId('bp-PageControlsForm-input').should('be.visible');
+        cy.getByTestId('bp-PageControlsForm-input').type('200');
+        cy.getByTestId('bp-PageControlsForm-input').blur();
 
         cy.getPreviewPage(200).should('be.visible');
         getThumbnailWithRenderedImage(200).should('have.class', THUMBNAIL_SELECTED_CLASS);
@@ -165,10 +163,9 @@ describe('Preview Document Thumbnails', () => {
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
 
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('bp-PageControlsForm-input')
-            .should('be.visible')
-            .type('1')
-            .blur();
+        cy.getByTestId('bp-PageControlsForm-input').should('be.visible');
+        cy.getByTestId('bp-PageControlsForm-input').type('1');
+        cy.getByTestId('bp-PageControlsForm-input').blur();
 
         cy.getPreviewPage(1).should('be.visible');
 
@@ -229,10 +226,9 @@ describe('Preview Document Thumbnails', () => {
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         cy.getByTitle('Click to enter page number').click();
-        cy.getByTestId('bp-PageControlsForm-input')
-            .should('be.visible')
-            .type('50')
-            .blur();
+        cy.getByTestId('bp-PageControlsForm-input').should('be.visible');
+        cy.getByTestId('bp-PageControlsForm-input').type('50');
+        cy.getByTestId('bp-PageControlsForm-input').blur();
 
         getThumbnailWithRenderedImage(50).should('have.class', THUMBNAIL_SELECTED_CLASS);
 

@@ -30,7 +30,7 @@ describe('Dash Viewer', () => {
 
                 runBaseMediaSettingsTests();
 
-                runQualityMenuTests();
+                runQualityMenuTests(false);
 
                 runAudioTracksTests();
 
@@ -42,7 +42,7 @@ describe('Dash Viewer', () => {
 
                 runBaseMediaSettingsTests();
 
-                runQualityMenuTests();
+                runQualityMenuTests(true);
 
                 runAudioTracksTests();
 
@@ -56,13 +56,13 @@ describe('Dash Viewer', () => {
             describe('Without react controls', () => {
                 beforeEach(() => setupTest(fileIdVideoSmall, false));
 
-                runLowQualityMenuTests();
+                runLowQualityMenuTests(false);
             });
 
             describe('With react controls', () => {
                 beforeEach(() => setupTest(fileIdVideoSmall, true));
 
-                runLowQualityMenuTests();
+                runLowQualityMenuTests(true);
             });
         });
     });

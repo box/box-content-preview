@@ -54,7 +54,7 @@ export function runBaseMediaSettingsTests() {
     });
 }
 
-export function runQualityMenuTests() {
+export function runQualityMenuTests(hasReactControls) {
     describe('Quality Menu', () => {
         it('Should be able to change the Quality setting', () => {
             cy.getByTestId('bp-media-settings-quality')
@@ -79,19 +79,27 @@ export function runQualityMenuTests() {
 
             cy.getByTestId('bp-media-settings-quality').contains('480p');
 
-            cy.getByTestId('bp-media-controls-hd').should('not.be.visible');
+            if (hasReactControls) {
+                cy.getByTestId('bp-media-controls-hd').should('not.exist');
+            } else {
+                cy.getByTestId('bp-media-controls-hd').should('not.be.visible');
+            }
         });
     });
 }
 
-export function runLowQualityMenuTests() {
+export function runLowQualityMenuTests(hasReactControls) {
     describe('Non HD Video', () => {
         it('Should not have the Quality settings menu enabled', () => {
             cy.getByTestId('bp-media-settings-quality')
                 .contains('480p')
                 .click({ force: true });
 
-            cy.getByTestId('bp-media-controls-hd').should('not.be.visible');
+            if (hasReactControls) {
+                cy.getByTestId('bp-media-controls-hd').should('not.exist');
+            } else {
+                cy.getByTestId('bp-media-controls-hd').should('not.be.visible');
+            }
         });
     });
 }
@@ -138,18 +146,16 @@ export function runSubtitlesTests() {
 
             cy.getByTestId('bp-media-settings-subtitles').contains('English');
 
-            cy.get('@subtitlesBtn')
-                .click()
-                .should('have.attr', 'aria-pressed', 'false');
+            cy.get('@subtitlesBtn').click();
+            cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'false');
 
             cy.getByTitle('Settings').click();
 
             cy.getByTestId('bp-media-settings-subtitles').contains('Off');
 
             // Toggling CC back on should restore the previously used text track
-            cy.get('@subtitlesBtn')
-                .click()
-                .should('have.attr', 'aria-pressed', 'true');
+            cy.get('@subtitlesBtn').click();
+            cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'true');
 
             cy.getByTitle('Settings').click();
 
@@ -175,12 +181,11 @@ export function runSubtitlesTests() {
             cy.getByTestId('bp-media-settings-subtitles').contains('Off');
 
             // Toggling CC back on should restore the previously used text track
-            cy.getByTitle('Subtitles/Closed Captions')
-                .as('subtitlesBtn')
-                .should('be.visible')
-                .should('have.attr', 'aria-pressed', 'false')
-                .click()
-                .should('have.attr', 'aria-pressed', 'true');
+            cy.getByTitle('Subtitles/Closed Captions').as('subtitlesBtn');
+            cy.getByTitle('Subtitles/Closed Captions').should('be.visible');
+            cy.getByTitle('Subtitles/Closed Captions').should('have.attr', 'aria-pressed', 'false');
+            cy.getByTitle('Subtitles/Closed Captions').click();
+            cy.getByTitle('Subtitles/Closed Captions').should('have.attr', 'aria-pressed', 'true');
 
             cy.getByTitle('Settings').click();
 

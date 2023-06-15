@@ -53,7 +53,7 @@ describe('Model3DSettings', () => {
             });
             expect(wrapper.find(Settings.Menu).props()).toMatchObject({
                 className: 'bp-Model3DSettings-menu',
-                name: Menu.MAIN,
+                title: Menu.MAIN,
             });
 
             // CheckboxItems

@@ -61,7 +61,7 @@ export default function Model3DSettings({
 }: Props): JSX.Element {
     return (
         <Settings className="bp-Model3DSettings" onClose={onClose} onOpen={onOpen}>
-            <Settings.Menu className="bp-Model3DSettings-menu" name={Menu.MAIN}>
+            <Settings.Menu className="bp-Model3DSettings-menu" title={Menu.MAIN}>
                 <Settings.Dropdown<RenderMode>
                     label={__('box3d_settings_render_label')}
                     listItems={renderModeOptions}

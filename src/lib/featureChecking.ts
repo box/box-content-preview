@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 
 type FeatureOptions = {
-    [key: string]: {};
+    [key: string]: NonNullable<unknown>;
 };
 
 type FeatureConfig = {

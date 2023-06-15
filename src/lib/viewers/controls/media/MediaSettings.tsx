@@ -46,7 +46,7 @@ export default function MediaSettings({
 
     return (
         <Settings badge={badge} className={className} toggle={toggle}>
-            <Settings.Menu name={Menu.MAIN}>
+            <Settings.Menu title={Menu.MAIN}>
                 <Settings.MenuItem
                     data-testid="bp-media-settings-autoplay"
                     label={__('media_autoplay')}

@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-function IconDrawing24({ fill, ...rest }: React.SVGProps<SVGSVGElement>): JSX.Element {
+type Props = React.SVGProps<SVGSVGElement> & {
+    fill?: string;
+};
+
+function IconDrawing24({ fill, ...rest }: Props): JSX.Element {
     return (
         <svg focusable="false" height={24} viewBox="0 0 16 16" width={24} {...rest}>
             <path

@@ -15,7 +15,7 @@ export default function MediaSettingsMenuAutoplay({ autoplay, onAutoplayChange }
     };
 
     return (
-        <Settings.Menu name={Menu.AUTOPLAY}>
+        <Settings.Menu title={Menu.AUTOPLAY}>
             <Settings.MenuBack label={__('media_autoplay')} />
             <Settings.RadioItem
                 isSelected={!autoplay}

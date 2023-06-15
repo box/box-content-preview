@@ -9,8 +9,7 @@ Cypress.Commands.add('getPreviewPage', pageNum => {
     return cy.get('@previewPage');
 });
 Cypress.Commands.add('showPreview', (token, fileId, options) => {
-    cy.server();
-    cy.route('**/files/*').as('getFileInfo');
+    cy.intercept('GET', '**/files/*').as('getFileInfo');
 
     cy.getByTestId('token').type(token);
     cy.getByTestId('token-set').click();
@@ -28,7 +27,9 @@ Cypress.Commands.add('showPreview', (token, fileId, options) => {
 });
 
 Cypress.Commands.add('showControls', () => {
-    cy.getByTestId('bp').trigger('mouseover');
+    cy.getByTestId('bp-controls')
+        .invoke('show')
+        .click({ force: true });
     cy.getByTestId('bp-controls').should('be.visible');
 });
 

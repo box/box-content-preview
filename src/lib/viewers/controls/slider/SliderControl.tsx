@@ -4,6 +4,8 @@ import noop from 'lodash/noop';
 import { decodeKeydown } from '../../../util';
 import './SliderControl.scss';
 
+export type Ref = HTMLDivElement;
+
 export type Props = React.HTMLAttributes<Ref> & {
     className?: string;
     max?: number;
@@ -15,8 +17,6 @@ export type Props = React.HTMLAttributes<Ref> & {
     track?: string;
     value: number;
 };
-
-export type Ref = HTMLDivElement;
 
 export default function SliderControl({
     className,

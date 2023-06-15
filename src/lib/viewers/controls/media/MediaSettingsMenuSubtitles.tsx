@@ -38,7 +38,7 @@ export default function MediaSettingsMenuSubtitles({
     };
 
     return (
-        <Settings.Menu name={Menu.SUBTITLES}>
+        <Settings.Menu title={Menu.SUBTITLES}>
             <Settings.MenuBack label={`${__('subtitles')}/CC`} />
             <Settings.RadioItem
                 isSelected={subtitle === SUBTITLES_OFF}
