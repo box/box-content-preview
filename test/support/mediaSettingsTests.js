@@ -61,9 +61,17 @@ export function runQualityMenuTests() {
                 .contains('Auto')
                 .click();
 
+            cy.get('[role="menuitem"]').contains('Quality');
+
+            cy.getByTestId('bp-settings-flyout')
+                .contains('1080p')
+                .click();
+
             cy.getByTestId('bp-media-controls-hd').should('be.visible');
 
-            cy.get('[role="menuitem"]').contains('Quality');
+            cy.getByTestId('bp-media-settings-quality')
+                .contains('1080p')
+                .click();
 
             cy.getByTestId('bp-settings-flyout')
                 .contains('480p')
