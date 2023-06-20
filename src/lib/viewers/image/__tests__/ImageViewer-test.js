@@ -907,7 +907,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             'should return correct value for isDiscoverabilityEnabled',
             ({ canShow, enableAnnotationsImageDiscoverability, result }) => {
                 image.options.experiences = {
-                    tooltipFlowAnnotationsExperience: {
+                    persistentOnboardingBoxEditAnnotations: {
+                        canShow: false,
+                    },
+                    tooltipFlowAnnotations: {
                         canShow,
                     },
                 };

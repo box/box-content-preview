@@ -2,7 +2,7 @@ import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
 import ControlsBar, { ControlsBarGroup } from '../controls/controls-bar';
 import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
-import ExperiencesProvider, { Props as ExperiencesProviderProps } from '../controls/experiences';
+import ExperiencesProvider, { ExperiencesProviderProps } from '../controls/experiences';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import PageControls, { Props as PageControlsProps } from '../controls/page';

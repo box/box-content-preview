@@ -2,13 +2,13 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
-import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconDrawing24 from '../icons/IconDrawing24';
 import IconExit24 from '../icons/IconExit24';
 import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconRegion24 from '../icons/IconRegion24';
 import useFullscreen from '../hooks/useFullscreen';
 import { AnnotationMode } from '../../../types';
+import AnnotationsButtonRegionTooltips from './annotations-button-region-tooltips';
 import './AnnotationsControls.scss';
 
 export type Props = {
@@ -109,7 +109,7 @@ export default function AnnotationsControls({
             >
                 <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
             </AnnotationsButton>
-            <AnnotationsTargetedTooltip isEnabled={showRegion}>
+            <AnnotationsButtonRegionTooltips isEnabled={showRegion}>
                 <AnnotationsButton
                     ref={annotationBtnRefs[AnnotationMode.REGION]}
                     data-resin-target="highlightRegion"
@@ -122,7 +122,7 @@ export default function AnnotationsControls({
                 >
                     <IconRegion24 />
                 </AnnotationsButton>
-            </AnnotationsTargetedTooltip>
+            </AnnotationsButtonRegionTooltips>
             <AnnotationsButton
                 ref={annotationBtnRefs[AnnotationMode.HIGHLIGHT]}
                 data-resin-target="highlightText"

@@ -1,20 +1,21 @@
 import React from 'react';
 import { ReactWrapper, mount } from 'enzyme';
-import AnnotationsTargetedTooltip from '../AnnotationsTargetedTooltip';
 
-describe('AnnotationsTargetedTooltip', () => {
+import AnnotationsFlowTooltip from '../AnnotationsFlowTooltip';
+
+describe('AnnotationsFlowTooltip', () => {
     const getWrapper = (props = {}): ReactWrapper =>
         mount(
-            <AnnotationsTargetedTooltip {...props}>
+            <AnnotationsFlowTooltip {...props}>
                 <div>Child</div>
-            </AnnotationsTargetedTooltip>,
+            </AnnotationsFlowTooltip>,
         );
 
     describe('render', () => {
         beforeEach(() => {
             jest.spyOn(React, 'useContext').mockImplementation(() => ({
                 experiences: {
-                    tooltipFlowAnnotationsExperience: {
+                    tooltipFlowAnnotations: {
                         canShow: true,
                         onClose: jest.fn(),
                         onComplete: jest.fn(),

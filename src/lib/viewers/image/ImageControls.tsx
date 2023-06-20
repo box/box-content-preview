@@ -2,7 +2,7 @@ import React from 'react';
 import AnnotationsControls, { Props as AnnotationsControlsProps } from '../controls/annotations';
 import ControlsBar, { ControlsBarGroup } from '../controls/controls-bar';
 import DrawingControls, { Props as DrawingControlsProps } from '../controls/annotations/DrawingControls';
-import ExperiencesProvider, { Props as ExperiencesProviderProps } from '../controls/experiences';
+import ExperiencesProvider, { ExperiencesProviderProps } from '../controls/experiences';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
