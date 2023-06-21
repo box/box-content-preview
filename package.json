@@ -125,7 +125,7 @@
         "setup": "yarn install",
         "start": "yarn setup && yarn build:dev --watch",
         "start:linked": "yarn link box-annotations && IS_LINKED=1 yarn start",
-        "start:dev": "yarn build:i18n && LANGUAGE=en-US BABEL_ENV=dev NODE_ENV=dev yarn webpack-dev-server --config build/webpack.config.js",
+        "start:dev": "yarn build:i18n && LANGUAGE=en-US BABEL_ENV=dev NODE_ENV=dev NODE_OPTIONS=--openssl-legacy-provider yarn webpack-dev-server --config build/webpack.config.js",
         "start:dev:linked": "yarn link box-annotations && IS_LINKED=1 yarn start:dev",
         "test": "yarn setup && NODE_ENV=test yarn jest",
         "test:ci": "yarn test --ci --maxWorkers=4",
