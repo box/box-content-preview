@@ -62,11 +62,11 @@ describe('TimeControls', () => {
 
         test.each`
             currentTime | track
-            ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #767676 10%, #767676 100%)'}
-            ${50}       | ${'linear-gradient(to right, #0061d5 0.5%, #fff 0.5%, #fff 10%, #767676 10%, #767676 100%)'}
-            ${1000}     | ${'linear-gradient(to right, #0061d5 10%, #fff 10%, #fff 10%, #767676 10%, #767676 100%)'}
-            ${2500}     | ${'linear-gradient(to right, #0061d5 25%, #fff 25%, #fff 10%, #767676 10%, #767676 100%)'}
-            ${10000}    | ${'linear-gradient(to right, #0061d5 100%, #fff 100%, #fff 10%, #767676 10%, #767676 100%)'}
+            ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
+            ${50}       | ${'linear-gradient(to right, #0061d5 0.5%, #fff 0.5%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
+            ${1000}     | ${'linear-gradient(to right, #0061d5 10%, #fff 10%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
+            ${2500}     | ${'linear-gradient(to right, #0061d5 25%, #fff 25%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
+            ${10000}    | ${'linear-gradient(to right, #0061d5 100%, #fff 100%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
         `('should render the correct track for currentTime $currentTime', ({ currentTime, track }) => {
             const buffer = getBuffer(1000, 0); // 10% buffered
             const wrapper = getWrapper({ bufferedRange: buffer, currentTime });
