@@ -15,7 +15,7 @@ describe('SettingsMenu', () => {
     };
     const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
         mount(
-            <SettingsMenu title={Menu.MAIN} {...props}>
+            <SettingsMenu name={Menu.MAIN} {...props}>
                 <div data-testid="test1" role="menuitem" tabIndex={0} />
                 <div data-testid="test2" role="menuitem" tabIndex={0} />
                 <div data-testid="test3" role="menuitem" tabIndex={0} />

@@ -51,7 +51,7 @@ export default function MediaSettingsMenuAudioTracks({
     };
 
     return (
-        <Settings.Menu title={Menu.AUDIO}>
+        <Settings.Menu name={Menu.AUDIO}>
             <Settings.MenuBack label={__('media_audio')} />
             {audioTracks.map(({ id, label }) => (
                 <Settings.RadioItem

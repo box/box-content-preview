@@ -15,7 +15,7 @@ export default function MediaSettingsMenuRate({ rate, onRateChange }: Props): JS
     };
 
     return (
-        <Settings.Menu title={Menu.RATE}>
+        <Settings.Menu name={Menu.RATE}>
             <Settings.MenuBack label={__('media_speed')} />
             <Settings.RadioItem isSelected={rate === '0.5'} onChange={handleChange} value="0.5" />
             <Settings.RadioItem

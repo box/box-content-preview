@@ -6,12 +6,12 @@ import './SettingsMenu.scss';
 
 export type Props = React.PropsWithChildren<{
     className?: string;
-    title: Menu;
+    name: Menu;
 }>;
 
-export default function SettingsMenu({ children, className, title }: Props): JSX.Element {
+export default function SettingsMenu({ children, className, name }: Props): JSX.Element {
     const { activeMenu, setActiveRect } = React.useContext(SettingsContext);
-    const isActive = activeMenu === title;
+    const isActive = activeMenu === name;
     const menuElRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {

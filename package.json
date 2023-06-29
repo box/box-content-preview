@@ -10,7 +10,6 @@
     },
     "devDependencies": {
         "@babel/core": "^7.18.6",
-        "@babel/eslint-parser": "^7.5.4",
         "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@babel/plugin-proposal-object-rest-spread": "^7.18.6",
         "@babel/plugin-transform-object-assign": "^7.18.6",
@@ -54,7 +53,7 @@
         "eslint-plugin-babel": "^5.3.0",
         "eslint-plugin-chai-friendly": "^0.4.1",
         "eslint-plugin-cypress": "^2.8.1",
-        "eslint-plugin-flowtype": "8.0.3",
+        "eslint-plugin-flowtype": "^8.0.3",
         "eslint-plugin-formatjs": "^1.5.4",
         "eslint-plugin-import": "^2.19.1",
         "eslint-plugin-jest": "^23.1.1",
@@ -93,7 +92,7 @@
         "stylelint-config-rational-order": "^0.1.2",
         "stylelint-config-standard": "^19.0.0",
         "stylelint-order": "^3.1.1",
-        "typescript": "5.0.4",
+        "typescript": "^5.0.4",
         "uglifyjs-webpack-plugin": "^2.1.3",
         "wait-on": "^3.2.0",
         "webpack": "^4.36.1",
@@ -154,8 +153,5 @@
     },
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1"
-    },
-    "dependencies": {
-        "@babel/plugin-syntax-flow": "^7.22.5"
     }
 }

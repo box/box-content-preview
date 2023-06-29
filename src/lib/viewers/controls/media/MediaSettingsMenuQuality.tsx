@@ -33,7 +33,7 @@ export default function MediaSettingsMenuQuality({ onQualityChange, quality }: P
     };
 
     return (
-        <Settings.Menu title={Menu.QUALITY}>
+        <Settings.Menu name={Menu.QUALITY}>
             <Settings.MenuBack label={__('media_quality')} />
             <Settings.RadioItem<Quality>
                 isSelected={quality === Quality.SD}

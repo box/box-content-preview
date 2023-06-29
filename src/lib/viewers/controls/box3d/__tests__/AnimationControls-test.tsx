@@ -6,7 +6,7 @@ import PlayPauseToggle from '../../media/PlayPauseToggle';
 
 describe('AnimationControls', () => {
     const getDefaults = (): AnimationControlsProps => ({
-        animationClips: [{ duration: 1, id: '1', title: 'one' }],
+        animationClips: [{ duration: 1, id: '1', name: 'one' }],
         currentAnimationClipId: '1',
         isPlaying: false,
         onAnimationClipSelect: jest.fn(),

@@ -6,7 +6,7 @@ import './AnimationClipsControl.scss';
 type AnimationClip = {
     duration: number;
     id: string;
-    title: string;
+    name: string;
 };
 
 export type Props = {
@@ -33,14 +33,14 @@ export default function AnimationClipsControl({
 }: Props): JSX.Element {
     return (
         <Settings className="bp-AnimationClipsControl" toggle={AnimationClipsToggle}>
-            <Settings.Menu title={Menu.MAIN}>
-                {animationClips.map(({ duration, id, title }) => {
+            <Settings.Menu name={Menu.MAIN}>
+                {animationClips.map(({ duration, id, name }) => {
                     return (
                         <Settings.RadioItem
                             key={id}
                             className="bp-AnimationClipsControl-radioItem"
                             isSelected={id === currentAnimationClipId}
-                            label={`${formatDuration(duration)} ${title}`}
+                            label={`${formatDuration(duration)} ${name}`}
                             onChange={onAnimationClipSelect}
                             value={id}
                         />
