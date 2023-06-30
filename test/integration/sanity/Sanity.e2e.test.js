@@ -17,9 +17,7 @@ describe('Preview Sanity', () => {
         cy.showPreview(token, fileId);
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
-        cy.get('.bp-thumbnail').each($ele => {
-            cy.wrap($ele).should('have.class', 'bp-thumbnail-image-loaded');
-        });
+        cy.hasThumbnails();
 
         cy.window().then(win => {
             win.preview.reload(true);
@@ -36,10 +34,7 @@ describe('Preview Sanity', () => {
         cy.showPreview(token, fileId);
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
-        cy.get('.bp-thumbnail').each($ele => {
-            cy.wrap($ele).should('have.class', 'bp-thumbnail-image-loaded');
-        });
-
+        cy.hasThumbnails();
         cy.window().then(win => {
             win.preview.reload();
             cy.getPreviewPage(1);

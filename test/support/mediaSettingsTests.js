@@ -181,11 +181,10 @@ export function runSubtitlesTests() {
             cy.getByTestId('bp-media-settings-subtitles').contains('Off');
 
             // Toggling CC back on should restore the previously used text track
-            cy.getByTitle('Subtitles/Closed Captions').as('subtitlesBtn');
-            cy.getByTitle('Subtitles/Closed Captions').should('be.visible');
-            cy.getByTitle('Subtitles/Closed Captions').should('have.attr', 'aria-pressed', 'false');
-            cy.getByTitle('Subtitles/Closed Captions').click();
-            cy.getByTitle('Subtitles/Closed Captions').should('have.attr', 'aria-pressed', 'true');
+            cy.get('@subtitlesBtn').should('be.visible');
+            cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'false');
+            cy.get('@subtitlesBtn').click();
+            cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'true');
 
             cy.getByTitle('Settings').click();
 

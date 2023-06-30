@@ -24,6 +24,7 @@ module.exports = {
             files: ['**/*.ts', '**/*.tsx'],
             rules: {
                 'no-shadow': 'off',
+                'react/prop-types': 'off',
                 '@typescript-eslint/no-unused-vars': 'off',
             },
         },
