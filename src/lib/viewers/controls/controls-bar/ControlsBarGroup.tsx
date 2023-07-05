@@ -2,9 +2,9 @@ import React from 'react';
 import classNames from 'classnames';
 import './ControlsBarGroup.scss';
 
-export type Props = React.HTMLAttributes<HTMLDivElement> & {
+export interface Props extends React.HTMLAttributes<HTMLDivElement> {
     isDistinct?: boolean;
-};
+}
 
 export default function ControlsBarGroup({ children, className, isDistinct }: Props): JSX.Element {
     return (

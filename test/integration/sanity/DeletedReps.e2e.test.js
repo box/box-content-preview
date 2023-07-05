@@ -5,7 +5,7 @@ describe('Previewing a file with deleted representations', () => {
     const token = Cypress.env('ACCESS_TOKEN');
 
     beforeEach(() => {
-        cy.server();
+        cy.intercept('GET', '**/files/*');
 
         cy.visit('/', {
             onBeforeLoad(win) {

@@ -1,1 +1,1 @@
-declare const __: Function;
+declare const __: (arg: string) => string;

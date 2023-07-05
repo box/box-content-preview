@@ -86,10 +86,9 @@ describe('Preview Document Controls', () => {
 
             cy.showControls();
             cy.getByTitle('Click to enter page number').click();
-            cy.getByTestId('bp-PageControlsForm-input')
-                .should('be.visible')
-                .type('2')
-                .blur();
+            cy.getByTestId('bp-PageControlsForm-input').should('be.visible');
+            cy.getByTestId('bp-PageControlsForm-input').type('2');
+            cy.getByTestId('bp-PageControlsForm-input').blur();
 
             cy.getPreviewPage(2).should('be.visible');
             cy.contains('Discover how your business can use Box Platform');

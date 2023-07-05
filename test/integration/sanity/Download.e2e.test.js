@@ -9,12 +9,7 @@ describe('Download disabled while preview is already open', () => {
 
     it('should give generic download error when trying to download and its forbidden', () => {
         cy.showPreview(token, fileIdBad, { showDownload: true });
-        cy.route({
-            method: 'GET',
-            url: `**/files/${fileIdBad}?fields=download_url`,
-            status: 403,
-            response: {},
-        });
+        cy.intercept('GET', `**/files/${fileIdBad}?fields=download_url`, { statusCode: 403, body: {} });
 
         cy.getByTestId('preview-error-download-btn').should('be.visible');
         cy.getByTestId('preview-error-download-btn').click();
@@ -23,13 +18,9 @@ describe('Download disabled while preview is already open', () => {
 
     it('should give shield error when trying to download and access policy prevents download', () => {
         cy.showPreview(token, fileIdBad, { showDownload: true });
-        cy.route({
-            method: 'GET',
-            url: `**/files/${fileIdBad}?fields=download_url`,
-            status: 403,
-            response: {
-                code: 'forbidden_by_policy',
-            },
+        cy.intercept('GET', `**/files/${fileIdBad}?fields=download_url`, {
+            statusCode: 403,
+            body: { code: 'forbidden_by_policy' },
         });
 
         cy.getByTestId('preview-error-download-btn').should('be.visible');
