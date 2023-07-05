@@ -1,3 +1,11 @@
+## 2.96.0 (2023-07-05)
+
+* feat(pdf): Upgrade Cypress for PDFjs update (#1482) ([92758e6](https://github.com/box/box-content-preview/commit/92758e6)), closes [#1482](https://github.com/box/box-content-preview/issues/1482)
+* feat(pdf): Upgrade PDFjs version (#1485) ([d81771d](https://github.com/box/box-content-preview/commit/d81771d)), closes [#1485](https://github.com/box/box-content-preview/issues/1485)
+* fix(e2e-tests): fixing hd video player test (#1484) ([42a9eb8](https://github.com/box/box-content-preview/commit/42a9eb8)), closes [#1484](https://github.com/box/box-content-preview/issues/1484)
+
+
+
 ## 2.95.0 (2023-06-08)
 
 * chore(sass): replace node-sass with sass (#1479) ([46c63e9](https://github.com/box/box-content-preview/commit/46c63e9)), closes [#1479](https://github.com/box/box-content-preview/issues/1479)
