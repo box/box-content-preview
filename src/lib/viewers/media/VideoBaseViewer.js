@@ -43,10 +43,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.mediaEl.setAttribute('playsinline', '');
 
         // Play button
-        this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('button'));
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
+        this.playButtonEl.querySelector('#play-button-icon-01').textContent = __('media_play');
 
         this.lowerLights();
     }
