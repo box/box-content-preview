@@ -46,6 +46,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('button'));
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
+        this.playButtonEl.setAttribute('type', 'button');
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
