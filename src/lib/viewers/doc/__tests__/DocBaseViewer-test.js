@@ -1145,11 +1145,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 2 }));
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
 
-            test('should simplify the text layer if the user is on mobile', () => {
+            test('should enable the text layer if the user is on mobile', () => {
                 docBase.isMobile = true;
                 stubs.checkPermission.mockReturnValueOnce(true);
 
