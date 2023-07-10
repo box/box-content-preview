@@ -158,7 +158,9 @@ class DocBaseViewer extends BaseViewer {
         super.setup();
 
         this.docEl = this.createViewer(document.createElement('div'));
+        this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
+        this.docEl.tabIndex = '0';
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
