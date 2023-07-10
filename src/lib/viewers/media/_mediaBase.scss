@@ -1,6 +1,16 @@
 @import '../../boxuiVariables';
 @import './MediaControls';
 
+// Reset default styling that come from the “User Agent Stylesheet”
+@mixin bp-reset-default-styling-button {
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
 .bp-media {
     position: absolute;
     top: 0;
@@ -31,12 +41,13 @@
 }
 
 .bp-media-play-button {
+    @include bp-reset-default-styling-button;
+
     position: absolute;
     top: 50%;
     left: 50%;
     width: 80px;
     height: 80px;
-    padding-top: 12px;
     color: $white;
     font-size: 40px;
     text-align: center;
