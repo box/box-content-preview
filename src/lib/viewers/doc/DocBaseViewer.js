@@ -80,7 +80,7 @@ const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
     DISABLE: 0, // Should match TextLayerMode enum in pdf_viewer.js
     ENABLE: 1,
-    ENABLE_ENHANCE: 2,
+    ENABLE_PERMISSIONS: 2,
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
@@ -796,7 +796,6 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
         const hasDownload = checkPermission(file, PERMISSION_DOWNLOAD);
         const hasTextLayer = hasDownload && !this.getViewerOption('disableTextLayer');
-        const textLayerMode = this.isMobile ? PDFJS_TEXT_LAYER_MODE.ENABLE : PDFJS_TEXT_LAYER_MODE.ENABLE_ENHANCE;
 
         return new PdfViewerClass({
             annotationMode: PDFAnnotationMode.ENABLE, // Show annotations, but not forms
@@ -807,7 +806,7 @@ class DocBaseViewer extends BaseViewer {
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
-            textLayerMode: hasTextLayer ? textLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
+            textLayerMode: hasTextLayer ? PDFJS_TEXT_LAYER_MODE.ENABLE : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
     }
 
