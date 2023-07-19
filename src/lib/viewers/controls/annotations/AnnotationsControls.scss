@@ -9,3 +9,9 @@
 .bp-AnnotationsControls-exitBtn {
     display: none;
 }
+
+.ba-Layer--popup,
+.ba-Layer--highlight,
+.ba-Layer--drawing {
+    z-index: 3;
+}
