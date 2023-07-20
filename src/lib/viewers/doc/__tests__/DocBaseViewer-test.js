@@ -1145,7 +1145,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    // Text Layer mode 1 = Enabled
+                    // Text Layer mode 1 = enabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
@@ -1156,7 +1156,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    // Text Layer mode 1 = Enabled
+                    // Text Layer mode 1 = enabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
@@ -1166,7 +1166,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    // Text Layer mode 0 = Disabled
+                    // Text Layer mode 0 = disabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
@@ -1178,7 +1178,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
                     expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
-                    // Text Layer mode 0 = Disabled
+                    // Text Layer mode 0 = disabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
