@@ -1145,16 +1145,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 2 }));
+                    // Text Layer mode 1 = enabled
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
 
-            test('should simplify the text layer if the user is on mobile', () => {
+            test('should enable the text layer if the user is on mobile', () => {
                 docBase.isMobile = true;
                 stubs.checkPermission.mockReturnValueOnce(true);
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    // Text Layer mode 1 = enabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
@@ -1164,6 +1166,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    // Text Layer mode 0 = disabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
@@ -1175,6 +1178,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
                     expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    // Text Layer mode 0 = disabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });
