@@ -1,3 +1,12 @@
+## 2.97.0 (2023-07-24)
+
+* fix(a11y): replace instructions (#1488) ([50ff7bb](https://github.com/box/box-content-preview/commit/50ff7bb)), closes [#1488](https://github.com/box/box-content-preview/issues/1488)
+* fix(a11y): video player thumbnail has no text alternative (#1486) ([bd3935b](https://github.com/box/box-content-preview/commit/bd3935b)), closes [#1486](https://github.com/box/box-content-preview/issues/1486)
+* fix(copy-paste-issue): PDFJS copy paste fix (#1489) ([9625e46](https://github.com/box/box-content-preview/commit/9625e46)), closes [#1489](https://github.com/box/box-content-preview/issues/1489)
+* feat(pdf): Fix search and highlight + comment tooltip (#1490) ([f937052](https://github.com/box/box-content-preview/commit/f937052)), closes [#1490](https://github.com/box/box-content-preview/issues/1490)
+
+
+
 ## 2.96.0 (2023-07-05)
 
 * feat(pdf): Upgrade Cypress for PDFjs update (#1482) ([92758e6](https://github.com/box/box-content-preview/commit/92758e6)), closes [#1482](https://github.com/box/box-content-preview/issues/1482)
