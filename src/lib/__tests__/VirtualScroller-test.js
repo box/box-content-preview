@@ -535,7 +535,7 @@ describe('VirtualScroller', () => {
             virtualScroller.scrollIntoView(1);
 
             expect(stubs.isVisible).toBeCalled();
-            expect(stubs.scrollIntoView).toBeCalled();
+            expect(stubs.scrollIntoView).toBeCalledWith({ block: 'nearest' });
             expect(scrollingEl.scrollTop).toBeUndefined();
             expect(stubs.dispatchEvent).not.toBeCalled();
         });
