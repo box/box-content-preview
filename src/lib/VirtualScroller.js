@@ -418,7 +418,7 @@ class VirtualScroller {
             // If it is already present and visible, do nothing, but if not visible
             // then scroll it into view
             if (!this.isVisible(foundItem)) {
-                foundItem.scrollIntoView();
+                foundItem.scrollIntoView({ block: 'nearest' });
             }
         } else {
             // If it is not present, then adjust the scrollTop so that the list item

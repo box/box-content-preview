@@ -12,6 +12,6 @@ export const isFeatureEnabled = (features: FeatureConfig, featureName: string): 
     return !!get(features, featureName, false);
 };
 
-export const getFeatureConfig = (features: FeatureConfig, featureName: string): FeatureConfig => {
+export const getFeatureConfig = (features: FeatureConfig, featureName: string): FeatureOptions => {
     return get(features, featureName, {});
 };
