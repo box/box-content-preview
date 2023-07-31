@@ -1,3 +1,12 @@
+## 2.98.0 (2023-07-31)
+
+* feat(node-18-upgrade): Node 18 Upgrade (#1491) ([05f31b8](https://github.com/box/box-content-preview/commit/05f31b8)), closes [#1491](https://github.com/box/box-content-preview/issues/1491)
+* feat(pdf): Fix commenting on expiring embed links (#1493) ([b3c8b6f](https://github.com/box/box-content-preview/commit/b3c8b6f)), closes [#1493](https://github.com/box/box-content-preview/issues/1493)
+* Revert "feat(node-18-upgrade): Node 18 Upgrade (#1491)" (#1494) ([df8a3d5](https://github.com/box/box-content-preview/commit/df8a3d5)), closes [#1491](https://github.com/box/box-content-preview/issues/1491) [#1494](https://github.com/box/box-content-preview/issues/1494)
+* fix(preview): fix auto scroll issue with embed preview (#1492) ([58f278f](https://github.com/box/box-content-preview/commit/58f278f)), closes [#1492](https://github.com/box/box-content-preview/issues/1492)
+
+
+
 ## 2.97.0 (2023-07-24)
 
 * fix(a11y): replace instructions (#1488) ([50ff7bb](https://github.com/box/box-content-preview/commit/50ff7bb)), closes [#1488](https://github.com/box/box-content-preview/issues/1488)
