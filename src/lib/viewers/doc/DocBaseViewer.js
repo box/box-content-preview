@@ -177,11 +177,6 @@ class DocBaseViewer extends BaseViewer {
 
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
-        // Text layer should be rendered for a11y reasons thats why we will block user from selecting content when no download permissions was granted
-        const isViewOnly = !checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (isViewOnly) {
-            this.viewerEl.classList.add('viewOnly');
-        }
 
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
@@ -801,9 +796,15 @@ class DocBaseViewer extends BaseViewer {
         const { AnnotationMode: PDFAnnotationMode = {} } = this.pdfjsLib;
         const assetUrlCreator = createAssetUrlCreator(location);
         const hasDownload = checkPermission(file, PERMISSION_DOWNLOAD);
+        const hasTextLayer = !this.getViewerOption('disableTextLayer');
         const enabledTextLayerMode = hasDownload
             ? PDFJS_TEXT_LAYER_MODE.ENABLE
             : PDFJS_TEXT_LAYER_MODE.ENABLE_PERMISSIONS; // This mode will prevent default behavior for copy events in the TextLayerBuilder
+
+        // Text layer should be rendered for a11y reasons thats why we will block user from selecting content when no download permissions was granted
+        if (!hasDownload) {
+            this.viewerEl.classList.add('pdfViewer--viewOnly');
+        }
 
         return new PdfViewerClass({
             annotationMode: PDFAnnotationMode.ENABLE, // Show annotations, but not forms
@@ -814,9 +815,7 @@ class DocBaseViewer extends BaseViewer {
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
-            textLayerMode: this.getViewerOption('disableTextLayer')
-                ? PDFJS_TEXT_LAYER_MODE.DISABLE
-                : enabledTextLayerMode,
+            textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
     }
 

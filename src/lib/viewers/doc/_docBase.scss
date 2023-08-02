@@ -305,10 +305,10 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .pdfViewer {
-        &.viewOnly {
+        &--viewOnly {
             .textLayer {
                 span {
-                    cursor: not-allowed;
+                    cursor: unset;
                     user-select: none;
                 }
             }

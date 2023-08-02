@@ -276,35 +276,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setup();
             expect(docBase.pageTracker).toBeInstanceOf(PageTracker);
         });
-        test('should add view only class if user does not have download permissions', () => {
-            docBase = new DocBaseViewer({
-                file: {
-                    id: '0',
-                },
-            });
-            docBase.containerEl = containerEl;
-
-            jest.spyOn(file, 'checkPermission').mockReturnValue(false);
-            docBase.setup();
-
-            expect(file.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-            expect(docBase.viewerEl).toHaveClass('viewOnly');
-        });
-
-        test('should not add view only class if user has download permissions', () => {
-            docBase = new DocBaseViewer({
-                file: {
-                    id: '0',
-                },
-            });
-            docBase.containerEl = containerEl;
-
-            jest.spyOn(file, 'checkPermission').mockReturnValue(true);
-            docBase.setup();
-
-            expect(file.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-            expect(docBase.viewerEl).not.toHaveClass('viewOnly');
-        });
     });
 
     describe('Non setup methods', () => {
@@ -1177,6 +1148,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
                     // Text Layer mode 1 = enabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
+                });
+            });
+
+            test('should add view only class if user does not have download permissions', () => {
+                docBase.containerEl = containerEl;
+                stubs.checkPermission.mockReturnValueOnce(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(docBase.viewerEl).toHaveClass('pdfViewer--viewOnly');
+                });
+            });
+
+            test('should not add view only class if user has download permissions', () => {
+                docBase.containerEl = containerEl;
+                stubs.checkPermission.mockReturnValueOnce(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(docBase.viewerEl).not.toHaveClass('pdfViewer--viewOnly');
                 });
             });
 
