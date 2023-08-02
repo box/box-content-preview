@@ -1,3 +1,10 @@
+## 2.99.0 (2023-08-02)
+
+* feat(pdf): Move annotation marker styling back to sdk (#1498) ([a6821cf](https://github.com/box/box-content-preview/commit/a6821cf)), closes [#1498](https://github.com/box/box-content-preview/issues/1498)
+* feat(pdf): Move annotation styling to box-annotations (#1497) ([07fccf2](https://github.com/box/box-content-preview/commit/07fccf2)), closes [#1497](https://github.com/box/box-content-preview/issues/1497)
+
+
+
 ## 2.98.0 (2023-07-31)
 
 * feat(node-18-upgrade): Node 18 Upgrade (#1491) ([05f31b8](https://github.com/box/box-content-preview/commit/05f31b8)), closes [#1491](https://github.com/box/box-content-preview/issues/1491)
