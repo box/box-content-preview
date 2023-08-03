@@ -304,6 +304,17 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
     }
 
+    .pdfViewer {
+        &.pdfViewer--viewOnly {
+            .textLayer {
+                span {
+                    cursor: unset;
+                    user-select: none;
+                }
+            }
+        }
+    }
+
     .textLayer {
         caret-color: black; // Required for caret navigation on transparent text
         top: $pdfjs-page-padding;
