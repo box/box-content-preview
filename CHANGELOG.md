@@ -1,3 +1,10 @@
+## 2.100.0 (2023-08-04)
+
+* fix(a11y): screen reader support for view only file preview (#1495) ([9a0b4ab](https://github.com/box/box-content-preview/commit/9a0b4ab)), closes [#1495](https://github.com/box/box-content-preview/issues/1495)
+* fix(pdf): Move controls layer above popup layer (#1499) ([9598097](https://github.com/box/box-content-preview/commit/9598097)), closes [#1499](https://github.com/box/box-content-preview/issues/1499)
+
+
+
 ## 2.99.0 (2023-08-02)
 
 * feat(pdf): Move annotation marker styling back to sdk (#1498) ([a6821cf](https://github.com/box/box-content-preview/commit/a6821cf)), closes [#1498](https://github.com/box/box-content-preview/issues/1498)
