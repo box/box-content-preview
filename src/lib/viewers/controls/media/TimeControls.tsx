@@ -1,7 +1,7 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
-import { bdlBoxBlue, bdlGray62, white } from 'box-ui-elements/es/styles/variables';
+import { bdlBoxBlue, bdlGray65, white } from 'box-ui-elements/es/styles/variables';
 import Filmstrip from './Filmstrip';
 import SliderControl from '../slider';
 import './TimeControls.scss';
@@ -75,7 +75,7 @@ export default function TimeControls({
                 onUpdate={onTimeChange}
                 step={5}
                 title={__('media_time_slider')}
-                track={`linear-gradient(to right, ${bdlBoxBlue} ${currentPercentage}%, ${white} ${currentPercentage}%, ${white} ${bufferedPercentage}%, ${bdlGray62} ${bufferedPercentage}%, ${bdlGray62} 100%)`}
+                track={`linear-gradient(to right, ${bdlBoxBlue} ${currentPercentage}%, ${white} ${currentPercentage}%, ${white} ${bufferedPercentage}%, ${bdlGray65} ${bufferedPercentage}%, ${bdlGray65} 100%)`}
                 value={currentValue}
             />
         </div>
