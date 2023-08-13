@@ -5,7 +5,6 @@
 #this fix or fixes it on it's own
 
 
-DOC_COMPILER_BINARY="build/closure-compiler-v20200719.jar"
 DOC_STATIC_ASSETS_PDFJS_VERSION=${1}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 DOC_STATIC_ASSETS_PATH="src/third-party/doc/box-${DOC_STATIC_ASSETS_PDFJS_VERSION}"
