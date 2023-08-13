@@ -944,7 +944,9 @@ class DocBaseViewer extends BaseViewer {
         // Set pdf.js worker source location
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
-
+        if (window.workerSet) {
+            return;
+        }
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
     }
 
