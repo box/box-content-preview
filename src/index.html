@@ -7,34 +7,64 @@
         <script src="./preview.js"></script>
 
         <script>
-            function switchVersion() {
-                const script = document.createElement('script');
-                let src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/#/pdf.min.js';
-                let version = document.getElementById('version').value;
-                src = src.replace('#', version);
-                script.src = src;
+            const pdfjs_cdn_url = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/#/pdf.min.js';
+            const pdf_viewer_css = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/#/pdf_viewer.min.css';
+            const shaka_url = 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/#/shaka-player.compiled.js';
 
+            function switchVersion() {
+                let oldJs = document.getElementById('new-js');
+                if (oldJs) {
+                    document.head.removeChild(oldJs);
+                }
+
+                const script = document.createElement('script');
+                script.id = 'new-js';
+                let version = document.getElementById('version').value;
+                let newsrc = pdfjs_cdn_url.replace('#', version);
+                script.src = newsrc;
                 document.head.appendChild(script);
 
+                let oldCss = document.getElementById('new-css');
+                if (oldCss) {
+                    document.head.removeChild(oldCss);
+                }
+
+                const link = document.createElement('link');
+                link.id = 'new-css';
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = pdf_viewer_css.replace('#', version);
+                document.head.append(link);
+
                 script.addEventListener('load', function() {
-                    const time = window.performance.now();
                     pdfjsLib = window['pdfjs-dist/build/pdf'];
                     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
                         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + version + '/pdf.worker.min.js';
+                    //preview.destroy();
                     window.workerSet = true;
-                    loadPreview();
-                    console.log(version);
-                    console.log(window.performance.now() - time);
+                    //  loadPreview();
+                    preview.reload(false);
                 });
             }
 
-            function switchShakaVersion() {
-                const script = document.createElement('script');
-                let src = 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/#/shaka-player.compiled.js';
-                let version = document.getElementById('shaka-version').value;
-                src = src.replace('#', version);
-                script.src = src;
+            function setPageStyle() {
+                const pages = document.getElementsByClassName('page');
+                for (page of pages) {
+                    page.style.cssText = pageStyle;
+                }
+            }
 
+            function switchShakaVersion() {
+                let oldJs = document.getElementById('new-shaka');
+                if (oldJs) {
+                    document.head.removeChild(oldJs);
+                }
+
+                const script = document.createElement('script');
+                let version = document.getElementById('shaka-version').value;
+                let src = shaka_url.replace('#', version);
+                script.id = 'new-shaka';
+                script.src = src;
                 document.head.appendChild(script);
 
                 script.addEventListener('load', function() {
@@ -55,7 +85,7 @@
             .setters-container {
                 display: flex;
                 flex-direction: column;
-                height: 15vh;
+                height: 10vh;
                 padding: 20px;
                 overflow: auto;
                 font-size: 75%;
@@ -122,43 +152,33 @@
                 <div class="container">
                     <div class="input-display">PDJ JS Version <span id="pdf-version-display"></span></div>
                     <select onchange="switchVersion()" id="version">
-                        <option>
-                            3.6.172
-                        </option>
-                        <option>
-                            3.4.120
-                        </option>
-                        <option>
-                            3.2.146
-                        </option>
-                        <option>
-                            3.1.81
-                        </option>
-                        <option>
-                            3.0.279
-                        </option>
-                        <option>
-                            2.16.105
-                        </option>
-                        <option>
-                            2.15.349
-                        </option>
-                        <option selected>
-                            2.14.305
-                        </option>
+                        <option>3.9.179</option>
+                        <option>3.8.162</option>
+                        <option>3.7.107</option>
+                        <option selected>3.6.172 </option>
+                        <option>3.4.120 </option>
+                        <option> 3.2.146</option>
+                        <option>3.1.81</option>
+                        <option> 3.0.279</option>
+                        <option> 2.16.105 </option>
+                        <option>2.15.349 </option>
+                        <option>2.14.305 </option>
+                        <option>2.13.216 </option>
+                        <option>2.12.313</option>
+                        <option>2.10.377</option>
+                        <option>2.9.359</option>
+                        <option>2.8.335</option>
+                        <option> 2.7.570</option>
+                        <option> 2.6.347</option>
                     </select>
-                    <button onclick="loadPreview()">Render File</button>
+                    <button onclick="window.location.reload()">Reset</button>
                 </div>
 
                 <div class="container" id="shaka-video-input">
                     <div class="input-display">Shaka Player Version</div>
                     <select id="shaka-version" onchange="switchShakaVersion()">
-                        <option>
-                            4.3.8
-                        </option>
-                        <option>
-                            4.3.7
-                        </option>
+                        <option> 4.3.8</option>
+                        <option>4.3.7</option>
                         <option>
                             4.3.6
                         </option>
@@ -770,14 +790,24 @@
                 </div>
             </div>
         </div>
-
+        <hr />
         <div class="preview-container" data-testid="preview-container"></div>
         <script>
             // Create preview first so events can be bound before 'show'
             /* global Box */
-            preview = new Box.Preview();
+            var preview = new Box.Preview();
+            var pageStyle = '';
+            var firstLoad = true;
             preview.addListener('load', () => {
                 window.workerSet = false;
+                const pages = document.getElementsByClassName('page');
+                if (firstLoad && pages.length > 0) {
+                    const page = pages[0];
+                    pageStyle = page.style.cssText;
+                    firstLoad = false;
+                } else if (pages.length > 0) {
+                    setPageStyle();
+                }
             });
 
             function clearProperty(selector) {

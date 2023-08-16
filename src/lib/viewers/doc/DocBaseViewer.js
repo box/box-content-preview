@@ -330,6 +330,7 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
+            console.log('prefetching assets.......');
             this.prefetchAssets(JS, CSS);
             this.prefetchAssets(PRELOAD_JS, [], true);
         }
@@ -403,10 +404,8 @@ class DocBaseViewer extends BaseViewer {
     load() {
         super.load();
         this.showPreload();
-
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
-
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
@@ -943,10 +942,11 @@ class DocBaseViewer extends BaseViewer {
 
         // Set pdf.js worker source location
         const { location } = this.options;
-        const assetUrlCreator = createAssetUrlCreator(location);
+
         if (window.workerSet) {
             return;
         }
+        const assetUrlCreator = createAssetUrlCreator(location);
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
     }
 
