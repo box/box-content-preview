@@ -10,6 +10,8 @@ import axios, {
 import pickBy from 'lodash/pickBy';
 import DownloadReachability from './DownloadReachability';
 import MetadataAPI from './metadataAPI';
+import lumappsPassThrough from './LUMAPPS_PassThrough';
+import { LumAppsContext, PassThroughData } from './LUMAPPS_types';
 
 export type APIGetConfig = { type?: ResponseType } & AxiosRequestConfig;
 export type APIError = { response: AxiosResponse } & Error;
@@ -20,6 +22,8 @@ const filterOptions = (options: AxiosRequestConfig = {}): AxiosRequestConfig => 
 };
 
 const handleError = ({ response }: AxiosError): void => {
+    // eslint-disable-next-line no-console
+    console.log('ERROR RESPONSE', response);
     if (response) {
         const error = new Error(response.statusText) as APIError;
         error.response = response; // Need to pass response through so we can see what kind of HTTP error this was
@@ -27,6 +31,8 @@ const handleError = ({ response }: AxiosError): void => {
     }
 };
 const parseResponse = (response: AxiosResponse): AxiosResponse | AxiosResponse['data'] => {
+    // eslint-disable-next-line no-console
+    console.log('RESPONSE', response);
     if (response.status === 204 || response.status === 202) {
         return response;
     }
@@ -90,15 +96,27 @@ export default class Api {
         return this.xhr(url, { method: 'put', data, ...options });
     }
 
-    xhr(url: string, options: AxiosRequestConfig = {}): AxiosPromise {
-        let transformResponse;
+    xhr(url: string, options: any): AxiosPromise {
+        // ORIGINAL CODE
+        //
+        // let transformResponse;
+        //
+        // if (options.responseType === 'text') {
+        //     transformResponse = transformTextResponse;
+        // }
+        // return this.client(url, filterOptions({ transformResponse, ...options }))
+        //     .then(parseResponse)
+        //     .catch(handleError);
 
-        if (options.responseType === 'text') {
-            transformResponse = transformTextResponse;
-        }
+        const { method, data, LumAppsContext, connectorId } = options;
+        const passThroughData: PassThroughData = {
+            method: method.toUpperCase(),
+            url,
+        };
+        if (data) passThroughData.body = data as object;
 
-        return this.client(url, filterOptions({ transformResponse, ...options }))
-            .then(parseResponse)
+        return lumappsPassThrough(LumAppsContext as LumAppsContext, connectorId as string, passThroughData)
+            .then(parseResponse, () => console.log(passThroughData.url))
             .catch(handleError);
     }
 }

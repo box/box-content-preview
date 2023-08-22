@@ -113,7 +113,7 @@
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
         "cy:run": "yarn cy:wait; yarn cypress run --spec test/integration/**/*.test.js",
-        "cy:wait": "wait-on http-get://localhost:8000",
+        "cy:wait": "wait-on http-get://localhost:3000",
         "lint": "npm-run-all lint:*",
         "lint:css": "NODE_ENV=dev yarn stylelint 'src/lib/**/*.scss'",
         "lint:js": "NODE_ENV=dev yarn eslint src/lib",
@@ -153,5 +153,8 @@
     },
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1"
+    },
+    "volta": {
+        "node": "14.21.3"
     }
 }

@@ -228,6 +228,119 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     show(fileIdOrFile, token, options = {}) {
+        const fileTest = {
+            type: 'file',
+            id: '1036135608382',
+            etag: '0',
+            permissions: {
+                can_download: true,
+                can_preview: true,
+                can_upload: true,
+                can_comment: true,
+                can_rename: true,
+                can_delete: true,
+                can_share: true,
+                can_set_share_access: true,
+                can_invite_collaborator: true,
+                can_annotate: true,
+                can_view_annotations_all: true,
+                can_view_annotations_self: true,
+                can_create_annotations: true,
+                can_view_annotations: true,
+            },
+            shared_link: null,
+            sha1: '314fe4aa9417a3a8b0f12e406247fbe3b301732f',
+            file_version: {
+                type: 'file_version',
+                id: '1122965861182',
+                sha1: '314fe4aa9417a3a8b0f12e406247fbe3b301732f',
+            },
+            name: 'danny-devito-2568824387.jpeg',
+            size: 133485,
+            extension: 'jpeg',
+            representations: {
+                entries: [
+                    {
+                        representation: '3d',
+                        properties: {},
+                        info: {
+                            url:
+                                'https://api.box.com/2.0/internal_files/1036135608382/versions/1122965861182/representations/3d',
+                        },
+                        status: {
+                            state: 'none',
+                        },
+                        content: {
+                            url_template:
+                                'https://public.boxcloud.com/api/2.0/internal_files/1036135608382/versions/1122965861182/representations/3d/content/{+asset_path}',
+                        },
+                    },
+                    {
+                        representation: 'jpg',
+                        properties: {
+                            dimensions: '1024x1024',
+                            paged: 'false',
+                            thumb: 'false',
+                        },
+                        info: {
+                            url:
+                                'https://api.box.com/2.0/internal_files/1036135608382/versions/1122965861182/representations/jpg_1024x1024',
+                        },
+                        status: {
+                            state: 'success',
+                        },
+                        content: {
+                            url_template:
+                                'https://public.boxcloud.com/api/2.0/internal_files/1036135608382/versions/1122965861182/representations/jpg_1024x1024/content/{+asset_path}',
+                        },
+                    },
+                    {
+                        representation: 'jpg',
+                        properties: {
+                            dimensions: '2048x2048',
+                            paged: 'true',
+                            thumb: 'false',
+                        },
+                        info: {
+                            url:
+                                'https://api.box.com/2.0/internal_files/1036135608382/versions/1122965861182/representations/jpg_paged_2048x2048',
+                        },
+                        status: {
+                            state: 'success',
+                        },
+                        content: {
+                            url_template:
+                                'https://public.boxcloud.com/api/2.0/internal_files/1036135608382/versions/1122965861182/representations/jpg_paged_2048x2048/content/{+asset_path}',
+                        },
+                        metadata: {
+                            pages: 1,
+                        },
+                    },
+                ],
+            },
+            watermark_info: {
+                is_watermarked: false,
+            },
+            authenticated_download_url: 'https://public.boxcloud.com/api/2.0/files/1036135608382/content',
+            is_download_available: true,
+        };
+        const contextTest = {
+            lang: 'en',
+            token:
+                'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6InN5bi1rZXktdjAifQ.eyJqdGkiOiJkNWQ2NTU1Ni1jYTdlLTRkYTItYWUxMC04YTJkYTRhNzE3YmIiLCJpc3MiOiJodHRwczovL2xvZ2luLmx1bWFwcHMuY29tL3YxIiwiaWF0IjoxNjkyMjAwNjMxLCJleHAiOjE2OTIyMDQyMzEsImF1ZCI6Imh0dHBzOi8vY3NieC11cy5sdW1hcHBzLmNvbS9fYWgvYXBpL2x1bXNpdGVzIiwic3ViIjoiNTcxNTc2MDIwMjY0NTUwNCIsIm9yZ2FuaXphdGlvbklkIjoiODI2NjAxNzExMTg2MjIyOCIsImVtYWlsIjoiZXVkZXNAbHVtYXBwcy5jb20iLCJpc09yZ0FkbWluIjp0cnVlfQ.Io-xyDQgqevZCU3Hz2sOOvz7hK7cSQZ-w6wqp8y1s4sheENbiFSrO6mconXBaXn1cqn_VlTgKTXtkSFgwKRCnGRG2AsvPmfdmTwcbyKW_imXV9XaxhRpgBLRBvBgstCvbyxT8Ik13_p-EQjFcO14ZZ7i9lpSBSXXC5v7is7A0aqtRBX68MpE5QI02wJcn7T5jv8-gmqpmUjZSuj1XBsuIKn4-hdyY4txV22fDJId3xxYPit5hgyH36j20cRv7yeQdzmFc5WvWSUtbIJFVKAIskkXc2mo_gQWnnKK2xb4snk67_hfqk5qgDy_TloBwta7Fgn1E7dbc29MHGMwUME1wEuvlg_sluIzwYxhdZbnQ97nVOT_fHQK7M1zZuUr2GzOvKfvnLam_qLGifBy0OMFScHZHR4GkSDfXCYdak4REmucCyChgpIuaHGqudM3356gprHNRMxebxqwlE1sbMOoKqoiANA8RxRHzsV3qmh0FeA722HTNf5sEREMSFzH9Za8O-DXbndDoEF6SdwvHwzbSkQgaH4boaBJUAvLgVGZntTI2moSbM61RjbQbM6vtm99pfZIAbJMxLGwS0j7E3R7dJekXKht3dR_Ozv1tcUIKqyavnLt7AwHRc5NOURONgHHR_qDXPQx683UfShbLdB_1-P0ynyCMXNHPVhMloJ6svE',
+            baseUrl: 'https://csbx-us.lumapps.com',
+            organizationId: '8266017111862228',
+            haussmannCell: 'https://go-cell-001.beta.api.lumapps.com',
+        };
+        const connectorTest = 'f162a4ff-810b-43a7-a0f8-6888d25e37e2';
+        options.LumAppsContext = contextTest;
+        options.connectorId = connectorTest;
+        fileIdOrFile = fileTest;
+
+        // console.log('fileIdOrFile', fileIdOrFile);
+        // console.log('options', options);
+        // console.log('_________________________');
+
         // Save a reference to the options to be re-used later.
         // Token should either be a function or a string.
         // Token can also be null or undefined for offline use case.
@@ -753,9 +866,12 @@ class Preview extends EventEmitter {
             // Use well-formed file object if available
         } else if (checkFileValid(fileIdOrFile)) {
             this.file = fileIdOrFile;
-
+            // eslint-disable-next-line no-console
+            console.log('well-formed file object');
             // File is not a well-formed file object but has a file ID and/or file version ID (e.g. Content Explorer)
         } else if (fileIdOrFile && typeof fileIdOrFile.id === 'string') {
+            // eslint-disable-next-line no-console
+            console.log('File is not a well-formed file object but has a file ID and/or file version ID');
             /* eslint-disable camelcase */
             const { id, file_version } = fileIdOrFile;
 
@@ -767,6 +883,8 @@ class Preview extends EventEmitter {
             }
             /* eslint-enable camelcase */
         } else {
+            // eslint-disable-next-line no-console
+            console.log('No well-formed File object or File ID');
             throw new PreviewError(
                 ERROR_CODE.BAD_INPUT,
                 __('error_generic'),
@@ -837,7 +955,7 @@ class Preview extends EventEmitter {
         if (!(this.ui.isSetup() && this.retryCount > 0)) {
             this.setupUI();
         }
-
+        // TODO check if file is valid
         // Load from cache if the current file is valid, otherwise load file info from server
         if (checkFileValid(this.file)) {
             // Save file in cache. This also adds the 'ORIGINAL' representation. It is required to preview files offline
@@ -891,6 +1009,12 @@ class Preview extends EventEmitter {
 
         // Reset all options
         this.options = {};
+
+        // LumApps Connector ID
+        this.options.connectorId = options.connectorId;
+
+        // LumAppsContext
+        this.options.LumAppsContext = options.LumAppsContext;
 
         // Container for preview
         this.options.container = options.container;
@@ -1078,11 +1202,13 @@ class Preview extends EventEmitter {
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         Timer.start(tag);
 
+        // eslint-disable-next-line no-unused-vars
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
-        this.api
-            .get(fileInfoUrl, { headers: this.getRequestHeaders() })
-            .then(this.handleFileInfoResponse)
-            .catch(this.handleFetchError);
+        // TODO check if this hack works in production
+        // this.api
+        //     .get(fileInfoUrl, { headers: this.getRequestHeaders() })
+        //     .then(this.handleFileInfoResponse)
+        //     .catch(this.handleFetchError);
     }
 
     /**
@@ -1093,6 +1219,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     handleFileInfoResponse(response) {
+        console.log('handleFileInfoResponse(response)');
         let file = response;
 
         // Stop timer for file info time event.
@@ -1415,7 +1542,7 @@ class Preview extends EventEmitter {
     logPreviewEvent(fileId, options) {
         this.logRetryCount = this.logRetryCount || 0;
 
-        const { apiHost, token, sharedLink, sharedLinkPassword } = options;
+        const { apiHost, token, sharedLink, sharedLinkPassword, LumAppsContext, connectorId } = options;
         const data = {
             event_type: 'preview',
             source: {
@@ -1437,7 +1564,7 @@ class Preview extends EventEmitter {
         }
 
         this.api
-            .post(`${apiHost}/2.0/events`, data, { headers })
+            .post(`${apiHost}/2.0/events`, data, { LumAppsContext, connectorId, headers })
             .then(() => {
                 this.pageTrackerReporter(true);
                 // Reset retry count after successfully logging
