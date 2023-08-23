@@ -7,9 +7,9 @@
 
 DOC_STATIC_ASSETS_PDFJS_VERSION=${1}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
-DOC_STATIC_ASSETS_PATH="src/third-party/doc/box-${DOC_STATIC_ASSETS_PDFJS_VERSION}"
+DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_PDFJS_VERSION}"
 
-echo "Upgrading pdf.js to $DOC_STATIC_ASSETS_BRANCH";
+echo "Upgrading pdf.js to $DOC_STATIC_ASSETS_PDFJS_VERSION";
 
 echo "-----------------------------------------------------------------------------------"
 echo "Creating target directory at $DOC_STATIC_ASSETS_PATH..."
@@ -54,10 +54,10 @@ sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH
 sed -i '' -e 's/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=this.data.readOnly&&!this.data.noHTML/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=false/' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.js
 
 
-# echo "-----------------------------------------------------------------------------------"
-# echo "Successfully updated pdf.js files!"
-# echo "-----------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------"
+echo "Successfully updated pdf.js files!"
+echo "-----------------------------------------------------------------------------------"
 
-# echo "------------------------------------------------------------------------------------"
-# echo "please see https://github.com/box/box-content-preview/pull/1466 and make sure your version of pdf.js includes this fix"
-# echo "------------------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------------------"
+echo "please see https://github.com/box/box-content-preview/pull/1466 and make sure your version of pdf.js includes this fix"
+echo "------------------------------------------------------------------------------------"
