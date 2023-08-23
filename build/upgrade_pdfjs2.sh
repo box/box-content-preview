@@ -50,6 +50,10 @@ sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipo
 sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.js
 
 
+# # Fix pdf.js issue with disappearing form data
+sed -i '' -e 's/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=this.data.readOnly&&!this.data.noHTML/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=false/' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.js
+
+
 # echo "-----------------------------------------------------------------------------------"
 # echo "Successfully updated pdf.js files!"
 # echo "-----------------------------------------------------------------------------------"
