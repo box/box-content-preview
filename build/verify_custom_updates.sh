@@ -10,7 +10,10 @@ if [[ $PIXEL_FIX_MISSING != 0 ]];then
 fi
 
 if [[ $READ_ONLY_FIELD_FIX != 0 ]];then
+    echo "-----------------------------------------"
     echo "Read only form field fix not implemented."
+    echo "Run: sed -i '' -e 's/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=this.data.readOnly&&!this.data.noHTML/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=false/' ./src/third-party/doc/<version>/pdf.worker.min.js"
+    echo "------------------------------------------"
     FAILED=true
 fi
 
