@@ -13,10 +13,12 @@ This library powers Preview in the main Box web application as well as the 'Get 
 
 ## Browser Support
 
-- Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
+- Desktop Chrome, Firefox, Safari, Edge
 - Limited support for mobile web - previews will render but some controls may not work
 
-If you are using Internet Explorer 11, which doesn't natively support promises, include a polyfill.io script (see sample code below) or a Promise library like Bluebird.
+Effective September 1, 2023, Box is discontinuing support for Internet Explorer 11 (IE 11) in Preview SDK. If your application requires IE 11 support, we recommend using the release versions of Preview SDK that were made available before August 15th, 2023. Our team will address any critical blocker and security issues specifically related to IE 11 until October 15, 2023. Following this date, we will no longer provide active support for IE 11 in Preview SDK.
+
+We encourage all users to update their applications to utilize modern browsers for optimal performance, security, and compatibility with the latest features in Preview SDK.
 
 ## Current Version
 
