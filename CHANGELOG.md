@@ -1,3 +1,11 @@
+## 2.101.0 (2023-08-31)
+
+* fix(pdf): fix disappearing form data (#1503) ([401c8f4](https://github.com/box/box-content-preview/commit/401c8f4)), closes [#1503](https://github.com/box/box-content-preview/issues/1503)
+* fix(preview): license readme updates (#1504) ([b687e16](https://github.com/box/box-content-preview/commit/b687e16)), closes [#1504](https://github.com/box/box-content-preview/issues/1504)
+* feat(node-18-upgrade): Node 18 Upgrade (#1500) ([e763af9](https://github.com/box/box-content-preview/commit/e763af9)), closes [#1500](https://github.com/box/box-content-preview/issues/1500)
+
+
+
 ## 2.100.0 (2023-08-04)
 
 * fix(a11y): screen reader support for view only file preview (#1495) ([9a0b4ab](https://github.com/box/box-content-preview/commit/9a0b4ab)), closes [#1495](https://github.com/box/box-content-preview/issues/1495)
