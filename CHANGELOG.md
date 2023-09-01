@@ -1,3 +1,9 @@
+## 2.102.0 (2023-09-01)
+
+* fix(pdf): override css missing asset (#1505) ([bca54e1](https://github.com/box/box-content-preview/commit/bca54e1)), closes [#1505](https://github.com/box/box-content-preview/issues/1505)
+
+
+
 ## 2.101.0 (2023-08-31)
 
 * fix(pdf): fix disappearing form data (#1503) ([401c8f4](https://github.com/box/box-content-preview/commit/401c8f4)), closes [#1503](https://github.com/box/box-content-preview/issues/1503)
