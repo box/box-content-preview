@@ -290,6 +290,8 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
 
         &.loadingIcon::after {
+            top: $pdfjs-page-padding;
+            bottom: $pdfjs-page-padding;
             background: none;
         }
 
