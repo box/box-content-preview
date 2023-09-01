@@ -289,22 +289,15 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             background: none;
         }
 
+        &.loadingIcon::after {
+            background: none;
+        }
+
         // Fixes annotation icon broken src
         .textAnnotation > img {
             opacity: 0;
         }
     }
-
-    //overwriting background image in pdf_viewer.css. Was causing 404's
-    /* stylelint-disable declaration-no-important */
-    .pdfViewer .page.loadingIcon {
-        background-image: none !important;
-    }
-
-    .pdfViewer .page.loadingIcon::after {
-        background-image: none !important;
-    }
-    /* stylelint-enable declaration-no-important */
 
     .pdfViewer .page.pinch-page {
         padding: 0;
