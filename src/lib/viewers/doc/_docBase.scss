@@ -289,6 +289,12 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             background: none;
         }
 
+        &.loadingIcon::after {
+            top: $pdfjs-page-padding;
+            bottom: $pdfjs-page-padding;
+            background: none;
+        }
+
         // Fixes annotation icon broken src
         .textAnnotation > img {
             opacity: 0;
