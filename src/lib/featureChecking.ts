@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 
 type FeatureOptions = {
-    [key: string]: {};
+    [key: string]: NonNullable<unknown>;
 };
 
 type FeatureConfig = {
@@ -12,6 +12,6 @@ export const isFeatureEnabled = (features: FeatureConfig, featureName: string): 
     return !!get(features, featureName, false);
 };
 
-export const getFeatureConfig = (features: FeatureConfig, featureName: string): FeatureConfig => {
+export const getFeatureConfig = (features: FeatureConfig, featureName: string): FeatureOptions => {
     return get(features, featureName, {});
 };

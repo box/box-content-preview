@@ -1,3 +1,57 @@
+## 2.102.0 (2023-09-01)
+
+* fix(pdf): override css missing asset (#1505) ([bca54e1](https://github.com/box/box-content-preview/commit/bca54e1)), closes [#1505](https://github.com/box/box-content-preview/issues/1505)
+
+
+
+## 2.101.0 (2023-08-31)
+
+* fix(pdf): fix disappearing form data (#1503) ([401c8f4](https://github.com/box/box-content-preview/commit/401c8f4)), closes [#1503](https://github.com/box/box-content-preview/issues/1503)
+* fix(preview): license readme updates (#1504) ([b687e16](https://github.com/box/box-content-preview/commit/b687e16)), closes [#1504](https://github.com/box/box-content-preview/issues/1504)
+* feat(node-18-upgrade): Node 18 Upgrade (#1500) ([e763af9](https://github.com/box/box-content-preview/commit/e763af9)), closes [#1500](https://github.com/box/box-content-preview/issues/1500)
+
+
+
+## 2.100.0 (2023-08-04)
+
+* fix(a11y): screen reader support for view only file preview (#1495) ([9a0b4ab](https://github.com/box/box-content-preview/commit/9a0b4ab)), closes [#1495](https://github.com/box/box-content-preview/issues/1495)
+* fix(pdf): Move controls layer above popup layer (#1499) ([9598097](https://github.com/box/box-content-preview/commit/9598097)), closes [#1499](https://github.com/box/box-content-preview/issues/1499)
+
+
+
+## 2.99.0 (2023-08-02)
+
+* feat(pdf): Move annotation marker styling back to sdk (#1498) ([a6821cf](https://github.com/box/box-content-preview/commit/a6821cf)), closes [#1498](https://github.com/box/box-content-preview/issues/1498)
+* feat(pdf): Move annotation styling to box-annotations (#1497) ([07fccf2](https://github.com/box/box-content-preview/commit/07fccf2)), closes [#1497](https://github.com/box/box-content-preview/issues/1497)
+
+
+
+## 2.98.0 (2023-07-31)
+
+* feat(node-18-upgrade): Node 18 Upgrade (#1491) ([05f31b8](https://github.com/box/box-content-preview/commit/05f31b8)), closes [#1491](https://github.com/box/box-content-preview/issues/1491)
+* feat(pdf): Fix commenting on expiring embed links (#1493) ([b3c8b6f](https://github.com/box/box-content-preview/commit/b3c8b6f)), closes [#1493](https://github.com/box/box-content-preview/issues/1493)
+* Revert "feat(node-18-upgrade): Node 18 Upgrade (#1491)" (#1494) ([df8a3d5](https://github.com/box/box-content-preview/commit/df8a3d5)), closes [#1491](https://github.com/box/box-content-preview/issues/1491) [#1494](https://github.com/box/box-content-preview/issues/1494)
+* fix(preview): fix auto scroll issue with embed preview (#1492) ([58f278f](https://github.com/box/box-content-preview/commit/58f278f)), closes [#1492](https://github.com/box/box-content-preview/issues/1492)
+
+
+
+## 2.97.0 (2023-07-24)
+
+* fix(a11y): replace instructions (#1488) ([50ff7bb](https://github.com/box/box-content-preview/commit/50ff7bb)), closes [#1488](https://github.com/box/box-content-preview/issues/1488)
+* fix(a11y): video player thumbnail has no text alternative (#1486) ([bd3935b](https://github.com/box/box-content-preview/commit/bd3935b)), closes [#1486](https://github.com/box/box-content-preview/issues/1486)
+* fix(copy-paste-issue): PDFJS copy paste fix (#1489) ([9625e46](https://github.com/box/box-content-preview/commit/9625e46)), closes [#1489](https://github.com/box/box-content-preview/issues/1489)
+* feat(pdf): Fix search and highlight + comment tooltip (#1490) ([f937052](https://github.com/box/box-content-preview/commit/f937052)), closes [#1490](https://github.com/box/box-content-preview/issues/1490)
+
+
+
+## 2.96.0 (2023-07-05)
+
+* feat(pdf): Upgrade Cypress for PDFjs update (#1482) ([92758e6](https://github.com/box/box-content-preview/commit/92758e6)), closes [#1482](https://github.com/box/box-content-preview/issues/1482)
+* feat(pdf): Upgrade PDFjs version (#1485) ([d81771d](https://github.com/box/box-content-preview/commit/d81771d)), closes [#1485](https://github.com/box/box-content-preview/issues/1485)
+* fix(e2e-tests): fixing hd video player test (#1484) ([42a9eb8](https://github.com/box/box-content-preview/commit/42a9eb8)), closes [#1484](https://github.com/box/box-content-preview/issues/1484)
+
+
+
 ## 2.95.0 (2023-06-08)
 
 * chore(sass): replace node-sass with sass (#1479) ([46c63e9](https://github.com/box/box-content-preview/commit/46c63e9)), closes [#1479](https://github.com/box/box-content-preview/issues/1479)

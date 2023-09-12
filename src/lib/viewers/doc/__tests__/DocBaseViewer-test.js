@@ -1140,41 +1140,67 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should enable the text layer based on download permissions', () => {
-                stubs.checkPermission.mockReturnValueOnce(true);
-
-                return docBase.initViewer('').then(() => {
-                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 2 }));
-                });
-            });
-
-            test('should simplify the text layer if the user is on mobile', () => {
+            test('should enable the text layer if the user is on mobile', () => {
                 docBase.isMobile = true;
                 stubs.checkPermission.mockReturnValueOnce(true);
 
                 return docBase.initViewer('').then(() => {
-                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    // Text Layer mode 1 = enabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
                 });
             });
 
-            test('should disable the text layer based on download permissions', () => {
+            test('should add view only class if user does not have download permissions', () => {
+                docBase.containerEl = containerEl;
                 stubs.checkPermission.mockReturnValueOnce(false);
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
-                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
+                    expect(docBase.viewerEl).toHaveClass('pdfViewer--viewOnly');
                 });
             });
 
-            test('should disable the text layer if disableTextLayer viewer option is set', () => {
+            test('should not add view only class if user has download permissions', () => {
+                docBase.containerEl = containerEl;
                 stubs.checkPermission.mockReturnValueOnce(true);
-                stubs.getViewerOption.mockReturnValue(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(docBase.viewerEl).not.toHaveClass('pdfViewer--viewOnly');
+                });
+            });
+
+            test('should use proper text layer mode if user has download permissions and disableTextLayer viewer option is not set', () => {
+                stubs.getViewerOption.mockReturnValue(false);
+                stubs.checkPermission.mockReturnValueOnce(true);
 
                 return docBase.initViewer('').then(() => {
                     expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
                     expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    // Text Layer mode 1 = enabled
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 1 }));
+                });
+            });
+
+            test('should use proper text layer mode if user does not have download permissions and disableTextLayer viewer option is not set', () => {
+                stubs.getViewerOption.mockReturnValue(false);
+                stubs.checkPermission.mockReturnValueOnce(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    // Text Layer mode 2 = enabled permissions
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 2 }));
+                });
+            });
+
+            test('should disable the text layer if disableTextLayer viewer option is set', () => {
+                stubs.getViewerOption.mockReturnValue(true);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.getViewerOption).toBeCalledWith('disableTextLayer');
+                    // Text Layer mode 0 = disabled
                     expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ textLayerMode: 0 }));
                 });
             });

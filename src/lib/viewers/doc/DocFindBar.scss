@@ -4,6 +4,7 @@
     position: absolute;
     top: 0;
     right: 17px; // Prevents overlap with scroll-bar
+    z-index: 3;
     display: flex;
     align-items: center;
     padding: 6px;

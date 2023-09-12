@@ -4,6 +4,7 @@ import IconCheckMark24 from '../icons/IconCheckMark24';
 import { decodeKeydown } from '../../../util';
 import './SettingsRadioItem.scss';
 
+export type Value = boolean | number | string;
 export type Props<V extends Value> = {
     className?: string;
     isSelected?: boolean;
@@ -12,7 +13,6 @@ export type Props<V extends Value> = {
     value: V;
 };
 export type Ref = HTMLDivElement;
-export type Value = boolean | number | string;
 
 function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, isSelected, label, onChange, value } = props;
