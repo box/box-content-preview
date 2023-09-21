@@ -3,20 +3,25 @@ const isDev = NODE_ENV === 'dev';
 const isProd = NODE_ENV === 'production';
 
 const fs = require('fs');
+const get = require('lodash/get');
 const path = require('path');
 const locales = require('@box/languages');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
+const { execSync } = require('child_process');
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
+const ApiRsyncPlugin = require('./ApiRsyncPlugin');
 const version = isProd ? require('../package.json').version : 'dev';
 
 let rsyncLocation = '';
+let rsyncApiLocation = null;
 if (fs.existsSync('build/rsync.json')) {
     /* eslint-disable */
     const rsyncConf = require('./rsync.json');
     rsyncLocation = rsyncConf.location;
+    rsyncApiLocation = rsyncConf.apiLocation;
     /* eslint-enable */
 }
 
@@ -77,6 +82,20 @@ function updateConfig(conf, language, index) {
 
         if (rsyncLocation) {
             config.plugins.push(new RsyncPlugin('dist/.', rsyncLocation));
+        }
+
+        if (rsyncApiLocation) {
+            const serverResponse = execSync(
+                `curl -sk -H "Content-Type: application/json"  --connect-timeout 1 ${rsyncApiLocation.url}`,
+            )
+                .toString()
+                .replace('\n', '');
+
+            const json = JSON.parse(serverResponse);
+
+            const destination = `${rsyncApiLocation.user}@${get(json, rsyncApiLocation.ip)}:${rsyncApiLocation.path}`;
+
+            config.plugins.push(new ApiRsyncPlugin('dist/.', destination));
         }
     }
 
