@@ -3,7 +3,6 @@ import './polyfill';
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
-import isEmpty from 'lodash/isEmpty';
 /* eslint-enable import/first */
 import Api from './api';
 import Browser from './Browser';
@@ -67,7 +66,7 @@ import {
     VIEWER_EVENT,
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
-import { getFeatureConfig } from './featureChecking';
+import { isFeatureEnabled } from './featureChecking';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -1434,14 +1433,11 @@ class Preview extends EventEmitter {
                 };
             }
         }
-        const isAdvancedContentInsightsActivityEnabled = !isEmpty(
-            getFeatureConfig(this.options.features, 'advancedContentInsights'),
-        );
 
         this.api
             .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
-                if (isAdvancedContentInsightsActivityEnabled) {
+                if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
                     this.pageTrackerReporter(true);
                 }
                 // Reset retry count after successfully logging
@@ -1451,7 +1447,7 @@ class Preview extends EventEmitter {
                 // Don't retry more than the retry limit
                 this.logRetryCount += 1;
                 if (this.logRetryCount > LOG_RETRY_COUNT) {
-                    if (isAdvancedContentInsightsActivityEnabled) {
+                    if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
                         this.pageTrackerReporter(false);
                     }
                     this.logRetryCount = 0;

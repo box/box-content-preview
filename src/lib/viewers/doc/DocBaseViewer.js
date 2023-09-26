@@ -1,6 +1,5 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
-import isEmpty from 'lodash/isEmpty';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
@@ -54,7 +53,7 @@ import {
     VIEWER_EVENT,
 } from '../../events';
 import Timer from '../../Timer';
-import { getFeatureConfig } from '../../featureChecking';
+import { getFeatureConfig, isFeatureEnabled } from '../../featureChecking';
 
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
@@ -197,7 +196,7 @@ class DocBaseViewer extends BaseViewer {
 
         const advancedContentInsightsConfig = getFeatureConfig(this.options.features, 'advancedContentInsights');
 
-        if (!isEmpty(advancedContentInsightsConfig)) {
+        if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
             this.pageTracker = new PageTracker(advancedContentInsightsConfig, this.options.file);
         }
     }

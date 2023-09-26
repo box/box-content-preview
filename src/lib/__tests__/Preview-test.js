@@ -13,7 +13,7 @@ import loaders from '../loaders';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import PageTracker from '../PageTracker';
-import { getFeatureConfig } from '../featureChecking';
+import { isFeatureEnabled } from '../featureChecking';
 
 jest.mock('../Logger');
 jest.mock('../util', () => ({
@@ -2111,11 +2111,11 @@ describe('lib/Preview', () => {
             });
         });
 
-        test('should fire the preview_event_report success event on a successful access stats post', () => {
+        test('should fire the preview_event_report success event on a successful access stats post if aci enabled', () => {
             preview.viewer = {
                 emit: jest.fn(),
             };
-            getFeatureConfig.mockReturnValueOnce({ isActive: true });
+            isFeatureEnabled.mockReturnValueOnce(true);
             stubs.emit = jest.spyOn(preview.viewer, 'emit');
             jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
             preview.logPreviewEvent(0, {});
@@ -2125,11 +2125,11 @@ describe('lib/Preview', () => {
             });
         });
 
-        test('should not fire the preview_event_report success event on a successful access stats post if aci config is empty', () => {
+        test('should not fire the preview_event_report success event on a successful access stats post if aci disabled', () => {
             preview.viewer = {
                 emit: jest.fn(),
             };
-            getFeatureConfig.mockReturnValueOnce({});
+            isFeatureEnabled.mockReturnValueOnce(false);
             stubs.emit = jest.spyOn(preview.viewer, 'emit');
             jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
             preview.logPreviewEvent(0, {});
