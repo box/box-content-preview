@@ -1843,15 +1843,15 @@ class Preview extends EventEmitter {
      * Updates advanced content insights options after props have changed in parent app
      *
      * @public
-     * @param {Object} options - new content insights options value
+     * @param {Object} newOptions - new content insights options value
      * @return {void}
      */
-    updateContentInsightsOptions(options) {
-        this.options.features = { ...this.options.features, advancedContentInsights: options };
+    updateContentInsightsOptions(newOptions) {
+        this.options.features = { ...this.options.features, advancedContentInsights: newOptions };
         if (this.viewer && this.viewer.pageTracker) {
             this.previewOptions = {
                 ...this.previewOptions,
-                features: { ...this.previewOptions.features, advancedContentInsights: options },
+                features: { ...this.previewOptions.features, advancedContentInsights: newOptions },
             };
             this.viewer.pageTracker.updateOptions(this.previewOptions.features.advancedContentInsights);
         }
