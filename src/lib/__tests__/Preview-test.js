@@ -13,6 +13,7 @@ import loaders from '../loaders';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, ENCODING_TYPES } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import PageTracker from '../PageTracker';
+import { isFeatureEnabled } from '../featureChecking';
 
 jest.mock('../Logger');
 jest.mock('../util', () => ({
@@ -25,6 +26,7 @@ jest.mock('../util', () => ({
     }),
     getHeaders: jest.fn(),
 }));
+jest.mock('../featureChecking');
 
 const tokens = require('../tokens');
 
@@ -2109,15 +2111,31 @@ describe('lib/Preview', () => {
             });
         });
 
-        test('should fire the preview_event_report success event on a successful access stats post', () => {
+        test('should fire the preview_event_report success event on a successful access stats post if aci enabled', () => {
             preview.viewer = {
                 emit: jest.fn(),
             };
+            isFeatureEnabled.mockReturnValueOnce(true);
             stubs.emit = jest.spyOn(preview.viewer, 'emit');
             jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
             preview.logPreviewEvent(0, {});
+
             return stubs.promiseResolve.then(() => {
                 expect(stubs.emit).toBeCalledWith('preview_event_report', true);
+            });
+        });
+
+        test('should not fire the preview_event_report success event on a successful access stats post if aci disabled', () => {
+            preview.viewer = {
+                emit: jest.fn(),
+            };
+            isFeatureEnabled.mockReturnValueOnce(false);
+            stubs.emit = jest.spyOn(preview.viewer, 'emit');
+            jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
+            preview.logPreviewEvent(0, {});
+
+            return stubs.promiseResolve.then(() => {
+                expect(stubs.emit).not.toBeCalled();
             });
         });
 
@@ -2961,12 +2979,8 @@ describe('lib/Preview', () => {
 
     describe('updateContentInsightsOptions()', () => {
         test('should update the content insights options', () => {
-            preview.options = {
-                enableAdvancedContentInsights: true,
-            };
-
-            preview.previewOptions = {
-                contentInsights: { isActive: false },
+            preview.previewOptions.features = {
+                advancedContentInsights: { isActive: false },
             };
 
             preview.viewer = {
@@ -2977,7 +2991,9 @@ describe('lib/Preview', () => {
             const options = { isActive: true };
 
             preview.updateContentInsightsOptions(options);
-            expect(preview.previewOptions.contentInsights).toBe(options);
+
+            expect(preview.options.features.advancedContentInsights).toBe(options);
+            expect(preview.previewOptions.features.advancedContentInsights).toBe(options);
             expect(stubs.updateOptions).toBeCalledWith(options);
         });
     });

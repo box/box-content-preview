@@ -53,6 +53,7 @@ import {
     VIEWER_EVENT,
 } from '../../events';
 import Timer from '../../Timer';
+import { getFeatureConfig, isFeatureEnabled } from '../../featureChecking';
 
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
@@ -192,8 +193,11 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.updateDiscoverabilityResinTag();
-        if (this.options.advancedContentInsights) {
-            this.pageTracker = new PageTracker(this.options.advancedContentInsights, this.options.file);
+
+        const advancedContentInsightsConfig = getFeatureConfig(this.options.features, 'advancedContentInsights');
+
+        if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
+            this.pageTracker = new PageTracker(advancedContentInsightsConfig, this.options.file);
         }
     }
 

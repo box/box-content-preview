@@ -66,6 +66,7 @@ import {
     VIEWER_EVENT,
 } from './events';
 import { getClientLogDetails, getISOTime } from './logUtils';
+import { isFeatureEnabled } from './featureChecking';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -1001,9 +1002,6 @@ class Preview extends EventEmitter {
         // Add the response interceptor to the preview instance
         this.options.responseInterceptor = options.responseInterceptor;
 
-        // Advanced Content Insights
-        this.options.advancedContentInsights = options.advancedContentInsights;
-
         // Features
         // This makes features available everywhere that features is passed in, which includes
         // all of the viewers for different files
@@ -1439,7 +1437,9 @@ class Preview extends EventEmitter {
         this.api
             .post(`${apiHost}/2.0/events`, data, { headers })
             .then(() => {
-                this.pageTrackerReporter(true);
+                if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
+                    this.pageTrackerReporter(true);
+                }
                 // Reset retry count after successfully logging
                 this.logRetryCount = 0;
             })
@@ -1447,7 +1447,9 @@ class Preview extends EventEmitter {
                 // Don't retry more than the retry limit
                 this.logRetryCount += 1;
                 if (this.logRetryCount > LOG_RETRY_COUNT) {
-                    this.pageTrackerReporter(false);
+                    if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
+                        this.pageTrackerReporter(false);
+                    }
                     this.logRetryCount = 0;
                     clearTimeout(this.logRetryTimeout);
                     return;
@@ -1841,13 +1843,17 @@ class Preview extends EventEmitter {
      * Updates advanced content insights options after props have changed in parent app
      *
      * @public
-     * @param {Object} options - new content insights options value
+     * @param {Object} newOptions - new content insights options value
      * @return {void}
      */
-    updateContentInsightsOptions(options) {
+    updateContentInsightsOptions(newOptions) {
+        this.options.features = { ...this.options.features, advancedContentInsights: newOptions };
         if (this.viewer && this.viewer.pageTracker) {
-            this.previewOptions = { ...this.previewOptions, contentInsights: options };
-            this.viewer.pageTracker.updateOptions(this.previewOptions.contentInsights);
+            this.previewOptions = {
+                ...this.previewOptions,
+                features: { ...this.previewOptions.features, advancedContentInsights: newOptions },
+            };
+            this.viewer.pageTracker.updateOptions(newOptions);
         }
     }
 
