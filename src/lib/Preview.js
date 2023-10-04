@@ -1853,7 +1853,7 @@ class Preview extends EventEmitter {
                 ...this.previewOptions,
                 features: { ...this.previewOptions.features, advancedContentInsights: newOptions },
             };
-            this.viewer.pageTracker.updateOptions(this.previewOptions.features.advancedContentInsights);
+            this.viewer.pageTracker.updateOptions(newOptions);
         }
     }
 
