@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
-import intlLocaleData from 'react-intl-locale-data'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
@@ -10,7 +9,6 @@ import readableTimeCellRenderer from 'box-ui-elements/es/features/virtualized-ta
 import sizeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sizeCellRenderer';
 import sortableColumnHeaderRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sortableColumnHeaderRenderer';
 import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
-import { addLocaleData } from 'react-intl';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
@@ -42,8 +40,6 @@ class ArchiveExplorer extends React.Component {
      */
     constructor(props) {
         super(props);
-
-        addLocaleData(intlLocaleData);
 
         this.state = {
             fullPath: ROOT_FOLDER,
