@@ -152,6 +152,7 @@
         }
     },
     "resolutions": {
-        "mojito-rb-gen/merge": "1.2.1"
+        "mojito-rb-gen/merge": "1.2.1",
+        "**/react-intl/**/@types/react": "^17.0.2"
     }
 }
