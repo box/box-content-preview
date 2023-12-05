@@ -32,6 +32,7 @@ export const ERROR_CODE = {
     GENERIC: 'error_generic',
     IMAGE_SIZING: 'error_image_sizing',
     INVALID_CACHE_ATTEMPT: 'error_invalid_file_for_cache',
+    LARGE_FILE_SIZE: 'error_large_size_file',
     LOAD_ANNOTATIONS: 'error_load_annotations',
     LOAD_ASSET: 'error_load_asset',
     LOAD_CSV: 'error_load_csv',
@@ -47,6 +48,7 @@ export const ERROR_CODE = {
     TOKEN_NOT_VALID: 'error_token_function_not_valid',
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
     VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
+    ZERO_BYTE_FILE: 'error_zero_byte_file',
 };
 
 // Event fired from Preview with error details
