@@ -23,16 +23,17 @@ export const ERROR_CODE = {
     CONTENT_DOWNLOAD: 'error_content_download',
     CONVERSION_FAILED: 'error_conversion_failed',
     CONVERSION_GENERIC: 'error_conversion_generic',
+    CONVERSION_LARGE_SIZE_FILE: 'error_large_size_file',
     CONVERSION_PASSWORD_PROTECTED: 'error_password_protected',
     CONVERSION_TRY_AGAIN_LATER: 'error_try_again_later',
     CONVERSION_UNSUPPORTED_FORMAT: 'error_unsupported_format',
+    CONVERSION_ZERO_BYTE_FILE: 'error_zero_byte_file',
     DELETED_REPS: 'error_deleted_reps',
     EXCEEDED_RETRY_LIMIT: 'error_exceeded_retry_limit',
     FLASH_NOT_ENABLED: 'error_flash_not_enabled',
     GENERIC: 'error_generic',
     IMAGE_SIZING: 'error_image_sizing',
     INVALID_CACHE_ATTEMPT: 'error_invalid_file_for_cache',
-    LARGE_FILE_SIZE: 'error_large_size_file',
     LOAD_ANNOTATIONS: 'error_load_annotations',
     LOAD_ASSET: 'error_load_asset',
     LOAD_CSV: 'error_load_csv',
@@ -48,7 +49,6 @@ export const ERROR_CODE = {
     TOKEN_NOT_VALID: 'error_token_function_not_valid',
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
     VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
-    ZERO_BYTE_FILE: 'error_zero_byte_file',
 };
 
 // Event fired from Preview with error details
