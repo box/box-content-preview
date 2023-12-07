@@ -233,7 +233,7 @@ describe('lib/RepStatus', () => {
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).toBe('Placeholder - file too large');
+                    expect(err.displayMessage).toBe(__('error_large_file'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
@@ -247,7 +247,7 @@ describe('lib/RepStatus', () => {
                 .mock(repStatus)
                 .expects('reject')
                 .callsFake(err => {
-                    expect(err.displayMessage).toBe('Placeholder - file too small');
+                    expect(err.displayMessage).toBe(__('error_zero_byte_file'));
                     done();
                 });
             repStatus.representation.status.state = 'error';
