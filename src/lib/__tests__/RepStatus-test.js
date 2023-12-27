@@ -228,6 +228,34 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
+        test('should reject with the file too big message if the rep status is error due to conversion failure', done => {
+            sandbox
+                .mock(repStatus)
+                .expects('reject')
+                .callsFake(err => {
+                    expect(err.displayMessage).toBe(__('error_large_file'));
+                    done();
+                });
+            repStatus.representation.status.state = 'error';
+            repStatus.representation.status.code = 'error_large_size_file';
+
+            repStatus.handleResponse();
+        });
+
+        test('should reject with the 0 byte file message if the rep status is error due to conversion failure', done => {
+            sandbox
+                .mock(repStatus)
+                .expects('reject')
+                .callsFake(err => {
+                    expect(err.displayMessage).toBe(__('error_zero_byte_file'));
+                    done();
+                });
+            repStatus.representation.status.state = 'error';
+            repStatus.representation.status.code = 'error_zero_byte_file';
+
+            repStatus.handleResponse();
+        });
+
         test('should reject with the re upload message if the rep status is error due to conversion failure', done => {
             sandbox
                 .mock(repStatus)
