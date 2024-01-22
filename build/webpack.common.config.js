@@ -11,7 +11,6 @@ const isLinked = process.env.IS_LINKED === '1';
 /* eslint-disable import/no-dynamic-require */
 module.exports = language => {
     const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
-    const locale = language ? language.substr(0, language.indexOf('-')) : 'en';
 
     return {
         bail: true,
@@ -67,7 +66,6 @@ module.exports = language => {
             alias: {
                 'box-annotations-messages': path.resolve(`node_modules/box-annotations/i18n/${language}`),
                 'box-elements-messages': path.resolve(`node_modules/box-ui-elements/i18n/${language}`),
-                'react-intl-locale-data': path.resolve(`node_modules/react-intl/locale-data/${locale}`),
             },
             extensions: ['.tsx', '.ts', '.js'],
             symlinks: !isLinked,

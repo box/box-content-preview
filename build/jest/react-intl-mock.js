@@ -14,13 +14,9 @@ FormattedTime.displayName = 'FormattedTime';
 export const FormattedMessage = () => <div />;
 FormattedMessage.displayName = 'FormattedMessage';
 
-export const addLocaleData = () => {};
-
 export const createIntl = () => intlMock;
 
 export const defineMessages = messages => messages;
-
-export const intlShape = {};
 
 export const injectIntl = Component => {
     const WrapperComponent = props => {

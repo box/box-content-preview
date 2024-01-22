@@ -13,7 +13,6 @@ module.exports = {
         '@box/react-virtualized/dist/es': '@box/react-virtualized/dist/commonjs',
         'box-elements-messages': '<rootDir>/build/jest/i18nMock.js',
         'react-intl': '<rootDir>/build/jest/react-intl-mock.js',
-        'react-intl-locale-data': '<rootDir>/node_modules/react-intl/locale-data/en.js',
         THREE: '<rootDir>/src/third-party/model3d/1.12.0/three.min.js',
     },
     restoreMocks: true,
