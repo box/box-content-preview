@@ -34,22 +34,6 @@ module.exports = api => {
             test: {
                 plugins: [
                     [
-                        'istanbul',
-                        {
-                            exclude: [
-                                '**/*-test.js',
-                                'build/**',
-                                'src/lib/polyfill.js',
-                                'src/lib/browser.js',
-                                'src/lib/viewers/box3d/model3d/Model3DAnimationClipsPullup.js',
-                                'src/lib/viewers/box3d/model3d/model3DSettingsPullup.js',
-                                'src/lib/viewers/box3d/model3d/Model3DVrControls.js',
-                                'src/lib/viewers/box3d/**/SceneEntities.js',
-                                'src/lib/viewers/box3d/**Constants.js',
-                            ],
-                        },
-                    ],
-                    [
                         'babel-plugin-transform-require-ignore',
                         {
                             extensions: ['.scss'],

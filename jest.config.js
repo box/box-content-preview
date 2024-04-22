@@ -1,6 +1,7 @@
 module.exports = {
     clearMocks: true,
     collectCoverage: false,
+    coveragePathIgnorePatterns: ['/build', '/node_modules', '/src/lib/polyfill.js', '/src/third-party'],
     globals: {
         __NAME__: 'name',
         __VERSION__: 'version',

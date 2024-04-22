@@ -3,6 +3,7 @@
 *.iml
 *.swp
 build/rsync.json
+coverage
 dist
 functional-tests/output
 jsconfig.json
