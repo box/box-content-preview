@@ -1,3 +1,10 @@
+## 2.104.0 (2024-04-22)
+
+* chore(i18n): Update Translations (#1512) ([a1aae25](https://github.com/box/box-content-preview/commit/a1aae25)), closes [#1512](https://github.com/box/box-content-preview/issues/1512)
+* fix(build): Update package json build params (#1513) ([e4e8733](https://github.com/box/box-content-preview/commit/e4e8733)), closes [#1513](https://github.com/box/box-content-preview/issues/1513)
+
+
+
 ## 2.103.0 (2023-12-15)
 
 * chore(i18n): Update Translations (#1465) ([1dc284e](https://github.com/box/box-content-preview/commit/1dc284e)), closes [#1465](https://github.com/box/box-content-preview/issues/1465)
