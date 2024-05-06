@@ -218,90 +218,6 @@ Number.isNaN =
         return value !== value;
     };
 
-// Reflect.construct polyfill for IE11, adapted from
-// https://github.com/zloirock/core-js/blob/master/modules/es6.reflect.construct.js
-(function() {
-    function aFunction(it) {
-        if (typeof it != 'function') throw TypeError(it + ' is not a function!');
-        return it;
-    }
-    function isObject(it) {
-        return typeof it === 'object' ? it !== null : typeof it === 'function';
-    }
-    function anObject(it) {
-        if (!isObject(it)) throw TypeError(it + ' is not an object!');
-        return it;
-    }
-    function fails(exec) {
-        try {
-            return !!exec();
-        } catch (e) {
-            return true;
-        }
-    }
-    var rConstruct = (typeof Reflect !== 'undefined' ? Reflect : {}).construct;
-
-    // MS Edge supports only 2 arguments and argumentsList argument is optional
-    // FF Nightly sets third argument as `new.target`, but does not create `this` from it
-    var NEW_TARGET_BUG = fails(function() {
-        function F() {
-            /* empty */
-        }
-        return !(
-            rConstruct(
-                function() {
-                    /* empty */
-                },
-                [],
-                F,
-            ) instanceof F
-        );
-    });
-    var ARGS_BUG = !fails(function() {
-        rConstruct(function() {
-            /* empty */
-        });
-    });
-    function construct(Target, args /* , newTarget */) {
-        aFunction(Target);
-        anObject(args);
-        var newTarget = arguments.length < 3 ? Target : aFunction(arguments[2]);
-        if (ARGS_BUG && !NEW_TARGET_BUG) return rConstruct(Target, args, newTarget);
-        if (Target == newTarget) {
-            // w/o altered newTarget, optimization for 0-4 arguments
-            switch (args.length) {
-                case 0:
-                    return new Target();
-                case 1:
-                    return new Target(args[0]);
-                case 2:
-                    return new Target(args[0], args[1]);
-                case 3:
-                    return new Target(args[0], args[1], args[2]);
-                case 4:
-                    return new Target(args[0], args[1], args[2], args[3]);
-            }
-            // w/o altered newTarget, lot of arguments case
-            var $args = [null];
-            $args.push.apply($args, args);
-            return new (Function.bind.apply(Target, $args))();
-        }
-        // with altered newTarget, not support built-in constructors
-        var proto = newTarget.prototype;
-        var instance = Object.create(isObject(proto) ? proto : Object.prototype);
-        var result = Function.apply.call(Target, instance, args);
-        return isObject(result) ? result : instance;
-    }
-
-    if (typeof Reflect !== 'undefined') {
-        Reflect.construct = construct;
-    } else {
-        Reflect = {
-            construct,
-        };
-    }
-})();
-
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 if (!Array.from) {
     Array.from = (function() {
@@ -383,20 +299,6 @@ if (!Array.from) {
             return A;
         };
     })();
-}
-
-// startsWith polyfill for IE 11
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
-if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function(search, pos) {
-        return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-    };
-}
-
-// NodeList.prototype.forEach polyfill for IE11
-// https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach
-if (window.NodeList && !NodeList.prototype.forEach) {
-    NodeList.prototype.forEach = Array.prototype.forEach;
 }
 
 // PerformanceObserver no-op polyfill for IE11 and Edge (not supported)
