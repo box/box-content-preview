@@ -1,5 +1,4 @@
 /* eslint-disable import/first */
-import './polyfill';
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';

@@ -39,7 +39,6 @@ module.exports = api => {
                             exclude: [
                                 '**/*-test.js',
                                 'build/**',
-                                'src/lib/polyfill.js',
                                 'src/lib/browser.js',
                                 'src/lib/viewers/box3d/model3d/Model3DAnimationClipsPullup.js',
                                 'src/lib/viewers/box3d/model3d/model3DSettingsPullup.js',

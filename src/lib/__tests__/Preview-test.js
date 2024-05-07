@@ -50,6 +50,10 @@ describe('lib/Preview', () => {
         preview.logger = new Logger();
         stubs = {};
         stubs.api = new Api();
+        window.PerformanceObserver = jest.fn(() => ({
+            disconnect: jest.fn(),
+            observe: jest.fn(),
+        }));
     });
 
     afterEach(() => {
