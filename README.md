@@ -20,7 +20,7 @@ Effective September 1, 2023, Box is discontinuing support for Internet Explorer 
 
 We encourage all users to update their applications to utilize modern browsers for optimal performance, security, and compatibility with the latest features in Preview SDK.
 
-## Current VersionF
+## Current Version
 
 - Version: v2.104.0
 - Locale: en-US
