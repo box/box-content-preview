@@ -20,7 +20,7 @@ Effective September 1, 2023, Box is discontinuing support for Internet Explorer 
 
 We encourage all users to update their applications to utilize modern browsers for optimal performance, security, and compatibility with the latest features in Preview SDK.
 
-## Current Version
+## Current VersionF
 
 - Version: v2.104.0
 - Locale: en-US
@@ -36,7 +36,7 @@ To use a different locale, replace `en-US` in the URLs above with any of the fol
 
 ## Supported File Types
 
-Box Content Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
+Box Content Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types on [Box Support](https://support.box.com/hc/en-us/articles/360043695794-Viewing-Different-File-Types-Supported-in-Box-Content-Preview) .
 
 ## Usage
 
