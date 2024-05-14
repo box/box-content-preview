@@ -1,3 +1,10 @@
+## 2.105.0 (2024-05-14)
+
+* chore(readme): Update link to supported filetypes (#1516) ([dced77d](https://github.com/box/box-content-preview/commit/dced77d)), closes [#1516](https://github.com/box/box-content-preview/issues/1516)
+* fix(polyfill): Remove IE11 polyfills (#1515) ([978aadd](https://github.com/box/box-content-preview/commit/978aadd)), closes [#1515](https://github.com/box/box-content-preview/issues/1515)
+
+
+
 ## 2.104.0 (2024-04-22)
 
 * chore(i18n): Update Translations (#1512) ([a1aae25](https://github.com/box/box-content-preview/commit/a1aae25)), closes [#1512](https://github.com/box/box-content-preview/issues/1512)
