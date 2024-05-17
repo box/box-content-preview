@@ -6,7 +6,7 @@
 
 
 DOC_STATIC_ASSETS_PDFJS_VERSION=${1}
-DOC_STATIC_ASSETS_PATH="src/third-party/doc/box-${DOC_STATIC_ASSETS_PDFJS_VERSION}"
+DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_PDFJS_VERSION}"
 if  [[ ${1:0:1} -ge "4" ]]; then JS_FILE_EXTENSION="mjs"; else JS_FILE_EXTENSION="js"; fi
 
 echo "Upgrading pdf.js to $DOC_STATIC_ASSETS_BRANCH";

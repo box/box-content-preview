@@ -117,6 +117,10 @@ export function createScript(url) {
     const script = document.createElement('script');
     script.src = url;
 
+    if (url.indexOf('.mjs') !== -1) {
+        script.type = 'module';
+    }
+
     // Force scripts to execute in order, see: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
     script.async = false;
     return script;
@@ -136,7 +140,7 @@ export function createPrefetch(url, preload = false) {
     link.href = url;
 
     if (preload) {
-        link.as = url.indexOf('.js') !== -1 ? 'script' : 'style';
+        link.as = url.indexOf('.css') !== -1 ? 'style' : 'script';
     }
 
     return link;
