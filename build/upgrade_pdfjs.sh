@@ -35,7 +35,6 @@ curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VER
 curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.css -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.css
 curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.min.css -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
 curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.${JS_FILE_EXTENSION} -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.${JS_FILE_EXTENSION}
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.min.${JS_FILE_EXTENSION} -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.${JS_FILE_EXTENSION}
 
 # Decreased default cached pages size to 5 on mobile web to lower memory usage
 echo "-----------------------------------------------------------------------------------"
