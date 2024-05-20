@@ -141,6 +141,10 @@ export function createPrefetch(url, preload = false) {
 
     if (preload) {
         link.as = url.indexOf('.css') !== -1 ? 'style' : 'script';
+
+        if (url.indexOf('.mjs') !== -1) {
+            link.type = 'module';
+        }
     }
 
     return link;
