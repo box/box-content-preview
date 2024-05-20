@@ -1,3 +1,9 @@
+## 2.106.0 (2024-05-20)
+
+* feat(preview): Disable eval support for documents by default (#1518) ([2005b3e](https://github.com/box/box-content-preview/commit/2005b3e)), closes [#1518](https://github.com/box/box-content-preview/issues/1518)
+
+
+
 ## 2.105.0 (2024-05-14)
 
 * chore(readme): Update link to supported filetypes (#1516) ([dced77d](https://github.com/box/box-content-preview/commit/dced77d)), closes [#1516](https://github.com/box/box-content-preview/issues/1516)
