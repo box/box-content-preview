@@ -37,23 +37,23 @@ curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VER
 curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.${JS_FILE_EXTENSION} -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.${JS_FILE_EXTENSION}
 curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.min.${JS_FILE_EXTENSION} -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.${JS_FILE_EXTENSION}
 
-# # Decreased default cached pages size to 5 on mobile web to lower memory usage
-# echo "-----------------------------------------------------------------------------------"
-# echo "Decreasing # of cached pages on mobile web..."
-# echo "-----------------------------------------------------------------------------------"
+# Decreased default cached pages size to 5 on mobile web to lower memory usage
+echo "-----------------------------------------------------------------------------------"
+echo "Decreasing # of cached pages on mobile web..."
+echo "-----------------------------------------------------------------------------------"
 sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.${JS_FILE_EXTENSION}
 
-# # Render e-signatures without validation
-# echo "-----------------------------------------------------------------------------------"
-# echo "Enabling e-signature rendering without validation..."
-# echo "-----------------------------------------------------------------------------------"
+# Render e-signatures without validation
+echo "-----------------------------------------------------------------------------------"
+echo "Enabling e-signature rendering without validation..."
+echo "-----------------------------------------------------------------------------------"
 sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.${JS_FILE_EXTENSION}
 
 
-# echo "-----------------------------------------------------------------------------------"
-# echo "Successfully updated pdf.js files!"
-# echo "-----------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------"
+echo "Successfully updated pdf.js files!"
+echo "-----------------------------------------------------------------------------------"
 
-# echo "------------------------------------------------------------------------------------"
-# echo "please see https://github.com/box/box-content-preview/pull/1466 and make sure your version of pdf.js includes this fix"
-# echo "------------------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------------------"
+echo "please see https://github.com/box/box-content-preview/pull/1466 and make sure your version of pdf.js includes this fix"
+echo "------------------------------------------------------------------------------------"
