@@ -723,6 +723,9 @@ class DocBaseViewer extends BaseViewer {
         // Disable streaming by default unless it is explicitly enabled via options
         const disableStream = this.getViewerOption('disableStream') !== false;
 
+        // Disable eval support by default
+        const isEvalSupported = this.getViewerOption('isEvalSupported') === true;
+
         // If range requests and streaming are disabled, request the gzip compressed version of the representation
         this.encoding = disableRange && disableStream ? ENCODING_TYPES.GZIP : undefined;
 
@@ -738,6 +741,7 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
+            isEvalSupported,
             rangeChunkSize,
             url: appendQueryParams(pdfUrl, queryParams),
         });
