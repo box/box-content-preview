@@ -1,10 +1,9 @@
-import Browser from '../../Browser';
-import { DOC_LEGACY_STATIC_ASSETS_VERSION, DOC_STATIC_ASSETS_VERSION } from '../../constants';
+import { DOC_STATIC_ASSETS_VERSION } from '../../constants';
 
-const STATIC_VERSION = Browser.isIE() ? DOC_LEGACY_STATIC_ASSETS_VERSION : DOC_STATIC_ASSETS_VERSION;
-const STATIC_URI = `third-party/doc/${STATIC_VERSION}`;
-const versionParts = STATIC_VERSION.split('.').map(part => parseInt(part, 10));
-const JS_EXTENSTION = versionParts[0] >= 2 && versionParts[1] >= 105 && versionParts[2] >= 0 ? 'mjs' : 'js';
+const STATIC_URI = `third-party/doc/${DOC_STATIC_ASSETS_VERSION}`;
+const versionParts = DOC_STATIC_ASSETS_VERSION.split('.').map(part => parseInt(part, 10));
+const JS_EXTENSTION =
+    versionParts[0] > 2 || (versionParts[0] === 2 && versionParts[1] >= 105 && versionParts[2] >= 0) ? 'mjs' : 'js';
 
 export const CMAP = `${STATIC_URI}/cmaps/`;
 export const IMAGES = `${STATIC_URI}/images/`;
