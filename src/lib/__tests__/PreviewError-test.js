@@ -24,12 +24,16 @@ describe('lib/PreviewError', () => {
 
         test('should default display message to generic error message if not provided', () => {
             const previewError = new PreviewError('some_code');
-            expect(previewError.displayMessage).toBe('Preview did not load. Open or download the file to view.');
+            expect(previewError.displayMessage).toBe(
+                'This preview didn’t load. Please try to open or download the file to view.',
+            );
         });
 
         test('should default message to display message if message is not provided', () => {
             const previewError = new PreviewError('some_code');
-            expect(previewError.message).toBe('Preview did not load. Open or download the file to view.');
+            expect(previewError.message).toBe(
+                'This preview didn’t load. Please try to open or download the file to view.',
+            );
         });
     });
 });
