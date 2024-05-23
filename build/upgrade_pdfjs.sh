@@ -16,6 +16,8 @@ echo "Creating target directory at $DOC_STATIC_ASSETS_PATH..."
 echo "-----------------------------------------------------------------------------------"
 
 rm -rf ${DOC_STATIC_ASSETS_PATH}
+rm -rf pdfjs-dist
+rm pdfjs-dist.zip
 DOC_CURRENT_ASSETS_VERSIONS=`ls src/third-party/doc | sort -t "." -k1,1n -k2,2n -k3,3n | tail -1`
 
 echo "Using base version from $DOC_CURRENT_ASSETS_VERSIONS"
@@ -23,37 +25,36 @@ mkdir ${DOC_STATIC_ASSETS_PATH}
 \cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/exif.js ${DOC_STATIC_ASSETS_PATH}/
 \cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/exif.min.js ${DOC_STATIC_ASSETS_PATH}/
 \cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/images ${DOC_STATIC_ASSETS_PATH}/images
-\cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
-echo "-----------------------------------------------------------------------------------"
-echo "Copying relevant files to third-party directory..."
-echo "-----------------------------------------------------------------------------------"
 
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf.min.mjs -o  ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf.worker.min.mjs -o  ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.min.css -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.mjs -o  ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
+echo "-----------------------------------------------------------------------------------"
+echo "Downloading pdf.js build..."
+echo "-----------------------------------------------------------------------------------"
+curl -L https://github.com/mozilla/pdf.js/releases/download/v${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdfjs-${DOC_STATIC_ASSETS_PDFJS_VERSION}-dist.zip -o pdfjs-dist.zip
+unzip pdfjs-dist.zip -d pdfjs-dist
 
-# Decreased default cached pages size to 5 on mobile web to lower memory usage
 echo "-----------------------------------------------------------------------------------"
-echo "Decreasing # of cached pages on mobile web..."
+echo "Minifying pdf.js files and outputting to thrid-party directory with terser..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
+TERSER_ARGS=(--comments false -c sequences=false -m reserved=['__webpack_exports__'] --keep-classnames --keep-fnames --module)
+yarn run terser pdfjs-dist/build/pdf.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs ${TERSER_ARGS[@]}
+yarn run terser pdfjs-dist/build/pdf.worker.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs ${TERSER_ARGS[@]}
+yarn run terser pdfjs-dist/web/viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs ${TERSER_ARGS[@]}
 
-# Minify using Google Closure Compiler, options:
-# Output to ES5 (Box supports Chrome, Edge, IE11, Firefox, Safari, and newer versions of iOS, Android)
-# Do not minify pdf.js or pdf.worker.js, as the closure compiler will mangle function names and cause bugs
 echo "-----------------------------------------------------------------------------------"
-echo "Minifying pdf.js files with terser"
+echo "Minifying pdf.js CSS and outputting to thrid-party directory with cssnano..."
 echo "-----------------------------------------------------------------------------------"
-yarn run terser ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs --comments false -c sequences=false --keep-classnames --keep-fnames --module
-rm -rf ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
+./node_modules/.bin/cssnano pdfjs-dist/web/viewer.css ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
 
-# Render e-signatures without validation
 echo "-----------------------------------------------------------------------------------"
-echo "Enabling e-signature rendering without validation..."
+echo "Copying cmaps to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-sed -e 's@;r.setFlags(o.AnnotationFlag.HIDDEN)@@' -i '' ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs
+cp -rf pdfjs-dist/web/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
 
+echo "-----------------------------------------------------------------------------------"
+echo "Cleanup..."
+echo "-----------------------------------------------------------------------------------"
+rm -rf pdfjs-dist
+rm pdfjs-dist.zip
 
 echo "-----------------------------------------------------------------------------------"
 echo "Successfully updated pdf.js files!"
