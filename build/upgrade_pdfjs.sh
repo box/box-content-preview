@@ -1,11 +1,10 @@
 #!/bin/bash
-# Run with specific version and branch/tag (e.g. ./upgrade_pdfjs.sh <version> tags/v2.2.228) or with no second argument to use master
+# Run with specific version (e.g. ./upgrade_pdfjs.sh <version>)
 
 #IMPORTANT!!!! See https://github.com/box/box-content-preview/pull/1466 and make sure any updated version of pdf.js includes
 #this fix or fixes it on it's own
 
 DOC_STATIC_ASSETS_PDFJS_VERSION=${1}
-DOC_STATIC_ASSETS_BRANCH=${2:-master}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}"
 
@@ -48,7 +47,7 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------"
 echo "Copying cmaps to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-cp -rf pdfjs-dist/web/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
+\cp -rf pdfjs-dist/web/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
 
 echo "-----------------------------------------------------------------------------------"
 echo "Cleanup..."
