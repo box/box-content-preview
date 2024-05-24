@@ -738,7 +738,6 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            isEvalSupported: false,
             rangeChunkSize,
             url: appendQueryParams(pdfUrl, queryParams),
         });
