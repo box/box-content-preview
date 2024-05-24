@@ -13,7 +13,7 @@ describe('Download disabled while preview is already open', () => {
 
         cy.getByTestId('preview-error-download-btn').should('be.visible');
         cy.getByTestId('preview-error-download-btn').click();
-        cy.contains('Sorry! You can’t download this file.');
+        cy.contains('This file could not be downloaded.');
     });
 
     it('should give shield error when trying to download and access policy prevents download', () => {
@@ -25,6 +25,6 @@ describe('Download disabled while preview is already open', () => {
 
         cy.getByTestId('preview-error-download-btn').should('be.visible');
         cy.getByTestId('preview-error-download-btn').click();
-        cy.contains('Downloading of this content has been disabled based on an access policy.');
+        cy.contains('The file could not be downloaded due to a security policy.');
     });
 });
