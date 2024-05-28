@@ -380,14 +380,15 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             margin-top: 15px;
         }
 
-        // Prevent placeholder {{ date }}, {{ time }} text from displaying when
-        // hovering over baked-in pdf annotations
-        span[data-l10n-id] {
-            display: none;
-        }
-
         .popup {
             font-size: inherit;
+
+            .header {
+                height: unset;
+                /* stylelint-disable declaration-no-important */
+                padding: unset !important;
+                background-color: unset;
+            }
         }
     }
 }

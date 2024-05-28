@@ -7,6 +7,7 @@
 DOC_STATIC_ASSETS_PDFJS_VERSION=${1}
 DOC_STATIC_ASSETS_VERSION=$(./build/current_version.sh)
 DOC_STATIC_ASSETS_PATH="src/third-party/doc/${DOC_STATIC_ASSETS_VERSION}"
+CURL_PATH="https://cdn.jsdelivr.net/npm/pdfjs-dist@${DOC_STATIC_ASSETS_PDFJS_VERSION}/legacy"
 
 echo "Upgrading pdf.js to $DOC_STATIC_ASSETS_BRANCH";
 
@@ -34,23 +35,17 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------"
 echo "Downloading pdf.js files and placing them in third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-# pdf_viewer is not included in the pdf.js build so we get it from a cdn
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf.worker.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
-curl https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdf_viewer.min.css -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
+curl ${CURL_PATH}/build/pdf.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs
+curl ${CURL_PATH}/build/pdf.worker.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs
+curl ${CURL_PATH}/web/pdf_viewer.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs
+curl ${CURL_PATH}/web/pdf_viewer.min.css -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
 
-echo "-----------------------------------------------------------------------------------"
-echo "Minifying pdf_viewer.mjs and outputting to thrid-party directory with terser..."
-echo "-----------------------------------------------------------------------------------"
-TERSER_ARGS=(--comments false -c sequences=false -m reserved=['__webpack_exports__'] --keep-classnames --keep-fnames --module)
-yarn run terser ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs --comments false -c sequences=false -m reserved=['__webpack_exports__'] --keep-classnames --keep-fnames --module
-rm ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
-
+# we get the cmaps from the prebuild rather than the cdn because we would have to web scrape the cdn in order to get the cmap file names.
+# We don't use the prebuild for the pdf.js files because it doesn't include pdf_viewer
 echo "-----------------------------------------------------------------------------------"
 echo "Downloading and copying cmaps to third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-curl -L https://github.com/mozilla/pdf.js/releases/download/v${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdfjs-${DOC_STATIC_ASSETS_PDFJS_VERSION}-dist.zip -o pdfjs-dist.zip
+curl -L https://github.com/mozilla/pdf.js/releases/download/v${DOC_STATIC_ASSETS_PDFJS_VERSION}/pdfjs-${DOC_STATIC_ASSETS_PDFJS_VERSION}-legacy-dist.zip -o pdfjs-dist.zip
 unzip -q -d pdfjs-dist pdfjs-dist.zip
 \cp -rf pdfjs-dist/web/cmaps ${DOC_STATIC_ASSETS_PATH}/cmaps
 rm -rf pdfjs-dist
