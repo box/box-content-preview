@@ -140,7 +140,7 @@ export function createPrefetch(url, preload = false) {
     link.href = url;
 
     if (preload) {
-        link.as = url.indexOf('.js') !== -1 || url.indexOf('.mjs') ? 'script' : 'style';
+        link.as = url.indexOf('.js') !== -1 || url.indexOf('.mjs') !== -1 ? 'script' : 'style';
 
         if (url.indexOf('.mjs') !== -1) {
             link.type = 'module';
