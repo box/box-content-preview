@@ -35,10 +35,25 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------"
 echo "Downloading pdf.js files and placing them in third-party directory..."
 echo "-----------------------------------------------------------------------------------"
-curl ${CURL_PATH}/build/pdf.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs
-curl ${CURL_PATH}/build/pdf.worker.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs
-curl ${CURL_PATH}/web/pdf_viewer.min.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs
+curl ${CURL_PATH}/build/pdf.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.mjs
+curl ${CURL_PATH}/build/pdf.worker.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.mjs
+curl ${CURL_PATH}/web/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
 curl ${CURL_PATH}/web/pdf_viewer.min.css -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
+
+echo "-----------------------------------------------------------------------------------"
+echo "Minifying pdf.js files using terser..."
+echo "-----------------------------------------------------------------------------------"
+TERSER_ARGS=(--comments false -c sequences=false -m reserved=['__webpack_exports__'] --keep-classnames --keep-fnames --module)
+yarn run terser ${DOC_STATIC_ASSETS_PATH}/pdf.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.min.mjs ${TERSER_ARGS[@]}
+yarn run terser ${DOC_STATIC_ASSETS_PATH}/pdf.worker.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.min.mjs ${TERSER_ARGS[@]}
+yarn run terser ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.mjs ${TERSER_ARGS[@]}
+
+echo "-----------------------------------------------------------------------------------"
+echo "Cleaning up un-minified pdf.js files..."
+echo "-----------------------------------------------------------------------------------"
+rm ${DOC_STATIC_ASSETS_PATH}/pdf.mjs
+rm ${DOC_STATIC_ASSETS_PATH}/pdf.worker.mjs
+rm ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
 
 # we get the cmaps from the prebuild rather than the cdn because we would have to web scrape the cdn in order to get the cmap file names.
 # We don't use the prebuild for the pdf.js files because it doesn't include pdf_viewer
