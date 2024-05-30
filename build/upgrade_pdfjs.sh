@@ -40,6 +40,9 @@ curl ${CURL_PATH}/build/pdf.worker.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf.worker.m
 curl ${CURL_PATH}/web/pdf_viewer.mjs -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.mjs
 curl ${CURL_PATH}/web/pdf_viewer.min.css -o ${DOC_STATIC_ASSETS_PATH}/pdf_viewer.min.css
 
+# We minify the files ourself to avoid the cdn incorrectly minifying the files.
+# We use the terser options defined by pdf.js here:
+# https://github.com/mozilla/pdf.js/blob/ea34e5ccf6fdc7b3efcf6eba5b937dc7d63c5961/gulpfile.mjs#L345-L359
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js files using terser..."
 echo "-----------------------------------------------------------------------------------"
