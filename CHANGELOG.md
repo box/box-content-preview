@@ -1,3 +1,12 @@
+## 2.107.0 (2024-05-31)
+
+* fix(annotations): Fix annotation region in mobile (#1521) ([d281190](https://github.com/box/box-content-preview/commit/d281190)), closes [#1521](https://github.com/box/box-content-preview/issues/1521)
+* chore(i18n): Update Translations (#1520) ([6af703f](https://github.com/box/box-content-preview/commit/6af703f)), closes [#1520](https://github.com/box/box-content-preview/issues/1520)
+* chore(i18n): Update Translations (#1522) ([9eb6adc](https://github.com/box/box-content-preview/commit/9eb6adc)), closes [#1522](https://github.com/box/box-content-preview/issues/1522)
+* feat(error-messages): Update error messages in preview (#1519) ([89fa483](https://github.com/box/box-content-preview/commit/89fa483)), closes [#1519](https://github.com/box/box-content-preview/issues/1519)
+
+
+
 ## 2.106.0 (2024-05-20)
 
 * feat(preview): Disable eval support for documents by default (#1518) ([2005b3e](https://github.com/box/box-content-preview/commit/2005b3e)), closes [#1518](https://github.com/box/box-content-preview/issues/1518)
