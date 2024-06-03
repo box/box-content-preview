@@ -82,7 +82,7 @@
         "raw-loader": "^3.1.0",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
-        "react-intl": "^2.9.0",
+        "react-intl": "6.4.2",
         "react-tether": "^1.0.5",
         "sass": "1.34.1",
         "sass-loader": "^7.1.0",
@@ -152,6 +152,7 @@
         }
     },
     "resolutions": {
-        "mojito-rb-gen/merge": "1.2.1"
+        "mojito-rb-gen/merge": "1.2.1",
+        "**/react-intl/**/@types/react": "^17.0.2"
     }
 }
