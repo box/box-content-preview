@@ -1,20 +1,15 @@
 #!/bin/bash
 
 VERSION="`grep -o 'DOC_STATIC_ASSETS_VERSION.*' ./src/lib/constants.js | grep -o "'.*'" | sed -e "s/'//g"`"
-PIXEL_FIX_MISSING="`grep -c '.PixelsPerInch.PDF_TO_CSS_UNITS);return void 0!==' ./src/third-party/doc/$VERSION/pdf.min.js`"
-READ_ONLY_FIELD_FIX="`grep -c 'class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=this.data.readOnly' ./src/third-party/doc/$VERSION/pdf.worker.min.js`"
+EXTERNAL_LINK_FIX_MISSING="`grep -c 'this instanceof WidgetAnnotationElement||(n.tabIndex=Qt);const{style:r}=n;r.zIndex=this.parent.zIndex++;' ./src/third-party/doc/$VERSION/pdf.min.mjs`"
 FAILED=false
-if [[ $PIXEL_FIX_MISSING != 0 ]];then
-    echo "Pixelation fix not implemented. See https://github.com/box/box-content-preview/pull/1466"
-    FAILED=true
-fi
 
-if [[ $READ_ONLY_FIELD_FIX != 0 ]];then
-    echo "-----------------------------------------"
-    echo "Read only form field fix not implemented."
-    echo "Run: sed -i '' -e 's/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=this.data.readOnly&&!this.data.noHTML/class TextWidgetAnnotation extends WidgetAnnotation{constructor(e){super(e);this.data.hasOwnCanvas=false/' ./src/third-party/doc/<version>/pdf.worker.min.js"
-    echo "------------------------------------------"
-    FAILED=true
+if [[ $EXTERNAL_LINK_FIX_MISSING != 0 ]];then
+     echo "-----------------------------------------"
+        echo "External link fix not implemented."
+        echo "Verify that the fix is still needed by loading a pdf with multiple external links and confirm the first one is clickable."
+        echo "To fix, run: sed -i '' -e 's/this instanceof WidgetAnnotationElement||(n.tabIndex=Qt);const{style:r}=n;r.zIndex=this.parent.zIndex++;/this instanceof WidgetAnnotationElement||(n.tabIndex=Qt);const{style:r}=n;r.zIndex=++this.parent.zIndex;/' ./src/third-party/doc/${VERSION}/pdf.min.mjs"
+        echo "------------------------------------------"
 fi
 
 if [[ $FAILED == true ]];then

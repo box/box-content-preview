@@ -39,6 +39,17 @@ describe('lib/util', () => {
             const scriptEl = util.createScript(url);
             expect(scriptEl instanceof HTMLElement).toBe(true);
             expect(scriptEl.tagName).toBe('SCRIPT');
+            expect(scriptEl.type).not.toBe('module');
+            expect(scriptEl.src.indexOf(url) !== -1).toBe(true);
+            expect(scriptEl.async).toBe(false);
+        });
+
+        test('should add type module if url extension is mjs', () => {
+            const url = 'foo.mjs';
+            const scriptEl = util.createScript(url);
+            expect(scriptEl instanceof HTMLElement).toBe(true);
+            expect(scriptEl.tagName).toBe('SCRIPT');
+            expect(scriptEl.type).toBe('module');
             expect(scriptEl.src.indexOf(url) !== -1).toBe(true);
             expect(scriptEl.async).toBe(false);
         });
@@ -61,6 +72,18 @@ describe('lib/util', () => {
             expect(linkEl.tagName).toBe('LINK');
             expect(linkEl.rel).toBe('preload');
             expect(linkEl.as).toBe('script');
+            expect(linkEl.type).not.toBe('module');
+            expect(linkEl.href.indexOf(url) !== -1).toBe(true);
+        });
+
+        test('should add type module if url extension is mjs', () => {
+            const url = 'foo.mjs';
+            const linkEl = util.createPrefetch(url, true);
+            expect(linkEl instanceof HTMLElement).toBe(true);
+            expect(linkEl.tagName).toBe('LINK');
+            expect(linkEl.rel).toBe('preload');
+            expect(linkEl.as).toBe('script');
+            expect(linkEl.type).toBe('module');
             expect(linkEl.href.indexOf(url) !== -1).toBe(true);
         });
     });
