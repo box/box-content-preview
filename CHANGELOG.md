@@ -1,3 +1,10 @@
+## 2.108.0 (2024-06-10)
+
+* chore(i18n): Update Translations (#1523) ([6e3a86d](https://github.com/box/box-content-preview/commit/6e3a86d)), closes [#1523](https://github.com/box/box-content-preview/issues/1523)
+* feat(pdfjs): upgrade pdf.js to 4.3.136 (#1517) ([87d1b17](https://github.com/box/box-content-preview/commit/87d1b17)), closes [#1517](https://github.com/box/box-content-preview/issues/1517)
+
+
+
 ## 2.107.0 (2024-05-31)
 
 * fix(annotations): Fix annotation region in mobile (#1521) ([d281190](https://github.com/box/box-content-preview/commit/d281190)), closes [#1521](https://github.com/box/box-content-preview/issues/1521)
