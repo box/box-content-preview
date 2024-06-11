@@ -3365,10 +3365,10 @@ box-annotations@^2.3.0:
   resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
   integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
 
-box-ui-elements@^18.1.0:
-  version "18.1.0"
-  resolved "https://registry.yarnpkg.com/box-ui-elements/-/box-ui-elements-18.1.0.tgz#59524c99596b3a9bc39b79eefa8d320dc487c7ad"
-  integrity sha512-D1r1qn0BfzHMHg3qVR+tJfB4jowUtmKtBGjyN1F9oE6dmj/mbp2t12WMpU+x57BRVY/h5COHYwBsYyGjets7tA==
+box-ui-elements@^20.0.0:
+  version "20.0.0"
+  resolved "https://registry.yarnpkg.com/box-ui-elements/-/box-ui-elements-20.0.0.tgz#a1777a692a5e2f71a79d6dbbcaa785af9a5f8c7c"
+  integrity sha512-56jY34zxigRi77tja4y+4KF3Z6nqgF7xWz2H0fMwLxD2VPuQVFG2k6GSxGWFBWTHP8JMLzQQ2y+/rxfCdTUhtg==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
