@@ -322,10 +322,11 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .textLayer {
-        caret-color: black; // Required for caret navigation on transparent text
         top: $pdfjs-page-padding;
         bottom: auto;
+        z-index: 1;
         opacity: 1;
+        caret-color: black; // Required for caret navigation on transparent text
 
         // Only allow text divs to be selected
         > div {
