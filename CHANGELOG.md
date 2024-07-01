@@ -1,3 +1,15 @@
+## 2.109.0 (2024-07-01)
+
+* fix(error-messages): Fix bracket in notification message (#1526) ([e0b4f52](https://github.com/box/box-content-preview/commit/e0b4f52)), closes [#1526](https://github.com/box/box-content-preview/issues/1526)
+* fix(preview): Fix highlighting text when performing click and drag (#1531) ([2a3459d](https://github.com/box/box-content-preview/commit/2a3459d)), closes [#1531](https://github.com/box/box-content-preview/issues/1531)
+* chore(i18n): Update Translations (#1525) ([9659c47](https://github.com/box/box-content-preview/commit/9659c47)), closes [#1525](https://github.com/box/box-content-preview/issues/1525)
+* chore(i18n): Update Translations (#1527) ([c8a71cc](https://github.com/box/box-content-preview/commit/c8a71cc)), closes [#1527](https://github.com/box/box-content-preview/issues/1527)
+* chore(i18n): Update Translations (#1528) ([acb8faa](https://github.com/box/box-content-preview/commit/acb8faa)), closes [#1528](https://github.com/box/box-content-preview/issues/1528)
+* chore(i18n): Update Translations (#1529) ([585d367](https://github.com/box/box-content-preview/commit/585d367)), closes [#1529](https://github.com/box/box-content-preview/issues/1529)
+* feat: update to react-intl 6 (#1524) ([26a073f](https://github.com/box/box-content-preview/commit/26a073f)), closes [#1524](https://github.com/box/box-content-preview/issues/1524)
+
+
+
 ## 2.108.0 (2024-06-10)
 
 * chore(i18n): Update Translations (#1523) ([6e3a86d](https://github.com/box/box-content-preview/commit/6e3a86d)), closes [#1523](https://github.com/box/box-content-preview/issues/1523)
