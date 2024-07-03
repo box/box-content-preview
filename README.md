@@ -51,9 +51,6 @@ You can self-host the Box Content Preview library or reference the versions avai
     <meta charset="utf-8" />
     <title>Box Content Preview Demo</title>
 
-    <!-- polyfill.io only loads a Promise polyfill if your browser needs one -->
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
-
     <!-- Latest version of Preview SDK for your locale -->
     <script src="https://cdn01.boxcdn.net/platform/preview/2.109.0/en-US/preview.js"></script>
     <link
