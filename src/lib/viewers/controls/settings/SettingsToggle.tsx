@@ -13,7 +13,10 @@ export type Ref = HTMLButtonElement;
 
 function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
-        <div className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}>
+        <div
+            className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}
+            data-testid="bp-SettingsToggle-container"
+        >
             <button
                 ref={ref}
                 className="bp-SettingsToggle-button"

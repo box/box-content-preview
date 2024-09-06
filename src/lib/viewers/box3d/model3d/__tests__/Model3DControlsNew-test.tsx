@@ -1,19 +1,22 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import AnimationControls from '../../../controls/box3d/AnimationControls';
-import FullscreenToggle from '../../../controls/fullscreen';
+import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import Model3DControls, { Props } from '../Model3DControlsNew';
-import Model3DSettings, { CameraProjection, RenderMode } from '../../../controls/box3d/Model3DSettings';
-import ResetControl from '../../../controls/box3d/ResetControl';
-import VrToggleControl from '../../../controls/box3d/VrToggleControl';
+import { CameraProjection, RenderMode } from '../../../controls/box3d/Model3DSettings';
 
 describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
     const getDefaults = (): Props => ({
-        animationClips: [],
+        animationClips: [
+            {
+                duration: 2,
+                id: '123',
+                name: 'foo',
+            },
+        ],
         cameraProjection: CameraProjection.PERSPECTIVE,
         currentAnimationClipId: '123',
         isPlaying: false,
-        isVrShown: false,
+        isVrShown: true,
         onAnimationClipSelect: jest.fn(),
         onCameraProjectionChange: jest.fn(),
         onFullscreenToggle: jest.fn(),
@@ -33,11 +36,10 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
         showWireframes: false,
     });
 
-    const getWrapper = (props: Partial<Props>): ShallowWrapper =>
-        shallow(<Model3DControls {...getDefaults()} {...props} />);
+    const getWrapper = (props: Partial<Props>) => render(<Model3DControls {...getDefaults()} {...props} />);
 
     describe('render()', () => {
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
             const onAnimationClipSelect = jest.fn();
             const onCameraProjectionChange = jest.fn();
             const onFullscreenToggle = jest.fn();
@@ -68,36 +70,44 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                 onVrToggle,
             });
 
-            expect(wrapper.find(ResetControl).props()).toMatchObject({
-                onReset,
+            await act(async () => {
+                await wrapper.queryByTitle('Reset')?.click();
             });
-            expect(wrapper.find(AnimationControls).props()).toMatchObject({
-                animationClips: [],
-                currentAnimationClipId: '123',
-                isPlaying: false,
-                onAnimationClipSelect,
-                onPlayPause,
+            await expect(onReset).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                await wrapper.queryByTitle('Play')?.click();
             });
-            expect(wrapper.find(VrToggleControl).props()).toMatchObject({
-                isVrShown: false,
-                onVrToggle,
+            await expect(onPlayPause).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                await wrapper.queryByTitle('Animation clips')?.click();
             });
-            expect(wrapper.find(Model3DSettings).props()).toMatchObject({
-                cameraProjection: CameraProjection.PERSPECTIVE,
-                onCameraProjectionChange,
-                onClose: onSettingsClose,
-                onOpen: onSettingsOpen,
-                onRenderModeChange,
-                onRotateOnAxisChange,
-                onShowGridToggle,
-                onShowSkeletonsToggle,
-                onShowWireframesToggle,
-                renderMode: RenderMode.LIT,
-                showGrid: true,
-                showSkeletons: false,
-                showWireframes: false,
+            const animationClip = await wrapper.getByRole('menuitemradio');
+            await expect(animationClip).toHaveTextContent('00:00:02 foo');
+            await act(async () => {
+                await animationClip.click();
             });
-            expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
+            await expect(onAnimationClipSelect).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                await wrapper.queryByTitle('Enter fullscreen')?.click();
+            });
+            await expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                await wrapper.queryByTitle('Toggle VR display')?.click();
+            });
+            await expect(onVrToggle).toHaveBeenCalledTimes(1);
+
+            const settings = await wrapper.queryByTitle('Settings');
+            await act(async () => {
+                await settings?.click();
+            });
+            await expect(onSettingsOpen).toHaveBeenCalledTimes(1);
+            await act(async () => {
+                await settings?.click();
+            });
         });
     });
 });

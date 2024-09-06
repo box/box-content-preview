@@ -1,8 +1,7 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, within } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import Model3DSettings, { CameraProjection, Props, RenderMode } from '../Model3DSettings';
-import Settings, { Menu } from '../../settings';
-import RotateAxisControls from '../RotateAxisControls';
 
 describe('Model3DSettings', () => {
     const getDefaults = (): Props => ({
@@ -20,7 +19,7 @@ describe('Model3DSettings', () => {
         showSkeletons: false,
         showWireframes: false,
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<Model3DSettings {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<Model3DSettings {...getDefaults()} {...props} />);
 
     describe('render()', () => {
         test('should return a valid wrapper', () => {
@@ -43,49 +42,59 @@ describe('Model3DSettings', () => {
                 onShowSkeletonsToggle,
                 onShowWireframesToggle,
             });
-            const checkboxItems = wrapper.find(Settings.CheckboxItem);
-            const dropdowns = wrapper.find(Settings.Dropdown);
+            act(() => wrapper.queryByTitle('Settings')?.click());
 
-            expect(wrapper.find(Settings).props()).toMatchObject({
-                className: 'bp-Model3DSettings',
-                onClose,
-                onOpen,
-            });
-            expect(wrapper.find(Settings.Menu).props()).toMatchObject({
-                className: 'bp-Model3DSettings-menu',
-                name: Menu.MAIN,
-            });
+            expect(onOpen).toHaveBeenCalled();
+
+            const checkboxItems = wrapper.queryAllByRole('checkbox');
+
+            expect(wrapper.getByRole('menu')).toHaveClass('bp-Model3DSettings-menu');
+            expect(wrapper.getByRole('menu')).toHaveClass('bp-is-active');
 
             // CheckboxItems
-            expect(checkboxItems.at(0).props()).toMatchObject({
-                isChecked: true,
-                label: __('box3d_settings_grid_label'),
-                onChange: onShowGridToggle,
-            });
-            expect(checkboxItems.at(1).props()).toMatchObject({
-                isChecked: false,
-                label: __('box3d_settings_wireframes_label'),
-                onChange: onShowWireframesToggle,
-            });
-            expect(checkboxItems.at(2).props()).toMatchObject({
-                isChecked: false,
-                label: __('box3d_settings_skeletons_label'),
-                onChange: onShowSkeletonsToggle,
-            });
+            expect(checkboxItems.at(0)).toHaveAttribute('checked');
+            expect(checkboxItems.at(1)).not.toHaveAttribute('checked');
+            expect(checkboxItems.at(2)).not.toHaveAttribute('checked');
+
+            expect(checkboxItems.at(0)).toBe(wrapper.getByLabelText('Show grid'));
+            expect(checkboxItems.at(1)).toBe(wrapper.getByLabelText('Show wireframes'));
+            expect(checkboxItems.at(2)).toBe(wrapper.getByLabelText('Show skeletons'));
 
             // Dropdowns
-            expect(dropdowns.at(0).props()).toMatchObject({
-                label: __('box3d_settings_render_label'),
-                onSelect: onRenderModeChange,
-                value: RenderMode.LIT,
-            });
-            expect(dropdowns.at(1).props()).toMatchObject({
-                label: __('box3d_settings_projection_label'),
-                onSelect: onCameraProjectionChange,
-                value: CameraProjection.PERSPECTIVE,
-            });
+            const dropdowns = wrapper.queryAllByTestId('bp-SettingsDropdown-container');
 
-            expect(wrapper.find(RotateAxisControls).props()).toMatchObject({ onRotateOnAxisChange });
+            expect(
+                within(dropdowns.at(0)!).queryByLabelText('Render mode', { selector: 'button' }),
+            ).toBeInTheDocument();
+            const renderModeDropdown = within(dropdowns.at(0)!).queryByLabelText(RenderMode.LIT, {
+                selector: 'button',
+            })!;
+            act(() => renderModeDropdown?.click());
+            expect(renderModeDropdown).toHaveAttribute('aria-expanded', 'true');
+
+            const renderModeList = within(dropdowns.at(0)!).queryByRole('listbox');
+            expect(renderModeList?.children[0]).toHaveTextContent('Lit');
+            expect(renderModeList?.children[1]).toHaveTextContent('Unlit');
+            expect(renderModeList?.children[2]).toHaveTextContent('Normals');
+            expect(renderModeList?.children[3]).toHaveTextContent('Shape');
+            expect(renderModeList?.children[4]).toHaveTextContent('UV Overlay');
+
+            expect(
+                within(dropdowns.at(1)!).queryByLabelText('Camera Projection', { selector: 'button' }),
+            ).toBeInTheDocument();
+            const cameraProjectionDropdown = within(dropdowns.at(1)!).queryByLabelText(CameraProjection.PERSPECTIVE, {
+                selector: 'button',
+            })!;
+            act(() => cameraProjectionDropdown?.click());
+            expect(cameraProjectionDropdown).toHaveAttribute('aria-expanded', 'true');
+            const cameraProjectionsList = within(dropdowns.at(1)!).queryByRole('listbox');
+            expect(cameraProjectionsList?.children[0]).toHaveTextContent('Perspective');
+            expect(cameraProjectionsList?.children[1]).toHaveTextContent('Orthographic');
+
+            expect(wrapper.queryByText('Rotate Model')).toBeInTheDocument();
+
+            act(() => wrapper.queryByTitle('Settings')?.click());
+            expect(onClose).toHaveBeenCalled();
         });
     });
 });

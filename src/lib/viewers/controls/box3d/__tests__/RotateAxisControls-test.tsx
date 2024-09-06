@@ -1,30 +1,36 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, within } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import RotateAxisControls, { Props } from '../RotateAxisControls';
-import RotateAxisControl from '../RotateAxisControl';
 
 describe('RotateAxisControls', () => {
     const getDefaults = (): Props => ({
         onRotateOnAxisChange: jest.fn(),
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<RotateAxisControls {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<RotateAxisControls {...getDefaults()} {...props} />);
 
     describe('render()', () => {
         test('should return a valid wrapper', () => {
             const onRotateOnAxisChange = jest.fn();
             const wrapper = getWrapper({ onRotateOnAxisChange });
-            const controls = wrapper.find(RotateAxisControl);
 
-            expect(wrapper.hasClass('bp-RotateAxisControls')).toBe(true);
-            expect(wrapper.find('[data-testid="bp-RotateAxisControls-label"]').text()).toBe(
-                __('box3d_settings_rotate_label'),
-            );
-            ['x', 'y', 'z'].forEach((axis, index) => {
-                expect(controls.at(index).props()).toMatchObject({
-                    axis,
-                    onRotateOnAxisChange,
-                });
+            expect(wrapper.queryByTestId('bp-RotateAxisControls-label')).toHaveTextContent('Rotate Model');
+
+            act(() => {
+                within(wrapper.queryByTestId('bp-RotateAxisControl-x')!)
+                    .queryByTestId('bp-RotateAxisControl-left')
+                    ?.click();
+                within(wrapper.queryByTestId('bp-RotateAxisControl-y')!)
+                    .queryByTestId('bp-RotateAxisControl-right')
+                    ?.click();
+                within(wrapper.queryByTestId('bp-RotateAxisControl-z')!)
+                    .queryByTestId('bp-RotateAxisControl-left')
+                    ?.click();
             });
+
+            expect(onRotateOnAxisChange.mock.calls.at(0)).toEqual([{ x: -90 }]);
+            expect(onRotateOnAxisChange.mock.calls.at(1)).toEqual([{ y: 90 }]);
+            expect(onRotateOnAxisChange.mock.calls.at(2)).toEqual([{ z: -90 }]);
         });
     });
 });

@@ -1,6 +1,6 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconVr24 from '../../icons/IconVr24';
+import { render, within } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import VrToggleControl, { Props } from '../VrToggleControl';
 
 describe('VrToggleControl', () => {
@@ -8,26 +8,23 @@ describe('VrToggleControl', () => {
         isVrShown: true,
         onVrToggle: jest.fn(),
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<VrToggleControl {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<VrToggleControl {...getDefaults()} {...props} />);
 
     describe('render', () => {
         test('should render valid wrapper', () => {
             const onVrToggle = jest.fn();
             const wrapper = getWrapper({ onVrToggle });
 
-            expect(wrapper.props()).toMatchObject({
-                className: 'bp-VrToggleControl',
-                onClick: onVrToggle,
-                title: __('box3d_toggle_vr'),
-                type: 'button',
-            });
-            expect(wrapper.exists(IconVr24)).toBe(true);
+            expect(wrapper.container).toBeInTheDocument();
+            act(() => wrapper.queryByTitle('Toggle VR display')?.click());
+
+            expect(onVrToggle).toHaveBeenCalled();
         });
 
         test('should render null if isVrShown is false', () => {
             const wrapper = getWrapper({ isVrShown: false });
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(wrapper.container).toBeEmptyDOMElement();
         });
     });
 });

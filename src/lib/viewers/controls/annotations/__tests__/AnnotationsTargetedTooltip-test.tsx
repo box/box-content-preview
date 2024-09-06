@@ -1,10 +1,11 @@
 import React from 'react';
-import { ReactWrapper, mount } from 'enzyme';
+import { render } from '@testing-library/react';
+
 import AnnotationsTargetedTooltip from '../AnnotationsTargetedTooltip';
 
 describe('AnnotationsTargetedTooltip', () => {
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(
+    const getWrapper = (props = {}) =>
+        render(
             <AnnotationsTargetedTooltip {...props}>
                 <div>Child</div>
             </AnnotationsTargetedTooltip>,
@@ -25,24 +26,23 @@ describe('AnnotationsTargetedTooltip', () => {
             }));
         });
 
-        test('should return tooltip when is enabled', () => {
+        test('should render tooltip when enabled', () => {
             const wrapper = getWrapper({
                 isEnabled: true,
             });
 
-            expect(wrapper.children().text()).not.toBe('Child');
-            expect(wrapper.children().prop('shouldTarget')).toBe(true);
-            expect(wrapper.children().prop('theme')).toBe('callout');
-            expect(wrapper.children().prop('useTargetingApi')().canShow).toBe(true);
+            const tooltip = wrapper.queryByRole('tooltip');
+            expect(tooltip).not.toBe(null);
+            expect(tooltip?.parentElement?.classList.contains('is-callout')).toBe(true);
         });
 
-        test('should return children when tooltip is disabled', () => {
+        test('should not render tooltip when disabled', () => {
             const wrapper = getWrapper({
                 isEnabled: false,
             });
 
-            expect(wrapper.children().text()).toBe('Child');
-            expect(wrapper.children().prop('shouldTarget')).toBe(false);
+            const tooltip = wrapper.queryByRole('tooltip');
+            expect(tooltip).toBe(null);
         });
     });
 });

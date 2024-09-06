@@ -1,17 +1,17 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
-import { ReactWrapper, mount } from 'enzyme';
+import { render, within } from '@testing-library/react';
 import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}): ReactWrapper => {
+    const getWrapper = (props = {}) => {
         const parentEl = document.createElement('div');
         document.body.appendChild(parentEl);
-        return mount(<AnnotationsControls {...props} />, { attachTo: parentEl });
+        return render(<AnnotationsControls {...props} />, { container: parentEl });
     };
-    const getElement = (props = {}): ReactWrapper => getWrapper(props).childAt(0);
+    const getElement = (props = {}) => getWrapper(props);
 
     beforeEach(() => {
         jest.spyOn(document, 'addEventListener');
@@ -39,18 +39,18 @@ describe('AnnotationsControls', () => {
                 hasHighlight: true,
                 hasRegion: true,
             });
-            expect(document.addEventListener).toBeCalledWith('keydown', expect.any(Function));
+            expect(document.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
 
             unmount();
-            expect(document.removeEventListener).toBeCalledWith('keydown', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
         });
 
         test('should not add a handler if the annotation mode is set to none', () => {
             getWrapper({ hasHighlight: true, hasRegion: true });
-            expect(document.addEventListener).not.toBeCalledWith('keydown', expect.any(Function));
+            expect(document.addEventListener).not.toHaveBeenCalledWith('keydown', expect.any(Function));
 
             unmount();
-            expect(document.removeEventListener).toBeCalledWith('keydown', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
         });
     });
 
@@ -73,9 +73,11 @@ describe('AnnotationsControls', () => {
                 onAnnotationModeClick: onClick,
             });
 
-            element.find(`button[data-testid="${selector}"]`).simulate('click');
+            act(() => {
+                element.queryByTestId(selector)?.click();
+            });
 
-            expect(onClick).toBeCalledWith({ mode: result });
+            expect(onClick).toHaveBeenCalledWith({ mode: result });
         });
 
         test('should invoke the escape callback if the escape key is pressed while in a mode', () => {
@@ -92,7 +94,7 @@ describe('AnnotationsControls', () => {
                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
             });
 
-            expect(onEscape).toBeCalled();
+            expect(onEscape).toHaveBeenCalled();
         });
 
         test('should not invoke the escape callback if any key other than escape is pressed', () => {
@@ -109,7 +111,7 @@ describe('AnnotationsControls', () => {
                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
             });
 
-            expect(onEscape).not.toBeCalled();
+            expect(onEscape).not.toHaveBeenCalled();
         });
 
         test.each`
@@ -127,11 +129,11 @@ describe('AnnotationsControls', () => {
                     hasRegion: true,
                 });
 
-                wrapper.find('button[data-testid="bp-AnnotationsControls-exitBtn"]').simulate('click');
+                act(() => {
+                    wrapper.queryByTestId('bp-AnnotationsControls-exitBtn')?.click();
+                });
 
-                expect(wrapper.find(`button[data-testid="${selector}"]`).getDOMNode() === document.activeElement).toBe(
-                    true,
-                );
+                expect(wrapper.queryByTestId(selector) === document.activeElement).toBe(true);
             },
         );
     });
@@ -140,13 +142,13 @@ describe('AnnotationsControls', () => {
         test('should return nothing if no mode is enabled', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(wrapper.container).toBeEmptyDOMElement();
         });
 
         test('should return a valid wrapper', () => {
             const element = getElement({ hasHighlight: true, hasRegion: true });
 
-            expect(element.hasClass('bp-AnnotationsControls')).toBe(true);
+            expect(element.container.getElementsByClassName('bp-AnnotationsControls').length).toBe(1);
         });
 
         test.each`
@@ -156,7 +158,9 @@ describe('AnnotationsControls', () => {
         `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
             const wrapper = getWrapper({ annotationMode: mode, hasDrawing: true });
 
-            expect(wrapper.find('IconDrawing24').props().fill).toBe(fill);
+            const icon = wrapper.getByTitle('Markup').querySelector('svg');
+
+            expect(icon?.children[0]).toHaveAttribute('fill', fill);
         });
     });
 });

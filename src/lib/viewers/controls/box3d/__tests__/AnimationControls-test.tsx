@@ -1,8 +1,7 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import AnimationClipsControl from '../AnimationClipsControl';
+import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import AnimationControls, { Props as AnimationControlsProps } from '../AnimationControls';
-import PlayPauseToggle from '../../media/PlayPauseToggle';
 
 describe('AnimationControls', () => {
     const getDefaults = (): AnimationControlsProps => ({
@@ -12,13 +11,13 @@ describe('AnimationControls', () => {
         onAnimationClipSelect: jest.fn(),
         onPlayPause: jest.fn(),
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<AnimationControls {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<AnimationControls {...getDefaults()} {...props} />);
 
     describe('render', () => {
         test('should return null if animationClips is empty', () => {
             const wrapper = getWrapper({ animationClips: [] });
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(wrapper.container).toBeEmptyDOMElement();
         });
 
         test('should return valid wrapper', () => {
@@ -26,15 +25,17 @@ describe('AnimationControls', () => {
             const onPlayPause = jest.fn();
             const wrapper = getWrapper({ onAnimationClipSelect, onPlayPause });
 
-            expect(wrapper.find(PlayPauseToggle).props()).toMatchObject({
-                isPlaying: false,
-                onPlayPause,
-            });
-            expect(wrapper.find(AnimationClipsControl).props()).toMatchObject({
-                animationClips: expect.any(Array),
-                currentAnimationClipId: '1',
-                onAnimationClipSelect,
-            });
+            act(() => wrapper.queryByTitle('Play')?.click());
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+
+            act(() => wrapper.queryByTitle('Animation clips')?.click());
+            act(() =>
+                wrapper
+                    .getAllByRole('menuitemradio')
+                    ?.at(0)
+                    ?.click(),
+            );
+            expect(onAnimationClipSelect).toHaveBeenCalledWith('1');
         });
     });
 });

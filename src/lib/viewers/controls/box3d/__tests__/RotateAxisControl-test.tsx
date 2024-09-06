@@ -1,5 +1,6 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import RotateAxisControl, { Props } from '../RotateAxisControl';
 
 describe('RotateAxisControl', () => {
@@ -7,25 +8,25 @@ describe('RotateAxisControl', () => {
         axis: 'x',
         onRotateOnAxisChange: jest.fn(),
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<RotateAxisControl {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<RotateAxisControl {...getDefaults()} {...props} />);
 
     describe('onRotateOnAxisChange()', () => {
         test('should indicate a negative rotation when the left button is clicked', () => {
             const onRotateOnAxisChange = jest.fn();
             const wrapper = getWrapper({ onRotateOnAxisChange });
 
-            wrapper.find('[data-testid="bp-RotateAxisControl-left"]').simulate('click');
+            act(() => wrapper.queryByTestId('bp-RotateAxisControl-left')?.click());
 
-            expect(onRotateOnAxisChange).toBeCalledWith({ x: -90 });
+            expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: -90 });
         });
 
         test('should indicate a positive rotation when the right button is clicked', () => {
             const onRotateOnAxisChange = jest.fn();
             const wrapper = getWrapper({ onRotateOnAxisChange });
 
-            wrapper.find('[data-testid="bp-RotateAxisControl-right"]').simulate('click');
+            act(() => wrapper.queryByTestId('bp-RotateAxisControl-right')?.click());
 
-            expect(onRotateOnAxisChange).toBeCalledWith({ x: 90 });
+            expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: 90 });
         });
     });
 
@@ -33,18 +34,9 @@ describe('RotateAxisControl', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.hasClass('bp-RotateAxisControl')).toBe(true);
-            expect(wrapper.find('[data-testid="bp-RotateAxisControl-left"]').props()).toMatchObject({
-                className: 'bp-RotateAxisControl-left',
-                onClick: expect.any(Function),
-                type: 'button',
-            });
-            expect(wrapper.find('[data-testid="bp-RotateAxisControl-label"]').text()).toBe('x');
-            expect(wrapper.find('[data-testid="bp-RotateAxisControl-right"]').props()).toMatchObject({
-                className: 'bp-RotateAxisControl-right',
-                onClick: expect.any(Function),
-                type: 'button',
-            });
+            expect(wrapper.queryByTestId('bp-RotateAxisControl-left')).toHaveClass('bp-RotateAxisControl-left');
+            expect(wrapper.queryByTestId('bp-RotateAxisControl-right')).toHaveClass('bp-RotateAxisControl-right');
+            expect(wrapper.queryByTestId('bp-RotateAxisControl-label')).toHaveTextContent('x');
         });
     });
 });

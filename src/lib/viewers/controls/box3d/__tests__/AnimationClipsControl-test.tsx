@@ -1,7 +1,7 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import AnimationClipsControl, { formatDuration, Props as AnimationClipsControlProps } from '../AnimationClipsControl';
-import AnimationClipsToggle from '../AnimationClipsToggle';
 import Settings from '../../settings';
 
 describe('AnimationClipsControl', () => {
@@ -14,39 +14,36 @@ describe('AnimationClipsControl', () => {
         currentAnimationClipId: '1',
         onAnimationClipSelect: jest.fn(),
     });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<AnimationClipsControl {...getDefaults()} {...props} />);
+    const getWrapper = (props = {}) => render(<AnimationClipsControl {...getDefaults()} {...props} />);
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.find(Settings).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl',
-                toggle: AnimationClipsToggle,
-            });
-            expect(wrapper.exists(Settings.Menu)).toBe(true);
+            expect(wrapper.queryByTitle('Animation clips')).toBeInTheDocument();
+            expect(wrapper.queryByTestId('bp-settings-flyout')).toBeInTheDocument();
         });
 
         test('should return the animationClips as RadioItems', () => {
             const onAnimationClipSelect = jest.fn();
             const wrapper = getWrapper({ onAnimationClipSelect });
-            const radioItems = wrapper.find(Settings.RadioItem);
+            act(() => {
+                wrapper.queryByTitle('Animation clips')?.click();
+            });
+
+            const radioItems = wrapper.queryAllByRole('menuitemradio');
 
             expect(radioItems).toHaveLength(2);
-            expect(radioItems.at(0).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl-radioItem',
-                isSelected: true,
-                label: '00:00:01 first',
-                onChange: onAnimationClipSelect,
-                value: animationClips[0].id,
-            });
-            expect(radioItems.at(1).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl-radioItem',
-                isSelected: false,
-                label: '00:00:02 second',
-                onChange: onAnimationClipSelect,
-                value: animationClips[1].id,
-            });
+            expect(radioItems.at(0)?.textContent?.includes('00:00:01 first')).toBe(true);
+            expect(radioItems.at(0)).toHaveAttribute('aria-checked', 'true');
+            expect(radioItems.at(1)?.textContent?.includes('00:00:02 second')).toBe(true);
+            expect(radioItems.at(1)).toHaveAttribute('aria-checked', 'false');
+
+            act(() => radioItems.at(0)?.click());
+            expect(onAnimationClipSelect).toHaveBeenCalledWith(animationClips[0].id);
+
+            act(() => radioItems.at(1)?.click());
+            expect(onAnimationClipSelect).toHaveBeenCalledWith(animationClips[1].id);
         });
     });
 
