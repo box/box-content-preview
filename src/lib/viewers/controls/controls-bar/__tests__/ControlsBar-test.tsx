@@ -9,7 +9,7 @@ describe('ControlsBar', () => {
             const wrapper = render(<ControlsBar>{children}</ControlsBar>);
 
             expect(wrapper.getByText('Hello')).toBeInTheDocument();
-            expect(wrapper.container.getElementsByClassName('bp-ControlsBar').length).toBe(1);
+            expect(wrapper.container.getElementsByClassName('bp-ControlsBar')).toHaveLength(1);
         });
 
         test('should return null if the children property is undefined', () => {

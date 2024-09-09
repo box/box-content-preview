@@ -1,7 +1,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
-import { render, within } from '@testing-library/react';
+import { fireEvent, render, within } from '@testing-library/react';
 import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
@@ -91,7 +91,7 @@ describe('AnnotationsControls', () => {
             });
 
             act(() => {
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+                fireEvent.keyDown(document, { key: 'Escape' });
             });
 
             expect(onEscape).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('AnnotationsControls', () => {
             });
 
             act(() => {
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+                fireEvent.keyDown(document, { key: 'Enter' });
             });
 
             expect(onEscape).not.toHaveBeenCalled();
@@ -148,7 +148,7 @@ describe('AnnotationsControls', () => {
         test('should return a valid wrapper', () => {
             const element = getElement({ hasHighlight: true, hasRegion: true });
 
-            expect(element.container.getElementsByClassName('bp-AnnotationsControls').length).toBe(1);
+            expect(element.container.getElementsByClassName('bp-AnnotationsControls')).toHaveLength(1);
         });
 
         test.each`

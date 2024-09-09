@@ -36,8 +36,8 @@ describe('AnnotationsButton', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.container.getElementsByClassName('bp-AnnotationsButton').length).toBe(1);
-            expect(wrapper.container.getElementsByClassName('bp-is-active').length).toBe(0); // Default
+            expect(wrapper.container.getElementsByClassName('bp-AnnotationsButton')).toHaveLength(1);
+            expect(wrapper.container.getElementsByClassName('bp-is-active')).toHaveLength(0); // Default
             expect(wrapper.container.textContent?.includes('Test')).toBe(true);
         });
     });
