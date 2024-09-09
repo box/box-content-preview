@@ -1,6 +1,4 @@
 import '@testing-library/jest-dom';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
-import Enzyme, { mount, shallow } from 'enzyme';
 
 expect.extend({
     toContainSelector(received, selector) {
@@ -10,9 +8,3 @@ expect.extend({
         };
     },
 });
-
-Enzyme.configure({ adapter: new Adapter() });
-
-// Make Enzyme functions available in all test files without importing
-global.shallow = shallow;
-global.mount = mount;

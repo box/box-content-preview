@@ -15,7 +15,7 @@ describe('RotateAxisControl', () => {
             const onRotateOnAxisChange = jest.fn();
             const wrapper = getWrapper({ onRotateOnAxisChange });
 
-            act(() => wrapper.queryByTestId('bp-RotateAxisControl-left')?.click());
+            act(() => wrapper.getByTestId('bp-RotateAxisControl-left').click());
 
             expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: -90 });
         });
@@ -24,7 +24,7 @@ describe('RotateAxisControl', () => {
             const onRotateOnAxisChange = jest.fn();
             const wrapper = getWrapper({ onRotateOnAxisChange });
 
-            act(() => wrapper.queryByTestId('bp-RotateAxisControl-right')?.click());
+            act(() => wrapper.getByTestId('bp-RotateAxisControl-right').click());
 
             expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: 90 });
         });
@@ -34,9 +34,9 @@ describe('RotateAxisControl', () => {
         test('should return a valid wrapper', () => {
             const wrapper = getWrapper();
 
-            expect(wrapper.queryByTestId('bp-RotateAxisControl-left')).toHaveClass('bp-RotateAxisControl-left');
-            expect(wrapper.queryByTestId('bp-RotateAxisControl-right')).toHaveClass('bp-RotateAxisControl-right');
-            expect(wrapper.queryByTestId('bp-RotateAxisControl-label')).toHaveTextContent('x');
+            expect(wrapper.getByTestId('bp-RotateAxisControl-left')).toHaveClass('bp-RotateAxisControl-left');
+            expect(wrapper.getByTestId('bp-RotateAxisControl-right')).toHaveClass('bp-RotateAxisControl-right');
+            expect(wrapper.getByTestId('bp-RotateAxisControl-label')).toHaveTextContent('x');
         });
     });
 });

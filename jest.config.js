@@ -18,6 +18,7 @@ module.exports = {
     restoreMocks: true,
     roots: ['src'],
     setupFiles: [
+        '<rootDir>/src/lib/types/jest-global.d.ts',
         '<rootDir>/build/jest/envGlobals.js',
         '<rootDir>/build/jest/envWindow.js',
         'jest-canvas-mock',
