@@ -26,3 +26,6 @@ export const injectIntl = Component => {
     WrapperComponent.displayName = Component.displayName || Component.name || 'Component';
     return WrapperComponent;
 };
+
+// eslint-disable-next-line react/prop-types
+export const IntlProvider = ({ children }) => <div>{children}</div>;
