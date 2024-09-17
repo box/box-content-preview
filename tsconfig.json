@@ -1,4 +1,7 @@
 {
+    "compilerOptions": {
+        "types": ["node", "jest", "@testing-library/jest-dom"]
+    },
     "extends": "@box/frontend/ts/tsconfig.json",
     "include": ["./src/**/*.ts", "./src/**/*.tsx"],
     "exclude": ["node_modules", "dist"]
