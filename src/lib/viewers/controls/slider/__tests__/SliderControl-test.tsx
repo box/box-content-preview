@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import SliderControl from '../SliderControl';
 
@@ -19,7 +19,7 @@ const getTouchEventDefaults = () => ({
 });
 
 describe('SliderControl', () => {
-    const getWrapper = (props = {}) =>
+    const renderView = (props = {}) =>
         render(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} {...props} />);
 
     beforeEach(() => {
@@ -48,10 +48,10 @@ describe('SliderControl', () => {
             ${1500} | ${100}
         `('should handle mousedown and update the value for pageX value $pageX', ({ pageX, result }) => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: 0 });
+            renderView({ onUpdate, value: 0 });
 
             fireEvent(
-                wrapper.getByRole('slider')!,
+                screen.getByRole('slider')!,
                 new MouseEventExtended('mousedown', {
                     button: 1,
                     bubbles: true,
@@ -64,10 +64,10 @@ describe('SliderControl', () => {
 
         test('should handle mousemove by calling onMove with the value, position, and width', () => {
             const onMove = jest.fn();
-            const wrapper = getWrapper({ onMove });
+            renderView({ onMove });
 
             fireEvent(
-                wrapper.getByRole('slider')!,
+                screen.getByRole('slider')!,
                 new MouseEventExtended('mousemove', {
                     button: 1,
                     bubbles: true,
@@ -83,11 +83,11 @@ describe('SliderControl', () => {
             ${0}    | ${0}
             ${10}   | ${9}
             ${100}  | ${99}
-        `('should handle keydown and decrement the value $initial to $result ', ({ initial, result }) => {
+        `('should handle keydown and decrement the value $initial to $result ', async ({ initial, result }) => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: initial });
+            renderView({ onUpdate, value: initial });
 
-            fireEvent.keyDown(wrapper.getByRole('slider')!, { key: 'ArrowLeft' });
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowLeft' });
 
             expect(onUpdate).toHaveBeenCalledWith(result);
         });
@@ -99,9 +99,9 @@ describe('SliderControl', () => {
             ${100}  | ${100}
         `('should handle keydown and increment the value $initial to $result ', ({ initial, result }) => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: initial });
+            renderView({ onUpdate, value: initial });
 
-            fireEvent.keyDown(wrapper.getByRole('slider')!, { key: 'ArrowRight' });
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowRight' });
 
             expect(onUpdate).toHaveBeenCalledWith(result);
         });
@@ -114,9 +114,9 @@ describe('SliderControl', () => {
         });
 
         test('should add document-level event handlers when scrubbing starts', () => {
-            const wrapper = getWrapper();
+            renderView();
 
-            fireEvent.mouseDown(wrapper.getByRole('slider')!);
+            fireEvent.mouseDown(screen.getByRole('slider')!);
 
             expect(document.addEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
             expect(document.addEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
@@ -125,9 +125,9 @@ describe('SliderControl', () => {
         });
 
         test('should remove document-level event handlers when scrubbing stops', async () => {
-            const wrapper = getWrapper();
+            renderView();
 
-            fireEvent.mouseDown(wrapper.getByRole('slider')!);
+            fireEvent.mouseDown(screen.getByRole('slider')!);
             await userEvent.click(document.body);
 
             expect(document.removeEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
@@ -138,9 +138,9 @@ describe('SliderControl', () => {
 
         test('should handle document-level mousemove events and call onUpdate', () => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate });
+            renderView({ onUpdate });
 
-            fireEvent.mouseDown(wrapper.getByRole('slider')!);
+            fireEvent.mouseDown(screen.getByRole('slider')!);
             fireEvent(
                 document,
                 new MouseEventExtended('mousemove', {
@@ -154,10 +154,10 @@ describe('SliderControl', () => {
 
         test('should handle document-level touchmove events and call onUpdate', () => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate });
+            renderView({ onUpdate });
 
             fireEvent(
-                wrapper.getByRole('slider')!,
+                screen.getByRole('slider')!,
                 new TouchEvent('touchstart', {
                     touches: [
                         {
@@ -186,22 +186,22 @@ describe('SliderControl', () => {
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+            renderView();
 
-            expect(wrapper.getByRole('slider')).toHaveClass('bp-SliderControl');
-            expect(wrapper.getByTestId('bp-slider-control-thumb')).toHaveStyle({
+            expect(screen.getByRole('slider')).toHaveClass('bp-SliderControl');
+            expect(screen.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '0%',
             });
         });
 
         test('should forward the track and value properties properly', () => {
             const track = 'linear-gradient(#fff %20, #000 100%';
-            const wrapper = getWrapper({ track, value: 20 });
+            renderView({ track, value: 20 });
 
-            expect(wrapper.getByTestId('bp-slider-control-thumb')).toHaveStyle({
+            expect(screen.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '20%',
             });
-            expect(wrapper.getByTestId('bp-slider-control-track')).toHaveStyle({
+            expect(screen.getByTestId('bp-slider-control-track')).toHaveStyle({
                 backgroundImage: track,
             });
         });

@@ -24,8 +24,8 @@ describe('MediaSettings', () => {
             renderView();
 
             expect(screen.queryByTitle('Settings')).toBeInTheDocument();
-            expect(screen.queryByTestId('bp-SettingsToggle-icon')).toBeInTheDocument();
-            expect(screen.queryByTestId('bp-settings-flyout')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-SettingsToggle-icon')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-settings-flyout')).toBeInTheDocument();
         });
 
         test('should render custom badge', () => {

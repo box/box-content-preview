@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Model3DControls, { Props } from '../Model3DControlsNew';
 import { CameraProjection, RenderMode } from '../../../controls/box3d/Model3DSettings';
 
@@ -36,10 +36,10 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
         showWireframes: false,
     });
 
-    const getWrapper = (props: Partial<Props>) => render(<Model3DControls {...getDefaults()} {...props} />);
+    const renderView = (props: Partial<Props>) => render(<Model3DControls {...getDefaults()} {...props} />);
 
     describe('render()', () => {
-        test('should return a valid wrapper', async () => {
+        test('should render valid output', async () => {
             const onAnimationClipSelect = jest.fn();
             const onCameraProjectionChange = jest.fn();
             const onFullscreenToggle = jest.fn();
@@ -54,7 +54,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
             const onShowWireframesToggle = jest.fn();
             const onVrToggle = jest.fn();
 
-            const wrapper = getWrapper({
+            renderView({
                 onAnimationClipSelect,
                 onCameraProjectionChange,
                 onFullscreenToggle,
@@ -70,44 +70,28 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                 onVrToggle,
             });
 
-            await act(async () => {
-                await wrapper.queryByTitle('Reset')?.click();
-            });
-            await expect(onReset).toHaveBeenCalledTimes(1);
+            await userEvent.click(screen.getByTitle('Reset'));
+            expect(onReset).toHaveBeenCalledTimes(1);
 
-            await act(async () => {
-                await wrapper.queryByTitle('Play')?.click();
-            });
-            await expect(onPlayPause).toHaveBeenCalledTimes(1);
+            await userEvent.click(screen.getByTitle('Play'));
+            expect(onPlayPause).toHaveBeenCalledTimes(1);
 
-            await act(async () => {
-                await wrapper.queryByTitle('Animation clips')?.click();
-            });
-            const animationClip = await wrapper.getByRole('menuitemradio');
-            await expect(animationClip).toHaveTextContent('00:00:02 foo');
-            await act(async () => {
-                await animationClip.click();
-            });
-            await expect(onAnimationClipSelect).toHaveBeenCalledTimes(1);
+            await userEvent.click(screen.getByTitle('Animation clips'));
+            const animationClip = screen.getByRole('menuitemradio');
+            expect(animationClip).toHaveTextContent('00:00:02 foo');
 
-            await act(async () => {
-                await wrapper.queryByTitle('Enter fullscreen')?.click();
-            });
-            await expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
+            await userEvent.click(animationClip);
+            expect(onAnimationClipSelect).toHaveBeenCalledTimes(1);
 
-            await act(async () => {
-                await wrapper.queryByTitle('Toggle VR display')?.click();
-            });
-            await expect(onVrToggle).toHaveBeenCalledTimes(1);
+            await userEvent.click(screen.getByTitle('Enter fullscreen'));
+            expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
 
-            const settings = await wrapper.queryByTitle('Settings');
-            await act(async () => {
-                await settings?.click();
-            });
-            await expect(onSettingsOpen).toHaveBeenCalledTimes(1);
-            await act(async () => {
-                await settings?.click();
-            });
+            await userEvent.click(screen.getByTitle('Toggle VR display'));
+            expect(onVrToggle).toHaveBeenCalledTimes(1);
+
+            const settings = screen.getByTitle('Settings');
+            await userEvent.click(settings);
+            expect(onSettingsOpen).toHaveBeenCalledTimes(1);
         });
     });
 });

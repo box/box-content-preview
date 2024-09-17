@@ -9,7 +9,7 @@ export type Props = {
 export default function RotateAxisControls({ onRotateOnAxisChange }: Props): JSX.Element {
     return (
         <div className="bp-RotateAxisControls">
-            <div className="bp-RotateAxisControls-label" data-testid="bp-RotateAxisControls-label">
+            <div className="bp-RotateAxisControls-label" data-testid="bp-rotate-axis-controls-label">
                 {__('box3d_settings_rotate_label')}
             </div>
             <div className="bp-RotateAxisControls-controls">

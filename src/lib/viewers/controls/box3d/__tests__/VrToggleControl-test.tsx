@@ -1,30 +1,27 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
-import VrToggleControl, { Props } from '../VrToggleControl';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import VrToggleControl from '../VrToggleControl';
 
 describe('VrToggleControl', () => {
-    const getDefaults = (): Props => ({
-        isVrShown: true,
-        onVrToggle: jest.fn(),
-    });
-    const getWrapper = (props = {}) => render(<VrToggleControl {...getDefaults()} {...props} />);
+    const renderView = (props = {}) => render(<VrToggleControl isVrShown onVrToggle={jest.fn()} {...props} />);
 
     describe('render', () => {
-        test('should render valid wrapper', () => {
+        test('should render valid output', async () => {
             const onVrToggle = jest.fn();
-            const wrapper = getWrapper({ onVrToggle });
+            renderView({ onVrToggle });
 
-            expect(wrapper.container).toBeInTheDocument();
-            act(() => wrapper.queryByTitle('Toggle VR display')?.click());
+            expect(screen.getByTitle('Toggle VR display')).toBeInTheDocument();
+
+            await userEvent.click(screen.getByTitle('Toggle VR display'));
 
             expect(onVrToggle).toHaveBeenCalled();
         });
 
-        test('should render null if isVrShown is false', () => {
-            const wrapper = getWrapper({ isVrShown: false });
+        test('should not render null if isVrShown is false', () => {
+            renderView({ isVrShown: false });
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
         });
     });
 });

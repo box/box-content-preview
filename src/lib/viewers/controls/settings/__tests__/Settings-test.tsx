@@ -1,6 +1,5 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import Settings from '../Settings';
 
@@ -37,6 +36,7 @@ describe('Settings', () => {
             'should update the focused state to $isFocused if $key is pressed',
             async ({ key, isFocused }: { key: string; isFocused: boolean }) => {
                 renderView();
+
                 await userEvent.click(screen.getByTitle('Settings'));
 
                 await userEvent.keyboard(`{${key}}`);

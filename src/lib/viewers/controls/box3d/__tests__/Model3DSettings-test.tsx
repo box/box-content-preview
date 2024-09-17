@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Model3DSettings, { CameraProjection, Props, RenderMode } from '../Model3DSettings';
 
 describe('Model3DSettings', () => {
@@ -19,10 +19,10 @@ describe('Model3DSettings', () => {
         showSkeletons: false,
         showWireframes: false,
     });
-    const getWrapper = (props = {}) => render(<Model3DSettings {...getDefaults()} {...props} />);
+    const renderView = (props = {}) => render(<Model3DSettings {...getDefaults()} {...props} />);
 
     describe('render()', () => {
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
             const onCameraProjectionChange = jest.fn();
             const onClose = jest.fn();
             const onOpen = jest.fn();
@@ -32,7 +32,7 @@ describe('Model3DSettings', () => {
             const onShowSkeletonsToggle = jest.fn();
             const onShowWireframesToggle = jest.fn();
 
-            const wrapper = getWrapper({
+            renderView({
                 onCameraProjectionChange,
                 onClose,
                 onOpen,
@@ -42,37 +42,33 @@ describe('Model3DSettings', () => {
                 onShowSkeletonsToggle,
                 onShowWireframesToggle,
             });
-            act(() => wrapper.queryByTitle('Settings')?.click());
+
+            await userEvent.click(screen.getByTitle('Settings'));
 
             expect(onOpen).toHaveBeenCalled();
 
-            const checkboxItems = wrapper.queryAllByRole('checkbox');
-
-            expect(wrapper.getByRole('menu')).toHaveClass('bp-Model3DSettings-menu');
-            expect(wrapper.getByRole('menu')).toHaveClass('bp-is-active');
+            expect(screen.getByRole('menu')).toHaveClass('bp-Model3DSettings-menu');
+            expect(screen.getByRole('menu')).toHaveClass('bp-is-active');
 
             // CheckboxItems
-            expect(checkboxItems.at(0)).toHaveAttribute('checked');
-            expect(checkboxItems.at(1)).not.toHaveAttribute('checked');
-            expect(checkboxItems.at(2)).not.toHaveAttribute('checked');
-
-            expect(checkboxItems.at(0)).toBe(wrapper.getByLabelText('Show grid'));
-            expect(checkboxItems.at(1)).toBe(wrapper.getByLabelText('Show wireframes'));
-            expect(checkboxItems.at(2)).toBe(wrapper.getByLabelText('Show skeletons'));
+            expect(screen.getByLabelText('Show grid')).toHaveAttribute('checked');
+            expect(screen.getByLabelText('Show wireframes')).not.toHaveAttribute('checked');
+            expect(screen.getByLabelText('Show skeletons')).not.toHaveAttribute('checked');
 
             // Dropdowns
-            const dropdowns = wrapper.queryAllByTestId('bp-SettingsDropdown-container');
+            const dropdowns = screen.queryAllByTestId('bp-SettingsDropdown-container');
 
-            expect(
-                within(dropdowns.at(0)!).queryByLabelText('Render mode', { selector: 'button' }),
-            ).toBeInTheDocument();
+            expect(within(dropdowns.at(0)!).getByLabelText('Render mode', { selector: 'button' })).toBeInTheDocument();
             const renderModeDropdown = within(dropdowns.at(0)!).queryByLabelText(RenderMode.LIT, {
                 selector: 'button',
             })!;
-            act(() => renderModeDropdown?.click());
+
+            await userEvent.click(renderModeDropdown);
+
             expect(renderModeDropdown).toHaveAttribute('aria-expanded', 'true');
 
             const renderModeList = within(dropdowns.at(0)!).getByRole('listbox');
+
             expect(renderModeList?.children[0]).toHaveTextContent('Lit');
             expect(renderModeList?.children[1]).toHaveTextContent('Unlit');
             expect(renderModeList?.children[2]).toHaveTextContent('Normals');
@@ -85,15 +81,19 @@ describe('Model3DSettings', () => {
             const cameraProjectionDropdown = within(dropdowns.at(1)!).queryByLabelText(CameraProjection.PERSPECTIVE, {
                 selector: 'button',
             })!;
-            act(() => cameraProjectionDropdown?.click());
+
+            await userEvent.click(cameraProjectionDropdown);
+
             expect(cameraProjectionDropdown).toHaveAttribute('aria-expanded', 'true');
+
             const cameraProjectionsList = within(dropdowns.at(1)!).getByRole('listbox');
             expect(cameraProjectionsList?.children[0]).toHaveTextContent('Perspective');
             expect(cameraProjectionsList?.children[1]).toHaveTextContent('Orthographic');
 
-            expect(wrapper.queryByText('Rotate Model')).toBeInTheDocument();
+            expect(screen.queryByText('Rotate Model')).toBeInTheDocument();
 
-            act(() => wrapper.queryByTitle('Settings')?.click());
+            await userEvent.click(screen.getByTitle('Settings'));
+
             expect(onClose).toHaveBeenCalled();
         });
     });

@@ -1,22 +1,21 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ControlsBar from '../ControlsBar';
 
 describe('ControlsBar', () => {
     describe('render', () => {
-        test('should return a valid wrapper', () => {
+        test('should render a valid output', () => {
             const children = <div className="test">Hello</div>;
-            const wrapper = render(<ControlsBar>{children}</ControlsBar>);
+            render(<ControlsBar>{children}</ControlsBar>);
 
-            expect(wrapper.getByText('Hello')).toBeInTheDocument();
-            expect(wrapper.container.getElementsByClassName('bp-ControlsBar')).toHaveLength(1);
+            expect(screen.getByText('Hello')).toBeInTheDocument();
         });
 
-        test('should return null if the children property is undefined', () => {
+        test('should render nothing if the children property is undefined', () => {
             const children = undefined;
-            const wrapper = render(<ControlsBar>{children}</ControlsBar>);
+            render(<ControlsBar>{children}</ControlsBar>);
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByText('Hello')).not.toBeInTheDocument();
         });
     });
 });

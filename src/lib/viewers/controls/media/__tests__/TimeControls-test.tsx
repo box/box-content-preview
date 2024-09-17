@@ -59,11 +59,11 @@ describe('TimeControls', () => {
         fireEvent(slider, new MouseEventExtended('mouseenter', mouseEventOptions));
         fireEvent(slider, new MouseEventExtended('mouseover', mouseEventOptions));
 
-        expect(screen.getByTestId('bp-TimeControls').firstChild).toHaveClass('bp-is-shown');
+        expect(screen.getByTestId('bp-time-controls').firstChild).toHaveClass('bp-is-shown');
 
         fireEvent(slider, new MouseEventExtended('mouseout', mouseEventOptions));
 
-        expect(screen.getByTestId('bp-TimeControls').firstChild).not.toHaveClass('bp-is-shown');
+        expect(screen.getByTestId('bp-time-controls').firstChild).not.toHaveClass('bp-is-shown');
     });
 
     test('should render the filmstrip with the correct props', () => {

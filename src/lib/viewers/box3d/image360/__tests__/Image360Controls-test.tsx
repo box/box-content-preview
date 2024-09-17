@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Image360Controls, { Props } from '../Image360Controls';
 
 describe('lib/viewers/box3d/image360/Image360Controls', () => {
@@ -10,22 +10,23 @@ describe('lib/viewers/box3d/image360/Image360Controls', () => {
         onVrToggle: jest.fn(),
     });
 
-    const getWrapper = (props: Partial<Props>) => render(<Image360Controls {...getDefaults()} {...props} />);
+    const renderView = (props: Partial<Props>) => render(<Image360Controls {...getDefaults()} {...props} />);
 
     describe('render()', () => {
         test('should return a valid wrapper', async () => {
             const onFullscreenToggle = jest.fn();
             const onVrToggle = jest.fn();
 
-            const wrapper = getWrapper({
+            renderView({
                 onFullscreenToggle,
                 onVrToggle,
             });
 
-            await expect(wrapper.queryByTitle('Toggle VR display')).toBe(null);
+            expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
 
-            await wrapper.queryByTitle('Enter fullscreen')?.click();
-            await expect(onFullscreenToggle).toHaveBeenCalled();
+            await userEvent.click(screen.getByTitle('Enter fullscreen'));
+
+            expect(onFullscreenToggle).toHaveBeenCalled();
         });
     });
 });

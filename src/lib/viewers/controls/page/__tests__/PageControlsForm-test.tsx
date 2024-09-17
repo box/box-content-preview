@@ -1,12 +1,11 @@
 import React from 'react';
-import noop from 'lodash/noop';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import PageControlsForm, { ENTER, ESCAPE } from '../PageControlsForm';
 
 describe('PageControlsForm', () => {
     const renderView = (props = {}) =>
-        render(<PageControlsForm onPageSubmit={noop} pageCount={3} pageNumber={1} {...props} />);
+        render(<PageControlsForm onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} {...props} />);
 
     describe('event handlers', () => {
         test.each`

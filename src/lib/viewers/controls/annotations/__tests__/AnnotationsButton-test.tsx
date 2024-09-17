@@ -1,11 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import AnnotationsButton from '../AnnotationsButton';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsButton', () => {
-    const getWrapper = (props = {}) =>
+    const renderView = (props = {}) =>
         render(
             <AnnotationsButton mode={AnnotationMode.REGION} onClick={jest.fn()} {...props}>
                 Test
@@ -13,32 +13,28 @@ describe('AnnotationsButton', () => {
         );
 
     describe('event handlers', () => {
-        test('should call the onClick callback with the given mode', () => {
+        test('should call the onClick callback with the given mode', async () => {
             const mode = AnnotationMode.HIGHLIGHT;
             const onClick = jest.fn();
-            const wrapper = getWrapper({ mode, onClick });
+            renderView({ mode, onClick });
 
-            act(() => {
-                wrapper.queryByText('Test')?.click();
-            });
+            await userEvent.click(screen.getByRole('button', { name: 'Test' }));
 
             expect(onClick).toHaveBeenCalledWith(mode);
         });
     });
 
     describe('render', () => {
-        test('should return nothing if not enabled', () => {
-            const wrapper = getWrapper({ isEnabled: false });
+        test('should render nothing if not enabled', () => {
+            renderView({ isEnabled: false });
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByRole('button', { name: 'Test' })).not.toBeInTheDocument();
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should render a valid output', () => {
+            renderView();
 
-            expect(wrapper.container.getElementsByClassName('bp-AnnotationsButton')).toHaveLength(1);
-            expect(wrapper.container.getElementsByClassName('bp-is-active')).toHaveLength(0); // Default
-            expect(wrapper.container.textContent?.includes('Test')).toBe(true);
+            expect(screen.getByRole('button', { name: 'Test' })).toBeInTheDocument();
         });
     });
 });

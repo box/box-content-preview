@@ -35,9 +35,9 @@ describe('SettingsDropdown', () => {
 
             await userEvent.click(screen.getByLabelText('Dropdown Label second'));
 
-            expect(screen.getAllByRole('option').at(0)).toHaveAttribute('aria-selected', 'false');
-            expect(screen.getAllByRole('option').at(1)).toHaveAttribute('aria-selected', 'true');
-            expect(screen.getAllByRole('option').at(2)).toHaveAttribute('aria-selected', 'false');
+            expect(screen.getByRole('option', { name: 'first' })).toHaveAttribute('aria-selected', 'false');
+            expect(screen.getByRole('option', { name: 'second' })).toHaveAttribute('aria-selected', 'true');
+            expect(screen.getByRole('option', { name: 'third' })).toHaveAttribute('aria-selected', 'false');
         });
     });
 
@@ -47,7 +47,7 @@ describe('SettingsDropdown', () => {
             renderView({ onSelect });
 
             await userEvent.click(screen.getByLabelText('Dropdown Label first'));
-            await userEvent.click(within(screen.getByRole('listbox')).getByText('second'));
+            await userEvent.click(screen.getByRole('option', { name: 'second' }));
 
             expect(onSelect).toHaveBeenCalledWith('second');
         });
@@ -74,12 +74,7 @@ describe('SettingsDropdown', () => {
                 renderView({ onSelect });
 
                 await userEvent.click(screen.getByLabelText('Dropdown Label first'));
-                fireEvent.keyDown(
-                    within(screen.getByRole('listbox'))
-                        .getAllByRole('option')
-                        .at(1)!,
-                    { key },
-                );
+                await userEvent.keyboard(`{${key}}`);
 
                 expect(onSelect).not.toHaveBeenCalled();
             },
@@ -99,7 +94,7 @@ describe('SettingsDropdown', () => {
             renderView();
 
             await userEvent.click(screen.getByLabelText('Dropdown Label first'));
-            fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
+            await userEvent.keyboard(`{Escape}`);
 
             expect(screen.queryByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
         });
@@ -112,7 +107,7 @@ describe('SettingsDropdown', () => {
                 renderView();
 
                 await userEvent.click(screen.getByLabelText('Dropdown Label first'));
-                fireEvent.keyDown(screen.getByRole('listbox'), { key });
+                await userEvent.keyboard(`{${key}}`);
 
                 expect(mockGlobalOnPress).not.toHaveBeenCalled();
                 document.removeEventListener('keydown', mockGlobalOnPress);

@@ -45,7 +45,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
     );
 
     return (
-        <div className="bp-VolumeControls" data-testid="bp-VolumeControls">
+        <div className="bp-VolumeControls" data-testid="bp-volume-controls">
             <MediaToggle
                 className="bp-VolumeControls-toggle"
                 onClick={(): void => onMuteChange(!isMuted)}

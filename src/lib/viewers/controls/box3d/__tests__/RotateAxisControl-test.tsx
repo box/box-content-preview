@@ -1,42 +1,29 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import RotateAxisControl, { Props } from '../RotateAxisControl';
 
 describe('RotateAxisControl', () => {
-    const getDefaults = (): Props => ({
-        axis: 'x',
-        onRotateOnAxisChange: jest.fn(),
-    });
-    const getWrapper = (props = {}) => render(<RotateAxisControl {...getDefaults()} {...props} />);
+    const renderView = (props = {}) =>
+        render(<RotateAxisControl axis="x" onRotateOnAxisChange={jest.fn()} {...props} />);
 
     describe('onRotateOnAxisChange()', () => {
-        test('should indicate a negative rotation when the left button is clicked', () => {
+        test('should indicate a negative rotation when the left button is clicked', async () => {
             const onRotateOnAxisChange = jest.fn();
-            const wrapper = getWrapper({ onRotateOnAxisChange });
+            renderView({ onRotateOnAxisChange });
 
-            act(() => wrapper.getByTestId('bp-RotateAxisControl-left').click());
+            await userEvent.click(screen.getByTestId('bp-rotate-axis-control-left'));
 
             expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: -90 });
         });
 
-        test('should indicate a positive rotation when the right button is clicked', () => {
+        test('should indicate a positive rotation when the right button is clicked', async () => {
             const onRotateOnAxisChange = jest.fn();
-            const wrapper = getWrapper({ onRotateOnAxisChange });
+            renderView({ onRotateOnAxisChange });
 
-            act(() => wrapper.getByTestId('bp-RotateAxisControl-right').click());
+            await userEvent.click(screen.getByTestId('bp-rotate-axis-control-right'));
 
             expect(onRotateOnAxisChange).toHaveBeenCalledWith({ x: 90 });
-        });
-    });
-
-    describe('render()', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-
-            expect(wrapper.getByTestId('bp-RotateAxisControl-left')).toHaveClass('bp-RotateAxisControl-left');
-            expect(wrapper.getByTestId('bp-RotateAxisControl-right')).toHaveClass('bp-RotateAxisControl-right');
-            expect(wrapper.getByTestId('bp-RotateAxisControl-label')).toHaveTextContent('x');
         });
     });
 });

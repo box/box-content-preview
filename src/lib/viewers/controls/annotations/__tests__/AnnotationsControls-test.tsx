@@ -1,17 +1,14 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
-import { fireEvent, render, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import AnnotationsControls from '../AnnotationsControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsControls', () => {
-    const getWrapper = (props = {}) => {
-        const parentEl = document.createElement('div');
-        document.body.appendChild(parentEl);
-        return render(<AnnotationsControls {...props} />, { container: parentEl });
+    const renderView = (props = {}) => {
+        return render(<AnnotationsControls {...props} />);
     };
-    const getElement = (props = {}) => getWrapper(props);
 
     beforeEach(() => {
         jest.spyOn(document, 'addEventListener');
@@ -34,7 +31,7 @@ describe('AnnotationsControls', () => {
         });
 
         test('should add and remove its event handlers on mount and unmount', () => {
-            getWrapper({
+            renderView({
                 annotationMode: AnnotationMode.REGION,
                 hasHighlight: true,
                 hasRegion: true,
@@ -46,7 +43,7 @@ describe('AnnotationsControls', () => {
         });
 
         test('should not add a handler if the annotation mode is set to none', () => {
-            getWrapper({ hasHighlight: true, hasRegion: true });
+            renderView({ hasHighlight: true, hasRegion: true });
             expect(document.addEventListener).not.toHaveBeenCalledWith('keydown', expect.any(Function));
 
             unmount();
@@ -63,9 +60,9 @@ describe('AnnotationsControls', () => {
             ${AnnotationMode.NONE}    | ${'bp-AnnotationsControls-highlightBtn'} | ${AnnotationMode.HIGHLIGHT}
             ${AnnotationMode.NONE}    | ${'bp-AnnotationsControls-drawBtn'}      | ${AnnotationMode.DRAWING}
             ${AnnotationMode.DRAWING} | ${'bp-AnnotationsControls-drawBtn'}      | ${AnnotationMode.NONE}
-        `('in $current mode returns $result when $selector is clicked', ({ current, result, selector }) => {
+        `('in $current mode returns $result when $selector is clicked', async ({ current, result, selector }) => {
             const onClick = jest.fn();
-            const element = getElement({
+            renderView({
                 annotationMode: current,
                 hasDrawing: true,
                 hasHighlight: true,
@@ -73,43 +70,37 @@ describe('AnnotationsControls', () => {
                 onAnnotationModeClick: onClick,
             });
 
-            act(() => {
-                element.queryByTestId(selector)?.click();
-            });
+            await userEvent.click(screen.getByTestId(selector));
 
             expect(onClick).toHaveBeenCalledWith({ mode: result });
         });
 
-        test('should invoke the escape callback if the escape key is pressed while in a mode', () => {
+        test('should invoke the escape callback if the escape key is pressed while in a mode', async () => {
             const onEscape = jest.fn();
 
-            getWrapper({
+            renderView({
                 annotationMode: AnnotationMode.REGION,
                 hasHighlight: true,
                 hasRegion: true,
                 onAnnotationModeEscape: onEscape,
             });
 
-            act(() => {
-                fireEvent.keyDown(document, { key: 'Escape' });
-            });
+            await userEvent.keyboard('{Escape}');
 
             expect(onEscape).toHaveBeenCalled();
         });
 
-        test('should not invoke the escape callback if any key other than escape is pressed', () => {
+        test('should not invoke the escape callback if any key other than escape is pressed', async () => {
             const onEscape = jest.fn();
 
-            getWrapper({
+            renderView({
                 annotationMode: AnnotationMode.REGION,
                 hasHighlight: true,
                 hasRegion: true,
                 onAnnotationModeEscape: onEscape,
             });
 
-            act(() => {
-                fireEvent.keyDown(document, { key: 'Enter' });
-            });
+            await userEvent.keyboard('{Enter}');
 
             expect(onEscape).not.toHaveBeenCalled();
         });
@@ -121,34 +112,32 @@ describe('AnnotationsControls', () => {
             ${AnnotationMode.DRAWING}   | ${'bp-AnnotationsControls-drawBtn'}
         `(
             'while in $current mode, should focus on $current button when exit button is clicked',
-            ({ current, selector }) => {
-                const wrapper = getWrapper({
+            async ({ current, selector }) => {
+                renderView({
                     annotationMode: current,
                     hasDrawing: true,
                     hasHighlight: true,
                     hasRegion: true,
                 });
 
-                act(() => {
-                    wrapper.queryByTestId('bp-AnnotationsControls-exitBtn')?.click();
-                });
+                await userEvent.click(screen.getByTestId('bp-annotations-controls-exit-btn'));
 
-                expect(wrapper.queryByTestId(selector) === document.activeElement).toBe(true);
+                expect(screen.getByTestId(selector) === document.activeElement).toBe(true);
             },
         );
     });
 
     describe('render', () => {
-        test('should return nothing if no mode is enabled', () => {
-            const wrapper = getWrapper();
+        test('should render nothing if no mode is enabled', () => {
+            renderView();
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByTestId('bp-annotations-controls')).not.toBeInTheDocument();
         });
 
-        test('should return a valid wrapper', () => {
-            const element = getElement({ hasHighlight: true, hasRegion: true });
+        test('should render a valid output', () => {
+            renderView({ hasHighlight: true, hasRegion: true });
 
-            expect(element.container.getElementsByClassName('bp-AnnotationsControls')).toHaveLength(1);
+            expect(screen.getByTestId('bp-annotations-controls')).toBeInTheDocument();
         });
 
         test.each`
@@ -156,9 +145,9 @@ describe('AnnotationsControls', () => {
             ${bdlBoxBlue} | ${AnnotationMode.DRAWING}
             ${'#fff'}     | ${AnnotationMode.NONE}
         `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
-            const wrapper = getWrapper({ annotationMode: mode, hasDrawing: true });
+            renderView({ annotationMode: mode, hasDrawing: true });
 
-            const icon = wrapper.getByTitle('Markup').querySelector('svg');
+            const icon = screen.getByTitle('Markup').querySelector('svg');
 
             expect(icon?.children[0]).toHaveAttribute('fill', fill);
         });

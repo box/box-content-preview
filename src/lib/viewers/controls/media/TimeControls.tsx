@@ -50,7 +50,7 @@ export default function TimeControls({
     };
 
     return (
-        <div className="bp-TimeControls" data-testid="bp-TimeControls">
+        <div className="bp-TimeControls" data-testid="bp-time-controls">
             {!!filmstripInterval && (
                 <Filmstrip
                     aspectRatio={aspectRatio}

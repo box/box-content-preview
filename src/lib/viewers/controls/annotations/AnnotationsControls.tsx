@@ -85,12 +85,12 @@ export default function AnnotationsControls({
     const isDrawingActive = annotationMode === AnnotationMode.DRAWING;
 
     return (
-        <div className="bp-AnnotationsControls">
+        <div className="bp-AnnotationsControls" data-testid="bp-annotations-controls">
             <AnnotationsButton
                 ref={annotationBtnRefs[AnnotationMode.NONE]}
                 className="bp-AnnotationsControls-exitBtn"
                 data-resin-target="exit"
-                data-testid="bp-AnnotationsControls-exitBtn"
+                data-testid="bp-annotations-controls-exit-btn"
                 mode={AnnotationMode.NONE}
                 onClick={handleExitClick}
                 title={__('exit_annotations')}

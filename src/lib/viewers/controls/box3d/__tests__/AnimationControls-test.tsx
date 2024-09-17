@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import AnimationControls, { Props as AnimationControlsProps } from '../AnimationControls';
 
 describe('AnimationControls', () => {
@@ -11,30 +11,27 @@ describe('AnimationControls', () => {
         onAnimationClipSelect: jest.fn(),
         onPlayPause: jest.fn(),
     });
-    const getWrapper = (props = {}) => render(<AnimationControls {...getDefaults()} {...props} />);
+    const renderView = (props = {}) => render(<AnimationControls {...getDefaults()} {...props} />);
 
     describe('render', () => {
-        test('should return null if animationClips is empty', () => {
-            const wrapper = getWrapper({ animationClips: [] });
+        test('should render nothing if animationClips is empty', () => {
+            renderView({ animationClips: [] });
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByTitle('Play')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Animation clips')).not.toBeInTheDocument();
         });
 
-        test('should return valid wrapper', () => {
+        test('should return valid wrapper', async () => {
             const onAnimationClipSelect = jest.fn();
             const onPlayPause = jest.fn();
-            const wrapper = getWrapper({ onAnimationClipSelect, onPlayPause });
+            renderView({ onAnimationClipSelect, onPlayPause });
 
-            act(() => wrapper.queryByTitle('Play')?.click());
+            await userEvent.click(screen.getByTitle('Play'));
             expect(onPlayPause).toHaveBeenCalledWith(true);
 
-            act(() => wrapper.queryByTitle('Animation clips')?.click());
-            act(() =>
-                wrapper
-                    .getAllByRole('menuitemradio')
-                    ?.at(0)
-                    ?.click(),
-            );
+            await userEvent.click(screen.getByTitle('Animation clips'));
+            await userEvent.click(screen.getByRole('menuitemradio', { name: '00:00:01 one' }));
+
             expect(onAnimationClipSelect).toHaveBeenCalledWith('1');
         });
     });

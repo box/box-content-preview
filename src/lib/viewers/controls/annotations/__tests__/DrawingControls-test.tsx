@@ -1,22 +1,22 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import DrawingControls from '../DrawingControls';
 import { AnnotationMode } from '../../../../types';
 
 describe('DrawingControls', () => {
-    const getWrapper = (props = {}) => render(<DrawingControls onAnnotationColorChange={jest.fn()} {...props} />);
+    const renderView = (props = {}) => render(<DrawingControls onAnnotationColorChange={jest.fn()} {...props} />);
 
     describe('render', () => {
         test('should return nothing if annotationMode is not DRAWING', () => {
-            const wrapper = getWrapper();
+            renderView();
 
-            expect(wrapper.container).toBeEmptyDOMElement();
+            expect(screen.queryByTestId('bp-color-picker-control')).not.toBeInTheDocument();
         });
 
         test('should return ColorPickerControl if annotationMode is DRAWING', () => {
-            const wrapper = getWrapper({ annotationMode: AnnotationMode.DRAWING });
+            renderView({ annotationMode: AnnotationMode.DRAWING });
 
-            expect(wrapper.queryByTestId('bp-ColorPickerControl-toggle')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-color-picker-control')).toBeInTheDocument();
         });
     });
 });

@@ -22,17 +22,17 @@ describe('lib/viewers/archive/Breadcrumbs', () => {
         test('should render correct components', () => {
             renderView({ filename, fullPath, onClick, view });
 
-            expect(screen.queryByLabelText('Breadcrumb')).toBeInTheDocument(1);
-            expect(screen.queryAllByRole('button')).toHaveLength(3);
-            expect(screen.queryAllByRole('button').at(0).textContent).toContain('test.zip');
-            expect(screen.queryAllByRole('button').at(1).textContent).toContain('test');
-            expect(screen.queryAllByRole('button').at(2).textContent).toContain('subfolder');
+            expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
+            expect(screen.getAllByRole('button')).toHaveLength(3);
+            expect(screen.getAllByRole('button').at(0).textContent).toContain('test.zip');
+            expect(screen.getAllByRole('button').at(1).textContent).toContain('test');
+            expect(screen.getAllByRole('button').at(2).textContent).toContain('subfolder');
         });
 
         test('should render search result if view is search', () => {
             renderView({ filename, fullPath, onClick, view: VIEWS.VIEW_SEARCH });
 
-            expect(screen.queryByText('Search Results')).toBeInTheDocument();
+            expect(screen.getByText('Search Results')).toBeInTheDocument();
         });
     });
 });

@@ -21,19 +21,19 @@ export default function RotateAxisControl({ axis, className, onRotateOnAxisChang
     const handleClickRight = (): void => onRotateOnAxisChange({ [axis]: ROTATION_STEP });
 
     return (
-        <div className={classNames('bp-RotateAxisControl', className)} data-testid={`bp-RotateAxisControl-${axis}`}>
+        <div className={classNames('bp-RotateAxisControl', className)} data-testid={`bp-rotate-axis-control-${axis}`}>
             <button
                 className="bp-RotateAxisControl-left"
-                data-testid="bp-RotateAxisControl-left"
+                data-testid="bp-rotate-axis-control-left"
                 onClick={handleClickLeft}
                 type="button"
             />
-            <span className="bp-RotateAxisControl-label" data-testid="bp-RotateAxisControl-label">
+            <span className="bp-RotateAxisControl-label" data-testid="bp-rotate-axis-control-label">
                 {axis}
             </span>
             <button
                 className="bp-RotateAxisControl-right"
-                data-testid="bp-RotateAxisControl-right"
+                data-testid="bp-rotate-axis-control-right"
                 onClick={handleClickRight}
                 type="button"
             />
