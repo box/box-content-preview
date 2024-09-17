@@ -1,14 +1,8 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import DashControls, { Props } from '../DashControls';
-import HDBadge from '../../controls/media/HDBadge';
-import MediaFullscreenToggle from '../../controls/media/MediaFullscreenToggle';
-import MediaSettings from '../../controls/media/MediaSettings';
-import PlayPauseToggle from '../../controls/media/PlayPauseToggle';
 import subtitles from '../../controls/media/__mocks__/subtitles';
-import SubtitlesToggle from '../../controls/media/SubtitlesToggle';
-import TimeControls from '../../controls/media/TimeControls';
-import VolumeControls from '../../controls/media/VolumeControls';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
 
@@ -36,9 +30,9 @@ describe('DashControls', () => {
             quality: Quality.AUTO,
             rate: '1.0',
         });
-        const getWrapper = (props = {}): ShallowWrapper => shallow(<DashControls {...getDefaults()} {...props} />);
+        const renderView = (props = {}) => render(<DashControls {...getDefaults()} {...props} />);
 
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
             const onAudioTrackChange = jest.fn();
             const onAutoplayChange = jest.fn();
             const onFullscreenToggle = jest.fn();
@@ -48,7 +42,7 @@ describe('DashControls', () => {
             const onPlayPause = jest.fn();
             const onTimeChange = jest.fn();
             const onVolumeChange = jest.fn();
-            const wrapper = getWrapper({
+            renderView({
                 onAudioTrackChange,
                 onAutoplayChange,
                 onFullscreenToggle,
@@ -60,55 +54,64 @@ describe('DashControls', () => {
                 onVolumeChange,
             });
 
-            expect(wrapper.hasClass('bp-DashControls')).toBe(true);
-            expect(wrapper.find(MediaFullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
-            expect(wrapper.find(MediaSettings).props()).toMatchObject({
-                audioTrack: 1,
-                audioTracks: [],
-                autoplay: false,
-                onAudioTrackChange,
-                onAutoplayChange,
-                onQualityChange,
-                onRateChange,
-                quality: 'auto',
-                rate: '1.0',
-            });
-            expect(wrapper.find(PlayPauseToggle).prop('onPlayPause')).toEqual(onPlayPause);
-            expect(wrapper.find(TimeControls).prop('onTimeChange')).toEqual(onTimeChange);
-            expect(wrapper.find(VolumeControls).prop('onMuteChange')).toEqual(onMuteChange);
-            expect(wrapper.find(VolumeControls).prop('onVolumeChange')).toEqual(onVolumeChange);
+            await userEvent.click(screen.getByTitle('Enter fullscreen'));
+            expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
+
+            await userEvent.click(screen.getByTitle('Play'));
+            expect(onPlayPause).toHaveBeenCalledTimes(1);
+
+            fireEvent.mouseDown(screen.getByLabelText('Media Slider'));
+            expect(onTimeChange).toHaveBeenCalledTimes(1);
+
+            await userEvent.click(screen.getByTitle('Mute'));
+            expect(onMuteChange).toHaveBeenCalledTimes(1);
+
+            fireEvent.mouseDown(screen.getByLabelText('Volume Slider'));
+            expect(onVolumeChange).toHaveBeenCalledTimes(1);
         });
 
-        test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', isHDSupported => {
-            const wrapper = getWrapper({ isHDSupported });
-            expect(wrapper.find(MediaSettings).prop('isHDSupported')).toBe(isHDSupported);
+        test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', async isHDSupported => {
+            renderView({ isHDSupported });
+
+            await userEvent.click(screen.getByTitle('Settings'));
+
+            expect(screen.getByTestId('bp-media-settings-quality')).toHaveAttribute(
+                'aria-disabled',
+                `${!isHDSupported}`,
+            );
         });
 
         test('should not pass along badge if not playing HD', () => {
-            const wrapper = getWrapper({ badge: <CustomBadge /> });
-            expect(wrapper.find(MediaSettings).prop('badge')).toBeUndefined();
+            renderView({ badge: <CustomBadge /> });
+
+            expect(screen.queryByTestId('bp-media-controls-hd')).not.toBeInTheDocument();
         });
 
         test('should pass along badge if playing HD', () => {
-            const wrapper = getWrapper({ isPlayingHD: true });
-            expect(wrapper.find(MediaSettings).prop('badge')).toEqual(<HDBadge />);
+            renderView({ isPlayingHD: true });
+
+            expect(screen.queryByTestId('bp-media-controls-hd')).toBeInTheDocument();
         });
 
-        test('should render SubtitlesToggle if subtitles exist', () => {
+        test('should render SubtitlesToggle if subtitles exist', async () => {
             const onSubtitlesToggle = jest.fn();
-            const wrapper = getWrapper({ isAutoGeneratedSubtitles: true, onSubtitlesToggle, subtitles });
-            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                isAutoGeneratedSubtitles: true,
-                isShowingSubtitles: true,
-                onSubtitlesToggle,
-            });
+            renderView({ isAutoGeneratedSubtitles: true, onSubtitlesToggle, subtitles });
+
+            expect(screen.queryByTitle('Subtitles/Closed Captions')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Auto-Generated Captions')).toBeInTheDocument();
+            expect(screen.queryByTitle('Auto-Generated Captions')).toHaveAttribute('aria-pressed', 'true');
+
+            await userEvent.click(screen.getByTitle('Auto-Generated Captions'));
+
+            expect(onSubtitlesToggle).toHaveBeenCalledTimes(1);
         });
 
         test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
-            const wrapper = getWrapper({ subtitle: SUBTITLES_OFF, subtitles });
-            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                isShowingSubtitles: false,
-            });
+            renderView({ subtitle: SUBTITLES_OFF, subtitles });
+
+            expect(screen.queryByTitle('Auto-Generated Captions')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Subtitles/Closed Captions')).toBeInTheDocument();
+            expect(screen.queryByTitle('Subtitles/Closed Captions')).toHaveAttribute('aria-pressed', 'false');
         });
     });
 });

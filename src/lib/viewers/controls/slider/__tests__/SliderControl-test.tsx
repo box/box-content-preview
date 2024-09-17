@@ -1,6 +1,6 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { fireEvent, render } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import SliderControl from '../SliderControl';
 
 const getTouchEventDefaults = () => ({
@@ -50,16 +50,14 @@ describe('SliderControl', () => {
             const onUpdate = jest.fn();
             const wrapper = getWrapper({ onUpdate, value: 0 });
 
-            act(() => {
-                fireEvent(
-                    wrapper.queryByRole('slider')!,
-                    new MouseEventExtended('mousedown', {
-                        button: 1,
-                        bubbles: true,
-                        pageX,
-                    }),
-                );
-            });
+            fireEvent(
+                wrapper.getByRole('slider')!,
+                new MouseEventExtended('mousedown', {
+                    button: 1,
+                    bubbles: true,
+                    pageX,
+                }),
+            );
 
             expect(onUpdate).toHaveBeenCalledWith(result);
         });
@@ -68,16 +66,14 @@ describe('SliderControl', () => {
             const onMove = jest.fn();
             const wrapper = getWrapper({ onMove });
 
-            act(() => {
-                fireEvent(
-                    wrapper.queryByRole('slider')!,
-                    new MouseEventExtended('mousemove', {
-                        button: 1,
-                        bubbles: true,
-                        pageX: 100,
-                    }),
-                );
-            });
+            fireEvent(
+                wrapper.getByRole('slider')!,
+                new MouseEventExtended('mousemove', {
+                    button: 1,
+                    bubbles: true,
+                    pageX: 100,
+                }),
+            );
 
             expect(onMove).toHaveBeenCalledWith(10, 100, 1000); // Value, position, width
         });
@@ -91,9 +87,7 @@ describe('SliderControl', () => {
             const onUpdate = jest.fn();
             const wrapper = getWrapper({ onUpdate, value: initial });
 
-            act(() => {
-                fireEvent.keyDown(wrapper.queryByRole('slider')!, { key: 'ArrowLeft' });
-            });
+            fireEvent.keyDown(wrapper.getByRole('slider')!, { key: 'ArrowLeft' });
 
             expect(onUpdate).toHaveBeenCalledWith(result);
         });
@@ -107,9 +101,7 @@ describe('SliderControl', () => {
             const onUpdate = jest.fn();
             const wrapper = getWrapper({ onUpdate, value: initial });
 
-            act(() => {
-                fireEvent.keyDown(wrapper.queryByRole('slider')!, { key: 'ArrowRight' });
-            });
+            fireEvent.keyDown(wrapper.getByRole('slider')!, { key: 'ArrowRight' });
 
             expect(onUpdate).toHaveBeenCalledWith(result);
         });
@@ -124,9 +116,7 @@ describe('SliderControl', () => {
         test('should add document-level event handlers when scrubbing starts', () => {
             const wrapper = getWrapper();
 
-            act(() => {
-                fireEvent.mouseDown(wrapper.queryByRole('slider')!);
-            });
+            fireEvent.mouseDown(wrapper.getByRole('slider')!);
 
             expect(document.addEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
             expect(document.addEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
@@ -134,16 +124,11 @@ describe('SliderControl', () => {
             expect(document.addEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function));
         });
 
-        test('should remove document-level event handlers when scrubbing stops', () => {
+        test('should remove document-level event handlers when scrubbing stops', async () => {
             const wrapper = getWrapper();
 
-            act(() => {
-                fireEvent.mouseDown(wrapper.queryByRole('slider')!);
-            });
-            act(() => {
-                fireEvent.mouseUp(document);
-                fireEvent.click(document);
-            });
+            fireEvent.mouseDown(wrapper.getByRole('slider')!);
+            await userEvent.click(document.body);
 
             expect(document.removeEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
             expect(document.removeEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
@@ -155,18 +140,14 @@ describe('SliderControl', () => {
             const onUpdate = jest.fn();
             const wrapper = getWrapper({ onUpdate });
 
-            act(() => {
-                fireEvent.mouseDown(wrapper.queryByRole('slider')!);
-            });
-            act(() => {
-                fireEvent(
-                    document,
-                    new MouseEventExtended('mousemove', {
-                        bubbles: true,
-                        pageX: 100,
-                    }),
-                );
-            });
+            fireEvent.mouseDown(wrapper.getByRole('slider')!);
+            fireEvent(
+                document,
+                new MouseEventExtended('mousemove', {
+                    bubbles: true,
+                    pageX: 100,
+                }),
+            );
 
             expect(onUpdate).toHaveBeenCalledWith(10);
         });
@@ -175,34 +156,29 @@ describe('SliderControl', () => {
             const onUpdate = jest.fn();
             const wrapper = getWrapper({ onUpdate });
 
-            act(() => {
-                fireEvent(
-                    wrapper.queryByRole('slider')!,
-                    new TouchEvent('touchstart', {
-                        touches: [
-                            {
-                                ...getTouchEventDefaults(),
-                                pageX: 100,
-                            },
-                        ],
-                        bubbles: true,
-                    }),
-                );
-            });
-
-            act(() => {
-                fireEvent(
-                    document,
-                    new TouchEvent('touchmove', {
-                        touches: [
-                            {
-                                ...getTouchEventDefaults(),
-                                pageX: 0,
-                            },
-                        ],
-                    }),
-                );
-            });
+            fireEvent(
+                wrapper.getByRole('slider')!,
+                new TouchEvent('touchstart', {
+                    touches: [
+                        {
+                            ...getTouchEventDefaults(),
+                            pageX: 100,
+                        },
+                    ],
+                    bubbles: true,
+                }),
+            );
+            fireEvent(
+                document,
+                new TouchEvent('touchmove', {
+                    touches: [
+                        {
+                            ...getTouchEventDefaults(),
+                            pageX: 0,
+                        },
+                    ],
+                }),
+            );
 
             expect(onUpdate).toHaveBeenCalledWith(10);
         });
@@ -213,7 +189,7 @@ describe('SliderControl', () => {
             const wrapper = getWrapper();
 
             expect(wrapper.getByRole('slider')).toHaveClass('bp-SliderControl');
-            expect(wrapper.getByTestId('bp-SliderControl-thumb')).toHaveStyle({
+            expect(wrapper.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '0%',
             });
         });
@@ -222,10 +198,10 @@ describe('SliderControl', () => {
             const track = 'linear-gradient(#fff %20, #000 100%';
             const wrapper = getWrapper({ track, value: 20 });
 
-            expect(wrapper.getByTestId('bp-SliderControl-thumb')).toHaveStyle({
+            expect(wrapper.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '20%',
             });
-            expect(wrapper.getByTestId('bp-SliderControl-track')).toHaveStyle({
+            expect(wrapper.getByTestId('bp-slider-control-track')).toHaveStyle({
                 backgroundImage: track,
             });
         });

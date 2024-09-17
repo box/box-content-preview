@@ -72,7 +72,7 @@ describe('Model3DSettings', () => {
             act(() => renderModeDropdown?.click());
             expect(renderModeDropdown).toHaveAttribute('aria-expanded', 'true');
 
-            const renderModeList = within(dropdowns.at(0)!).queryByRole('listbox');
+            const renderModeList = within(dropdowns.at(0)!).getByRole('listbox');
             expect(renderModeList?.children[0]).toHaveTextContent('Lit');
             expect(renderModeList?.children[1]).toHaveTextContent('Unlit');
             expect(renderModeList?.children[2]).toHaveTextContent('Normals');
@@ -87,7 +87,7 @@ describe('Model3DSettings', () => {
             })!;
             act(() => cameraProjectionDropdown?.click());
             expect(cameraProjectionDropdown).toHaveAttribute('aria-expanded', 'true');
-            const cameraProjectionsList = within(dropdowns.at(1)!).queryByRole('listbox');
+            const cameraProjectionsList = within(dropdowns.at(1)!).getByRole('listbox');
             expect(cameraProjectionsList?.children[0]).toHaveTextContent('Perspective');
             expect(cameraProjectionsList?.children[1]).toHaveTextContent('Orthographic');
 

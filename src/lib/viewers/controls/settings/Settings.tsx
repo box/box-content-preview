@@ -82,6 +82,7 @@ export default function Settings({
         <div
             ref={controlsElRef}
             className={classNames('bp-Settings', className, { 'bp-is-focused': isFocused })}
+            data-testid="bp-settings"
             onKeyDown={handleKeyDown}
             role="presentation"
             {...rest}

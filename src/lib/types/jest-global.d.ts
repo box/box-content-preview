@@ -5,7 +5,7 @@ declare global {
             type: string,
             eventInitDict?: MouseEventInit & {
                 pageX?: number;
-                pageX?: number;
+                pageY?: number;
             },
         ): MouseEvent;
         prototype: MouseEvent;

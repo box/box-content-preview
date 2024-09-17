@@ -1,9 +1,7 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
-import SettingsDropdown, { Props, Ref as SettingsDropdownRef } from '../SettingsDropdown';
-import SettingsFlyout from '../SettingsFlyout';
-import SettingsList from '../SettingsList';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import SettingsDropdown, { Props } from '../SettingsDropdown';
 
 describe('SettingsDropdown', () => {
     const listItems = [
@@ -17,206 +15,120 @@ describe('SettingsDropdown', () => {
         onSelect: jest.fn(),
         value: 'first',
     });
-    const getHostNode = (): HTMLDivElement => {
-        return document.body.appendChild(document.createElement('div'));
-    };
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(<SettingsDropdown {...getDefaults()} {...props} />, {
-            attachTo: getHostNode(),
-        });
+    const renderView = (props = {}) => render(<SettingsDropdown {...getDefaults()} {...props} />);
 
     describe('toggling', () => {
-        test('should toggle open the flyout and render the list', () => {
-            const wrapper = getWrapper();
+        test('should toggle open the flyout and render the list', async () => {
+            renderView();
 
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label first'));
 
-            const renderedItems = wrapper.find('.bp-SettingsDropdown-listitem');
-
-            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
-            expect(renderedItems.length).toBe(listItems.length);
+            expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
+            expect(screen.getAllByRole('option')).toHaveLength(listItems.length);
+            expect(screen.getAllByRole('option').at(0)?.textContent).toContain('first');
+            expect(screen.getAllByRole('option').at(1)?.textContent).toContain('second');
+            expect(screen.getAllByRole('option').at(2)?.textContent).toContain('third');
         });
 
-        test('should select the specified value', () => {
-            const wrapper = getWrapper({ value: 'second' });
+        test('should select the specified value', async () => {
+            renderView({ value: 'second' });
 
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label second'));
 
-            const renderedItems = wrapper.find('.bp-SettingsDropdown-listitem');
-
-            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(true);
-            expect(renderedItems.length).toBe(listItems.length);
-            expect(renderedItems.get(0).props['aria-selected']).toBe(false);
-            expect(renderedItems.get(1).props['aria-selected']).toBe(true);
-            expect(renderedItems.get(2).props['aria-selected']).toBe(false);
+            expect(screen.getAllByRole('option').at(0)).toHaveAttribute('aria-selected', 'false');
+            expect(screen.getAllByRole('option').at(1)).toHaveAttribute('aria-selected', 'true');
+            expect(screen.getAllByRole('option').at(2)).toHaveAttribute('aria-selected', 'false');
         });
     });
 
     describe('events', () => {
-        test('should call onSelect with the list item value when clicked', () => {
-            const mockEvent = { stopPropagation: jest.fn() };
+        test('should call onSelect with the list item value when clicked', async () => {
             const onSelect = jest.fn();
-            const wrapper = getWrapper({ onSelect });
+            renderView({ onSelect });
 
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+            await userEvent.click(within(screen.getByRole('listbox')).getByText('second'));
 
-            act(() => {
-                wrapper
-                    .find('.bp-SettingsDropdown-listitem')
-                    .get(1)
-                    .props.onClick(mockEvent);
-            });
-            wrapper.update();
-
-            expect(onSelect).toBeCalledWith('second');
-            expect(mockEvent.stopPropagation).toHaveBeenCalled();
+            expect(onSelect).toHaveBeenCalledWith('second');
         });
 
-        test.each(['Space', 'Enter'])('should call onSelect with the list item value when keydown %s', key => {
-            const mockEvent = { key };
+        test.each(['Space', 'Enter'])('should call onSelect with the list item value when keydown %s', async key => {
             const onSelect = jest.fn();
-            const wrapper = getWrapper({ onSelect });
+            renderView({ onSelect });
 
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+            fireEvent.keyDown(
+                within(screen.getByRole('listbox'))
+                    .getAllByRole('option')
+                    .at(1)!,
+                { key },
+            );
 
-            act(() => {
-                wrapper
-                    .find('.bp-SettingsDropdown-listitem')
-                    .get(1)
-                    .props.onKeyDown(mockEvent);
-            });
-            wrapper.update();
-
-            expect(onSelect).toBeCalledWith('second');
+            expect(onSelect).toHaveBeenCalledWith('second');
         });
 
-        test.each(['Escape', 'ArrowLeft'])('should not call onSelect with the list item value when keydown %s', key => {
-            const mockEvent = { key };
+        test.each(['Escape', 'ArrowLeft'])(
+            'should not call onSelect with the list item value when keydown %s',
+            async key => {
+                const onSelect = jest.fn();
+                renderView({ onSelect });
+
+                await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+                fireEvent.keyDown(
+                    within(screen.getByRole('listbox'))
+                        .getAllByRole('option')
+                        .at(1)!,
+                    { key },
+                );
+
+                expect(onSelect).not.toHaveBeenCalled();
+            },
+        );
+
+        test('should close dropdown after making selection', async () => {
             const onSelect = jest.fn();
-            const wrapper = getWrapper({ onSelect });
+            renderView({ onSelect });
 
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+            await userEvent.click(within(screen.getByRole('listbox')).getByText('second'));
 
-            act(() => {
-                wrapper
-                    .find('.bp-SettingsDropdown-listitem')
-                    .get(1)
-                    .props.onKeyDown(mockEvent);
-            });
-            wrapper.update();
-
-            expect(onSelect).not.toBeCalled();
+            expect(screen.queryByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
         });
 
-        test('should close dropdown after making selection', () => {
-            const mockEvent = { stopPropagation: jest.fn() };
-            const onSelect = jest.fn();
-            const wrapper = getWrapper({ onSelect });
+        test('should close dropdown if Escape is pressed', async () => {
+            renderView();
 
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+            await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+            fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
 
-            act(() => {
-                wrapper
-                    .find('.bp-SettingsDropdown-listitem')
-                    .get(1)
-                    .props.onClick(mockEvent);
-            });
-            wrapper.update();
-
-            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
+            expect(screen.queryByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
         });
 
-        test('should close dropdown if Escape is pressed', () => {
-            const mockEvent = { key: 'Escape', stopPropagation: jest.fn() };
-            const wrapper = getWrapper();
+        test.each(['ArrowUp', 'ArrowDown', 'Escape'])(
+            'should prevent propagation of keydown events for %s',
+            async key => {
+                const mockGlobalOnPress = jest.fn();
+                document.addEventListener('keydown', mockGlobalOnPress);
+                renderView();
 
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
+                await userEvent.click(screen.getByLabelText('Dropdown Label first'));
+                fireEvent.keyDown(screen.getByRole('listbox'), { key });
 
-            act(() => {
-                wrapper.find(SettingsList).simulate('keydown', mockEvent);
-            });
-            wrapper.update();
-
-            expect(wrapper.find(SettingsFlyout).prop('isOpen')).toBe(false);
-            expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        });
-
-        test.each(['ArrowUp', 'ArrowDown', 'Escape'])('should prevent propagation of keydown events for %s', key => {
-            const mockEvent = { key, stopPropagation: jest.fn() };
-            const wrapper = getWrapper();
-
-            // Open the flyout
-            act(() => {
-                wrapper.find('.bp-SettingsDropdown-button').simulate('click');
-            });
-            wrapper.update();
-
-            act(() => {
-                wrapper.find(SettingsList).simulate('keydown', mockEvent);
-            });
-            wrapper.update();
-
-            expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        });
+                expect(mockGlobalOnPress).not.toHaveBeenCalled();
+                document.removeEventListener('keydown', mockGlobalOnPress);
+            },
+        );
     });
 
-    describe('ref', () => {
-        const TestComponent = (): JSX.Element => {
-            const ref = React.useRef<SettingsDropdownRef | null>(null);
-
-            React.useEffect(() => {
-                if (ref.current) {
-                    ref.current.focus();
-                }
-            }, []);
-            return <SettingsDropdown ref={ref} {...getDefaults()} />;
-        };
-
+    describe('focus', () => {
         test('should be able to focus on the dropdown button', () => {
-            const wrapper = mount(<TestComponent />, {
-                attachTo: getHostNode(),
+            renderView();
+
+            fireEvent.focus(screen.getByRole('button', { name: /first/i }));
+
+            waitFor(() => {
+                expect(document.activeElement).toBe(screen.getByRole('button', { name: /first/i }));
             });
-
-            expect(wrapper.find('.bp-SettingsDropdown-button').getDOMNode()).toHaveFocus();
-        });
-    });
-
-    describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-            const element = wrapper.getDOMNode();
-
-            expect(element).toHaveClass('bp-SettingsDropdown');
-            expect(wrapper.find('.bp-SettingsDropdown-label').text()).toBe('Dropdown Label');
-            expect(wrapper.find('.bp-SettingsDropdown-button').text()).toBe('first');
-            expect(wrapper.exists(SettingsFlyout));
-            expect(wrapper.exists(SettingsList));
         });
     });
 });

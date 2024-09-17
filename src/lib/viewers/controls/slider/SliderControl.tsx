@@ -136,12 +136,12 @@ export default function SliderControl({
         >
             <div
                 className="bp-SliderControl-track"
-                data-testid="bp-SliderControl-track"
+                data-testid="bp-slider-control-track"
                 style={{ backgroundImage: track }}
             />
             <div
                 className="bp-SliderControl-thumb"
-                data-testid="bp-SliderControl-thumb"
+                data-testid="bp-slider-control-thumb"
                 style={{
                     left: `${(value / max) * 100}%`,
                 }}

@@ -1,12 +1,12 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { fireEvent, render, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import ArchiveExplorer from '../ArchiveExplorer';
 
 let data;
 let filename;
 
-const getComponent = props => render(<ArchiveExplorer {...props} />);
+const renderView = props => render(<ArchiveExplorer {...props} />);
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
@@ -78,154 +78,124 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
     describe('render()', () => {
         test('should render correct components', () => {
-            const component = getComponent({ filename, itemCollection: data });
+            renderView({ filename, itemCollection: data });
 
-            expect(component.queryByTestId('bp-ArchiveExplorer')).toBeInTheDocument();
-            expect(component.queryByRole('searchbox')).toBeInTheDocument();
-            expect(component.queryByLabelText('Breadcrumb')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-archive-explorer')).toBeInTheDocument();
+            expect(screen.getByRole('searchbox')).toBeInTheDocument();
+            expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
         });
     });
 
     describe('Subfolders', () => {
-        test('should render nested content on folder item click', () => {
-            const component = getComponent({ filename, itemCollection: data });
+        test('should render nested content on folder item click', async () => {
+            renderView({ filename, itemCollection: data });
 
-            act(() => {
-                component.queryByText('test').click();
-            });
+            await userEvent.click(screen.getByText('test'));
 
-            expect(component.queryByText('subfolder')).toBeInTheDocument();
-            expect(component.queryByText('pdf-level-1.pdf')).toBeInTheDocument();
+            expect(screen.getByText('subfolder')).toBeInTheDocument();
+            expect(screen.getByText('pdf-level-1.pdf')).toBeInTheDocument();
 
-            act(() => {
-                component.queryByText('subfolder').click();
-            });
+            await userEvent.click(screen.getByText('subfolder'));
 
-            expect(component.queryByText('test-level-2.jpg')).toBeInTheDocument();
+            expect(screen.getByText('test-level-2.jpg')).toBeInTheDocument();
         });
     });
 
     describe('Breadcrumbs', () => {
-        test('should render breadcrumbs correctly', () => {
-            const component = getComponent({ filename, itemCollection: data });
+        test('should render breadcrumbs correctly', async () => {
+            renderView({ filename, itemCollection: data });
 
-            act(() => {
-                component.queryByText('test').click();
-            });
+            await userEvent.click(screen.getByText('test'));
 
-            expect(within(component.queryByLabelText('Breadcrumb')).queryByText('test.zip')).toBeInTheDocument();
-            expect(within(component.queryByLabelText('Breadcrumb')).queryByText('test')).toBeInTheDocument();
+            expect(within(screen.getByLabelText('Breadcrumb')).getByText('test.zip')).toBeInTheDocument();
+            expect(within(screen.getByLabelText('Breadcrumb')).getByText('test')).toBeInTheDocument();
 
-            act(() => {
-                within(component.queryByLabelText('Breadcrumb'))
-                    .queryByText('test.zip')
-                    .click();
-            });
+            await userEvent.click(within(screen.getByLabelText('Breadcrumb')).getByText('test.zip'));
 
-            expect(within(component.queryByLabelText('Breadcrumb')).queryByText('test.zip')).toBeInTheDocument();
-            expect(within(component.queryByLabelText('Breadcrumb')).queryByText('test')).not.toBeInTheDocument();
+            expect(within(screen.getByLabelText('Breadcrumb')).getByText('test.zip')).toBeInTheDocument();
+            expect(within(screen.queryByLabelText('Breadcrumb')).queryByText('test')).not.toBeInTheDocument();
         });
     });
 
     describe('Items list', () => {
         test('should render items correctly', () => {
-            const component = getComponent({ filename, itemCollection: data });
+            renderView({ filename, itemCollection: data });
 
-            expect(component.getByRole('gridcell', { name: 'test' })).toHaveAttribute('aria-colindex', '1');
+            expect(screen.getByRole('gridcell', { name: 'test' })).toHaveAttribute('aria-colindex', '1');
             expect(
-                component.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
+                screen.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
             ).toHaveAttribute('aria-colindex', '2');
-            expect(component.getByRole('gridcell', { name: '--' })).toHaveAttribute('aria-colindex', '3');
+            expect(screen.getByRole('gridcell', { name: '--' })).toHaveAttribute('aria-colindex', '3');
 
-            expect(component.getByRole('gridcell', { name: 'level-0.txt' })).toHaveAttribute('aria-colindex', '1');
+            expect(screen.getByRole('gridcell', { name: 'level-0.txt' })).toHaveAttribute('aria-colindex', '1');
             expect(
-                component.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
+                screen.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
             ).toHaveAttribute('aria-colindex', '2');
-            expect(component.getByRole('gridcell', { name: '1 Bytes' })).toHaveAttribute('aria-colindex', '3');
+            expect(screen.getByRole('gridcell', { name: '1 Bytes' })).toHaveAttribute('aria-colindex', '3');
         });
     });
 
     describe('Search', () => {
-        test('should correctly search for query longer than 1 letter', () => {
-            const component = getComponent({ filename, itemCollection: data });
+        test('should correctly search for query longer than 1 letter', async () => {
+            renderView({ filename, itemCollection: data });
 
-            act(() => {
-                fireEvent.change(component.queryByRole('searchbox'), { target: { value: 'test' } });
-            });
+            await userEvent.type(screen.getByRole('searchbox'), 'test');
 
-            expect(component.queryByText('Search Results')).toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'test' })).toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'test-level-2.jpg' })).toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'level-0.txt' })).not.toBeInTheDocument();
+            expect(screen.getByText('Search Results')).toBeInTheDocument();
+            expect(screen.getByRole('gridcell', { name: 'test' })).toBeInTheDocument();
+            expect(screen.getByRole('gridcell', { name: 'test-level-2.jpg' })).toBeInTheDocument();
+            expect(screen.queryByRole('gridcell', { name: 'level-0.txt' })).not.toBeInTheDocument();
 
-            act(() => {
-                fireEvent.change(component.queryByRole('searchbox'), { target: { value: '' } });
-            });
+            await userEvent.clear(screen.getByRole('searchbox'));
 
-            expect(component.queryByText('Search Results')).not.toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'test' })).toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'level-0.txt' })).toBeInTheDocument();
-            expect(component.queryByRole('gridcell', { name: 'test-level-2.jpg' })).not.toBeInTheDocument();
+            expect(screen.queryByText('Search Results')).not.toBeInTheDocument();
+            expect(screen.getByRole('gridcell', { name: 'test' })).toBeInTheDocument();
+            expect(screen.getByRole('gridcell', { name: 'level-0.txt' })).toBeInTheDocument();
+            expect(screen.queryByRole('gridcell', { name: 'test-level-2.jpg' })).not.toBeInTheDocument();
         });
     });
 
     describe('Sorting', () => {
         test('should set the sort direction and type', () => {
-            const component = getComponent({ filename, itemCollection: data });
+            renderView({ filename, itemCollection: data });
 
-            expect(component.queryByTitle('Name').querySelector('svg')).toHaveClass('bdl-icon-sort-chevron');
-            expect(component.queryByTitle('Modified').querySelector('svg')).not.toBeInTheDocument();
-            expect(component.queryByTitle('Size').querySelector('svg')).not.toBeInTheDocument();
+            expect(screen.getByTitle('Name').querySelector('svg')).toHaveClass('bdl-icon-sort-chevron');
+            expect(screen.queryByTitle('Modified').querySelector('svg')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Size').querySelector('svg')).not.toBeInTheDocument();
         });
 
-        test('should sort itemList by clicking on the Size column header', () => {
-            const component = getComponent({ filename, itemCollection: data });
+        test('should sort itemList by clicking on the Size column header', async () => {
+            renderView({ filename, itemCollection: data });
 
-            act(() => {
-                within(component.queryByTitle('test'))
-                    .queryByRole('button')
-                    .click();
-            });
-            act(() => {
-                component.queryByTitle('Size').click();
-            });
+            await userEvent.click(within(screen.getByTitle('test')).getByRole('button'));
+            await userEvent.click(screen.getByRole('columnheader', { name: 'Size' }));
 
-            expect(component.queryAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
-            expect(component.queryAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
-            expect(component.queryAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
 
-            act(() => {
-                component.queryByTitle('Size').click();
-            });
+            await userEvent.click(screen.getByRole('columnheader', { name: 'Size' }));
 
-            expect(component.queryAllByRole('row').at(2).textContent).toContain('subfolder');
-            expect(component.queryAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
-            expect(component.queryAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
         });
 
-        test('should sort itemList by clicking on the Name column header', () => {
-            const component = getComponent({ filename, itemCollection: data });
+        test('should sort itemList by clicking on the Name column header', async () => {
+            renderView({ filename, itemCollection: data });
 
-            act(() => {
-                within(component.queryByTitle('test'))
-                    .queryByRole('button')
-                    .click();
-            });
-            act(() => {
-                component.queryByTitle('Name').click();
-            });
+            await userEvent.click(within(screen.queryByTitle('test')).getByRole('button'));
+            await userEvent.click(screen.getByRole('columnheader', { name: 'Name' }));
 
-            expect(component.queryAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
-            expect(component.queryAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
-            expect(component.queryAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
 
-            act(() => {
-                component.queryByTitle('Name').click();
-            });
+            await userEvent.click(screen.getByRole('columnheader', { name: 'Name' }));
 
-            expect(component.queryAllByRole('row').at(2).textContent).toContain('subfolder');
-            expect(component.queryAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
-            expect(component.queryAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
         });
     });
 });

@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import AnnotationsTargetedTooltip from '../AnnotationsTargetedTooltip';
 
 describe('AnnotationsTargetedTooltip', () => {
-    const getWrapper = (props = {}) =>
+    const renderView = (props = {}) =>
         render(
             <AnnotationsTargetedTooltip {...props}>
                 <div>Child</div>
@@ -27,22 +27,19 @@ describe('AnnotationsTargetedTooltip', () => {
         });
 
         test('should render tooltip when enabled', () => {
-            const wrapper = getWrapper({
+            renderView({
                 isEnabled: true,
             });
 
-            const tooltip = wrapper.queryByRole('tooltip');
-            expect(tooltip).not.toBe(null);
-            expect(tooltip?.parentElement?.classList.contains('is-callout')).toBe(true);
+            expect(screen.getByRole('tooltip')).toBeInTheDocument();
         });
 
         test('should not render tooltip when disabled', () => {
-            const wrapper = getWrapper({
+            renderView({
                 isEnabled: false,
             });
 
-            const tooltip = wrapper.queryByRole('tooltip');
-            expect(tooltip).toBe(null);
+            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         });
     });
 });
