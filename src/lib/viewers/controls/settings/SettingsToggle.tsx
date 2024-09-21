@@ -24,7 +24,7 @@ function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>):
                 title={__('media_settings')}
                 type="button"
             >
-                <IconGear24 className="bp-SettingsToggle-icon" data-testid="bp-SettingsToggle-icon" />
+                <IconGear24 className="bp-SettingsToggle-icon" data-testid="bp-settings-toggle-icon" />
                 {React.isValidElement(badge) && <div className="bp-SettingsToggle-badge">{badge}</div>}
             </button>
         </div>

@@ -4,25 +4,9 @@ import userEvent from '@testing-library/user-event';
 import Model3DSettings, { CameraProjection, Props, RenderMode } from '../Model3DSettings';
 
 describe('Model3DSettings', () => {
-    const getDefaults = (): Props => ({
-        cameraProjection: CameraProjection.PERSPECTIVE,
-        onCameraProjectionChange: jest.fn(),
-        onClose: jest.fn(),
-        onOpen: jest.fn(),
-        onRenderModeChange: jest.fn(),
-        onRotateOnAxisChange: jest.fn(),
-        onShowGridToggle: jest.fn(),
-        onShowSkeletonsToggle: jest.fn(),
-        onShowWireframesToggle: jest.fn(),
-        renderMode: RenderMode.LIT,
-        showGrid: true,
-        showSkeletons: false,
-        showWireframes: false,
-    });
-    const renderView = (props = {}) => render(<Model3DSettings {...getDefaults()} {...props} />);
-
     describe('render()', () => {
         test('should return a valid wrapper', async () => {
+            const user = userEvent.setup();
             const onCameraProjectionChange = jest.fn();
             const onClose = jest.fn();
             const onOpen = jest.fn();
@@ -31,19 +15,25 @@ describe('Model3DSettings', () => {
             const onShowGridToggle = jest.fn();
             const onShowSkeletonsToggle = jest.fn();
             const onShowWireframesToggle = jest.fn();
+            render(
+                <Model3DSettings
+                    cameraProjection={CameraProjection.PERSPECTIVE}
+                    onCameraProjectionChange={onCameraProjectionChange}
+                    onClose={onClose}
+                    onOpen={onOpen}
+                    onRenderModeChange={onRenderModeChange}
+                    onRotateOnAxisChange={onRotateOnAxisChange}
+                    onShowGridToggle={onShowGridToggle}
+                    onShowSkeletonsToggle={onShowSkeletonsToggle}
+                    onShowWireframesToggle={onShowWireframesToggle}
+                    renderMode={RenderMode.LIT}
+                    showGrid
+                    showSkeletons={false}
+                    showWireframes={false}
+                />,
+            );
 
-            renderView({
-                onCameraProjectionChange,
-                onClose,
-                onOpen,
-                onRenderModeChange,
-                onRotateOnAxisChange,
-                onShowGridToggle,
-                onShowSkeletonsToggle,
-                onShowWireframesToggle,
-            });
-
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(onOpen).toHaveBeenCalled();
 
@@ -56,14 +46,14 @@ describe('Model3DSettings', () => {
             expect(screen.getByLabelText('Show skeletons')).not.toHaveAttribute('checked');
 
             // Dropdowns
-            const dropdowns = screen.queryAllByTestId('bp-SettingsDropdown-container');
+            const dropdowns = screen.queryAllByTestId('bp-settings-dropdown-container');
 
             expect(within(dropdowns.at(0)!).getByLabelText('Render mode', { selector: 'button' })).toBeInTheDocument();
             const renderModeDropdown = within(dropdowns.at(0)!).queryByLabelText(RenderMode.LIT, {
                 selector: 'button',
             })!;
 
-            await userEvent.click(renderModeDropdown);
+            await user.click(renderModeDropdown);
 
             expect(renderModeDropdown).toHaveAttribute('aria-expanded', 'true');
 
@@ -82,7 +72,7 @@ describe('Model3DSettings', () => {
                 selector: 'button',
             })!;
 
-            await userEvent.click(cameraProjectionDropdown);
+            await user.click(cameraProjectionDropdown);
 
             expect(cameraProjectionDropdown).toHaveAttribute('aria-expanded', 'true');
 
@@ -92,7 +82,7 @@ describe('Model3DSettings', () => {
 
             expect(screen.queryByText('Rotate Model')).toBeInTheDocument();
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(onClose).toHaveBeenCalled();
         });

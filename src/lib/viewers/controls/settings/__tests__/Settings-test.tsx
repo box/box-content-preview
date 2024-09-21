@@ -4,17 +4,15 @@ import { userEvent } from '@testing-library/user-event';
 import Settings from '../Settings';
 
 describe('Settings', () => {
-    const renderView = (props = {}) =>
-        render(<Settings {...props} />, { container: document.body.appendChild(document.createElement('div')) });
-
     describe('event handlers', () => {
         test('should update the flyout and toggle button isOpen prop when clicked', async () => {
-            renderView();
+            const user = userEvent.setup();
+            render(<Settings />);
 
             expect(screen.getByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
             expect(screen.getByTestId('bp-settings-toggle-container')).not.toHaveClass('bp-is-open');
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
             expect(screen.getByTestId('bp-settings-toggle-container')).toHaveClass('bp-is-open');
@@ -35,44 +33,47 @@ describe('Settings', () => {
         `(
             'should update the focused state to $isFocused if $key is pressed',
             async ({ key, isFocused }: { key: string; isFocused: boolean }) => {
-                renderView();
+                const user = userEvent.setup();
+                render(<Settings />);
 
-                await userEvent.click(screen.getByTitle('Settings'));
+                await user.click(screen.getByTitle('Settings'));
 
-                await userEvent.keyboard(`{${key}}`);
+                await user.keyboard(`{${key}}`);
 
                 expect(screen.getByTestId('bp-settings').className.includes('bp-is-focused')).toBe(isFocused);
             },
         );
 
         test('should reset the parent context when a click is detected outside the controls', async () => {
-            renderView();
+            const user = userEvent.setup();
+            render(<Settings />);
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
 
-            await userEvent.click(document.body); // Click outside the controls
+            await user.click(document.body); // Click outside the controls
 
             expect(screen.getByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
 
             // Re-open the controls
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
 
-            await userEvent.click(screen.getByTestId('bp-settings-flyout')); // Click within the controls
+            await user.click(screen.getByTestId('bp-settings-flyout')); // Click within the controls
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
         });
 
         test('should stop propagation on all keydown events to prevent triggering global event listeners', async () => {
+            const user = userEvent.setup();
             const mockGlobalOnClick = jest.fn();
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             document.addEventListener('keydown', mockGlobalOnClick);
-            renderView();
+            render(<Settings />);
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(mockGlobalOnClick).not.toHaveBeenCalled();
             document.removeEventListener('keydown', mockGlobalOnClick);
@@ -81,14 +82,15 @@ describe('Settings', () => {
 
     describe('open/close callbacks', () => {
         test('should call the onOpen callback when the flyout opens', async () => {
+            const user = userEvent.setup();
             const onClose = jest.fn();
             const onOpen = jest.fn();
-            renderView({ onClose, onOpen });
+            render(<Settings onClose={onClose} onOpen={onOpen} />);
 
             expect(screen.getByTestId('bp-settings-toggle-container')).not.toHaveClass('bp-is-open');
             expect(screen.getByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
             expect(onOpen).toHaveBeenCalledTimes(1);
@@ -96,20 +98,21 @@ describe('Settings', () => {
         });
 
         test('should call the onClose callback when the flyout closes', async () => {
+            const user = userEvent.setup();
             const onClose = jest.fn();
             const onOpen = jest.fn();
-            renderView({ onClose, onOpen });
+            render(<Settings onClose={onClose} onOpen={onOpen} />);
 
             expect(screen.getByTestId('bp-settings-toggle-container')).not.toHaveClass('bp-is-open');
             expect(screen.getByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).toHaveClass('bp-is-open');
             expect(onOpen).toHaveBeenCalledTimes(1);
             expect(onClose).not.toHaveBeenCalled();
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-flyout')).not.toHaveClass('bp-is-open');
             expect(onOpen).toHaveBeenCalledTimes(1);
@@ -117,15 +120,16 @@ describe('Settings', () => {
         });
 
         test('should call the onClose callback when the flyout is closed by clicking outside', async () => {
+            const user = userEvent.setup();
             const onClose = jest.fn();
             const onOpen = jest.fn();
-            renderView({ onClose, onOpen });
+            render(<Settings onClose={onClose} onOpen={onOpen} />);
 
-            await userEvent.click(screen.getByTitle('Settings'));
+            await user.click(screen.getByTitle('Settings'));
 
             expect(screen.getByTestId('bp-settings-toggle-container')).toHaveClass('bp-is-open');
 
-            await userEvent.click(document.body);
+            await user.click(document.body);
 
             expect(onOpen).toHaveBeenCalledTimes(1);
             expect(onClose).toHaveBeenCalledTimes(1);
@@ -134,7 +138,7 @@ describe('Settings', () => {
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
-            renderView();
+            render(<Settings />);
 
             expect(screen.getByTestId('bp-settings-flyout')).toBeInTheDocument();
             expect(screen.getByTestId('bp-settings-toggle-container')).toBeInTheDocument();
@@ -142,9 +146,10 @@ describe('Settings', () => {
 
         describe('flyout dimensions', () => {
             test('should apply activeRect dimensions if present', async () => {
-                renderView();
+                const user = userEvent.setup();
+                render(<Settings />);
 
-                await userEvent.click(screen.getByTitle('Settings'));
+                await user.click(screen.getByTitle('Settings'));
 
                 expect(screen.getByTestId('bp-settings-flyout')).toHaveStyle('height: auto');
                 expect(screen.getByTestId('bp-settings-flyout')).toHaveStyle('width: auto');
@@ -163,13 +168,13 @@ describe('Settings', () => {
             const CustomToggleWithRef = React.forwardRef(CustomToggle);
 
             test('should default to SettingsGearToggle toggle', () => {
-                renderView();
+                render(<Settings />);
 
                 expect(screen.getByTestId('bp-settings-toggle-container')).toBeInTheDocument();
             });
 
             test('should use provided toggle', () => {
-                renderView({ toggle: CustomToggleWithRef });
+                render(<Settings toggle={CustomToggleWithRef} />);
 
                 expect(screen.queryByTestId('bp-settings-toggle-container')).not.toBeInTheDocument();
                 expect(screen.getByTestId('custom-toggle')).toBeInTheDocument();
@@ -177,19 +182,14 @@ describe('Settings', () => {
         });
 
         describe('badge prop', () => {
-            function CustomBadge(): JSX.Element {
-                return <div data-testid="custom-badge">custom</div>;
-            }
-
             test('should not show badge if not provided', () => {
-                renderView();
+                render(<Settings />);
 
                 expect(screen.queryByTestId('custom-badge')).not.toBeInTheDocument();
             });
 
             test('should show badge if provided', () => {
-                const badge = <CustomBadge />;
-                renderView({ badge });
+                render(<Settings badge={<div data-testid="custom-badge">custom</div>} />);
 
                 expect(screen.getByTestId('custom-badge')).toBeInTheDocument();
             });

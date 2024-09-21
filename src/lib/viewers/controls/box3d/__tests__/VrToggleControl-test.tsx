@@ -4,22 +4,21 @@ import userEvent from '@testing-library/user-event';
 import VrToggleControl from '../VrToggleControl';
 
 describe('VrToggleControl', () => {
-    const renderView = (props = {}) => render(<VrToggleControl isVrShown onVrToggle={jest.fn()} {...props} />);
-
     describe('render', () => {
         test('should render valid output', async () => {
+            const user = userEvent.setup();
             const onVrToggle = jest.fn();
-            renderView({ onVrToggle });
+            render(<VrToggleControl isVrShown onVrToggle={onVrToggle} />);
 
             expect(screen.getByTitle('Toggle VR display')).toBeInTheDocument();
 
-            await userEvent.click(screen.getByTitle('Toggle VR display'));
+            await user.click(screen.getByTitle('Toggle VR display'));
 
             expect(onVrToggle).toHaveBeenCalled();
         });
 
         test('should not render null if isVrShown is false', () => {
-            renderView({ isVrShown: false });
+            render(<VrToggleControl isVrShown={false} onVrToggle={jest.fn()} />);
 
             expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
         });

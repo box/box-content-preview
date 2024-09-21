@@ -3,16 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import TimeControls from '../TimeControls';
 
 describe('TimeControls', () => {
-    const renderView = (props = {}) =>
-        render(
-            <TimeControls
-                currentTime={0}
-                durationTime={10000}
-                filmstripUrl="http://example.com/image.png"
-                onTimeChange={jest.fn()}
-                {...props}
-            />,
-        );
     const mouseEventOptions = {
         bubbles: true,
         pageX: 250, // The center of the slider
@@ -36,7 +26,15 @@ describe('TimeControls', () => {
     });
 
     test('should update the slider on mousemove', () => {
-        renderView({ filmstripInterval: 1 });
+        render(
+            <TimeControls
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={1}
+                filmstripUrl="http://example.com/image.png"
+                onTimeChange={jest.fn()}
+            />,
+        );
 
         const slider = screen.getByLabelText('Media Slider');
 
@@ -52,7 +50,15 @@ describe('TimeControls', () => {
     });
 
     test('should update the slider hover state on mouseover and mouseout', () => {
-        renderView({ filmstripInterval: 1 });
+        render(
+            <TimeControls
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={1}
+                filmstripUrl="http://example.com/image.png"
+                onTimeChange={jest.fn()}
+            />,
+        );
 
         const slider = screen.getByLabelText('Media Slider');
 
@@ -67,11 +73,16 @@ describe('TimeControls', () => {
     });
 
     test('should render the filmstrip with the correct props', () => {
-        renderView({
-            aspectRatio: 1.5,
-            filmstripInterval: 2,
-            filmstripUrl: 'https://app.box.com',
-        });
+        render(
+            <TimeControls
+                aspectRatio={1.5}
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={2}
+                filmstripUrl="https://app.box.com"
+                onTimeChange={jest.fn()}
+            />,
+        );
 
         expect(screen.getByTestId('bp-Filmstrip-frame')).toHaveStyle({
             backgroundImage: 'url(https://app.box.com)',

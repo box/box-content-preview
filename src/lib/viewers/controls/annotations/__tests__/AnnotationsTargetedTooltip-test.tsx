@@ -4,13 +4,6 @@ import { render, screen } from '@testing-library/react';
 import AnnotationsTargetedTooltip from '../AnnotationsTargetedTooltip';
 
 describe('AnnotationsTargetedTooltip', () => {
-    const renderView = (props = {}) =>
-        render(
-            <AnnotationsTargetedTooltip {...props}>
-                <div>Child</div>
-            </AnnotationsTargetedTooltip>,
-        );
-
     describe('render', () => {
         beforeEach(() => {
             jest.spyOn(React, 'useContext').mockImplementation(() => ({
@@ -27,17 +20,21 @@ describe('AnnotationsTargetedTooltip', () => {
         });
 
         test('should render tooltip when enabled', () => {
-            renderView({
-                isEnabled: true,
-            });
+            render(
+                <AnnotationsTargetedTooltip isEnabled>
+                    <div>Child</div>
+                </AnnotationsTargetedTooltip>,
+            );
 
             expect(screen.getByRole('tooltip')).toBeInTheDocument();
         });
 
         test('should not render tooltip when disabled', () => {
-            renderView({
-                isEnabled: false,
-            });
+            render(
+                <AnnotationsTargetedTooltip isEnabled={false}>
+                    <div>Child</div>
+                </AnnotationsTargetedTooltip>,
+            );
 
             expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         });
