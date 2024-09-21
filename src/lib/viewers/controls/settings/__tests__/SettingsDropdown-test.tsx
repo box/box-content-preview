@@ -132,16 +132,15 @@ describe('SettingsDropdown', () => {
     });
 
     describe('focus', () => {
-        test('should be able to focus on the dropdown button', () => {
+        test('should be able to focus on the dropdown button', async () => {
+            const user = userEvent.setup();
             render(
                 <SettingsDropdown label="Dropdown Label" listItems={listItems} onSelect={jest.fn()} value="first" />,
             );
 
-            fireEvent.focus(screen.getByRole('button', { name: /first/i }));
+            await user.tab();
 
-            waitFor(() => {
-                expect(document.activeElement).toBe(screen.getByRole('button', { name: /first/i }));
-            });
+            expect(screen.getByRole('button', { name: /first/i })).toHaveFocus();
         });
     });
 });
