@@ -1,22 +1,21 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import ControlsBar from '../ControlsBar';
 
 describe('ControlsBar', () => {
     describe('render', () => {
-        test('should return a valid wrapper', () => {
+        test('should render a valid output', () => {
             const children = <div className="test">Hello</div>;
-            const wrapper = shallow(<ControlsBar>{children}</ControlsBar>);
+            render(<ControlsBar>{children}</ControlsBar>);
 
-            expect(wrapper.contains(children)).toBe(true);
-            expect(wrapper.hasClass('bp-ControlsBar')).toBe(true);
+            expect(screen.getByText('Hello')).toBeInTheDocument();
         });
 
-        test('should return null if the children property is undefined', () => {
+        test('should render nothing if the children property is undefined', () => {
             const children = undefined;
-            const wrapper = shallow(<ControlsBar>{children}</ControlsBar>);
+            render(<ControlsBar>{children}</ControlsBar>);
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(screen.queryByText('Hello')).not.toBeInTheDocument();
         });
     });
 });

@@ -1,44 +1,15 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import DashControls, { Props } from '../DashControls';
-import HDBadge from '../../controls/media/HDBadge';
-import MediaFullscreenToggle from '../../controls/media/MediaFullscreenToggle';
-import MediaSettings from '../../controls/media/MediaSettings';
-import PlayPauseToggle from '../../controls/media/PlayPauseToggle';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import DashControls from '../DashControls';
 import subtitles from '../../controls/media/__mocks__/subtitles';
-import SubtitlesToggle from '../../controls/media/SubtitlesToggle';
-import TimeControls from '../../controls/media/TimeControls';
-import VolumeControls from '../../controls/media/VolumeControls';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
 
 describe('DashControls', () => {
     describe('render', () => {
-        function CustomBadge(): JSX.Element {
-            return <div className="custom-badge">custom</div>;
-        }
-
-        const getDefaults = (): Props => ({
-            audioTrack: 1,
-            audioTracks: [],
-            autoplay: false,
-            isPlaying: false,
-            isPlayingHD: false,
-            onAudioTrackChange: jest.fn(),
-            onAutoplayChange: jest.fn(),
-            onFullscreenToggle: jest.fn(),
-            onMuteChange: jest.fn(),
-            onPlayPause: jest.fn(),
-            onQualityChange: jest.fn(),
-            onRateChange: jest.fn(),
-            onTimeChange: jest.fn(),
-            onVolumeChange: jest.fn(),
-            quality: Quality.AUTO,
-            rate: '1.0',
-        });
-        const getWrapper = (props = {}): ShallowWrapper => shallow(<DashControls {...getDefaults()} {...props} />);
-
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
+            const user = userEvent.setup();
             const onAudioTrackChange = jest.fn();
             const onAutoplayChange = jest.fn();
             const onFullscreenToggle = jest.fn();
@@ -48,67 +19,189 @@ describe('DashControls', () => {
             const onPlayPause = jest.fn();
             const onTimeChange = jest.fn();
             const onVolumeChange = jest.fn();
-            const wrapper = getWrapper({
-                onAudioTrackChange,
-                onAutoplayChange,
-                onFullscreenToggle,
-                onMuteChange,
-                onPlayPause,
-                onQualityChange,
-                onRateChange,
-                onTimeChange,
-                onVolumeChange,
-            });
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    onAudioTrackChange={onAudioTrackChange}
+                    onAutoplayChange={onAutoplayChange}
+                    onFullscreenToggle={onFullscreenToggle}
+                    onMuteChange={onMuteChange}
+                    onPlayPause={onPlayPause}
+                    onQualityChange={onQualityChange}
+                    onRateChange={onRateChange}
+                    onTimeChange={onTimeChange}
+                    onVolumeChange={onVolumeChange}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                />,
+            );
 
-            expect(wrapper.hasClass('bp-DashControls')).toBe(true);
-            expect(wrapper.find(MediaFullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
-            expect(wrapper.find(MediaSettings).props()).toMatchObject({
-                audioTrack: 1,
-                audioTracks: [],
-                autoplay: false,
-                onAudioTrackChange,
-                onAutoplayChange,
-                onQualityChange,
-                onRateChange,
-                quality: 'auto',
-                rate: '1.0',
-            });
-            expect(wrapper.find(PlayPauseToggle).prop('onPlayPause')).toEqual(onPlayPause);
-            expect(wrapper.find(TimeControls).prop('onTimeChange')).toEqual(onTimeChange);
-            expect(wrapper.find(VolumeControls).prop('onMuteChange')).toEqual(onMuteChange);
-            expect(wrapper.find(VolumeControls).prop('onVolumeChange')).toEqual(onVolumeChange);
+            await user.click(screen.getByTitle('Enter fullscreen'));
+            expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
+
+            await user.click(screen.getByTitle('Play'));
+            expect(onPlayPause).toHaveBeenCalledTimes(1);
+
+            fireEvent.mouseDown(screen.getByLabelText('Media Slider'));
+            expect(onTimeChange).toHaveBeenCalledTimes(1);
+
+            await user.click(screen.getByTitle('Mute'));
+            expect(onMuteChange).toHaveBeenCalledTimes(1);
+
+            fireEvent.mouseDown(screen.getByLabelText('Volume Slider'));
+            expect(onVolumeChange).toHaveBeenCalledTimes(1);
         });
 
-        test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', isHDSupported => {
-            const wrapper = getWrapper({ isHDSupported });
-            expect(wrapper.find(MediaSettings).prop('isHDSupported')).toBe(isHDSupported);
+        test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', async isHDSupported => {
+            const user = userEvent.setup();
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isHDSupported={isHDSupported}
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                />,
+            );
+
+            await user.click(screen.getByTitle('Settings'));
+
+            expect(screen.getByTestId('bp-media-settings-quality')).toHaveAttribute(
+                'aria-disabled',
+                `${!isHDSupported}`,
+            );
         });
 
         test('should not pass along badge if not playing HD', () => {
-            const wrapper = getWrapper({ badge: <CustomBadge /> });
-            expect(wrapper.find(MediaSettings).prop('badge')).toBeUndefined();
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    badge={<div className="custom-badge">custom</div>}
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                />,
+            );
+
+            expect(screen.queryByTestId('bp-media-controls-hd')).not.toBeInTheDocument();
         });
 
         test('should pass along badge if playing HD', () => {
-            const wrapper = getWrapper({ isPlayingHD: true });
-            expect(wrapper.find(MediaSettings).prop('badge')).toEqual(<HDBadge />);
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isPlaying={false}
+                    isPlayingHD
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                />,
+            );
+
+            expect(screen.getByTestId('bp-media-controls-hd')).toBeInTheDocument();
         });
 
-        test('should render SubtitlesToggle if subtitles exist', () => {
+        test('should render SubtitlesToggle if subtitles exist', async () => {
+            const user = userEvent.setup();
             const onSubtitlesToggle = jest.fn();
-            const wrapper = getWrapper({ isAutoGeneratedSubtitles: true, onSubtitlesToggle, subtitles });
-            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                isAutoGeneratedSubtitles: true,
-                isShowingSubtitles: true,
-                onSubtitlesToggle,
-            });
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isAutoGeneratedSubtitles
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onSubtitlesToggle={onSubtitlesToggle}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                    subtitles={subtitles}
+                />,
+            );
+
+            expect(screen.queryByTitle('Subtitles/Closed Captions')).not.toBeInTheDocument();
+            expect(screen.getByTitle('Auto-Generated Captions')).toBeInTheDocument();
+            expect(screen.getByTitle('Auto-Generated Captions')).toHaveAttribute('aria-pressed', 'true');
+
+            await user.click(screen.getByTitle('Auto-Generated Captions'));
+
+            expect(onSubtitlesToggle).toHaveBeenCalledTimes(1);
         });
 
         test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
-            const wrapper = getWrapper({ subtitle: SUBTITLES_OFF, subtitles });
-            expect(wrapper.find(SubtitlesToggle).props()).toMatchObject({
-                isShowingSubtitles: false,
-            });
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                    subtitle={SUBTITLES_OFF}
+                    subtitles={subtitles}
+                />,
+            );
+
+            expect(screen.queryByTitle('Auto-Generated Captions')).not.toBeInTheDocument();
+            expect(screen.getByTitle('Subtitles/Closed Captions')).toBeInTheDocument();
+            expect(screen.getByTitle('Subtitles/Closed Captions')).toHaveAttribute('aria-pressed', 'false');
         });
     });
 });

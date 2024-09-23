@@ -54,7 +54,7 @@ export default function ColorPickerControl({
     };
 
     return (
-        <div className="bp-ColorPickerControl">
+        <div className="bp-ColorPickerControl" data-testid="bp-color-picker-control">
             <button
                 ref={toggleRef}
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}

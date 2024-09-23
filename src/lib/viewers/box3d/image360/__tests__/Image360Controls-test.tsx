@@ -1,34 +1,22 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import FullscreenToggle from '../../../controls/fullscreen';
-import Image360Controls, { Props } from '../Image360Controls';
-import VrToggleControl from '../../../controls/box3d/VrToggleControl';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Image360Controls from '../Image360Controls';
 
 describe('lib/viewers/box3d/image360/Image360Controls', () => {
-    const getDefaults = (): Props => ({
-        isVrShown: false,
-        onFullscreenToggle: jest.fn(),
-        onVrToggle: jest.fn(),
-    });
-
-    const getWrapper = (props: Partial<Props>): ShallowWrapper =>
-        shallow(<Image360Controls {...getDefaults()} {...props} />);
-
     describe('render()', () => {
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
+            const user = userEvent.setup();
             const onFullscreenToggle = jest.fn();
-            const onVrToggle = jest.fn();
+            render(
+                <Image360Controls isVrShown={false} onFullscreenToggle={onFullscreenToggle} onVrToggle={jest.fn()} />,
+            );
 
-            const wrapper = getWrapper({
-                onFullscreenToggle,
-                onVrToggle,
-            });
+            expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
 
-            expect(wrapper.find(VrToggleControl).props()).toMatchObject({
-                isVrShown: false,
-                onVrToggle,
-            });
-            expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onFullscreenToggle);
+            await user.click(screen.getByTitle('Enter fullscreen'));
+
+            expect(onFullscreenToggle).toHaveBeenCalled();
         });
     });
 });

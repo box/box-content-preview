@@ -1,52 +1,57 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import AnimationClipsControl, { formatDuration, Props as AnimationClipsControlProps } from '../AnimationClipsControl';
-import AnimationClipsToggle from '../AnimationClipsToggle';
-import Settings from '../../settings';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import AnimationClipsControl, { formatDuration } from '../AnimationClipsControl';
 
 describe('AnimationClipsControl', () => {
-    const animationClips = [
-        { duration: 1, id: '1', name: 'first' },
-        { duration: 2, id: '2', name: 'second' },
-    ];
-    const getDefaults = (): AnimationClipsControlProps => ({
-        animationClips,
-        currentAnimationClipId: '1',
-        onAnimationClipSelect: jest.fn(),
-    });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<AnimationClipsControl {...getDefaults()} {...props} />);
-
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid screen', () => {
+            render(
+                <AnimationClipsControl
+                    animationClips={[
+                        { duration: 1, id: '1', name: 'first' },
+                        { duration: 2, id: '2', name: 'second' },
+                    ]}
+                    currentAnimationClipId="1"
+                    onAnimationClipSelect={jest.fn()}
+                />,
+            );
 
-            expect(wrapper.find(Settings).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl',
-                toggle: AnimationClipsToggle,
-            });
-            expect(wrapper.exists(Settings.Menu)).toBe(true);
+            expect(screen.getByTitle('Animation clips')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-settings-flyout')).toBeInTheDocument();
         });
 
-        test('should return the animationClips as RadioItems', () => {
+        test('should return the animationClips as RadioItems', async () => {
+            const user = userEvent.setup();
             const onAnimationClipSelect = jest.fn();
-            const wrapper = getWrapper({ onAnimationClipSelect });
-            const radioItems = wrapper.find(Settings.RadioItem);
+            render(
+                <AnimationClipsControl
+                    animationClips={[
+                        { duration: 1, id: '1', name: 'first' },
+                        { duration: 2, id: '2', name: 'second' },
+                    ]}
+                    currentAnimationClipId="1"
+                    onAnimationClipSelect={onAnimationClipSelect}
+                />,
+            );
+
+            await user.click(screen.getByTitle('Animation clips'));
+
+            const radioItems = screen.queryAllByRole('menuitemradio');
 
             expect(radioItems).toHaveLength(2);
-            expect(radioItems.at(0).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl-radioItem',
-                isSelected: true,
-                label: '00:00:01 first',
-                onChange: onAnimationClipSelect,
-                value: animationClips[0].id,
-            });
-            expect(radioItems.at(1).props()).toMatchObject({
-                className: 'bp-AnimationClipsControl-radioItem',
-                isSelected: false,
-                label: '00:00:02 second',
-                onChange: onAnimationClipSelect,
-                value: animationClips[1].id,
-            });
+            expect(radioItems.at(0)?.textContent?.includes('00:00:01 first')).toBe(true);
+            expect(radioItems.at(0)).toHaveAttribute('aria-checked', 'true');
+            expect(radioItems.at(1)?.textContent?.includes('00:00:02 second')).toBe(true);
+            expect(radioItems.at(1)).toHaveAttribute('aria-checked', 'false');
+
+            await user.click(screen.getByRole('menuitemradio', { name: '00:00:01 first' }));
+
+            expect(onAnimationClipSelect).toHaveBeenCalledWith('1');
+
+            await user.click(screen.getByRole('menuitemradio', { name: '00:00:02 second' }));
+
+            expect(onAnimationClipSelect).toHaveBeenCalledWith('2');
         });
     });
 

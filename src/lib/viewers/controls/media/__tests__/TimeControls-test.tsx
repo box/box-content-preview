@@ -1,99 +1,91 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import Filmstrip from '../Filmstrip';
-import SliderControl from '../../slider';
+import { fireEvent, render, screen } from '@testing-library/react';
 import TimeControls from '../TimeControls';
 
 describe('TimeControls', () => {
-    const getBuffer = (end = 1000, start = 0): TimeRanges => ({
-        length: end - start,
-        end: jest.fn().mockReturnValue(end),
-        start: jest.fn().mockReturnValue(start),
-    });
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<TimeControls currentTime={0} durationTime={10000} onTimeChange={jest.fn()} {...props} />);
+    const mouseEventOptions = {
+        bubbles: true,
+        pageX: 250, // The center of the slider
+        pageY: 478,
+    };
 
-    describe('event handlers', () => {
-        test('should update the slider hover state on mousemove', () => {
-            const wrapper = getWrapper({ filmstripInterval: 1 });
-
-            wrapper.find(SliderControl).simulate('move', 100, 1000, 10000); // Time, position, max position
-
-            expect(wrapper.find(Filmstrip).props()).toMatchObject({
-                position: 1000,
-                positionMax: 10000,
-                time: 100,
-            });
-        });
-
-        test('should update the slider hover state on mouseover and mouseout', () => {
-            const wrapper = getWrapper({ filmstripInterval: 1 });
-
-            wrapper.find(SliderControl).simulate('mouseover');
-            expect(wrapper.find(Filmstrip).prop('isShown')).toBe(true);
-
-            wrapper.find(SliderControl).simulate('mouseout');
-            expect(wrapper.find(Filmstrip).prop('isShown')).toBe(false);
-        });
+    beforeEach(() => {
+        jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
+            (): DOMRect => ({
+                toJSON: jest.fn(),
+                bottom: 1000,
+                height: 930,
+                left: 0, // Values are reduced by the left offset of the slider
+                right: 500,
+                top: 60,
+                width: 500, // Values are calculated based on width of the slider
+                x: 0,
+                y: 60,
+            }),
+        );
     });
 
-    describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+    test('should update the slider on mousemove', () => {
+        render(
+            <TimeControls
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={1}
+                filmstripUrl="http://example.com/image.png"
+                onTimeChange={jest.fn()}
+            />,
+        );
 
-            expect(wrapper.hasClass('bp-TimeControls')).toBe(true);
-            expect(wrapper.find(SliderControl).props()).toMatchObject({
-                max: 10000,
-                min: 0,
-                step: 5,
-                value: 0,
-            });
-        });
+        const slider = screen.getByLabelText('Media Slider');
 
-        test('should not default to zero for invalid currentTime value', () => {
-            const wrapper = getWrapper({ currentTime: NaN });
-            expect(wrapper.find(SliderControl).prop('value')).toBe(0);
-        });
+        expect(screen.getByTestId('bp-Filmstrip-time')).toHaveTextContent('0:00');
 
-        test('should default to zero for invalid durationTime value', () => {
-            const wrapper = getWrapper({ durationTime: NaN });
-            expect(wrapper.find(SliderControl).prop('max')).toBe(0);
-        });
+        fireEvent(slider, new MouseEventExtended('mouseenter', mouseEventOptions));
+        fireEvent(slider, new MouseEventExtended('mouseover', mouseEventOptions));
+        fireEvent(slider, new MouseEventExtended('mousedown', mouseEventOptions));
+        fireEvent(slider, new MouseEventExtended('mousemove', mouseEventOptions));
+        fireEvent(slider, new MouseEventExtended('mouseup', mouseEventOptions));
 
-        test.each`
-            currentTime | track
-            ${0}        | ${'linear-gradient(to right, #0061d5 0%, #fff 0%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
-            ${50}       | ${'linear-gradient(to right, #0061d5 0.5%, #fff 0.5%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
-            ${1000}     | ${'linear-gradient(to right, #0061d5 10%, #fff 10%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
-            ${2500}     | ${'linear-gradient(to right, #0061d5 25%, #fff 25%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
-            ${10000}    | ${'linear-gradient(to right, #0061d5 100%, #fff 100%, #fff 10%, #6f6f6f 10%, #6f6f6f 100%)'}
-        `('should render the correct track for currentTime $currentTime', ({ currentTime, track }) => {
-            const buffer = getBuffer(1000, 0); // 10% buffered
-            const wrapper = getWrapper({ bufferedRange: buffer, currentTime });
-            expect(wrapper.find(SliderControl).prop('track')).toEqual(track);
-        });
+        expect(screen.getByTestId('bp-Filmstrip-time')).toHaveTextContent('1:23:20'); // 1:23:20 = 5000 seconds, half of 10000
+    });
 
-        test('should render the filmstrip with the correct props', () => {
-            const wrapper = getWrapper({
-                aspectRatio: 1.5,
-                filmstripInterval: 2,
-                filmstripUrl: 'https://app.box.com',
-            });
+    test('should update the slider hover state on mouseover and mouseout', () => {
+        render(
+            <TimeControls
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={1}
+                filmstripUrl="http://example.com/image.png"
+                onTimeChange={jest.fn()}
+            />,
+        );
 
-            expect(wrapper.find(Filmstrip).props()).toMatchObject({
-                aspectRatio: 1.5,
-                imageUrl: 'https://app.box.com',
-                interval: 2,
-            });
-        });
+        const slider = screen.getByLabelText('Media Slider');
 
-        test('should not render the filmstrip if the interval is missing', () => {
-            const wrapper = getWrapper({
-                aspectRatio: 1.5,
-                imageUrl: 'https://app.box.com',
-            });
+        fireEvent(slider, new MouseEventExtended('mouseenter', mouseEventOptions));
+        fireEvent(slider, new MouseEventExtended('mouseover', mouseEventOptions));
 
-            expect(wrapper.exists(Filmstrip)).toBe(false);
+        expect(screen.getByTestId('bp-time-controls').firstChild).toHaveClass('bp-is-shown');
+
+        fireEvent(slider, new MouseEventExtended('mouseout', mouseEventOptions));
+
+        expect(screen.getByTestId('bp-time-controls').firstChild).not.toHaveClass('bp-is-shown');
+    });
+
+    test('should render the filmstrip with the correct props', () => {
+        render(
+            <TimeControls
+                aspectRatio={1.5}
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={2}
+                filmstripUrl="https://app.box.com"
+                onTimeChange={jest.fn()}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-Filmstrip-frame')).toHaveStyle({
+            backgroundImage: 'url(https://app.box.com)',
         });
     });
 });

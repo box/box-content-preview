@@ -13,7 +13,10 @@ export type Ref = HTMLButtonElement;
 
 function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>): JSX.Element {
     return (
-        <div className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}>
+        <div
+            className={classNames('bp-SettingsToggle', { 'bp-is-open': isOpen })}
+            data-testid="bp-settings-toggle-container"
+        >
             <button
                 ref={ref}
                 className="bp-SettingsToggle-button"
@@ -21,7 +24,7 @@ function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>):
                 title={__('media_settings')}
                 type="button"
             >
-                <IconGear24 className="bp-SettingsToggle-icon" />
+                <IconGear24 className="bp-SettingsToggle-icon" data-testid="bp-settings-toggle-icon" />
                 {React.isValidElement(badge) && <div className="bp-SettingsToggle-badge">{badge}</div>}
             </button>
         </div>

@@ -4,23 +4,6 @@ Object.defineProperty(global.navigator, 'mimeTypes', {
     writable: true,
 });
 
-Object.defineProperty(document, 'createRange', {
-    value: () => ({
-        commonAncestorContainer: {
-            nodeName: 'BODY',
-            ownerDocument: document,
-        },
-        createContextualFragment: fragment => {
-            const el = document.createElement('div');
-            el.innerHTML = fragment;
-            return el.children[0];
-        },
-        selectNode: () => {},
-        setStart: () => {},
-        setEnd: () => {},
-    }),
-});
-
 Object.defineProperty(HTMLElement.prototype, 'offsetParent', {
     get() {
         return this.parentNode;

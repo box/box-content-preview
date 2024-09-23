@@ -1,12 +1,24 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import SliderControl from '../SliderControl';
 
-describe('SliderControl', () => {
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} {...props} />);
+const getTouchEventDefaults = () => ({
+    clientX: 0,
+    clientY: 0,
+    force: 0,
+    identifier: 0,
+    pageX: 0,
+    pageY: 0,
+    radiusX: 0,
+    radiusY: 0,
+    rotationAngle: 0,
+    screenX: 0,
+    screenY: 0,
+    target: new EventTarget(),
+});
 
+describe('SliderControl', () => {
     beforeEach(() => {
         jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
             (): DOMRect => ({
@@ -32,29 +44,55 @@ describe('SliderControl', () => {
             ${999}  | ${99.9}
             ${1500} | ${100}
         `('should handle mousedown and update the value for pageX value $pageX', ({ pageX, result }) => {
-            const event = { button: 1, pageX };
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: 0 });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onUpdate={onUpdate}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
 
-            act(() => {
-                wrapper.simulate('mousedown', event);
-            });
-            wrapper.update();
+            fireEvent(
+                screen.getByRole('slider')!,
+                new MouseEventExtended('mousedown', {
+                    button: 1,
+                    bubbles: true,
+                    pageX,
+                }),
+            );
 
-            expect(onUpdate).toBeCalledWith(result);
+            expect(onUpdate).toHaveBeenCalledWith(result);
         });
 
         test('should handle mousemove by calling onMove with the value, position, and width', () => {
-            const event = { pageX: 100 };
             const onMove = jest.fn();
-            const wrapper = getWrapper({ onMove });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onMove={onMove}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
 
-            act(() => {
-                wrapper.simulate('mousemove', event);
-            });
-            wrapper.update();
+            fireEvent(
+                screen.getByRole('slider')!,
+                new MouseEventExtended('mousemove', {
+                    button: 1,
+                    bubbles: true,
+                    pageX: 100,
+                }),
+            );
 
-            expect(onMove).toBeCalledWith(10, 100, 1000); // Value, position, width
+            expect(onMove).toHaveBeenCalledWith(10, 100, 1000); // Value, position, width
         });
 
         test.each`
@@ -62,18 +100,23 @@ describe('SliderControl', () => {
             ${0}    | ${0}
             ${10}   | ${9}
             ${100}  | ${99}
-        `('should handle keydown and decrement the value $initial to $result ', ({ initial, result }) => {
-            const event = { key: 'ArrowLeft', stopPropagation: jest.fn() };
+        `('should handle keydown and decrement the value $initial to $result ', async ({ initial, result }) => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: initial });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onUpdate={onUpdate}
+                    step={1}
+                    title="Slider"
+                    value={initial}
+                />,
+            );
 
-            act(() => {
-                wrapper.simulate('keydown', event);
-            });
-            wrapper.update();
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowLeft' });
 
-            expect(event.stopPropagation).toBeCalled();
-            expect(onUpdate).toBeCalledWith(result);
+            expect(onUpdate).toHaveBeenCalledWith(result);
         });
 
         test.each`
@@ -82,14 +125,22 @@ describe('SliderControl', () => {
             ${10}   | ${11}
             ${100}  | ${100}
         `('should handle keydown and increment the value $initial to $result ', ({ initial, result }) => {
-            const event = { key: 'ArrowRight', stopPropagation: jest.fn() };
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate, value: initial });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onUpdate={onUpdate}
+                    step={1}
+                    title="Slider"
+                    value={initial}
+                />,
+            );
 
-            wrapper.simulate('keydown', event);
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowRight' });
 
-            expect(event.stopPropagation).toBeCalled();
-            expect(onUpdate).toBeCalledWith(result);
+            expect(onUpdate).toHaveBeenCalledWith(result);
         });
     });
 
@@ -100,95 +151,125 @@ describe('SliderControl', () => {
         });
 
         test('should add document-level event handlers when scrubbing starts', () => {
-            const wrapper = getWrapper();
+            render(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} />);
 
-            act(() => {
-                wrapper.simulate('mousedown', { button: 1 });
-            });
-            wrapper.update();
+            fireEvent.mouseDown(screen.getByRole('slider')!);
 
-            expect(document.addEventListener).toBeCalledWith('mousemove', expect.any(Function));
-            expect(document.addEventListener).toBeCalledWith('mouseup', expect.any(Function));
-            expect(document.addEventListener).toBeCalledWith('touchend', expect.any(Function));
-            expect(document.addEventListener).toBeCalledWith('touchmove', expect.any(Function));
+            expect(document.addEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
+            expect(document.addEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
+            expect(document.addEventListener).toHaveBeenCalledWith('touchend', expect.any(Function));
+            expect(document.addEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function));
         });
 
-        test('should remove document-level event handlers when scrubbing stops', () => {
-            const wrapper = getWrapper();
+        test('should remove document-level event handlers when scrubbing stops', async () => {
+            const user = userEvent.setup();
+            render(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} />);
 
-            act(() => {
-                wrapper.simulate('mousedown', { button: 1 });
-            });
-            wrapper.update();
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            await user.click(document.body);
 
-            act(() => {
-                document.dispatchEvent(new Event('mouseup'));
-            });
-            wrapper.update();
-
-            expect(document.removeEventListener).toBeCalledWith('mousemove', expect.any(Function));
-            expect(document.removeEventListener).toBeCalledWith('mouseup', expect.any(Function));
-            expect(document.removeEventListener).toBeCalledWith('touchend', expect.any(Function));
-            expect(document.removeEventListener).toBeCalledWith('touchmove', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('touchend', expect.any(Function));
+            expect(document.removeEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function));
         });
 
         test('should handle document-level mousemove events and call onUpdate', () => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onUpdate={onUpdate}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
 
-            act(() => {
-                wrapper.simulate('mousedown', { button: 1 });
-            });
-            wrapper.update();
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            fireEvent(
+                document,
+                new MouseEventExtended('mousemove', {
+                    bubbles: true,
+                    pageX: 100,
+                }),
+            );
 
-            act(() => {
-                const event = new MouseEvent('mousemove');
-                Object.assign(event, { pageX: 100 });
-                document.dispatchEvent(event);
-            });
-            wrapper.update();
-
-            expect(onUpdate).toBeCalledWith(10);
+            expect(onUpdate).toHaveBeenCalledWith(10);
         });
 
         test('should handle document-level touchmove events and call onUpdate', () => {
             const onUpdate = jest.fn();
-            const wrapper = getWrapper({ onUpdate });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    onUpdate={onUpdate}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
 
-            act(() => {
-                wrapper.simulate('touchstart', { touches: [{ pageX: 0 }] });
-            });
-            wrapper.update();
+            fireEvent(
+                screen.getByRole('slider')!,
+                new TouchEvent('touchstart', {
+                    touches: [
+                        {
+                            ...getTouchEventDefaults(),
+                            pageX: 100,
+                        },
+                    ],
+                    bubbles: true,
+                }),
+            );
+            fireEvent(
+                document,
+                new TouchEvent('touchmove', {
+                    touches: [
+                        {
+                            ...getTouchEventDefaults(),
+                            pageX: 0,
+                        },
+                    ],
+                }),
+            );
 
-            act(() => {
-                const event = new MouseEvent('touchmove');
-                Object.assign(event, { touches: [{ pageX: 100 }] });
-                document.dispatchEvent(event);
-            });
-            wrapper.update();
-
-            expect(onUpdate).toBeCalledWith(10);
+            expect(onUpdate).toHaveBeenCalledWith(10);
         });
     });
 
     describe('render', () => {
         test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+            render(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} />);
 
-            expect(wrapper.childAt(0).hasClass('bp-SliderControl')).toBe(true);
-            expect(wrapper.find('[data-testid="bp-SliderControl-thumb"]').prop('style')).toEqual({
+            expect(screen.getByRole('slider')).toHaveClass('bp-SliderControl');
+            expect(screen.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '0%',
             });
         });
 
         test('should forward the track and value properties properly', () => {
             const track = 'linear-gradient(#fff %20, #000 100%';
-            const wrapper = getWrapper({ track, value: 20 });
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onChange={jest.fn()}
+                    step={1}
+                    title="Slider"
+                    track={track}
+                    value={20}
+                />,
+            );
 
-            expect(wrapper.find('[data-testid="bp-SliderControl-thumb"]').prop('style')).toEqual({
+            expect(screen.getByTestId('bp-slider-control-thumb')).toHaveStyle({
                 left: '20%',
             });
-            expect(wrapper.find('[data-testid="bp-SliderControl-track"]').prop('style')).toEqual({
+            expect(screen.getByTestId('bp-slider-control-track')).toHaveStyle({
                 backgroundImage: track,
             });
         });

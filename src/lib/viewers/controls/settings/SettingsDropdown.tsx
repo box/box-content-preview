@@ -74,7 +74,7 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
     React.useImperativeHandle(ref, () => buttonElRef.current, []);
 
     return (
-        <div className={classNames('bp-SettingsDropdown', className)}>
+        <div className={classNames('bp-SettingsDropdown', className)} data-testid="bp-settings-dropdown-container">
             <div className="bp-SettingsDropdown-label" id={`${id}-label`}>
                 {label}
             </div>

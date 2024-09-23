@@ -210,7 +210,7 @@ class ArchiveExplorer extends React.Component {
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
-                <div className="bp-ArchiveExplorer" data-resin-feature="archive">
+                <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs
                         filename={filename}

@@ -1,33 +1,26 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconVr24 from '../../icons/IconVr24';
-import VrToggleControl, { Props } from '../VrToggleControl';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import VrToggleControl from '../VrToggleControl';
 
 describe('VrToggleControl', () => {
-    const getDefaults = (): Props => ({
-        isVrShown: true,
-        onVrToggle: jest.fn(),
-    });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<VrToggleControl {...getDefaults()} {...props} />);
-
     describe('render', () => {
-        test('should render valid wrapper', () => {
+        test('should render valid output', async () => {
+            const user = userEvent.setup();
             const onVrToggle = jest.fn();
-            const wrapper = getWrapper({ onVrToggle });
+            render(<VrToggleControl isVrShown onVrToggle={onVrToggle} />);
 
-            expect(wrapper.props()).toMatchObject({
-                className: 'bp-VrToggleControl',
-                onClick: onVrToggle,
-                title: __('box3d_toggle_vr'),
-                type: 'button',
-            });
-            expect(wrapper.exists(IconVr24)).toBe(true);
+            expect(screen.getByTitle('Toggle VR display')).toBeInTheDocument();
+
+            await user.click(screen.getByTitle('Toggle VR display'));
+
+            expect(onVrToggle).toHaveBeenCalled();
         });
 
-        test('should render null if isVrShown is false', () => {
-            const wrapper = getWrapper({ isVrShown: false });
+        test('should not render null if isVrShown is false', () => {
+            render(<VrToggleControl isVrShown={false} onVrToggle={jest.fn()} />);
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
         });
     });
 });

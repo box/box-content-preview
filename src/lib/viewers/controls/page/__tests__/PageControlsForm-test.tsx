@@ -1,115 +1,89 @@
 import React from 'react';
-import noop from 'lodash/noop';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import PageControlsForm, { ENTER, ESCAPE } from '../PageControlsForm';
 
 describe('PageControlsForm', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<PageControlsForm onPageSubmit={noop} pageCount={3} pageNumber={1} {...props} />);
-    const getFormButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-PageControlsForm-button"]');
-    const getFormInput = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-PageControlsForm-input"]');
-
     describe('event handlers', () => {
         test.each`
             newPageNumber | onPageSubmitCallCount
             ${2}          | ${1}
             ${''}         | ${0}
-        `('should call onPageSubmit when input blurs', ({ newPageNumber, onPageSubmitCallCount }) => {
+        `('should call onPageSubmit when input blurs', async ({ newPageNumber, onPageSubmitCallCount }) => {
+            const user = userEvent.setup();
             const onPageSubmit = jest.fn();
-            const wrapper = getWrapper({ onPageSubmit, pageCount: 3, pageNumber: 1 });
+            render(<PageControlsForm onPageSubmit={onPageSubmit} pageCount={3} pageNumber={1} />);
 
-            getFormButton(wrapper).simulate('click');
-            getFormInput(wrapper).simulate('change', { target: { value: newPageNumber } });
-            getFormInput(wrapper).simulate('blur');
+            expect(screen.getByTitle('Click to enter page number')).toBe(screen.getByRole('button', { name: '1 / 3' }));
 
-            expect(onPageSubmit).toBeCalledTimes(onPageSubmitCallCount);
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
+
+            expect(screen.getByTitle('Click to enter page number')).toBe(screen.getByRole('spinbutton'));
+
+            fireEvent.change(screen.getByRole('spinbutton'), { target: { value: newPageNumber } });
+            fireEvent.blur(screen.getByRole('spinbutton'));
+
+            expect(onPageSubmit).toHaveBeenCalledTimes(onPageSubmitCallCount);
         });
 
         test.each`
             newPageNumber | onPageSubmitCallCount
             ${2}          | ${1}
             ${''}         | ${0}
-        `('should handle when Enter key is pressed on input', ({ onPageSubmitCallCount, newPageNumber }) => {
+        `('should handle when Enter key is pressed on input', async ({ onPageSubmitCallCount, newPageNumber }) => {
+            const user = userEvent.setup();
             const onPageSubmit = jest.fn();
-            const preventDefault = jest.fn();
-            const stopPropagation = jest.fn();
-            const wrapper = getWrapper({ onPageSubmit, pageCount: 3, pageNumber: 1 });
+            render(<PageControlsForm onPageSubmit={onPageSubmit} pageCount={3} pageNumber={1} />);
 
-            getFormButton(wrapper).simulate('click');
-
-            expect(getFormButton(wrapper).exists()).toBe(false);
-            expect(getFormInput(wrapper).exists()).toBe(true);
-
-            getFormInput(wrapper).simulate('change', {
-                target: { value: newPageNumber },
-            });
-            getFormInput(wrapper).simulate('keydown', {
-                preventDefault,
-                stopPropagation,
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
+            fireEvent.change(screen.getByRole('spinbutton'), { target: { value: newPageNumber } });
+            fireEvent.keyDown(screen.getByRole('spinbutton'), {
                 key: ENTER,
             });
 
-            expect(preventDefault).toHaveBeenCalled();
-            expect(stopPropagation).toHaveBeenCalled();
-            expect(onPageSubmit).toBeCalledTimes(onPageSubmitCallCount);
-            expect(getFormButton(wrapper).exists()).toBe(true);
-            expect(getFormInput(wrapper).exists()).toBe(false);
+            expect(onPageSubmit).toHaveBeenCalledTimes(onPageSubmitCallCount);
+            expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
+            expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
         });
 
-        test('should handle Escape key when pressed on input', () => {
-            const preventDefault = jest.fn();
-            const stopPropagation = jest.fn();
-            const wrapper = getWrapper();
+        test('should handle Escape key when pressed on input', async () => {
+            const user = userEvent.setup();
+            render(<PageControlsForm onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} />);
 
-            expect(getFormButton(wrapper).exists()).toBe(true);
-            expect(getFormInput(wrapper).exists()).toBe(false);
-
-            getFormButton(wrapper).simulate('click');
-
-            expect(getFormButton(wrapper).exists()).toBe(false);
-            expect(getFormInput(wrapper).exists()).toBe(true);
-
-            getFormInput(wrapper).simulate('keydown', {
-                preventDefault,
-                stopPropagation,
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
+            fireEvent.keyDown(screen.getByRole('spinbutton'), {
                 key: ESCAPE,
             });
 
-            expect(preventDefault).toHaveBeenCalled();
-            expect(stopPropagation).toHaveBeenCalled();
-            expect(getFormButton(wrapper).exists()).toBe(true);
-            expect(getFormInput(wrapper).exists()).toBe(false);
+            expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
+            expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
         });
     });
 
     describe('render', () => {
         test('should render button with correct page number', () => {
-            const pageCount = 3;
-            const pageNumber = 2;
+            render(<PageControlsForm onPageSubmit={jest.fn()} pageCount={3} pageNumber={2} />);
 
-            const wrapper = getWrapper({ pageCount, pageNumber });
-
-            expect(getFormButton(wrapper).text()).toEqual(`${pageNumber} / ${pageCount}`);
+            expect(screen.getByRole('button', { name: '2 / 3' })).toBeInTheDocument();
         });
 
         test('should render disabled button when pageCount is 1', () => {
-            const wrapper = getWrapper({ pageCount: 1, pageNumber: 1 });
+            render(<PageControlsForm onPageSubmit={jest.fn()} pageCount={1} pageNumber={1} />);
 
-            expect(getFormButton(wrapper).prop('disabled')).toBe(true);
+            expect(screen.getByRole('button', { name: '1 / 1' })).toHaveAttribute('disabled');
         });
 
-        test('should render input when button is clicked', () => {
-            const wrapper = getWrapper();
+        test('should render input when button is clicked', async () => {
+            const user = userEvent.setup();
+            render(<PageControlsForm onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} />);
 
-            expect(getFormButton(wrapper).exists()).toBe(true);
-            expect(getFormInput(wrapper).exists()).toBe(false);
+            expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
+            expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
 
-            getFormButton(wrapper).simulate('click');
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
 
-            expect(getFormButton(wrapper).exists()).toBe(false);
-            expect(getFormInput(wrapper).exists()).toBe(true);
+            expect(screen.queryByRole('button', { name: '1 / 3' })).not.toBeInTheDocument();
+            expect(screen.getByRole('spinbutton')).toBeInTheDocument();
         });
     });
 });

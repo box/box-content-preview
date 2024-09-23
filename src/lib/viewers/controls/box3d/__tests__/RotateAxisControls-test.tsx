@@ -1,30 +1,29 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import RotateAxisControls, { Props } from '../RotateAxisControls';
-import RotateAxisControl from '../RotateAxisControl';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import RotateAxisControls from '../RotateAxisControls';
 
 describe('RotateAxisControls', () => {
-    const getDefaults = (): Props => ({
-        onRotateOnAxisChange: jest.fn(),
-    });
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<RotateAxisControls {...getDefaults()} {...props} />);
-
     describe('render()', () => {
-        test('should return a valid wrapper', () => {
+        test('should return a valid wrapper', async () => {
+            const user = userEvent.setup();
             const onRotateOnAxisChange = jest.fn();
-            const wrapper = getWrapper({ onRotateOnAxisChange });
-            const controls = wrapper.find(RotateAxisControl);
+            render(<RotateAxisControls onRotateOnAxisChange={onRotateOnAxisChange} />);
 
-            expect(wrapper.hasClass('bp-RotateAxisControls')).toBe(true);
-            expect(wrapper.find('[data-testid="bp-RotateAxisControls-label"]').text()).toBe(
-                __('box3d_settings_rotate_label'),
+            expect(screen.getByTestId('bp-rotate-axis-controls-label')).toHaveTextContent('Rotate Model');
+            await user.click(
+                within(screen.getByTestId('bp-rotate-axis-control-x')).getByTestId('bp-rotate-axis-control-left'),
             );
-            ['x', 'y', 'z'].forEach((axis, index) => {
-                expect(controls.at(index).props()).toMatchObject({
-                    axis,
-                    onRotateOnAxisChange,
-                });
-            });
+            await user.click(
+                within(screen.getByTestId('bp-rotate-axis-control-y')).getByTestId('bp-rotate-axis-control-right'),
+            );
+            await user.click(
+                within(screen.getByTestId('bp-rotate-axis-control-z')).getByTestId('bp-rotate-axis-control-left'),
+            );
+
+            expect(onRotateOnAxisChange.mock.calls.at(0)).toEqual([{ x: -90 }]);
+            expect(onRotateOnAxisChange.mock.calls.at(1)).toEqual([{ y: 90 }]);
+            expect(onRotateOnAxisChange.mock.calls.at(2)).toEqual([{ z: -90 }]);
         });
     });
 });
