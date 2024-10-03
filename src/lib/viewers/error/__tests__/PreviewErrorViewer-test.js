@@ -55,7 +55,8 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             ['zip', 'zip'],
             ['tgz', 'tgz'],
             ['flv', 'flv'],
-            ['blah', undefined],
+            ['pdf', 'pdf'],
+            ['pptx', 'pptx'],
         ])('should set appropriate icon', (fileExtension, iconExtension) => {
             const err = new PreviewError('some_code');
             error.options.file.extension = fileExtension;
