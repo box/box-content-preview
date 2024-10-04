@@ -80,8 +80,7 @@ class PreviewErrorViewer extends BaseViewer {
 
         const { displayMessage, details, message } = error;
         const { file } = this.options;
-        const { extension } = file || {};
-        const iconExtension = extension === 'flv' || extension === 'tgz' || extension === 'zip' ? extension : undefined;
+        const { extension: iconExtension } = file || {};
 
         // Display the default or file-specific error icon
         this.errorIcon = new ErrorIcon({ containerEl: this.iconEl });
