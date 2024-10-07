@@ -1,3 +1,13 @@
+## 2.110.0 (2024-10-07)
+
+* feat(preview-error): Display file icon based on extension for errors (#1536) ([d0b10cb](https://github.com/box/box-content-preview/commit/d0b10cb)), closes [#1536](https://github.com/box/box-content-preview/issues/1536) [/github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts#L183](https://github.com//github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts/issues/L183)
+* chore(docs): remove polyfill.io from README (#1532) ([ac1a091](https://github.com/box/box-content-preview/commit/ac1a091)), closes [#1532](https://github.com/box/box-content-preview/issues/1532)
+* chore(i18n): Update Translations (#1530) ([ea172c1](https://github.com/box/box-content-preview/commit/ea172c1)), closes [#1530](https://github.com/box/box-content-preview/issues/1530)
+* chore(i18n): Update Translations (#1534) ([0cdea26](https://github.com/box/box-content-preview/commit/0cdea26)), closes [#1534](https://github.com/box/box-content-preview/issues/1534)
+* chore(tests): Migrate from Enzyme to RTL (1st batch) (#1535) ([9a2ed15](https://github.com/box/box-content-preview/commit/9a2ed15)), closes [#1535](https://github.com/box/box-content-preview/issues/1535)
+
+
+
 ## 2.109.0 (2024-07-01)
 
 * fix(error-messages): Fix bracket in notification message (#1526) ([e0b4f52](https://github.com/box/box-content-preview/commit/e0b4f52)), closes [#1526](https://github.com/box/box-content-preview/issues/1526)
