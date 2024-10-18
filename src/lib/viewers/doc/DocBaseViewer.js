@@ -26,20 +26,11 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
-    ENCODING_TYPES,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    QUERY_PARAM_ENCODING,
     STATUS_SUCCESS,
 } from '../../constants';
-import {
-    appendQueryParams,
-    createAssetUrlCreator,
-    decodeKeydown,
-    getClosestPageToPinch,
-    getDistance,
-    getMidpoint,
-} from '../../util';
+import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, WORKER } from './docAssets';
@@ -100,9 +91,6 @@ class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     /** @property {Thumbnail} - Thumbnail reference */
     advancedInsightsThumbs;
-
-    /** @property {string} - Tracks the type of encoding, if applicable, that was requested for the viewable content */
-    encoding;
 
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
@@ -702,7 +690,6 @@ class DocBaseViewer extends BaseViewer {
         const { file, location } = this.options;
         const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
-        const queryParams = {};
 
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
         // not applicable to Box's use case and disabling causes performance issues
@@ -723,13 +710,6 @@ class DocBaseViewer extends BaseViewer {
         // Disable streaming by default unless it is explicitly enabled via options
         const disableStream = this.getViewerOption('disableStream') !== false;
 
-        // If range requests and streaming are disabled, request the gzip compressed version of the representation
-        this.encoding = disableRange && disableStream ? ENCODING_TYPES.GZIP : undefined;
-
-        if (this.encoding) {
-            queryParams[QUERY_PARAM_ENCODING] = this.encoding;
-        }
-
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
         this.pdfLoadingTask = this.pdfjsLib.getDocument({
             cMapPacked: true,
@@ -740,7 +720,7 @@ class DocBaseViewer extends BaseViewer {
             disableStream,
             isEvalSupported: false,
             rangeChunkSize,
-            url: appendQueryParams(pdfUrl, queryParams),
+            url: pdfUrl,
         });
 
         if (this.pageTracker) {
@@ -1218,7 +1198,6 @@ class DocBaseViewer extends BaseViewer {
                 }
             }
             this.emit(VIEWER_EVENT.load, {
-                encoding: this.encoding,
                 numPages: pagesCount,
                 scale: currentScale,
                 currentPage: startPage,

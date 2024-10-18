@@ -10,7 +10,7 @@ import PreviewError from '../PreviewError';
 import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY, ENCODING_TYPES } from '../constants';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
@@ -2524,14 +2524,6 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).toBeCalled();
             expect(preview.emit).toBeCalled();
-        });
-
-        test('should append encoding field to load metric, when provided', done => {
-            preview.once(PREVIEW_METRIC, metric => {
-                expect(metric.encoding).toBe(ENCODING_TYPES.GZIP);
-                done();
-            });
-            preview.emitLoadMetrics({ encoding: ENCODING_TYPES.GZIP });
         });
     });
 

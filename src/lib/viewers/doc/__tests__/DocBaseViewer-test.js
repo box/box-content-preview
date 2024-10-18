@@ -22,8 +22,6 @@ import {
     STATUS_ERROR,
     STATUS_PENDING,
     STATUS_SUCCESS,
-    QUERY_PARAM_ENCODING,
-    ENCODING_TYPES,
     SELECTOR_BOX_PREVIEW_CONTENT,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
@@ -1359,29 +1357,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer('');
             });
 
-            test('should append encoding query parameter for gzip content when range requests are disabled', () => {
-                const defaultChunkSize = 524288; // Taken from RANGE_CHUNK_SIZE_NON_US
-                const url = 'www.myTestPDF.com/123456';
-                const paramsList = `${QUERY_PARAM_ENCODING}=${ENCODING_TYPES.GZIP}`;
-
-                docBase.options.location = {
-                    locale: 'ja-JP', // Disables range requests
-                };
-
-                docBase.options.file = {
-                    size: 1048576, // 1MB < RANGE_REQUEST_MINIMUM_SIZE (25MB)
-                };
-
-                return docBase.initViewer(url).then(() => {
-                    expect(stubs.getDocument).toBeCalledWith(
-                        expect.objectContaining({
-                            rangeChunkSize: defaultChunkSize,
-                            url: `${url}?${paramsList}`,
-                        }),
-                    );
-                });
-            });
-
             test('should resolve the loading task and set the document/viewer', () => {
                 const doc = {
                     url: 'url',
@@ -1990,12 +1965,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 docBase.loaded = false;
                 docBase.pdfViewer.pagesCount = 5;
-                docBase.encoding = 'gzip';
                 docBase.startPageNum = 1;
 
                 docBase.pagesinitHandler();
                 expect(stubs.emit).toBeCalledWith(VIEWER_EVENT.load, {
-                    encoding: docBase.encoding,
                     numPages: 5,
                     scale: 'unknown',
                     currentPage: 1,
