@@ -39,6 +39,16 @@
     }
 }
 
+.bp-presentation-preload-wrapper {
+    pointer-events: all;
+}
+
+.bp-preloader-loaded {
+    margin-right: auto;
+    margin-left: auto;
+    pointer-events: all;
+}
+
 .bp-loading {
     position: relative;
     display: flex;

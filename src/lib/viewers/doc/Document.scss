@@ -13,6 +13,8 @@
     right: 0;
     bottom: 0;
     left: 0;
+    z-index: 99999999;
+    height: 100%;
     margin: 0;
     overflow-y: scroll;
     background-color: $ffive;
@@ -55,5 +57,21 @@
 
         position: relative;
         margin: 15px auto 30px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            visibility: hidden;
+        }
+
+        img.loaded {
+            visibility: visible;
+        }
+    }
+
+    .bp-preload-placeholder.loaded {
+        img {
+            visibility: visible;
+        }
     }
 }

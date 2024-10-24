@@ -95,6 +95,8 @@ class DocBaseViewer extends BaseViewer {
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
 
+    doc;
+
     /**
      * @inheritdoc
      */
@@ -353,25 +355,31 @@ class DocBaseViewer extends BaseViewer {
 
         // Don't show preload if there's a cached page or startAt is set and > 1 since preloads are only for the 1st page
         // Also don't show preloads for watermarked files
-        if (
-            !this.preloader ||
-            isWatermarked ||
-            (this.startPageNum && this.startPageNum !== 1) ||
-            this.getCachedPage() !== 1
-        ) {
+        if (!this.preloader || isWatermarked || (this.startPageNum && this.startPageNum !== 1)) {
             return;
         }
 
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+
+        const preloadRepPaged = getRepresentation(file, 'png');
         if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
             return;
         }
 
         const { url_template: template } = preloadRep.content;
+
+        const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
+        const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        const newPagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
+        const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
         this.startPreloadTimer();
-        this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
+        this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+        this.emit(VIEWER_EVENT.thumbnailsOpen);
+        this.resize();
+        this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+
     }
 
     /**
@@ -394,8 +402,10 @@ class DocBaseViewer extends BaseViewer {
      */
     load() {
         super.load();
-        this.showPreload();
 
+        this.loadAssets(JS).then(() => {
+            this.showPreload();
+        });
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
@@ -650,6 +660,7 @@ class DocBaseViewer extends BaseViewer {
      */
     emitMetric({ name, data }) {
         super.emitMetric(name, data);
+        console.log(`showing metrics ${name}=>${JSON.stringify(data)}`);
     }
 
     //--------------------------------------------------------------------------
@@ -732,12 +743,12 @@ class DocBaseViewer extends BaseViewer {
             .then(doc => {
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
-
                 if (this.shouldThumbnailsBeToggled()) {
                     this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                     this.emit(VIEWER_EVENT.thumbnailsOpen);
                     this.resize();
                 }
+                this.doc = doc;
             })
             .catch(err => {
                 console.error(err); // eslint-disable-line
@@ -844,7 +855,7 @@ class DocBaseViewer extends BaseViewer {
     resize() {
         if (!this.pdfViewer || !this.somePageRendered) {
             if (this.preloader) {
-                this.preloader.resize();
+                //  this.preloader.resize();
             }
             return;
         }
@@ -855,7 +866,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
 
-        this.setPage(currentPageNumber);
+        // this.setPage(currentPageNumber);
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.resize();
@@ -1214,9 +1225,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initThumbnails() {
-        this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
+        this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+
         this.thumbnailsSidebar.init({
-            currentPage: this.pdfViewer.currentPageNumber,
+            currentPage: this.pdfViewer?.currentPageNumber,
             isOpen: this.shouldThumbnailsBeToggled(),
             onSelect: this.onThumbnailSelectHandler,
         });
@@ -1265,6 +1277,21 @@ class DocBaseViewer extends BaseViewer {
                 this.initThumbnails();
                 this.resize();
             }
+        }
+
+        const { numPages } = this.doc;
+
+        const count = pageNumber > 1 ? 8 : numPages;
+
+        if (pageNumber === 1) {
+            const timeDiff = Date.now() - this.preloader.loadTime;
+            console.log(` Time diff ${timeDiff}`);
+            const el = document.getElementsByClassName('bcs-title')[0];
+            el.innerHTML = `Time diff: ${timeDiff / 1000} seconds`;
+            this.emitMetric({
+                name: 'PRELOAD_DOC_LOAD_TIME_DIFF',
+                data: { pagesLoaded: count, timeDifference: timeDiff },
+            });
         }
 
         // Fire rendered metric to indicate that the specific page of content the user requested has been shown
@@ -1628,7 +1655,7 @@ class DocBaseViewer extends BaseViewer {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
         // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
-        const { numPages = 0 } = this.pdfViewer && this.pdfViewer.pdfDocument;
+        const { numPages = 0 } = this.preloader || (this.pdfViewer && this.pdfViewer.pdfDocument);
         let toggledState = cachedToggledState;
 
         // If cached toggled state is anything other than false, set it to true
