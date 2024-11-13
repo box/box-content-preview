@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import ArchiveExplorer from './ArchiveExplorer';
 
 class BoxArchive {
@@ -11,11 +11,8 @@ class BoxArchive {
      * @return {BoxArchive} Instance
      */
     constructor(archiveEl, filename, data) {
-        this.archiveEl = archiveEl;
-        ReactDOM.render(
-            <ArchiveExplorer ref={this.setRef} filename={filename} itemCollection={data} />,
-            this.archiveEl,
-        );
+        this.root = createRoot(archiveEl);
+        this.root.render(<ArchiveExplorer ref={this.setRef} filename={filename} itemCollection={data} />);
     }
 
     /**
@@ -25,7 +22,7 @@ class BoxArchive {
      */
     destroy() {
         if (this.archiveExplorer) {
-            ReactDOM.unmountComponentAtNode(this.archiveEl);
+            this.root.unmount();
             this.archiveExplorer = null;
         }
     }

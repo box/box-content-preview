@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import { PreviewLoading } from 'box-ui-elements/es/components/preview';
 
 export type Options = {
@@ -7,17 +7,17 @@ export type Options = {
 };
 
 export default class LoadingIcon {
-    containerEl: HTMLElement;
+    root: Root;
 
     constructor({ containerEl }: Options) {
-        this.containerEl = containerEl;
+        this.root = createRoot(containerEl);
     }
 
     destroy(): void {
-        ReactDOM.unmountComponentAtNode(this.containerEl);
+        this.root.unmount();
     }
 
     render(extension: string): void {
-        ReactDOM.render(<PreviewLoading extension={extension} />, this.containerEl);
+        this.root.render(<PreviewLoading extension={extension} />);
     }
 }

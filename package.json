@@ -30,8 +30,8 @@
         "@types/enzyme": "^3.10.8",
         "@types/jest": "^29.5.13",
         "@types/lodash": "^4.14.149",
-        "@types/react": "^17.0.38",
-        "@types/react-dom": "^17.0.1",
+        "@types/react": "18.3.1",
+        "@types/react-dom": "18.3.1",
         "@typescript-eslint/eslint-plugin": "^5.60.1",
         "@typescript-eslint/parser": "^5.60.1",
         "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
@@ -157,7 +157,7 @@
     },
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1",
-        "**/react-intl/**/@types/react": "^17.0.2",
+        "**/react-intl/**/@types/react": "18.3.1",
         "cheerio": "1.0.0-rc.12"
     }
 }

@@ -1,4 +1,5 @@
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import './MP3ControlsRoot.scss';
 
 export type Options = {
@@ -10,6 +11,8 @@ export default class MP3ControlsRoot {
 
     controlsEl: HTMLElement;
 
+    root: Root;
+
     constructor({ containerEl }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-MP3ControlsRoot');
@@ -17,17 +20,19 @@ export default class MP3ControlsRoot {
 
         this.containerEl = containerEl;
         this.containerEl.appendChild(this.controlsEl);
+
+        this.root = createRoot(this.controlsEl);
     }
 
     destroy(): void {
-        ReactDOM.unmountComponentAtNode(this.controlsEl);
+        this.root.unmount();
 
         if (this.containerEl) {
             this.containerEl.removeChild(this.controlsEl);
         }
     }
 
-    render(controls: JSX.Element): void {
-        ReactDOM.render(controls, this.controlsEl);
+    render(controls: React.JSX.Element): void {
+        this.root.render(controls);
     }
 }
