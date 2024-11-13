@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-expressions */
-import React from 'react'; // eslint-disable-line no-unused-vars
+import { createRoot } from 'react-dom/client';
 import createReactClass from 'create-react-class';
 import Papa from '../../../../third-party/text/2.65.0/papaparse.min.js';
 import Api from '../../../api';
@@ -13,6 +12,10 @@ let options;
 let csv;
 const stubs = {};
 
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
+
 describe('lib/viewers/text/CSVViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
@@ -21,6 +24,11 @@ describe('lib/viewers/text/CSVViewer', () => {
     });
 
     beforeEach(() => {
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
+
         fixture.load('viewers/text/__tests__/CSVViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.api = new Api();
@@ -52,6 +60,8 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.destroy();
         }
         csv = null;
+
+        jest.resetAllMocks();
     });
 
     describe('setup()', () => {

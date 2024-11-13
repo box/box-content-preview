@@ -1,10 +1,14 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import Image360Viewer from '../Image360Viewer';
 import BaseViewer from '../../../BaseViewer';
 import Box3DControls from '../../Box3DControls';
 import ControlsRoot from '../../../controls';
 import Image360Renderer from '../Image360Renderer';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../../constants';
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 
@@ -25,6 +29,11 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         viewer.containerEl = document.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -36,6 +45,8 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
             viewer.destroy();
         }
         viewer = null;
+
+        jest.resetAllMocks();
     });
 
     describe('setup()', () => {

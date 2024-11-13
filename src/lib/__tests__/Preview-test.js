@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import * as file from '../file';
 import * as util from '../util';
 import Api from '../api';
@@ -25,8 +25,13 @@ jest.mock('../util', () => ({
         location: 'en-US',
     }),
     getHeaders: jest.fn(),
+    openUrlInsideIframe: jest.fn(),
 }));
 jest.mock('../featureChecking');
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 const tokens = require('../tokens');
 
@@ -54,6 +59,11 @@ describe('lib/Preview', () => {
             disconnect: jest.fn(),
             observe: jest.fn(),
         }));
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -62,6 +72,8 @@ describe('lib/Preview', () => {
         preview.destroy();
         preview = null;
         stubs = null;
+
+        jest.resetAllMocks();
     });
 
     describe('constructor()', () => {

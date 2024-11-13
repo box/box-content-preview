@@ -1,9 +1,25 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { createRoot } from 'react-dom/client';
 import ControlsLayer from '../../controls-layer';
 import ControlsRoot from '../ControlsRoot';
 
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
+
 describe('ControlsRoot', () => {
+    beforeEach(() => {
+        const mockedCreateRoot = createRoot as jest.Mock;
+        mockedCreateRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     const getInstance = (options = {}): ControlsRoot =>
         new ControlsRoot({ containerEl: document.createElement('div'), fileId: '1', ...options });
 
@@ -104,8 +120,11 @@ describe('ControlsRoot', () => {
 
             instance.render(controls);
 
-            expect(instance.controlsEl.firstChild).toHaveClass('bp-ControlsLayer');
-            expect(instance.controlsEl.firstChild).toContainHTML(ReactDOMServer.renderToStaticMarkup(controls));
+            expect(instance.root.render).toHaveBeenCalledWith(
+                <ControlsLayer onHide={instance.handleHide} onMount={instance.handleMount} onShow={instance.handleShow}>
+                    {controls}
+                </ControlsLayer>,
+            );
         });
 
         test('should attach onHide and onShow handlers to the underlying controls layer', () => {
