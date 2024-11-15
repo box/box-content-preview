@@ -1,35 +1,41 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import FindBarToggle from '../FindBarToggle';
 import IconSearch24 from '../../icons/IconSearch24';
 
 describe('FindBarToggle', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<FindBarToggle {...props} />);
+    const getWrapper = (props = {}) => render(<FindBarToggle {...props} />);
 
     describe('event handlers', () => {
-        test('should forward the click from the button', () => {
+        test('should forward the click from the button', async () => {
             const onToggle = jest.fn();
-            const mockedEvent = { target: document.createElement('button') };
-            const wrapper = getWrapper({ onFindBarToggle: onToggle });
+            getWrapper({ onFindBarToggle: onToggle });
+            const button = await screen.findByRole('button');
 
-            wrapper.simulate('click', mockedEvent);
+            await userEvent.click(button);
 
-            expect(onToggle).toBeCalledWith(mockedEvent.target);
+            expect(onToggle).toHaveBeenCalledWith(button);
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper({ onFindBarToggle: jest.fn() });
+        test('should return a valid wrapper', async () => {
+            getWrapper({ onFindBarToggle: jest.fn() });
+            const button = await screen.findByRole('button');
+            const icon = await screen.findByTestId('IconSearch24');
 
-            expect(wrapper.hasClass('bp-FindBarToggle')).toBe(true);
-            expect(wrapper.exists(IconSearch24)).toBe(true);
+            expect(button).toBeInTheDocument();
+            expect(icon).toBeInTheDocument();
         });
 
         test('should return an empty wrapper if no callback is defined', () => {
-            const wrapper = getWrapper();
+            getWrapper();
+            const button = screen.queryByRole('button');
+            const icon = screen.queryByTestId('IconSearch24');
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(button).toBeNull();
+            expect(icon).toBeNull();
         });
     });
 });

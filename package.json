@@ -24,7 +24,7 @@
         "@commitlint/travis-cli": "^8.2.0",
         "@testing-library/dom": "^10.4.0",
         "@testing-library/jest-dom": "^6.5.0",
-        "@testing-library/react": "^12.1.2",
+        "@testing-library/react": "16.0.1",
         "@testing-library/user-event": "^14.5.2",
         "@types/classnames": "^2.2.11",
         "@types/enzyme": "^3.10.8",

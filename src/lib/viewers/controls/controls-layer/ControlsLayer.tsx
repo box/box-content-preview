@@ -94,6 +94,7 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         >
             <div
                 className={`bp-ControlsLayer ${isShown || isForced ? SHOW_CLASSNAME : ''}`}
+                data-testid="bp-ControlsLayer"
                 onBlur={handleFocusOut}
                 onFocus={handleFocusIn}
                 onMouseEnter={handleMouseEnter}
