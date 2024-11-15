@@ -1,38 +1,32 @@
 import * as React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { fireEvent, render, screen } from '@testing-library/react';
 import useAttention from '../useAttention';
 
 describe('useAttention', () => {
-    function TestComponent(): JSX.Element {
+    function TestComponent(): React.JSX.Element {
         const [isActive, handlers] = useAttention();
-        return <div className={isActive ? 'active' : ''} {...handlers} />;
+        return <div className={isActive ? 'active' : ''} data-testid="test-div" {...handlers} />;
     }
 
-    const getElement = (wrapper: ReactWrapper): ReactWrapper => wrapper.childAt(0);
-    const getWrapper = (): ReactWrapper => mount(<TestComponent />);
+    const getWrapper = () => render(<TestComponent />);
+    const getElement = async () => screen.findByTestId('test-div');
 
-    test('should return isActive based on focus and/or hover state', () => {
-        const wrapper = getWrapper();
-        const simulate = (event: string): void => {
-            act(() => {
-                wrapper.simulate(event);
-            });
-            wrapper.update();
-        };
+    test('should return isActive based on focus and/or hover state', async () => {
+        getWrapper();
+        const element = await getElement();
 
-        expect(getElement(wrapper).hasClass('active')).toBe(false); // Default
+        expect(element).not.toHaveClass('active'); // Default
 
-        simulate('focus');
-        expect(getElement(wrapper).hasClass('active')).toBe(true); // Focus
+        fireEvent.focus(element);
+        expect(element).toHaveClass('active'); // Focus
 
-        simulate('mouseover');
-        expect(getElement(wrapper).hasClass('active')).toBe(true); // Focus & Hover
+        fireEvent.mouseOver(element);
+        expect(element).toHaveClass('active'); // Focus & Hover
 
-        simulate('blur');
-        expect(getElement(wrapper).hasClass('active')).toBe(true); // Hover
+        fireEvent.blur(element);
+        expect(element).toHaveClass('active'); // Hover
 
-        simulate('mouseout');
-        expect(getElement(wrapper).hasClass('active')).toBe(false); // Default
+        fireEvent.mouseOut(element);
+        expect(element).not.toHaveClass('active'); // Default
     });
 });

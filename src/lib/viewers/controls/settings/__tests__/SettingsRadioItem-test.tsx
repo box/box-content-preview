@@ -1,20 +1,24 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconCheckMark24 from '../../icons/IconCheckMark24';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SettingsRadioItem from '../SettingsRadioItem';
 
 describe('SettingsRadioItem', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<SettingsRadioItem label="1.0" onChange={jest.fn()} value={1} {...props} />);
+    const getWrapper = (props = {}) =>
+        render(<SettingsRadioItem label="1.0" onChange={jest.fn()} value={1} {...props} />);
+
+    const getRadioItem = async () => screen.findByRole('menuitemradio');
+    const getIconCheckMark = async () => screen.findByTestId('IconCheckMark24');
 
     describe('event handlers', () => {
-        test('should set the active menu when clicked', () => {
+        test('should set the active menu when clicked', async () => {
             const onChange = jest.fn();
-            const wrapper = getWrapper({ onChange });
+            getWrapper({ onChange });
+            const radioItem = await getRadioItem();
 
-            wrapper.simulate('click');
+            await userEvent.click(radioItem);
 
-            expect(onChange).toBeCalledWith(1);
+            expect(onChange).toHaveBeenCalledWith(1);
         });
 
         test.each`
@@ -23,29 +27,38 @@ describe('SettingsRadioItem', () => {
             ${'Enter'}     | ${1}
             ${'Escape'}    | ${0}
             ${'Space'}     | ${1}
-        `('should set the active menu $calledTimes times when $key is pressed', ({ key, calledTimes }) => {
+        `('should set the active menu $calledTimes times when $key is pressed', async ({ key, calledTimes }) => {
             const onChange = jest.fn();
-            const wrapper = getWrapper({ onChange });
+            getWrapper({ onChange });
 
-            wrapper.simulate('keydown', { key });
+            // focus on radio menu item
+            await userEvent.tab();
+            await userEvent.keyboard(`{${key}}`);
 
-            expect(onChange).toBeCalledTimes(calledTimes);
+            expect(onChange).toHaveBeenCalledTimes(calledTimes);
         });
     });
 
     describe('render', () => {
-        test.each([true, false])('should set classes based on isSelected prop %s', isSelected => {
-            const wrapper = getWrapper({ isSelected });
+        test.each([true, false])('should set classes based on isSelected prop %s', async isSelected => {
+            getWrapper({ isSelected });
+            const radioItem = await getRadioItem();
 
-            expect(wrapper.hasClass('bp-is-selected')).toBe(isSelected);
+            if (isSelected) {
+                expect(radioItem).toHaveClass('bp-is-selected');
+            } else {
+                expect(radioItem).not.toHaveClass('bp-is-selected');
+            }
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const radioItem = await getRadioItem();
+            const icon = await getIconCheckMark();
 
-            expect(wrapper.hasClass('bp-SettingsRadioItem')).toBe(true);
-            expect(wrapper.find('.bp-SettingsRadioItem-value').contains('1.0')).toBe(true);
-            expect(wrapper.exists(IconCheckMark24)).toBe(true); // Rendered, but visually hidden by default
+            expect(radioItem).toBeInTheDocument();
+            expect(screen.getByText('1.0')).toBeInTheDocument();
+            expect(icon).toBeInTheDocument(); // Rendered, but visually hidden by default
         });
     });
 });

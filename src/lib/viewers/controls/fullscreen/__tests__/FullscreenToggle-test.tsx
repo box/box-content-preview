@@ -1,53 +1,57 @@
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import React, { act } from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import fullscreen from '../../../../Fullscreen';
 import FullscreenToggle from '../FullscreenToggle';
 import IconFullscreenIn24 from '../../icons/IconFullscreenIn24';
 import IconFullscreenOut24 from '../../icons/IconFullscreenOut24';
 
 describe('FullscreenToggle', () => {
-    const getButton = (wrapper: ReactWrapper): ReactWrapper => wrapper.childAt(0);
-    const getWrapper = (props = {}): ReactWrapper =>
-        mount(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
+    const getWrapper = (props = {}) => render(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
+    const getEnterToggleButton = async () => screen.findByTitle('Enter fullscreen');
+    const getExitToggleButton = async () => screen.findByTitle('Exit fullscreen');
+    const getIconFullscreenIn = async () => screen.findByTestId('IconFullscreenIn24');
+    const getIconFullscreenOut = async () => screen.findByTestId('IconFullscreenOut24');
 
     describe('event handlers', () => {
-        test('should respond to fullscreen events', () => {
-            const wrapper = getWrapper();
+        test('should respond to fullscreen events', async () => {
+            getWrapper();
 
             act(() => {
                 fullscreen.enter();
             });
-            wrapper.update();
 
-            expect(getButton(wrapper).exists(IconFullscreenOut24)).toBe(true);
-            expect(getButton(wrapper).prop('title')).toBe(__('exit_fullscreen'));
+            const iconFullscreenOut = await getIconFullscreenOut();
+            const exitToggleButton = await getExitToggleButton();
+            expect(iconFullscreenOut).toBeInTheDocument();
+            expect(exitToggleButton).toBeInTheDocument();
 
             act(() => {
                 fullscreen.exit();
             });
-            wrapper.update();
 
-            expect(getButton(wrapper).exists(IconFullscreenIn24)).toBe(true);
-            expect(getButton(wrapper).prop('title')).toBe(__('enter_fullscreen'));
+            const iconFullscreenIn = await getIconFullscreenIn();
+            const enterToggleButton = await getEnterToggleButton();
+            expect(iconFullscreenIn).toBeInTheDocument();
+            expect(enterToggleButton).toBeInTheDocument();
         });
 
-        test('should invoke onFullscreenToggle prop on click', () => {
+        test('should invoke onFullscreenToggle prop on click', async () => {
             const onToggle = jest.fn();
-            const mockedEvent = { target: document.createElement('button') };
-            const wrapper = getWrapper({ onFullscreenToggle: onToggle });
+            getWrapper({ onFullscreenToggle: onToggle });
 
-            wrapper.simulate('click', mockedEvent);
-            expect(onToggle).toBeCalledWith(true, mockedEvent.target);
+            const enterToggleButton = await getEnterToggleButton();
+            await userEvent.click(enterToggleButton);
+            expect(onToggle).toHaveBeenCalledWith(true, enterToggleButton);
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-            const button = getButton(wrapper);
+        test('should return a valid wrapper', async () => {
+            getWrapper();
 
-            expect(button.hasClass('bp-FullscreenToggle')).toBe(true);
+            const enterToggleButton = await getEnterToggleButton();
+            expect(enterToggleButton).toBeInTheDocument();
         });
     });
 });

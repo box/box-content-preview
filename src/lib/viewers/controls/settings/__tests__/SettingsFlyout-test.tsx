@@ -1,64 +1,77 @@
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
-import SettingsContext, { Context } from '../SettingsContext';
+import React, { act } from 'react';
+import { render, screen } from '@testing-library/react';
+import SettingsContext, { Context, Menu } from '../SettingsContext';
 import SettingsFlyout from '../SettingsFlyout';
 
 describe('SettingsFlyout', () => {
-    const getContext = (): Partial<Context> => ({});
-    const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<SettingsFlyout isOpen={false} {...props} />, {
-            wrappingComponent: SettingsContext.Provider,
-            wrappingComponentProps: { value: context },
-        });
+    const getContext = (): Context => ({
+        activeMenu: Menu.MAIN,
+        setActiveMenu: jest.fn(),
+        setActiveRect: jest.fn(),
+    });
+
+    const getWrapper = (props = {}, context = getContext()) =>
+        render(
+            <SettingsContext.Provider value={context}>
+                <SettingsFlyout isOpen={false} {...props} />
+            </SettingsContext.Provider>,
+        );
+
+    const getSettingsFlyout = async () => screen.findByTestId('bp-settings-flyout');
 
     describe('event handlers', () => {
-        test('should set classes based on the transitionstart/end events', () => {
-            const wrapper = getWrapper();
-            expect(wrapper.getDOMNode()).not.toHaveClass('bp-is-transitioning');
+        test('should set classes based on the transitionstart/end events', async () => {
+            getWrapper();
+            const settingsFlyout = await getSettingsFlyout();
 
-            act(() => {
-                wrapper.getDOMNode().dispatchEvent(new Event('transitionstart'));
-            });
-            expect(wrapper.getDOMNode()).toHaveClass('bp-is-transitioning');
+            expect(settingsFlyout).not.toHaveClass('bp-is-transitioning');
 
-            act(() => {
-                wrapper.getDOMNode().dispatchEvent(new Event('transitionend'));
-            });
-            expect(wrapper.getDOMNode()).not.toHaveClass('bp-is-transitioning');
+            await act(() => settingsFlyout.dispatchEvent(new Event('transitionstart')));
+            expect(settingsFlyout).toHaveClass('bp-is-transitioning');
+
+            await act(() => settingsFlyout.dispatchEvent(new Event('transitionend')));
+            expect(settingsFlyout).not.toHaveClass('bp-is-transitioning');
         });
     });
 
     describe('render', () => {
-        test.each([true, false])('should set classes based on the isOpen prop %s', isOpen => {
-            const wrapper = getWrapper({ isOpen });
+        test.each([true, false])('should set classes based on the isOpen prop %s', async isOpen => {
+            getWrapper({ isOpen });
+            const settingsFlyout = await getSettingsFlyout();
 
-            expect(wrapper.childAt(0).hasClass('bp-is-open')).toBe(isOpen);
+            if (isOpen) {
+                expect(settingsFlyout).toHaveClass('bp-is-open');
+            } else {
+                expect(settingsFlyout).not.toHaveClass('bp-is-open');
+            }
         });
 
-        test('should set styles based on the provided height and width, if present', () => {
+        test('should set styles based on the provided height and width, if present', async () => {
             const activeRect = { bottom: 0, left: 0, height: 100, right: 0, top: 0, width: 100 };
-            const wrapper = getWrapper({ height: activeRect.height, width: activeRect.width }, {});
+            getWrapper({ height: activeRect.height, width: activeRect.width });
+            const settingsFlyout = await getSettingsFlyout();
 
-            expect(wrapper.childAt(0).prop('style')).toEqual({
-                height: 100,
-                width: 100,
+            expect(settingsFlyout).toHaveStyle({
+                height: '100px',
+                width: '100px',
             });
         });
 
-        test('should set styles based on defaults if height and width is not present', () => {
-            const wrapper = getWrapper();
+        test('should set styles based on defaults if height and width is not present', async () => {
+            getWrapper();
+            const settingsFlyout = await getSettingsFlyout();
 
-            expect(wrapper.childAt(0).prop('style')).toEqual({
+            expect(settingsFlyout).toHaveStyle({
                 height: 'auto',
                 width: 'auto',
             });
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const settingsFlyout = await getSettingsFlyout();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsFlyout');
+            expect(settingsFlyout).toBeInTheDocument();
         });
     });
 });

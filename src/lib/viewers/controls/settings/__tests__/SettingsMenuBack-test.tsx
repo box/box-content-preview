@@ -1,25 +1,33 @@
 import React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
-import IconArrowLeft24 from '../../icons/IconArrowLeft24';
-import SettingsContext, { Context } from '../SettingsContext';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import SettingsContext, { Context, Menu } from '../SettingsContext';
 import SettingsMenuBack from '../SettingsMenuBack';
 
 describe('SettingsMenuBack', () => {
-    const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
-    const getWrapper = (props = {}, context = {}): ReactWrapper =>
-        mount(<SettingsMenuBack label="Autoplay" {...props} />, {
-            wrappingComponent: SettingsContext.Provider,
-            wrappingComponentProps: { value: context },
-        });
+    const getContext = (): Context => ({
+        activeMenu: Menu.MAIN,
+        setActiveMenu: jest.fn(),
+        setActiveRect: jest.fn(),
+    });
+    const getWrapper = (props = {}, context = getContext()) =>
+        render(
+            <SettingsContext.Provider value={context}>
+                <SettingsMenuBack label="Autoplay" {...props} />
+            </SettingsContext.Provider>,
+        );
+
+    const getMenuItem = async () => screen.findByRole('menuitem');
 
     describe('event handlers', () => {
-        test('should set the active menu when clicked', () => {
+        test('should set the active menu when clicked', async () => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
+            const menuItem = await getMenuItem();
 
-            wrapper.simulate('click');
+            await userEvent.click(menuItem);
 
-            expect(context.setActiveMenu).toBeCalled();
+            expect(context.setActiveMenu).toHaveBeenCalled();
         });
 
         test.each`
@@ -28,23 +36,28 @@ describe('SettingsMenuBack', () => {
             ${'Enter'}     | ${1}
             ${'Escape'}    | ${0}
             ${'Space'}     | ${1}
-        `('should set the active menu $calledTimes times when $key is pressed', ({ key, calledTimes }) => {
+        `('should set the active menu $calledTimes times when $key is pressed', async ({ key, calledTimes }) => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
 
-            wrapper.simulate('keydown', { key });
+            // focus on menu item
+            await userEvent.tab();
+            await userEvent.keyboard(`{${key}}`);
 
-            expect(context.setActiveMenu).toBeCalledTimes(calledTimes);
+            expect(context.setActiveMenu).toHaveBeenCalledTimes(calledTimes);
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const menuItem = await getMenuItem();
+            const label = screen.getByText('Autoplay');
+            const icon = screen.getByTestId('IconArrowLeft24');
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsMenuBack');
-            expect(wrapper.find('.bp-SettingsMenuBack-label').contains('Autoplay')).toBe(true);
-            expect(wrapper.exists(IconArrowLeft24)).toBe(true);
+            expect(menuItem).toBeInTheDocument();
+            expect(label).toBeInTheDocument();
+            expect(icon).toBeInTheDocument();
         });
     });
 });
