@@ -56,15 +56,16 @@ describe('lib/PreviewUI', () => {
             const resultEl = ui.setup(options);
 
             expect(resultEl).toBe(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTAINER));
-            expect(resultEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_HEADER);
+
+            expect(resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_HEADER)).not.toBeNull();
 
             // Check loading state
-            expect(resultEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
+            expect(resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON)).not.toBeNull();
         });
 
         test('should not setup the loading state if their respective option is false', () => {
             const resultEl = ui.setup({ container: containerEl, showLoading: false });
-            expect(resultEl).not.toContainSelector(constants.SELECTOR_BOX_PREVIEW_ICON);
+            expect(resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON)).toBeNull();
         });
 
         test('should setup logo if option specifies', () => {
@@ -212,7 +213,7 @@ describe('lib/PreviewUI', () => {
         describe('setupNotification()', () => {
             test('should set up the notification', () => {
                 ui.setupNotification();
-                expect(containerEl).toContainSelector(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
+                expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION)).not.toBeNull();
             });
         });
     });
