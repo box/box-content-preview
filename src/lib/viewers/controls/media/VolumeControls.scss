@@ -10,7 +10,6 @@
     max-width: 0;
     height: $bp-MediaControl-height;
     overflow: hidden;
-    transition: max-width 200ms ease-in-out;
 
     &.bp-is-open {
         max-width: 100px;

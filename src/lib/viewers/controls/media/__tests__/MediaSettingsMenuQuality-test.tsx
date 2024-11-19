@@ -1,56 +1,77 @@
 import React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import MediaSettingsMenuQuality, { Quality } from '../MediaSettingsMenuQuality';
 import Settings, { Context, Menu } from '../../settings';
 
 describe('MediaSettingsMenuQuality', () => {
-    const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
-    const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(<MediaSettingsMenuQuality onQualityChange={jest.fn()} quality={Quality.AUTO} {...props} />, {
-            wrappingComponent: Settings.Context.Provider,
-            wrappingComponentProps: { value: context },
-        });
+    const getContext = (): Context => ({
+        activeMenu: Menu.MAIN,
+        setActiveMenu: jest.fn(),
+        setActiveRect: jest.fn(),
+    });
+
+    const getWrapper = (props = {}, context = getContext()) =>
+        render(
+            <Settings.Context.Provider value={context}>
+                <MediaSettingsMenuQuality onQualityChange={jest.fn()} quality={Quality.AUTO} {...props} />
+            </Settings.Context.Provider>,
+        );
+
+    const getSdRadioItem = async () => screen.getByRole('menuitemradio', { name: '480p' });
+    const getHdRadioItem = async () => screen.getByRole('menuitemradio', { name: '1080p' });
+    const getAutoRadioItem = async () => screen.getByRole('menuitemradio', { name: __('media_quality_auto') });
 
     describe('event handlers', () => {
-        test('should surface the selected item on change', () => {
+        test('should surface the selected item on change', async () => {
             const onQualityChange = jest.fn();
-            const wrapper = getWrapper({ onQualityChange });
+            getWrapper({ onQualityChange });
 
-            wrapper.find({ value: 'sd' }).simulate('click');
+            const sdRadioItem = await getSdRadioItem();
+            await userEvent.click(sdRadioItem);
 
-            expect(onQualityChange).toBeCalledWith('sd');
+            expect(onQualityChange).toHaveBeenCalledWith('sd');
         });
 
-        test('should reset the active menu on change', () => {
+        test('should reset the active menu on change', async () => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
 
-            wrapper.find({ value: 'sd' }).simulate('click');
+            const sdRadioItem = await getSdRadioItem();
+            await userEvent.click(sdRadioItem);
 
-            expect(context.setActiveMenu).toBeCalledWith(Menu.MAIN);
+            expect(context.setActiveMenu).toHaveBeenCalledWith(Menu.MAIN);
         });
     });
 
     describe('render', () => {
         test('should not render if no quality is provided', () => {
-            const wrapper = getWrapper({ quality: undefined });
+            getWrapper({ quality: undefined });
+            const menu = screen.queryByRole('menu');
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(menu).toBeNull();
         });
 
         test('should not render if no callback is provided', () => {
-            const wrapper = getWrapper({ onQualityChange: undefined });
+            getWrapper({ onQualityChange: undefined });
+            const menu = screen.queryByRole('menu');
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(menu).toBeNull();
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-            const radioItems = wrapper.find(Settings.RadioItem);
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const menu = await screen.findByRole('menu');
+            const menuBack = await screen.findByRole('menuitem');
+            const sdRadioItem = await getSdRadioItem();
+            const hdRadioItem = await getHdRadioItem();
+            const autoRadioItem = await getAutoRadioItem();
 
-            expect(wrapper.exists(Settings.MenuBack)).toBe(true);
-            expect(radioItems.length).toBe(3);
-            expect(radioItems.at(2).prop('isSelected')).toBe(true);
+            expect(menu).toBeInTheDocument();
+            expect(menuBack).toBeInTheDocument();
+            expect(sdRadioItem).toBeInTheDocument();
+            expect(hdRadioItem).toBeInTheDocument();
+            expect(autoRadioItem).toBeInTheDocument();
         });
     });
 });

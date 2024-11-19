@@ -1,17 +1,27 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import ControlsBar from '../../controls/controls-bar';
-import FullscreenToggle from '../../controls/fullscreen';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import MarkdownControls from '../MarkdownControls';
 
 describe('MarkdownControls', () => {
-    describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const onToggle = jest.fn();
-            const wrapper = shallow(<MarkdownControls onFullscreenToggle={onToggle} />);
+    const getWrapper = (props = {}) => render(<MarkdownControls onFullscreenToggle={jest.fn()} {...props} />);
 
-            expect(wrapper.exists(ControlsBar));
-            expect(wrapper.find(FullscreenToggle).prop('onFullscreenToggle')).toEqual(onToggle);
+    describe('render', () => {
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const controlBar = await screen.findByTestId('bp-ControlsBar');
+
+            expect(controlBar).toBeInTheDocument();
+        });
+
+        test('should pass down onFullscreenToggle prop', async () => {
+            const onFullscreenToggle = jest.fn();
+            getWrapper({ onFullscreenToggle });
+            const toggle = await screen.findByTitle(__('enter_fullscreen'));
+
+            await userEvent.click(toggle);
+
+            expect(onFullscreenToggle).toHaveBeenCalled();
         });
     });
 });

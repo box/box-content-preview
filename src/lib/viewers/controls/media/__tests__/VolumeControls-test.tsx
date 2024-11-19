@@ -1,18 +1,14 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconVolumeHigh24 from '../../icons/IconVolumeHigh24';
-import IconVolumeLow24 from '../../icons/IconVolumeLow24';
-import IconVolumeMedium24 from '../../icons/IconVolumeMedium24';
-import IconVolumeMute24 from '../../icons/IconVolumeMute24';
-import MediaToggle from '../MediaToggle';
-import SliderControl from '../../slider';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import VolumeControls from '../VolumeControls';
 
-jest.mock('../../slider');
-
 describe('VolumeControls', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} {...props} />);
+    const getWrapper = (props = {}) =>
+        render(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} {...props} />);
+
+    const getContainer = async () => screen.findByTestId('bp-volume-controls');
+    const getToggle = async () => screen.getByTitle(new RegExp(`^(${__('media_mute')}|${__('media_unmute')})$`));
 
     describe('event handlers', () => {
         test.each`
@@ -20,38 +16,41 @@ describe('VolumeControls', () => {
             ${0}   | ${false}
             ${0.5} | ${true}
             ${1}   | ${true}
-        `('should toggle mute to $isMuted when volume is $volume', ({ isMuted, volume }) => {
+        `('should toggle mute to $isMuted when volume is $volume', async ({ isMuted, volume }) => {
             const onMuteChange = jest.fn();
-            const wrapper = getWrapper({ onMuteChange, volume });
-            const toggle = wrapper.find(MediaToggle);
+            getWrapper({ onMuteChange, volume });
+            const toggle = await getToggle();
 
-            toggle.simulate('click');
-            expect(onMuteChange).toBeCalledWith(isMuted);
+            await userEvent.click(toggle);
+            expect(onMuteChange).toHaveBeenCalledWith(isMuted);
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const container = await getContainer();
 
-            expect(wrapper.hasClass('bp-VolumeControls')).toBe(true);
+            expect(container).toBeInTheDocument();
         });
 
         test.each`
-            volume  | icon                  | title
-            ${0}    | ${IconVolumeMute24}   | ${'Unmute'}
-            ${0.0}  | ${IconVolumeMute24}   | ${'Unmute'}
-            ${0.01} | ${IconVolumeLow24}    | ${'Mute'}
-            ${0.25} | ${IconVolumeLow24}    | ${'Mute'}
-            ${0.33} | ${IconVolumeMedium24} | ${'Mute'}
-            ${0.51} | ${IconVolumeMedium24} | ${'Mute'}
-            ${0.66} | ${IconVolumeHigh24}   | ${'Mute'}
-            ${1.0}  | ${IconVolumeHigh24}   | ${'Mute'}
-        `('should render the correct icon and title for volume $volume', ({ icon, title, volume }) => {
-            const wrapper = getWrapper({ volume });
+            volume  | icon                    | title
+            ${0}    | ${'IconVolumeMute24'}   | ${'Unmute'}
+            ${0.0}  | ${'IconVolumeMute24'}   | ${'Unmute'}
+            ${0.01} | ${'IconVolumeLow24'}    | ${'Mute'}
+            ${0.25} | ${'IconVolumeLow24'}    | ${'Mute'}
+            ${0.33} | ${'IconVolumeMedium24'} | ${'Mute'}
+            ${0.51} | ${'IconVolumeMedium24'} | ${'Mute'}
+            ${0.66} | ${'IconVolumeHigh24'}   | ${'Mute'}
+            ${1.0}  | ${'IconVolumeHigh24'}   | ${'Mute'}
+        `('should render the correct icon and title for volume $volume', async ({ icon, title, volume }) => {
+            getWrapper({ volume });
+            const iconElement = await screen.findByTestId(icon);
+            const toggle = await screen.findByTitle(title);
 
-            expect(wrapper.exists(icon)).toBe(true);
-            expect(wrapper.find(MediaToggle).prop('title')).toBe(title);
+            expect(iconElement).toBeInTheDocument();
+            expect(toggle).toBeInTheDocument();
         });
 
         test.each`
@@ -63,13 +62,15 @@ describe('VolumeControls', () => {
             ${0.254} | ${`linear-gradient(to right, #0061d5 25%, #fff 25%)`}   | ${25}
             ${0.255} | ${`linear-gradient(to right, #0061d5 26%, #fff 26%)`}   | ${26}
             ${1.0}   | ${`linear-gradient(to right, #0061d5 100%, #fff 100%)`} | ${100}
-        `('should render the correct track and value for volume $volume', ({ track, value, volume }) => {
-            const wrapper = getWrapper({ volume });
+        `('should render the correct track and value for volume $volume', async ({ track, value, volume }) => {
+            const max = 100;
+            getWrapper({ volume, max });
 
-            expect(wrapper.find(SliderControl).props()).toMatchObject({
-                track,
-                value,
-            });
+            const sliderTrack = await screen.findByTestId('bp-slider-control-track');
+            const sliderThumb = await screen.findByTestId('bp-slider-control-thumb');
+
+            expect(sliderTrack).toHaveStyle({ backgroundImage: track });
+            expect(sliderThumb).toHaveStyle({ left: `${(value / max) * 100}%` });
         });
     });
 });

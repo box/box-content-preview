@@ -3,8 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fullscreen from '../../../../Fullscreen';
 import FullscreenToggle from '../FullscreenToggle';
-import IconFullscreenIn24 from '../../icons/IconFullscreenIn24';
-import IconFullscreenOut24 from '../../icons/IconFullscreenOut24';
 
 describe('FullscreenToggle', () => {
     const getWrapper = (props = {}) => render(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
