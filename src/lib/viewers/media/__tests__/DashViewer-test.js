@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import noop from 'lodash/noop';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
@@ -695,6 +696,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 jest.spyOn(dash, 'loadUIReact').mockImplementation();
                 jest.spyOn(dash, 'loadUI').mockImplementation();
                 jest.spyOn(dash, 'resize').mockImplementation();
+                jest.spyOn(dash, 'startBandwidthTracking').mockImplementation();
             });
 
             test('should call loadUIReact', () => {
@@ -705,6 +707,25 @@ describe('lib/viewers/media/DashViewer', () => {
                 expect(dash.loadFilmStrip).toBeCalled();
                 expect(dash.loadSubtitles).toBeCalled();
                 expect(dash.loadAlternateAudio).toBeCalled();
+            });
+
+            test('should retry showAndHideReactControls 10 times if show === noop', () => {
+                jest.spyOn(dash, 'showAndHideReactControls');
+
+                jest.useFakeTimers();
+
+                dash.controls = {
+                    controlsLayer: {
+                        hide: jest.fn(),
+                        show: noop,
+                    },
+                };
+
+                dash.loadeddataHandler();
+
+                jest.runAllTimers();
+
+                expect(dash.showAndHideReactControls).toHaveBeenCalledTimes(11);
             });
         });
     });
