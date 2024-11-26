@@ -19,7 +19,7 @@ Rotating the viewer will rotate the image 90 degrees clockwise. At the default z
 
 ## Supported File Extensions
 
-`ai, bmp, dcm, eps, gif, heic, png, ps, psd, tga, tif, tiff`
+`ai, bmp, dcm, eps, gif, heic, png, ps, psd, tga, tif, tiff, webp`
 
 ## Options
 
