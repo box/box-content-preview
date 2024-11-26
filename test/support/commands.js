@@ -39,8 +39,19 @@ Cypress.Commands.add('showControls', () => {
 });
 
 Cypress.Commands.add('showMediaControls', () => {
-    // Hover over the preview to trigger the controls
-    cy.getByTestId('bp').trigger('mouseover');
-    // Assert that the controls are shown
-    return cy.getByTestId('media-controls-wrapper').should('be.visible');
+    const hoverAndAssert = (retries = 5) => {
+        // Hover over the preview to trigger the controls
+        cy.getByTestId('bp').trigger('mouseover');
+        // Assert that the controls are shown
+        return cy
+            .getByTestId('media-controls-wrapper')
+            .should('be.visible')
+            .then(el => {
+                if (el.length === 0 && retries > 0) {
+                    hoverAndAssert(retries - 1);
+                }
+            });
+    };
+
+    hoverAndAssert();
 });

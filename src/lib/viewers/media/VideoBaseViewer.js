@@ -1,3 +1,4 @@
+import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -87,8 +88,16 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.mediaControls) {
             this.mediaControls.show();
         } else if (this.controls && this.controls.controlsLayer) {
+            this.showAndHideReactControls();
+        }
+    }
+
+    showAndHideReactControls(retries = 10) {
+        if (this.controls?.controlsLayer?.show && this.controls.controlsLayer.show !== noop) {
             this.controls.controlsLayer.show();
             this.controls.controlsLayer.hide(); // Show controls briefly after content loads
+        } else if (retries > 0) {
+            setTimeout(() => this.showAndHideReactControls(retries - 1), 100);
         }
     }
 

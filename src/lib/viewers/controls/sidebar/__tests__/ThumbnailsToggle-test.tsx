@@ -1,44 +1,50 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconThumbnailsToggle24 from '../../icons/IconThumbnailsToggle24';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ThumbnailsToggle from '../ThumbnailsToggle';
 
 describe('ThumbnailsToggle', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<ThumbnailsToggle {...props} />);
+    const getWrapper = (props = {}) => render(<ThumbnailsToggle {...props} />);
+    const getButton = async () => screen.findByRole('button');
+    const getIcon = async () => screen.findByTestId('IconThumbnailsToggle24');
 
     describe('event handlers', () => {
-        test('should forward the click from the button', () => {
+        test('should forward the click from the button', async () => {
             const onToggle = jest.fn();
-            const wrapper = getWrapper({ onThumbnailsToggle: onToggle });
+            getWrapper({ onThumbnailsToggle: onToggle });
+            const button = await getButton();
 
-            wrapper.simulate('click');
+            await userEvent.click(button);
 
-            expect(onToggle).toBeCalled();
+            expect(onToggle).toHaveBeenCalled();
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper({ onThumbnailsToggle: jest.fn() });
+        test('should return a valid wrapper', async () => {
+            getWrapper({ onThumbnailsToggle: jest.fn() });
+            const button = await getButton();
+            const icon = await getIcon();
 
-            expect(wrapper.hasClass('bp-ThumbnailsToggle')).toBe(true);
-            expect(wrapper.exists(IconThumbnailsToggle24)).toBe(true);
+            expect(button).toBeInTheDocument();
+            expect(icon).toBeInTheDocument();
         });
 
         test('should return an empty wrapper if no callback is defined', () => {
-            const wrapper = getWrapper();
+            getWrapper();
+            const button = screen.queryByRole('button');
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(button).toBeNull();
         });
 
-        test('should have a property aria-expanded setted to false', () => {
-            const wrapper = getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: false });
-            expect(wrapper.prop('aria-expanded')).toBe(false);
-        });
+        test.each([true, false])(
+            'should have a property aria-expanded setted isThumbnailsOpen: %s',
+            async isThumbnailsOpen => {
+                getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
+                const button = await getButton();
 
-        test('should have a property aria-expanded setted to true', () => {
-            const wrapper = getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: true });
-            expect(wrapper.prop('aria-expanded')).toBe(true);
-        });
+                expect(button).toHaveAttribute('aria-expanded', isThumbnailsOpen.toString());
+            },
+        );
     });
 });

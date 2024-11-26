@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import PresentationViewer from '../PresentationViewer';
 import BaseViewer from '../../BaseViewer';
 import DocBaseViewer from '../DocBaseViewer';
@@ -8,6 +8,10 @@ import { CLASS_INVISIBLE } from '../../../constants';
 let containerEl;
 let presentation;
 let stubs = {};
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 describe('lib/viewers/doc/PresentationViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -42,6 +46,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         presentation.controls = {
             add: jest.fn(),
         };
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -56,6 +65,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         presentation = null;
         stubs = {};
+
+        jest.resetAllMocks();
     });
 
     describe('setup()', () => {

@@ -83,7 +83,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
     }, [isInputShown]);
 
     return (
-        <div className="bp-PageControlsForm">
+        <div className="bp-PageControlsForm" data-testid="bp-PageControlsForm">
             {isInputShown ? (
                 <input
                     ref={inputElRef}

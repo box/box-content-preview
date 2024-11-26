@@ -1,11 +1,19 @@
-/* eslint-disable no-unused-expressions */
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import BoxCSV from '../BoxCSV';
 
 let csvComponent;
 
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
+
 describe('lib/viewers/text/BoxCSV', () => {
     beforeEach(() => {
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
+
         fixture.load('viewers/text/__tests__/BoxCSV-test.html');
         csvComponent = new BoxCSV(document.querySelector('.container'), {});
     });
@@ -17,6 +25,8 @@ describe('lib/viewers/text/BoxCSV', () => {
             csvComponent.destroy();
         }
         csvComponent = null;
+
+        jest.resetAllMocks();
     });
 
     describe('getRowClassName()', () => {
@@ -46,7 +56,6 @@ describe('lib/viewers/text/BoxCSV', () => {
 
     describe('renderCSV()', () => {
         test('should render Grid using calculated properties', () => {
-            const renderStub = jest.spyOn(ReactDOM, 'render');
             csvComponent.data = [
                 [1, 2],
                 [2, 3],
@@ -55,20 +64,19 @@ describe('lib/viewers/text/BoxCSV', () => {
 
             csvComponent.renderCSV();
 
-            const gridComponent = renderStub.mock.calls[0][0];
+            const gridComponent = csvComponent.root.render.mock.calls[0][0];
             expect(gridComponent.props.className).toBe('bp-text-csv-grid');
             expect(gridComponent.props.cellRenderer).toBe(csvComponent.cellRenderer);
             expect(gridComponent.props.columnCount).toBe(2);
             expect(gridComponent.props.rowCount).toBe(3);
-            expect(renderStub).toBeCalledWith(gridComponent, csvComponent.csvEl);
+            expect(csvComponent.root.render).toHaveBeenCalledWith(gridComponent);
         });
 
         test('should base its column count on the longest available row', () => {
-            const renderStub = jest.spyOn(ReactDOM, 'render');
             csvComponent.data = [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4], [1, 2]];
             csvComponent.renderCSV();
 
-            const gridComponent = renderStub.mock.calls[0][0];
+            const gridComponent = csvComponent.root.render.mock.calls[0][0];
             expect(gridComponent.props.columnCount).toBe(4);
         });
     });

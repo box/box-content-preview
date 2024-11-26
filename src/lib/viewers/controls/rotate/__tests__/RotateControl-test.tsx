@@ -1,28 +1,32 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconRotate24 from '../../icons/IconRotate24';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import RotateControl from '../RotateControl';
 
 describe('RotateControl', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<RotateControl onRotateLeft={jest.fn()} {...props} />);
+    const getWrapper = (props = {}) => render(<RotateControl onRotateLeft={jest.fn()} {...props} />);
+    const getButton = async () => screen.findByRole('button', { name: __('rotate_left') });
 
     describe('event handlers', () => {
-        test('should invoke onRotateLeft prop on click', () => {
+        test('should invoke onRotateLeft prop on click', async () => {
             const onRotateLeft = jest.fn();
-            const wrapper = getWrapper({ onRotateLeft });
+            getWrapper({ onRotateLeft });
+            const button = await getButton();
 
-            wrapper.simulate('click');
+            await userEvent.click(button);
 
             expect(onRotateLeft).toHaveBeenCalled();
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const button = await getButton();
+            const icon = await screen.findByTestId('IconRotate24');
 
-            expect(wrapper.hasClass('bp-RotateControl')).toBe(true);
-            expect(wrapper.exists(IconRotate24)).toBe(true);
+            expect(button).toBeInTheDocument();
+            expect(icon).toBeInTheDocument();
         });
     });
 });

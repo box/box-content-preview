@@ -1,40 +1,42 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import IconPause24 from '../../icons/IconPause24';
-import IconPlay24 from '../../icons/IconPlay24';
-import MediaToggle from '../MediaToggle';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import PlayPauseToggle from '../PlayPauseToggle';
 
 describe('PlayPauseToggle', () => {
-    const getWrapper = (props = {}): ShallowWrapper => shallow(<PlayPauseToggle onPlayPause={jest.fn()} {...props} />);
+    const getWrapper = (props = {}) => render(<PlayPauseToggle onPlayPause={jest.fn()} {...props} />);
+    const getToggle = async () => screen.findByRole('button');
 
     describe('event handlers', () => {
-        test('should toggle isPlaying when clicked', () => {
+        test('should toggle isPlaying when clicked', async () => {
             const onPlayPause = jest.fn();
-            const wrapper = getWrapper({ isPlaying: false, onPlayPause });
-            const toggle = wrapper.find(MediaToggle);
+            getWrapper({ isPlaying: false, onPlayPause });
+            const toggle = await getToggle();
 
-            toggle.simulate('click');
-            expect(onPlayPause).toBeCalledWith(true);
+            await userEvent.click(toggle);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const toggle = await getToggle();
 
-            expect(wrapper.hasClass('bp-PlayPauseToggle')).toBe(true);
+            expect(toggle).toBeInTheDocument();
         });
 
         test.each`
-            isPlaying | icon           | title
-            ${true}   | ${IconPause24} | ${'Pause'}
-            ${false}  | ${IconPlay24}  | ${'Play'}
-        `('should render the correct icon and title if isPlaying is $isPlaying', ({ isPlaying, icon, title }) => {
-            const wrapper = getWrapper({ isPlaying });
+            isPlaying | icon             | title
+            ${true}   | ${'IconPause24'} | ${'Pause'}
+            ${false}  | ${'IconPlay24'}  | ${'Play'}
+        `('should render the correct icon and title if isPlaying is $isPlaying', async ({ isPlaying, icon, title }) => {
+            getWrapper({ isPlaying });
+            const iconElement = await screen.findByTestId(icon);
+            const titleElement = await screen.findByTitle(title);
 
-            expect(wrapper.exists(icon)).toBe(true);
-            expect(wrapper.prop('title')).toBe(title);
+            expect(iconElement).toBeInTheDocument();
+            expect(titleElement).toBeInTheDocument();
         });
     });
 });

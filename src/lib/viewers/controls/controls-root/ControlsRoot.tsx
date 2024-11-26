@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import ControlsLayer, { Helpers } from '../controls-layer';
@@ -28,6 +28,8 @@ export default class ControlsRoot {
 
     handleShow: () => void;
 
+    root: Root;
+
     constructor({ className = 'bp-ControlsRoot', containerEl, fileId, onHide = noop, onShow = noop }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', className);
@@ -39,6 +41,8 @@ export default class ControlsRoot {
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);
         this.containerEl.addEventListener('touchstart', this.handleTouchStart);
         this.containerEl.appendChild(this.controlsEl);
+
+        this.root = createRoot(this.controlsEl);
 
         this.handleHide = onHide;
         this.handleShow = onShow;
@@ -60,7 +64,7 @@ export default class ControlsRoot {
     }, 100);
 
     destroy(): void {
-        ReactDOM.unmountComponentAtNode(this.controlsEl);
+        this.root.unmount();
 
         if (this.containerEl) {
             this.containerEl.removeEventListener('mousemove', this.handleMouseMove);
@@ -77,12 +81,11 @@ export default class ControlsRoot {
         this.controlsEl.classList.remove('bp-is-hidden');
     }
 
-    render(controls: JSX.Element): void {
-        ReactDOM.render(
+    render(controls: React.JSX.Element): void {
+        this.root.render(
             <ControlsLayer onHide={this.handleHide} onMount={this.handleMount} onShow={this.handleShow}>
                 {controls}
             </ControlsLayer>,
-            this.controlsEl,
         );
     }
 }

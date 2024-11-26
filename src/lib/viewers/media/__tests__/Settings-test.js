@@ -30,7 +30,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('Settings()', () => {
         test('should have its template set up', () => {
             expect(settings.settingsEl).toHaveClass('bp-media-settings');
-            expect(settings.settingsEl).toContainSelector('.bp-media-settings-item');
+            expect(settings.firstMenuItem).toHaveClass('bp-media-settings-item');
         });
 
         test('should initialize as invisible and without subtitles', () => {

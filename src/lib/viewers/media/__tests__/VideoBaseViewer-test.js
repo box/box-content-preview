@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import noop from 'lodash/noop';
 import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls';
 import MediaBaseViewer from '../MediaBaseViewer';
@@ -129,6 +130,46 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.controls.controlsLayer.show).toBeCalled();
             expect(videoBase.controls.controlsLayer.hide).toBeCalled();
+        });
+
+        test('should retry showAndHideReactControls 10 times if show == noop', () => {
+            jest.spyOn(videoBase, 'showAndHideReactControls');
+
+            jest.useFakeTimers();
+
+            videoBase.controls = {
+                controlsLayer: {
+                    hide: jest.fn(),
+                    show: noop,
+                },
+            };
+            videoBase.mediaControls = null;
+            videoBase.loadeddataHandler();
+
+            jest.runAllTimers();
+
+            expect(videoBase.showAndHideReactControls).toBeCalledTimes(11);
+        });
+    });
+
+    describe('showAndHideReactControls()', () => {
+        test('should retry function 10 times if show === noop', () => {
+            jest.spyOn(videoBase, 'showAndHideReactControls');
+
+            jest.useFakeTimers();
+
+            videoBase.controls = {
+                controlsLayer: {
+                    hide: jest.fn(),
+                    show: noop,
+                },
+            };
+            videoBase.mediaControls = null;
+            videoBase.showAndHideReactControls();
+
+            jest.runAllTimers();
+
+            expect(videoBase.showAndHideReactControls).toBeCalledTimes(11);
         });
     });
 

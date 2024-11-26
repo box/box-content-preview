@@ -1,33 +1,32 @@
 import React from 'react';
-import noop from 'lodash/noop';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ZoomControls from '../ZoomControls';
 
 describe('ZoomControls', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<ZoomControls onZoomIn={noop} onZoomOut={noop} {...props} />);
-    const getZoom = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-ZoomControls-current"]');
-    const getZoomIn = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('[data-testid="bp-ZoomControls-in"]');
-    const getZoomOut = (wrapper: ShallowWrapper): ShallowWrapper => wrapper.find('[data-testid="bp-ZoomControls-out"]');
+    const getWrapper = (props = {}) => render(<ZoomControls onZoomIn={jest.fn()} onZoomOut={jest.fn()} {...props} />);
+    const getZoomIn = async () => screen.findByRole('button', { name: __('zoom_in') });
+    const getZoomOut = async () => screen.findByRole('button', { name: __('zoom_out') });
 
     describe('event handlers', () => {
-        test('should handle zoom in click', () => {
+        test('should handle zoom in click', async () => {
             const onZoomIn = jest.fn();
-            const wrapper = getWrapper({ onZoomIn });
+            getWrapper({ onZoomIn });
+            const zoomIn = await getZoomIn();
 
-            getZoomIn(wrapper).simulate('click');
+            await userEvent.click(zoomIn);
 
-            expect(onZoomIn).toBeCalled();
+            expect(onZoomIn).toHaveBeenCalled();
         });
 
-        test('should handle zoom out click', () => {
+        test('should handle zoom out click', async () => {
             const onZoomOut = jest.fn();
-            const wrapper = getWrapper({ onZoomOut });
+            getWrapper({ onZoomOut });
+            const zoomOut = await getZoomOut();
 
-            getZoomOut(wrapper).simulate('click');
+            await userEvent.click(zoomOut);
 
-            expect(onZoomOut).toBeCalled();
+            expect(onZoomOut).toHaveBeenCalled();
         });
     });
 
@@ -40,11 +39,19 @@ describe('ZoomControls', () => {
             ${0.5}   | ${0.5}    | ${true}
             ${-50}   | ${0.1}    | ${true}
             ${-50}   | ${0.2}    | ${false}
-        `('should set disabled for zoom out to $disabled for $scale / $minScale', ({ disabled, minScale, scale }) => {
-            const wrapper = getWrapper({ minScale, scale });
+        `(
+            'should set disabled for zoom out to $disabled for $scale / $minScale',
+            async ({ disabled, minScale, scale }) => {
+                getWrapper({ minScale, scale });
+                const zoomOut = await getZoomOut();
 
-            expect(getZoomOut(wrapper).prop('disabled')).toBe(disabled);
-        });
+                if (disabled) {
+                    expect(zoomOut).toBeDisabled();
+                } else {
+                    expect(zoomOut).not.toBeDisabled();
+                }
+            },
+        );
 
         test.each`
             maxScale | scale      | disabled
@@ -54,11 +61,19 @@ describe('ZoomControls', () => {
             ${50}    | ${50}      | ${true}
             ${500}   | ${100}     | ${true}
             ${500}   | ${99}      | ${false}
-        `('should set disabled for zoom in to $disabled for $scale / $maxScale', ({ disabled, maxScale, scale }) => {
-            const wrapper = getWrapper({ maxScale, scale });
+        `(
+            'should set disabled for zoom in to $disabled for $scale / $maxScale',
+            async ({ disabled, maxScale, scale }) => {
+                getWrapper({ maxScale, scale });
+                const zoomIn = await getZoomIn();
 
-            expect(getZoomIn(wrapper).prop('disabled')).toBe(disabled);
-        });
+                if (disabled) {
+                    expect(zoomIn).toBeDisabled();
+                } else {
+                    expect(zoomIn).not.toBeDisabled();
+                }
+            },
+        );
 
         test.each`
             scale    | zoom
@@ -67,19 +82,22 @@ describe('ZoomControls', () => {
             ${1.499} | ${'150%'}
             ${10}    | ${'1000%'}
             ${100}   | ${'10000%'}
-        `('should format $scale to $zoom properly', ({ scale, zoom }) => {
-            const wrapper = getWrapper({ scale });
+        `('should format $scale to $zoom properly', async ({ scale, zoom }) => {
+            getWrapper({ scale });
+            const currentZoom = await screen.findByText(zoom);
 
-            expect(getZoom(wrapper).text()).toEqual(zoom);
+            expect(currentZoom).toBeInTheDocument();
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper({ scale: 1 });
+            const zoomIn = await getZoomIn();
+            const zoomOut = await getZoomOut();
+            const currentZoom = await screen.findByText('100%');
 
-            expect(getZoom(wrapper)).toBeDefined();
-            expect(getZoomIn(wrapper)).toBeDefined();
-            expect(getZoomOut(wrapper)).toBeDefined();
-            expect(wrapper.hasClass('bp-ZoomControls')).toBe(true);
+            expect(zoomIn).toBeInTheDocument();
+            expect(zoomOut).toBeInTheDocument();
+            expect(currentZoom).toBeInTheDocument();
         });
     });
 });

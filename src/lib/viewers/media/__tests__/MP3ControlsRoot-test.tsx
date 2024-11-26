@@ -1,8 +1,24 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { createRoot } from 'react-dom/client';
 import MP3ControlsRoot from '../MP3ControlsRoot';
 
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
+
 describe('MP3ControlsRoot', () => {
+    beforeEach(() => {
+        const mockedCreateRoot = createRoot as jest.Mock;
+        mockedCreateRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     const getInstance = (options = {}): MP3ControlsRoot =>
         new MP3ControlsRoot({ containerEl: document.createElement('div'), ...options });
 
@@ -32,7 +48,7 @@ describe('MP3ControlsRoot', () => {
 
             instance.render(controls);
 
-            expect(instance.controlsEl).toContainHTML(ReactDOMServer.renderToStaticMarkup(controls));
+            expect(instance.root.render).toHaveBeenCalledWith(controls);
         });
     });
 });

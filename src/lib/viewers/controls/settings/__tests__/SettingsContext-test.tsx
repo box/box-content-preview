@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import SettingsContext, { Context, Menu } from '../SettingsContext';
 
 describe('SettingsContext', () => {
@@ -8,14 +8,17 @@ describe('SettingsContext', () => {
         setActiveMenu: jest.fn(),
         setActiveRect: jest.fn(),
     });
-    const TestComponent = (): JSX.Element => <div className="test">{React.useContext(SettingsContext).activeMenu}</div>;
+    const TestComponent = (): React.JSX.Element => (
+        <div className="test">{React.useContext(SettingsContext).activeMenu}</div>
+    );
 
-    test('should populate its context values', () => {
-        const wrapper = mount(<TestComponent />, {
-            wrappingComponent: SettingsContext.Provider,
-            wrappingComponentProps: { value: getContext() },
-        });
+    test('should populate its context values', async () => {
+        render(
+            <SettingsContext.Provider value={getContext()}>
+                <TestComponent />
+            </SettingsContext.Provider>,
+        );
 
-        expect(wrapper.text()).toBe(Menu.MAIN);
+        expect(await screen.findByText(Menu.MAIN)).toBeInTheDocument();
     });
 });
