@@ -1,3 +1,9 @@
+## 3.0.0 (2024-11-26)
+
+* feat(react): React 18 upgrade (#1538) ([ebb2768](https://github.com/box/box-content-preview/commit/ebb2768)), closes [#1538](https://github.com/box/box-content-preview/issues/1538)
+
+
+
 ## 2.112.0 (2024-11-26)
 
 * feat: STORCLIENT-2331 Added WebP support to ImageLoaders (#1539) ([9c8887c](https://github.com/box/box-content-preview/commit/9c8887c)), closes [#1539](https://github.com/box/box-content-preview/issues/1539)
