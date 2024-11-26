@@ -1,3 +1,9 @@
+## 2.112.0 (2024-11-26)
+
+* feat: STORCLIENT-2331 Added WebP support to ImageLoaders (#1539) ([9c8887c](https://github.com/box/box-content-preview/commit/9c8887c)), closes [#1539](https://github.com/box/box-content-preview/issues/1539)
+
+
+
 ## 2.111.0 (2024-11-20)
 
 * fix(docs): Remove gzip encoding query param (#1537) ([a77524d](https://github.com/box/box-content-preview/commit/a77524d)), closes [#1537](https://github.com/box/box-content-preview/issues/1537)
