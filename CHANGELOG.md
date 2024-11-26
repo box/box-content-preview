@@ -1,3 +1,15 @@
+## 2.112.0 (2024-11-26)
+
+* feat: STORCLIENT-2331 Added WebP support to ImageLoaders (#1539) ([9c8887c](https://github.com/box/box-content-preview/commit/9c8887c)), closes [#1539](https://github.com/box/box-content-preview/issues/1539)
+
+
+
+## 2.111.0 (2024-11-20)
+
+* fix(docs): Remove gzip encoding query param (#1537) ([a77524d](https://github.com/box/box-content-preview/commit/a77524d)), closes [#1537](https://github.com/box/box-content-preview/issues/1537)
+
+
+
 ## 2.110.0 (2024-10-07)
 
 * feat(preview-error): Display file icon based on extension for errors (#1536) ([d0b10cb](https://github.com/box/box-content-preview/commit/d0b10cb)), closes [#1536](https://github.com/box/box-content-preview/issues/1536) [/github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts#L183](https://github.com//github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts/issues/L183)
