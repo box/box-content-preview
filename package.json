@@ -102,7 +102,7 @@
         "webpack-dev-server": "^3.11.2"
     },
     "engines": {
-        "node": ">=18.x",
+        "node": ">=18.0.0",
         "yarn": ">=1.19.x"
     },
     "scripts": {
@@ -142,8 +142,7 @@
         "last 2 Firefox versions",
         "last 2 Safari versions",
         "last 2 Edge versions",
-        "last 2 iOS versions",
-        "IE 11"
+        "last 2 iOS versions"
     ],
     "husky": {
         "hooks": {
@@ -155,6 +154,7 @@
     "resolutions": {
         "mojito-rb-gen/merge": "1.2.1",
         "**/react-intl/**/@types/react": "18.3.1",
-        "cheerio": "1.0.0-rc.12"
+        "cheerio": "1.0.0-rc.12",
+        "acorn": "8.14.0"
     }
 }
