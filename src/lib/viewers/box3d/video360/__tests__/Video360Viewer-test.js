@@ -192,6 +192,9 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             stubs.initBox3d = jest.spyOn(Video360Renderer.prototype, 'initBox3d').mockResolvedValue(undefined);
             stubs.initVr = jest.spyOn(Video360Renderer.prototype, 'initVr').mockImplementation();
             stubs.create360Environment = jest.spyOn(viewer, 'create360Environment').mockResolvedValue(undefined);
+            window.BoxSDK = function sdk() {
+                return {};
+            };
         });
 
         afterEach(() => {
@@ -202,6 +205,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
                 }
             });
             viewer.renderer = null;
+            window.BoxSDK = undefined;
         });
 
         test('should create a new Video360 renderer instance', done => {
