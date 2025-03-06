@@ -1,3 +1,10 @@
+## 3.1.0 (2025-03-06)
+
+* feat(nodejs20): WEBAPP-30462 Node updated to 20 (+4 squashed commits) (#1545) ([37e7504](https://github.com/box/box-content-preview/commit/37e7504)), closes [#1545](https://github.com/box/box-content-preview/issues/1545)
+* fix: correct yarn build command syntax (#1543) ([970a96c](https://github.com/box/box-content-preview/commit/970a96c)), closes [#1543](https://github.com/box/box-content-preview/issues/1543)
+
+
+
 ## 3.0.0 (2024-11-26)
 
 * feat(react): React 18 upgrade (#1538) ([ebb2768](https://github.com/box/box-content-preview/commit/ebb2768)), closes [#1538](https://github.com/box/box-content-preview/issues/1538)
