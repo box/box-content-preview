@@ -241,7 +241,7 @@ class PresentationViewer extends DocBaseViewer {
             if (pageEl.getAttribute('data-page-number') === '1') {
                 return;
             }
-            
+
             pageEl.classList.add(CLASS_INVISIBLE);
         });
 

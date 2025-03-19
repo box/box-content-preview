@@ -1,6 +1,7 @@
 import Browser from '../../Browser';
 import DocBaseViewer from './DocBaseViewer';
 import DocPreloader from './DocPreloader';
+import DocFirstPreloader from './DocFirstPreloader';
 import fullscreen from '../../Fullscreen';
 import { OFFICE_ONLINE_EXTENSIONS } from '../../extensions';
 import './Document.scss';
@@ -23,7 +24,10 @@ class DocumentViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.preloader = new DocPreloader(this.previewUI, { api: this.api });
+        const useDocFirstPreloder = !this.featureEnabled('docFirstPages.enabled');
+        this.preloader = useDocFirstPreloder
+            ? new DocFirstPreloader(this.previwewUI, { api: this.api })
+            : new DocPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 

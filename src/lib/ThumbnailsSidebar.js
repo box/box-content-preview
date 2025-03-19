@@ -226,7 +226,6 @@ class ThumbnailsSidebar {
     createPlaceholderThumbnail(itemIndex) {
         const thumbnailEl = document.createElement('div');
         const pageNum = itemIndex + 1;
-        console.log(`in create page holderthumbnail=>${pageNum}`);
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.setAttribute('role', 'button');

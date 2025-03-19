@@ -379,7 +379,6 @@ class DocBaseViewer extends BaseViewer {
         this.emit(VIEWER_EVENT.thumbnailsOpen);
         this.resize();
         this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
-
     }
 
     /**
@@ -660,7 +659,6 @@ class DocBaseViewer extends BaseViewer {
      */
     emitMetric({ name, data }) {
         super.emitMetric(name, data);
-        console.log(`showing metrics ${name}=>${JSON.stringify(data)}`);
     }
 
     //--------------------------------------------------------------------------
@@ -861,7 +859,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // Save page and return after resize
-        const { currentPageNumber } = this.pdfViewer;
+        // const { currentPageNumber } = this.pdfViewer;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();

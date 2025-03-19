@@ -2,8 +2,6 @@ import EventEmitter from 'events';
 import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
-    CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
-    CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_INVISIBLE,
@@ -92,7 +90,6 @@ class DocFirstPreloader extends EventEmitter {
         return placeHolder;
     }
 
-
     async loadImage(src) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -125,7 +122,7 @@ class DocFirstPreloader extends EventEmitter {
         const count = pages > 8 ? 8 : pages;
 
         if (pagedPreLoadUrlWithAuth) {
-            for (let i = 2; i <= count; i++) {
+            for (let i = 2; i <= count; i += 1) {
                 const url = pagedPreLoadUrlWithAuth.replace('asset_url', `${i}.png`);
                 const promise = this.api.get(url, { type: 'blob' });
                 promises.push(promise.catch(e => e));
@@ -202,7 +199,6 @@ class DocFirstPreloader extends EventEmitter {
         // Emit message that preload has occurred
         this.emit('preload');
     }
-
 
     /**
      * Hides the preload if it exists.
@@ -493,4 +489,4 @@ class DocFirstPreloader extends EventEmitter {
     }
 }
 
-export default DocPreloader;
+export default DocFirstPreloader;
