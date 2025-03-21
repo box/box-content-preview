@@ -24,8 +24,7 @@ class DocumentViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        const useDocFirstPreloder = !this.featureEnabled('docFirstPages.enabled');
-        this.preloader = useDocFirstPreloder
+        this.preloader = this.docFirstPagesEnabled
             ? new DocFirstPreloader(this.previwewUI, { api: this.api })
             : new DocPreloader(this.previewUI, { api: this.api });
         this.preloader.addListener('preload', this.onPreload.bind(this));

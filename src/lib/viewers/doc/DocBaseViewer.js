@@ -137,7 +137,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
-        this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
+        this.docFirstPagesEnabled = true; // this.featureEnabled('docFirstPages.enabled');
     }
 
     /**
@@ -390,7 +390,7 @@ class DocBaseViewer extends BaseViewer {
             this.startPreloadTimer();
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             this.emit(VIEWER_EVENT.thumbnailsOpen);
-            this.resize();
+            // this.resize();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
         }
     }
@@ -1673,7 +1673,8 @@ class DocBaseViewer extends BaseViewer {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
         // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
-        const { numPages = 0 } = this.preloader || (this.pdfViewer && this.pdfViewer.pdfDocument);
+        // const { numPages = 0 } = this.preloader || (this.pdfViewer && this.pdfViewer.pdfDocument);
+        const { numPages = 0 } = (this.pdfViewer && this.pdfViewer.pdfDocument) || this.preloader;
         let toggledState = cachedToggledState;
 
         // If cached toggled state is anything other than false, set it to true
