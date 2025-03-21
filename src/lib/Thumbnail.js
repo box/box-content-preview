@@ -156,7 +156,7 @@ class Thumbnail {
         const thumbnailImageWidth =
             thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
 
-        if (this.preloader && this.preloader.preloadedImages[pageNum]) {
+        if (this.preloader?.preloadedImages?.[pageNum]) {
             return Promise.resolve(this.preloader.preloadedImages[pageNum]);
         }
 
