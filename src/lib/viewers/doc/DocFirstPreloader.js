@@ -165,7 +165,6 @@ class DocFirstPreloader extends EventEmitter {
 
                 docBaseViewer.initThumbnails();
                 this.loadTime = Date.now();
-                console.log(`preload complete  ${Date.now()}`);
             });
     }
 

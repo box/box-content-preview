@@ -33,7 +33,7 @@ import {
 import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, WORKER } from './docAssets';
+import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF, WORKER } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -97,6 +97,8 @@ class DocBaseViewer extends BaseViewer {
 
     doc;
 
+    docFirstPagesEnabled;
+
     /**
      * @inheritdoc
      */
@@ -135,6 +137,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
+        this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
     }
 
     /**
@@ -355,7 +358,12 @@ class DocBaseViewer extends BaseViewer {
 
         // Don't show preload if there's a cached page or startAt is set and > 1 since preloads are only for the 1st page
         // Also don't show preloads for watermarked files
-        if (!this.preloader || isWatermarked || (this.startPageNum && this.startPageNum !== 1)) {
+        if (
+            !this.preloader ||
+            isWatermarked ||
+            (this.startPageNum && this.startPageNum !== 1) ||
+            this.getCachedPage() !== 1
+        ) {
             return;
         }
 
@@ -369,16 +377,22 @@ class DocBaseViewer extends BaseViewer {
 
         const { url_template: template } = preloadRep.content;
 
-        const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
-        const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-        const newPagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
-        const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-        this.startPreloadTimer();
-        this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-        this.emit(VIEWER_EVENT.thumbnailsOpen);
-        this.resize();
-        this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+
+        if (!this.docFirstPagesEnabled) {
+            this.startPreloadTimer();
+            this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
+        } else {
+            const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
+            let pagedUrlTemplate = preloadRepPaged?.content?.url_template;
+            pagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
+            const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(pagedUrlTemplate);
+            this.startPreloadTimer();
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            this.emit(VIEWER_EVENT.thumbnailsOpen);
+            this.resize();
+            this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+        }
     }
 
     /**
@@ -402,9 +416,14 @@ class DocBaseViewer extends BaseViewer {
     load() {
         super.load();
 
-        this.loadAssets(JS).then(() => {
+        if (this.docFirstPagesEnabled) {
+            this.loadAssets(EXIF).then(() => {
+                this.showPreload();
+            });
+        } else {
             this.showPreload();
-        });
+        }
+
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
@@ -746,6 +765,7 @@ class DocBaseViewer extends BaseViewer {
                     this.emit(VIEWER_EVENT.thumbnailsOpen);
                     this.resize();
                 }
+                // store a reference to the doc for docfirstpages
                 this.doc = doc;
             })
             .catch(err => {
@@ -852,19 +872,22 @@ class DocBaseViewer extends BaseViewer {
      */
     resize() {
         if (!this.pdfViewer || !this.somePageRendered) {
-            if (this.preloader) {
-                //  this.preloader.resize();
+            if (!this.docFirstPagesEnabled && this.preloader) {
+                this.preloader.resize();
             }
             return;
         }
 
         // Save page and return after resize
-        // const { currentPageNumber } = this.pdfViewer;
+
+        const { currentPageNumber } = this.pdfViewer;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
 
-        // this.setPage(currentPageNumber);
+        if (!this.docFirstPagesEnabled) {
+            this.setPage(currentPageNumber);
+        }
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.resize();
@@ -1279,13 +1302,10 @@ class DocBaseViewer extends BaseViewer {
 
         const { numPages } = this.doc;
 
-        const count = pageNumber > 1 ? 8 : numPages;
+        const count = numPages > 8 ? 8 : numPages;
 
-        if (pageNumber === 1) {
+        if (!this.startPageRendered && pageNumber === 1) {
             const timeDiff = Date.now() - this.preloader.loadTime;
-            console.log(` Time diff ${timeDiff}`);
-            const el = document.getElementsByClassName('bcs-title')[0];
-            el.innerHTML = `Time diff: ${timeDiff / 1000} seconds`;
             this.emitMetric({
                 name: 'PRELOAD_DOC_LOAD_TIME_DIFF',
                 data: { pagesLoaded: count, timeDifference: timeDiff },
