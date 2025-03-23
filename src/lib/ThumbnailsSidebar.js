@@ -168,7 +168,7 @@ class ThumbnailsSidebar {
         }
         this.thumbnail.init().then(thumbnailHeight => {
             if (thumbnailHeight) {
-                const count = this.pdfViewer?.pagesCount || this.preloader?.pageCount;
+                const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
                 this.virtualScroller.init({
                     initialRowIndex: this.currentPage - 1,
                     totalItems: count || 1,

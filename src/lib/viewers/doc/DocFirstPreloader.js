@@ -19,7 +19,7 @@ const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPage
 
 const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of pages cannot be read
 const NUM_PAGES_MAX = 20;
-
+const MAX_PRELOAD_PAGES = 8;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
 
 class DocFirstPreloader extends EventEmitter {
@@ -63,7 +63,7 @@ class DocFirstPreloader extends EventEmitter {
 
     firstImage;
 
-    pageCount = 1;
+    numPages = 1;
 
     preloadedImages = {};
 
@@ -108,7 +108,7 @@ class DocFirstPreloader extends EventEmitter {
      */
     async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth = '', pages, docBaseViewer) {
         this.containerEl = containerEl;
-        this.pageCount = pages;
+        this.numPages = pages;
         // Need to load image as a blob to read EXIF
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.className = this.wrapperClassName;
@@ -116,11 +116,8 @@ class DocFirstPreloader extends EventEmitter {
         this.containerEl.appendChild(this.wrapperEl);
 
         const promise1 = this.api.get(preloadUrlWithAuth, { type: 'blob' });
-
         const promises = [promise1];
-
-        const count = pages > 8 ? 8 : pages;
-
+        const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
                 const url = pagedPreLoadUrlWithAuth.replace('asset_url', `${i}.png`);
@@ -292,7 +289,6 @@ class DocFirstPreloader extends EventEmitter {
             .then(pdfData => {
                 this.pdfData = pdfData;
                 const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
-                this.wrapperEl.style.width = `${scaledWidth}px`;
                 this.imageDimensions = { width: scaledWidth, height: scaledHeight };
                 imageEl.classList.add('loaded');
                 this.numPages = pdfData.numPages;
@@ -301,7 +297,6 @@ class DocFirstPreloader extends EventEmitter {
             .catch(() => {
                 const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = imageEl;
                 const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.wrapperEl.style.width = `${scaledWidth}px`;
                 this.imageDimensions = { width: scaledWidth, height: scaledHeight };
                 imageEl.classList.add('loaded');
             });
