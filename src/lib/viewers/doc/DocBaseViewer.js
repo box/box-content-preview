@@ -1300,7 +1300,7 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        if (!this.startPageRendered && pageNumber === 1 && this.docFirstPagesEnabled) {
+        if (!this.startPageRendered && pageNumber === 1 && this.docFirstPagesEnabled && this.preloader) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
                 name: 'PRELOAD_DOC_LOAD_TIME_DIFF',
