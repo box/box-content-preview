@@ -369,7 +369,6 @@ class DocBaseViewer extends BaseViewer {
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
 
-        const preloadRepPaged = getRepresentation(file, 'png');
         if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
             return;
         }
@@ -382,6 +381,7 @@ class DocBaseViewer extends BaseViewer {
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
+            const preloadRepPaged = getRepresentation(file, 'png');
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
             let pagedUrlTemplate = preloadRepPaged?.content?.url_template;
             pagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
