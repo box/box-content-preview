@@ -51,7 +51,7 @@ class Thumbnail {
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
 
-        if (this.preloader.imageDimensions) {
+        if (this.preloader?.imageDimensions) {
             const { width, height } = this.preloader.imageDimensions;
             this.scale = THUMBNAIL_TOTAL_WIDTH / width;
             this.pageRatio = width / height;
