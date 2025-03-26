@@ -11,7 +11,7 @@ import {
     PDFJS_MAX_AUTO_SCALE,
     PDFJS_WIDTH_PADDING_PX,
 } from '../../constants';
-import { setDimensions, handleRepresentationBlobFetch } from '../../util';
+import { handleRepresentationBlobFetch } from '../../util';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
@@ -107,7 +107,8 @@ class DocFirstPreloader extends EventEmitter {
 
         this.initializePreloadContainerComponents(containerEl, pages);
         const promises = this.getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
-        Promise.all(promises)
+        // eslint-disable-next-line consistent-return
+        return Promise.all(promises)
             .then(responses => {
                 const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
                 return Promise.all(results); // Parse all JSON responses
@@ -195,7 +196,6 @@ class DocFirstPreloader extends EventEmitter {
 
         // Cleanup preload DOM after fade out
         this.wrapperEl.addEventListener('transitionend', this.cleanupPreload);
-
         // Cleanup preload DOM immediately if user scrolls after the document is ready since we don't want half-faded
         // out preload content to be on top of real document content while scrolling
         this.wrapperEl.addEventListener('scroll', this.cleanupPreload);
@@ -265,7 +265,6 @@ class DocFirstPreloader extends EventEmitter {
                 this.imageDimensions = { width: scaledWidth, height: scaledHeight };
                 imageEl.classList.add('loaded');
                 this.numPages = pdfData.numPages;
-                // Otherwise, use the preload image's natural dimensions as a base to scale from
             })
             .catch(() => {
                 const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = imageEl;
@@ -296,26 +295,26 @@ class DocFirstPreloader extends EventEmitter {
      *
      * @return {void}
      */
-    resize() {
-        if (!this.preloadEl || (!this.pdfData && !this.imageEl)) {
-            return;
-        }
+    // resize() {
+    //     if (!this.preloadEl || !this.firstPageImage) {
+    //         return;
+    //     }
 
-        let dimensionData;
-        if (this.pdfData) {
-            dimensionData = this.getScaledWidthAndHeight(this.pdfData);
-        } else {
-            const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
-            dimensionData = this.getScaledDimensions(pdfWidth, pdfHeight);
-        }
+    //     let dimensionData;
+    //     if (this.pdfData) {
+    //         dimensionData = this.getScaledWidthAndHeight(this.pdfData);
+    //     } else {
+    //         const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
+    //         dimensionData = this.getScaledDimensions(pdfWidth, pdfHeight);
+    //     }
 
-        const { scaledWidth, scaledHeight } = dimensionData;
-        // Scale preload and placeholder elements
-        const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER);
-        for (let i = 0; i < preloadEls.length; i += 1) {
-            setDimensions(preloadEls[i], scaledWidth, scaledHeight);
-        }
-    }
+    //     const { scaledWidth, scaledHeight } = dimensionData;
+    //     // Scale preload and placeholder elements
+    //     const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER);
+    //     for (let i = 0; i < preloadEls.length; i += 1) {
+    //         setDimensions(preloadEls[i], scaledWidth, scaledHeight);
+    //     }
+    // }
 
     /**
      * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.

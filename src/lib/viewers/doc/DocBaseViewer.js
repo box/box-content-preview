@@ -137,7 +137,6 @@ class DocBaseViewer extends BaseViewer {
 
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
-        this.docFirstPagesEnabled = true; // this.featureEnabled('docFirstPages.enabled');
     }
 
     /**
@@ -150,7 +149,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Call super() to set up common layout
         super.setup();
-
+        this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
@@ -386,14 +385,12 @@ class DocBaseViewer extends BaseViewer {
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
             let pagedUrlTemplate = preloadRepPaged?.content?.url_template;
             pagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
-            this.preloader.numPages = pageCount;
             const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(pagedUrlTemplate);
             this.startPreloadTimer();
             if (this.shouldThumbnailsBeToggled()) {
                 this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                 this.emit(VIEWER_EVENT.thumbnailsOpen);
             }
-            // this.resize();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
         }
     }
@@ -1303,15 +1300,11 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        const { numPages } = this.doc;
-
-        const count = numPages > 8 ? 8 : numPages;
-
-        if (!this.startPageRendered && pageNumber === 1) {
+        if (!this.startPageRendered && pageNumber === 1 && this.docFirstPagesEnabled) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
                 name: 'PRELOAD_DOC_LOAD_TIME_DIFF',
-                data: { pagesLoaded: count, timeDifference: timeDiff },
+                data: { pagesLoaded: this.preloader.numPages, timeDifference: timeDiff },
             });
         }
 
