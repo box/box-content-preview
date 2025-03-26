@@ -174,7 +174,7 @@ class DocFirstPreloader extends EventEmitter {
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
-                const url = pagedPreLoadUrlWithAuth.replace('asset_url', `${i}.png`);
+                const url = pagedPreLoadUrlWithAuth.replace(/\{.*\}/, `${i}.png`);
                 const promise = this.api.get(url, { type: 'blob' });
                 promises.push(promise.catch(e => e));
             }

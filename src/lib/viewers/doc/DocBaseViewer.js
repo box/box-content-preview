@@ -383,14 +383,9 @@ class DocBaseViewer extends BaseViewer {
         } else {
             const preloadRepPaged = getRepresentation(file, 'png');
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
-            let pagedUrlTemplate = preloadRepPaged?.content?.url_template;
-            pagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, 'asset_url');
+            const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
             const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(pagedUrlTemplate);
             this.startPreloadTimer();
-            if (this.shouldThumbnailsBeToggled()) {
-                this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                this.emit(VIEWER_EVENT.thumbnailsOpen);
-            }
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
         }
     }
