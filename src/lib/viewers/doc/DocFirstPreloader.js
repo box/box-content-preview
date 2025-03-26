@@ -129,8 +129,10 @@ class DocFirstPreloader extends EventEmitter {
                 const container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
                 await this.setPreloadImageDimensions(imageDomElement, container);
                 if (!this.pdfJsDocLoadComplete()) {
+                    let foundError = false;
                     data.forEach(element => {
-                        if (!(element instanceof Error)) {
+                        foundError = foundError || element instanceof Error;
+                        if (!foundError) {
                             preloaderImageIndex += 1;
                             imageDomElement = document.createElement('img');
                             this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
