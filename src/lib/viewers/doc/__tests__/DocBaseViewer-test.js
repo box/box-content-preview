@@ -643,6 +643,67 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(startPreloadTimerStub).toBeCalled();
             });
+
+            test('should load preloader properly for doc first pages', () => {
+                jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
+                const preloadUrlTemplate = 'https://preload-url-template';
+                const pagedUrlTemplate = 'https://url/{+asset_path}';
+                const pagedRep = {
+                    content: {
+                        url_template: pagedUrlTemplate,
+                    },
+                    metadata: {
+                        pages: 4,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                const preloadRep = {
+                    content: {
+                        url_template: preloadUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return preloadRep;
+                    }
+                    if (theFile && repName === 'png') {
+                        return pagedRep;
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === pagedUrlTemplate) {
+                        return 'paged-url';
+                    }
+                    if (url === preloadUrlTemplate) {
+                        return 'preload-url';
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'preload-url',
+                    containerEl,
+                    'paged-url',
+                    4,
+                    docBase,
+                );
+            });
         });
 
         describe('hidePreload', () => {
