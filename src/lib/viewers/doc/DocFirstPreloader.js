@@ -10,7 +10,11 @@ import {
     PDFJS_HEIGHT_PADDING_PX,
     PDFJS_MAX_AUTO_SCALE,
     PDFJS_WIDTH_PADDING_PX,
+    CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
 } from '../../constants';
+
+import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
+import { VIEWER_EVENT } from '../../events';
 import { handleRepresentationBlobFetch } from '../../util';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
@@ -105,7 +109,9 @@ class DocFirstPreloader extends EventEmitter {
             return;
         }
 
-        this.initializePreloadContainerComponents(containerEl, pages);
+        this.numPages = pages;
+
+        this.initializePreloadContainerComponents(containerEl);
         const promises = this.getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
         // eslint-disable-next-line consistent-return
         return Promise.all(promises)
@@ -118,6 +124,11 @@ class DocFirstPreloader extends EventEmitter {
                 const firstPageImage = data.shift();
                 if (firstPageImage instanceof Error) {
                     return;
+                }
+
+                if (docBaseViewer.shouldThumbnailsBeToggled()) {
+                    docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
                 }
 
                 // index at 1 for thumbnails
@@ -156,9 +167,8 @@ class DocFirstPreloader extends EventEmitter {
         return container;
     }
 
-    initializePreloadContainerComponents(containerEl, pages) {
+    initializePreloadContainerComponents(containerEl) {
         this.containerEl = containerEl;
-        this.numPages = pages;
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.className = this.wrapperClassName;
         this.wrapperEl.classList.add('bp-preloader-loaded');
@@ -174,7 +184,7 @@ class DocFirstPreloader extends EventEmitter {
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
-                const url = pagedPreLoadUrlWithAuth.replace(/\{.*\}/, `${i}.png`);
+                const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.png`);
                 const promise = this.api.get(url, { type: 'blob' });
                 promises.push(promise.catch(e => e));
             }

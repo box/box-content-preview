@@ -7,6 +7,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     let preloader;
     let mockPreviewUI;
     let mockApi;
+    let mockDocBaseViewer;
     beforeEach(() => {
         mockPreviewUI = {
             previewContainer: {
@@ -15,6 +16,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 },
             },
         };
+
+        mockDocBaseViewer = {
+            initThumbnails: jest.fn(),
+            shouldThumbnailsBeToggled: jest.fn(),
+            rootEl: document.createElement('div'),
+            emit: jest.fn(),
+        };
+
         mockApi = new Api();
         preloader = new DocFirstPreloader(mockPreviewUI, { api: mockApi });
         preloader.preloadEl = document.createElement('div');
@@ -116,10 +125,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 return '';
             });
             const mockContainer = document.createElement('div');
-            const initThumbnailsMock = jest.fn();
-            const mockDocBaseViewer = { initThumbnails: initThumbnailsMock };
+
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 4, mockDocBaseViewer);
-            expect(preloader.initializePreloadContainerComponents).toHaveBeenCalledWith(mockContainer, 4);
+            expect(preloader.numPages).toBe(4);
+            expect(preloader.initializePreloadContainerComponents).toHaveBeenCalledWith(mockContainer);
             expect(preloader.getPreloadImageRequestPromises).toHaveBeenCalledWith(
                 'mock-url',
                 4,
@@ -134,7 +143,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 mockFirstImage,
                 expect.any(HTMLDivElement),
             );
-            expect(initThumbnailsMock).toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
             expect(preloader.loadTime).toBeDefined();
         });
@@ -147,12 +156,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             const mockContainer = document.createElement('div');
-            const initThumbnailsMock = jest.fn();
-            const mockDocBaseViewer = { initThumbnails: initThumbnailsMock };
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
             expect(Object.keys(preloader.preloadedImages).length).toBe(0);
             expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
-            expect(initThumbnailsMock).not.toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalled();
             expect(preloader.loadTime).toBeUndefined();
         });
@@ -174,13 +181,11 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
 
             const mockContainer = document.createElement('div');
-            const initThumbnailsMock = jest.fn();
-            const mockDocBaseViewer = { initThumbnails: initThumbnailsMock };
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 3, mockDocBaseViewer);
             expect(Object.keys(preloader.preloadedImages).length).toBe(1);
             expect(preloader.preloadedImages[1]).toBe('mock-object-url');
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
-            expect(initThumbnailsMock).toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
         });
@@ -217,14 +222,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             });
 
             const mockContainer = document.createElement('div');
-            const initThumbnailsMock = jest.fn();
-            const mockDocBaseViewer = { initThumbnails: initThumbnailsMock };
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 4, mockDocBaseViewer);
             expect(Object.keys(preloader.preloadedImages).length).toBe(2);
             expect(preloader.preloadedImages[1]).toBe('mock-object-url1');
             expect(preloader.preloadedImages[2]).toBe('mock-object-url2');
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
-            expect(initThumbnailsMock).toHaveBeenCalled();
+            expect(mockDocBaseViewer.rootEl.classList.contains('bp-thumbnails-open')).toBe(true);
+            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
         });

@@ -10,7 +10,7 @@ import Api from '../../../api';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
-import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
+import DocBaseViewer, { DISCOVERABILITY_STATES, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
 import DocFirstPreloader from '../DocFirstPreloader';
@@ -29,6 +29,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
 } from '../../../constants';
+
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
@@ -681,7 +682,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
 
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    if (url === pagedUrlTemplate) {
+                    // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
                         return 'paged-url';
                     }
                     if (url === preloadUrlTemplate) {

@@ -52,6 +52,7 @@ export const DISCOVERABILITY_STATES = [
     AnnotationState.REGION_TEMP,
 ];
 
+export const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
 const ACI_THUMB_MAX_WIDTH = 240;
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 0.1;
@@ -76,6 +77,7 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
 const RANGE_CHUNK_SIZE_US = 1048576; // 1MB
@@ -384,7 +386,8 @@ class DocBaseViewer extends BaseViewer {
             const preloadRepPaged = getRepresentation(file, 'png');
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
             const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
-            const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(pagedUrlTemplate);
+            const newPagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
+            const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
         }
