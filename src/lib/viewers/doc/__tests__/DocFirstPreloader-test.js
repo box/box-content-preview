@@ -287,25 +287,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
-    // describe('resize()', () => {
-    //     it('should scale preload elements based on dimensions', () => {
-    //         const mockPreloadEl = document.createElement('div');
-    //         const mockPlaceholder = document.createElement('div');
-    //         mockPlaceholder.classList.add('bp-preload-placeholder');
-    //         mockPreloadEl.appendChild(mockPlaceholder);
-    //         const mockSetDimensions = jest.spyOn(util, 'setDimensions').mockImplementation();
-    //         preloader.pdfData = jest.fn();
-    //         preloader.first
-    //         preloader.preloadEl = mockPreloadEl;
-    //         preloader.imageEl = { naturalWidth: 100, naturalHeight: 200 };
-    //         jest.spyOn(preloader, 'getScaledDimensions').mockReturnValue({ scaledWidth: 50, scaledHeight: 100 });
-
-    //         preloader.resize();
-
-    //         expect(mockSetDimensions).toHaveBeenCalledWith(mockPlaceholder, 50, 100);
-    //     });
-    // });
-
     describe('pdfJsDocLoadComplete()', () => {
         it('should return true if the document is already loaded', () => {
             mockPreviewUI.previewContainer.classList.contains.mockReturnValue(true);
