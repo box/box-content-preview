@@ -110,7 +110,6 @@ class Thumbnail {
      * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
      */
     createThumbnailImage(itemIndex, thumbOptions) {
-        // console.log(`starting to create thumbnail image:${itemIndex}`);
         const cacheEntry = this.getImageFromCache(itemIndex);
         // If this thumbnail has already been cached, use it
         if (cacheEntry && cacheEntry.image) {
@@ -152,13 +151,13 @@ class Thumbnail {
      * @return {string} The data URL of the page image
      */
     getThumbnailDataURL(pageNum, thumbOptions) {
-        const canvas = document.createElement('canvas');
-        const thumbnailImageWidth =
-            thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
-
         if (this.preloader?.preloadedImages?.[pageNum]) {
             return Promise.resolve(this.preloader.preloadedImages[pageNum]);
         }
+
+        const canvas = document.createElement('canvas');
+        const thumbnailImageWidth =
+            thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
 
         return this.pdfViewer.pdfDocument
             .getPage(pageNum)

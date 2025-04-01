@@ -184,7 +184,7 @@ class DocFirstPreloader extends EventEmitter {
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
-                const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.png`);
+                const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
                 const promise = this.api.get(url, { type: 'blob' });
                 promises.push(promise.catch(e => e));
             }
@@ -301,32 +301,6 @@ class DocFirstPreloader extends EventEmitter {
             scaledHeight,
         };
     }
-
-    /**
-     * Resizes the preload and placeholder elements
-     *
-     * @return {void}
-     */
-    // resize() {
-    //     if (!this.preloadEl || !this.firstPageImage) {
-    //         return;
-    //     }
-
-    //     let dimensionData;
-    //     if (this.pdfData) {
-    //         dimensionData = this.getScaledWidthAndHeight(this.pdfData);
-    //     } else {
-    //         const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
-    //         dimensionData = this.getScaledDimensions(pdfWidth, pdfHeight);
-    //     }
-
-    //     const { scaledWidth, scaledHeight } = dimensionData;
-    //     // Scale preload and placeholder elements
-    //     const preloadEls = this.preloadEl.getElementsByClassName(CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER);
-    //     for (let i = 0; i < preloadEls.length; i += 1) {
-    //         setDimensions(preloadEls[i], scaledWidth, scaledHeight);
-    //     }
-    // }
 
     /**
      * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.

@@ -383,7 +383,7 @@ class DocBaseViewer extends BaseViewer {
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
-            const preloadRepPaged = getRepresentation(file, 'png');
+            const preloadRepPaged = getRepresentation(file, 'webp');
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
             const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
             const newPagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);

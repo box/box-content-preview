@@ -674,7 +674,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     if (theFile && repName === 'jpg') {
                         return preloadRep;
                     }
-                    if (theFile && repName === 'png') {
+                    if (theFile && repName === 'webp') {
                         return pagedRep;
                     }
 

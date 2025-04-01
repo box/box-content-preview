@@ -162,6 +162,10 @@ class ThumbnailsSidebar {
             this.isOpen = !!options.isOpen;
         }
 
+        /* If the thubmnail sidebar exists remove it so that we an recreate it
+           this is needed to remove the old virtual scroller that was created by the    
+           doc first preloader
+        */
         const element = document.getElementsByClassName('bp-vs')[0];
         if (element) {
             element.remove();
