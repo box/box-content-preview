@@ -39,6 +39,10 @@
     }
 }
 
+.bp-thumbnails-open.bp-preload-complete {
+    pointer-events: all;
+}
+
 .bp-presentation-preload-wrapper {
     pointer-events: all;
 }

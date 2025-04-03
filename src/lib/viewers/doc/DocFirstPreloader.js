@@ -128,7 +128,11 @@ class DocFirstPreloader extends EventEmitter {
 
                 if (docBaseViewer.shouldThumbnailsBeToggled()) {
                     docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                    docBaseViewer.rootEl.classList.add('bp-preload-complete');
                     docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
+                    // hide the preview mask
+                    const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+                    previewMask.style.display = 'none';
                 }
 
                 // index at 1 for thumbnails
@@ -152,7 +156,9 @@ class DocFirstPreloader extends EventEmitter {
                         }
                     });
 
-                    docBaseViewer.initThumbnails();
+                    if (docBaseViewer.options.enableThumbnailsSidebar) {
+                        docBaseViewer.initThumbnails();
+                    }
                     this.emit('preload');
                     this.loadTime = Date.now();
                 }
