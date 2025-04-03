@@ -11,6 +11,7 @@ import {
     PDFJS_MAX_AUTO_SCALE,
     PDFJS_WIDTH_PADDING_PX,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
+    CLASS_BOX_PRELOAD_COMPLETE,
 } from '../../constants';
 
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
@@ -126,15 +127,6 @@ class DocFirstPreloader extends EventEmitter {
                     return;
                 }
 
-                if (docBaseViewer.shouldThumbnailsBeToggled()) {
-                    docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                    docBaseViewer.rootEl.classList.add('bp-preload-complete');
-                    docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                    // hide the preview mask
-                    const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
-                    previewMask.style.display = 'none';
-                }
-
                 // index at 1 for thumbnails
                 let preloaderImageIndex = 1;
                 this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(firstPageImage);
@@ -156,9 +148,16 @@ class DocFirstPreloader extends EventEmitter {
                         }
                     });
 
-                    if (docBaseViewer.options.enableThumbnailsSidebar) {
+                    if (docBaseViewer.shouldThumbnailsBeToggled()) {
+                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
+                        docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
+                        // hide the preview mask
+                        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+                        previewMask.style.display = 'none';
                         docBaseViewer.initThumbnails();
                     }
+
                     this.emit('preload');
                     this.loadTime = Date.now();
                 }
