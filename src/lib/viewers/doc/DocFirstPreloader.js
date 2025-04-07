@@ -67,6 +67,10 @@ class DocFirstPreloader extends EventEmitter {
 
     preloadedImages = {};
 
+    thumbnailsOpen = false;
+
+    retrievedPages = 0;
+
     /**
      * [constructor]
      *
@@ -154,6 +158,7 @@ class DocFirstPreloader extends EventEmitter {
                         }
                     });
 
+                    this.retrievedPages = Object.keys(this.preloadedImages).length;
                     if (docBaseViewer.shouldThumbnailsBeToggled()) {
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
@@ -162,8 +167,8 @@ class DocFirstPreloader extends EventEmitter {
                         const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
                         previewMask.style.display = 'none';
                         docBaseViewer.initThumbnails();
+                        this.thumbnailsOpen = true;
                     }
-
                     this.emit('preload');
                     this.loadTime = Date.now();
                 }
@@ -172,7 +177,7 @@ class DocFirstPreloader extends EventEmitter {
 
     addPreloadImageToPreloaderContainer(img, i) {
         const container = this.buildPreloaderImagePlaceHolder(img);
-        container.setAttribute('preload-index', i);
+        container.setAttribute('data-preload-index', i);
         container.classList.add('loaded');
         this.preloadEl.appendChild(container);
         return container;

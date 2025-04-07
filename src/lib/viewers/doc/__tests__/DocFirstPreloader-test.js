@@ -283,7 +283,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const result = preloader.addPreloadImageToPreloaderContainer(mockImage, index);
 
             expect(preloader.buildPreloaderImagePlaceHolder).toHaveBeenCalledWith(mockImage);
-            expect(result.getAttribute('preload-index')).toBe(String(index));
+            expect(result.getAttribute('data-preload-index')).toBe(String(index));
             expect(result.classList.contains('loaded')).toBe(true);
             expect(preloader.preloadEl.contains(result)).toBe(true);
             expect(result.querySelector('img')).toBe(mockImage);

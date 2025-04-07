@@ -120,18 +120,6 @@ describe('ThumbnailsSidebar', () => {
                 expect(stubs.vsInit).not.toBeCalled();
             });
         });
-
-        test('should remove sidebar element if it alraedy exists', () => {
-            const thumbHeightPromise = Promise.resolve(10);
-            stubs.thumbnailInit = jest.fn(() => thumbHeightPromise);
-            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockImplementation(stubs.thumbnailInit);
-            const element = document.createElement('div');
-            const mockRemove = jest.fn();
-            jest.spyOn(element, 'remove').mockImplementation(mockRemove);
-            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([element]);
-            thumbnailsSidebar.init();
-            expect(mockRemove).toHaveBeenCalled();
-        });
     });
 
     describe('renderNextThumbnailImage()', () => {
