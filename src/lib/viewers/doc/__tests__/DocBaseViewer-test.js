@@ -645,7 +645,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(startPreloadTimerStub).toBeCalled();
             });
 
-            test('should load preloader properly for doc first pages', () => {
+            test('should load doc first preloader properly for doc first pages', () => {
                 jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
                 const preloadUrlTemplate = 'https://preload-url-template';
                 const pagedUrlTemplate = 'https://url/{+asset_path}';
@@ -705,6 +705,45 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     4,
                     docBase,
                 );
+            });
+
+            test('should not throw an error in doc first preloader if no webp rep available', () => {
+                jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
+                const preloadUrlTemplate = 'https://preload-url-template';
+                const preloadRep = {
+                    content: {
+                        url_template: preloadUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return preloadRep;
+                    }
+                    if (theFile && repName === 'webp') {
+                        return null;
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === preloadUrlTemplate) {
+                        return 'preload-url';
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith('preload-url', containerEl, '', 1, docBase);
             });
         });
 

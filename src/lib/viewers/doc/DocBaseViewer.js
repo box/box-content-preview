@@ -375,7 +375,7 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        const { url_template: template } = preloadRep.content;
+        const { url_template: template = '' } = preloadRep.content || {};
 
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
 
@@ -385,8 +385,8 @@ class DocBaseViewer extends BaseViewer {
         } else {
             const preloadRepPaged = getRepresentation(file, 'webp');
             const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
-            const pagedUrlTemplate = preloadRepPaged?.content?.url_template;
-            const newPagedUrlTemplate = pagedUrlTemplate?.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
+            const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
+            const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedPreLoadUrlWithAuth = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);

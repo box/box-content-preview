@@ -1,5 +1,7 @@
 @import 'boxuiVariables';
 
+$doc-first-preloader-padding: 0 20px;
+
 @keyframes box-crawler {
     0%,
     80%,
@@ -50,7 +52,7 @@
 .bp-preloader-loaded {
     margin-right: auto;
     margin-left: auto;
-    padding: 0 20px;
+    padding: $doc-first-preloader-padding;
     overflow: auto;
     pointer-events: all;
 }
