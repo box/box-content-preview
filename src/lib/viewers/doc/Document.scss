@@ -57,19 +57,12 @@
         position: relative;
         margin: 15px auto 30px;
 
-        img {
+        img.doc-first-image {
             width: 100%;
             height: 100%;
-            visibility: hidden;
         }
 
         img.loaded {
-            visibility: visible;
-        }
-    }
-
-    .bp-preload-placeholder.loaded {
-        img {
             visibility: visible;
         }
     }

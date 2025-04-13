@@ -12,6 +12,7 @@ import {
     PDFJS_WIDTH_PADDING_PX,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_BOX_PRELOAD_COMPLETE,
+    CLASS_DOC_FIRST_IMAGE,
 } from '../../constants';
 
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
@@ -85,6 +86,7 @@ class DocFirstPreloader extends EventEmitter {
         const placeHolder = document.createElement('div');
         placeHolder.classList.add(CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER);
         placeHolder.appendChild(image);
+        image.classList.add(CLASS_DOC_FIRST_IMAGE);
 
         return placeHolder;
     }
@@ -133,8 +135,10 @@ class DocFirstPreloader extends EventEmitter {
 
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
-                const container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
                 await this.setPreloadImageDimensions(imageDomElement, container);
+                container.style.maxWidth = `${this.imageDimensions.width}px`;
+                container.style.maxHeight = `${this.imageDimensions.height}px`;
                 if (!this.pdfJsDocLoadComplete()) {
                     let foundError = false;
                     data.forEach(element => {
@@ -144,7 +148,9 @@ class DocFirstPreloader extends EventEmitter {
                             imageDomElement = document.createElement('img');
                             this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
                             imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                            this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                            container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                            container.style.maxWidth = `${this.imageDimensions.width}px`;
+                            container.style.maxHeight = `${this.imageDimensions.height}px`;
                         }
                     });
 
