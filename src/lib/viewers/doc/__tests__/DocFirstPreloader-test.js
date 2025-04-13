@@ -31,6 +31,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         preloader = new DocFirstPreloader(mockPreviewUI, { api: mockApi });
         preloader.preloadEl = document.createElement('div');
         mockElement = document.createElement('div');
+        preloader.imageDimensions = {
+            width: 100,
+            height: 100,
+        };
 
         jest.spyOn(document, 'getElementsByClassName').mockImplementation(className => {
             if (className === 'bcpr-PreviewMask') {
