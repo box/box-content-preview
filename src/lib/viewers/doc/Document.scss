@@ -9,11 +9,11 @@
 .bp-preload-spinner {
     position: fixed;
     top: 50%;
-    left: 40%;
+    left: 50%;
     z-index: 1000;
     display: none;
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
     background-color: transparent;
     border: 2px solid red;
     border-top: 5px solid transparent;
@@ -30,7 +30,12 @@
             transform: translate(-50%, -50%) rotate(360deg);
         }
     }
+
+    &.bp-sidebar-open {
+        left: 43%;
+    }
 }
+
 // Used for showing preload, aka Instant Preview
 .bp-document-preload-wrapper {
     position: absolute;

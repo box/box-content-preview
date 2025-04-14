@@ -70,6 +70,7 @@ class DocFirstPreloader extends EventEmitter {
     thumbnailsOpen = false;
 
     retrievedPages = 0;
+    spinnner;
 
     /**
      * [constructor]
@@ -169,6 +170,11 @@ class DocFirstPreloader extends EventEmitter {
                         docBaseViewer.initThumbnails();
                         this.thumbnailsOpen = true;
                     }
+
+                    this.wrapperEl.classList.add('loaded');
+                    if (document.getElementsByClassName('bcs-is-open')[0]) {
+                        this.spinner.classList.add('bp-sidebar-open');
+                    }
                     this.emit('preload');
                     this.loadTime = Date.now();
                 }
@@ -188,9 +194,9 @@ class DocFirstPreloader extends EventEmitter {
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.className = this.wrapperClassName;
         this.wrapperEl.classList.add('bp-preloader-loaded');
-        const spinner = document.createElement('div');
-        spinner.classList.add('bp-preload-spinner');
-        this.wrapperEl.appendChild(spinner);
+        this.spinner = document.createElement('div');
+        this.spinner.classList.add('bp-preload-spinner');
+        this.wrapperEl.appendChild(this.spinner);
         this.containerEl.appendChild(this.wrapperEl);
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);
