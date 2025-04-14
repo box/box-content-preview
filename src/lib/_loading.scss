@@ -1,5 +1,7 @@
 @import 'boxuiVariables';
 
+$doc-first-preloader-padding: 0 20px;
+
 @keyframes box-crawler {
     0%,
     80%,
@@ -37,6 +39,22 @@
     & .bp-loading-wrapper {
         pointer-events: all;
     }
+}
+
+.bp-thumbnails-open.bp-preload-complete {
+    pointer-events: all;
+}
+
+.bp-presentation-preload-wrapper {
+    pointer-events: all;
+}
+
+.bp-preloader-loaded {
+    margin-right: auto;
+    margin-left: auto;
+    padding: $doc-first-preloader-padding;
+    overflow: auto;
+    pointer-events: all;
 }
 
 .bp-loading {

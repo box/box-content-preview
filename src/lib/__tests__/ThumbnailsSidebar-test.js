@@ -11,6 +11,7 @@ describe('ThumbnailsSidebar', () => {
     let virtualScroller;
     let pagePromise;
     let anchorEl;
+    const preloader = {};
 
     beforeEach(() => {
         fixture.load('__tests__/ThumbnailsSidebar-test.html');
@@ -67,6 +68,17 @@ describe('ThumbnailsSidebar', () => {
         test('should initialize properties', () => {
             expect(thumbnailsSidebar.anchorEl.id).toBe('test-thumbnails-sidebar');
             expect(thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
+            expect(thumbnailsSidebar.preloader).not.toBeDefined();
+            expect(thumbnailsSidebar.thumbnail.preloader).not.toBeDefined();
+        });
+
+        test('should initialize properties with doc first pages', () => {
+            thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer, preloader);
+            expect(thumbnailsSidebar.anchorEl.id).toBe('test-thumbnails-sidebar');
+            expect(thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
+            expect(thumbnailsSidebar.preloader).toBe(preloader);
+            expect(thumbnailsSidebar.thumbnail.preloader).toBe(preloader);
+            expect(thumbnailsSidebar.thumbnail.pdfViewer).toBe(pdfViewer);
         });
     });
 
@@ -107,6 +119,18 @@ describe('ThumbnailsSidebar', () => {
             return pagePromise.then(() => {
                 expect(stubs.vsInit).not.toBeCalled();
             });
+        });
+
+        test('should remove sidebar element if it alraedy exists', () => {
+            const thumbHeightPromise = Promise.resolve(10);
+            stubs.thumbnailInit = jest.fn(() => thumbHeightPromise);
+            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockImplementation(stubs.thumbnailInit);
+            const element = document.createElement('div');
+            const mockRemove = jest.fn();
+            jest.spyOn(element, 'remove').mockImplementation(mockRemove);
+            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([element]);
+            thumbnailsSidebar.init();
+            expect(mockRemove).toHaveBeenCalled();
         });
     });
 

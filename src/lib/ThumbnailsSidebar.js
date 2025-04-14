@@ -37,6 +37,8 @@ class ThumbnailsSidebar {
 
     virtualScroller;
 
+    preloader;
+
     /** @property {Array<number>} - The ID values returned by the call to window.requestAnimationFrame() */
     animationFrameRequestIds;
 
@@ -46,12 +48,13 @@ class ThumbnailsSidebar {
      * @param {HTMLElement} element - the HTMLElement that will anchor the thumbnail sidebar
      * @param {PDFViewer} pdfViewer - the PDFJS viewer
      */
-    constructor(element, pdfViewer) {
+    constructor(element, pdfViewer, preloader) {
         this.animationFrameRequestIds = [];
         this.anchorEl = element;
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
-        this.thumbnail = new Thumbnail(this.pdfViewer);
+        this.preloader = preloader;
+        this.thumbnail = new Thumbnail(this.pdfViewer, this.preloader);
         this.isOpen = false;
 
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
@@ -159,11 +162,20 @@ class ThumbnailsSidebar {
             this.isOpen = !!options.isOpen;
         }
 
+        /* If the thubmnail sidebar exists remove it so that we an recreate it
+           this is needed to remove the old virtual scroller that was created by the    
+           doc first preloader
+        */
+        const element = document.getElementsByClassName('bp-vs')[0];
+        if (element) {
+            element.remove();
+        }
         this.thumbnail.init().then(thumbnailHeight => {
             if (thumbnailHeight) {
+                const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
                 this.virtualScroller.init({
                     initialRowIndex: this.currentPage - 1,
-                    totalItems: this.pdfViewer.pagesCount,
+                    totalItems: count || 1,
                     itemHeight: thumbnailHeight,
                     containerHeight: this.getContainerHeight(),
                     margin: THUMBNAIL_MARGIN,
@@ -218,7 +230,6 @@ class ThumbnailsSidebar {
     createPlaceholderThumbnail(itemIndex) {
         const thumbnailEl = document.createElement('div');
         const pageNum = itemIndex + 1;
-
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.setAttribute('role', 'button');
