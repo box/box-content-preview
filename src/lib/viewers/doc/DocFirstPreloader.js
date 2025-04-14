@@ -188,6 +188,9 @@ class DocFirstPreloader extends EventEmitter {
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.className = this.wrapperClassName;
         this.wrapperEl.classList.add('bp-preloader-loaded');
+        const spinner = document.createElement('div');
+        spinner.classList.add('bp-preload-spinner');
+        this.wrapperEl.appendChild(spinner);
         this.containerEl.appendChild(this.wrapperEl);
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);

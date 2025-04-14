@@ -6,6 +6,31 @@
     overflow-y: scroll;
 }
 
+.bp-preload-spinner {
+    position: fixed;
+    top: 50%;
+    left: 40%;
+    z-index: 1000;
+    display: none;
+    width: 200px;
+    height: 200px;
+    background-color: transparent;
+    border: 2px solid red;
+    border-top: 5px solid transparent;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 1s linear infinite;
+
+    @keyframes spin {
+        from {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+}
 // Used for showing preload, aka Instant Preview
 .bp-document-preload-wrapper {
     position: absolute;
@@ -19,6 +44,12 @@
     background-color: $ffive;
     opacity: 1;
     transition: opacity .5s;
+
+    &.loaded {
+        .bp-preload-spinner {
+            display: block;
+        }
+    }
 
     &.bp-is-invisible {
         visibility: hidden;
