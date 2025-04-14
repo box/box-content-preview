@@ -103,7 +103,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         docBase = null;
         stubs = null;
-        jest.resetAllMocks();
+        jest.restoreAllMocks();
     });
 
     describe('setup()', () => {
