@@ -1254,6 +1254,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initThumbnails() {
+        // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
+        // we only need one thumbnail sidebar for both the preloader and the pdfViewer
         if (!this.thumbnailsSidebar) {
             this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
