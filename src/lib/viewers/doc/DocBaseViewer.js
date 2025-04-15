@@ -537,7 +537,8 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        // if the preloader has opened the thumbnails and the pdf has not finished loading
+        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
+        // for that thumbnail
         if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
             this.cachePage(parsedPageNumber);
             const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);

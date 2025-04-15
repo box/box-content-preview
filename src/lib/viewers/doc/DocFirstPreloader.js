@@ -159,13 +159,13 @@ class DocFirstPreloader extends EventEmitter {
                     });
 
                     this.retrievedPages = Object.keys(this.preloadedImages).length;
+                    const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+                    previewMask.style.display = 'none';
                     if (docBaseViewer.shouldThumbnailsBeToggled()) {
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
                         docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
                         // hide the preview mask
-                        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
-                        previewMask.style.display = 'none';
                         docBaseViewer.initThumbnails();
                         this.thumbnailsOpen = true;
                     }

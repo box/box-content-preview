@@ -310,7 +310,7 @@ class ThumbnailsSidebar {
      */
     setCurrentPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-
+        // don't use the virtual scroller if the pdfViewer is not ready but the preloader has opened the thumbnails
         if (parsedPageNumber >= 1 && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
