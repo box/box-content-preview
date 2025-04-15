@@ -138,7 +138,7 @@ class ThumbnailsSidebar {
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
-
+        this.preloader = null;
         this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
     }
 
