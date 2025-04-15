@@ -337,6 +337,15 @@ describe('ThumbnailsSidebar', () => {
             expect(stubs.applyCurrentPageSelection).toBeCalled();
             expect(stubs.vsScrollIntoView).toBeCalledWith(2);
         });
+
+        test('should not call call scroll into view if the preloader has opened thumbnails but the pdfViewer has not loaded any pages yet', () => {
+            thumbnailsSidebar.pdfViewer.pagesCount = 0;
+            thumbnailsSidebar.preloader = { thumbnailsOpen: true };
+            thumbnailsSidebar.setCurrentPage(3);
+            expect(thumbnailsSidebar.currentPage).toBe(3);
+            expect(stubs.applyCurrentPageSelection).toHaveBeenCalled();
+            expect(stubs.vsScrollIntoView).not.toHaveBeenCalled();
+        });
     });
 
     describe('applyCurrentPageSelection()', () => {
