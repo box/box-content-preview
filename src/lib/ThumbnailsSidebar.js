@@ -138,7 +138,7 @@ class ThumbnailsSidebar {
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
-
+        this.preloader = null;
         this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
     }
 
@@ -162,20 +162,12 @@ class ThumbnailsSidebar {
             this.isOpen = !!options.isOpen;
         }
 
-        /* If the thubmnail sidebar exists remove it so that we an recreate it
-           this is needed to remove the old virtual scroller that was created by the    
-           doc first preloader
-        */
-        const element = document.getElementsByClassName('bp-vs')[0];
-        if (element) {
-            element.remove();
-        }
         this.thumbnail.init().then(thumbnailHeight => {
             if (thumbnailHeight) {
                 const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
                 this.virtualScroller.init({
                     initialRowIndex: this.currentPage - 1,
-                    totalItems: count || 1,
+                    totalItems: count,
                     itemHeight: thumbnailHeight,
                     containerHeight: this.getContainerHeight(),
                     margin: THUMBNAIL_MARGIN,
@@ -216,6 +208,10 @@ class ThumbnailsSidebar {
 
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
+            // max doc first pages is 8 and this prevents the 9th page from being blank if the pdfDocument is not loaded yet
+            if (parsedPageNum > this.preloader?.retrievedPages && !this.pdfViewer.pdfDocument) {
+                return;
+            }
             this.requestThumbnailImage(parsedPageNum - 1, nextThumbnailEl);
         }
     }
@@ -314,8 +310,11 @@ class ThumbnailsSidebar {
      */
     setCurrentPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-
-        if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
+        // don't use the virtual scroller if the pdfViewer is not ready but the preloader has opened the thumbnails
+        if (parsedPageNumber >= 1 && this.preloader?.thumbnailsOpen && !this.pdfViewer?.pagesCount) {
+            this.currentPage = parsedPageNumber;
+            this.applyCurrentPageSelection();
+        } else if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
             this.virtualScroller.scrollIntoView(parsedPageNumber - 1);
