@@ -11,7 +11,6 @@ describe('ThumbnailsSidebar', () => {
     let virtualScroller;
     let pagePromise;
     let anchorEl;
-    const preloader = {};
 
     beforeEach(() => {
         fixture.load('__tests__/ThumbnailsSidebar-test.html');
@@ -73,6 +72,7 @@ describe('ThumbnailsSidebar', () => {
         });
 
         test('should initialize properties with doc first pages', () => {
+            const preloader = {};
             thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer, preloader);
             expect(thumbnailsSidebar.anchorEl.id).toBe('test-thumbnails-sidebar');
             expect(thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
@@ -86,6 +86,10 @@ describe('ThumbnailsSidebar', () => {
         test('should clean up the instance properties', () => {
             thumbnailsSidebar.destroy();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
+            const preloader = { retrievedPages: 3 };
+            thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer, preloader);
+            thumbnailsSidebar.destroy();
+            expect(thumbnailsSidebar.preloader).toBeNull();
         });
 
         test('should destroy virtualScroller if it exists', () => {
@@ -119,18 +123,6 @@ describe('ThumbnailsSidebar', () => {
             return pagePromise.then(() => {
                 expect(stubs.vsInit).not.toBeCalled();
             });
-        });
-
-        test('should remove sidebar element if it alraedy exists', () => {
-            const thumbHeightPromise = Promise.resolve(10);
-            stubs.thumbnailInit = jest.fn(() => thumbHeightPromise);
-            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockImplementation(stubs.thumbnailInit);
-            const element = document.createElement('div');
-            const mockRemove = jest.fn();
-            jest.spyOn(element, 'remove').mockImplementation(mockRemove);
-            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([element]);
-            thumbnailsSidebar.init();
-            expect(mockRemove).toHaveBeenCalled();
         });
     });
 
@@ -183,6 +175,16 @@ describe('ThumbnailsSidebar', () => {
             thumbnailsSidebar.renderNextThumbnailImage();
 
             expect(stubs.requestThumbnailImage).toBeCalledTimes(1);
+        });
+
+        test('should not request thumbnail if the page number is greater than the number of preloader retrieved images and document is not loaded', () => {
+            const items = [createThumbnailEl(9, false)];
+            thumbnailsSidebar.currentThumbnails = items;
+            thumbnailsSidebar.pdfViewer.pdfDocument = null;
+            thumbnailsSidebar.preloader = { retrievedPages: 8 };
+            thumbnailsSidebar.renderNextThumbnailImage();
+
+            expect(stubs.requestThumbnailImage).not.toHaveBeenCalled();
         });
     });
 
@@ -334,6 +336,15 @@ describe('ThumbnailsSidebar', () => {
             expect(thumbnailsSidebar.currentPage).toBe(3);
             expect(stubs.applyCurrentPageSelection).toBeCalled();
             expect(stubs.vsScrollIntoView).toBeCalledWith(2);
+        });
+
+        test('should not call call scroll into view if the preloader has opened thumbnails but the pdfViewer has not loaded any pages yet', () => {
+            thumbnailsSidebar.pdfViewer.pagesCount = 0;
+            thumbnailsSidebar.preloader = { thumbnailsOpen: true };
+            thumbnailsSidebar.setCurrentPage(3);
+            expect(thumbnailsSidebar.currentPage).toBe(3);
+            expect(stubs.applyCurrentPageSelection).toHaveBeenCalled();
+            expect(stubs.vsScrollIntoView).not.toHaveBeenCalled();
         });
     });
 

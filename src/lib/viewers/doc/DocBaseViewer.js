@@ -537,14 +537,24 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
+        // for that thumbnail
+        if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
+            this.cachePage(parsedPageNumber);
+            const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+            el.scrollIntoView({ behavior: 'instant', block: 'start' });
+            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+        } else if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
         this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
-
-        if (this.thumbnailsSidebar) {
+        /*
+        Don't set the page if the thumbnails from the preloader are already open and the
+        pdf doc has loaded.This causes the virtual scroller to always scroll to the top
+        */
+        if (this.thumbnailsSidebar && !this.preloader?.thumbnailsOpen) {
             this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
         }
     }
@@ -1244,13 +1254,20 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initThumbnails() {
-        this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+        // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
+        // we only need one thumbnail sidebar for both the preloader and the pdfViewer
+        if (!this.thumbnailsSidebar) {
+            this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
-        this.thumbnailsSidebar.init({
-            currentPage: this.pdfViewer?.currentPageNumber,
-            isOpen: this.shouldThumbnailsBeToggled(),
-            onSelect: this.onThumbnailSelectHandler,
-        });
+            this.thumbnailsSidebar.init({
+                currentPage: this.pdfViewer?.currentPageNumber,
+                isOpen: this.shouldThumbnailsBeToggled(),
+                onSelect: this.onThumbnailSelectHandler,
+            });
+        } else {
+            // if preloader has finished and the document has loaded start rendering the remaining thumbnails
+            this.thumbnailsSidebar.renderNextThumbnailImage();
+        }
     }
 
     /**

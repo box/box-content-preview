@@ -36,6 +36,7 @@ import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
 import { EXIF, JS, CSS } from '../docAssets';
+import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1030,6 +1031,55 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.setPage(4);
                     expect(docBase.pdfViewer.currentPageNumber).toBe(1);
                     expect(stubs.cachePage).not.toBeCalled();
+                });
+
+                test('should scroll to doc first page when thumbnail is clicked in the preloader', () => {
+                    const fileId = '1234';
+                    const docBaseObj = new DocBaseViewer({
+                        cache: {
+                            set: () => {},
+                            has: () => {},
+                            get: () => {},
+                            unset: () => {},
+                        },
+
+                        file: {
+                            id: fileId,
+                            extension: 'pdf',
+                        },
+                        enableThumbnailsSidebar: true,
+                    });
+
+                    const pageNumber = 2;
+                    const mockElement = {
+                        scrollIntoView: jest.fn(),
+                    };
+
+                    jest.spyOn(document, 'querySelector').mockImplementation(query => {
+                        if (query === `[data-preload-index="${pageNumber}"]`) {
+                            return mockElement;
+                        }
+                        return null;
+                    });
+
+                    const setCachePage = jest.spyOn(docBaseObj, 'cachePage').mockImplementation();
+                    const setCurrentPage = jest.fn();
+
+                    docBaseObj.pdfViewer = {
+                        currentPageNumber: 0,
+                        pagesCount: 0,
+                    };
+
+                    docBaseObj.thumbnailsSidebar = {
+                        currentPage: 0,
+                        setCurrentPage,
+                    };
+
+                    docBaseObj.preloader = { thumbnailsOpen: true };
+                    docBaseObj.setPage(pageNumber);
+                    expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'instant', block: 'start' });
+                    expect(setCurrentPage).toHaveBeenCalledWith(pageNumber);
+                    expect(setCachePage).toHaveBeenCalledWith(pageNumber);
                 });
             });
         });
@@ -3285,6 +3335,66 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handlePreviewEventReport(false);
                 expect(stubs.previewEventReported).not.toBeCalled();
                 expect(docBase.pageTracker).toBe(null);
+            });
+        });
+
+        describe('intThumbnails()', () => {
+            let docBaseObj;
+            beforeEach(() => {
+                docBaseObj = new DocBaseViewer({
+                    cache: {
+                        set: () => {},
+                        has: () => {},
+                        get: () => {},
+                        unset: () => {},
+                    },
+                    container: containerEl,
+                    representation: {
+                        content: {
+                            url_template: 'foo',
+                        },
+                    },
+                    file: {
+                        id: '0',
+                        extension: 'ppt',
+                    },
+                    enableThumbnailsSidebar: true,
+                });
+
+                docBaseObj.pdfViewer = {
+                    currentPageNumber: 1,
+                };
+
+                docBaseObj.preloader = {};
+
+                docBaseObj.thumbnailsSidebarEl = document.createElement('div');
+                jest.spyOn(docBaseObj, 'shouldThumbnailsBeToggled').mockReturnValue(true);
+            });
+
+            test('should call render next thumbnail image if the preloader has already loaded its thumbnails', () => {
+                docBaseObj.preloader = {};
+                const renderNextThumbnailImage = jest.fn();
+                docBaseObj.thumbnailsSidebar = {
+                    renderNextThumbnailImage,
+                };
+                docBaseObj.initThumbnails();
+                expect(renderNextThumbnailImage).toHaveBeenCalled();
+            });
+
+            test('should create a new ThumbnailSidebar if it is null and initialize it', () => {
+                const init = jest.fn();
+                Object.defineProperty(ThumbnailsSidebar.prototype, 'init', { value: init });
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebar);
+                expect(docBaseObj.thumbnailsSidebar.anchorEl).toBe(docBaseObj.thumbnailsSidebarEl);
+                expect(docBaseObj.thumbnailsSidebar.pdfViewer).toBe(docBaseObj.pdfViewer);
+                expect(docBaseObj.thumbnailsSidebar.preloader).toBe(docBaseObj.preloader);
+                const params = {
+                    currentPage: docBaseObj.pdfViewer.currentPageNumber,
+                    isOpen: true,
+                    onSelect: docBaseObj.onThumbnailSelectHandler,
+                };
+                expect(init).toHaveBeenCalledWith(params);
             });
         });
     });
