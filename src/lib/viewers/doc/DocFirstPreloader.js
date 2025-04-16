@@ -61,15 +61,22 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {Object} - Preloaded image dimensions */
     imageDimensions;
 
+    /** @property {number} - Preloader load time */
     loadTime;
 
+    /** @property {number} - Number of pages in the document */
     numPages = 1;
 
+    /** @property {Object} - Preloaded image map */
     preloadedImages = {};
 
+    /** @property {boolean} - Preloader thumbnails open */
     thumbnailsOpen = false;
 
+    /** @property {number} - Preloader number of pages retrieved from representation api */
     retrievedPages = 0;
+
+    /** @property {HTMLElement} - Preload loading spinner element */
     spinnner;
 
     /**
