@@ -167,7 +167,7 @@ class ThumbnailsSidebar {
                 const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
                 this.virtualScroller.init({
                     initialRowIndex: this.currentPage - 1,
-                    totalItems: count || 1,
+                    totalItems: count,
                     itemHeight: thumbnailHeight,
                     containerHeight: this.getContainerHeight(),
                     margin: THUMBNAIL_MARGIN,
