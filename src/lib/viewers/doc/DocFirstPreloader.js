@@ -3,6 +3,7 @@ import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
+    CLASS_BOX_PREVIEW_PRELOAD_SPINNER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
@@ -173,19 +174,28 @@ class DocFirstPreloader extends EventEmitter {
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
                         docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                        // hide the preview mask
                         docBaseViewer.initThumbnails();
                         this.thumbnailsOpen = true;
                     }
-
-                    this.wrapperEl.classList.add('loaded');
-                    if (document.getElementsByClassName('bcs-is-open')[0]) {
-                        this.spinner.classList.add('bp-sidebar-open');
+                    if (this.retrievedPages) {
+                        this.emit('preload');
+                        this.loadTime = Date.now();
+                        this.wrapperEl.classList.add('loaded');
+                        this.showSpinner();
                     }
-                    this.emit('preload');
-                    this.loadTime = Date.now();
                 }
             });
+    }
+
+    showSpinner() {
+        if (!this.spinner) {
+            this.spinner = document.createElement('div');
+            this.spinner.classList.add(CLASS_BOX_PREVIEW_PRELOAD_SPINNER);
+            if (!document.getElementsByClassName('bcs-is-open')[0]) {
+                this.spinner.classList.add('bp-sidebar-closed');
+            }
+            this.wrapperEl.appendChild(this.spinner);
+        }
     }
 
     addPreloadImageToPreloaderContainer(img, i) {
@@ -201,9 +211,6 @@ class DocFirstPreloader extends EventEmitter {
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.className = this.wrapperClassName;
         this.wrapperEl.classList.add('bp-preloader-loaded');
-        this.spinner = document.createElement('div');
-        this.spinner.classList.add('bp-preload-spinner');
-        this.wrapperEl.appendChild(this.spinner);
         this.containerEl.appendChild(this.wrapperEl);
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);

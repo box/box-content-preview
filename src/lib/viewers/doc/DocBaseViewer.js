@@ -415,9 +415,13 @@ class DocBaseViewer extends BaseViewer {
         super.load();
 
         if (this.docFirstPagesEnabled) {
-            this.loadAssets(EXIF).then(() => {
-                this.showPreload();
-            });
+            // If there is an error and we are in a retry don't
+            // re-render the preloader. Use the existing one.
+            if (!this.preloader?.retrievedPages) {
+                this.loadAssets(EXIF).then(() => {
+                    this.showPreload();
+                });
+            }
         } else {
             this.showPreload();
         }

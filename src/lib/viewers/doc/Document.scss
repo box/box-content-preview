@@ -6,10 +6,10 @@
     overflow-y: scroll;
 }
 
-.bp-preload-spinner {
+.bp-document-preload-spinner {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 43%;
     z-index: 1000;
     display: none;
     width: 160px;
@@ -31,8 +31,8 @@
         }
     }
 
-    &.bp-sidebar-open {
-        left: 43%;
+    &.bp-sidebar-closed {
+        left: 50%;
     }
 }
 
@@ -51,7 +51,7 @@
     transition: opacity .5s;
 
     &.loaded {
-        .bp-preload-spinner {
+        .bp-document-preload-spinner {
             display: block;
         }
     }
