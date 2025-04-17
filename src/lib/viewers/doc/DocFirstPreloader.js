@@ -266,10 +266,11 @@ class DocFirstPreloader extends EventEmitter {
 
         this.preloadEl = undefined;
         this.imageEl = undefined;
-
-        if (this.srcUrl) {
-            URL.revokeObjectURL(this.srcUrl);
-        }
+        this.retrievedPages = undefined;
+        Object.values(this.preloadedImages).forEach(image => {
+            URL.revokeObjectURL(image);
+        });
+        this.preloadedImages = {};
     };
 
     /**

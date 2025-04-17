@@ -298,6 +298,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
+    /*
+  jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+
+            docPreloader.wrapperEl = document.createElement('div');
+            docPreloader.preloadEl = document.createElement('div');
+            docPreloader.imageEl = document.createElement('img');
+            docPreloader.srcUrl = 'blah';
+            containerEl.appendChild(docPreloader.wrapperEl);
+
+            docPreloader.cleanupPreload();
+
+            expect(docPreloader.preloadEl).toBeUndefined();
+            expect(docPreloader.imageEl).toBeUndefined();
+            expect(containerEl).not.toContain(docPreloader.wrapperEl);
+    */
+
     describe('cleanupPreload()', () => {
         it('should remove the wrapper element and revoke object URLs', () => {
             const mockWrapperEl = document.createElement('div');
@@ -305,14 +321,17 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             mockParent.appendChild(mockWrapperEl);
             preloader.wrapperEl = mockWrapperEl;
             preloader.srcUrl = 'mock-url';
-
+            preloader.preloadedImages = {
+                1: 'mock-url',
+                2: 'mock-url2',
+            };
             jest.spyOn(URL, 'revokeObjectURL');
-
             preloader.cleanupPreload();
-
             expect(mockParent.contains(mockWrapperEl)).toBe(false);
             expect(preloader.wrapperEl).toBeUndefined();
             expect(URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('mock-url2');
+            expect(preloader.preloadedImages).toEqual({});
         });
     });
 
