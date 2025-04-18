@@ -177,6 +177,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.preloadedImages[3]).toBe('mock-object-url3');
             expect(preloader.preloadedImages[4]).toBe('mock-object-url4');
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(
+                mockBlob,
                 mockFirstImage,
                 expect.any(HTMLDivElement),
             );
