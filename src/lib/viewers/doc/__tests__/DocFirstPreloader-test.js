@@ -298,22 +298,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
-    /*
-  jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
-
-            docPreloader.wrapperEl = document.createElement('div');
-            docPreloader.preloadEl = document.createElement('div');
-            docPreloader.imageEl = document.createElement('img');
-            docPreloader.srcUrl = 'blah';
-            containerEl.appendChild(docPreloader.wrapperEl);
-
-            docPreloader.cleanupPreload();
-
-            expect(docPreloader.preloadEl).toBeUndefined();
-            expect(docPreloader.imageEl).toBeUndefined();
-            expect(containerEl).not.toContain(docPreloader.wrapperEl);
-    */
-
     describe('cleanupPreload()', () => {
         it('should remove the wrapper element and revoke object URLs', () => {
             const mockWrapperEl = document.createElement('div');
