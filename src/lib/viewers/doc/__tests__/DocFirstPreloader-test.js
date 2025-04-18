@@ -11,6 +11,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     let mockApi;
     let mockDocBaseViewer;
     let mockElement;
+    let mockFirstImage;
     beforeEach(() => {
         mockPreviewUI = {
             previewContainer: {
@@ -31,6 +32,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         preloader = new DocFirstPreloader(mockPreviewUI, { api: mockApi });
         preloader.preloadEl = document.createElement('div');
         mockElement = document.createElement('div');
+        mockFirstImage = new Image(100, 200);
         preloader.imageDimensions = {
             width: 100,
             height: 100,
@@ -97,6 +99,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     });
 
     describe('showPreload()', () => {
+        beforeEach(() => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'showSpinner');
+            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
+            jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
+        });
+
         it('should not proceed if the document is already loaded', async () => {
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
             jest.spyOn(preloader, 'initializePreloadContainerComponents').mockImplementation();
@@ -108,11 +118,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         it('should handle thubmnail sidebar correctly', async () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(mockBlob)];
-            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'loadImage').mockReturnValue(new Image(100, 200));
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             const mockContainer = document.createElement('div');
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
@@ -134,13 +141,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob4),
             ];
 
-            const mockFirstImage = new Image(100, 200);
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
             jest.spyOn(preloader, 'initializePreloadContainerComponents');
-            jest.spyOn(preloader, 'emit');
+
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
                     return 'mock-object-url1';
@@ -178,6 +182,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             );
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
+            expect(preloader.showSpinner).toHaveBeenCalled();
             expect(preloader.loadTime).toBeDefined();
             expect(mockElement.style.display).toBe('none');
         });
@@ -185,15 +190,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         it('should stop on first image retrieval failure', async () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
-            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             const mockContainer = document.createElement('div');
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
             expect(preloader.retrievedPages).toBe(0);
             expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
             expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
+            expect(preloader.showSpinner).not.toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalled();
             expect(preloader.loadTime).toBeUndefined();
         });
@@ -206,12 +209,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob),
             ];
 
-            const mockFirstImage = new Image(100, 200);
-            jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
-            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
 
             const mockContainer = document.createElement('div');
@@ -222,6 +220,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
+            expect(preloader.showSpinner).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
         });
 
@@ -236,12 +235,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob4),
             ];
 
-            const mockFirstImage = new Image(100, 200);
-            jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
-            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
@@ -311,14 +305,17 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             mockParent.appendChild(mockWrapperEl);
             preloader.wrapperEl = mockWrapperEl;
             preloader.srcUrl = 'mock-url';
-
+            preloader.preloadedImages = {
+                1: 'mock-url',
+                2: 'mock-url2',
+            };
             jest.spyOn(URL, 'revokeObjectURL');
-
             preloader.cleanupPreload();
-
             expect(mockParent.contains(mockWrapperEl)).toBe(false);
             expect(preloader.wrapperEl).toBeUndefined();
             expect(URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('mock-url2');
+            expect(preloader.preloadedImages).toEqual({});
         });
     });
 
@@ -337,6 +334,46 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const result = preloader.pdfJsDocLoadComplete();
 
             expect(result).toBe(false);
+        });
+    });
+
+    describe('showSpinner()', () => {
+        it('should not create the spinner if it already exists', () => {
+            const mockWrapperEl = jest.spyOn(document, 'createElement').mockReturnValue();
+            preloader.wrapperEl = mockWrapperEl;
+            preloader.spinner = {};
+            preloader.showSpinner();
+            expect(document.createElement).not.toHaveBeenCalled();
+            expect(preloader.spinner).toEqual({});
+        });
+
+        it('should create the spinner if it does not exist', () => {
+            const mockWrapperEl = document.createElement('div');
+            jest.spyOn(mockWrapperEl, 'appendChild');
+            jest.spyOn(document, 'getElementsByClassName').mockImplementation(klass => {
+                if (klass === 'bcs-is-open') {
+                    return ['div'];
+                }
+
+                return null;
+            });
+
+            preloader.wrapperEl = mockWrapperEl;
+            preloader.spinner = null;
+            preloader.showSpinner();
+            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
+            expect(preloader.spinner.classList.contains('bp-document-preload-spinner')).toBe(true);
+            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).not.toBe(true);
+            expect(mockWrapperEl.appendChild).toHaveBeenCalledWith(preloader.spinner);
+        });
+
+        it('should create the spinner and position it properly if sidebar is closed', () => {
+            const mockWrapperEl = document.createElement('div');
+            jest.spyOn(mockWrapperEl, 'appendChild');
+            preloader.wrapperEl = mockWrapperEl;
+            preloader.showSpinner();
+            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
+            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).toBe(true);
         });
     });
 });
