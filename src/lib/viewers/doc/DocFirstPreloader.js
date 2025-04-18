@@ -3,6 +3,7 @@ import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
+    CLASS_BOX_PREVIEW_PRELOAD_SPINNER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
@@ -61,15 +62,23 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {Object} - Preloaded image dimensions */
     imageDimensions;
 
+    /** @property {number} - Preloader load time */
     loadTime;
 
+    /** @property {number} - Number of pages in the document */
     numPages = 1;
 
+    /** @property {Object} - Preloaded image map */
     preloadedImages = {};
 
+    /** @property {boolean} - Preloader thumbnails open */
     thumbnailsOpen = false;
 
+    /** @property {number} - Preloader number of pages retrieved from representation api */
     retrievedPages = 0;
+
+    /** @property {HTMLElement} - Preload loading spinner element */
+    spinnner;
 
     /**
      * [constructor]
@@ -165,14 +174,28 @@ class DocFirstPreloader extends EventEmitter {
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
                         docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                        // hide the preview mask
                         docBaseViewer.initThumbnails();
                         this.thumbnailsOpen = true;
                     }
-                    this.emit('preload');
-                    this.loadTime = Date.now();
+                    if (this.retrievedPages) {
+                        this.emit('preload');
+                        this.loadTime = Date.now();
+                        this.wrapperEl.classList.add('loaded');
+                        this.showSpinner();
+                    }
                 }
             });
+    }
+
+    showSpinner() {
+        if (!this.spinner) {
+            this.spinner = document.createElement('div');
+            this.spinner.classList.add(CLASS_BOX_PREVIEW_PRELOAD_SPINNER);
+            if (!document.getElementsByClassName('bcs-is-open')[0]) {
+                this.spinner.classList.add('bp-sidebar-closed');
+            }
+            this.wrapperEl.appendChild(this.spinner);
+        }
     }
 
     addPreloadImageToPreloaderContainer(img, i) {
@@ -243,10 +266,11 @@ class DocFirstPreloader extends EventEmitter {
 
         this.preloadEl = undefined;
         this.imageEl = undefined;
-
-        if (this.srcUrl) {
-            URL.revokeObjectURL(this.srcUrl);
-        }
+        this.retrievedPages = undefined;
+        Object.values(this.preloadedImages).forEach(image => {
+            URL.revokeObjectURL(image);
+        });
+        this.preloadedImages = {};
     };
 
     /**
