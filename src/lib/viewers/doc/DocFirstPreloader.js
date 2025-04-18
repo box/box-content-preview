@@ -149,7 +149,7 @@ class DocFirstPreloader extends EventEmitter {
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
                 await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
-                let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
 
                 if (!this.pdfJsDocLoadComplete()) {
                     let foundError = false;
@@ -160,9 +160,7 @@ class DocFirstPreloader extends EventEmitter {
                             imageDomElement = document.createElement('img');
                             this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
                             imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                            container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                            container.style.maxWidth = `${this.imageDimensions.width}px`;
-                            container.style.maxHeight = `${this.imageDimensions.height}px`;
+                            this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
                         }
                     });
 
