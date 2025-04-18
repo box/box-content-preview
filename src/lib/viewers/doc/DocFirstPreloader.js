@@ -149,7 +149,7 @@ class DocFirstPreloader extends EventEmitter {
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
                 let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                await this.setPreloadImageDimensions2(imageDomElement, container);
+                await this.setPreloadImageDimensions(firstPageImage, imageDomElement, container);
                 container.style.maxWidth = `${this.imageDimensions.width}px`;
                 container.style.maxHeight = `${this.imageDimensions.height}px`;
                 if (!this.pdfJsDocLoadComplete()) {
@@ -305,33 +305,10 @@ class DocFirstPreloader extends EventEmitter {
      * @private
      * @return {Promise} Promise to scale and show preload
      */
-    setPreloadImageDimensions = imageEl => {
-        if (!imageEl) {
+    setPreloadImageDimensions = (imageBlob, imageEl, container) => {
+        if (!imageBlob || !container || !imageEl) {
             return Promise.resolve();
         }
-
-        // Calculate pdf width, height, and number of pages from EXIF if possible
-        return this.readEXIF(imageEl)
-            .then(pdfData => {
-                this.pdfData = pdfData;
-                const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
-                this.imageDimensions = { width: scaledWidth, height: scaledHeight };
-                imageEl.classList.add('loaded');
-                this.numPages = pdfData.numPages;
-            })
-            .catch(() => {
-                const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = imageEl;
-                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.imageDimensions = { width: scaledWidth, height: scaledHeight };
-                imageEl.classList.add('loaded');
-            });
-    };
-
-    setPreloadImageDimensions2 = (imageBlob, imageEl) => {
-        if (!imageEl) {
-            return Promise.resolve();
-        }
-
         // Calculate pdf width, height, and number of pages from EXIF if possible
         return this.readEXIFNew(imageBlob, imageEl)
             .then(pdfData => {
