@@ -176,11 +176,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.preloadedImages[2]).toBe('mock-object-url2');
             expect(preloader.preloadedImages[3]).toBe('mock-object-url3');
             expect(preloader.preloadedImages[4]).toBe('mock-object-url4');
-            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(
-                mockBlob,
-                mockFirstImage,
-                expect.any(HTMLDivElement),
-            );
+            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, mockFirstImage);
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
             expect(preloader.showSpinner).toHaveBeenCalled();
@@ -263,6 +259,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
         });
+
+        it('should use the jpeg image as  preloader if webp is not available ', async () => {
+            const mockBlob = new Blob(['mock-content'], { type: 'image/jpg' });
+            const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
+            const mockContainer = document.createElement('div');
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
+            expect(preloader.retrievedPages).toBe(0);
+            expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalled();
+            expect(preloader.loadTime).toBeUndefined();
+        });
     });
 
     describe('addPreloadImageToPreloaderContainer()', () => {
@@ -338,6 +350,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
+
     describe('showSpinner()', () => {
         it('should not create the spinner if it already exists', () => {
             const mockWrapperEl = jest.spyOn(document, 'createElement').mockReturnValue();
@@ -375,6 +388,36 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.showSpinner();
             expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
             expect(preloader.spinner.classList.contains('bp-sidebar-closed')).toBe(true);
+        });
+    });
+
+    
+    describe('getPreloadImageRequestPromises()', () => {
+        beforeEach(() => {
+            jest.spyOn(preloader.api, 'get').mockResolvedValue({});
+        });
+
+        it('should create only the jpeg promise if webp is unavailable', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = '';
+            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
+            expect(preloader.api.get).toHaveBeenNthCalledWith(
+                1,
+                expect.stringContaining('jpeg-url'),
+                expect.any(Object),
+            );
+            expect(promises.length).toBe(1);
+        });
+
+        it('should create only the webp promises if webp is unavailable', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = 'webp-urlpage_number';
+            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
+            expect(preloader.api.get).toHaveBeenCalledTimes(3);
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
+            expect(promises.length).toBe(3);
         });
     });
 });

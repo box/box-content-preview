@@ -148,10 +148,9 @@ class DocFirstPreloader extends EventEmitter {
 
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
+                await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
                 let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                await this.setPreloadImageDimensions(firstPageImage, imageDomElement, container);
-                container.style.maxWidth = `${this.imageDimensions.width}px`;
-                container.style.maxHeight = `${this.imageDimensions.height}px`;
+
                 if (!this.pdfJsDocLoadComplete()) {
                     let foundError = false;
                     data.forEach(element => {
@@ -202,7 +201,8 @@ class DocFirstPreloader extends EventEmitter {
         const container = this.buildPreloaderImagePlaceHolder(img);
         container.setAttribute('data-preload-index', i);
         container.classList.add('loaded');
-
+        container.style.maxWidth = `${this.imageDimensions.width}px`;
+        container.style.maxHeight = `${this.imageDimensions.height}px`;
         this.preloadEl.appendChild(container);
         return container;
     }
@@ -219,8 +219,11 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
-        // const promise1 = this.api.get(preloadUrlWithAuth, { type: 'blob' });
-        const promises = [];
+        const firstPageUrl = !pagedPreLoadUrlWithAuth
+            ? preloadUrlWithAuth
+            : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
+        const promise1 = this.api.get(firstPageUrl, { type: 'blob' });
+        const promises = [promise1.catch(e => e)];
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
@@ -305,8 +308,8 @@ class DocFirstPreloader extends EventEmitter {
      * @private
      * @return {Promise} Promise to scale and show preload
      */
-    setPreloadImageDimensions = (imageBlob, imageEl, container) => {
-        if (!imageBlob || !container || !imageEl) {
+    setPreloadImageDimensions = (imageBlob, imageEl) => {
+        if (!imageBlob || !imageEl) {
             return Promise.resolve();
         }
         // Calculate pdf width, height, and number of pages from EXIF if possible
@@ -446,8 +449,7 @@ class DocFirstPreloader extends EventEmitter {
                     /* global ExifReader */
                     tags = ExifReader.load(arrayBuffer);
 
-                    const userCommentRaw = tags.UserComment.description || tags.UserComment.value;
-                    const userComment = userCommentRaw.map(c => String.fromCharCode(c)).join('');
+                    const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
                     // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
