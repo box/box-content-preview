@@ -350,7 +350,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
-
     describe('showSpinner()', () => {
         it('should not create the spinner if it already exists', () => {
             const mockWrapperEl = jest.spyOn(document, 'createElement').mockReturnValue();
@@ -391,7 +390,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
-    
     describe('getPreloadImageRequestPromises()', () => {
         beforeEach(() => {
             jest.spyOn(preloader.api, 'get').mockResolvedValue({});
