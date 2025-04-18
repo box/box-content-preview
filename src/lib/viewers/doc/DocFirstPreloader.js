@@ -142,14 +142,6 @@ class DocFirstPreloader extends EventEmitter {
                     return;
                 }
 
-                this.readEXIFNew(firstPageImage).then(pdfData => {
-                    this.pdfData = pdfData;
-                });
-                if (docBaseViewer.shouldThumbnailsBeToggled()) {
-                    docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                    docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                }
-
                 // index at 1 for thumbnails
                 let preloaderImageIndex = 1;
                 this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(firstPageImage);
@@ -157,7 +149,7 @@ class DocFirstPreloader extends EventEmitter {
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
                 let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                await this.setPreloadImageDimensions(imageDomElement, container);
+                await this.setPreloadImageDimensions2(imageDomElement, container);
                 container.style.maxWidth = `${this.imageDimensions.width}px`;
                 container.style.maxHeight = `${this.imageDimensions.height}px`;
                 if (!this.pdfJsDocLoadComplete()) {
