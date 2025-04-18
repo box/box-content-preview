@@ -35,7 +35,7 @@ import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, 
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { EXIF, JS, CSS } from '../docAssets';
+import { EXIF_READER, JS, CSS, JS_NO_EXIF } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -763,42 +763,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('load()', () => {
             const loadFunc = BaseViewer.prototype.load;
 
-            afterEach(() => {
-                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
-            });
-
-            test('should load a document', () => {
+            beforeEach(() => {
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 jest.spyOn(docBase, 'setup').mockImplementation();
-                Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
-                jest.spyOn(docBase, 'handleAssetAndRepLoad').mockImplementation();
-                jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-                jest.spyOn(docBase, 'loadAssets').mockImplementation();
-                jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
-
-                return docBase.load().then(() => {
-                    expect(docBase.loadAssets).toBeCalled();
-                    expect(docBase.setup).not.toBeCalled();
-                    expect(docBase.createContentUrlWithAuthParams).toBeCalledWith('foo');
-                    expect(docBase.handleAssetAndRepLoad).toBeCalled();
-                });
-            });
-
-            test('should load EXIF asset first if doc first pages enabled', () => {
-                jest.spyOn(stubs.api, 'get').mockImplementation();
-                jest.spyOn(docBase, 'setup').mockImplementation();
-                docBase.docFirstPagesEnabled = true;
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
                 jest.spyOn(docBase, 'handleAssetAndRepLoad').mockImplementation();
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
                 jest.spyOn(docBase, 'loadAssets').mockResolvedValue();
                 jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
+            });
 
+            afterEach(() => {
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
+            });
+
+            test('should load a document', () => {
                 return docBase.load().then(() => {
-                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, JS, CSS);
-                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, EXIF);
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(JS, CSS);
+                    expect(docBase.setup).not.toHaveBeenCalled();
+                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                    expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
+                    expect(docBase.loadAssets).not.toHaveBeenCalledWith(EXIF_READER);
+                });
+            });
+
+            test('should load new exif reader if docfirst pages enabled', () => {
+                docBase.docFirstPagesEnabled = true;
+                return docBase.load().then(() => {
+                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, JS_NO_EXIF, CSS);
+                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, EXIF_READER);
                     expect(docBase.setup).not.toHaveBeenCalled();
                     expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
                     expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();

@@ -33,7 +33,7 @@ import {
 import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF, WORKER } from './docAssets';
+import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -413,12 +413,12 @@ class DocBaseViewer extends BaseViewer {
      */
     load() {
         super.load();
-
+        // Create a new array from a constant array
         if (this.docFirstPagesEnabled) {
             // If there is an error and we are in a retry don't
             // re-render the preloader. Use the existing one.
             if (!this.preloader?.retrievedPages) {
-                this.loadAssets(EXIF).then(() => {
+                this.loadAssets(EXIF_READER).then(() => {
                     this.showPreload();
                 });
             }
@@ -428,8 +428,8 @@ class DocBaseViewer extends BaseViewer {
 
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
-
-        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
+        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
