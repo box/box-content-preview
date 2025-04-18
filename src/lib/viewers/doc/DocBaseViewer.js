@@ -413,7 +413,7 @@ class DocBaseViewer extends BaseViewer {
      */
     load() {
         super.load();
-        // Create a new array from a constant array
+
         if (this.docFirstPagesEnabled) {
             // If there is an error and we are in a retry don't
             // re-render the preloader. Use the existing one.
