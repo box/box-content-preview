@@ -65,6 +65,7 @@ export const LOAD_METRIC = {
     previewLoadEvent: 'load', // Event name for preview_metric events related to loading times.
     previewLoadTime: 'preview_loading', // Total preview load time. Maps to "value" of load event
     previewPreloadEvent: 'preload', // Event name for preview_metrics based on preload times.
+    preloadContentLoadDiff: 'preload_content_load_diff', // Difference between content load time and preload time.
 };
 // Event fired from preview based on when the content was actually shown
 export const RENDER_EVENT = 'preview_render';

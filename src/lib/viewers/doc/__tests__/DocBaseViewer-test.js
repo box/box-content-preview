@@ -2211,6 +2211,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.stop = jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 1000 });
             });
 
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
             test('should emit render metric event for start page if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emitMetric).toBeCalledWith({
@@ -2248,14 +2252,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should emit doc first pages metric', () => {
-                const emitter = jest.spyOn(BaseViewer.prototype, 'emitMetric').mockImplementation();
-                stubs.emitMetric.mockRestore();
+                jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;
                 docBase.preloader = new DocFirstPreloader();
-                docBase.preloader.startTime = Date.now();
+                docBase.preloader.loadTime = 20;
+                docBase.preloader.retrievedPages = 4;
                 docBase.pagerenderedHandler({ pageNumber: 1 });
-                expect(emitter).toHaveBeenCalledWith('PRELOAD_DOC_LOAD_TIME_DIFF', expect.any(Object));
+
+                expect(stubs.emitMetric).toHaveBeenCalledWith({
+                    data: { pagesLoaded: 4, timeDifference: 80 },
+                    name: 'preload_content_load_diff',
+                });
             });
         });
 
