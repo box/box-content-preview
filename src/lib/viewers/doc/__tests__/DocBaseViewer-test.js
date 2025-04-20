@@ -2262,7 +2262,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(stubs.emitMetric).toHaveBeenCalledWith({
                     data: { pagesLoaded: 4, timeDifference: 80 },
-                    name: 'preload_content_load_diff',
+                    name: 'preload_content_load_time_diff',
                 });
             });
         });

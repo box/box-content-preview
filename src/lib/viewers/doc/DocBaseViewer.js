@@ -1328,7 +1328,7 @@ class DocBaseViewer extends BaseViewer {
         if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
-                name: LOAD_METRIC.preloadContentLoadDiff,
+                name: LOAD_METRIC.preloadContentLoadTimeDiff,
                 data: { pagesLoaded: this.preloader.retrievedPages, timeDifference: timeDiff },
             });
         }
