@@ -392,7 +392,14 @@ class DocFirstPreloader extends EventEmitter {
                     const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
-                    // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
+                    /*  There should be 3 pieces of metadata: PDF width, PDF height, and num pages
+                        and the comments should match this format "pdfWidth:1190.55pts,pdfHeight:841.89pts,numPages:6"
+                        the regext will return an array of 4 elements
+                        0: full match
+                        1: pdfWidth
+                        2: pdfHeight
+                        3: numPages
+                    */
                     if (!match || match.length !== 4) {
                         reject(new Error('No valid EXIF data found'));
                         return;
