@@ -19,8 +19,7 @@ import {
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
 import { VIEWER_EVENT } from '../../events';
 import { handleRepresentationBlobFetch } from '../../util';
-
-const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
+// Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
 const MAX_PRELOAD_PAGES = 8;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
@@ -311,7 +310,7 @@ class DocFirstPreloader extends EventEmitter {
             return Promise.resolve();
         }
         // Calculate pdf width, height, and number of pages from EXIF if possible
-        return this.readEXIFNew(imageBlob, imageEl)
+        return this.readEXIF(imageBlob, imageEl)
             .then(pdfData => {
                 this.pdfData = pdfData;
                 const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
@@ -376,68 +375,11 @@ class DocFirstPreloader extends EventEmitter {
      * available as a property on the preload representation object.
      *
      * @private
+     * @param {Blob} imageBlob - Preload image element
      * @param {HTMLElement} imageEl - Preload image element
      * @return {Promise} Promise that resolves with PDF width, PDF height, and num pages
      */
-    readEXIF(imageEl) {
-        return new Promise((resolve, reject) => {
-            try {
-                /* global EXIF */
-                EXIF.getData(imageEl, () => {
-                    const userCommentRaw = EXIF.getTag(imageEl, EXIF_COMMENT_TAG_NAME);
-                    const userComment = userCommentRaw.map(c => String.fromCharCode(c)).join('');
-                    const match = EXIF_COMMENT_REGEX.exec(userComment);
-
-                    // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
-                    if (!match || match.length !== 4) {
-                        reject(new Error('No valid EXIF data found'));
-                        return;
-                    }
-
-                    // Convert PDF Units to CSS Pixels
-                    let pdfWidth = parseInt(match[1], 10) * PDFJS_CSS_UNITS;
-                    let pdfHeight = parseInt(match[2], 10) * PDFJS_CSS_UNITS;
-                    const numPages = parseInt(match[3], 10);
-
-                    // Validate number of pages
-                    if (numPages <= 0) {
-                        reject(new Error('EXIF num pages data is invalid'));
-                        return;
-                    }
-
-                    // Validate PDF width and height by comparing ratio to preload image dimension ratio
-                    const pdfRatio = pdfWidth / pdfHeight;
-                    const imageRatio = imageEl.naturalWidth / imageEl.naturalHeight;
-
-                    if (Math.abs(pdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
-                        const rotatedPdfRatio = pdfHeight / pdfWidth;
-
-                        // Check if ratio is valid after height and width are swapped since PDF may be rotated
-                        if (Math.abs(rotatedPdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
-                            reject(new Error('EXIF PDF width and height are invalid'));
-                            return;
-                        }
-
-                        // Swap PDF width and height if swapped ratio seems correct
-                        const tempWidth = pdfWidth;
-                        pdfWidth = pdfHeight;
-                        pdfHeight = tempWidth;
-                    }
-
-                    // Resolve with valid PDF width, height, and num pages
-                    resolve({
-                        pdfWidth,
-                        pdfHeight,
-                        numPages,
-                    });
-                });
-            } catch (e) {
-                reject(new Error('Error reading EXIF data'));
-            }
-        });
-    }
-
-    readEXIFNew(imageBlob, imageEl) {
+    readEXIF(imageBlob, imageEl) {
         return new Promise((resolve, reject) => {
             try {
                 let tags = {};

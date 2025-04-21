@@ -418,4 +418,127 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(promises.length).toBe(3);
         });
     });
+
+    describe('readEXIF', () => {
+        const mockImageBlob = new Blob(['mock data'], { type: 'image/jpeg' });
+        const mockImageEl = {
+            naturalWidth: 600,
+            naturalHeight: 800,
+        };
+
+        beforeEach(() => {
+            preloader = new DocFirstPreloader();
+        });
+
+        it('should resolve with valid PDF dimensions and number of pages when EXIF data is valid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const result = await preloader.readEXIF(mockImageBlob, mockImageEl);
+
+            expect(result).toEqual({
+                pdfWidth: 612 * 1.3333333333333333, // PDFJS_CSS_UNITS
+                pdfHeight: 792 * 1.3333333333333333,
+                numPages: 10,
+            });
+        });
+
+        it('should reject if EXIF data is invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'invalid data',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, mockImageEl)).rejects.toThrow('No valid EXIF data found');
+        });
+
+        it('should reject if EXIF num pages is invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:0',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, mockImageEl)).rejects.toThrow(
+                'EXIF num pages data is invalid',
+            );
+        });
+
+        it('should reject if EXIF PDF width and height are invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const invalidImageEl = {
+                naturalWidth: 2000,
+                naturalHeight: 500,
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, invalidImageEl)).rejects.toThrow(
+                'EXIF PDF width and height are invalid',
+            );
+        });
+
+        it('should resolve with swapped PDF dimensions if rotated ratio is valid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:792pts,pdfHeight:612pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const rotatedImageEl = {
+                naturalWidth: 600,
+                naturalHeight: 800,
+            };
+
+            const result = await preloader.readEXIF(mockImageBlob, rotatedImageEl);
+
+            expect(result).toEqual({
+                pdfWidth: 612 * 1.3333333333333333, // PDFJS_CSS_UNITS
+                pdfHeight: 792 * 1.3333333333333333,
+                numPages: 10,
+            });
+        });
+
+        it('should reject if there is an error reading the blob as ArrayBuffer', async () => {
+            const mockReader = {
+                readAsArrayBuffer: jest.fn(),
+                onerror: null,
+            };
+
+            global.FileReader = jest.fn(() => mockReader);
+
+            const promise = preloader.readEXIF(mockImageBlob, mockImageEl);
+
+            mockReader.onerror();
+
+            await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
+        });
+    });
 });
