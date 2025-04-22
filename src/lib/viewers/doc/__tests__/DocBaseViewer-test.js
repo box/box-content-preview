@@ -709,12 +709,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should not throw an error in doc first preloader if no webp rep available', () => {
+            test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
                 jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
-                const preloadUrlTemplate = 'https://preload-url-template';
-                const preloadRep = {
+                const jpegUrlTemplate = 'https://preload-url-template';
+                const jpegPreloadRep = {
                     content: {
-                        url_template: preloadUrlTemplate,
+                        url_template: jpegUrlTemplate,
                     },
                     status: {
                         state: STATUS_SUCCESS,
@@ -723,7 +723,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
                     if (theFile && repName === 'jpg') {
-                        return preloadRep;
+                        return jpegPreloadRep;
                     }
                     if (theFile && repName === 'webp') {
                         return null;
@@ -733,11 +733,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
 
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    if (url === preloadUrlTemplate) {
-                        return 'preload-url';
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
                     }
 
-                    return '';
+                    return 'url without template';
                 });
 
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
@@ -745,7 +745,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.docFirstPagesEnabled = true;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith('preload-url', containerEl, '', 1, docBase);
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    '',
+                    1,
+                    docBase,
+                );
             });
         });
 
