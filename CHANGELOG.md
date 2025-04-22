@@ -1,3 +1,14 @@
+## 3.2.0 (2025-04-22)
+
+* feat(doc-first-pages): implementing doc first pages (#1546) ([8d7ea5e](https://github.com/box/box-content-preview/commit/8d7ea5e)), closes [#1546](https://github.com/box/box-content-preview/issues/1546)
+* feat(doc-first): fixing bug with non webp documents (#1550) ([c7bdf13](https://github.com/box/box-content-preview/commit/c7bdf13)), closes [#1550](https://github.com/box/box-content-preview/issues/1550)
+* feat(doc-first): new exif implementation (#1549) ([3406c18](https://github.com/box/box-content-preview/commit/3406c18)), closes [#1549](https://github.com/box/box-content-preview/issues/1549)
+* feat(doc-first): reverting version bump (#1551) ([baa3acd](https://github.com/box/box-content-preview/commit/baa3acd)), closes [#1551](https://github.com/box/box-content-preview/issues/1551)
+* Add thumbnail click functionality (#1547) ([272fed8](https://github.com/box/box-content-preview/commit/272fed8)), closes [#1547](https://github.com/box/box-content-preview/issues/1547)
+* adding spinner logic (#1548) ([6bc52f4](https://github.com/box/box-content-preview/commit/6bc52f4)), closes [#1548](https://github.com/box/box-content-preview/issues/1548)
+
+
+
 ## 3.1.0 (2025-03-06)
 
 * feat(nodejs20): WEBAPP-30462 Node updated to 20 (+4 squashed commits) (#1545) ([37e7504](https://github.com/box/box-content-preview/commit/37e7504)), closes [#1545](https://github.com/box/box-content-preview/issues/1545)
