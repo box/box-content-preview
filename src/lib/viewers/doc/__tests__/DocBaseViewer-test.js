@@ -709,7 +709,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should not throw an error in doc first preloader and us jpeg rep if no webp rep available', () => {
+            test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
                 jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
                 const jpegUrlTemplate = 'https://preload-url-template';
                 const jpegPreloadRep = {
