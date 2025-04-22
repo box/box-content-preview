@@ -176,10 +176,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.preloadedImages[2]).toBe('mock-object-url2');
             expect(preloader.preloadedImages[3]).toBe('mock-object-url3');
             expect(preloader.preloadedImages[4]).toBe('mock-object-url4');
-            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(
-                mockFirstImage,
-                expect.any(HTMLDivElement),
-            );
+            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, mockFirstImage);
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
             expect(preloader.showSpinner).toHaveBeenCalled();
@@ -261,6 +258,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
+        });
+
+        it('should use the jpeg image as  preloader if webp is not available ', async () => {
+            const mockBlob = new Blob(['mock-content'], { type: 'image/jpg' });
+            const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
+            const mockContainer = document.createElement('div');
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
+            expect(preloader.retrievedPages).toBe(0);
+            expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalled();
+            expect(preloader.loadTime).toBeUndefined();
         });
     });
 
@@ -374,6 +387,158 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.showSpinner();
             expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
             expect(preloader.spinner.classList.contains('bp-sidebar-closed')).toBe(true);
+        });
+    });
+
+    describe('getPreloadImageRequestPromises()', () => {
+        beforeEach(() => {
+            jest.spyOn(preloader.api, 'get').mockResolvedValue({});
+        });
+
+        it('should create only the jpeg promise if webp is unavailable', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = '';
+            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
+            expect(preloader.api.get).toHaveBeenNthCalledWith(
+                1,
+                expect.stringContaining('jpeg-url'),
+                expect.any(Object),
+            );
+            expect(promises.length).toBe(1);
+        });
+
+        it('should create only the webp promises if webp is unavailable', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = 'webp-urlpage_number';
+            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
+            expect(preloader.api.get).toHaveBeenCalledTimes(3);
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
+            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
+            expect(promises.length).toBe(3);
+        });
+    });
+
+    describe('readEXIF', () => {
+        const mockImageBlob = new Blob(['mock data'], { type: 'image/jpeg' });
+        const mockImageEl = {
+            naturalWidth: 600,
+            naturalHeight: 800,
+        };
+
+        beforeEach(() => {
+            preloader = new DocFirstPreloader();
+        });
+
+        it('should resolve with valid PDF dimensions and number of pages when EXIF data is valid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const result = await preloader.readEXIF(mockImageBlob, mockImageEl);
+
+            expect(result).toEqual({
+                pdfWidth: 612 * 1.3333333333333333, // PDFJS_CSS_UNITS
+                pdfHeight: 792 * 1.3333333333333333,
+                numPages: 10,
+            });
+        });
+
+        it('should reject if EXIF data is invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'invalid data',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, mockImageEl)).rejects.toThrow('No valid EXIF data found');
+        });
+
+        it('should reject if EXIF num pages is invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:0',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, mockImageEl)).rejects.toThrow(
+                'EXIF num pages data is invalid',
+            );
+        });
+
+        it('should reject if EXIF PDF width and height are invalid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:612pts,pdfHeight:792pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const invalidImageEl = {
+                naturalWidth: 2000,
+                naturalHeight: 500,
+            };
+
+            await expect(preloader.readEXIF(mockImageBlob, invalidImageEl)).rejects.toThrow(
+                'EXIF PDF width and height are invalid',
+            );
+        });
+
+        it('should resolve with swapped PDF dimensions if rotated ratio is valid', async () => {
+            const mockTags = {
+                UserComment: {
+                    description: 'pdfWidth:792pts,pdfHeight:612pts,numPages:10',
+                },
+            };
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const rotatedImageEl = {
+                naturalWidth: 600,
+                naturalHeight: 800,
+            };
+
+            const result = await preloader.readEXIF(mockImageBlob, rotatedImageEl);
+
+            expect(result).toEqual({
+                pdfWidth: 612 * 1.3333333333333333, // PDFJS_CSS_UNITS
+                pdfHeight: 792 * 1.3333333333333333,
+                numPages: 10,
+            });
+        });
+
+        it('should reject if there is an error reading the blob as ArrayBuffer', async () => {
+            const mockReader = {
+                readAsArrayBuffer: jest.fn(),
+                onerror: null,
+            };
+
+            global.FileReader = jest.fn(() => mockReader);
+
+            const promise = preloader.readEXIF(mockImageBlob, mockImageEl);
+
+            mockReader.onerror();
+
+            await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
         });
     });
 });

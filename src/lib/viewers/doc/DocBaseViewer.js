@@ -33,7 +33,7 @@ import {
 import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF, WORKER } from './docAssets';
+import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -99,7 +99,11 @@ class DocBaseViewer extends BaseViewer {
 
     doc;
 
+    /** @property {boolean} - DOC First Pages Enabled */
     docFirstPagesEnabled;
+
+    /** @property {DocFirstPreloader|DocPreloader} - document preloader */
+    preloader;
 
     /**
      * @inheritdoc
@@ -418,7 +422,7 @@ class DocBaseViewer extends BaseViewer {
             // If there is an error and we are in a retry don't
             // re-render the preloader. Use the existing one.
             if (!this.preloader?.retrievedPages) {
-                this.loadAssets(EXIF).then(() => {
+                this.loadAssets(EXIF_READER).then(() => {
                     this.showPreload();
                 });
             }
@@ -428,8 +432,8 @@ class DocBaseViewer extends BaseViewer {
 
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
-
-        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
+        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -1319,11 +1323,13 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        if (!this.startPageRendered && pageNumber === 1 && this.docFirstPagesEnabled && this.preloader) {
+        // Preloader will only be used if we're not using a cached page number.
+        // This is why we need to emit the event here and not in the block below
+        if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
-                name: 'PRELOAD_DOC_LOAD_TIME_DIFF',
-                data: { pagesLoaded: this.preloader.numPages, timeDifference: timeDiff },
+                name: LOAD_METRIC.preloadContentLoadTimeDiff,
+                data: { pagesLoaded: this.preloader.retrievedPages, timeDifference: timeDiff },
             });
         }
 
@@ -1688,7 +1694,6 @@ class DocBaseViewer extends BaseViewer {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
         // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
-        // const { numPages = 0 } = this.preloader || (this.pdfViewer && this.pdfViewer.pdfDocument);
         const { numPages = 0 } = (this.pdfViewer && this.pdfViewer.pdfDocument) || this.preloader;
         let toggledState = cachedToggledState;
 

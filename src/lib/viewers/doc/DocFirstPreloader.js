@@ -19,8 +19,7 @@ import {
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
 import { VIEWER_EVENT } from '../../events';
 import { handleRepresentationBlobFetch } from '../../util';
-
-const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
+// Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
 const MAX_PRELOAD_PAGES = 8;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
@@ -148,10 +147,9 @@ class DocFirstPreloader extends EventEmitter {
 
                 // make sure first image is loaded before dimesions are extracted
                 let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
-                let container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                await this.setPreloadImageDimensions(imageDomElement, container);
-                container.style.maxWidth = `${this.imageDimensions.width}px`;
-                container.style.maxHeight = `${this.imageDimensions.height}px`;
+                await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
+                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+
                 if (!this.pdfJsDocLoadComplete()) {
                     let foundError = false;
                     data.forEach(element => {
@@ -161,9 +159,7 @@ class DocFirstPreloader extends EventEmitter {
                             imageDomElement = document.createElement('img');
                             this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
                             imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                            container = this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
-                            container.style.maxWidth = `${this.imageDimensions.width}px`;
-                            container.style.maxHeight = `${this.imageDimensions.height}px`;
+                            this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
                         }
                     });
 
@@ -202,6 +198,8 @@ class DocFirstPreloader extends EventEmitter {
         const container = this.buildPreloaderImagePlaceHolder(img);
         container.setAttribute('data-preload-index', i);
         container.classList.add('loaded');
+        container.style.maxWidth = `${this.imageDimensions.width}px`;
+        container.style.maxHeight = `${this.imageDimensions.height}px`;
         this.preloadEl.appendChild(container);
         return container;
     }
@@ -218,8 +216,11 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
-        const promise1 = this.api.get(preloadUrlWithAuth, { type: 'blob' });
-        const promises = [promise1];
+        const firstPageUrl = !pagedPreLoadUrlWithAuth
+            ? preloadUrlWithAuth
+            : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
+        const promise1 = this.api.get(firstPageUrl, { type: 'blob' });
+        const promises = [promise1.catch(e => e)];
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         if (pagedPreLoadUrlWithAuth) {
             for (let i = 2; i <= count; i += 1) {
@@ -304,13 +305,12 @@ class DocFirstPreloader extends EventEmitter {
      * @private
      * @return {Promise} Promise to scale and show preload
      */
-    setPreloadImageDimensions = (imageEl, container) => {
-        if (!container || !imageEl) {
+    setPreloadImageDimensions = (imageBlob, imageEl) => {
+        if (!imageBlob || !imageEl) {
             return Promise.resolve();
         }
-
         // Calculate pdf width, height, and number of pages from EXIF if possible
-        return this.readEXIF(imageEl)
+        return this.readEXIF(imageBlob, imageEl)
             .then(pdfData => {
                 this.pdfData = pdfData;
                 const { scaledWidth, scaledHeight } = this.getScaledWidthAndHeight(pdfData);
@@ -375,19 +375,31 @@ class DocFirstPreloader extends EventEmitter {
      * available as a property on the preload representation object.
      *
      * @private
+     * @param {Blob} imageBlob - Preload image element
      * @param {HTMLElement} imageEl - Preload image element
      * @return {Promise} Promise that resolves with PDF width, PDF height, and num pages
      */
-    readEXIF(imageEl) {
+    readEXIF(imageBlob, imageEl) {
         return new Promise((resolve, reject) => {
             try {
-                /* global EXIF */
-                EXIF.getData(imageEl, () => {
-                    const userCommentRaw = EXIF.getTag(imageEl, EXIF_COMMENT_TAG_NAME);
-                    const userComment = userCommentRaw.map(c => String.fromCharCode(c)).join('');
+                let tags = {};
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const arrayBuffer = reader.result;
+                    /* global ExifReader */
+                    tags = ExifReader.load(arrayBuffer);
+
+                    const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
-                    // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
+                    /*  There should be 3 pieces of metadata: PDF width, PDF height, and num pages
+                        and the comments should match this format "pdfWidth:1190.55pts,pdfHeight:841.89pts,numPages:6"
+                        the regext will return an array of 4 elements
+                        0: full match
+                        1: pdfWidth
+                        2: pdfHeight
+                        3: numPages
+                    */
                     if (!match || match.length !== 4) {
                         reject(new Error('No valid EXIF data found'));
                         return;
@@ -429,7 +441,12 @@ class DocFirstPreloader extends EventEmitter {
                         pdfHeight,
                         numPages,
                     });
-                });
+                };
+
+                reader.onerror = () => {
+                    reject(new Error('Error reading blob as ArrayBuffer'));
+                };
+                reader.readAsArrayBuffer(imageBlob);
             } catch (e) {
                 reject(new Error('Error reading EXIF data'));
             }
