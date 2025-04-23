@@ -744,7 +744,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
 
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    // the webpRep template gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
                     if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
                         return 'paged-url';
                     }

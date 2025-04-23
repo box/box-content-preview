@@ -190,7 +190,7 @@ class DocFirstPreloader extends EventEmitter {
             this.spinner.classList.add(CLASS_BOX_PREVIEW_PRELOAD_SPINNER);
             if (!document.getElementsByClassName('bcs-is-open')[0] && this.thumbnailsOpen) {
                 this.spinner.classList.add('bp-sidebar-closed');
-            } else if (!this.thumbnailsOpen) {
+            } else if (!this.thumbnailsOpen && document.getElementsByClassName('bcs-is-open')[0]) {
                 this.spinner.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             }
             this.wrapperEl.appendChild(this.spinner);

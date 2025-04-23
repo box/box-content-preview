@@ -393,6 +393,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should create the spinner and position it properly if thumbnails are closed', () => {
             const mockWrapperEl = document.createElement('div');
+            jest.spyOn(document, 'getElementsByClassName').mockImplementation(klass => {
+                if (klass === 'bcs-is-open') {
+                    return ['div'];
+                }
+
+                return null;
+            });
+
             jest.spyOn(mockWrapperEl, 'appendChild');
             preloader.wrapperEl = mockWrapperEl;
             preloader.thumbnailsOpen = false;
