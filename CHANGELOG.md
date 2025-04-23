@@ -1,3 +1,9 @@
+## 3.3.0 (2025-04-23)
+
+* fix(doc-first): webp rep is not marked as success bug (#1552) ([650e691](https://github.com/box/box-content-preview/commit/650e691)), closes [#1552](https://github.com/box/box-content-preview/issues/1552)
+
+
+
 ## 3.2.0 (2025-04-22)
 
 * feat(doc-first-pages): implementing doc first pages (#1546) ([8d7ea5e](https://github.com/box/box-content-preview/commit/8d7ea5e)), closes [#1546](https://github.com/box/box-content-preview/issues/1546)
