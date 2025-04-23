@@ -481,8 +481,52 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('showPreload()', () => {
+            let startPreloadTimerStub;
+            const jpegUrlTemplate = 'https://preload-url-template';
+            const webpUrlTemplate = 'https://url/{+asset_path}';
+            let webpRep;
+            let jpegRep;
             beforeEach(() => {
                 docBase.preloader = new DocPreloader();
+                startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
+                webpRep = {
+                    content: {
+                        url_template: webpUrlTemplate,
+                    },
+                    metadata: {
+                        pages: 4,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jpegRep = {
+                    content: {
+                        url_template: jpegUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return jpegRep;
+                    }
+                    if (theFile && repName === 'webp') {
+                        return webpRep;
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase, 'getViewerOption').mockImplementation(option => {
+                    if (option === 'preload') {
+                        return true;
+                    }
+                    return false;
+                });
             });
 
             test('should not do anything if there is a previously cached page', () => {
@@ -640,55 +684,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
 
                 sandbox.mock(docBase.preloader).expects('showPreload');
-                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
 
                 docBase.showPreload();
 
                 expect(startPreloadTimerStub).toBeCalled();
             });
 
-            test('should load doc first preloader properly for doc first pages', () => {
-                jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
-                const preloadUrlTemplate = 'https://preload-url-template';
-                const pagedUrlTemplate = 'https://url/{+asset_path}';
-                const pagedRep = {
-                    content: {
-                        url_template: pagedUrlTemplate,
-                    },
-                    metadata: {
-                        pages: 4,
-                    },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
-                };
-
-                const preloadRep = {
-                    content: {
-                        url_template: preloadUrlTemplate,
-                    },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
-                };
-
-                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
-                    if (theFile && repName === 'jpg') {
-                        return preloadRep;
-                    }
-                    if (theFile && repName === 'webp') {
-                        return pagedRep;
-                    }
-
-                    return '';
-                });
-
+            test('should load doc first preloader properly for doc first pages when webp rep available', () => {
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
                     // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
                     if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
                         return 'paged-url';
                     }
-                    if (url === preloadUrlTemplate) {
+                    if (url === jpegUrlTemplate) {
                         return 'preload-url';
                     }
 
@@ -696,42 +704,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
 
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
                 docBase.docFirstPagesEnabled = true;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
-                    'preload-url',
-                    containerEl,
-                    'paged-url',
-                    4,
-                    docBase,
-                );
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase);
             });
 
             test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
-                jest.spyOn(docBase, 'getViewerOption').mockReturnValue(true);
-                const jpegUrlTemplate = 'https://preload-url-template';
-                const jpegPreloadRep = {
-                    content: {
-                        url_template: jpegUrlTemplate,
-                    },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
-                };
-
-                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
-                    if (theFile && repName === 'jpg') {
-                        return jpegPreloadRep;
-                    }
-                    if (theFile && repName === 'webp') {
-                        return null;
-                    }
-
-                    return '';
-                });
-
+                webpRep = null;
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
                     if (url === jpegUrlTemplate) {
                         return 'jpeg-preload-url';
@@ -741,14 +721,48 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
 
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
                 docBase.docFirstPagesEnabled = true;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
                 expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
                     'jpeg-preload-url',
                     containerEl,
-                    '',
+                    null,
+                    1,
+                    docBase,
+                );
+            });
+
+            test('should not throw an error in doc first preloader and use jpeg rep if webp is in error', () => {
+                webpRep = {
+                    content: {
+                        url_template: webpUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_ERROR,
+                    },
+                };
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    // the webpRep template gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
+                        return 'paged-url';
+                    }
+                    if (url === jpegUrlTemplate) {
+                        return 'preload-url';
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'preload-url',
+                    containerEl,
+                    null,
                     1,
                     docBase,
                 );
