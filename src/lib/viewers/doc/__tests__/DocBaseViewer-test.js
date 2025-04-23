@@ -690,7 +690,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(startPreloadTimerStub).toBeCalled();
             });
 
-            test('should load doc first preloader properly for doc first pages', () => {
+            test('should load doc first preloader properly for doc first pages when webp rep available', () => {
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
                     // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
                     if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
@@ -707,13 +707,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.docFirstPagesEnabled = true;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
-                    'preload-url',
-                    containerEl,
-                    'paged-url',
-                    4,
-                    docBase,
-                );
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase);
             });
 
             test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {

@@ -397,13 +397,7 @@ class DocBaseViewer extends BaseViewer {
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
                 const pagedPreLoadUrlWithAuth =
                     newPagedUrlTemplate && this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-                this.preloader.showPreload(
-                    preloadUrlWithAuth,
-                    this.containerEl,
-                    pagedPreLoadUrlWithAuth,
-                    pageCount,
-                    this,
-                );
+                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
             }
         }
     }

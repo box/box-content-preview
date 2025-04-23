@@ -384,9 +384,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const mockWrapperEl = document.createElement('div');
             jest.spyOn(mockWrapperEl, 'appendChild');
             preloader.wrapperEl = mockWrapperEl;
+            preloader.thumbnailsOpen = true;
             preloader.showSpinner();
             expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
             expect(preloader.spinner.classList.contains('bp-sidebar-closed')).toBe(true);
+            expect(preloader.spinner.classList.contains('bp-thumbnails-close')).not.toBe(true);
+        });
+
+        it('should create the spinner and position it properly if thumbnails are closed', () => {
+            const mockWrapperEl = document.createElement('div');
+            jest.spyOn(mockWrapperEl, 'appendChild');
+            preloader.wrapperEl = mockWrapperEl;
+            preloader.thumbnailsOpen = false;
+            preloader.showSpinner();
+            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
+            expect(preloader.spinner.classList.contains('bp-thumbnails-close')).toBe(true);
+            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).not.toBe(true);
         });
     });
 

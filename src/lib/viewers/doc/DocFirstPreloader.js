@@ -14,6 +14,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_BOX_PRELOAD_COMPLETE,
     CLASS_DOC_FIRST_IMAGE,
+    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
 } from '../../constants';
 
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
@@ -119,7 +120,7 @@ class DocFirstPreloader extends EventEmitter {
      * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
      * @return {Promise} Promise to show preload
      */
-    async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth = '', pages, docBaseViewer) {
+    async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
@@ -187,8 +188,10 @@ class DocFirstPreloader extends EventEmitter {
         if (!this.spinner) {
             this.spinner = document.createElement('div');
             this.spinner.classList.add(CLASS_BOX_PREVIEW_PRELOAD_SPINNER);
-            if (!document.getElementsByClassName('bcs-is-open')[0]) {
+            if (!document.getElementsByClassName('bcs-is-open')[0] && this.thumbnailsOpen) {
                 this.spinner.classList.add('bp-sidebar-closed');
+            } else if (!this.thumbnailsOpen) {
+                this.spinner.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
             }
             this.wrapperEl.appendChild(this.spinner);
         }
@@ -216,6 +219,9 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
+        if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
+            return [];
+        }
         const firstPageUrl = !pagedPreLoadUrlWithAuth
             ? preloadUrlWithAuth
             : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
