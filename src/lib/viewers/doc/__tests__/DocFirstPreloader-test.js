@@ -561,6 +561,21 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
         });
+
+        it('should reject with error when FileReader fails to read blob', async () => {
+            const mockFileReader = {
+                readAsArrayBuffer: jest.fn(),
+                onerror: null,
+                onload: null,
+                result: null,
+            };
+            global.FileReader = jest.fn(() => mockFileReader);
+
+            const promise = preloader.readEXIF(mockImageBlob, mockImageEl);
+            mockFileReader.onerror();
+
+            await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
+        });
     });
 
     describe('getScaledDimensions()', () => {
