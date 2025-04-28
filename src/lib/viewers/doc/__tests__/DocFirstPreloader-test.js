@@ -579,6 +579,9 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     });
 
     describe('getScaledDimensions()', () => {
+        const pdfjsHeightCSSUnits = 5;
+        const pdfjsHWidthCSSUnits = 40;
+
         beforeEach(() => {
             preloader.wrapperEl = document.createElement('div');
             Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 0, writable: true });
@@ -611,7 +614,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
             // Expect height scale to be used
-            const expectedScale = (clientHeight - 5) / pdfHeight;
+            const expectedScale = (clientHeight - pdfjsHeightCSSUnits) / pdfHeight;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
@@ -629,7 +632,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
             // Expect width scale to be used
-            const expectedScale = (clientWidth - 40) / pdfWidth;
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
@@ -647,7 +650,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
             // Expect width scale to be used
-            const expectedScale = (clientWidth - 40) / pdfWidth;
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
@@ -665,7 +668,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const pdfHeight = 500;
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
-            const expectedScale = (clientWidth - 40) / pdfWidth;
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
                 scaledHeight: Math.floor(expectedScale * pdfHeight),
