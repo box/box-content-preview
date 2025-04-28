@@ -561,5 +561,289 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
         });
+
+        it('should reject with error when FileReader fails to read blob', async () => {
+            const mockFileReader = {
+                readAsArrayBuffer: jest.fn(),
+                onerror: null,
+                onload: null,
+                result: null,
+            };
+            global.FileReader = jest.fn(() => mockFileReader);
+
+            const promise = preloader.readEXIF(mockImageBlob, mockImageEl);
+            mockFileReader.onerror();
+
+            await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
+        });
+    });
+
+    describe('getScaledDimensions()', () => {
+        const pdfjsHeightCSSUnits = 5;
+        const pdfjsHWidthCSSUnits = 40;
+
+        beforeEach(() => {
+            preloader.wrapperEl = document.createElement('div');
+            Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 0, writable: true });
+            Object.defineProperty(preloader.wrapperEl, 'clientWidth', { value: 0, writable: true });
+        });
+
+        test('should scale up to a max defined by maxZoomScale', () => {
+            const clientWidth = 500;
+            const clientHeight = 500;
+            preloader.wrapperEl.clientWidth = clientWidth;
+            preloader.wrapperEl.clientHeight = clientHeight;
+            const expectedScale = 1.25;
+            preloader.maxZoomScale = expectedScale;
+
+            const scaledDimensions = preloader.getScaledDimensions(100, 100);
+            expect(scaledDimensions).toEqual({
+                scaledWidth: Math.floor(expectedScale * 100),
+                scaledHeight: Math.floor(expectedScale * 100),
+            });
+        });
+
+        test('should scale with height scale if in landscape and height scale is less than width scale', () => {
+            const clientWidth = 1000;
+            const clientHeight = 500;
+            preloader.wrapperEl.clientWidth = clientWidth;
+            preloader.wrapperEl.clientHeight = clientHeight;
+
+            const pdfWidth = 1000;
+            const pdfHeight = 600;
+            const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect height scale to be used
+            const expectedScale = (clientHeight - pdfjsHeightCSSUnits) / pdfHeight;
+            expect(scaledDimensions).toEqual({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight),
+            });
+        });
+
+        test('should scale with width scale if in landscape and width scale is less than height scale', () => {
+            const clientWidth = 1000;
+            const clientHeight = 500;
+            preloader.wrapperEl.clientWidth = clientWidth;
+            preloader.wrapperEl.clientHeight = clientHeight;
+
+            const pdfWidth = 1000;
+            const pdfHeight = 500;
+            const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect width scale to be used
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
+            expect(scaledDimensions).toEqual({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight),
+            });
+        });
+
+        test('should scale with width scale if not in landscape', () => {
+            const clientWidth = 600;
+            const clientHeight = 1100;
+            preloader.wrapperEl.clientWidth = clientWidth;
+            preloader.wrapperEl.clientHeight = clientHeight;
+
+            const pdfWidth = 500;
+            const pdfHeight = 1000;
+            const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect width scale to be used
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
+            expect(scaledDimensions).toEqual({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight),
+            });
+        });
+
+        test('should not apply maxZoomScale if not defined', () => {
+            const clientWidth = 1000;
+            const clientHeight = 1000;
+            preloader.wrapperEl.clientWidth = clientWidth;
+            preloader.wrapperEl.clientHeight = clientHeight;
+            preloader.maxZoomScale = undefined;
+
+            const pdfWidth = 500;
+            const pdfHeight = 500;
+            const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
+            expect(scaledDimensions).toEqual({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight),
+            });
+        });
+    });
+
+    describe('restoreScrollPosition()', () => {
+        let docEl;
+
+        beforeEach(() => {
+            // Create a document element with the expected class
+            docEl = document.createElement('div');
+            docEl.className = 'bp-doc';
+
+            // Set up the wrapper element with a parent node that contains the doc element
+            preloader.wrapperEl = document.createElement('div');
+            const parentNode = document.createElement('div');
+            parentNode.appendChild(preloader.wrapperEl);
+            parentNode.appendChild(docEl);
+
+            // Mock the scrollTop property
+            Object.defineProperty(preloader.wrapperEl, 'scrollTop', {
+                value: 0,
+                writable: true,
+            });
+        });
+
+        test('should restore scroll position when scrollTop is greater than 0', () => {
+            // Set a non-zero scroll position
+            preloader.wrapperEl.scrollTop = 150;
+
+            // Call the method
+            preloader.restoreScrollPosition();
+
+            // Verify the document element's scroll position was updated
+            expect(docEl.scrollTop).toBe(150);
+        });
+
+        test('should not restore scroll position when scrollTop is 0', () => {
+            // Set scroll position to 0
+            preloader.wrapperEl.scrollTop = 0;
+
+            // Call the method
+            preloader.restoreScrollPosition();
+
+            // Verify the document element's scroll position was not updated
+            expect(docEl.scrollTop).toBe(0);
+        });
+
+        test('should not throw error when document element is not found', () => {
+            // Remove the document element
+            docEl.remove();
+
+            // Set a non-zero scroll position
+            preloader.wrapperEl.scrollTop = 150;
+
+            // Call the method - should not throw an error
+            expect(() => preloader.restoreScrollPosition()).not.toThrow();
+        });
+    });
+
+    describe('setPreloadImageDimensions()', () => {
+        let mockImageBlob;
+        let mockImageEl;
+        let mockPdfData;
+        let mockScaledDimensions;
+        let readExif;
+        beforeEach(() => {
+            // Create mock image blob and element
+            mockImageBlob = new Blob(['mock-image-data'], { type: 'image/jpeg' });
+
+            const mockImage = {
+                onload: null,
+                onerror: null,
+                naturalWidth: 800, // Set a mock value
+                naturalHeight: 600, // Set a mock value
+                src: '',
+            };
+
+            jest.spyOn(window, 'Image').mockImplementation(() => {
+                return mockImage;
+            });
+            mockImageEl = document.createElement('img');
+
+            // Mock PDF data that would be returned from readEXIF
+            mockPdfData = {
+                pdfWidth: 1000,
+                pdfHeight: 800,
+                numPages: 5,
+            };
+
+            // Mock scaled dimensions that would be returned from getScaledWidthAndHeight
+            mockScaledDimensions = {
+                scaledWidth: 900,
+                scaledHeight: 720,
+            };
+
+            // Mock the methods used by setPreloadImageDimensions
+            jest.spyOn(preloader, 'readEXIF').mockImplementation(() => Promise.resolve(mockPdfData));
+            jest.spyOn(preloader, 'getScaledWidthAndHeight').mockReturnValue(mockScaledDimensions);
+            jest.spyOn(preloader, 'getScaledDimensions').mockReturnValue(mockScaledDimensions);
+            readExif = jest.spyOn(preloader, 'readEXIF');
+
+            // Set up wrapperEl for getScaledDimensions
+            preloader.wrapperEl = document.createElement('div');
+            Object.defineProperty(preloader.wrapperEl, 'clientWidth', { value: 1000, writable: true });
+            Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 800, writable: true });
+        });
+
+        it('should return early if imageBlob or imageEl is not provided', async () => {
+            await preloader.setPreloadImageDimensions(null, mockImageEl);
+            expect(readExif).not.toHaveBeenCalled();
+
+            await preloader.setPreloadImageDimensions(mockImageBlob, null);
+            expect(readExif).not.toHaveBeenCalled();
+        });
+
+        it('should set dimensions from EXIF data when available', async () => {
+            await preloader.setPreloadImageDimensions(mockImageBlob, mockImageEl);
+
+            expect(preloader.readEXIF).toHaveBeenCalledWith(mockImageBlob, mockImageEl);
+            expect(preloader.getScaledWidthAndHeight).toHaveBeenCalledWith(mockPdfData);
+            expect(preloader.pdfData).toEqual(mockPdfData);
+            expect(preloader.imageDimensions.width).toEqual(mockScaledDimensions.scaledWidth);
+            expect(preloader.imageDimensions.height).toEqual(mockScaledDimensions.scaledHeight);
+            expect(preloader.numPages).toBe(mockPdfData.numPages);
+            expect(mockImageEl.classList.contains('loaded')).toBe(true);
+        });
+
+        it('should fall back to natural dimensions when EXIF data is not available', async () => {
+            // Mock readEXIF to reject
+            jest.spyOn(preloader, 'readEXIF').mockImplementation(() => Promise.reject(new Error('EXIF error')));
+
+            await preloader.setPreloadImageDimensions(mockImageBlob, mockImageEl);
+
+            expect(preloader.readEXIF).toHaveBeenCalledWith(mockImageBlob, mockImageEl);
+            expect(preloader.getScaledDimensions).toHaveBeenCalledWith(
+                mockImageEl.naturalWidth,
+                mockImageEl.naturalHeight,
+            );
+            expect(preloader.imageDimensions.width).toEqual(mockScaledDimensions.scaledWidth);
+            expect(preloader.imageDimensions.height).toEqual(mockScaledDimensions.scaledHeight);
+            expect(mockImageEl.classList.contains('loaded')).toBe(true);
+        });
+    });
+
+    describe('getScaledWidthAndHeight()', () => {
+        let mockPdfData;
+        let mockScaledDimensions;
+
+        beforeEach(() => {
+            preloader = new DocFirstPreloader();
+            mockPdfData = {
+                pdfWidth: 800,
+                pdfHeight: 600,
+            };
+            mockScaledDimensions = {
+                scaledWidth: 1000,
+                scaledHeight: 800,
+            };
+
+            // Mock the getScaledDimensions method
+            jest.spyOn(preloader, 'getScaledDimensions').mockReturnValue(mockScaledDimensions);
+        });
+
+        test('should return the scaled width and height from getScaledDimensions', () => {
+            // Call the method
+            const result = preloader.getScaledWidthAndHeight(mockPdfData);
+
+            // Verify getScaledDimensions was called with the correct parameters
+            expect(preloader.getScaledDimensions).toHaveBeenCalledWith(mockPdfData.pdfWidth, mockPdfData.pdfHeight);
+
+            // Verify the returned object matches the mock scaled dimensions
+            expect(result).toEqual(mockScaledDimensions);
+        });
     });
 });

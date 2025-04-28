@@ -47,6 +47,7 @@ module.exports = api => {
                                 'src/lib/viewers/box3d/**Constants.js',
                             ],
                         },
+                        'babel-plugin-istanbul-custom',
                     ],
                     [
                         'babel-plugin-transform-require-ignore',
