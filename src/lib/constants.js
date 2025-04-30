@@ -85,7 +85,7 @@ export const APP_HOST = 'https://app.box.com';
 
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'jpg';
-
+export const PRELOAD_PAGED_REP_NAME = 'webp';
 export const STATUS_ERROR = 'error';
 export const STATUS_NONE = 'none';
 export const STATUS_PENDING = 'pending';
