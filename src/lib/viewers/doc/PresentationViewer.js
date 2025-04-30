@@ -25,6 +25,7 @@ class PresentationViewer extends DocBaseViewer {
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.throttledWheelHandler = this.getWheelHandler().bind(this);
+        this.docFirstPagesEnabled = false;
     }
 
     /**

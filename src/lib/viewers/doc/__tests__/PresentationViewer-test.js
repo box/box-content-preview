@@ -73,6 +73,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         test('should add the presentation class to the presentation element and set up preloader', () => {
             expect(presentation.docEl).toHaveClass('bp-doc-presentation');
             expect(presentation.preloader).toBeInstanceOf(PresentationPreloader);
+            expect(presentation.docFirstPagesEnabled).toBe(false);
         });
 
         test('should invoke onPreload callback', () => {
