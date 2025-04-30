@@ -1,3 +1,10 @@
+## 3.4.0 (2025-04-30)
+
+* fix(doc-first): adding test coverage (#1553) ([c4907e5](https://github.com/box/box-content-preview/commit/c4907e5)), closes [#1553](https://github.com/box/box-content-preview/issues/1553)
+* fix(doc-first): code udpates (#1555) ([809f03a](https://github.com/box/box-content-preview/commit/809f03a)), closes [#1555](https://github.com/box/box-content-preview/issues/1555)
+
+
+
 ## 3.3.0 (2025-04-23)
 
 * fix(doc-first): webp rep is not marked as success bug (#1552) ([650e691](https://github.com/box/box-content-preview/commit/650e691)), closes [#1552](https://github.com/box/box-content-preview/issues/1552)
