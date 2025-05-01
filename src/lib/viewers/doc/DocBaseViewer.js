@@ -8,7 +8,6 @@ import DocFindBar from './DocFindBar';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
-import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import Thumbnail from '../../Thumbnail';
 
@@ -28,7 +27,7 @@ import {
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS,
+    PRELOAD_PAGED_REP_NAME,
 } from '../../constants';
 import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
@@ -374,13 +373,14 @@ class DocBaseViewer extends BaseViewer {
 
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-
-        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
+        const preloadRepPaged = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
+        const pagedWebpRepReady = preloadRepPaged && this.isRepresentationReady(preloadRepPaged);
+        const jpegRepReady = preloadRep && this.isRepresentationReady(preloadRep);
+        if ((!pagedWebpRepReady && !jpegRepReady) || !this.getViewerOption('preload')) {
             return;
         }
 
-        const { url_template: template = '' } = preloadRep.content || {};
-
+        const { url_template: template = '' } = preloadRep?.content || {};
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
 
         if (!this.docFirstPagesEnabled) {
@@ -388,8 +388,7 @@ class DocBaseViewer extends BaseViewer {
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
             this.startPreloadTimer();
-            const preloadRepPaged = getRepresentation(file, 'webp');
-            if (!preloadRepPaged || RepStatus.getStatus(preloadRepPaged) !== STATUS_SUCCESS) {
+            if (!pagedWebpRepReady) {
                 this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
             } else {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
@@ -1334,7 +1333,7 @@ class DocBaseViewer extends BaseViewer {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
                 name: LOAD_METRIC.preloadContentLoadTimeDiff,
-                data: { pagesLoaded: this.preloader.retrievedPages, timeDifference: timeDiff },
+                data: timeDiff,
             });
         }
 
