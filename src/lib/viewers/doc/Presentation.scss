@@ -54,6 +54,12 @@
         background-color: $sunset-grey;
     }
 
+    &.loaded {
+        .bp-document-preload-spinner {
+            display: block;
+        }
+    }
+
     .bp-preload-content,
     .bp-preload-overlay,
     .bp-preload-placeholder {
