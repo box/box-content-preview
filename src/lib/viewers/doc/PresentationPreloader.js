@@ -1,5 +1,5 @@
 import DocFirstPreloader from './DocFirstPreloader';
-import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,CLASS_PREVIEW_LOADED } from '../../constants';
+import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION, CLASS_PREVIEW_LOADED } from '../../constants';
 import { setDimensions } from '../../util';
 
 class PresentationPreloader extends DocFirstPreloader {
