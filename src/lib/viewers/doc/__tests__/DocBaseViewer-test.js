@@ -2316,10 +2316,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.docFirstPagesEnabled = true;
                 docBase.preloader = new DocFirstPreloader();
                 docBase.preloader.loadTime = 20;
-                docBase.preloader.retrievedPages = 4;
+                docBase.preloader.retrievedPagesCount = 4;
                 docBase.pagerenderedHandler({ pageNumber: 1 });
 
                 expect(stubs.emitMetric).toHaveBeenCalledWith({
+                    data: 80,
+                    name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should notemit doc first pages metric if retrieved pages count is 1', () => {
+                jest.spyOn(Date, 'now').mockReturnValue(100);
+                docBase.startPageRendered = false;
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloader = new DocFirstPreloader();
+                docBase.preloader.loadTime = 20;
+                docBase.preloader.retrievedPagesCount = 1;
+                docBase.pagerenderedHandler({ pageNumber: 1 });
+
+                expect(stubs.emitMetric).not.toHaveBeenCalledWith({
                     data: 80,
                     name: 'preload_content_load_time_diff',
                 });

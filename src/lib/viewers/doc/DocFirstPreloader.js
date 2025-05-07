@@ -15,6 +15,7 @@ import {
     CLASS_BOX_PRELOAD_COMPLETE,
     CLASS_DOC_FIRST_IMAGE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
+    CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
 
 import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
@@ -75,7 +76,7 @@ class DocFirstPreloader extends EventEmitter {
     thumbnailsOpen = false;
 
     /** @property {number} - Preloader number of pages retrieved from representation api */
-    retrievedPages = 0;
+    retrievedPagesCount = 0;
 
     /** @property {HTMLElement} - Preload loading spinner element */
     spinnner;
@@ -88,11 +89,13 @@ class DocFirstPreloader extends EventEmitter {
      * @param {Api} options.api - API Instance
      * @return {DocPreloader} DocPreloader instance
      */
-    constructor(previewUI, { api } = {}) {
+    constructor(previewUI, { api } = {}, isPresentation = false) {
         super();
         this.api = api;
         this.previewUI = previewUI;
-        this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
+        this.wrapperClassName = isPresentation
+            ? CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION
+            : CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
     }
 
     buildPreloaderImagePlaceHolder(image) {
@@ -164,7 +167,7 @@ class DocFirstPreloader extends EventEmitter {
                         }
                     });
 
-                    this.retrievedPages = Object.keys(this.preloadedImages).length;
+                    this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
                     const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
                     previewMask.style.display = 'none';
                     if (docBaseViewer.shouldThumbnailsBeToggled()) {
@@ -174,7 +177,7 @@ class DocFirstPreloader extends EventEmitter {
                         docBaseViewer.initThumbnails();
                         this.thumbnailsOpen = true;
                     }
-                    if (this.retrievedPages) {
+                    if (this.retrievedPagesCount) {
                         this.emit('preload');
                         this.loadTime = Date.now();
                         this.wrapperEl.classList.add('loaded');
@@ -273,7 +276,7 @@ class DocFirstPreloader extends EventEmitter {
 
         this.preloadEl = undefined;
         this.imageEl = undefined;
-        this.retrievedPages = undefined;
+        this.retrievedPagesCount = undefined;
         Object.values(this.preloadedImages).forEach(image => {
             URL.revokeObjectURL(image);
         });

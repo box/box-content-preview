@@ -1,8 +1,8 @@
-import DocFirstPreloader from './DocFirstPreloader';
-import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION, CLASS_PREVIEW_LOADED } from '../../constants';
+import DocPreloader from './DocPreloader';
+import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION } from '../../constants';
 import { setDimensions } from '../../util';
 
-class PresentationPreloader extends DocFirstPreloader {
+class PresentationPreloader extends DocPreloader {
     /** @inheritdoc */
     maxZoomScale = 0;
 

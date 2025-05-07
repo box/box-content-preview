@@ -86,7 +86,7 @@ describe('ThumbnailsSidebar', () => {
         test('should clean up the instance properties', () => {
             thumbnailsSidebar.destroy();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
-            const preloader = { retrievedPages: 3 };
+            const preloader = { retrievedPagesCount: 3 };
             thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer, preloader);
             thumbnailsSidebar.destroy();
             expect(thumbnailsSidebar.preloader).toBeNull();
@@ -181,7 +181,7 @@ describe('ThumbnailsSidebar', () => {
             const items = [createThumbnailEl(9, false)];
             thumbnailsSidebar.currentThumbnails = items;
             thumbnailsSidebar.pdfViewer.pdfDocument = null;
-            thumbnailsSidebar.preloader = { retrievedPages: 8 };
+            thumbnailsSidebar.preloader = { retrievedPagesCount: 8 };
             thumbnailsSidebar.renderNextThumbnailImage();
 
             expect(stubs.requestThumbnailImage).not.toHaveBeenCalled();

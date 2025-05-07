@@ -59,6 +59,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         test('should add the document class to the doc element and set up preloader', () => {
             expect(doc.docEl).toHaveClass('bp-doc-document');
             expect(doc.preloader).toBeInstanceOf(DocPreloader);
+            expect(doc.preloader.wrapperClassName).toBe('bp-document-preload-wrapper');
         });
 
         test('should add the document class to the doc element and set up doc first preloader if feature is enabled', () => {
@@ -66,6 +67,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             doc.setup();
             expect(doc.docEl).toHaveClass('bp-doc-document');
             expect(doc.preloader).toBeInstanceOf(DocFirstPreloader);
+            expect(doc.preloader.wrapperClassName).toBe('bp-document-preload-wrapper');
         });
 
         test('should invoke onPreload callback', () => {

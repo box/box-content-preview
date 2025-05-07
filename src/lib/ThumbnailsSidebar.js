@@ -209,7 +209,7 @@ class ThumbnailsSidebar {
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
             // max doc first pages is 8 and this prevents the 9th page from being blank if the pdfDocument is not loaded yet
-            if (parsedPageNum > this.preloader?.retrievedPages && !this.pdfViewer.pdfDocument) {
+            if (parsedPageNum > this.preloader?.retrievedPagesCount && !this.pdfViewer.pdfDocument) {
                 return;
             }
             this.requestThumbnailImage(parsedPageNum - 1, nextThumbnailEl);
