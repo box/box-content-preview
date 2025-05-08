@@ -1,3 +1,10 @@
+## 3.5.0 (2025-05-08)
+
+* feat(doc-first): adding doc first behavior to presentations (#1556) ([e7014e7](https://github.com/box/box-content-preview/commit/e7014e7)), closes [#1556](https://github.com/box/box-content-preview/issues/1556)
+* fix(virtualscroller): accurately remove scrolled-out elements (#1554) ([fa5b0c6](https://github.com/box/box-content-preview/commit/fa5b0c6)), closes [#1554](https://github.com/box/box-content-preview/issues/1554)
+
+
+
 ## 3.4.0 (2025-04-30)
 
 * fix(doc-first): adding test coverage (#1553) ([c4907e5](https://github.com/box/box-content-preview/commit/c4907e5)), closes [#1553](https://github.com/box/box-content-preview/issues/1553)
