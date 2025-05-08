@@ -1329,12 +1329,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Preloader will only be used if we're not using a cached page number.
         // This is why we need to emit the event here and not in the block below
-        if (
-            !this.startPageRendered &&
-            pageNumber === 1 &&
-            this.preloader?.loadTime &&
-            this.preloader?.retrievedPagesCount > 1
-        ) {
+        if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime && this.preloader?.isWebp) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
                 name: LOAD_METRIC.preloadContentLoadTimeDiff,

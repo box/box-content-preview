@@ -81,6 +81,9 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {HTMLElement} - Preload loading spinner element */
     spinnner;
 
+    /** @property {boolean} - Preloader used webp */
+    isWebp = false;
+
     /**
      * [constructor]
      *
@@ -129,7 +132,7 @@ class DocFirstPreloader extends EventEmitter {
         }
 
         this.numPages = pages;
-
+        this.isWebp = !!pagedPreLoadUrlWithAuth;
         this.initializePreloadContainerComponents(containerEl);
         const promises = this.getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
         // eslint-disable-next-line consistent-return

@@ -2317,6 +2317,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.preloader = new DocFirstPreloader();
                 docBase.preloader.loadTime = 20;
                 docBase.preloader.retrievedPagesCount = 4;
+                docBase.preloader.isWebp = true;
                 docBase.pagerenderedHandler({ pageNumber: 1 });
 
                 expect(stubs.emitMetric).toHaveBeenCalledWith({
@@ -2332,6 +2333,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.preloader = new DocFirstPreloader();
                 docBase.preloader.loadTime = 20;
                 docBase.preloader.retrievedPagesCount = 1;
+                docBase.preloader.isWebp = false;
                 docBase.pagerenderedHandler({ pageNumber: 1 });
 
                 expect(stubs.emitMetric).not.toHaveBeenCalledWith({
