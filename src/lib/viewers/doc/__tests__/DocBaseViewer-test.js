@@ -2310,16 +2310,33 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).toBeCalled();
             });
 
-            test('should emit doc first pages metric', () => {
+            test('should emit doc first pages metric if webp representation is available', () => {
                 jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;
                 docBase.preloader = new DocFirstPreloader();
                 docBase.preloader.loadTime = 20;
-                docBase.preloader.retrievedPages = 4;
+                docBase.preloader.retrievedPagesCount = 4;
+                docBase.preloader.isWebp = true;
                 docBase.pagerenderedHandler({ pageNumber: 1 });
 
                 expect(stubs.emitMetric).toHaveBeenCalledWith({
+                    data: 80,
+                    name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should not emit doc first pages metric if no webp representation is available', () => {
+                jest.spyOn(Date, 'now').mockReturnValue(100);
+                docBase.startPageRendered = false;
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloader = new DocFirstPreloader();
+                docBase.preloader.loadTime = 20;
+                docBase.preloader.retrievedPagesCount = 1;
+                docBase.preloader.isWebp = false;
+                docBase.pagerenderedHandler({ pageNumber: 1 });
+
+                expect(stubs.emitMetric).not.toHaveBeenCalledWith({
                     data: 80,
                     name: 'preload_content_load_time_diff',
                 });

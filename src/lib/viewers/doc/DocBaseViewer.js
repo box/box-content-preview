@@ -425,7 +425,7 @@ class DocBaseViewer extends BaseViewer {
         if (this.docFirstPagesEnabled) {
             // If there is an error and we are in a retry don't
             // re-render the preloader. Use the existing one.
-            if (!this.preloader?.retrievedPages) {
+            if (!this.preloader?.retrievedPagesCount) {
                 this.loadAssets(EXIF_READER).then(() => {
                     this.showPreload();
                 });
@@ -1329,7 +1329,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Preloader will only be used if we're not using a cached page number.
         // This is why we need to emit the event here and not in the block below
-        if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime) {
+        if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime && this.preloader?.isWebp) {
             const timeDiff = Date.now() - this.preloader.loadTime;
             this.emitMetric({
                 name: LOAD_METRIC.preloadContentLoadTimeDiff,

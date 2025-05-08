@@ -1,5 +1,7 @@
 import throttle from 'lodash/throttle';
 import DocBaseViewer from './DocBaseViewer';
+
+import DocFirstPreloader from './DocFirstPreloader';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
 import { getProp } from '../../util';
@@ -17,6 +19,9 @@ class PresentationViewer extends DocBaseViewer {
     /**
      * @inheritdoc
      */
+
+    docFirstPagesEnabled;
+
     constructor(options) {
         super(options);
 
@@ -25,7 +30,6 @@ class PresentationViewer extends DocBaseViewer {
         this.pagesinitHandler = this.pagesinitHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
         this.throttledWheelHandler = this.getWheelHandler().bind(this);
-        this.docFirstPagesEnabled = false;
     }
 
     /**
@@ -41,13 +45,17 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
-        this.preloader = new PresentationPreloader(this.previewUI, { api: this.api });
+        this.preloader = this.docFirstPagesEnabled
+            ? new DocFirstPreloader(this.previwewUI, { api: this.api }, true)
+            : new PresentationPreloader(this.previewUI, { api: this.api });
+
         this.preloader.addListener('preload', this.onPreload.bind(this));
     }
 
     /**
      * @inheritdoc
      */
+
     destroy() {
         super.destroy();
         this.preloader.removeAllListeners('preload');
