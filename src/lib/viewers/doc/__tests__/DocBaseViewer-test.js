@@ -2310,7 +2310,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).toBeCalled();
             });
 
-            test('should emit doc first pages metric', () => {
+            test('should emit doc first pages metric if webp representation is available', () => {
                 jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;
@@ -2326,7 +2326,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should notemit doc first pages metric if retrieved pages count is 1', () => {
+            test('should not emit doc first pages metric if no webp representation is available', () => {
                 jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;
