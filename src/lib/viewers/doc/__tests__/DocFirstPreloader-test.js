@@ -103,7 +103,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         beforeEach(() => {
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
             jest.spyOn(preloader, 'emit');
-            jest.spyOn(preloader, 'showSpinner');
             jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
             mockContainer = document.createElement('div');
@@ -191,7 +190,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, mockFirstImage);
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
-            expect(preloader.showSpinner).toHaveBeenCalled();
             expect(preloader.loadTime).toBeDefined();
             expect(mockElement.style.display).toBe('none');
         });
@@ -204,7 +202,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.retrievedPagesCount).toBe(0);
             expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
             expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
-            expect(preloader.showSpinner).not.toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalled();
             expect(preloader.loadTime).toBeUndefined();
         });
@@ -227,7 +224,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
-            expect(preloader.showSpinner).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
         });
 
@@ -340,67 +336,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const result = preloader.pdfJsDocLoadComplete();
 
             expect(result).toBe(false);
-        });
-    });
-
-    describe('showSpinner()', () => {
-        it('should not create the spinner if it already exists', () => {
-            const mockWrapperEl = jest.spyOn(document, 'createElement').mockReturnValue();
-            preloader.wrapperEl = mockWrapperEl;
-            preloader.spinner = {};
-            preloader.showSpinner();
-            expect(document.createElement).not.toHaveBeenCalled();
-            expect(preloader.spinner).toEqual({});
-        });
-
-        it('should create the spinner if it does not exist', () => {
-            const mockWrapperEl = document.createElement('div');
-            jest.spyOn(mockWrapperEl, 'appendChild');
-            jest.spyOn(document, 'getElementsByClassName').mockImplementation(klass => {
-                if (klass === 'bcs-is-open') {
-                    return ['div'];
-                }
-
-                return null;
-            });
-
-            preloader.wrapperEl = mockWrapperEl;
-            preloader.spinner = null;
-            preloader.showSpinner();
-            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
-            expect(preloader.spinner.classList.contains('bp-document-preload-spinner')).toBe(true);
-            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).not.toBe(true);
-            expect(mockWrapperEl.appendChild).toHaveBeenCalledWith(preloader.spinner);
-        });
-
-        it('should create the spinner and position it properly if sidebar is closed', () => {
-            const mockWrapperEl = document.createElement('div');
-            jest.spyOn(mockWrapperEl, 'appendChild');
-            preloader.wrapperEl = mockWrapperEl;
-            preloader.thumbnailsOpen = true;
-            preloader.showSpinner();
-            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
-            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).toBe(true);
-            expect(preloader.spinner.classList.contains('bp-thumbnails-close')).not.toBe(true);
-        });
-
-        it('should create the spinner and position it properly if thumbnails are closed', () => {
-            const mockWrapperEl = document.createElement('div');
-            jest.spyOn(document, 'getElementsByClassName').mockImplementation(klass => {
-                if (klass === 'bcs-is-open') {
-                    return ['div'];
-                }
-
-                return null;
-            });
-
-            jest.spyOn(mockWrapperEl, 'appendChild');
-            preloader.wrapperEl = mockWrapperEl;
-            preloader.thumbnailsOpen = false;
-            preloader.showSpinner();
-            expect(preloader.spinner).toBeInstanceOf(HTMLDivElement);
-            expect(preloader.spinner.classList.contains('bp-thumbnails-close')).toBe(true);
-            expect(preloader.spinner.classList.contains('bp-sidebar-closed')).not.toBe(true);
         });
     });
 

@@ -3,7 +3,6 @@ import Api from '../../api';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
-    CLASS_BOX_PREVIEW_PRELOAD_SPINNER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
@@ -14,7 +13,6 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     CLASS_BOX_PRELOAD_COMPLETE,
     CLASS_DOC_FIRST_IMAGE,
-    CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
 
@@ -77,9 +75,6 @@ class DocFirstPreloader extends EventEmitter {
 
     /** @property {number} - Preloader number of pages retrieved from representation api */
     retrievedPagesCount = 0;
-
-    /** @property {HTMLElement} - Preload loading spinner element */
-    spinnner;
 
     /** @property {boolean} - Preloader used webp */
     isWebp = false;
@@ -184,23 +179,9 @@ class DocFirstPreloader extends EventEmitter {
                         this.emit('preload');
                         this.loadTime = Date.now();
                         this.wrapperEl.classList.add('loaded');
-                        this.showSpinner();
                     }
                 }
             });
-    }
-
-    showSpinner() {
-        if (!this.spinner) {
-            this.spinner = document.createElement('div');
-            this.spinner.classList.add(CLASS_BOX_PREVIEW_PRELOAD_SPINNER);
-            if (!document.getElementsByClassName('bcs-is-open')[0] && this.thumbnailsOpen) {
-                this.spinner.classList.add('bp-sidebar-closed');
-            } else if (!this.thumbnailsOpen && document.getElementsByClassName('bcs-is-open')[0]) {
-                this.spinner.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE);
-            }
-            this.wrapperEl.appendChild(this.spinner);
-        }
     }
 
     addPreloadImageToPreloaderContainer(img, i) {
