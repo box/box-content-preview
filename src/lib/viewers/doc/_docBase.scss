@@ -474,37 +474,3 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         display: none;
     }
 }
-
-.bp-document-preload-spinner {
-    position: fixed;
-    top: 50%;
-    left: 43%;
-    z-index: 1000;
-    display: none;
-    width: 160px;
-    height: 160px;
-    background-color: transparent;
-    border: 2px solid red;
-    border-top: 5px solid transparent;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: spin 1s linear infinite;
-
-    @keyframes spin {
-        from {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        to {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-    }
-
-    &.bp-sidebar-closed {
-        left: 50%;
-    }
-
-    &.bp-thumbnails-close {
-        left: 37%;
-    }
-}

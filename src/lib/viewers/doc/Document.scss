@@ -20,12 +20,6 @@
     opacity: 1;
     transition: opacity .5s;
 
-    &.loaded {
-        .bp-document-preload-spinner {
-            display: block;
-        }
-    }
-
     &.bp-is-invisible {
         visibility: hidden;
     }

@@ -33,7 +33,6 @@ export const CLASS_BOX_PRELOAD_COMPLETE = 'bp-preload-complete';
 export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
 export const CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER = 'bp-preload-placeholder';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
-export const CLASS_BOX_PREVIEW_PRELOAD_SPINNER = 'bp-document-preload-spinner';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
 export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
