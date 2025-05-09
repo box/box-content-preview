@@ -1,3 +1,9 @@
+## 3.6.0 (2025-05-09)
+
+* feat(doc-first): removing spinner (#1557) ([1c50761](https://github.com/box/box-content-preview/commit/1c50761)), closes [#1557](https://github.com/box/box-content-preview/issues/1557)
+
+
+
 ## 3.5.0 (2025-05-08)
 
 * feat(doc-first): adding doc first behavior to presentations (#1556) ([e7014e7](https://github.com/box/box-content-preview/commit/e7014e7)), closes [#1556](https://github.com/box/box-content-preview/issues/1556)
