@@ -28,6 +28,7 @@ import {
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
+    STATUS_PENDING,
 } from '../../constants';
 import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
@@ -374,9 +375,14 @@ class DocBaseViewer extends BaseViewer {
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
         const preloadRepPaged = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
-        const pagedWebpRepReady = preloadRepPaged && this.isRepresentationReady(preloadRepPaged);
-        const jpegRepReady = preloadRep && this.isRepresentationReady(preloadRep);
-        if ((!pagedWebpRepReady && !jpegRepReady) || !this.getViewerOption('preload')) {
+        const pagedWebpRepReadyOrPending =
+            preloadRepPaged &&
+            (this.isRepresentationReady(preloadRepPaged) ||
+                this.getRepresentationStatus(preloadRepPaged) === STATUS_PENDING);
+        const jpegRepReadyOrPending =
+            preloadRep &&
+            (this.isRepresentationReady(preloadRep) || this.getRepresentationStatus(preloadRep) === STATUS_PENDING);
+        if ((!pagedWebpRepReadyOrPending && !jpegRepReadyOrPending) || !this.getViewerOption('preload')) {
             return;
         }
 
@@ -388,15 +394,26 @@ class DocBaseViewer extends BaseViewer {
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
             this.startPreloadTimer();
-            if (!pagedWebpRepReady) {
+            if (!pagedWebpRepReadyOrPending && jpegRepReadyOrPending) {
                 this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
             } else {
-                const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
+                const { pages: pageCount = 1 } = preloadRepPaged?.metadata || { pages: 8 };
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
                 const pagedPreLoadUrlWithAuth =
                     newPagedUrlTemplate && this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+                const isPagedRepPending = this.getRepresentationStatus(preloadRepPaged) === STATUS_PENDING;
+                if (isPagedRepPending && jpegRepReadyOrPending) {
+                    this.preloader.showPreload(
+                        preloadUrlWithAuth,
+                        this.containerEl,
+                        pagedPreLoadUrlWithAuth,
+                        pageCount,
+                        this,
+                    );
+                } else {
+                    this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+                }
             }
         }
     }

@@ -1037,6 +1037,21 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getRepresentationStatus()', () => {
+        test('should return the status of the representation', () => {
+            const representation = {
+                status: {
+                    state: 'success',
+                },
+            };
+            expect(base.getRepresentationStatus(representation)).toBe('success');
+        });
+
+        test('shouldd return null if the representation is not present', () => {
+            expect(base.getRepresentationStatus(null)).toBeNull();
+        });
+    });
+
     describe('disableViewerControls()', () => {
         test('should disable viewer controls', () => {
             base.controls = {
