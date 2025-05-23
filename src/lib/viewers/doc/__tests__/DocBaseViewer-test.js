@@ -487,8 +487,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const webpUrlTemplate = 'https://url/{+asset_path}';
             let webpRep;
             let jpegRep;
+            const jpegUrl = 'preload-url';
+            const pagedUrl = 'paged-url';
             beforeEach(() => {
                 docBase.preloader = new DocPreloader();
+                docBase.docFirstPagesEnabled = true;
                 startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
                 webpRep = {
                     content: {
@@ -497,18 +500,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     metadata: {
                         pages: 4,
                     },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
+                    status: {},
                 };
 
                 jpegRep = {
                     content: {
                         url_template: jpegUrlTemplate,
                     },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
+                    status: {},
                 };
 
                 jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
@@ -528,27 +527,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     }
                     return false;
                 });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
+                        return pagedUrl;
+                    }
+                    if (url === jpegUrlTemplate) {
+                        return jpegUrl;
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
             });
 
             test('should not do anything if there is a previously cached page', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(2);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
             test('should not do anything if startAt is not page 1', () => {
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 docBase.startPageNum = 3;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
             test('should not do anything if file is watermarked', () => {
@@ -557,254 +564,122 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         is_watermarked: true,
                     },
                 };
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue({});
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
+            });
+
+            test('should not do anything if preload option is not set', () => {
+                jest.spyOn(docBase, 'getViewerOption').mockImplementation(option => {
+                    if (option === 'preload') {
+                        return false;
+                    }
+                    return true;
+                });
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
             test('should not do anything if both reps are missing', () => {
                 docBase.options.file = {};
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
                 webpRep = null;
                 jpegRep = null;
-
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
             test('should not do anything if no preload or paged preload rep is available', () => {
-                docBase.options.file = {};
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
                 webpRep.status.state = STATUS_NONE;
                 jpegRep.status.state = STATUS_NONE;
-
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
-            test('should not do anything if preload option is not set', () => {
-                docBase.options.file = {};
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(false);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue(null);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
-                docBase.showPreload();
-            });
-
-            test('should not do anything if reps have an error', () => {
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+            test('should not do anything if both reps have an error', () => {
                 webpRep.status.state = STATUS_ERROR;
                 jpegRep.status.state = STATUS_ERROR;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+                expect(startPreloadTimerStub).not.toHaveBeenCalled();
             });
 
-            test('should not do anything if preload reps are pending', () => {
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
-                webpRep.status.state = STATUS_PENDING;
+            test('should call showPreload on preloader with jpeg url and webp paged url if both reps are pending using max 8 pages', () => {
                 jpegRep.status.state = STATUS_PENDING;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
-
+                // metadata is null for webp paged rep if it's pending
+                webpRep.metadata = null;
+                webpRep.status.state = STATUS_PENDING;
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(jpegUrl, containerEl, pagedUrl, 8, docBase);
             });
 
-            test('should show preload if webp paged rep is unavalable but jpeg preload rep is available', () => {
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
-                webpRep.status.state = STATUS_NONE;
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+            test('should call showPreload on preloader with jpeg url and webp paged url if jpeg rep is available and webp paged rep is pending using max 8 pages', () => {
+                webpRep.metadata = null;
+                webpRep.status.state = STATUS_PENDING;
+                jpegRep.status.state = STATUS_SUCCESS;
                 docBase.showPreload();
-                expect(docBase.preloader.showPreload).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(jpegUrl, containerEl, pagedUrl, 8, docBase);
             });
 
-            test('should show preload of webp paged rep is available but jpeg preload rep is unavailable', () => {
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+            test('should call showPreload on preloader with paged url only if webp paged rep is available but jpeg preload rep is unavailable', () => {
                 jpegRep.status.state = STATUS_NONE;
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                webpRep.status.state = STATUS_SUCCESS;
                 docBase.showPreload();
-                expect(docBase.preloader.showPreload).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, pagedUrl, 4, docBase);
             });
 
-            test('should show preload with correct authed URL', () => {
-                const preloadUrl = 'someUrl';
+            test('should call showPreload on preloader with paged url only if webp paged rep is available and jpeg rep is available', () => {
+                webpRep.status.state = STATUS_SUCCESS;
+                jpegRep.status.state = STATUS_SUCCESS;
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, pagedUrl, 4, docBase);
+            });
+
+            test('should call showPreload on prelaoder with only the jpeg url if webp paged rep is unavailable and jpeg rep is available', () => {
+                webpRep.status.state = STATUS_NONE;
+                jpegRep.status.state = STATUS_SUCCESS;
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(jpegUrl, containerEl, null, 1, docBase);
+            });
+
+            test('should call showPreload on prelaoder with only the jpeg url if webp paged rep is in error and jpeg rep is available', () => {
+                webpRep.status.state = STATUS_ERROR;
+                jpegRep.status.state = STATUS_SUCCESS;
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(jpegUrl, containerEl, null, 1, docBase);
+            });
+
+            test('should show preload with jpeg url if doc first pages is disabled', () => {
                 docBase.options.file = {};
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue({
-                    content: {
-                        url_template: '',
-                    },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
-                });
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .withArgs(preloadUrl, docBase.containerEl);
-
+                jpegRep.status.state = STATUS_SUCCESS;
+                docBase.docFirstPagesEnabled = false;
                 docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(jpegUrl, docBase.containerEl);
             });
 
-            test('should start preload timer for metrics', () => {
-                const preloadUrl = 'someUrl';
-                docBase.options.file = {};
-                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue({
-                    content: {
-                        url_template: '',
-                    },
-                    status: {
-                        state: STATUS_SUCCESS,
-                    },
-                });
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
-
-                sandbox.mock(docBase.preloader).expects('showPreload');
-
-                docBase.showPreload();
-
-                expect(startPreloadTimerStub).toBeCalled();
-            });
-
-            test('should load doc first preloader properly for doc first pages when webp rep available', () => {
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
-                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
-                        return 'paged-url';
-                    }
-                    if (url === jpegUrlTemplate) {
-                        return 'preload-url';
-                    }
-
-                    return '';
-                });
-
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-                docBase.docFirstPagesEnabled = true;
+            test('should call showPreload on preloader with only the paged url if webp paged is fully available', () => {
+                webpRep.status.state = STATUS_SUCCESS;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
                 expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase);
             });
 
-            test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
-                webpRep = null;
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    if (url === jpegUrlTemplate) {
-                        return 'jpeg-preload-url';
-                    }
-
-                    return 'url without template';
-                });
-
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-                docBase.docFirstPagesEnabled = true;
+            test('should start preload timer for metrics if doc first pages is enabled', () => {
+                jpegRep.status.state = STATUS_SUCCESS;
+                webpRep.status.state = STATUS_SUCCESS;
+                docBase.options.file = {};
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
-                    'jpeg-preload-url',
-                    containerEl,
-                    null,
-                    1,
-                    docBase,
-                );
             });
 
-            test('should not throw an error in doc first preloader and use jpeg rep if webp is in error', () => {
-                webpRep = {
-                    content: {
-                        url_template: webpUrlTemplate,
-                    },
-                    status: {
-                        state: STATUS_ERROR,
-                    },
-                };
-
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
-                    // the webpRep template gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
-                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
-                        return 'paged-url';
-                    }
-                    if (url === jpegUrlTemplate) {
-                        return 'preload-url';
-                    }
-
-                    return '';
-                });
-
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-                docBase.docFirstPagesEnabled = true;
+            test('should  start preload timer for metrics if doc first pages is disabled', () => {
+                docBase.docFirstPagesEnabled = false;
+                jpegRep.status.state = STATUS_SUCCESS;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
-                    'preload-url',
-                    containerEl,
-                    null,
-                    1,
-                    docBase,
-                );
             });
         });
 
@@ -2310,7 +2185,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).toBeCalled();
             });
 
-            test('should emit doc first pages metric if webp representation is available', () => {
+            test('should emit doc first pages metric if webp paged representation is available', () => {
                 jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;
@@ -2326,7 +2201,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should not emit doc first pages metric if no webp representation is available', () => {
+            test('should not emit doc first pages metric if no webp paged representation is available', () => {
                 jest.spyOn(Date, 'now').mockReturnValue(100);
                 docBase.startPageRendered = false;
                 docBase.docFirstPagesEnabled = true;

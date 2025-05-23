@@ -209,13 +209,14 @@ class DocFirstPreloader extends EventEmitter {
         if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
             return [];
         }
-        const firstPageUrl = !pagedPreLoadUrlWithAuth
-            ? preloadUrlWithAuth
-            : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
+
+        const firstPageUrl =
+            preloadUrlWithAuth || pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
         const promise1 = this.api.get(firstPageUrl, { type: 'blob' });
         const promises = [promise1.catch(e => e)];
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
-        if (pagedPreLoadUrlWithAuth) {
+        const useWebp = !preloadUrlWithAuth || (pagedPreLoadUrlWithAuth && preloadUrlWithAuth);
+        if (useWebp) {
             for (let i = 2; i <= count; i += 1) {
                 const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
                 const promise = this.api.get(url, { type: 'blob' });

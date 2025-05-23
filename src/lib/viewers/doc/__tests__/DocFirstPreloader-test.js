@@ -346,7 +346,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should create only the jpeg promise if webp is unavailable', () => {
             const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = '';
+            const webpPagedUrl = null;
             const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
             expect(preloader.api.get).toHaveBeenNthCalledWith(
                 1,
@@ -356,14 +356,25 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(promises.length).toBe(1);
         });
 
-        it('should create only the webp promises if webp is unavailable', () => {
+        it('should create only webp promises if only the webp url is present', () => {
+            const webpPagedUrl = 'webp-urlpage_number';
+            const jpegPagedUrl = null;
+            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
+            expect(preloader.api.get).toHaveBeenCalledTimes(3);
+            expect(preloader.api.get).toHaveBeenNthCalledWith(1, 'webp-url1.webp', expect.any(Object));
+            expect(preloader.api.get).toHaveBeenNthCalledWith(2, 'webp-url2.webp', expect.any(Object));
+            expect(preloader.api.get).toHaveBeenNthCalledWith(3, 'webp-url3.webp', expect.any(Object));
+            expect(promises.length).toBe(3);
+        });
+
+        it('should create the jpeg and webp promises in order if both the jpeg url and webp url are present', () => {
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
             expect(preloader.api.get).toHaveBeenCalledTimes(3);
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
+            expect(preloader.api.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
+            expect(preloader.api.get).toHaveBeenNthCalledWith(2, 'webp-url2.webp', expect.any(Object));
+            expect(preloader.api.get).toHaveBeenNthCalledWith(3, 'webp-url3.webp', expect.any(Object));
             expect(promises.length).toBe(3);
         });
     });

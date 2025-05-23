@@ -902,6 +902,13 @@ class BaseViewer extends EventEmitter {
         return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
 
+    getRepresentationStatus(representation) {
+        if (!representation) {
+            return null;
+        }
+        return RepStatus.getStatus(representation);
+    }
+
     /**
      * Disables viewer controls
      *
