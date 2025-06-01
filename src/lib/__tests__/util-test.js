@@ -3,6 +3,7 @@ import Location from '../Location';
 import * as util from '../util';
 import { ERROR_CODE } from '../events';
 import DownloadReachability from '../DownloadReachability';
+import Api from '../api';
 
 describe('lib/util', () => {
     describe('iframe', () => {
@@ -708,6 +709,32 @@ describe('lib/util', () => {
             };
 
             util.handleRepresentationBlobFetch(response).then(passedResponse => expect(passedResponse).toBe(response));
+        });
+    });
+
+    describe('getPreloadImageRequestPromises()', () => {
+        const mockApi = new Api();
+        beforeEach(() => {
+            jest.spyOn(mockApi, 'get').mockResolvedValue({});
+        });
+
+        it('should create only the jpeg promise if webp is unavailable', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = '';
+            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
+            expect(mockApi.get).toHaveBeenNthCalledWith(1, expect.stringContaining('jpeg-url'), expect.any(Object));
+            expect(promises.length).toBe(1);
+        });
+
+        it('should create only the webp promises if webp is available', () => {
+            const jpegPagedUrl = 'jpeg-url';
+            const webpPagedUrl = 'webp-urlpage_number';
+            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
+            expect(mockApi.get).toHaveBeenCalledTimes(3);
+            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
+            expect(promises.length).toBe(3);
         });
     });
 });

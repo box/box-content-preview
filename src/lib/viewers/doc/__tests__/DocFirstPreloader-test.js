@@ -1,5 +1,6 @@
 import DocFirstPreloader from '../DocFirstPreloader';
 import Api from '../../../api';
+import * as util from '../../../util';
 import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -117,13 +118,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
 
         it('should set isWebp to true if pagedPreLoadUrlWithAuth is provided', async () => {
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload(null, mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(true);
         });
 
         it('should set isWebp to false if pagedPreLoadUrlWithAuth is not provided', async () => {
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(false);
         });
@@ -132,7 +133,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(mockBlob)];
             jest.spyOn(preloader, 'loadImage').mockReturnValue(new Image(100, 200));
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
             expect(mockElement.style.display).toBe('none');
@@ -156,7 +157,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
             jest.spyOn(preloader, 'initializePreloadContainerComponents');
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
                     return 'mock-object-url1';
@@ -177,7 +178,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.numPages).toBe(4);
             expect(preloader.retrievedPagesCount).toBe(4);
             expect(preloader.initializePreloadContainerComponents).toHaveBeenCalledWith(mockContainer);
-            expect(preloader.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                mockApi,
                 'mock-url',
                 4,
                 'mock-paged-image-url',
@@ -197,7 +199,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         it('should stop on first image retrieval failure', async () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
             expect(preloader.retrievedPagesCount).toBe(0);
             expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
@@ -214,7 +216,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob),
             ];
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
 
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
@@ -238,7 +240,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob4),
             ];
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
@@ -336,35 +338,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const result = preloader.pdfJsDocLoadComplete();
 
             expect(result).toBe(false);
-        });
-    });
-
-    describe('getPreloadImageRequestPromises()', () => {
-        beforeEach(() => {
-            jest.spyOn(preloader.api, 'get').mockResolvedValue({});
-        });
-
-        it('should create only the jpeg promise if webp is unavailable', () => {
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = '';
-            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
-            expect(preloader.api.get).toHaveBeenNthCalledWith(
-                1,
-                expect.stringContaining('jpeg-url'),
-                expect.any(Object),
-            );
-            expect(promises.length).toBe(1);
-        });
-
-        it('should create only the webp promises if webp is unavailable', () => {
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = 'webp-urlpage_number';
-            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
-            expect(preloader.api.get).toHaveBeenCalledTimes(3);
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
-            expect(promises.length).toBe(3);
         });
     });
 

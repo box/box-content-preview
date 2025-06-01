@@ -16,12 +16,10 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
 
-import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
 import { VIEWER_EVENT } from '../../events';
-import { handleRepresentationBlobFetch } from '../../util';
+import { handleRepresentationBlobFetch, getPreloadImageRequestPromises } from '../../util';
 // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
-const MAX_PRELOAD_PAGES = 8;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
 
 class DocFirstPreloader extends EventEmitter {
@@ -122,6 +120,11 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise} Promise to show preload
      */
     async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = 'none';
+        }
+
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
@@ -129,7 +132,7 @@ class DocFirstPreloader extends EventEmitter {
         this.numPages = pages;
         this.isWebp = !!pagedPreLoadUrlWithAuth;
         this.initializePreloadContainerComponents(containerEl);
-        const promises = this.getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
+        const promises = getPreloadImageRequestPromises(this.api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
         // eslint-disable-next-line consistent-return
         return Promise.all(promises)
             .then(responses => {
@@ -166,8 +169,7 @@ class DocFirstPreloader extends EventEmitter {
                     });
 
                     this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
-                    const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
-                    previewMask.style.display = 'none';
+
                     if (docBaseViewer.shouldThumbnailsBeToggled()) {
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                         docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
@@ -203,26 +205,6 @@ class DocFirstPreloader extends EventEmitter {
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);
         this.preloadedImages = {};
-    }
-
-    getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
-        if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
-            return [];
-        }
-        const firstPageUrl = !pagedPreLoadUrlWithAuth
-            ? preloadUrlWithAuth
-            : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
-        const promise1 = this.api.get(firstPageUrl, { type: 'blob' });
-        const promises = [promise1.catch(e => e)];
-        const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
-        if (pagedPreLoadUrlWithAuth) {
-            for (let i = 2; i <= count; i += 1) {
-                const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
-                const promise = this.api.get(url, { type: 'blob' });
-                promises.push(promise.catch(e => e));
-            }
-        }
-        return promises;
     }
 
     /**
