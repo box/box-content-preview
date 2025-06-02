@@ -3526,7 +3526,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let mockFile;
             let jpegRep;
             let webpRep;
-
+            const webpUrl =
+                'https://example.com/webp/page_number?access_token=auth_token&box_client_name=name&box_client_version=version';
+            const jpegUrl =
+                'https://example.com/jpeg/{+asset}?access_token=auth_token&box_client_name=name&box_client_version=version';
             beforeEach(() => {
                 // Mock representations
                 jpegRep = {
@@ -3558,15 +3561,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         entries: [jpegRep, webpRep],
                     },
                 };
-
-                stubs.createContentUrlWithAuthParams = jest
-                    .spyOn(docBase, 'createContentUrlWithAuthParams')
-                    .mockImplementation(url => `${url}?auth=token`);
                 // Mock options
                 docBase.options = {
                     file: { id: 'test-file-id' }, // Add file to options to prevent destroy errors
                     sharedLink: 'original-shared-link',
                     sharedLinkPassword: 'original-password',
+                    token: 'auth_token',
                 };
             });
 
@@ -3574,10 +3574,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.restoreAllMocks();
             });
 
-            test('should clear sharedLink and sharedLinkPassword options', () => {
+            test('should clear sharedLink and sharedLinkPassword options and reset them after prefetching', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(docBase.options.sharedLink).toBe('');
-                expect(docBase.options.sharedLinkPassword).toBe('');
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
+                expect(docBase.options.sharedLink).toBe('original-shared-link');
+                expect(docBase.options.sharedLinkPassword).toBe('original-password');
             });
 
             test('should not prefetch when neither jpeg nor webp representations exists', () => {
@@ -3600,10 +3601,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 webpRep.metadata = null;
                 docBase.prefetchPreloaderImages(mockFile);
 
-                expect(stubs.createContentUrlWithAuthParams).toHaveBeenCalledWith(jpegRep.content.url_template);
                 expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
                     docBase.api,
-                    `${jpegRep.content.url_template}?auth=token`,
+                    jpegUrl,
                     1, // default fallback page count when webp metadata is not available
                     '',
                 );
@@ -3611,17 +3611,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should only prefetch webp representations when webp is ready', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                const expectedPagedUrlTemplate = webpRep.content.url_template.replace(
-                    /\{.*\}/,
-                    PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER,
-                );
-                expect(stubs.createContentUrlWithAuthParams).toHaveBeenCalledWith(expectedPagedUrlTemplate);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '',
-                    5,
-                    `${expectedPagedUrlTemplate}?auth=token`,
-                );
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
             });
 
             test('should handle webp representation without metadata pages', () => {
@@ -3652,36 +3642,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should handle jpeg representation without content', () => {
                 jpegRep.content = null;
                 docBase.prefetchPreloaderImages(mockFile);
-
-                const expectedPagedUrlTemplate = webpRep.content.url_template.replace(
-                    /\{.*\}/,
-                    PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER,
-                );
-                expect(stubs.createContentUrlWithAuthParams).toHaveBeenCalledWith(expectedPagedUrlTemplate);
                 expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
                     docBase.api,
                     '', // jpegUrlAuthTemplate should be false when webp is available
                     5,
-                    `${expectedPagedUrlTemplate}?auth=token`,
+                    webpUrl,
                 );
             });
 
             test('should handle webp representation without content', () => {
                 webpRep.content = null;
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    `${jpegRep.content.url_template}?auth=token`,
-                    1,
-                    '',
-                );
-            });
-
-            test('should correctly replace URL template placeholder for webp', () => {
-                docBase.prefetchPreloaderImages(mockFile);
-
-                const expectedTemplate = 'https://example.com/webp/page_number';
-                expect(stubs.createContentUrlWithAuthParams).toHaveBeenCalledWith(expectedTemplate);
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, jpegUrl, 1, '');
             });
 
             test('should call Promise.all with the returned promises', () => {

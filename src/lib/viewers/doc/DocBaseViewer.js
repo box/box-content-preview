@@ -338,14 +338,17 @@ class DocBaseViewer extends BaseViewer {
         }
         /*
           Prefetched image urls will not match the urls that the preloader uses when shared link or shared password is set. This negates the benefit
-          of prefetching the images. We need to set the shared link and shared password to empty strings. It is possible 
+          of prefetching the images. As a result we need to set the shared link and shared password to empty strings. It is possible 
           that these values are not even necessary for the representations api call as the code that sets them is old and 
-          the reps api does not seem to use them when it retreives the image reps.
+          the reps api does not seem to use them when it retreives the image reps. Preloading can also include the actual pdf itself
+          so we need to set the share link and shared link password back to what it was before after we are done prefetching the images.
+          The options object is used downstream in thee url auth append logic and if the sharedLink and sharedLinkPassword are set it appends them
+          to the query params for the representations api call. This stops this from happening.
           */
-        if (this.options) {
-            this.options.sharedLink = '';
-            this.options.sharedLinkPassword = '';
-        }
+
+        const { sharedLink = '', sharedLinkPassword = '' } = this.options;
+        this.options.sharedLink = '';
+        this.options.sharedLinkPassword = '';
 
         const jpegPreloadRep = getRepresentation(file, PRELOAD_REP_NAME);
         const pagedWebpRep = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
@@ -368,6 +371,8 @@ class DocBaseViewer extends BaseViewer {
             const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
             Promise.all(promises);
         }
+        this.options.sharedLink = sharedLink;
+        this.options.sharedLinkPassword = sharedLinkPassword;
     }
 
     /**
