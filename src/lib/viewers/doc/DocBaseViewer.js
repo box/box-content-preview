@@ -108,9 +108,6 @@ class DocBaseViewer extends BaseViewer {
     /** @property {boolean} - DOC First Pages Enabled */
     docFirstPagesEnabled;
 
-    /** @property {boolean} - DOC First Prefetch Enabled */
-    docFirstPrefetchEnabled;
-
     /** @property {DocFirstPreloader|DocPreloader} - document preloader */
     preloader;
 
@@ -165,7 +162,6 @@ class DocBaseViewer extends BaseViewer {
         // Call super() to set up common layout
         super.setup();
         this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
-        this.docFirstPrefetchEnabled = this.featureEnabled('docFirstPrefetch.enabled');
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
@@ -383,7 +379,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     prefetch({ assets = true, preload = true, content = true }) {
-        const { file, representation } = this.options;
+        const { file, representation, isDocFirstPrefetchEnabled } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
@@ -392,7 +388,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (preload && !isWatermarked) {
-            if (!this.docFirstPrefetchEnabled) {
+            if (!isDocFirstPrefetchEnabled) {
                 const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
                 if (preloadRep && this.isRepresentationReady(preloadRep)) {
                     const { url_template: template } = preloadRep.content;

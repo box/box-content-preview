@@ -281,32 +281,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setup();
             expect(docBase.pageTracker).toBeInstanceOf(PageTracker);
         });
-
-        test('should set docFirstPrefetchEnabled to true if feature is enabled', () => {
-            docBase = new DocBaseViewer({
-                cache: {
-                    set: () => {},
-                    has: () => {},
-                    get: () => {},
-                    unset: () => {},
-                },
-                container: containerEl,
-                representation: {
-                    content: {
-                        url_template: 'foo',
-                    },
-                },
-                file: {
-                    id: '0',
-                    extension: 'ppt',
-                },
-            });
-            docBase.containerEl = containerEl;
-            docBase.rootEl = rootEl;
-            jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'docFirstPrefetch.enabled');
-            docBase.setup();
-            expect(docBase.docFirstPrefetchEnabled).toBe(true);
-        });
     });
 
     describe('Non setup methods', () => {
@@ -419,6 +393,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('prefetch()', () => {
+            beforeEach(() => {
+                docBase.options.isDocFirstPrefetchEnabled = false;
+            });
+
             test('should prefetch assets if assets is true', () => {
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
                 jest.spyOn(stubs.api, 'get').mockImplementation();
@@ -430,7 +408,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
                 jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
 
-                docBase.docFirstPrefetchEnabled = true;
+                docBase.options.isDocFirstPrefetchEnabled = true;
                 docBase.prefetch({ assets: true, preload: true, content: false });
                 expect(docBase.prefetchPreloaderImages).toHaveBeenCalled();
             });
@@ -441,9 +419,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
                 jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
-                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
-                    feature => feature === 'docFirstPrefetch.enabled',
-                );
+                docBase.options.isDocFirstPrefetchEnabled = true;
                 docBase.prefetch({ assets: true, preload: true, content: false });
                 expect(docBase.prefetchPreloaderImages).not.toHaveBeenCalled();
             });
@@ -464,7 +440,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).toBeCalledWith(template);
+                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith(template);
             });
 
             test('should not prefetch preload if preload is true and representation is not ready', () => {
@@ -523,7 +499,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         },
                     },
                 ];
-                docBase.docFirstPrefetchEnabled = true;
+                docBase.options.isDocFirstPrefetchEnabled = true;
                 const contentUrl = 'someContentUrl';
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
