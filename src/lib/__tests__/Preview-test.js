@@ -583,15 +583,23 @@ describe('lib/Preview', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
             jest.spyOn(preview, 'createViewerOptions');
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: true,
+                isDocFirstPrefetchEnabled: false,
+            });
 
-            expect(preview.createViewerOptions).toBeCalledWith({
+            expect(preview.createViewerOptions).toHaveBeenCalledWith({
                 viewer,
                 file: someFile,
                 token,
                 representation: undefined,
                 sharedLink,
                 sharedLinkPassword,
+                isDocFirstPrefetchEnabled: false,
             });
         });
 

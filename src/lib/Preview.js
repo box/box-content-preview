@@ -623,7 +623,15 @@ class Preview extends EventEmitter {
      * @param {string} token - Access token
      * @return {void}
      */
-    prefetch({ fileId, fileVersionId, token, sharedLink = '', sharedLinkPassword = '', preload = false }) {
+    prefetch({
+        fileId,
+        fileVersionId,
+        token,
+        sharedLink = '',
+        sharedLinkPassword = '',
+        preload = false,
+        isDocFirstPrefetchEnabled = false,
+    }) {
         let file;
         let loader;
         let viewer;
@@ -661,6 +669,7 @@ class Preview extends EventEmitter {
         if (preload) {
             options.sharedLink = sharedLink;
             options.sharedLinkPassword = sharedLinkPassword;
+            options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));

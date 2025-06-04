@@ -16,12 +16,10 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
 
-import { PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from './DocBaseViewer';
 import { VIEWER_EVENT } from '../../events';
-import { handleRepresentationBlobFetch } from '../../util';
+import { handleRepresentationBlobFetch, getPreloadImageRequestPromises } from '../../util';
 // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
-const MAX_PRELOAD_PAGES = 8;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
 
 class DocFirstPreloader extends EventEmitter {
@@ -115,6 +113,32 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     /**
+     * Hides the preview mask element if it exists
+     *
+     * @private
+     * @return {void}
+     */
+    hidePreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = 'none';
+        }
+    }
+
+    /**
+     * Shows the preview mask element if it exists
+     *
+     * @private
+     * @return {void}
+     */
+    showPreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = '';
+        }
+    }
+
+    /**
      * Shows a preload of the document by showing the first page as an image. This should be called
      * while the full document loads to give the user visual feedback on the file as soon as possible.
      *
@@ -125,63 +149,98 @@ class DocFirstPreloader extends EventEmitter {
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
+        this.hidePreviewMask();
 
-        this.numPages = pages;
-        this.isWebp = !!pagedPreLoadUrlWithAuth;
-        this.initializePreloadContainerComponents(containerEl);
-        const promises = this.getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
-        // eslint-disable-next-line consistent-return
-        return Promise.all(promises)
-            .then(responses => {
-                const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
-                return Promise.all(results); // Parse all JSON responses
-            })
-            .then(async data => {
-                this.wrapperEl.appendChild(this.preloadEl);
-                const firstPageImage = data.shift();
-                if (firstPageImage instanceof Error) {
-                    return;
-                }
+        try {
+            this.numPages = pages;
+            this.isWebp = !!pagedPreLoadUrlWithAuth;
+            this.initializePreloadContainerComponents(containerEl);
 
-                // index at 1 for thumbnails
-                let preloaderImageIndex = 1;
-                this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(firstPageImage);
+            const promises = getPreloadImageRequestPromises(
+                this.api,
+                preloadUrlWithAuth,
+                pages,
+                pagedPreLoadUrlWithAuth,
+            );
 
-                // make sure first image is loaded before dimesions are extracted
-                let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
-                await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
-                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+            await Promise.all(promises)
+                .then(responses => {
+                    const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
+                    return Promise.all(results); // Parse all JSON responses
+                })
+                .then(async data => {
+                    this.wrapperEl.appendChild(this.preloadEl);
+                    const firstPageImage = data.shift();
+                    if (firstPageImage instanceof Error || !firstPageImage) {
+                        this.showPreviewMask();
+                        return;
+                    }
 
-                if (!this.pdfJsDocLoadComplete()) {
-                    let foundError = false;
-                    data.forEach(element => {
-                        foundError = foundError || element instanceof Error;
-                        if (!foundError) {
-                            preloaderImageIndex += 1;
-                            imageDomElement = document.createElement('img');
-                            this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
-                            imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                            this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                    // index at 1 for thumbnails
+                    const preloaderFirstImageIndex = 1;
+                    this.preloadedImages[preloaderFirstImageIndex] = URL.createObjectURL(firstPageImage);
+                    // make sure first image is loaded before dimesions are extracted
+                    const imageDomElement = await this.loadImage(this.preloadedImages[preloaderFirstImageIndex]);
+                    await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
+                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderFirstImageIndex);
+
+                    if (!this.pdfJsDocLoadComplete()) {
+                        this.processAdditionalPages(data);
+                        this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
+                        this.handleThumbnailToggling(docBaseViewer);
+                        if (this.retrievedPagesCount) {
+                            this.emit('preload');
+                            this.loadTime = Date.now();
+                            this.wrapperEl.classList.add('loaded');
                         }
-                    });
+                    }
+                })
+                .catch(() => {
+                    this.showPreviewMask();
+                });
+        } catch (error) {
+            this.showPreviewMask();
+        }
+    }
 
-                    this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
-                    const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
-                    previewMask.style.display = 'none';
-                    if (docBaseViewer.shouldThumbnailsBeToggled()) {
-                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
-                        docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                        docBaseViewer.initThumbnails();
-                        this.thumbnailsOpen = true;
-                    }
-                    if (this.retrievedPagesCount) {
-                        this.emit('preload');
-                        this.loadTime = Date.now();
-                        this.wrapperEl.classList.add('loaded');
-                    }
-                }
-            });
+    /**
+     * Processes additional pages after the first page has been loaded
+     *
+     * @private
+     * @param {Array} data - Array of image blobs for additional pages
+     * @return {number} The starting index for additional pages
+     */
+    processAdditionalPages(data) {
+        let preloaderImageIndex = 1; // Start from 1 since first page is already processed
+        let foundError = false;
+
+        data.forEach(element => {
+            foundError = foundError || element instanceof Error;
+            if (!foundError) {
+                preloaderImageIndex += 1;
+                const imageDomElement = document.createElement('img');
+                this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
+                imageDomElement.src = this.preloadedImages[preloaderImageIndex];
+                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+            }
+        });
+    }
+
+    /**
+     * Handles thumbnail toggling and initialization if needed
+     *
+     * @private
+     * @param {Object} docBaseViewer - The document base viewer instance
+     * @return {void}
+     */
+    handleThumbnailToggling(docBaseViewer) {
+        if (docBaseViewer.shouldThumbnailsBeToggled()) {
+            docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
+            docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
+            docBaseViewer.initThumbnails();
+            this.thumbnailsOpen = true;
+        }
     }
 
     addPreloadImageToPreloaderContainer(img, i) {
@@ -203,26 +262,6 @@ class DocFirstPreloader extends EventEmitter {
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);
         this.preloadedImages = {};
-    }
-
-    getPreloadImageRequestPromises(preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
-        if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
-            return [];
-        }
-        const firstPageUrl = !pagedPreLoadUrlWithAuth
-            ? preloadUrlWithAuth
-            : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
-        const promise1 = this.api.get(firstPageUrl, { type: 'blob' });
-        const promises = [promise1.catch(e => e)];
-        const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
-        if (pagedPreLoadUrlWithAuth) {
-            for (let i = 2; i <= count; i += 1) {
-                const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
-                const promise = this.api.get(url, { type: 'blob' });
-                promises.push(promise.catch(e => e));
-            }
-        }
-        return promises;
     }
 
     /**

@@ -1,5 +1,6 @@
 import DocFirstPreloader from '../DocFirstPreloader';
 import Api from '../../../api';
+import * as util from '../../../util';
 import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
@@ -105,6 +106,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
+            jest.spyOn(preloader, 'hidePreviewMask');
+            jest.spyOn(preloader, 'showPreviewMask');
             mockContainer = document.createElement('div');
         });
 
@@ -117,13 +120,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
 
         it('should set isWebp to true if pagedPreLoadUrlWithAuth is provided', async () => {
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload(null, mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(true);
         });
 
         it('should set isWebp to false if pagedPreLoadUrlWithAuth is not provided', async () => {
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(false);
         });
@@ -132,7 +135,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(mockBlob)];
             jest.spyOn(preloader, 'loadImage').mockReturnValue(new Image(100, 200));
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
             expect(mockElement.style.display).toBe('none');
@@ -156,7 +159,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
             jest.spyOn(preloader, 'initializePreloadContainerComponents');
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
                     return 'mock-object-url1';
@@ -177,7 +180,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.numPages).toBe(4);
             expect(preloader.retrievedPagesCount).toBe(4);
             expect(preloader.initializePreloadContainerComponents).toHaveBeenCalledWith(mockContainer);
-            expect(preloader.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                mockApi,
                 'mock-url',
                 4,
                 'mock-paged-image-url',
@@ -191,19 +195,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
             expect(preloader.loadTime).toBeDefined();
-            expect(mockElement.style.display).toBe('none');
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
         });
 
         it('should stop on first image retrieval failure', async () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
             expect(preloader.retrievedPagesCount).toBe(0);
             expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
             expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalled();
             expect(preloader.loadTime).toBeUndefined();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
         });
 
         it('should only show the first image if a failure occurs in the second image but not the third', async () => {
@@ -214,7 +221,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob),
             ];
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
 
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
@@ -238,7 +245,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 Promise.resolve(mockBlob4),
             ];
 
-            jest.spyOn(preloader, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
             jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
                 if (blob === mockBlob) {
@@ -263,6 +270,29 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
+        });
+
+        it('should show preview mask when Promise.all chain fails', async () => {
+            const mockPromises = [Promise.reject(new Error('Network error'))];
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
+
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
+        });
+
+        it('should show preview mask when initialization throws an error', async () => {
+            jest.spyOn(preloader, 'initializePreloadContainerComponents').mockImplementation(() => {
+                throw new Error('Initialization error');
+            });
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
+
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
         });
     });
 
@@ -336,35 +366,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const result = preloader.pdfJsDocLoadComplete();
 
             expect(result).toBe(false);
-        });
-    });
-
-    describe('getPreloadImageRequestPromises()', () => {
-        beforeEach(() => {
-            jest.spyOn(preloader.api, 'get').mockResolvedValue({});
-        });
-
-        it('should create only the jpeg promise if webp is unavailable', () => {
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = '';
-            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
-            expect(preloader.api.get).toHaveBeenNthCalledWith(
-                1,
-                expect.stringContaining('jpeg-url'),
-                expect.any(Object),
-            );
-            expect(promises.length).toBe(1);
-        });
-
-        it('should create only the webp promises if webp is unavailable', () => {
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = 'webp-urlpage_number';
-            const promises = preloader.getPreloadImageRequestPromises(jpegPagedUrl, 3, webpPagedUrl);
-            expect(preloader.api.get).toHaveBeenCalledTimes(3);
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
-            expect(preloader.api.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
-            expect(promises.length).toBe(3);
         });
     });
 
@@ -772,6 +773,57 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             // Verify the returned object matches the mock scaled dimensions
             expect(result).toEqual(mockScaledDimensions);
+        });
+    });
+
+    describe('hidePreviewMask()', () => {
+        it('should hide the preview mask element when it exists', () => {
+            // Call the method
+            preloader.hidePreviewMask();
+
+            // Verify that getElementsByClassName was called with the correct class name
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+
+            // Verify that the display style was set to 'none'
+            expect(mockElement.style.display).toBe('none');
+        });
+
+        it('should not throw an error when preview mask element does not exist', () => {
+            // Mock getElementsByClassName to return an empty array
+            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
+
+            // Call the method - should not throw an error
+            expect(() => preloader.hidePreviewMask()).not.toThrow();
+
+            // Verify that getElementsByClassName was called
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+        });
+    });
+
+    describe('showPreviewMask()', () => {
+        it('should show the preview mask element when it exists', () => {
+            // Set initial display style to 'none' to simulate hidden state
+            mockElement.style.display = 'none';
+
+            // Call the method
+            preloader.showPreviewMask();
+
+            // Verify that getElementsByClassName was called with the correct class name
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+
+            // Verify that the display style was set to empty string (default display)
+            expect(mockElement.style.display).toBe('');
+        });
+
+        it('should not throw an error when preview mask element does not exist', () => {
+            // Mock getElementsByClassName to return an empty array
+            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
+
+            // Call the method - should not throw an error
+            expect(() => preloader.showPreviewMask()).not.toThrow();
+
+            // Verify that getElementsByClassName was called
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
         });
     });
 });

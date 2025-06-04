@@ -29,7 +29,14 @@ import {
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
 } from '../../constants';
-import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
+import {
+    createAssetUrlCreator,
+    decodeKeydown,
+    getClosestPageToPinch,
+    getDistance,
+    getMidpoint,
+    getPreloadImageRequestPromises,
+} from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
@@ -319,6 +326,56 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles preload prefetching for non-watermarked files
+     *
+     * @private
+     * @param {Object} file - The file object
+     * @return {void}
+     */
+    prefetchPreloaderImages(file) {
+        if (!file) {
+            return;
+        }
+        /*
+          Prefetched image urls will not match the urls that the preloader uses when shared link or shared password is set. This negates the benefit
+          of prefetching the images. As a result we need to set the shared link and shared password to empty strings. It is possible 
+          that these values are not even necessary for the representations api call as the code that sets them is old and 
+          the reps api does not seem to use them when it retreives the image reps. Preloading can also include the actual pdf itself
+          so we need to set the share link and shared link password back to what it was before after we are done prefetching the images.
+          The options object is used downstream in thee url auth append logic and if the sharedLink and sharedLinkPassword are set it appends them
+          to the query params for the representations api call. This stops this from happening.
+          */
+
+        const { sharedLink = '', sharedLinkPassword = '' } = this.options;
+        this.options.sharedLink = '';
+        this.options.sharedLinkPassword = '';
+
+        const jpegPreloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        const pagedWebpRep = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
+        const pagedWebpRepReady =
+            pagedWebpRep && this.isRepresentationReady(pagedWebpRep) && pagedWebpRep.content?.url_template;
+        const jpegRepReady =
+            jpegPreloadRep && this.isRepresentationReady(jpegPreloadRep) && jpegPreloadRep.content?.url_template;
+        const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
+
+        if (onlyJpegRepAvailable) {
+            const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
+            const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
+            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
+            Promise.all(promises);
+        } else if (pagedWebpRepReady) {
+            const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
+            const pageCount = pagedWebpRep.metadata?.pages || 8;
+            const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
+            const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
+            Promise.all(promises);
+        }
+        this.options.sharedLink = sharedLink;
+        this.options.sharedLinkPassword = sharedLinkPassword;
+    }
+
+    /**
      * Prefetches assets for a document.
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
@@ -327,7 +384,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     prefetch({ assets = true, preload = true, content = true }) {
-        const { file, representation } = this.options;
+        const { file, representation, isDocFirstPrefetchEnabled } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
@@ -336,12 +393,16 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (preload && !isWatermarked) {
-            const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-            if (preloadRep && this.isRepresentationReady(preloadRep)) {
-                const { url_template: template } = preloadRep.content;
+            if (!isDocFirstPrefetchEnabled) {
+                const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+                if (preloadRep && this.isRepresentationReady(preloadRep)) {
+                    const { url_template: template } = preloadRep.content;
 
-                // Prefetch as blob since preload needs to load image as a blob
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                    // Prefetch as blob since preload needs to load image as a blob
+                    this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                }
+            } else {
+                this.prefetchPreloaderImages(file);
             }
         }
 
