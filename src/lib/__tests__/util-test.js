@@ -722,19 +722,35 @@ describe('lib/util', () => {
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = '';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
-            expect(mockApi.get).toHaveBeenNthCalledWith(1, expect.stringContaining('jpeg-url'), expect.any(Object));
+            expect(mockApi.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
             expect(promises.length).toBe(1);
         });
 
-        it('should create only the webp promises if webp is available', () => {
+        it('should create only the webp promises if both reps are available', () => {
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
             expect(mockApi.get).toHaveBeenCalledTimes(3);
-            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('1.webp'), expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('2.webp'), expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith(expect.stringContaining('3.webp'), expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
             expect(promises.length).toBe(3);
+        });
+
+        it('should create only the webp promises if only webp is availabl with a max of 8 pages', () => {
+            const jpegPagedUrl = '';
+            const webpPagedUrl = 'webp-urlpage_number';
+            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 27, webpPagedUrl);
+            expect(mockApi.get).toHaveBeenCalledTimes(8);
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url4.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url5.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url6.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url7.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', expect.any(Object));
+            expect(promises.length).toBe(8);
         });
     });
 });

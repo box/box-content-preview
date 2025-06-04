@@ -106,6 +106,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'emit');
             jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
             jest.spyOn(preloader, 'loadImage').mockReturnValue(mockFirstImage);
+            jest.spyOn(preloader, 'hidePreviewMask');
+            jest.spyOn(preloader, 'showPreviewMask');
             mockContainer = document.createElement('div');
         });
 
@@ -193,7 +195,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalledWith('preload');
             expect(preloader.loadTime).toBeDefined();
-            expect(mockElement.style.display).toBe('none');
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
         });
 
         it('should stop on first image retrieval failure', async () => {
@@ -206,6 +209,8 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalled();
             expect(preloader.loadTime).toBeUndefined();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
         });
 
         it('should only show the first image if a failure occurs in the second image but not the third', async () => {
@@ -265,6 +270,29 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
             expect(preloader.emit).toHaveBeenCalled();
             expect(preloader.loadTime).not.toBeUndefined();
+        });
+
+        it('should show preview mask when Promise.all chain fails', async () => {
+            const mockPromises = [Promise.reject(new Error('Network error'))];
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
+
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
+        });
+
+        it('should show preview mask when initialization throws an error', async () => {
+            jest.spyOn(preloader, 'initializePreloadContainerComponents').mockImplementation(() => {
+                throw new Error('Initialization error');
+            });
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
+
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
         });
     });
 
@@ -745,6 +773,57 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             // Verify the returned object matches the mock scaled dimensions
             expect(result).toEqual(mockScaledDimensions);
+        });
+    });
+
+    describe('hidePreviewMask()', () => {
+        it('should hide the preview mask element when it exists', () => {
+            // Call the method
+            preloader.hidePreviewMask();
+
+            // Verify that getElementsByClassName was called with the correct class name
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+
+            // Verify that the display style was set to 'none'
+            expect(mockElement.style.display).toBe('none');
+        });
+
+        it('should not throw an error when preview mask element does not exist', () => {
+            // Mock getElementsByClassName to return an empty array
+            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
+
+            // Call the method - should not throw an error
+            expect(() => preloader.hidePreviewMask()).not.toThrow();
+
+            // Verify that getElementsByClassName was called
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+        });
+    });
+
+    describe('showPreviewMask()', () => {
+        it('should show the preview mask element when it exists', () => {
+            // Set initial display style to 'none' to simulate hidden state
+            mockElement.style.display = 'none';
+
+            // Call the method
+            preloader.showPreviewMask();
+
+            // Verify that getElementsByClassName was called with the correct class name
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+
+            // Verify that the display style was set to empty string (default display)
+            expect(mockElement.style.display).toBe('');
+        });
+
+        it('should not throw an error when preview mask element does not exist', () => {
+            // Mock getElementsByClassName to return an empty array
+            jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
+
+            // Call the method - should not throw an error
+            expect(() => preloader.showPreviewMask()).not.toThrow();
+
+            // Verify that getElementsByClassName was called
+            expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
         });
     });
 });

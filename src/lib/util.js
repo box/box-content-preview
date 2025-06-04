@@ -773,17 +773,18 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
     const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
     const MAX_PRELOAD_PAGES = 8;
 
+    const promises = [];
     if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
-        return [];
+        return promises;
     }
-    const firstPageUrl = !pagedPreLoadUrlWithAuth
-        ? preloadUrlWithAuth
-        : pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, '1.webp');
-    const promise1 = api.get(firstPageUrl, { type: 'blob' });
-    const promises = [promise1.catch(e => e)];
-    const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
-    if (pagedPreLoadUrlWithAuth) {
-        for (let i = 2; i <= count; i += 1) {
+
+    const useNonPagedJpegRep = !pagedPreLoadUrlWithAuth && preloadUrlWithAuth;
+    if (useNonPagedJpegRep) {
+        const promise = api.get(preloadUrlWithAuth, { type: 'blob' });
+        promises.push(promise.catch(e => e));
+    } else if (pagedPreLoadUrlWithAuth) {
+        const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
+        for (let i = 1; i <= count; i += 1) {
             const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
             const promise = api.get(url, { type: 'blob' });
             promises.push(promise.catch(e => e));

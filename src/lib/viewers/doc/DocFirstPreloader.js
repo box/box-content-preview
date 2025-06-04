@@ -113,6 +113,32 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     /**
+     * Hides the preview mask element if it exists
+     *
+     * @private
+     * @return {void}
+     */
+    hidePreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = 'none';
+        }
+    }
+
+    /**
+     * Shows the preview mask element if it exists
+     *
+     * @private
+     * @return {void}
+     */
+    showPreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = '';
+        }
+    }
+
+    /**
      * Shows a preload of the document by showing the first page as an image. This should be called
      * while the full document loads to give the user visual feedback on the file as soon as possible.
      *
@@ -120,70 +146,103 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise} Promise to show preload
      */
     async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
-        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
-        if (previewMask) {
-            previewMask.style.display = 'none';
-        }
-
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
+        this.hidePreviewMask();
 
-        this.numPages = pages;
-        this.isWebp = !!pagedPreLoadUrlWithAuth;
-        this.initializePreloadContainerComponents(containerEl);
-        const promises = getPreloadImageRequestPromises(this.api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
-        // eslint-disable-next-line consistent-return
-        return Promise.all(promises)
-            .then(responses => {
-                const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
-                return Promise.all(results); // Parse all JSON responses
-            })
-            .then(async data => {
-                this.wrapperEl.appendChild(this.preloadEl);
-                const firstPageImage = data.shift();
-                if (firstPageImage instanceof Error) {
-                    return;
-                }
+        try {
+            this.numPages = pages;
+            this.isWebp = !!pagedPreLoadUrlWithAuth;
+            this.initializePreloadContainerComponents(containerEl);
 
-                // index at 1 for thumbnails
-                let preloaderImageIndex = 1;
-                this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(firstPageImage);
+            const promises = getPreloadImageRequestPromises(
+                this.api,
+                preloadUrlWithAuth,
+                pages,
+                pagedPreLoadUrlWithAuth,
+            );
 
-                // make sure first image is loaded before dimesions are extracted
-                let imageDomElement = await this.loadImage(this.preloadedImages[preloaderImageIndex]);
-                await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
-                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+            Promise.all(promises)
+                .then(responses => {
+                    const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
+                    return Promise.all(results); // Parse all JSON responses
+                })
+                .then(async data => {
+                    this.wrapperEl.appendChild(this.preloadEl);
+                    const firstPageImage = data.shift();
+                    if (firstPageImage instanceof Error || !firstPageImage) {
+                        this.showPreviewMask();
+                        return;
+                    }
 
-                if (!this.pdfJsDocLoadComplete()) {
-                    let foundError = false;
-                    data.forEach(element => {
-                        foundError = foundError || element instanceof Error;
-                        if (!foundError) {
-                            preloaderImageIndex += 1;
-                            imageDomElement = document.createElement('img');
-                            this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
-                            imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                            this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                    // index at 1 for thumbnails
+                    const preloaderFirstImageIndex = 1;
+                    this.preloadedImages[preloaderFirstImageIndex] = URL.createObjectURL(firstPageImage);
+                    // make sure first image is loaded before dimesions are extracted
+                    const imageDomElement = await this.loadImage(this.preloadedImages[preloaderFirstImageIndex]);
+                    await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
+                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderFirstImageIndex);
+
+                    if (!this.pdfJsDocLoadComplete()) {
+                        this.processAdditionalPages(data);
+                        this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
+                        this.handleThumbnailToggling(docBaseViewer);
+                        if (this.retrievedPagesCount) {
+                            this.emit('preload');
+                            this.loadTime = Date.now();
+                            this.wrapperEl.classList.add('loaded');
                         }
-                    });
-
-                    this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
-
-                    if (docBaseViewer.shouldThumbnailsBeToggled()) {
-                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                        docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
-                        docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
-                        docBaseViewer.initThumbnails();
-                        this.thumbnailsOpen = true;
                     }
-                    if (this.retrievedPagesCount) {
-                        this.emit('preload');
-                        this.loadTime = Date.now();
-                        this.wrapperEl.classList.add('loaded');
-                    }
-                }
-            });
+                })
+                .catch(() => {
+                    this.showPreviewMask();
+                });
+        } catch (error) {
+            this.showPreviewMask();
+        }
+    }
+
+    /**
+     * Processes additional pages after the first page has been loaded
+     *
+     * @private
+     * @param {Array} data - Array of image blobs for additional pages
+     * @return {number} The starting index for additional pages
+     */
+    processAdditionalPages(data) {
+        let preloaderImageIndex = 1; // Start from 1 since first page is already processed
+        let foundError = false;
+
+        data.forEach(element => {
+            foundError = foundError || element instanceof Error;
+            if (!foundError) {
+                preloaderImageIndex += 1;
+                const imageDomElement = document.createElement('img');
+                this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
+                imageDomElement.src = this.preloadedImages[preloaderImageIndex];
+                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+            }
+        });
+
+        return preloaderImageIndex;
+    }
+
+    /**
+     * Handles thumbnail toggling and initialization if needed
+     *
+     * @private
+     * @param {Object} docBaseViewer - The document base viewer instance
+     * @return {void}
+     */
+    handleThumbnailToggling(docBaseViewer) {
+        if (docBaseViewer.shouldThumbnailsBeToggled()) {
+            docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+            docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
+            docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
+            docBaseViewer.initThumbnails();
+            this.thumbnailsOpen = true;
+        }
     }
 
     addPreloadImageToPreloaderContainer(img, i) {
