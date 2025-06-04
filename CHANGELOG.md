@@ -1,3 +1,9 @@
+## 3.7.0 (2025-06-04)
+
+* feat(prefetch-images): prefetch images updates (#1560) ([fbdae40](https://github.com/box/box-content-preview/commit/fbdae40)), closes [#1560](https://github.com/box/box-content-preview/issues/1560)
+
+
+
 ## 3.6.0 (2025-05-09)
 
 * feat(doc-first): removing spinner (#1557) ([1c50761](https://github.com/box/box-content-preview/commit/1c50761)), closes [#1557](https://github.com/box/box-content-preview/issues/1557)
