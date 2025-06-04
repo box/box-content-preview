@@ -13,6 +13,8 @@
         "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@babel/plugin-proposal-object-rest-spread": "^7.18.6",
         "@babel/plugin-transform-object-assign": "^7.18.6",
+        "@babel/plugin-transform-private-methods": "^7.27.1",
+        "@babel/plugin-transform-private-property-in-object": "^7.27.1",
         "@babel/preset-env": "^7.18.6",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
@@ -43,6 +45,7 @@
         "classnames": "^2.2.6",
         "conventional-changelog-cli": "^2.0.28",
         "conventional-github-releaser": "^3.1.3",
+        "copy-webpack-plugin": "^6.4.1",
         "create-react-class": "^15.6.2",
         "css-loader": "^3.1.0",
         "cypress": "^12.15.0",
@@ -100,6 +103,9 @@
         "webpack-bundle-analyzer": "^3.3.2",
         "webpack-cli": "^3.3.6",
         "webpack-dev-server": "^3.11.2"
+    },
+    "dependencies": {
+        "pdfjs-dist": "4.3.136"
     },
     "engines": {
         "node": ">=18.0.0",
