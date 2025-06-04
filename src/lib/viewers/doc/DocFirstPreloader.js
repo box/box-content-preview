@@ -163,7 +163,7 @@ class DocFirstPreloader extends EventEmitter {
                 pagedPreLoadUrlWithAuth,
             );
 
-            Promise.all(promises)
+            await Promise.all(promises)
                 .then(responses => {
                     const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
                     return Promise.all(results); // Parse all JSON responses
@@ -224,8 +224,6 @@ class DocFirstPreloader extends EventEmitter {
                 this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
             }
         });
-
-        return preloaderImageIndex;
     }
 
     /**
