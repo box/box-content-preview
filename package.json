@@ -107,8 +107,10 @@
     },
     "scripts": {
         "build": "yarn setup && yarn clean && yarn build:i18n && yarn build:dev",
+        "build:browserOverride": "yarn setup && yarn clean && yarn build:i18n && yarn build:dev:override",
         "build:ci": "yarn setup && yarn webpack --progress --colors --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --colors --config build/webpack.config.js",
+        "build:dev:override": "BABEL_ENV=dev NODE_ENV=dev BROWSER_OVERRIDE=true  yarn webpack --progress --colors --config build/webpack.config.js",
         "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
         "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",

@@ -828,10 +828,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     });
 
     describe('processAdditionalPages()', () => {
+        const widthDimension = 123;
+        const heightDimension = 456;
+
         beforeEach(() => {
             // Set up preloader instance
             preloader.pdfData = { numPages: 5 };
-            preloader.imageDimensions = { width: 123, height: 456 };
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.preloadEl = document.createElement('div');
             const firstImagePlaceholder = document.createElement('div');
             firstImagePlaceholder.classList.add('bp-preload-placeholder');
@@ -870,19 +873,18 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should add placeholder divs for missing pages', () => {
             const data = [new Blob(), new Blob()];
-            const width = 123;
-            const height = 456;
-            preloader.imageDimensions = { width, height };
+
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
             expect(placeholders.length).toBe(5);
             const placeholder4 = placeholders[3];
             const placeholder5 = placeholders[4];
-            expect(placeholder4.style.width).toBe(`${width}px`);
-            expect(placeholder4.style.height).toBe(`${height}px`);
-            expect(placeholder5.style.width).toBe(`${width}px`);
-            expect(placeholder5.style.height).toBe(`${height}px`);
+            expect(placeholder4.style.width).toBe(`${widthDimension}px`);
+            expect(placeholder4.style.height).toBe(`${heightDimension}px`);
+            expect(placeholder5.style.width).toBe(`${widthDimension}px`);
+            expect(placeholder5.style.height).toBe(`${heightDimension}px`);
             expect(placeholder4.classList.contains('loaded')).not.toBe(true);
             expect(placeholder5.classList.contains('loaded')).not.toBe(true);
         });
