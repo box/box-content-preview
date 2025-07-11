@@ -15,6 +15,7 @@ import {
     CLASS_DOC_FIRST_IMAGE,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
+
 import { VIEWER_EVENT } from '../../events';
 import { handleRepresentationBlobFetch, getPreloadImageRequestPromises } from '../../util';
 // Read EXIF data from 'UserComment' tag
@@ -233,8 +234,9 @@ class DocFirstPreloader extends EventEmitter {
         });
 
         if (preloaderImageIndex < this.pdfData?.numPages && !this.isPresentation) {
-            let counter = 0;
-            for (let i = preloaderImageIndex; i < this.pdfData?.numPages; i += 1) {
+            let counter = 1;
+            const indexToStart = preloaderImageIndex + 1;
+            for (let i = indexToStart; i <= this.pdfData?.numPages; i += 1) {
                 // don't add more than 10 placeholders.
                 if (counter > 10) {
                     break;

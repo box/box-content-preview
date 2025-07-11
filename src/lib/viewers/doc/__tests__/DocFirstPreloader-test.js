@@ -3,7 +3,6 @@ import Api from '../../../api';
 import * as util from '../../../util';
 import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
-import Browser from '../../../Browser';
 
 jest.mock('../../../api');
 
@@ -829,12 +828,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     });
 
     describe('processAdditionalPages()', () => {
-        let originalIsMobile;
         beforeEach(() => {
-            // Mock Browser.isMobile to return true
-            originalIsMobile = Browser.isMobile;
-            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
-
             // Set up preloader instance
             preloader.pdfData = { numPages: 5 };
             preloader.imageDimensions = { width: 123, height: 456 };
@@ -843,35 +837,39 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             firstImagePlaceholder.classList.add('bp-preload-placeholder');
             firstImagePlaceholder.classList.add('loaded');
             preloader.preloadEl.appendChild(firstImagePlaceholder);
+            preloader.preloadedImages = { 1: 'url1' };
         });
 
         afterEach(() => {
-            // Restore original isMobile
-            if (originalIsMobile) {
-                Browser.isMobile = originalIsMobile;
-            }
+            jest.restoreAllMocks();
         });
 
-        it('should not add empty placeholder is browser is not mobile', () => {
-            jest.spyOn(Browser, 'isMobile').mockReturnValue(false);
+        it('should set the preloaded images object with the correct number of pages', () => {
             const data = [new Blob(), new Blob()];
-            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
-            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+            expect(Object.keys(preloader.preloadedImages).length).toBe(3);
+        });
+
+        it('should not add additional pages if it is for a presentation', () => {
+            const data = [new Blob(), new Blob()];
+            const addPreloadImageToPreloaderContainer = jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
+            preloader.isPresentation = true;
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data);
+            expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
         });
 
         it('should not add placeholders if the number of pages equals than the number of images', () => {
             const data = [new Blob(), new Blob()];
-            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should add placeholder divs for missing pages on mobile', () => {
+        it('should add placeholder divs for missing pages', () => {
             const data = [new Blob(), new Blob()];
-            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
@@ -884,6 +882,43 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(placeholder5.style.height).toBe('456px');
             expect(placeholder4.classList.contains('loaded')).not.toBe(true);
             expect(placeholder5.classList.contains('loaded')).not.toBe(true);
+        });
+
+        it('should add a max of 10 placeholders', () => {
+            // 7 additional doc first pages, total will be 8 including the first one.
+            const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 321 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(18);
+        });
+
+        it('should not add empty placeholders if the number of pages is less than the number of images', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 2 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if there is no pdfData', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = null;
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if the number of pages in pdfData is null', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: null };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if this is a presentation', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.isPresentation = true;
+            preloader.pdfData = { numPages: 10 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
         });
     });
 });
