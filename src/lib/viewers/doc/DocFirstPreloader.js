@@ -225,6 +225,8 @@ class DocFirstPreloader extends EventEmitter {
             if (!foundError) {
                 preloaderImageIndex += 1;
                 this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
+
+                // presentations only show one page at a time. We don't need to add more images to the preloader container.
                 if (!this.isPresentation) {
                     const imageDomElement = document.createElement('img');
                     imageDomElement.src = this.preloadedImages[preloaderImageIndex];
@@ -233,6 +235,10 @@ class DocFirstPreloader extends EventEmitter {
             }
         });
 
+        // pfdData is set by reading the EXIF data from the first image. If we have a value for the number of pages,
+        // we can add up to 10 placeholders to show the user that content exists beyond the pages represented by the
+        // preloaded images we retrieved. This is to prevent users from thinking that a doucment only has 8 pages when in
+        // reality it has 20 but the maximum number of doc first pages we can return is 8.
         if (preloaderImageIndex < this.pdfData?.numPages && !this.isPresentation) {
             let counter = 1;
             const indexToStart = preloaderImageIndex + 1;
