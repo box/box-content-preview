@@ -860,7 +860,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
         });
 
-        it('should not add placeholders if the number of pages equals than the number of images', () => {
+        it('should not add placeholders if the number of pages equals the number of images', () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
@@ -870,16 +870,19 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should add placeholder divs for missing pages', () => {
             const data = [new Blob(), new Blob()];
+            const width = 123;
+            const height = 456;
+            preloader.imageDimensions = { width, height };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
             expect(placeholders.length).toBe(5);
             const placeholder4 = placeholders[3];
             const placeholder5 = placeholders[4];
-            expect(placeholder4.style.width).toBe('123px');
-            expect(placeholder4.style.height).toBe('456px');
-            expect(placeholder5.style.width).toBe('123px');
-            expect(placeholder5.style.height).toBe('456px');
+            expect(placeholder4.style.width).toBe(`${width}px`);
+            expect(placeholder4.style.height).toBe(`${height}px`);
+            expect(placeholder5.style.width).toBe(`${width}px`);
+            expect(placeholder5.style.height).toBe(`${height}px`);
             expect(placeholder4.classList.contains('loaded')).not.toBe(true);
             expect(placeholder5.classList.contains('loaded')).not.toBe(true);
         });
