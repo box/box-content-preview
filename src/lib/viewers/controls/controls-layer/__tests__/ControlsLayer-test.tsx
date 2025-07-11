@@ -1,126 +1,107 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { EventType, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ControlsLayer, { Helpers, HIDE_DELAY_MS, SHOW_CLASSNAME } from '../ControlsLayer';
 
 describe('ControlsLayer', () => {
     const children = <div className="TestControls">Controls</div>;
-    const getElement = (wrapper: ReactWrapper): ReactWrapper => wrapper.childAt(0);
-    const getWrapper = (props = {}): ReactWrapper => mount(<ControlsLayer {...props}>{children}</ControlsLayer>);
+    const getElement = async () => screen.findByTestId('bp-ControlsLayer');
+    const getWrapper = (props = {}) => render(<ControlsLayer {...props}>{children}</ControlsLayer>);
 
     beforeEach(() => {
         jest.useFakeTimers();
     });
 
     describe('event handlers', () => {
-        test.each(['focus', 'mouseenter'])('should show the controls %s', eventProp => {
-            const wrapper = getWrapper();
+        test.each(['focus', 'mouseEnter'] as EventType[])(
+            'should show the controls %s',
+            async (eventType: EventType) => {
+                getWrapper();
+                const element = await getElement();
 
-            act(() => {
-                getElement(wrapper).simulate(eventProp);
-            });
-            wrapper.update();
+                fireEvent[eventType](element);
 
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
-        });
+                expect(element).toHaveClass(SHOW_CLASSNAME);
+            },
+        );
 
         test.each`
             showTrigger     | hideTrigger
             ${'focus'}      | ${'blur'}
-            ${'mouseenter'} | ${'mouseleave'}
-        `('should show $showTrigger and hide $hideTrigger', ({ hideTrigger, showTrigger }) => {
-            const wrapper = getWrapper();
+            ${'mouseEnter'} | ${'mouseLeave'}
+        `(
+            'should show $showTrigger and hide $hideTrigger',
+            async ({ hideTrigger, showTrigger }: { hideTrigger: EventType; showTrigger: EventType }) => {
+                getWrapper();
+                const element = await getElement();
 
-            act(() => {
-                getElement(wrapper).simulate(showTrigger);
-            });
-            wrapper.update();
+                fireEvent[showTrigger](element);
 
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
+                expect(element).toHaveClass(SHOW_CLASSNAME);
 
-            act(() => {
-                getElement(wrapper).simulate(hideTrigger);
-                jest.advanceTimersByTime(HIDE_DELAY_MS);
-            });
-            wrapper.update();
+                fireEvent[hideTrigger](element);
 
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(false);
+                await waitFor(
+                    async () => {
+                        expect(element).not.toHaveClass(SHOW_CLASSNAME);
+                    },
+                    { timeout: HIDE_DELAY_MS + 1000 },
+                );
+            },
+        );
+
+        test('should always show the controls if they have focus', async () => {
+            getWrapper();
+            const element = await getElement();
+
+            fireEvent.focus(element);
+            fireEvent.mouseEnter(element);
+
+            expect(element).toHaveClass(SHOW_CLASSNAME);
+
+            fireEvent.mouseLeave(element);
+            jest.advanceTimersByTime(HIDE_DELAY_MS);
+
+            expect(element).toHaveClass(SHOW_CLASSNAME);
         });
 
-        test('should always show the controls if they have focus', () => {
-            const wrapper = getWrapper();
+        test('should always show the controls if they have the mouse cursor', async () => {
+            getWrapper();
+            const element = await getElement();
 
-            act(() => {
-                getElement(wrapper).simulate('focus');
-                getElement(wrapper).simulate('mouseenter');
-            });
-            wrapper.update();
+            fireEvent.focus(element);
+            fireEvent.mouseEnter(element);
 
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
+            expect(element).toHaveClass(SHOW_CLASSNAME);
 
-            act(() => {
-                getElement(wrapper).simulate('mouseleave');
-                jest.advanceTimersByTime(HIDE_DELAY_MS);
-            });
-            wrapper.update();
+            fireEvent.blur(element);
+            jest.advanceTimersByTime(HIDE_DELAY_MS);
 
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
-        });
-
-        test('should always show the controls if they have the mouse cursor', () => {
-            const wrapper = getWrapper();
-
-            act(() => {
-                getElement(wrapper).simulate('focus');
-                getElement(wrapper).simulate('mouseenter');
-            });
-            wrapper.update();
-
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
-
-            act(() => {
-                getElement(wrapper).simulate('blur');
-                jest.advanceTimersByTime(HIDE_DELAY_MS);
-            });
-            wrapper.update();
-
-            expect(getElement(wrapper).hasClass(SHOW_CLASSNAME)).toBe(true);
+            expect(element).toHaveClass(SHOW_CLASSNAME);
         });
     });
 
     describe('unmount', () => {
         test('should destroy any existing hide timeout', () => {
-            let unmount = (): void => {
-                // placeholder
-            };
-
             jest.spyOn(window, 'clearTimeout');
-            jest.spyOn(React, 'useEffect').mockImplementation(cb => {
-                unmount = cb() as () => void; // Enzyme unmount helper does not currently invoke useEffect cleanup
-            });
 
-            getWrapper({
+            const { unmount } = getWrapper({
                 onMount: (helpers: Helpers): void => {
                     helpers.hide(); // Kick off the hide timeout
                 },
             });
             unmount();
 
-            expect(window.clearTimeout).toBeCalledTimes(2); // Once on hide, once on unmount
+            expect(window.clearTimeout).toHaveBeenCalledTimes(2); // Once on hide, once on unmount
         });
     });
 
     describe('render', () => {
         test('should invoke the onMount callback once with the visibility helpers', () => {
             const onMount = jest.fn();
-            const wrapper = getWrapper({ onMount });
+            getWrapper({ onMount });
 
-            wrapper.update();
-            wrapper.update();
-            wrapper.update();
-
-            expect(onMount).toBeCalledTimes(1);
-            expect(onMount).toBeCalledWith({
+            expect(onMount).toHaveBeenCalledTimes(1);
+            expect(onMount).toHaveBeenCalledWith({
                 clean: expect.any(Function),
                 hide: expect.any(Function),
                 reset: expect.any(Function),
@@ -128,11 +109,11 @@ describe('ControlsLayer', () => {
             });
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const element = await getElement();
 
-            expect(wrapper.contains(children)).toBe(true);
-            expect(wrapper.childAt(0).hasClass('bp-ControlsLayer')).toBe(true);
+            expect(element).toBeInTheDocument();
         });
     });
 });

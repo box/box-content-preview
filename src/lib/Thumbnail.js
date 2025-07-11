@@ -12,12 +12,15 @@ class Thumbnail {
     /** @property {Object} - Cache for the thumbnail image elements */
     thumbnailImageCache;
 
+    preloader;
+
     /**
      * [constructor]
      *
      * @param {PDFViewer} pdfViewer - the PDFJS viewer
      */
-    constructor(pdfViewer) {
+    constructor(pdfViewer, preloader) {
+        this.preloader = preloader;
         this.createImageEl = this.createImageEl.bind(this);
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
@@ -36,6 +39,7 @@ class Thumbnail {
             this.thumbnailImageCache = null;
         }
         this.pdfViewer = null;
+        this.preloader = null;
     }
 
     /**
@@ -46,6 +50,15 @@ class Thumbnail {
     init() {
         // Get the first page of the document, and use its dimensions
         // to set the thumbnails size of the thumbnails sidebar
+
+        if (this.preloader?.imageDimensions) {
+            const { width, height } = this.preloader.imageDimensions;
+            this.scale = THUMBNAIL_TOTAL_WIDTH / width;
+            this.pageRatio = width / height;
+            this.thumbnailHeight = Math.ceil(height * this.scale);
+            return Promise.resolve(this.thumbnailHeight);
+        }
+
         return this.pdfViewer.pdfDocument.getPage(1).then(page => {
             const { width, height } = page.getViewport({ scale: 1 });
 
@@ -138,6 +151,10 @@ class Thumbnail {
      * @return {string} The data URL of the page image
      */
     getThumbnailDataURL(pageNum, thumbOptions) {
+        if (this.preloader?.preloadedImages?.[pageNum]) {
+            return Promise.resolve(this.preloader.preloadedImages[pageNum]);
+        }
+
         const canvas = document.createElement('canvas');
         const thumbnailImageWidth =
             thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;

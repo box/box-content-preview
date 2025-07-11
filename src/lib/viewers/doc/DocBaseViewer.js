@@ -8,7 +8,6 @@ import DocFindBar from './DocFindBar';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
-import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import Thumbnail from '../../Thumbnail';
 
@@ -28,12 +27,19 @@ import {
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS,
+    PRELOAD_PAGED_REP_NAME,
 } from '../../constants';
-import { createAssetUrlCreator, decodeKeydown, getClosestPageToPinch, getDistance, getMidpoint } from '../../util';
+import {
+    createAssetUrlCreator,
+    decodeKeydown,
+    getClosestPageToPinch,
+    getDistance,
+    getMidpoint,
+    getPreloadImageRequestPromises,
+} from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, WORKER } from './docAssets';
+import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -52,6 +58,7 @@ export const DISCOVERABILITY_STATES = [
     AnnotationState.REGION_TEMP,
 ];
 
+export const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
 const ACI_THUMB_MAX_WIDTH = 240;
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 0.1;
@@ -76,6 +83,7 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
 const RANGE_CHUNK_SIZE_US = 1048576; // 1MB
@@ -94,6 +102,14 @@ class DocBaseViewer extends BaseViewer {
 
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
+
+    doc;
+
+    /** @property {boolean} - DOC First Pages Enabled */
+    docFirstPagesEnabled;
+
+    /** @property {DocFirstPreloader|DocPreloader} - document preloader */
+    preloader;
 
     /**
      * @inheritdoc
@@ -145,7 +161,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Call super() to set up common layout
         super.setup();
-
+        this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
@@ -310,6 +326,56 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles preload prefetching for non-watermarked files
+     *
+     * @private
+     * @param {Object} file - The file object
+     * @return {void}
+     */
+    prefetchPreloaderImages(file) {
+        if (!file) {
+            return;
+        }
+        /*
+          Prefetched image urls will not match the urls that the preloader uses when shared link or shared password is set. This negates the benefit
+          of prefetching the images. As a result we need to set the shared link and shared password to empty strings. It is possible 
+          that these values are not even necessary for the representations api call as the code that sets them is old and 
+          the reps api does not seem to use them when it retreives the image reps. Preloading can also include the actual pdf itself
+          so we need to set the share link and shared link password back to what it was before after we are done prefetching the images.
+          The options object is used downstream in thee url auth append logic and if the sharedLink and sharedLinkPassword are set it appends them
+          to the query params for the representations api call. This stops this from happening.
+          */
+
+        const { sharedLink = '', sharedLinkPassword = '' } = this.options;
+        this.options.sharedLink = '';
+        this.options.sharedLinkPassword = '';
+
+        const jpegPreloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        const pagedWebpRep = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
+        const pagedWebpRepReady =
+            pagedWebpRep && this.isRepresentationReady(pagedWebpRep) && pagedWebpRep.content?.url_template;
+        const jpegRepReady =
+            jpegPreloadRep && this.isRepresentationReady(jpegPreloadRep) && jpegPreloadRep.content?.url_template;
+        const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
+
+        if (onlyJpegRepAvailable) {
+            const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
+            const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
+            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
+            Promise.all(promises);
+        } else if (pagedWebpRepReady) {
+            const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
+            const pageCount = pagedWebpRep.metadata?.pages || 8;
+            const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
+            const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
+            Promise.all(promises);
+        }
+        this.options.sharedLink = sharedLink;
+        this.options.sharedLinkPassword = sharedLinkPassword;
+    }
+
+    /**
      * Prefetches assets for a document.
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
@@ -318,7 +384,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     prefetch({ assets = true, preload = true, content = true }) {
-        const { file, representation } = this.options;
+        const { file, representation, isDocFirstPrefetchEnabled } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
@@ -327,12 +393,16 @@ class DocBaseViewer extends BaseViewer {
         }
 
         if (preload && !isWatermarked) {
-            const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-            if (preloadRep && this.isRepresentationReady(preloadRep)) {
-                const { url_template: template } = preloadRep.content;
+            if (!isDocFirstPrefetchEnabled) {
+                const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+                if (preloadRep && this.isRepresentationReady(preloadRep)) {
+                    const { url_template: template } = preloadRep.content;
 
-                // Prefetch as blob since preload needs to load image as a blob
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                    // Prefetch as blob since preload needs to load image as a blob
+                    this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                }
+            } else {
+                this.prefetchPreloaderImages(file);
             }
         }
 
@@ -364,14 +434,32 @@ class DocBaseViewer extends BaseViewer {
 
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
+        const preloadRepPaged = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
+        const pagedWebpRepReady = preloadRepPaged && this.isRepresentationReady(preloadRepPaged);
+        const jpegRepReady = preloadRep && this.isRepresentationReady(preloadRep);
+        if ((!pagedWebpRepReady && !jpegRepReady) || !this.getViewerOption('preload')) {
             return;
         }
 
-        const { url_template: template } = preloadRep.content;
+        const { url_template: template = '' } = preloadRep?.content || {};
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-        this.startPreloadTimer();
-        this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
+
+        if (!this.docFirstPagesEnabled) {
+            this.startPreloadTimer();
+            this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
+        } else {
+            this.startPreloadTimer();
+            if (!pagedWebpRepReady) {
+                this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
+            } else {
+                const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
+                const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
+                const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
+                const pagedPreLoadUrlWithAuth =
+                    newPagedUrlTemplate && this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+            }
+        }
     }
 
     /**
@@ -394,12 +482,23 @@ class DocBaseViewer extends BaseViewer {
      */
     load() {
         super.load();
-        this.showPreload();
+
+        if (this.docFirstPagesEnabled) {
+            // If there is an error and we are in a retry don't
+            // re-render the preloader. Use the existing one.
+            if (!this.preloader?.retrievedPagesCount) {
+                this.loadAssets(EXIF_READER).then(() => {
+                    this.showPreload();
+                });
+            }
+        } else {
+            this.showPreload();
+        }
 
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
-
-        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
+        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -511,14 +610,24 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
+        // for that thumbnail
+        if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
+            this.cachePage(parsedPageNumber);
+            const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+            el.scrollIntoView({ behavior: 'instant', block: 'start' });
+            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+        } else if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
         this.pdfViewer.currentPageNumber = parsedPageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
-
-        if (this.thumbnailsSidebar) {
+        /*
+        Don't set the page if the thumbnails from the preloader are already open and the
+        pdf doc has loaded.This causes the virtual scroller to always scroll to the top
+        */
+        if (this.thumbnailsSidebar && !this.preloader?.thumbnailsOpen) {
             this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
         }
     }
@@ -732,12 +841,13 @@ class DocBaseViewer extends BaseViewer {
             .then(doc => {
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
-
                 if (this.shouldThumbnailsBeToggled()) {
                     this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
                     this.emit(VIEWER_EVENT.thumbnailsOpen);
                     this.resize();
                 }
+                // store a reference to the doc for docfirstpages
+                this.doc = doc;
             })
             .catch(err => {
                 console.error(err); // eslint-disable-line
@@ -843,19 +953,22 @@ class DocBaseViewer extends BaseViewer {
      */
     resize() {
         if (!this.pdfViewer || !this.somePageRendered) {
-            if (this.preloader) {
+            if (!this.docFirstPagesEnabled && this.preloader) {
                 this.preloader.resize();
             }
             return;
         }
 
         // Save page and return after resize
+
         const { currentPageNumber } = this.pdfViewer;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
 
-        this.setPage(currentPageNumber);
+        if (!this.docFirstPagesEnabled) {
+            this.setPage(currentPageNumber);
+        }
 
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.resize();
@@ -1214,12 +1327,20 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initThumbnails() {
-        this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer);
-        this.thumbnailsSidebar.init({
-            currentPage: this.pdfViewer.currentPageNumber,
-            isOpen: this.shouldThumbnailsBeToggled(),
-            onSelect: this.onThumbnailSelectHandler,
-        });
+        // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
+        // we only need one thumbnail sidebar for both the preloader and the pdfViewer
+        if (!this.thumbnailsSidebar) {
+            this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+
+            this.thumbnailsSidebar.init({
+                currentPage: this.pdfViewer?.currentPageNumber,
+                isOpen: this.shouldThumbnailsBeToggled(),
+                onSelect: this.onThumbnailSelectHandler,
+            });
+        } else {
+            // if preloader has finished and the document has loaded start rendering the remaining thumbnails
+            this.thumbnailsSidebar.renderNextThumbnailImage();
+        }
     }
 
     /**
@@ -1265,6 +1386,16 @@ class DocBaseViewer extends BaseViewer {
                 this.initThumbnails();
                 this.resize();
             }
+        }
+
+        // Preloader will only be used if we're not using a cached page number.
+        // This is why we need to emit the event here and not in the block below
+        if (!this.startPageRendered && pageNumber === 1 && this.preloader?.loadTime && this.preloader?.isWebp) {
+            const timeDiff = Date.now() - this.preloader.loadTime;
+            this.emitMetric({
+                name: LOAD_METRIC.preloadContentLoadTimeDiff,
+                data: timeDiff,
+            });
         }
 
         // Fire rendered metric to indicate that the specific page of content the user requested has been shown
@@ -1628,7 +1759,7 @@ class DocBaseViewer extends BaseViewer {
         const cachedToggledState = this.getCachedThumbnailsToggledState();
         // `pdfViewer.pagesCount` isn't immediately available after pdfViewer.setDocument()
         // is called, but the numPages is available on the underlying pdfViewer.pdfDocument
-        const { numPages = 0 } = this.pdfViewer && this.pdfViewer.pdfDocument;
+        const { numPages = 0 } = (this.pdfViewer && this.pdfViewer.pdfDocument) || this.preloader;
         let toggledState = cachedToggledState;
 
         // If cached toggled state is anything other than false, set it to true

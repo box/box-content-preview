@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import Api from '../../../api';
 import Browser from '../../../Browser';
 import PlainTextViewer from '../PlainTextViewer';
@@ -15,10 +15,19 @@ let containerEl;
 let text;
 let rootEl;
 
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
+
 describe('lib/viewers/text/PlainTextViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
 
     beforeEach(() => {
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
+
         fixture.load('viewers/text/__tests__/PlainTextViewer-test.html');
         containerEl = document.querySelector('.container');
         rootEl = document.querySelector(SELECTOR_BOX_PREVIEW);
@@ -55,6 +64,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.destroy();
         }
         text = null;
+
+        jest.resetAllMocks();
     });
 
     describe('setup()', () => {

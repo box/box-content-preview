@@ -38,7 +38,7 @@ const VIEWERS = [
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'png',
-        EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'heic', 'png', 'ps', 'psd', 'tga', 'tif', 'tiff'],
+        EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'heic', 'png', 'ps', 'psd', 'tga', 'tif', 'tiff', 'webp'],
         ASSET: '1.png',
     },
 ];

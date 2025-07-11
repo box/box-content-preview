@@ -53,10 +53,12 @@ describe('lib/viewers/doc/DocPreloader', () => {
             jest.spyOn(stubs.api, 'get').mockResolvedValue({});
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
-                expect(docPreloader.wrapperEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
-                expect(docPreloader.preloadEl).toContainSelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
+                expect(docPreloader.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`)).not.toBeNull();
+                expect(docPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`)).not.toBeNull();
+                expect(docPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`)).not.toBeNull();
+                expect(
+                    docPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`),
+                ).not.toBeNull();
                 expect(docPreloader.imageEl.src).toBe(imgSrc);
                 expect(containerEl).toContainElement(docPreloader.wrapperEl);
                 expect(docPreloader.bindDOMListeners).toBeCalled();

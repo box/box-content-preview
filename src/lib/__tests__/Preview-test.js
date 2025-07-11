@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import * as file from '../file';
 import * as util from '../util';
 import Api from '../api';
@@ -25,8 +25,13 @@ jest.mock('../util', () => ({
         location: 'en-US',
     }),
     getHeaders: jest.fn(),
+    openUrlInsideIframe: jest.fn(),
 }));
 jest.mock('../featureChecking');
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 const tokens = require('../tokens');
 
@@ -54,6 +59,11 @@ describe('lib/Preview', () => {
             disconnect: jest.fn(),
             observe: jest.fn(),
         }));
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -62,6 +72,8 @@ describe('lib/Preview', () => {
         preview.destroy();
         preview = null;
         stubs = null;
+
+        jest.resetAllMocks();
     });
 
     describe('constructor()', () => {
@@ -522,7 +534,7 @@ describe('lib/Preview', () => {
                 determineRepresentation: () => {},
             };
             viewer = {
-                CONSTRUCTOR: () => {},
+                CONSTRUCTOR: function constr() {},
             };
 
             sandbox
@@ -571,21 +583,29 @@ describe('lib/Preview', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
             jest.spyOn(preview, 'createViewerOptions');
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: true,
+                isDocFirstPrefetchEnabled: false,
+            });
 
-            expect(preview.createViewerOptions).toBeCalledWith({
+            expect(preview.createViewerOptions).toHaveBeenCalledWith({
                 viewer,
                 file: someFile,
                 token,
                 representation: undefined,
                 sharedLink,
                 sharedLinkPassword,
+                isDocFirstPrefetchEnabled: false,
             });
         });
 
         test('should prefetch assets, preload, and content if viewer defines a prefetch function and preload is false, but viewer preload option is true', () => {
             viewer = {
-                CONSTRUCTOR: () => {
+                CONSTRUCTOR: function constr() {
                     return {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
@@ -606,7 +626,7 @@ describe('lib/Preview', () => {
 
         test('should prefetch assets and content but not preload if viewer defines a prefetch function and preload is false, and viewer preload option is false', () => {
             viewer = {
-                CONSTRUCTOR: () => {
+                CONSTRUCTOR: function constr() {
                     return {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
@@ -627,7 +647,7 @@ describe('lib/Preview', () => {
 
         test('should prefetch assets and preload, but not content if viewer defines a prefetch function and preload is true', () => {
             viewer = {
-                CONSTRUCTOR: () => {
+                CONSTRUCTOR: function constr() {
                     return {
                         prefetch: sandbox.mock().withArgs({
                             assets: true,
@@ -651,7 +671,7 @@ describe('lib/Preview', () => {
                 prefetchStub = jest.fn();
 
                 /* eslint-disable require-jsdoc */
-                const stubViewer = () => {
+                const stubViewer = function constr() {
                     return { prefetch: prefetchStub };
                 };
                 /* eslint-enable require-jsdoc */
@@ -1762,7 +1782,7 @@ describe('lib/Preview', () => {
 
         test('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
             stubs.loader.determineViewer.mockReturnValue({
-                CONSTRUCTOR: () => {
+                CONSTRUCTOR: function constr() {
                     return stubs.viewer;
                 },
                 NAME: 'someViewerName',

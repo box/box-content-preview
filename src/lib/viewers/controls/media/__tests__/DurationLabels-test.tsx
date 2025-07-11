@@ -1,16 +1,17 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import DurationLabels from '../DurationLabels';
 
 describe('DurationLabels', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<DurationLabels currentTime={0} durationTime={60} {...props} />);
+    const getWrapper = (props = {}) => render(<DurationLabels currentTime={0} durationTime={60} {...props} />);
+
+    const getContainer = async () => screen.findByTestId('bp-DurationLabels');
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-
-            expect(wrapper.hasClass('bp-DurationLabels')).toBe(true);
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const container = await getContainer();
+            expect(container).toBeInTheDocument();
         });
 
         test.each`
@@ -22,13 +23,12 @@ describe('DurationLabels', () => {
             ${705}   | ${'11:45'}
             ${10800} | ${'3:00:00'}
             ${11211} | ${'3:06:51'}
-        `('should render both current and duration time $input to $result', ({ input, result }) => {
-            const wrapper = getWrapper({ currentTime: input, durationTime: input });
-            const current = wrapper.childAt(0);
-            const duration = wrapper.childAt(2);
+        `('should render both current and duration time $input to $result', async ({ input, result }) => {
+            getWrapper({ currentTime: input, durationTime: input });
+            const [current, duration] = await screen.findAllByText(result);
 
-            expect(current.text()).toBe(result);
-            expect(duration.text()).toBe(result);
+            expect(current).toBeInTheDocument();
+            expect(duration).toBeInTheDocument();
         });
     });
 });

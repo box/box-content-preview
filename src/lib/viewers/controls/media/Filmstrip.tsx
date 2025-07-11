@@ -43,7 +43,11 @@ export default function Filmstrip({
     }, [imageUrl]);
 
     return (
-        <div className={classNames('bp-Filmstrip', { 'bp-is-shown': isShown })} style={{ left: `${filmstripLeft}px` }}>
+        <div
+            className={classNames('bp-Filmstrip', { 'bp-is-shown': isShown })}
+            data-testid="bp-Filmstrip"
+            style={{ left: `${filmstripLeft}px` }}
+        >
             <div
                 className="bp-Filmstrip-frame"
                 data-testid="bp-Filmstrip-frame"

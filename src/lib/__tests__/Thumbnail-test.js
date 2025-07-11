@@ -45,6 +45,16 @@ describe('Thumbnail', () => {
             expect(thumbnail.scale).toBeUndefined();
             expect(thumbnail.pageRatio).toBeUndefined();
         });
+
+        test('should initialize properties if docFirstPreloader is enabled', () => {
+            const preloader = {};
+            thumbnail = new Thumbnail(pdfViewer, preloader);
+            expect(thumbnail.pdfViewer).toBe(pdfViewer);
+            expect(thumbnail.preloader).toBe(preloader);
+            expect(thumbnail.thumbnailImageCache.cache).toEqual({});
+            expect(thumbnail.scale).toBeUndefined();
+            expect(thumbnail.pageRatio).toBeUndefined();
+        });
     });
 
     describe('init()', () => {
@@ -56,6 +66,23 @@ describe('Thumbnail', () => {
                 expect(stubs.getViewport).toBeCalled();
                 expect(thumbnail.scale).toBe(15);
                 expect(thumbnail.pageRatio).toBe(1);
+            });
+        });
+
+        test('should initialize the render properties from the preloader if available', () => {
+            const preloader = {
+                imageDimensions: {
+                    width: 10,
+                    height: 10,
+                },
+            };
+            thumbnail = new Thumbnail(pdfViewer, preloader);
+
+            thumbnail.init();
+            return pagePromise.then(() => {
+                expect(thumbnail.scale).toBe(15);
+                expect(thumbnail.pageRatio).toBe(1);
+                expect(stubs.getViewport).not.toBeCalled();
             });
         });
 
@@ -222,6 +249,19 @@ describe('Thumbnail', () => {
             const thumbMaxWidth = 20;
             return thumbnail.getThumbnailDataURL(0, { thumbMaxWidth }).then(() => {
                 expect(stubs.mathCeil).toBeCalledWith(thumbMaxWidth / thumbnail.pageRatio);
+            });
+        });
+
+        test('should get data url from preloader if available', () => {
+            const preloader = {
+                preloadedImages: { 1: 'dataurl' },
+            };
+            thumbnail = new Thumbnail(pdfViewer, preloader);
+
+            return thumbnail.getThumbnailDataURL(1).then(dataUrl => {
+                expect(dataUrl).toBe('dataurl');
+                expect(stubs.getPage).not.toHaveBeenCalled();
+                expect(stubs.getViewport).not.toHaveBeenCalled();
             });
         });
     });

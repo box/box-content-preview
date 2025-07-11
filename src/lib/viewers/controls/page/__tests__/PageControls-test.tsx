@@ -1,36 +1,37 @@
 import React from 'react';
-import noop from 'lodash/noop';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import PageControls from '../PageControls';
-import PageControlsForm from '../PageControlsForm';
 
 describe('PageControls', () => {
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<PageControls onPageChange={noop} onPageSubmit={noop} pageCount={3} pageNumber={1} {...props} />);
-    const getPreviousPageButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-PageControls-previous"]');
-    const getNextPageButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-PageControls-next"]');
+    const getWrapper = (props = {}) =>
+        render(
+            <PageControls onPageChange={jest.fn()} onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} {...props} />,
+        );
+    const getPreviousPageButton = async () => screen.findByTitle(__('previous_page'));
+    const getNextPageButton = async () => screen.findByTitle(__('next_page'));
 
     describe('event handlers', () => {
-        test('should handle previous page click', () => {
+        test('should handle previous page click', async () => {
             const pageNumber = 2;
             const onPageChange = jest.fn();
-            const wrapper = getWrapper({ onPageChange, pageCount: 3, pageNumber });
+            getWrapper({ onPageChange, pageCount: 3, pageNumber });
+            const previousPageButton = await getPreviousPageButton();
 
-            getPreviousPageButton(wrapper).simulate('click');
+            await userEvent.click(previousPageButton);
 
-            expect(onPageChange).toBeCalledWith(pageNumber - 1);
+            expect(onPageChange).toHaveBeenCalledWith(pageNumber - 1);
         });
 
-        test('should handle next page click', () => {
+        test('should handle next page click', async () => {
             const pageNumber = 2;
             const onPageChange = jest.fn();
-            const wrapper = getWrapper({ onPageChange, pageCount: 3, pageNumber });
+            getWrapper({ onPageChange, pageCount: 3, pageNumber });
+            const nextPageButton = await getNextPageButton();
 
-            getNextPageButton(wrapper).simulate('click');
+            await userEvent.click(nextPageButton);
 
-            expect(onPageChange).toBeCalledWith(pageNumber + 1);
+            expect(onPageChange).toHaveBeenCalledWith(pageNumber + 1);
         });
     });
 
@@ -42,27 +43,43 @@ describe('PageControls', () => {
             ${2}       | ${false}             | ${false}
         `(
             'should handle the disable prop correctly when pageNumber is $pageNumber and pageCount is $pageCount',
-            ({ pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
-                const wrapper = getWrapper({ pageCount: 3, pageNumber });
+            async ({ pageNumber, isNextButtonDisabled, isPrevButtonDisabled }) => {
+                getWrapper({ pageCount: 3, pageNumber });
+                const previousPageButton = await getPreviousPageButton();
+                const nextPageButton = await getNextPageButton();
 
-                expect(getPreviousPageButton(wrapper).prop('disabled')).toBe(isPrevButtonDisabled);
-                expect(getNextPageButton(wrapper).prop('disabled')).toBe(isNextButtonDisabled);
+                if (isPrevButtonDisabled) {
+                    expect(previousPageButton).toBeDisabled();
+                } else {
+                    expect(previousPageButton).not.toBeDisabled();
+                }
+
+                if (isNextButtonDisabled) {
+                    expect(nextPageButton).toBeDisabled();
+                } else {
+                    expect(nextPageButton).not.toBeDisabled();
+                }
             },
         );
 
         test('should return an empty render if pageCount is less than 2', () => {
-            const wrapper = getWrapper({ pageCount: 1, pageNumber: 1 });
+            getWrapper({ pageCount: 1, pageNumber: 1 });
+            const previousPageButton = screen.queryByTitle(__('previous_page'));
+            const nextPageButton = screen.queryByTitle(__('next_page'));
 
-            expect(wrapper.isEmptyRender()).toBe(true);
+            expect(previousPageButton).toBeNull();
+            expect(nextPageButton).toBeNull();
         });
 
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
+            const previousPageButton = await getPreviousPageButton();
+            const nextPageButton = await getNextPageButton();
+            const pageControlsForm = await screen.findByTestId('bp-PageControlsForm');
 
-            expect(getPreviousPageButton(wrapper).exists()).toBe(true);
-            expect(getNextPageButton(wrapper).exists()).toBe(true);
-            expect(wrapper.find(PageControlsForm).exists()).toBe(true);
-            expect(wrapper.hasClass('bp-PageControls')).toBe(true);
+            expect(previousPageButton).toBeInTheDocument();
+            expect(nextPageButton).toBeInTheDocument();
+            expect(pageControlsForm).toBeInTheDocument();
         });
     });
 });

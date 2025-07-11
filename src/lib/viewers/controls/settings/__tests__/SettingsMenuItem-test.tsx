@@ -1,25 +1,33 @@
 import React from 'react';
-import { mount, ReactWrapper } from 'enzyme';
-import IconArrowRight24 from '../../icons/IconArrowRight24';
-import SettingsContext, { Menu, Context } from '../SettingsContext';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import SettingsContext, { Context, Menu } from '../SettingsContext';
 import SettingsMenuItem from '../SettingsMenuItem';
 
 describe('SettingsMenuItem', () => {
-    const getContext = (): Partial<Context> => ({ setActiveMenu: jest.fn() });
-    const getWrapper = (props = {}, context = {}): ReactWrapper =>
-        mount(<SettingsMenuItem label="Speed" target={Menu.AUTOPLAY} value="Normal" {...props} />, {
-            wrappingComponent: SettingsContext.Provider,
-            wrappingComponentProps: { value: context },
-        });
+    const getContext = (): Context => ({
+        activeMenu: Menu.MAIN,
+        setActiveMenu: jest.fn(),
+        setActiveRect: jest.fn(),
+    });
+    const getWrapper = (props = {}, context = getContext()) =>
+        render(
+            <SettingsContext.Provider value={context}>
+                <SettingsMenuItem label="Speed" target={Menu.AUTOPLAY} value="Normal" {...props} />
+            </SettingsContext.Provider>,
+        );
+
+    const getMenuItem = async () => screen.findByRole('menuitem');
 
     describe('event handlers', () => {
-        test('should set the active menu when clicked', () => {
+        test('should set the active menu when clicked', async () => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
+            const menuItem = await getMenuItem();
 
-            wrapper.simulate('click');
+            await userEvent.click(menuItem);
 
-            expect(context.setActiveMenu).toBeCalled();
+            expect(context.setActiveMenu).toHaveBeenCalled();
         });
 
         test.each`
@@ -28,22 +36,25 @@ describe('SettingsMenuItem', () => {
             ${'Enter'}      | ${1}
             ${'Escape'}     | ${0}
             ${'Space'}      | ${1}
-        `('should set the active menu $calledTimes times when $key is pressed', ({ key, calledTimes }) => {
+        `('should set the active menu $calledTimes times when $key is pressed', async ({ key, calledTimes }) => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
 
-            wrapper.simulate('keydown', { key });
+            // focus on menu item
+            await userEvent.tab();
+            await userEvent.keyboard(`{${key}}`);
 
-            expect(context.setActiveMenu).toBeCalledTimes(calledTimes);
+            expect(context.setActiveMenu).toHaveBeenCalledTimes(calledTimes);
         });
 
-        test('should not set the active menu when clicked while disabled', () => {
+        test('should not set the active menu when clicked while disabled', async () => {
             const context = getContext();
-            const wrapper = getWrapper({ isDisabled: true }, context);
+            getWrapper({ isDisabled: true }, context);
+            const menuItem = await getMenuItem();
 
-            wrapper.simulate('click');
+            await userEvent.click(menuItem);
 
-            expect(context.setActiveMenu).not.toBeCalled();
+            expect(context.setActiveMenu).not.toHaveBeenCalled();
         });
 
         test.each`
@@ -51,32 +62,41 @@ describe('SettingsMenuItem', () => {
             ${'ArrowRight'}
             ${'Enter'}
             ${'Space'}
-        `('should not set the active menu when $key is pressed while disabled', ({ key }) => {
+        `('should not set the active menu when $key is pressed while disabled', async ({ key }) => {
             const context = getContext();
-            const wrapper = getWrapper({ isDisabled: true }, context);
+            getWrapper({ isDisabled: true }, context);
 
-            wrapper.simulate('keydown', { key });
+            // focus on menu item
+            await userEvent.tab();
+            await userEvent.keyboard(`{${key}}`);
 
-            expect(context.setActiveMenu).not.toBeCalled();
+            expect(context.setActiveMenu).not.toHaveBeenCalled();
         });
     });
 
     describe('render', () => {
-        test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
+        test('should return a valid wrapper', async () => {
+            getWrapper();
 
-            expect(wrapper.getDOMNode()).toHaveClass('bp-SettingsMenuItem');
-            expect(wrapper.getDOMNode().getAttribute('aria-disabled')).toBe('false');
-            expect(wrapper.find('.bp-SettingsMenuItem-label').contains('Speed')).toBe(true);
-            expect(wrapper.find('.bp-SettingsMenuItem-value').contains('Normal')).toBe(true);
-            expect(wrapper.exists(IconArrowRight24)).toBe(true);
+            const menuItem = await getMenuItem();
+            const label = await screen.findByText('Speed');
+            const value = await screen.findByText('Normal');
+            const icon = await screen.findByTestId('IconArrowRight24');
+
+            expect(menuItem).toBeInTheDocument();
+            expect(menuItem).toHaveAttribute('aria-disabled', 'false');
+            expect(label).toBeInTheDocument();
+            expect(value).toBeInTheDocument();
+            expect(icon).toBeInTheDocument();
         });
 
-        test('should render as disabled when isDisabled is true', () => {
-            const wrapper = getWrapper({ isDisabled: true });
+        test('should render as disabled when isDisabled is true', async () => {
+            getWrapper({ isDisabled: true });
+            const menuItem = await getMenuItem();
+            const icon = screen.queryByTestId('IconArrowRight24');
 
-            expect(wrapper.getDOMNode().getAttribute('aria-disabled')).toBe('true');
-            expect(wrapper.exists(IconArrowRight24)).toBe(false);
+            expect(menuItem).toHaveAttribute('aria-disabled', 'true');
+            expect(icon).toBeNull();
         });
     });
 });

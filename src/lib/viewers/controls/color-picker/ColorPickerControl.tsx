@@ -15,7 +15,7 @@ export default function ColorPickerControl({
     colors,
     onColorSelect,
     ...rest
-}: Props): JSX.Element | null {
+}: Props): React.JSX.Element | null {
     const paletteRef = React.useRef<HTMLDivElement>(null);
     const toggleRef = React.useRef<HTMLButtonElement>(null);
     const [isColorPickerToggled, setIsColorPickerToggled] = React.useState(false);

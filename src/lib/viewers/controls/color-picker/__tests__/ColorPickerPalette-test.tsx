@@ -1,33 +1,31 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ColorPickerPalette from '../ColorPickerPalette';
 
 describe('ColorPickerPalette', () => {
     const defaultColor = '#fff';
     const colors = [defaultColor];
 
-    const getWrapper = (props = {}): ShallowWrapper =>
-        shallow(<ColorPickerPalette colors={colors} onBlur={jest.fn()} onSelect={jest.fn()} {...props} />);
-
-    const getButton = (wrapper: ShallowWrapper): ShallowWrapper =>
-        wrapper.find('[data-testid="bp-ColorPickerPalette-button"]');
+    const getWrapper = (props = {}) =>
+        render(<ColorPickerPalette colors={colors} onBlur={jest.fn()} onSelect={jest.fn()} {...props} />);
 
     describe('render', () => {
-        test('should render a single color swatch', () => {
-            const wrapper = getWrapper();
+        test('should render a single color swatch', async () => {
+            getWrapper();
 
-            expect(getButton(wrapper).length).toBe(1);
+            const button = await screen.findByRole('button');
+            expect(button).toBeInTheDocument();
         });
     });
 
     describe('onSelect', () => {
-        test('should call onSelect with a button is clicked', () => {
+        test('should call onSelect with a button is clicked', async () => {
             const onSelect = jest.fn();
-            const wrapper = getWrapper({ onSelect });
+            getWrapper({ onSelect });
 
-            getButton(wrapper)
-                .at(0)
-                .simulate('click');
+            const button = await screen.findByRole('button');
+            await userEvent.click(button);
 
             expect(onSelect).toHaveBeenCalledWith(defaultColor);
         });

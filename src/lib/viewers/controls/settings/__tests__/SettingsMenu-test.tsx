@@ -1,93 +1,89 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SettingsContext, { Context, Menu } from '../SettingsContext';
 import SettingsMenu from '../SettingsMenu';
 
 describe('SettingsMenu', () => {
-    const getContext = (overrides = {}): Partial<Context> => ({
+    const getContext = (overrides = {}): Context => ({
         activeMenu: Menu.MAIN,
         setActiveRect: jest.fn(),
+        setActiveMenu: jest.fn(),
         ...overrides,
     });
-    const getHostNode = (): HTMLDivElement => {
-        return document.body.appendChild(document.createElement('div'));
-    };
-    const getWrapper = (props = {}, context = getContext()): ReactWrapper =>
-        mount(
+
+    const getComponent = (props = {}, context = getContext()) => (
+        <SettingsContext.Provider value={context}>
             <SettingsMenu name={Menu.MAIN} {...props}>
-                <div data-testid="test1" role="menuitem" tabIndex={0} />
-                <div data-testid="test2" role="menuitem" tabIndex={0} />
-                <div data-testid="test3" role="menuitem" tabIndex={0} />
-            </SettingsMenu>,
-            {
-                attachTo: getHostNode(),
-                wrappingComponent: SettingsContext.Provider,
-                wrappingComponentProps: { value: context },
-            },
-        );
+                <div role="menuitem" tabIndex={0} />
+                <div role="menuitem" tabIndex={0} />
+                <div role="menuitem" tabIndex={0} />
+            </SettingsMenu>
+        </SettingsContext.Provider>
+    );
+
+    const getWrapper = (props = {}, context = getContext()) => render(getComponent(props, context));
+
+    const getSettingsList = async () => screen.findByRole('menu');
+    const getSettinglistItems = async () => screen.findAllByRole('menuitem');
 
     describe('event handlers', () => {
-        test('should focus the active menu index based on the arrow keys', () => {
-            const wrapper = getWrapper();
-            const simulateKey = (key: string): void => {
-                act(() => {
-                    wrapper.simulate('keydown', { key });
-                });
-                wrapper.update();
-            };
+        test('should focus the active menu index based on the arrow keys', async () => {
+            getWrapper();
 
-            expect(wrapper.find('[data-testid="test1"]').getDOMNode()).toHaveFocus(); // Default case on mount
+            const [test1, test2, test3] = await getSettinglistItems();
 
-            simulateKey('ArrowDown');
-            expect(wrapper.find('[data-testid="test2"]').getDOMNode()).toHaveFocus();
+            expect(test1).toHaveFocus(); // Default case on mount
 
-            simulateKey('ArrowDown');
-            expect(wrapper.find('[data-testid="test3"]').getDOMNode()).toHaveFocus();
+            await userEvent.keyboard('{ArrowDown}');
+            expect(test2).toHaveFocus();
 
-            simulateKey('ArrowDown');
-            expect(wrapper.find('[data-testid="test3"]').getDOMNode()).toHaveFocus(); // Increment stops at list end
+            await userEvent.keyboard('{ArrowDown}');
+            expect(test3).toHaveFocus();
 
-            simulateKey('ArrowUp');
-            expect(wrapper.find('[data-testid="test2"]').getDOMNode()).toHaveFocus();
+            await userEvent.keyboard('{ArrowDown}');
+            expect(test3).toHaveFocus(); // Increment stops at list end
 
-            simulateKey('ArrowUp');
-            expect(wrapper.find('[data-testid="test1"]').getDOMNode()).toHaveFocus();
+            await userEvent.keyboard('{ArrowUp}');
+            expect(test2).toHaveFocus();
 
-            simulateKey('ArrowUp');
-            expect(wrapper.find('[data-testid="test1"]').getDOMNode()).toHaveFocus(); // Decrement stops at list start
+            await userEvent.keyboard('{ArrowUp}');
+            expect(test1).toHaveFocus();
+
+            await userEvent.keyboard('{ArrowUp}');
+            expect(test1).toHaveFocus(); // Decrement stops at list start
         });
     });
 
     describe('lifecycle', () => {
-        test('should update the active rect on mount', () => {
+        test('should update the active rect on mount', async () => {
             const context = getContext();
-            const wrapper = getWrapper({}, context);
+            getWrapper({}, context);
+            const settingsList = await getSettingsList();
 
-            expect(context.setActiveRect).toBeCalledWith(wrapper.getDOMNode().getBoundingClientRect());
+            expect(context.setActiveRect).toHaveBeenCalledWith(settingsList.getBoundingClientRect());
         });
     });
 
     describe('render', () => {
         test('should set classes based on the active menu', () => {
             const context = getContext({ activeMenu: Menu.MAIN });
-            const wrapper = getWrapper({ name: Menu.MAIN }, context);
+            const { rerender } = getWrapper({ name: Menu.MAIN }, context);
+            const settingsList = screen.getByRole('menu');
 
-            expect(wrapper.childAt(0).hasClass('bp-is-active')).toBe(true);
+            expect(settingsList).toHaveClass('bp-is-active');
 
             context.activeMenu = Menu.AUTOPLAY;
-            wrapper.setProps({}); // Force re-render
-            wrapper.update();
+            rerender(getComponent({ name: Menu.MAIN }, context));
 
-            expect(wrapper.childAt(0).hasClass('bp-is-active')).toBe(false);
+            expect(settingsList).not.toHaveClass('bp-is-active');
         });
 
         test('should return a valid wrapper', () => {
-            const wrapper = getWrapper();
-            const element = wrapper.getDOMNode();
+            getWrapper();
+            const settingsList = screen.getByRole('menu');
 
-            expect(element).toHaveClass('bp-SettingsMenu');
-            expect(element).toHaveAttribute('role', 'menu');
+            expect(settingsList).toBeInTheDocument();
         });
     });
 });

@@ -37,6 +37,8 @@ class ThumbnailsSidebar {
 
     virtualScroller;
 
+    preloader;
+
     /** @property {Array<number>} - The ID values returned by the call to window.requestAnimationFrame() */
     animationFrameRequestIds;
 
@@ -46,12 +48,13 @@ class ThumbnailsSidebar {
      * @param {HTMLElement} element - the HTMLElement that will anchor the thumbnail sidebar
      * @param {PDFViewer} pdfViewer - the PDFJS viewer
      */
-    constructor(element, pdfViewer) {
+    constructor(element, pdfViewer, preloader) {
         this.animationFrameRequestIds = [];
         this.anchorEl = element;
         this.currentThumbnails = [];
         this.pdfViewer = pdfViewer;
-        this.thumbnail = new Thumbnail(this.pdfViewer);
+        this.preloader = preloader;
+        this.thumbnail = new Thumbnail(this.pdfViewer, this.preloader);
         this.isOpen = false;
 
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
@@ -135,7 +138,7 @@ class ThumbnailsSidebar {
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
-
+        this.preloader = null;
         this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
     }
 
@@ -161,9 +164,10 @@ class ThumbnailsSidebar {
 
         this.thumbnail.init().then(thumbnailHeight => {
             if (thumbnailHeight) {
+                const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
                 this.virtualScroller.init({
                     initialRowIndex: this.currentPage - 1,
-                    totalItems: this.pdfViewer.pagesCount,
+                    totalItems: count,
                     itemHeight: thumbnailHeight,
                     containerHeight: this.getContainerHeight(),
                     margin: THUMBNAIL_MARGIN,
@@ -204,6 +208,10 @@ class ThumbnailsSidebar {
 
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
+            // max doc first pages is 8 and this prevents the 9th page from being blank if the pdfDocument is not loaded yet
+            if (parsedPageNum > this.preloader?.retrievedPagesCount && !this.pdfViewer.pdfDocument) {
+                return;
+            }
             this.requestThumbnailImage(parsedPageNum - 1, nextThumbnailEl);
         }
     }
@@ -218,7 +226,6 @@ class ThumbnailsSidebar {
     createPlaceholderThumbnail(itemIndex) {
         const thumbnailEl = document.createElement('div');
         const pageNum = itemIndex + 1;
-
         thumbnailEl.className = CLASS_BOX_PREVIEW_THUMBNAIL;
         thumbnailEl.dataset.bpPageNum = pageNum;
         thumbnailEl.setAttribute('role', 'button');
@@ -303,8 +310,11 @@ class ThumbnailsSidebar {
      */
     setCurrentPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-
-        if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
+        // don't use the virtual scroller if the pdfViewer is not ready but the preloader has opened the thumbnails
+        if (parsedPageNumber >= 1 && this.preloader?.thumbnailsOpen && !this.pdfViewer?.pagesCount) {
+            this.currentPage = parsedPageNumber;
+            this.applyCurrentPageSelection();
+        } else if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
             this.virtualScroller.scrollIntoView(parsedPageNumber - 1);

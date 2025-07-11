@@ -1,36 +1,34 @@
 import * as React from 'react';
-import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import fullscreen from '../../../../Fullscreen';
 import useFullscreen from '../useFullscreen';
 
 describe('useFullscreen', () => {
-    function TestComponent(): JSX.Element {
+    function TestComponent(): React.JSX.Element {
         const isFullscreen = useFullscreen();
 
-        return <div className={isFullscreen ? 'fullscreen' : ''} />;
+        return <div className={isFullscreen ? 'fullscreen' : ''} data-testid="test-div" />;
     }
 
-    const getElement = (wrapper: ReactWrapper): ReactWrapper => wrapper.childAt(0);
-    const getWrapper = (): ReactWrapper => mount(<TestComponent />);
+    const getWrapper = () => render(<TestComponent />);
+    const getElement = async () => screen.findByTestId('test-div');
 
-    test('should return the current fullscreen status', () => {
-        const wrapper = getWrapper();
+    test('should return the current fullscreen status', async () => {
+        getWrapper();
+        const element = await getElement();
 
-        expect(getElement(wrapper).hasClass('fullscreen')).toBe(false);
+        expect(element).not.toHaveClass('fullscreen');
 
-        act(() => {
+        React.act(() => {
             fullscreen.enter();
         });
-        wrapper.update();
 
-        expect(getElement(wrapper).hasClass('fullscreen')).toBe(true);
+        expect(element).toHaveClass('fullscreen');
 
-        act(() => {
+        React.act(() => {
             fullscreen.exit();
         });
-        wrapper.update();
 
-        expect(getElement(wrapper).hasClass('fullscreen')).toBe(false);
+        expect(element).not.toHaveClass('fullscreen');
     });
 });

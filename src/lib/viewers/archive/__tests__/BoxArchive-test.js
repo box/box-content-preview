@@ -1,14 +1,24 @@
-/* eslint-disable no-unused-expressions */
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import BoxArchive from '../BoxArchive';
+import ArchiveExplorer from '../ArchiveExplorer';
 
 let archiveComponent;
 let containerEl;
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 describe('lib/viewers/archive/BoxArchive', () => {
     beforeEach(() => {
         fixture.load('viewers/archive/__tests__/BoxArchive-test.html');
         containerEl = document.querySelector('.container');
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -19,26 +29,22 @@ describe('lib/viewers/archive/BoxArchive', () => {
         }
 
         archiveComponent = null;
+
+        jest.resetAllMocks();
     });
 
     describe('destroy()', () => {
         test('should unmount the component', () => {
-            jest.spyOn(ReactDOM, 'render').mockImplementation();
-            jest.spyOn(ReactDOM, 'unmountComponentAtNode').mockImplementation();
-
             archiveComponent = new BoxArchive(containerEl, 'test.zip', []);
             archiveComponent.archiveExplorer = {};
             archiveComponent.destroy();
-            archiveComponent = null;
 
-            expect(ReactDOM.unmountComponentAtNode).toBeCalled();
+            expect(archiveComponent.root.unmount).toBeCalled();
         });
     });
 
     describe('constructor render', () => {
-        test('should render archive explorer with the right data', () => {
-            jest.spyOn(ReactDOM, 'render').mockImplementation();
-
+        test('should render archive explorer with correct props', () => {
             const data = [
                 {
                     type: 'folder',
@@ -50,10 +56,13 @@ describe('lib/viewers/archive/BoxArchive', () => {
                 },
             ];
 
-            archiveComponent = new BoxArchive(containerEl, 'test.zip', data);
+            const filename = 'test.zip';
 
-            const archiveExplorer = ReactDOM.render.mock.calls[0][0];
-            expect(archiveExplorer.props.itemCollection).toBe(data);
+            archiveComponent = new BoxArchive(containerEl, filename, data);
+
+            expect(archiveComponent.root.render).toHaveBeenCalledWith(
+                <ArchiveExplorer ref={archiveComponent.setRef} filename={filename} itemCollection={data} />,
+            );
         });
     });
 });

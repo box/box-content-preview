@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import { getIcon } from 'box-ui-elements/es/components/preview';
 
 export type Options = {
@@ -7,19 +7,19 @@ export type Options = {
 };
 
 export default class ErrorIcon {
-    containerEl: HTMLElement;
+    root: Root;
 
     constructor({ containerEl }: Options) {
-        this.containerEl = containerEl;
+        this.root = createRoot(containerEl);
     }
 
     destroy(): void {
-        ReactDOM.unmountComponentAtNode(this.containerEl);
+        this.root.unmount();
     }
 
     render(extension?: string): void {
         const Icon = getIcon(extension);
 
-        ReactDOM.render(<Icon extension={extension} />, this.containerEl);
+        this.root.render(<Icon extension={extension} />);
     }
 }

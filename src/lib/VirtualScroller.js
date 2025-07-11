@@ -289,8 +289,8 @@ class VirtualScroller {
             newStartOffset = curEndOffset + 1;
             // Create elements from curEnd + 1 to newEndOffset
             this.createItems(fragment, newStartOffset, newEndOffset);
-            // Delete the elements from curStartOffset to newStartOffset
-            this.deleteItems(this.listEl, curStartOffset - curStartOffset, offset - curStartOffset);
+            // Delete the first (offset - curStartOffset) elements that scrolled out of view
+            this.deleteItems(this.listEl, 0, offset - curStartOffset);
             // Append the document fragment to the listEl
             this.listEl.appendChild(fragment);
         } else if (curStartOffset <= newEndOffset && newEndOffset <= curEndOffset) {

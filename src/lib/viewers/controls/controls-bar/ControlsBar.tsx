@@ -11,7 +11,7 @@ export default function ControlsBar({ children, ...rest }: Props): JSX.Element |
     }
 
     return (
-        <div className="bp-ControlsBar" {...rest}>
+        <div className="bp-ControlsBar" data-testid="bp-ControlsBar" {...rest}>
             {children}
         </div>
     );

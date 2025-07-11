@@ -1,13 +1,18 @@
-/* eslint-disable no-unused-expressions */
+import { createRoot } from 'react-dom/client';
 import PresentationViewer from '../PresentationViewer';
 import BaseViewer from '../../BaseViewer';
 import DocBaseViewer from '../DocBaseViewer';
 import PresentationPreloader from '../PresentationPreloader';
+import DocFirstPreloader from '../DocFirstPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
 
 let containerEl;
 let presentation;
 let stubs = {};
+
+jest.mock('react-dom/client', () => ({
+    createRoot: jest.fn(),
+}));
 
 describe('lib/viewers/doc/PresentationViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -42,6 +47,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         presentation.controls = {
             add: jest.fn(),
         };
+
+        createRoot.mockReturnValue({
+            render: jest.fn(),
+            unmount: jest.fn(),
+        });
     });
 
     afterEach(() => {
@@ -56,12 +66,25 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         presentation = null;
         stubs = {};
+
+        jest.resetAllMocks();
     });
 
     describe('setup()', () => {
         test('should add the presentation class to the presentation element and set up preloader', () => {
             expect(presentation.docEl).toHaveClass('bp-doc-presentation');
             expect(presentation.preloader).toBeInstanceOf(PresentationPreloader);
+            expect(presentation.preloader.wrapperClassName).toBe('bp-presentation-preload-wrapper');
+        });
+
+        test('should add the presentation class to the presentation element and set up doc first preloader if feature is enabled', () => {
+            jest.spyOn(presentation, 'featureEnabled').mockImplementation(
+                feature => feature === 'docFirstPages.enabled',
+            );
+            presentation.setup();
+            expect(presentation.docEl).toHaveClass('bp-doc-presentation');
+            expect(presentation.preloader).toBeInstanceOf(DocFirstPreloader);
+            expect(presentation.preloader.wrapperClassName).toBe('bp-presentation-preload-wrapper');
         });
 
         test('should invoke onPreload callback', () => {

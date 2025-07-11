@@ -10,9 +10,10 @@ import Api from '../../../api';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
-import DocBaseViewer, { DISCOVERABILITY_STATES } from '../DocBaseViewer';
+import DocBaseViewer, { DISCOVERABILITY_STATES, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
+import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
     ANNOTATOR_EVENT,
@@ -27,12 +28,16 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_CONTAINER,
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
+    STATUS_NONE,
 } from '../../../constants';
+
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
+import { EXIF_READER, JS, CSS, JS_NO_EXIF } from '../docAssets';
+import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -83,6 +88,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         stubs.classListRemove = jest.spyOn(rootEl.classList, 'remove').mockImplementation();
         stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockImplementation();
         stubs.urlCreator = jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => 'asset');
+        stubs.getPreloadImageRequestPromises = jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
     });
 
     afterEach(() => {
@@ -100,6 +106,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         docBase = null;
         stubs = null;
+        jest.restoreAllMocks();
     });
 
     describe('setup()', () => {
@@ -386,11 +393,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('prefetch()', () => {
+            beforeEach(() => {
+                docBase.options.isDocFirstPrefetchEnabled = false;
+            });
+
             test('should prefetch assets if assets is true', () => {
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 docBase.prefetch({ assets: true, preload: false, content: false });
                 expect(docBase.prefetchAssets).toBeCalled();
+            });
+
+            test('should prefetch doc first pages if assets is true and ff is on and preload is true', () => {
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+                jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
+
+                docBase.options.isDocFirstPrefetchEnabled = true;
+                docBase.prefetch({ assets: true, preload: true, content: false });
+                expect(docBase.prefetchPreloaderImages).toHaveBeenCalled();
+            });
+
+            test('should not prefetch doc first pages if assets is true and ff is on and preload is true and is watermarked', () => {
+                docBase.options.file.watermark_info = {
+                    is_watermarked: true,
+                };
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+                jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
+                docBase.options.isDocFirstPrefetchEnabled = true;
+                docBase.prefetch({ assets: true, preload: true, content: false });
+                expect(docBase.prefetchPreloaderImages).not.toHaveBeenCalled();
             });
 
             test('should prefetch preload if preload is true and representation is ready', () => {
@@ -409,7 +440,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).toBeCalledWith(template);
+                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith(template);
             });
 
             test('should not prefetch preload if preload is true and representation is not ready', () => {
@@ -439,19 +470,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).not.toBeCalled();
+                expect(docBase.createContentUrlWithAuthParams).not.toHaveBeenCalled();
             });
 
             test('should prefetch content if content is true and representation is ready', () => {
+                docBase.options.file.watermark_info = {
+                    is_watermarked: false,
+                };
+
+                docBase.options.file.representations = {};
+                docBase.options.file.representations.entries = [
+                    {
+                        representation: 'jpg',
+                        status: {
+                            state: 'success',
+                        },
+                        content: {
+                            url_template: 'someContentUrl',
+                        },
+                    },
+                    {
+                        representation: 'webp',
+                        status: {
+                            state: 'success',
+                        },
+                        content: {
+                            url_template: 'someContentUrl',
+                        },
+                    },
+                ];
+                docBase.options.isDocFirstPrefetchEnabled = true;
                 const contentUrl = 'someContentUrl';
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
-                sandbox
-                    .mock(stubs.api)
-                    .expects('get')
-                    .withArgs(contentUrl, { type: 'document' });
-
-                docBase.prefetch({ assets: false, preload: false, content: true });
+                docBase.prefetch({ assets: false, preload: true, content: true });
+                expect(stubs.getPreloadImageRequestPromises).toBeCalled();
             });
 
             test('should not prefetch content if content is true but representation is not ready', () => {
@@ -476,8 +529,52 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('showPreload()', () => {
+            let startPreloadTimerStub;
+            const jpegUrlTemplate = 'https://preload-url-template';
+            const webpUrlTemplate = 'https://url/{+asset_path}';
+            let webpRep;
+            let jpegRep;
             beforeEach(() => {
                 docBase.preloader = new DocPreloader();
+                startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
+                webpRep = {
+                    content: {
+                        url_template: webpUrlTemplate,
+                    },
+                    metadata: {
+                        pages: 4,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jpegRep = {
+                    content: {
+                        url_template: jpegUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return jpegRep;
+                    }
+                    if (theFile && repName === 'webp') {
+                        return webpRep;
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase, 'getViewerOption').mockImplementation(option => {
+                    if (option === 'preload') {
+                        return true;
+                    }
+                    return false;
+                });
             });
 
             test('should not do anything if there is a previously cached page', () => {
@@ -521,14 +618,34 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            test('should not do anything if no preload rep is found', () => {
+            test('should not do anything if both reps are missing', () => {
                 docBase.options.file = {};
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue(null);
+                webpRep = null;
+                jpegRep = null;
+
+                sandbox
+                    .mock(docBase.preloader)
+                    .expects('showPreload')
+                    .never();
+
+                docBase.showPreload();
+            });
+
+            test('should not do anything if no preload or paged preload rep is available', () => {
+                docBase.options.file = {};
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
+                sandbox
+                    .stub(docBase, 'getViewerOption')
+                    .withArgs('preload')
+                    .returns(true);
+                webpRep.status.state = STATUS_NONE;
+                jpegRep.status.state = STATUS_NONE;
+
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -553,17 +670,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            test('should not do anything if preload rep has an error', () => {
+            test('should not do anything if reps have an error', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue({
-                    status: {
-                        state: STATUS_ERROR,
-                    },
-                });
+                webpRep.status.state = STATUS_ERROR;
+                jpegRep.status.state = STATUS_ERROR;
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -572,23 +686,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.showPreload();
             });
 
-            test('should not do anything if preload rep is pending', () => {
+            test('should not do anything if preload reps are pending', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 sandbox
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                jest.spyOn(file, 'getRepresentation').mockReturnValue({
-                    status: {
-                        state: STATUS_PENDING,
-                    },
-                });
+                webpRep.status.state = STATUS_PENDING;
+                jpegRep.status.state = STATUS_PENDING;
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
                     .never();
 
                 docBase.showPreload();
+            });
+
+            test('should show preload if webp paged rep is unavalable but jpeg preload rep is available', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
+                sandbox
+                    .stub(docBase, 'getViewerOption')
+                    .withArgs('preload')
+                    .returns(true);
+                webpRep.status.state = STATUS_NONE;
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalled();
+            });
+
+            test('should show preload of webp paged rep is available but jpeg preload rep is unavailable', () => {
+                jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
+                sandbox
+                    .stub(docBase, 'getViewerOption')
+                    .withArgs('preload')
+                    .returns(true);
+                jpegRep.status.state = STATUS_NONE;
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalled();
             });
 
             test('should show preload with correct authed URL', () => {
@@ -635,11 +770,88 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
 
                 sandbox.mock(docBase.preloader).expects('showPreload');
-                const startPreloadTimerStub = jest.spyOn(docBase, 'startPreloadTimer');
 
                 docBase.showPreload();
 
                 expect(startPreloadTimerStub).toBeCalled();
+            });
+
+            test('should load doc first preloader properly for doc first pages when webp rep available', () => {
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
+                        return 'paged-url';
+                    }
+                    if (url === jpegUrlTemplate) {
+                        return 'preload-url';
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase);
+            });
+
+            test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
+                webpRep = null;
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+
+                    return 'url without template';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    null,
+                    1,
+                    docBase,
+                );
+            });
+
+            test('should not throw an error in doc first preloader and use jpeg rep if webp is in error', () => {
+                webpRep = {
+                    content: {
+                        url_template: webpUrlTemplate,
+                    },
+                    status: {
+                        state: STATUS_ERROR,
+                    },
+                };
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    // the webpRep template gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
+                    if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
+                        return 'paged-url';
+                    }
+                    if (url === jpegUrlTemplate) {
+                        return 'preload-url';
+                    }
+
+                    return '';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'preload-url',
+                    containerEl,
+                    null,
+                    1,
+                    docBase,
+                );
             });
         });
 
@@ -657,25 +869,39 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('load()', () => {
             const loadFunc = BaseViewer.prototype.load;
 
-            afterEach(() => {
-                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
-            });
-
-            test('should load a document', () => {
+            beforeEach(() => {
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 jest.spyOn(docBase, 'setup').mockImplementation();
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
                 jest.spyOn(docBase, 'handleAssetAndRepLoad').mockImplementation();
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-                jest.spyOn(docBase, 'loadAssets').mockImplementation();
+                jest.spyOn(docBase, 'loadAssets').mockResolvedValue();
                 jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
+            });
 
+            afterEach(() => {
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
+            });
+
+            test('should load a document', () => {
                 return docBase.load().then(() => {
-                    expect(docBase.loadAssets).toBeCalled();
-                    expect(docBase.setup).not.toBeCalled();
-                    expect(docBase.createContentUrlWithAuthParams).toBeCalledWith('foo');
-                    expect(docBase.handleAssetAndRepLoad).toBeCalled();
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(JS, CSS);
+                    expect(docBase.setup).not.toHaveBeenCalled();
+                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                    expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
+                    expect(docBase.loadAssets).not.toHaveBeenCalledWith(EXIF_READER);
+                });
+            });
+
+            test('should load new exif reader if docfirst pages enabled', () => {
+                docBase.docFirstPagesEnabled = true;
+                return docBase.load().then(() => {
+                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, JS_NO_EXIF, CSS);
+                    expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, EXIF_READER);
+                    expect(docBase.setup).not.toHaveBeenCalled();
+                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                    expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
                 });
             });
         });
@@ -905,6 +1131,55 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.setPage(4);
                     expect(docBase.pdfViewer.currentPageNumber).toBe(1);
                     expect(stubs.cachePage).not.toBeCalled();
+                });
+
+                test('should scroll to doc first page when thumbnail is clicked in the preloader', () => {
+                    const fileId = '1234';
+                    const docBaseObj = new DocBaseViewer({
+                        cache: {
+                            set: () => {},
+                            has: () => {},
+                            get: () => {},
+                            unset: () => {},
+                        },
+
+                        file: {
+                            id: fileId,
+                            extension: 'pdf',
+                        },
+                        enableThumbnailsSidebar: true,
+                    });
+
+                    const pageNumber = 2;
+                    const mockElement = {
+                        scrollIntoView: jest.fn(),
+                    };
+
+                    jest.spyOn(document, 'querySelector').mockImplementation(query => {
+                        if (query === `[data-preload-index="${pageNumber}"]`) {
+                            return mockElement;
+                        }
+                        return null;
+                    });
+
+                    const setCachePage = jest.spyOn(docBaseObj, 'cachePage').mockImplementation();
+                    const setCurrentPage = jest.fn();
+
+                    docBaseObj.pdfViewer = {
+                        currentPageNumber: 0,
+                        pagesCount: 0,
+                    };
+
+                    docBaseObj.thumbnailsSidebar = {
+                        currentPage: 0,
+                        setCurrentPage,
+                    };
+
+                    docBaseObj.preloader = { thumbnailsOpen: true };
+                    docBaseObj.setPage(pageNumber);
+                    expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'instant', block: 'start' });
+                    expect(setCurrentPage).toHaveBeenCalledWith(pageNumber);
+                    expect(setCachePage).toHaveBeenCalledWith(pageNumber);
                 });
             });
         });
@@ -2042,6 +2317,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.stop = jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 1000 });
             });
 
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
             test('should emit render metric event for start page if not already emitted', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.emitMetric).toBeCalledWith({
@@ -2076,6 +2355,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagerenderedHandler(docBase.event);
                 expect(stubs.initThumbnails).not.toBeCalled();
                 expect(docBase.renderUI).toBeCalled();
+            });
+
+            test('should emit doc first pages metric if webp representation is available', () => {
+                jest.spyOn(Date, 'now').mockReturnValue(100);
+                docBase.startPageRendered = false;
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloader = new DocFirstPreloader();
+                docBase.preloader.loadTime = 20;
+                docBase.preloader.retrievedPagesCount = 4;
+                docBase.preloader.isWebp = true;
+                docBase.pagerenderedHandler({ pageNumber: 1 });
+
+                expect(stubs.emitMetric).toHaveBeenCalledWith({
+                    data: 80,
+                    name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should not emit doc first pages metric if no webp representation is available', () => {
+                jest.spyOn(Date, 'now').mockReturnValue(100);
+                docBase.startPageRendered = false;
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloader = new DocFirstPreloader();
+                docBase.preloader.loadTime = 20;
+                docBase.preloader.retrievedPagesCount = 1;
+                docBase.preloader.isWebp = false;
+                docBase.pagerenderedHandler({ pageNumber: 1 });
+
+                expect(stubs.emitMetric).not.toHaveBeenCalledWith({
+                    data: 80,
+                    name: 'preload_content_load_time_diff',
+                });
             });
         });
 
@@ -2766,6 +3077,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.shouldThumbnailsBeToggled()).toBe(false);
             });
+
+            test('should return true if preloader num pages is greater than 1 and the document is not available yet', () => {
+                docBase.preloader = {
+                    numPages: 2,
+                };
+                docBase.pdfViewer = {};
+                const result = docBase.shouldThumbnailsBeToggled();
+                expect(result).toBe(true);
+            });
+
+            test('should return false if preloader num pages is 1 and the document is not available yet', () => {
+                docBase.preloader = {
+                    numPages: 1,
+                };
+                docBase.pdfViewer = {};
+                const result = docBase.shouldThumbnailsBeToggled();
+                expect(result).toBe(false);
+            });
         });
 
         describe('initAnnotations()', () => {
@@ -3131,6 +3460,220 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handlePreviewEventReport(false);
                 expect(stubs.previewEventReported).not.toBeCalled();
                 expect(docBase.pageTracker).toBe(null);
+            });
+        });
+
+        describe('intThumbnails()', () => {
+            let docBaseObj;
+            beforeEach(() => {
+                docBaseObj = new DocBaseViewer({
+                    cache: {
+                        set: () => {},
+                        has: () => {},
+                        get: () => {},
+                        unset: () => {},
+                    },
+                    container: containerEl,
+                    representation: {
+                        content: {
+                            url_template: 'foo',
+                        },
+                    },
+                    file: {
+                        id: '0',
+                        extension: 'ppt',
+                    },
+                    enableThumbnailsSidebar: true,
+                });
+
+                docBaseObj.pdfViewer = {
+                    currentPageNumber: 1,
+                };
+
+                docBaseObj.preloader = {};
+
+                docBaseObj.thumbnailsSidebarEl = document.createElement('div');
+                jest.spyOn(docBaseObj, 'shouldThumbnailsBeToggled').mockReturnValue(true);
+            });
+
+            test('should call render next thumbnail image if the preloader has already loaded its thumbnails', () => {
+                docBaseObj.preloader = {};
+                const renderNextThumbnailImage = jest.fn();
+                docBaseObj.thumbnailsSidebar = {
+                    renderNextThumbnailImage,
+                };
+                docBaseObj.initThumbnails();
+                expect(renderNextThumbnailImage).toHaveBeenCalled();
+            });
+
+            test('should create a new ThumbnailSidebar if it is null and initialize it', () => {
+                const init = jest.fn();
+                Object.defineProperty(ThumbnailsSidebar.prototype, 'init', { value: init });
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebar);
+                expect(docBaseObj.thumbnailsSidebar.anchorEl).toBe(docBaseObj.thumbnailsSidebarEl);
+                expect(docBaseObj.thumbnailsSidebar.pdfViewer).toBe(docBaseObj.pdfViewer);
+                expect(docBaseObj.thumbnailsSidebar.preloader).toBe(docBaseObj.preloader);
+                const params = {
+                    currentPage: docBaseObj.pdfViewer.currentPageNumber,
+                    isOpen: true,
+                    onSelect: docBaseObj.onThumbnailSelectHandler,
+                };
+                expect(init).toHaveBeenCalledWith(params);
+            });
+        });
+        describe('prefetchPreloaderImages()', () => {
+            let mockFile;
+            let jpegRep;
+            let webpRep;
+            const webpUrl =
+                'https://example.com/webp/page_number?access_token=auth_token&box_client_name=name&box_client_version=version';
+            const jpegUrl =
+                'https://example.com/jpeg/{+asset}?access_token=auth_token&box_client_name=name&box_client_version=version';
+            beforeEach(() => {
+                // Mock representations
+                jpegRep = {
+                    representation: 'jpg',
+                    content: {
+                        url_template: 'https://example.com/jpeg/{+asset}',
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                webpRep = {
+                    representation: 'webp',
+                    content: {
+                        url_template: 'https://example.com/webp/{page_number}',
+                    },
+                    metadata: {
+                        pages: 5,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                mockFile = {
+                    id: 'test-file-id',
+                    representations: {
+                        entries: [jpegRep, webpRep],
+                    },
+                };
+                // Mock options
+                docBase.options = {
+                    file: { id: 'test-file-id' }, // Add file to options to prevent destroy errors
+                    sharedLink: 'original-shared-link',
+                    sharedLinkPassword: 'original-password',
+                    token: 'auth_token',
+                };
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should clear sharedLink and sharedLinkPassword options and reset them after prefetching', () => {
+                docBase.prefetchPreloaderImages(mockFile);
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
+                expect(docBase.options.sharedLink).toBe('original-shared-link');
+                expect(docBase.options.sharedLinkPassword).toBe('original-password');
+            });
+
+            test('should not prefetch when neither jpeg nor webp representations exists', () => {
+                mockFile.representations.entries = [];
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
+            });
+
+            test('should not prefetch when representations exist but are not ready', () => {
+                jpegRep.status.state = STATUS_ERROR;
+                webpRep.status.state = STATUS_ERROR;
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
+            });
+
+            test('should prefetch jpeg representation when only jpeg is ready', () => {
+                webpRep.status.state = STATUS_NONE;
+                webpRep.metadata = null;
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    jpegUrl,
+                    1, // default fallback page count when webp metadata is not available
+                    '',
+                );
+            });
+
+            test('should only prefetch webp representations when webp is ready', () => {
+                docBase.prefetchPreloaderImages(mockFile);
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
+            });
+
+            test('should handle webp representation without metadata pages', () => {
+                webpRep.metadata.pages = null;
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    '',
+                    8,
+                    expect.any(String),
+                );
+            });
+
+            test('should handle webp representation with empty metadata', () => {
+                webpRep.metadata = null;
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    '', // jpegUrlAuthTemplate should be false when webp is available
+                    8, // default page count when pages is not specified
+                    expect.any(String),
+                );
+            });
+
+            test('should handle jpeg representation without content', () => {
+                jpegRep.content = null;
+                docBase.prefetchPreloaderImages(mockFile);
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    '', // jpegUrlAuthTemplate should be false when webp is available
+                    5,
+                    webpUrl,
+                );
+            });
+
+            test('should handle webp representation without content', () => {
+                webpRep.content = null;
+                docBase.prefetchPreloaderImages(mockFile);
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, jpegUrl, 1, '');
+            });
+
+            test('should call Promise.all with the returned promises', () => {
+                const mockPromises = [Promise.resolve('promise1'), Promise.resolve('promise2')];
+                stubs.getPreloadImageRequestPromises.mockReturnValue(mockPromises);
+                const promiseAllSpy = jest.spyOn(Promise, 'all');
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                expect(promiseAllSpy).toHaveBeenCalledWith(mockPromises);
+
+                promiseAllSpy.mockRestore();
+            });
+
+            test('should handle null file parameter gracefully', () => {
+                // Mock getRepresentation to handle null file without throwing
+                expect(() => {
+                    docBase.prefetchPreloaderImages(null);
+                }).not.toThrow();
+                expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
             });
         });
     });

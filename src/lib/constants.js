@@ -29,6 +29,7 @@ export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
+export const CLASS_BOX_PRELOAD_COMPLETE = 'bp-preload-complete';
 export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
 export const CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER = 'bp-preload-placeholder';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
@@ -54,6 +55,7 @@ export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';
 export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
+export const CLASS_DOC_FIRST_IMAGE = 'doc-first-image';
 export const CLASS_CRAWLER = 'bp-crawler';
 
 export const DISCOVERABILITY_ATTRIBUTE = 'data-resin-discoverability';
@@ -82,7 +84,7 @@ export const APP_HOST = 'https://app.box.com';
 
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'jpg';
-
+export const PRELOAD_PAGED_REP_NAME = 'webp';
 export const STATUS_ERROR = 'error';
 export const STATUS_NONE = 'none';
 export const STATUS_PENDING = 'pending';
