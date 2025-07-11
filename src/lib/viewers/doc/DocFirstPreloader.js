@@ -15,7 +15,6 @@ import {
     CLASS_DOC_FIRST_IMAGE,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION,
 } from '../../constants';
-
 import { VIEWER_EVENT } from '../../events';
 import { handleRepresentationBlobFetch, getPreloadImageRequestPromises } from '../../util';
 // Read EXIF data from 'UserComment' tag
@@ -77,6 +76,9 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {boolean} - Preloader used webp */
     isWebp = false;
 
+    /** @property {boolean} - Preloader used webp */
+    isPresentation = false;
+
     /**
      * [constructor]
      *
@@ -89,6 +91,7 @@ class DocFirstPreloader extends EventEmitter {
         super();
         this.api = api;
         this.previewUI = previewUI;
+        this.isPresentation = isPresentation;
         this.wrapperClassName = isPresentation
             ? CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION
             : CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
@@ -193,6 +196,8 @@ class DocFirstPreloader extends EventEmitter {
                             this.loadTime = Date.now();
                             this.wrapperEl.classList.add('loaded');
                         }
+                    } else {
+                        this.wrapperEl.classList.add('loaded');
                     }
                 })
                 .catch(() => {
@@ -218,12 +223,30 @@ class DocFirstPreloader extends EventEmitter {
             foundError = foundError || element instanceof Error;
             if (!foundError) {
                 preloaderImageIndex += 1;
-                const imageDomElement = document.createElement('img');
                 this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
-                imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                if (!this.isPresentation) {
+                    const imageDomElement = document.createElement('img');
+                    imageDomElement.src = this.preloadedImages[preloaderImageIndex];
+                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                }
             }
         });
+
+        if (preloaderImageIndex < this.pdfData?.numPages && !this.isPresentation) {
+            let counter = 0;
+            for (let i = preloaderImageIndex; i < this.pdfData?.numPages; i += 1) {
+                // don't add more than 10 placeholders.
+                if (counter > 10) {
+                    break;
+                }
+                const el = document.createElement('div');
+                const container = this.buildPreloaderImagePlaceHolder(el);
+                container.style.width = `${this.imageDimensions.width}px`;
+                container.style.height = `${this.imageDimensions.height}px`;
+                this.preloadEl.appendChild(container);
+                counter += 1;
+            }
+        }
     }
 
     /**

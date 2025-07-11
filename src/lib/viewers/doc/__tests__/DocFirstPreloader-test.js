@@ -3,6 +3,7 @@ import Api from '../../../api';
 import * as util from '../../../util';
 import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+import Browser from '../../../Browser';
 
 jest.mock('../../../api');
 
@@ -824,6 +825,65 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             // Verify that getElementsByClassName was called
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
+        });
+    });
+
+    describe('processAdditionalPages()', () => {
+        let originalIsMobile;
+        beforeEach(() => {
+            // Mock Browser.isMobile to return true
+            originalIsMobile = Browser.isMobile;
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
+
+            // Set up preloader instance
+            preloader.pdfData = { numPages: 5 };
+            preloader.imageDimensions = { width: 123, height: 456 };
+            preloader.preloadEl = document.createElement('div');
+            const firstImagePlaceholder = document.createElement('div');
+            firstImagePlaceholder.classList.add('bp-preload-placeholder');
+            firstImagePlaceholder.classList.add('loaded');
+            preloader.preloadEl.appendChild(firstImagePlaceholder);
+        });
+
+        afterEach(() => {
+            // Restore original isMobile
+            if (originalIsMobile) {
+                Browser.isMobile = originalIsMobile;
+            }
+        });
+
+        it('should not add empty placeholder is browser is not mobile', () => {
+            jest.spyOn(Browser, 'isMobile').mockReturnValue(false);
+            const data = [new Blob(), new Blob()];
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add placeholders if the number of pages equals than the number of images', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should add placeholder divs for missing pages on mobile', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            preloader.pdfData = { numPages: 5 };
+            preloader.processAdditionalPages(data);
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(5);
+            const placeholder4 = placeholders[3];
+            const placeholder5 = placeholders[4];
+            expect(placeholder4.style.width).toBe('123px');
+            expect(placeholder4.style.height).toBe('456px');
+            expect(placeholder5.style.width).toBe('123px');
+            expect(placeholder5.style.height).toBe('456px');
+            expect(placeholder4.classList.contains('loaded')).not.toBe(true);
+            expect(placeholder5.classList.contains('loaded')).not.toBe(true);
         });
     });
 });
