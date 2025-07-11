@@ -631,7 +631,6 @@ class Preview extends EventEmitter {
         sharedLinkPassword = '',
         preload = false,
         isDocFirstPrefetchEnabled = false,
-        assets = true,
     }) {
         let file;
         let loader;
@@ -676,7 +675,7 @@ class Preview extends EventEmitter {
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
         if (typeof viewerInstance.prefetch === 'function') {
             viewerInstance.prefetch({
-                assets,
+                assets: true,
                 // Prefetch preload if explicitly requested or if viewer has 'preload' option set
                 preload: preload || !!viewerInstance.getViewerOption('preload'),
                 // Don't prefetch file's representation content if this is for preload

@@ -387,13 +387,9 @@ class DocBaseViewer extends BaseViewer {
         const { file, representation, isDocFirstPrefetchEnabled } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
-        if (assets && !preload) {
-            this.loadAssets(JS, CSS, false);
-            this.loadAssets(EXIF_READER, [], false);
-            this.loadAssets(PRELOAD_JS, [], false);
-            // this.prefetchAssets(JS, CSS, true);
-            // this.prefetchAssets(EXIF_READER, [], true);
-            // this.prefetchAssets(PRELOAD_JS, [], true);
+        if (assets) {
+            this.prefetchAssets(JS, CSS);
+            this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
         if (preload && !isWatermarked) {
