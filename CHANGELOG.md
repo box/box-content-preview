@@ -1,3 +1,10 @@
+## 3.8.0 (2025-07-12)
+
+* fix(doc-first): fixing ui issues (#1562) ([2c08f33](https://github.com/box/box-content-preview/commit/2c08f33)), closes [#1562](https://github.com/box/box-content-preview/issues/1562)
+* Update .mergify.yml ([45b4b01](https://github.com/box/box-content-preview/commit/45b4b01))
+
+
+
 ## 3.7.0 (2025-06-04)
 
 * feat(prefetch-images): prefetch images updates (#1560) ([fbdae40](https://github.com/box/box-content-preview/commit/fbdae40)), closes [#1560](https://github.com/box/box-content-preview/issues/1560)
