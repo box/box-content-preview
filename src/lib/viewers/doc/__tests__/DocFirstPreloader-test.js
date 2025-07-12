@@ -826,4 +826,104 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
         });
     });
+
+    describe('processAdditionalPages()', () => {
+        const widthDimension = 123;
+        const heightDimension = 456;
+
+        beforeEach(() => {
+            // Set up preloader instance
+            preloader.pdfData = { numPages: 5 };
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
+            preloader.preloadEl = document.createElement('div');
+            const firstImagePlaceholder = document.createElement('div');
+            firstImagePlaceholder.classList.add('bp-preload-placeholder');
+            firstImagePlaceholder.classList.add('loaded');
+            preloader.preloadEl.appendChild(firstImagePlaceholder);
+            preloader.preloadedImages = { 1: 'url1' };
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should set the preloaded images object with the correct number of pages', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data);
+            expect(Object.keys(preloader.preloadedImages).length).toBe(3);
+        });
+
+        it('should not add additional pages if it is for a presentation', () => {
+            const data = [new Blob(), new Blob()];
+            const addPreloadImageToPreloaderContainer = jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
+            preloader.isPresentation = true;
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data);
+            expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
+        });
+
+        it('should not add placeholders if the number of pages equals the number of images', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should add placeholder divs for missing pages', () => {
+            const data = [new Blob(), new Blob()];
+
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
+            preloader.pdfData = { numPages: 5 };
+            preloader.processAdditionalPages(data);
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(5);
+            const placeholder4 = placeholders[3];
+            const placeholder5 = placeholders[4];
+            expect(placeholder4.style.width).toBe(`${widthDimension}px`);
+            expect(placeholder4.style.height).toBe(`${heightDimension}px`);
+            expect(placeholder5.style.width).toBe(`${widthDimension}px`);
+            expect(placeholder5.style.height).toBe(`${heightDimension}px`);
+            expect(placeholder4.classList.contains('loaded')).not.toBe(true);
+            expect(placeholder5.classList.contains('loaded')).not.toBe(true);
+        });
+
+        it('should add a max of 10 placeholders', () => {
+            // 7 additional doc first pages, total will be 8 including the first one.
+            const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 321 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(18);
+        });
+
+        it('should not add empty placeholders if the number of pages is less than the number of images', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 2 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if there is no pdfData', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = null;
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if the number of pages in pdfData is null', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: null };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+        });
+
+        it('should not add empty placeholders if this is a presentation', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.isPresentation = true;
+            preloader.pdfData = { numPages: 10 };
+            preloader.processAdditionalPages(data);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
+        });
+    });
 });

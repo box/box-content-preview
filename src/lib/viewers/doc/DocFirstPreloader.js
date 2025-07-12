@@ -77,6 +77,9 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {boolean} - Preloader used webp */
     isWebp = false;
 
+    /** @property {boolean} - Preloader used webp */
+    isPresentation = false;
+
     /**
      * [constructor]
      *
@@ -89,6 +92,7 @@ class DocFirstPreloader extends EventEmitter {
         super();
         this.api = api;
         this.previewUI = previewUI;
+        this.isPresentation = isPresentation;
         this.wrapperClassName = isPresentation
             ? CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION
             : CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
@@ -193,6 +197,8 @@ class DocFirstPreloader extends EventEmitter {
                             this.loadTime = Date.now();
                             this.wrapperEl.classList.add('loaded');
                         }
+                    } else {
+                        this.wrapperEl.classList.add('loaded');
                     }
                 })
                 .catch(() => {
@@ -218,12 +224,37 @@ class DocFirstPreloader extends EventEmitter {
             foundError = foundError || element instanceof Error;
             if (!foundError) {
                 preloaderImageIndex += 1;
-                const imageDomElement = document.createElement('img');
                 this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
-                imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+
+                // presentations only show one page at a time. We don't need to add more images to the preloader container.
+                if (!this.isPresentation) {
+                    const imageDomElement = document.createElement('img');
+                    imageDomElement.src = this.preloadedImages[preloaderImageIndex];
+                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+                }
             }
         });
+
+        // pfdData is set by reading the EXIF data from the first image. If we have a value for the number of pages,
+        // we can add up to 10 placeholders to show the user that content exists beyond the pages represented by the
+        // preloaded images we retrieved. This is to prevent users from thinking that a doucment only has 8 pages when in
+        // reality it has 20 but the maximum number of doc first pages we can return is 8.
+        if (preloaderImageIndex < this.pdfData?.numPages && !this.isPresentation) {
+            let counter = 1;
+            const indexToStart = preloaderImageIndex + 1;
+            for (let i = indexToStart; i <= this.pdfData?.numPages; i += 1) {
+                // don't add more than 10 placeholders.
+                if (counter > 10) {
+                    break;
+                }
+                const el = document.createElement('div');
+                const container = this.buildPreloaderImagePlaceHolder(el);
+                container.style.width = `${this.imageDimensions.width}px`;
+                container.style.height = `${this.imageDimensions.height}px`;
+                this.preloadEl.appendChild(container);
+                counter += 1;
+            }
+        }
     }
 
     /**
