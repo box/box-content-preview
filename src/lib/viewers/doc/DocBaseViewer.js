@@ -93,6 +93,20 @@ const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
+const MAX_OPERATIONS = 10000; // Block PDFs with more than 10,000 drawing operations
+const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
+
+function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
+    const numPages = Math.min(doc.numPages, maxPages);
+    const opPromises = [];
+    for (let i = 1; i <= numPages; i += 1) {
+        opPromises.push(doc.getPage(i).then(page => page.getOperatorList().then(opList => opList.fnArray.length)));
+    }
+    return Promise.all(opPromises).then(opCounts => {
+        return opCounts.reduce((sum, count) => sum + count, 0);
+    });
+}
+
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
@@ -852,32 +866,46 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
-                this.pdfLinkService.setDocument(doc, pdfUrl);
-                this.pdfViewer.setDocument(doc);
-                if (this.shouldThumbnailsBeToggled()) {
-                    this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
-                    this.emit(VIEWER_EVENT.thumbnailsOpen);
-                    this.resize();
-                }
-                // store a reference to the doc for docfirstpages
-                this.doc = doc;
+                return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
+                    if (opCount > MAX_OPERATIONS) {
+                        throw new Error('PDF has too many drawing operations');
+                    }
+                    this.pdfLinkService.setDocument(doc, pdfUrl);
+                    this.pdfViewer.setDocument(doc);
+                    if (this.shouldThumbnailsBeToggled()) {
+                        this.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
+                        this.emit(VIEWER_EVENT.thumbnailsOpen);
+                        this.resize();
+                    }
+                    // store a reference to the doc for docfirstpages
+                    this.doc = doc;
+                });
             })
             .catch(err => {
                 console.error(err); // eslint-disable-line
 
                 // pdf.js gives us the status code in their error message
                 const { status, message } = err;
+                const isTooManyOps = /too many drawing operations/i.test(message);
 
-                // Display a generic error message but log the real one
-                const error =
-                    status === 202
-                        ? new PreviewError(
-                              ERROR_CODE.DELETED_REPS,
-                              __('error_refresh'),
-                              { isRepDeleted: true },
-                              message,
-                          )
-                        : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
+                let error;
+                if (isTooManyOps) {
+                    error = new PreviewError(
+                        ERROR_CODE.CONVERSION_LARGE_SIZE_FILE,
+                        __('error_document_too_complex') ||
+                            'This PDF is too complex to preview. Please download to view.',
+                        message,
+                    );
+                } else if (status === 202) {
+                    error = new PreviewError(
+                        ERROR_CODE.DELETED_REPS,
+                        __('error_refresh'),
+                        { isRepDeleted: true },
+                        message,
+                    );
+                } else {
+                    error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
+                }
                 this.handleDownloadError(error, pdfUrl);
             });
     }
