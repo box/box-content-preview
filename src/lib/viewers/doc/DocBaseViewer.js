@@ -1017,13 +1017,6 @@ class DocBaseViewer extends BaseViewer {
             data: time.elapsed,
         });
         Timer.reset(tag);
-
-        const t2 = Timer.createTag(file.id, 'preview_start');
-        const t2Time = Timer.get(t2);
-        Timer.stop(t2);
-
-        console.log(`total time to preload for ${file.id} with cache`, t2Time.elapsed);
-        Timer.reset(t2);
     }
 
     /**
