@@ -388,7 +388,8 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            this.prefetchAssets(JS, CSS);
+            const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+            this.prefetchAssets(ASSETS, CSS);
             this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
@@ -410,6 +411,12 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: template } = representation.content;
             this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
+    }
+
+    loadViewerAssets() {
+        const ASSETS = [...JS_NO_EXIF, ...EXIF_READER];
+        this.loadAssets(ASSETS, CSS);
+        this.loadAssets(PRELOAD_JS, []);
     }
 
     /**
@@ -1010,6 +1017,13 @@ class DocBaseViewer extends BaseViewer {
             data: time.elapsed,
         });
         Timer.reset(tag);
+
+        const t2 = Timer.createTag(file.id, 'preview_start');
+        const t2Time = Timer.get(t2);
+        Timer.stop(t2);
+
+        console.log(`total time to preload for ${file.id} with cache`, t2Time.elapsed);
+        Timer.reset(t2);
     }
 
     /**

@@ -150,10 +150,10 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise} Promise to show preload
      */
     async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
+        this.hidePreviewMask();
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
-        this.hidePreviewMask();
 
         try {
             this.numPages = pages;
@@ -450,8 +450,18 @@ class DocFirstPreloader extends EventEmitter {
                 reader.onload = () => {
                     const arrayBuffer = reader.result;
                     /* global ExifReader */
-                    tags = ExifReader.load(arrayBuffer);
-
+                    // To speed up parsing, we only ask for the UserComment tag.
+                    const options = {
+                        include: {
+                            exif: ['UserComment'],
+                        },
+                    };
+                    try {
+                        tags = ExifReader.load(arrayBuffer, options);
+                    } catch (e) {
+                        reject(new Error('Error reading EXIF data'));
+                        return;
+                    }
                     const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
