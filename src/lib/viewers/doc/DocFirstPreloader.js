@@ -450,18 +450,8 @@ class DocFirstPreloader extends EventEmitter {
                 reader.onload = () => {
                     const arrayBuffer = reader.result;
                     /* global ExifReader */
-                    // To speed up parsing, we only ask for the UserComment tag.
-                    const options = {
-                        include: {
-                            exif: ['UserComment'],
-                        },
-                    };
-                    try {
-                        tags = ExifReader.load(arrayBuffer, options);
-                    } catch (e) {
-                        reject(new Error('Error reading EXIF data'));
-                        return;
-                    }
+                    tags = ExifReader.load(arrayBuffer);
+
                     const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
