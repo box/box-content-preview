@@ -711,6 +711,29 @@ class Preview extends EventEmitter {
             });
     }
 
+    /**
+     * Prefetches static viewer assets for the specified viewers.
+     *
+     * @public
+     * @param {string[]} [viewerNames] - Names of viewers to load assets for, defaults to none
+     * @return {void}
+     */
+    loadViewers(viewerNames = []) {
+        this.getViewers()
+            .filter(viewer => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach(viewer => {
+                const viewerInstance = new viewer.CONSTRUCTOR(
+                    this.createViewerOptions({
+                        viewer,
+                    }),
+                );
+
+                if (typeof viewerInstance.loadViewerAssets === 'function') {
+                    viewerInstance.loadViewerAssets();
+                }
+            });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
