@@ -413,8 +413,14 @@ class DocBaseViewer extends BaseViewer {
         }
     }
 
+    /**
+     * Loads the viewer assets as opposed to just prefetching them as a performance optimization. This means that the libraries will be loaded
+     * into memory eliminating the need to load them when a preview is clicked.
+     *
+     * @return {void}
+     */
     loadViewerAssets() {
-        const ASSETS = [...JS_NO_EXIF, ...EXIF_READER];
+        const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
     }

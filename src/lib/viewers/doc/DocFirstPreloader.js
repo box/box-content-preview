@@ -150,11 +150,11 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise} Promise to show preload
      */
     async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
-        this.hidePreviewMask();
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
 
+        this.hidePreviewMask();
         try {
             this.numPages = pages;
             this.isWebp = !!pagedPreLoadUrlWithAuth;

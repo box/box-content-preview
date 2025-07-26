@@ -693,7 +693,7 @@ class Preview extends EventEmitter {
      */
     prefetchViewers(viewerNames = []) {
         this.getViewers()
-            .filter(viewer => viewerNames.indexOf(viewer.NAME) !== -1)
+            .filter(viewer => viewerNames.includes(viewer.NAME))
             .forEach(viewer => {
                 const viewerInstance = new viewer.CONSTRUCTOR(
                     this.createViewerOptions({
@@ -720,7 +720,7 @@ class Preview extends EventEmitter {
      */
     loadViewers(viewerNames = []) {
         this.getViewers()
-            .filter(viewer => viewerNames.indexOf(viewer.NAME) !== -1)
+            .filter(viewer => viewerNames.includes(viewer.NAME))
             .forEach(viewer => {
                 const viewerInstance = new viewer.CONSTRUCTOR(
                     this.createViewerOptions({
