@@ -153,8 +153,8 @@ class DocFirstPreloader extends EventEmitter {
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
-        this.hidePreviewMask();
 
+        this.hidePreviewMask();
         try {
             this.numPages = pages;
             this.isWebp = !!pagedPreLoadUrlWithAuth;

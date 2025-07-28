@@ -721,6 +721,49 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('loadViewers()', () => {
+        let loadViewerAssetsStub;
+        let prefetchStub;
+
+        beforeEach(() => {
+            loadViewerAssetsStub = jest.fn();
+            prefetchStub = jest.fn();
+
+            /* eslint-disable require-jsdoc */
+            const stubViewer = function constr() {
+                return { loadViewerAssets: loadViewerAssetsStub };
+            };
+
+            const stubViewer2 = function constr() {
+                return { prefetch: prefetchStub };
+            };
+            /* eslint-enable require-jsdoc */
+
+            const mockViewers = [
+                {
+                    NAME: 'Document',
+                    CONSTRUCTOR: stubViewer,
+                },
+                {
+                    NAME: 'MP4',
+                    CONSTRUCTOR: stubViewer2,
+                },
+                {
+                    NAME: 'IMAGE',
+                    CONSTRUCTOR: stubViewer2,
+                },
+            ];
+
+            stubs.getViewers = jest.spyOn(preview, 'getViewers').mockReturnValue(mockViewers);
+        });
+
+        test('should load the viewers', () => {
+            preview.loadViewers(['Document', 'MP4', 'IMAGE']);
+            expect(loadViewerAssetsStub).toHaveBeenCalledTimes(1);
+            expect(prefetchStub).not.toHaveBeenCalled();
+        });
+    });
+
     describe('disableViewers()', () => {
         beforeEach(() => {
             preview.disabledViewers = {};

@@ -388,7 +388,8 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            this.prefetchAssets(JS, CSS);
+            const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+            this.prefetchAssets(ASSETS, CSS);
             this.prefetchAssets(PRELOAD_JS, [], true);
         }
 
@@ -410,6 +411,18 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: template } = representation.content;
             this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
         }
+    }
+
+    /**
+     * Loads the viewer assets as opposed to just prefetching them as a performance optimization. This means that the libraries will be loaded
+     * into memory eliminating the need to load them when a preview is clicked.
+     *
+     * @return {void}
+     */
+    loadViewerAssets() {
+        const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+        this.loadAssets(ASSETS, CSS);
+        this.loadAssets(PRELOAD_JS, []);
     }
 
     /**
