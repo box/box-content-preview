@@ -1,3 +1,9 @@
+## 3.9.0 (2025-07-28)
+
+* feat(pdfjs-preloading): add function to preload pdfjs assets (#1565) ([4c6f142](https://github.com/box/box-content-preview/commit/4c6f142)), closes [#1565](https://github.com/box/box-content-preview/issues/1565)
+
+
+
 ## 3.8.0 (2025-07-12)
 
 * fix(doc-first): fixing ui issues (#1562) ([2c08f33](https://github.com/box/box-content-preview/commit/2c08f33)), closes [#1562](https://github.com/box/box-content-preview/issues/1562)
