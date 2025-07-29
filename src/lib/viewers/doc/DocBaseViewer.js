@@ -93,7 +93,7 @@ const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
-const MAX_OPERATIONS = 600000; // Block PDFs with more than 10,000 drawing operations
+const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing operations
 const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
 const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
 
