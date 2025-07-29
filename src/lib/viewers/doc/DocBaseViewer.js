@@ -900,7 +900,7 @@ class DocBaseViewer extends BaseViewer {
                 if (isTooManyOps) {
                     error = new PreviewError(
                         ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
-                        __('error_viewer_too_many_operations'),
+                        __('error_too_many_operations'),
                         message,
                     );
                 } else if (status === 202) {
