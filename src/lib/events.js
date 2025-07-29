@@ -49,6 +49,7 @@ export const ERROR_CODE = {
     TOKEN_NOT_VALID: 'error_token_function_not_valid',
     UNSUPPORTED_FILE_TYPE: 'error_unsupported_file_type',
     VIEWER_LOAD_TIMEOUT: 'error_viewer_load_timeout',
+    VIEWER_TOO_MANY_OPERATIONS: 'error_viewer_too_many_operations',
 };
 
 // Event fired from Preview with error details
