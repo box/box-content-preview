@@ -1712,6 +1712,163 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.handleAdvancedInsightsReport,
                 );
             });
+
+            describe('operations check', () => {
+                test('should check operations count for .numbers files', async () => {
+                    docBase.options.file.extension = 'numbers';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    await docBase.initViewer('url');
+
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should skip operations check for non-.numbers files', async () => {
+                    docBase.options.file.extension = 'pdf';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    await docBase.initViewer('url');
+
+                    // Should not call getPage for operations counting
+                    expect(mockDoc.getPage).not.toHaveBeenCalled();
+                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should throw error when .numbers file has too many operations', async () => {
+                    docBase.options.file.extension = 'numbers';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                    await docBase.initViewer('url').catch(() => {
+                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    });
+                });
+
+                test('should handle operations check error properly', async () => {
+                    docBase.options.file.extension = 'numbers';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockRejectedValue(new Error('Page error')),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                    await docBase.initViewer('url').catch(() => {
+                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    });
+                });
+
+                test('should use correct error code for too many operations', async () => {
+                    docBase.options.file.extension = 'numbers';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(400000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                    await docBase.initViewer('url').catch(() => {
+                        expect(stubs.handleDownloadError).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                code: 'error_viewer_too_many_operations',
+                                message:
+                                    'The file is too complex to display in your browser. Please download it to view.',
+                            }),
+                            'url',
+                        );
+                    });
+                });
+
+                test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['xlsx'], ['pdf']])(
+                    'should skip operations check for %s files',
+                    async extension => {
+                        docBase.options.file.extension = extension;
+
+                        const mockDoc = {
+                            numPages: 1,
+                            getPage: jest.fn(),
+                        };
+
+                        stubs.getDocument.mockReturnValue({
+                            destroy: jest.fn(),
+                            promise: Promise.resolve(mockDoc),
+                        });
+
+                        await docBase.initViewer('url');
+
+                        expect(mockDoc.getPage).not.toHaveBeenCalled();
+                        expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
+                        expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                    },
+                );
+            });
         });
 
         describe('resize()', () => {
@@ -3679,210 +3836,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }).not.toThrow();
                 expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
             });
-        });
-
-        describe('initViewer() - operations check', () => {
-            beforeEach(() => {
-                stubs.bindDOMListeners = jest.spyOn(docBase, 'bindDOMListeners').mockImplementation();
-                stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
-                stubs.getDocument = jest.fn(() => ({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(),
-                }));
-                stubs.getViewerOption = jest.spyOn(docBase, 'getViewerOption').mockImplementation();
-                stubs.pdfEventBus = {
-                    off: jest.fn(),
-                    on: jest.fn(),
-                };
-                stubs.pdfViewer = {
-                    setDocument: jest.fn(),
-                };
-                stubs.pdfViewerClass = jest.fn(() => stubs.pdfViewer);
-                stubs.shouldThumbnailsBeToggled = jest.spyOn(docBase, 'shouldThumbnailsBeToggled').mockImplementation();
-                stubs.resize = jest.spyOn(docBase, 'resize').mockImplementation();
-
-                docBase.isMobile = false;
-                docBase.options.file = {
-                    size: 1000000,
-                    watermark_info: {},
-                    extension: 'pdf', // Default to pdf
-                };
-                docBase.options.location = {
-                    locale: 'en-US',
-                };
-                docBase.pdfjsLib = {
-                    disableRange: false,
-                    getDocument: stubs.getDocument,
-                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
-                };
-                docBase.pdfjsViewer = {
-                    EventBus: jest.fn(() => stubs.pdfEventBus),
-                    LinkTarget: { NONE: 0, SELF: 1, BLANK: 2, PARENT: 3, TOP: 4 },
-                    PDFFindController: jest.fn(() => ({
-                        setLinkService: jest.fn(),
-                    })),
-                    PDFLinkService: jest.fn(() => ({
-                        setDocument: jest.fn(),
-                        setViewer: jest.fn(),
-                    })),
-                    PDFViewer: stubs.pdfViewerClass,
-                };
-            });
-
-            test('should check operations count for .numbers files', async () => {
-                docBase.options.file.extension = 'numbers';
-
-                const mockDoc = {
-                    numPages: 2,
-                    getPage: jest.fn(),
-                };
-
-                const mockPage = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-                stubs.getDocument.mockReturnValue({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(mockDoc),
-                });
-
-                await docBase.initViewer('url');
-
-                expect(mockDoc.getPage).toHaveBeenCalledWith(1);
-                expect(mockDoc.getPage).toHaveBeenCalledWith(2);
-                expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
-                expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
-            });
-
-            test('should skip operations check for non-.numbers files', async () => {
-                docBase.options.file.extension = 'pdf';
-
-                const mockDoc = {
-                    numPages: 2,
-                    getPage: jest.fn(),
-                };
-
-                stubs.getDocument.mockReturnValue({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(mockDoc),
-                });
-
-                await docBase.initViewer('url');
-
-                // Should not call getPage for operations counting
-                expect(mockDoc.getPage).not.toHaveBeenCalled();
-                expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
-                expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
-            });
-
-            test('should throw error when .numbers file has too many operations', async () => {
-                docBase.options.file.extension = 'numbers';
-
-                const mockDoc = {
-                    numPages: 2,
-                    getPage: jest.fn(),
-                };
-
-                const mockPage = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200000) }),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-                stubs.getDocument.mockReturnValue({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(mockDoc),
-                });
-
-                stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
-
-                await docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).toHaveBeenCalled();
-                });
-            });
-
-            test('should handle operations check error properly', async () => {
-                docBase.options.file.extension = 'numbers';
-
-                const mockDoc = {
-                    numPages: 2,
-                    getPage: jest.fn(),
-                };
-
-                const mockPage = {
-                    getOperatorList: jest.fn().mockRejectedValue(new Error('Page error')),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-                stubs.getDocument.mockReturnValue({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(mockDoc),
-                });
-
-                stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
-
-                await docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).toHaveBeenCalled();
-                });
-            });
-
-            test('should use correct error code for too many operations', async () => {
-                docBase.options.file.extension = 'numbers';
-
-                const mockDoc = {
-                    numPages: 2,
-                    getPage: jest.fn(),
-                };
-
-                const mockPage = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(400000) }),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-                stubs.getDocument.mockReturnValue({
-                    destroy: jest.fn(),
-                    promise: Promise.resolve(mockDoc),
-                });
-
-                stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
-
-                await docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).toHaveBeenCalledWith(
-                        expect.objectContaining({
-                            code: 'error_viewer_too_many_operations',
-                            message: 'The file is too complex to display in your browser. Please download it to view.',
-                        }),
-                        'url',
-                    );
-                });
-            });
-
-            test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['xlsx'], ['pdf']])(
-                'should skip operations check for %s files',
-                async extension => {
-                    docBase.options.file.extension = extension;
-
-                    const mockDoc = {
-                        numPages: 1,
-                        getPage: jest.fn(),
-                    };
-
-                    stubs.getDocument.mockReturnValue({
-                        destroy: jest.fn(),
-                        promise: Promise.resolve(mockDoc),
-                    });
-
-                    await docBase.initViewer('url');
-
-                    // Should not call getPage for operations counting on non-numbers files
-                    expect(mockDoc.getPage).not.toHaveBeenCalled();
-                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
-                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
-                },
-            );
         });
 
         describe('countPdfOperations', () => {
