@@ -97,7 +97,7 @@ const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing oper
 const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
 const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
 
-function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
+export function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
     const numPages = Math.min(doc.numPages, maxPages);
     const opPromises = [];
     for (let i = 1; i <= numPages; i += 1) {
