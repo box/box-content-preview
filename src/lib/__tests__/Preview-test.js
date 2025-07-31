@@ -2470,6 +2470,68 @@ describe('lib/Preview', () => {
                 }),
             );
         });
+
+        test('should include current_page_number from viewer.pdfViewer.currentPageNumber', () => {
+            preview.file = { id: '12345' };
+            preview.viewer = {
+                pdfViewer: {
+                    currentPageNumber: 5,
+                },
+            };
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toBeCalledWith(
+                'test',
+                expect.objectContaining({
+                    current_page_number: 5,
+                }),
+            );
+        });
+
+        test('should use empty string for current_page_number when pdfViewer is not available', () => {
+            preview.file = { id: '12345' };
+            preview.viewer = {};
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toBeCalledWith(
+                'test',
+                expect.objectContaining({
+                    current_page_number: '',
+                }),
+            );
+        });
+
+        test('should include file_size from file.size', () => {
+            preview.file = {
+                id: '12345',
+                size: 1024000,
+            };
+            preview.viewer = {};
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toBeCalledWith(
+                'test',
+                expect.objectContaining({
+                    file_size: 1024000,
+                }),
+            );
+        });
+
+        test('should use empty string for file_size when file.size is not available', () => {
+            preview.file = {
+                id: '12345',
+                // size not set
+            };
+            preview.viewer = {};
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toBeCalledWith(
+                'test',
+                expect.objectContaining({
+                    file_size: '',
+                }),
+            );
+        });
     });
 
     describe('emitPreviewError()', () => {
