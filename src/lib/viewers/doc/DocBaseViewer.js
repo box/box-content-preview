@@ -93,6 +93,21 @@ const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
+const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing operations
+const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
+const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
+
+export function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
+    const numPages = Math.min(doc.numPages, maxPages);
+    const opPromises = [];
+    for (let i = 1; i <= numPages; i += 1) {
+        opPromises.push(doc.getPage(i).then(page => page.getOperatorList().then(opList => opList.fnArray.length)));
+    }
+    return Promise.all(opPromises).then(opCounts => {
+        return opCounts.reduce((sum, count) => sum + count, 0);
+    });
+}
+
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
@@ -852,6 +867,18 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
+                // Only check operations for .numbers files
+                if (file.extension === 'numbers') {
+                    return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
+                        if (opCount > MAX_OPERATIONS) {
+                            throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
+                        }
+                        return doc;
+                    });
+                }
+                return doc;
+            })
+            .then(doc => {
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
                 if (this.shouldThumbnailsBeToggled()) {
@@ -867,17 +894,25 @@ class DocBaseViewer extends BaseViewer {
 
                 // pdf.js gives us the status code in their error message
                 const { status, message } = err;
+                const isTooManyOps = message === MAX_OPERATIONS_ERROR_MESSAGE;
 
-                // Display a generic error message but log the real one
-                const error =
-                    status === 202
-                        ? new PreviewError(
-                              ERROR_CODE.DELETED_REPS,
-                              __('error_refresh'),
-                              { isRepDeleted: true },
-                              message,
-                          )
-                        : new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
+                let error;
+                if (isTooManyOps) {
+                    error = new PreviewError(
+                        ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
+                        __('error_too_many_operations'),
+                        message,
+                    );
+                } else if (status === 202) {
+                    error = new PreviewError(
+                        ERROR_CODE.DELETED_REPS,
+                        __('error_refresh'),
+                        { isRepDeleted: true },
+                        message,
+                    );
+                } else {
+                    error = new PreviewError(ERROR_CODE.CONTENT_DOWNLOAD, __('error_document'), message);
+                }
                 this.handleDownloadError(error, pdfUrl);
             });
     }
