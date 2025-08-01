@@ -1707,6 +1707,7 @@ class Preview extends EventEmitter {
             locale: getProp(this.location, 'locale', ''),
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             timestamp: getISOTime(),
+            total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
             ...getClientLogDetails(),
         });
     }

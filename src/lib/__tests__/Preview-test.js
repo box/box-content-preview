@@ -108,7 +108,7 @@ describe('lib/Preview', () => {
         test('should invoke emitLoadMetrics()', () => {
             stubs.emitLoadMetrics = jest.spyOn(preview, 'emitLoadMetrics');
             preview.destroy();
-            expect(stubs.emitLoadMetrics).toBeCalled();
+            expect(stubs.emitLoadMetrics).toHaveBeenCalled();
         });
 
         test('should destroy the viewer if it exists', () => {
@@ -118,12 +118,12 @@ describe('lib/Preview', () => {
             };
 
             preview.destroy();
-            expect(stubs.viewer.destroy).not.toBeCalled();
+            expect(stubs.viewer.destroy).not.toHaveBeenCalled();
 
             preview.viewer = stubs.viewer;
 
             preview.destroy();
-            expect(stubs.viewer.destroy).toBeCalled();
+            expect(stubs.viewer.destroy).toHaveBeenCalled();
         });
 
         test('should stop the duration timer, reset it, and log a preview end event', () => {
@@ -139,9 +139,9 @@ describe('lib/Preview', () => {
             preview.viewer = stubs.viewer;
 
             preview.destroy();
-            expect(Timer.createTag).toBeCalled();
-            expect(Timer.stop).toBeCalledWith('duration_tag');
-            expect(preview.emitLogEvent).toBeCalledWith(PREVIEW_METRIC, {
+            expect(Timer.createTag).toHaveBeenCalled();
+            expect(Timer.stop).toHaveBeenCalledWith('duration_tag');
+            expect(preview.emitLogEvent).toHaveBeenCalledWith(PREVIEW_METRIC, {
                 event_name: 'preview_end',
                 value: 7,
             });
@@ -194,17 +194,17 @@ describe('lib/Preview', () => {
 
         test('should call update collection with optional collection', () => {
             preview.show('123', 'token', { collection: 'collection' });
-            expect(stubs.updateCollection).toBeCalledWith('collection');
+            expect(stubs.updateCollection).toHaveBeenCalledWith('collection');
         });
 
         test('should load file associated with the passed in file ID', () => {
             preview.show('123', 'token');
-            expect(stubs.load).toBeCalledWith('123');
+            expect(stubs.load).toHaveBeenCalledWith('123');
         });
 
         test('should call update collection with passed in collection', () => {
             preview.show('123', 'token', { collection: 'collection' });
-            expect(stubs.updateCollection).toBeCalledWith('collection');
+            expect(stubs.updateCollection).toHaveBeenCalledWith('collection');
         });
 
         test('should load file matching the passed in file object', () => {
@@ -224,7 +224,7 @@ describe('lib/Preview', () => {
             };
 
             preview.show(file123, 'foken');
-            expect(stubs.load).toBeCalledWith(file123);
+            expect(stubs.load).toHaveBeenCalledWith(file123);
         });
 
         test('should throw an error if auth token is a random object', () => {
@@ -249,7 +249,7 @@ describe('lib/Preview', () => {
 
             preview.show('123', token, options);
 
-            expect(stubs.parseOptions).toBeCalledWith({ ...options, token });
+            expect(stubs.parseOptions).toHaveBeenCalledWith({ ...options, token });
         });
 
         test('should initialize performance observers', () => {
@@ -274,12 +274,12 @@ describe('lib/Preview', () => {
 
         test('should destroy the viewer', () => {
             preview.hide();
-            expect(stubs.destroy).toBeCalled();
+            expect(stubs.destroy).toHaveBeenCalled();
         });
 
         test('should cleanup the ui', () => {
             preview.hide();
-            expect(stubs.cleanup).toBeCalled();
+            expect(stubs.cleanup).toHaveBeenCalled();
         });
 
         test('should clear the file', () => {
@@ -295,7 +295,7 @@ describe('lib/Preview', () => {
             };
             preview.hide();
 
-            expect(preview.perf.destroy).toBeCalled();
+            expect(preview.perf.destroy).toHaveBeenCalled();
         });
     });
 
@@ -325,7 +325,7 @@ describe('lib/Preview', () => {
         test('should default to skipServerUpdate Preview option if no params are passed in', () => {
             preview.options.skipServerUpdate = true;
             preview.reload();
-            expect(preview.load).not.toBeCalled();
+            expect(preview.load).not.toHaveBeenCalled();
         });
 
         test('should not do anything if skipServerUpdate is true and file is not valid', () => {
@@ -333,18 +333,18 @@ describe('lib/Preview', () => {
 
             preview.reload(true);
 
-            expect(preview.destroy).not.toBeCalled();
-            expect(preview.setupUI).not.toBeCalled();
-            expect(preview.loadViewer).not.toBeCalled();
+            expect(preview.destroy).not.toHaveBeenCalled();
+            expect(preview.setupUI).not.toHaveBeenCalled();
+            expect(preview.loadViewer).not.toHaveBeenCalled();
         });
 
         test('should reload preview without fetching file info if skipServerUpdate is true', () => {
             preview.reload(true);
 
-            expect(preview.destroy).toBeCalled();
-            expect(preview.setupUI).toBeCalled();
-            expect(preview.loadViewer).toBeCalled();
-            expect(preview.load).not.toBeCalled();
+            expect(preview.destroy).toHaveBeenCalled();
+            expect(preview.setupUI).toHaveBeenCalled();
+            expect(preview.loadViewer).toHaveBeenCalled();
+            expect(preview.load).not.toHaveBeenCalled();
         });
 
         test('should not do anything if skipServerUpdate is false and file ID does not exist', () => {
@@ -352,12 +352,12 @@ describe('lib/Preview', () => {
 
             preview.reload(false);
 
-            expect(preview.load).not.toBeCalled();
+            expect(preview.load).not.toHaveBeenCalled();
         });
 
         test('should fetch file info and reload preview if skipServerUpdate is false', () => {
             preview.reload(false);
-            expect(preview.load).toBeCalled();
+            expect(preview.load).toHaveBeenCalled();
         });
     });
 
@@ -371,7 +371,7 @@ describe('lib/Preview', () => {
             const array = ['1', '2', '3', '4'];
 
             preview.updateCollection(array);
-            expect(stubs.updateFileCache).toBeCalledWith([]);
+            expect(stubs.updateFileCache).toHaveBeenCalledWith([]);
             expect(preview.collection).toEqual(array);
         });
 
@@ -379,7 +379,7 @@ describe('lib/Preview', () => {
             const files = ['1', { id: '2' }, 3, { id: '4' }, { id: 5 }];
 
             preview.updateCollection(files);
-            expect(stubs.updateFileCache).toBeCalledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
+            expect(stubs.updateFileCache).toHaveBeenCalledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
             expect(preview.collection).toEqual(['1', '2', '3', '4', '5']);
         });
 
@@ -387,21 +387,21 @@ describe('lib/Preview', () => {
             const files = ['1', {}, '3'];
 
             expect(preview.updateCollection.bind(preview, files)).toThrowError(Error);
-            expect(stubs.updateFileCache).not.toBeCalled();
+            expect(stubs.updateFileCache).not.toHaveBeenCalled();
         });
 
         test('should throw when bad array of file ids passed in', () => {
             const files = ['', '3'];
 
             expect(preview.updateCollection.bind(preview, files)).toThrowError(Error);
-            expect(stubs.updateFileCache).not.toBeCalled();
+            expect(stubs.updateFileCache).not.toHaveBeenCalled();
         });
 
         test('should reset the preview collection to an empty array', () => {
             const array = '1,2,3,4';
 
             preview.updateCollection(array);
-            expect(stubs.updateFileCache).toBeCalledWith([]);
+            expect(stubs.updateFileCache).toHaveBeenCalledWith([]);
             expect(preview.collection).toEqual([]);
         });
 
@@ -409,14 +409,14 @@ describe('lib/Preview', () => {
             preview.file = undefined;
 
             preview.updateCollection();
-            expect(stubs.showNavigation).not.toBeCalled();
+            expect(stubs.showNavigation).not.toHaveBeenCalled();
 
             preview.file = {
                 id: 0,
             };
 
             preview.updateCollection();
-            expect(stubs.showNavigation).toBeCalledWith(0, []);
+            expect(stubs.showNavigation).toHaveBeenCalledWith(0, []);
         });
     });
 
@@ -439,7 +439,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.mockReturnValueOnce(true);
 
             preview.updateFileCache(files);
-            expect(stubs.cacheFile).toBeCalledWith(preview.cache, files);
+            expect(stubs.cacheFile).toHaveBeenCalledWith(preview.cache, files);
         });
 
         test('should add the file to the cache if it is valid', () => {
@@ -461,9 +461,9 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.mockReturnValueOnce(true).mockReturnValueOnce(false);
 
             preview.updateFileCache(files);
-            expect(stubs.cacheFile).toBeCalledTimes(1);
-            expect(stubs.consoleError).toBeCalledTimes(1);
-            expect(stubs.emitPreviewError).toBeCalledTimes(1);
+            expect(stubs.cacheFile).toHaveBeenCalledTimes(1);
+            expect(stubs.consoleError).toHaveBeenCalledTimes(1);
+            expect(stubs.emitPreviewError).toHaveBeenCalledTimes(1);
         });
 
         test('should not cache a file if it is watermarked', () => {
@@ -477,8 +477,8 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.mockReturnValue(true);
 
             preview.updateFileCache(files);
-            expect(stubs.cacheFile).not.toBeCalled();
-            expect(stubs.consoleError).not.toBeCalled();
+            expect(stubs.cacheFile).not.toHaveBeenCalled();
+            expect(stubs.consoleError).not.toHaveBeenCalled();
         });
     });
 
@@ -696,7 +696,7 @@ describe('lib/Preview', () => {
 
             test('should prefetch no viewers if no viewer names are specified', () => {
                 preview.prefetchViewers();
-                expect(prefetchStub).not.toBeCalled();
+                expect(prefetchStub).not.toHaveBeenCalled();
             });
 
             test('should prefetch only passed in viewers', () => {
@@ -704,8 +704,8 @@ describe('lib/Preview', () => {
                 const viewerName = viewerToPrefetch.NAME;
 
                 preview.prefetchViewers([viewerName]);
-                expect(prefetchStub).toBeCalledTimes(1);
-                expect(prefetchStub).toBeCalledWith({
+                expect(prefetchStub).toHaveBeenCalledTimes(1);
+                expect(prefetchStub).toHaveBeenCalledWith({
                     assets: true,
                     preload: false,
                     content: false,
@@ -826,7 +826,7 @@ describe('lib/Preview', () => {
             };
 
             preview.resize();
-            expect(preview.viewer.resize).toBeCalled();
+            expect(preview.viewer.resize).toHaveBeenCalled();
         });
     });
 
@@ -844,7 +844,7 @@ describe('lib/Preview', () => {
             stubs.checkFeature.mockReturnValue(true);
 
             preview.print();
-            expect(preview.viewer.print).toBeCalled();
+            expect(preview.viewer.print).toHaveBeenCalled();
         });
 
         test('should not print if feature does not exist', () => {
@@ -852,7 +852,7 @@ describe('lib/Preview', () => {
             stubs.checkFeature.mockReturnValue(false);
 
             preview.print();
-            expect(preview.viewer.print).not.toBeCalled();
+            expect(preview.viewer.print).not.toHaveBeenCalled();
         });
 
         test('should not print if file cannot be downloaded', () => {
@@ -860,7 +860,7 @@ describe('lib/Preview', () => {
             stubs.checkFeature.mockReturnValue(false);
 
             preview.print();
-            expect(preview.viewer.print).not.toBeCalled();
+            expect(preview.viewer.print).not.toHaveBeenCalled();
         });
     });
 
@@ -931,8 +931,8 @@ describe('lib/Preview', () => {
         test('should show error notification and not download file if file cannot be downloaded', () => {
             file.canDownload.mockReturnValue(false);
             preview.download();
-            expect(preview.ui.showNotification).toBeCalled();
-            expect(util.openUrlInsideIframe).not.toBeCalled();
+            expect(preview.ui.showNotification).toHaveBeenCalled();
+            expect(util.openUrlInsideIframe).not.toHaveBeenCalled();
         });
 
         test('should show error notification and not download watermarked file if file should be downloaded as watermarked, but file does not have a previewable representation', () => {
@@ -942,8 +942,8 @@ describe('lib/Preview', () => {
 
             preview.download();
 
-            expect(preview.ui.showNotification).toBeCalled();
-            expect(util.openUrlInsideIframe).not.toBeCalled();
+            expect(preview.ui.showNotification).toHaveBeenCalled();
+            expect(util.openUrlInsideIframe).not.toHaveBeenCalled();
         });
 
         test('should download watermarked representation if file should be downloaded as watermarked', () => {
@@ -966,10 +966,10 @@ describe('lib/Preview', () => {
 
             preview.download();
 
-            expect(util.appendQueryParams).toBeCalledWith(url, {
+            expect(util.appendQueryParams).toHaveBeenCalledWith(url, {
                 response_content_disposition_type: 'attachment',
             });
-            expect(stubs.downloadReachability.downloadWithReachabilityCheck).toBeCalledWith(url);
+            expect(stubs.downloadReachability.downloadWithReachabilityCheck).toHaveBeenCalledWith(url);
         });
 
         test('should download original file if file should not be downloaded as watermarked', () => {
@@ -988,7 +988,7 @@ describe('lib/Preview', () => {
             preview.download();
 
             return promise.then(() => {
-                expect(stubs.downloadReachability.downloadWithReachabilityCheck).toBeCalledWith(url);
+                expect(stubs.downloadReachability.downloadWithReachabilityCheck).toHaveBeenCalledWith(url);
             });
         });
 
@@ -1003,7 +1003,7 @@ describe('lib/Preview', () => {
             });
 
             preview.download();
-            expect(preview.emit).toBeCalledWith('preview_metric', expect.any(Object));
+            expect(preview.emit).toHaveBeenCalledWith('preview_metric', expect.any(Object));
         });
     });
 
@@ -1022,14 +1022,14 @@ describe('lib/Preview', () => {
             preview.file = { id: '1' };
             jest.spyOn(preview, 'load');
             preview.updateToken('DownloadReachability-strange');
-            expect(preview.reload).toBeCalled();
+            expect(preview.reload).toHaveBeenCalled();
         });
 
         test('should not reload preview if reload is false', () => {
             preview.file = { id: '123' };
             jest.spyOn(preview, 'load');
             preview.updateToken('nick-fury', false);
-            expect(preview.reload).not.toBeCalled();
+            expect(preview.reload).not.toHaveBeenCalled();
         });
     });
 
@@ -1074,7 +1074,7 @@ describe('lib/Preview', () => {
 
         test('should cleanup any existing viewer', () => {
             preview.load('0');
-            expect(stubs.destroy).toBeCalled();
+            expect(stubs.destroy).toHaveBeenCalled();
         });
 
         test('should set the preview to open, and initialize the performance logger', () => {
@@ -1082,19 +1082,19 @@ describe('lib/Preview', () => {
             preview.load('0');
             expect(preview.open).toBe(true);
             expect(preview.logger).toBeDefined();
-            expect(Browser.getBrowserInfo).not.toBeCalled(); // cached from preview constructor
+            expect(Browser.getBrowserInfo).not.toHaveBeenCalled(); // cached from preview constructor
         });
 
         test('should fetch file from cache using file ID as key if file version ID is not in options', () => {
             const fileId = '123';
             preview.load(fileId);
-            expect(file.getCachedFile).toBeCalledWith(preview.cache, { fileId });
+            expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileId });
         });
 
         test('should fetch file from cache and convert file id to string when file id passed as a number', () => {
             const fileId = 123;
             preview.load(fileId);
-            expect(file.getCachedFile).toBeCalledWith(preview.cache, { fileId: fileId.toString() });
+            expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileId: fileId.toString() });
         });
 
         test('should fetch file from cache using file version ID as key if file version ID is in options', () => {
@@ -1107,7 +1107,7 @@ describe('lib/Preview', () => {
                 .returns(fileVersionId);
             preview.load(fileId);
 
-            expect(file.getCachedFile).toBeCalledWith(preview.cache, { fileVersionId });
+            expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileVersionId });
         });
 
         test('should clear the retry timeout', () => {
@@ -1119,8 +1119,8 @@ describe('lib/Preview', () => {
             preview.options.skipServerUpdate = true;
 
             preview.load(stubs.file);
-            expect(stubs.handleTokenResponse).toBeCalledWith({});
-            expect(stubs.getTokens).not.toBeCalled();
+            expect(stubs.handleTokenResponse).toHaveBeenCalledWith({});
+            expect(stubs.getTokens).not.toHaveBeenCalled();
         });
 
         test('should set the retry count if we are retrying by file ID', () => {
@@ -1186,8 +1186,8 @@ describe('lib/Preview', () => {
 
             preview.load({ id: '123' });
             return stubs.promise.then(() => {
-                expect(stubs.getTokens).toBeCalledWith('123', 'token');
-                expect(stubs.handleTokenResponse).toBeCalled();
+                expect(stubs.getTokens).toHaveBeenCalledWith('123', 'token');
+                expect(stubs.handleTokenResponse).toHaveBeenCalled();
             });
         });
 
@@ -1196,8 +1196,8 @@ describe('lib/Preview', () => {
 
             preview.load('0');
             return stubs.promise.then(() => {
-                expect(stubs.getTokens).toBeCalledWith('0', 'token');
-                expect(stubs.handleTokenResponse).toBeCalled();
+                expect(stubs.getTokens).toHaveBeenCalledWith('0', 'token');
+                expect(stubs.handleTokenResponse).toHaveBeenCalled();
             });
         });
 
@@ -1205,14 +1205,14 @@ describe('lib/Preview', () => {
             preview.options.responseInterceptor = jest.fn();
 
             preview.load('0');
-            expect(stubs.apiAddResponseInterceptor).toBeCalled();
+            expect(stubs.apiAddResponseInterceptor).toHaveBeenCalled();
         });
 
         test('should load request interceptor if an option', () => {
             preview.options.requestInterceptor = jest.fn();
 
             preview.load('0');
-            expect(stubs.apiAddRequestInterceptor).toBeCalled();
+            expect(stubs.apiAddRequestInterceptor).toHaveBeenCalled();
         });
     });
 
@@ -1243,44 +1243,44 @@ describe('lib/Preview', () => {
 
         test('should setup UI', () => {
             preview.handleTokenResponse({});
-            expect(stubs.setupUI).toBeCalled();
+            expect(stubs.setupUI).toHaveBeenCalled();
         });
 
         test('should load from cache if the file is valid', () => {
             stubs.checkFileValid.mockReturnValue(true);
 
             preview.handleTokenResponse({});
-            expect(stubs.cacheFile).toBeCalledWith(preview.cache, preview.file);
-            expect(stubs.loadFromCache).toBeCalled();
-            expect(stubs.loadFromServer).not.toBeCalled();
+            expect(stubs.cacheFile).toHaveBeenCalledWith(preview.cache, preview.file);
+            expect(stubs.loadFromCache).toHaveBeenCalled();
+            expect(stubs.loadFromServer).not.toHaveBeenCalled();
         });
 
         test('should load from the server on a cache miss', () => {
             stubs.checkFileValid.mockReturnValue(false);
 
             preview.handleTokenResponse({});
-            expect(stubs.loadFromCache).not.toBeCalled();
-            expect(stubs.loadFromServer).toBeCalled();
+            expect(stubs.loadFromCache).not.toHaveBeenCalled();
+            expect(stubs.loadFromServer).toHaveBeenCalled();
         });
 
         test('should setup UI if ui is not setup', () => {
             stubs.ui.mockReturnValue(false);
             preview.handleTokenResponse({});
-            expect(stubs.setupUI).toBeCalled();
+            expect(stubs.setupUI).toHaveBeenCalled();
         });
 
         test('should setup UI if not retrying', () => {
             stubs.ui.mockReturnValue(true);
             preview.retryCount = 0;
             preview.handleTokenResponse({});
-            expect(stubs.setupUI).toBeCalled();
+            expect(stubs.setupUI).toHaveBeenCalled();
         });
 
         test('should not setup UI if UI is setup and is retrying', () => {
             stubs.ui.mockReturnValue(true);
             preview.retryCount = 1;
             preview.handleTokenResponse({});
-            expect(stubs.setupUI).not.toBeCalled();
+            expect(stubs.setupUI).not.toHaveBeenCalled();
         });
     });
 
@@ -1435,8 +1435,8 @@ describe('lib/Preview', () => {
             };
 
             preview.parseOptions(preview.previewOptions);
-            expect(stubs.disableViewers).toBeCalledWith('Office');
-            expect(stubs.enableViewers).toBeCalledWith('text');
+            expect(stubs.disableViewers).toHaveBeenCalledWith('Office');
+            expect(stubs.enableViewers).toHaveBeenCalledWith('text');
         });
 
         test('should set whether to enable thumbnails sidebar', () => {
@@ -1497,23 +1497,23 @@ describe('lib/Preview', () => {
 
         test('should set the file as cached in the logger', () => {
             preview.loadFromCache();
-            expect(preview.logger.setCached).toBeCalled();
+            expect(preview.logger.setCached).toHaveBeenCalled();
         });
 
         test('should load the viewer', () => {
             preview.loadFromCache();
-            expect(stubs.loadViewer).toBeCalled();
+            expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
         test('should not refresh the file from the server when need to skip server update', () => {
             preview.options.skipServerUpdate = true;
             preview.loadFromCache();
-            expect(preview.loadFromServer).not.toBeCalled();
+            expect(preview.loadFromServer).not.toHaveBeenCalled();
         });
 
         test('should refresh the file from the server to update the cache', () => {
             preview.loadFromCache();
-            expect(preview.loadFromServer).toBeCalled();
+            expect(preview.loadFromServer).toHaveBeenCalled();
         });
     });
 
@@ -1531,11 +1531,11 @@ describe('lib/Preview', () => {
 
         test('should handle load response on a successful get', () => {
             preview.loadFromServer();
-            expect(stubs.get).toBeCalled();
-            expect(stubs.getURL).toBeCalled();
+            expect(stubs.get).toHaveBeenCalled();
+            expect(stubs.getURL).toHaveBeenCalled();
             return stubs.promise.then(() => {
-                expect(stubs.handleFileInfoResponse).toBeCalled();
-                expect(stubs.handleFetchError).not.toBeCalled();
+                expect(stubs.handleFileInfoResponse).toHaveBeenCalled();
+                expect(stubs.handleFetchError).not.toHaveBeenCalled();
             });
         });
 
@@ -1543,7 +1543,7 @@ describe('lib/Preview', () => {
             const startStub = jest.spyOn(Timer, 'start');
             const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
             preview.loadFromServer();
-            expect(startStub).toBeCalledWith(expectedTag);
+            expect(startStub).toHaveBeenCalledWith(expectedTag);
         });
     });
 
@@ -1596,14 +1596,14 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(fileVersion);
 
-            expect(file.normalizeFileVersion).toBeCalledWith(fileVersion, preview.file.id);
+            expect(file.normalizeFileVersion).toHaveBeenCalledWith(fileVersion, preview.file.id);
         });
 
         test('should do nothing if the preview is closed', () => {
             preview.open = false;
             preview.file.id = '123';
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.set).not.toBeCalled();
+            expect(stubs.set).not.toHaveBeenCalled();
         });
 
         test('should do nothing if response comes back for an incorrect file', () => {
@@ -1616,13 +1616,13 @@ describe('lib/Preview', () => {
             stubs.file.file_version.id = '1233';
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.set).not.toBeCalled();
+            expect(stubs.set).not.toHaveBeenCalled();
         });
 
         test('should save a reference to the file and update the logger', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).toBe(stubs.file);
-            expect(preview.logger.setFile).toBeCalled();
+            expect(preview.logger.setFile).toHaveBeenCalled();
         });
 
         test('should get the latest cache, then update it with the new file', () => {
@@ -1635,11 +1635,11 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 0;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.getCachedFile).toBeCalledWith(preview.cache, {
+            expect(stubs.getCachedFile).toHaveBeenCalledWith(preview.cache, {
                 fileVersionId: stubs.file.file_version.id,
             });
-            expect(stubs.cacheFile).toBeCalledWith(preview.cache, stubs.file);
-            expect(stubs.loadViewer).not.toBeCalled();
+            expect(stubs.cacheFile).toHaveBeenCalledWith(preview.cache, stubs.file);
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
         test('should uncache the file if the file is watermarked', () => {
@@ -1653,21 +1653,21 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 0;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.uncacheFile).toBeCalledWith(preview.cache, stubs.file);
+            expect(stubs.uncacheFile).toHaveBeenCalledWith(preview.cache, stubs.file);
         });
 
         test('should load the viewer if the file is not in the cache', () => {
             stubs.getCachedFile.mockReturnValue(null);
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.loadViewer).toBeCalled();
+            expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
         test('should load the viewer if the cached file is not valid', () => {
             stubs.checkFileValid.mockReturnValue(false);
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.loadViewer).toBeCalled();
+            expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
         test('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
@@ -1680,8 +1680,8 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).toBeCalled();
-            expect(stubs.reload).toBeCalled();
+            expect(preview.logger.setCacheStale).toHaveBeenCalled();
+            expect(stubs.reload).toHaveBeenCalled();
         });
 
         test('should set the cache stale and re-load the viewer if the file is watermarked', () => {
@@ -1695,8 +1695,8 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).toBeCalled();
-            expect(stubs.reload).toBeCalled();
+            expect(preview.logger.setCacheStale).toHaveBeenCalled();
+            expect(stubs.reload).toHaveBeenCalled();
         });
 
         test('should trigger an error if any cache or load operations fail', () => {
@@ -1705,7 +1705,7 @@ describe('lib/Preview', () => {
                 throw error;
             });
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.triggerError).toBeCalledWith(error);
+            expect(stubs.triggerError).toHaveBeenCalledWith(error);
         });
 
         test('should trigger a viewer load error if a non-PreviewError is thrown', () => {
@@ -1714,7 +1714,7 @@ describe('lib/Preview', () => {
             });
             preview.handleFileInfoResponse(stubs.file);
 
-            expect(stubs.triggerError).toBeCalled();
+            expect(stubs.triggerError).toHaveBeenCalled();
         });
 
         test('should stop the Timer for file info time', () => {
@@ -1724,7 +1724,7 @@ describe('lib/Preview', () => {
             };
             Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
             preview.handleFileInfoResponse(stubs.file);
-            expect(stopStub).toBeCalled();
+            expect(stopStub).toHaveBeenCalled();
         });
     });
 
@@ -1777,7 +1777,7 @@ describe('lib/Preview', () => {
         test('should do nothing if the preview is closed', () => {
             preview.open = false;
             preview.loadViewer();
-            expect(stubs.destroy).not.toBeCalled();
+            expect(stubs.destroy).not.toHaveBeenCalled();
         });
 
         test('should trigger error if file is not downloadable', () => {
@@ -1813,14 +1813,14 @@ describe('lib/Preview', () => {
 
         test('should get the loader, viewer, and log the type of file', () => {
             preview.loadViewer();
-            expect(stubs.getLoader).toBeCalledWith(expect.any(Object));
-            expect(stubs.loader.determineViewer).toBeCalled();
-            expect(preview.logger.setType).toBeCalled();
+            expect(stubs.getLoader).toHaveBeenCalledWith(expect.any(Object));
+            expect(stubs.loader.determineViewer).toHaveBeenCalled();
+            expect(preview.logger.setType).toHaveBeenCalled();
         });
 
         test('should determine the representation to use', () => {
             preview.loadViewer();
-            expect(stubs.loader.determineRepresentation).toBeCalled();
+            expect(stubs.loader.determineRepresentation).toHaveBeenCalled();
         });
 
         test('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
@@ -1833,13 +1833,13 @@ describe('lib/Preview', () => {
 
             preview.loadViewer();
 
-            expect(preview.logger.setType).toBeCalledWith('someViewerName');
-            expect(stubs.viewer.load).toBeCalled();
+            expect(preview.logger.setType).toHaveBeenCalledWith('someViewerName');
+            expect(stubs.viewer.load).toHaveBeenCalled();
         });
 
         test('should emit viewer with the viewer instance', () => {
             preview.loadViewer();
-            expect(stubs.emit).toBeCalledWith('viewer', stubs.viewer);
+            expect(stubs.emit).toHaveBeenCalledWith('viewer', stubs.viewer);
         });
 
         test('should reset retry count', () => {
@@ -1856,9 +1856,9 @@ describe('lib/Preview', () => {
             };
 
             preview.attachViewerListeners();
-            expect(preview.viewer.addListener).toBeCalledWith('error', expect.any(Function));
-            expect(preview.viewer.addListener).toBeCalledWith(VIEWER_EVENT.default, expect.any(Function));
-            expect(preview.viewer.addListener).toBeCalledWith(VIEWER_EVENT.metric, expect.any(Function));
+            expect(preview.viewer.addListener).toHaveBeenCalledWith('error', expect.any(Function));
+            expect(preview.viewer.addListener).toHaveBeenCalledWith(VIEWER_EVENT.default, expect.any(Function));
+            expect(preview.viewer.addListener).toHaveBeenCalledWith(VIEWER_EVENT.metric, expect.any(Function));
         });
     });
 
@@ -1866,19 +1866,19 @@ describe('lib/Preview', () => {
         test('should call download on download event', () => {
             jest.spyOn(preview, 'download').mockImplementation();
             preview.handleViewerEvents({ event: VIEWER_EVENT.download });
-            expect(preview.download).toBeCalled();
+            expect(preview.download).toHaveBeenCalled();
         });
 
         test('should reload preview on reload event', () => {
             jest.spyOn(preview, 'reload').mockImplementation();
             preview.handleViewerEvents({ event: VIEWER_EVENT.reload });
-            expect(preview.reload).toBeCalled();
+            expect(preview.reload).toHaveBeenCalled();
         });
 
         test('should finish loading preview on load event', () => {
             jest.spyOn(preview, 'finishLoading').mockImplementation();
             preview.handleViewerEvents({ event: VIEWER_EVENT.load });
-            expect(preview.finishLoading).toBeCalled();
+            expect(preview.finishLoading).toHaveBeenCalled();
         });
 
         test('should emit viewerevent when event does not match', () => {
@@ -1888,8 +1888,8 @@ describe('lib/Preview', () => {
                 data: 'message',
             };
             preview.handleViewerEvents(data);
-            expect(preview.emit).toBeCalledWith(data.event, data.data);
-            expect(preview.emit).toBeCalledWith(VIEWER_EVENT.default, data);
+            expect(preview.emit).toHaveBeenCalledWith(data.event, data.data);
+            expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
         });
 
         test('should not emit any messages error events', () => {
@@ -1899,7 +1899,7 @@ describe('lib/Preview', () => {
                 data: ':(',
             };
             preview.handleViewerEvents(data);
-            expect(preview.emit).not.toBeCalled();
+            expect(preview.emit).not.toHaveBeenCalled();
         });
     });
 
@@ -1913,7 +1913,7 @@ describe('lib/Preview', () => {
 
             preview.handleViewerMetrics(fakeEvent);
 
-            expect(preview.emitLogEvent).toBeCalledWith(PREVIEW_METRIC, {
+            expect(preview.emitLogEvent).toHaveBeenCalledWith(PREVIEW_METRIC, {
                 event_name: fakeEvent.event,
                 value: fakeEvent.data,
             });
@@ -1949,34 +1949,34 @@ describe('lib/Preview', () => {
         test('should show download button if file can be downloaded', () => {
             stubs.canDownload.mockReturnValue(true);
             preview.finishLoading();
-            expect(stubs.showDownloadButton).toBeCalled();
+            expect(stubs.showDownloadButton).toHaveBeenCalled();
         });
 
         test("should not show download button if file can't be downloaded", () => {
             stubs.canDownload.mockReturnValue(false);
             preview.finishLoading();
-            expect(stubs.showDownloadButton).not.toBeCalled();
+            expect(stubs.showDownloadButton).not.toHaveBeenCalled();
         });
 
         test('should show print button if print is supported', () => {
             stubs.checkFeature.mockReturnValue(true);
             stubs.canDownload.mockReturnValue(true);
             preview.finishLoading();
-            expect(stubs.showPrintButton).toBeCalled();
+            expect(stubs.showPrintButton).toHaveBeenCalled();
         });
 
         test('should not show print button if print is not supported', () => {
             stubs.checkFeature.mockReturnValue(false);
             stubs.canDownload.mockReturnValue(true);
             preview.finishLoading();
-            expect(stubs.showPrintButton).not.toBeCalled();
+            expect(stubs.showPrintButton).not.toHaveBeenCalled();
         });
 
         test("should not show print button if file can't be downloaded", () => {
             stubs.checkFeature.mockReturnValue(true);
             stubs.canDownload.mockReturnValue(false);
             preview.finishLoading();
-            expect(stubs.showPrintButton).not.toBeCalled();
+            expect(stubs.showPrintButton).not.toHaveBeenCalled();
         });
 
         test('should increment the preview count', () => {
@@ -1992,7 +1992,7 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
 
-            expect(emitLogEvent).toBeCalledWith(PREVIEW_METRIC, { event_name: eventName });
+            expect(emitLogEvent).toHaveBeenCalledWith(PREVIEW_METRIC, { event_name: eventName });
         });
 
         test('should emit a metrics message for failed preview', () => {
@@ -2001,21 +2001,21 @@ describe('lib/Preview', () => {
 
             preview.finishLoading({ error: {} });
 
-            expect(emitLogEvent).toBeCalledWith(PREVIEW_METRIC, { event_name: eventName });
+            expect(emitLogEvent).toHaveBeenCalledWith(PREVIEW_METRIC, { event_name: eventName });
         });
 
         test('should emit the load event', () => {
             preview.finishLoading();
-            expect(stubs.emit).toBeCalled();
-            expect(preview.logger.done).toBeCalled();
+            expect(stubs.emit).toHaveBeenCalled();
+            expect(preview.logger.done).toHaveBeenCalled();
         });
 
         test('should log a preview event via the Events API if there was not an error', () => {
             preview.finishLoading({ error: 'error!' });
-            expect(stubs.logPreviewEvent).not.toBeCalled();
+            expect(stubs.logPreviewEvent).not.toHaveBeenCalled();
 
             preview.finishLoading({ error: undefined });
-            expect(stubs.logPreviewEvent).toBeCalled();
+            expect(stubs.logPreviewEvent).toHaveBeenCalled();
         });
 
         test('should call phantom for a health check, if it is available', () => {
@@ -2027,10 +2027,10 @@ describe('lib/Preview', () => {
             window.callPhantom = () => {};
 
             const callPhantomSpy = jest.spyOn(window, 'callPhantom');
-            expect(window.callPhantom).not.toBeCalled();
+            expect(window.callPhantom).not.toHaveBeenCalled();
 
             preview.finishLoading();
-            expect(callPhantomSpy).toBeCalled();
+            expect(callPhantomSpy).toHaveBeenCalled();
         });
 
         test('should focus the viewer container', () => {
@@ -2056,12 +2056,12 @@ describe('lib/Preview', () => {
 
         test('should hide the loading indicator', () => {
             preview.finishLoading();
-            expect(stubs.hideLoadingIndicator).toBeCalled();
+            expect(stubs.hideLoadingIndicator).toHaveBeenCalled();
         });
 
         test('should prefetch next files', () => {
             preview.finishLoading();
-            expect(stubs.prefetchNextFiles).toBeCalled();
+            expect(stubs.prefetchNextFiles).toHaveBeenCalled();
         });
 
         test('should stop the timer for full document load if a file exists', () => {
@@ -2069,7 +2069,7 @@ describe('lib/Preview', () => {
             const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.contentLoadTime);
             jest.spyOn(Timer, 'stop');
             preview.finishLoading();
-            expect(Timer.stop).toBeCalledWith(expectedTag);
+            expect(Timer.stop).toHaveBeenCalledWith(expectedTag);
         });
 
         test('should stop the timer for preview load if a file exists', () => {
@@ -2077,13 +2077,13 @@ describe('lib/Preview', () => {
             const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.previewLoadTime);
             jest.spyOn(Timer, 'stop');
             preview.finishLoading();
-            expect(Timer.stop).toBeCalledWith(expectedTag);
+            expect(Timer.stop).toHaveBeenCalledWith(expectedTag);
         });
 
         test('should invoke emitLoadMetrics()', () => {
             stubs.emitLoadMetrics = jest.spyOn(preview, 'emitLoadMetrics');
             preview.finishLoading();
-            expect(stubs.emitLoadMetrics).toBeCalled();
+            expect(stubs.emitLoadMetrics).toHaveBeenCalled();
         });
     });
 
@@ -2108,7 +2108,7 @@ describe('lib/Preview', () => {
             jest.spyOn(stubs.api, 'post').mockReturnValue(stubs.promiseResolve);
 
             preview.logPreviewEvent(0, {});
-            expect(stubs.getHeaders).toBeCalled();
+            expect(stubs.getHeaders).toHaveBeenCalled();
         });
 
         test('should reset the log retry count on a successful post', () => {
@@ -2150,7 +2150,7 @@ describe('lib/Preview', () => {
             jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
             preview.logPreviewEvent(0, { apiHost: API_HOST });
             return stubs.promiseResolve.then(() => {
-                expect(Api.prototype.post).toBeCalledWith(
+                expect(Api.prototype.post).toHaveBeenCalledWith(
                     `${API_HOST}/2.0/events`,
                     expect.not.objectContaining(stubs.eventObjectWithSession),
                     expect.any(Object),
@@ -2170,7 +2170,7 @@ describe('lib/Preview', () => {
             preview.logPreviewEvent(0, { apiHost: API_HOST });
 
             return stubs.promiseResolve.then(() => {
-                expect(Api.prototype.post).toBeCalledWith(
+                expect(Api.prototype.post).toHaveBeenCalledWith(
                     `${API_HOST}/2.0/events`,
                     expect.objectContaining(stubs.eventObjectWithSession),
                     expect.any(Object),
@@ -2188,7 +2188,7 @@ describe('lib/Preview', () => {
             preview.logPreviewEvent(0, {});
 
             return stubs.promiseResolve.then(() => {
-                expect(stubs.emit).toBeCalledWith('preview_event_report', true);
+                expect(stubs.emit).toHaveBeenCalledWith('preview_event_report', true);
             });
         });
 
@@ -2202,7 +2202,7 @@ describe('lib/Preview', () => {
             preview.logPreviewEvent(0, {});
 
             return stubs.promiseResolve.then(() => {
-                expect(stubs.emit).not.toBeCalled();
+                expect(stubs.emit).not.toHaveBeenCalled();
             });
         });
 
@@ -2216,7 +2216,7 @@ describe('lib/Preview', () => {
             preview.logRetryTimeout = true;
             preview.logPreviewEvent(0, {});
             return stubs.promiseResolve.catch(() => {
-                expect(stubs.emit).toBeCalledWith('preview_event_report', false);
+                expect(stubs.emit).toHaveBeenCalledWith('preview_event_report', false);
             });
         });
         test('should not call emit viewer event on logPreviewEvent if preview was hidden and viewer was destroyed', () => {
@@ -2231,8 +2231,8 @@ describe('lib/Preview', () => {
             preview.hide();
             preview.pageTrackerReporter(true);
 
-            expect(stubs.destroy).toBeCalled();
-            expect(stubs.emit).not.toBeCalled();
+            expect(stubs.destroy).toHaveBeenCalled();
+            expect(stubs.emit).not.toHaveBeenCalled();
         });
     });
 
@@ -2257,7 +2257,7 @@ describe('lib/Preview', () => {
             preview.open = false;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.uncacheFile).not.toBeCalled();
+            expect(stubs.uncacheFile).not.toHaveBeenCalled();
         });
 
         test('should clear the current file from the cache', () => {
@@ -2267,7 +2267,7 @@ describe('lib/Preview', () => {
             preview.open = true;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.uncacheFile).toBeCalled();
+            expect(stubs.uncacheFile).toHaveBeenCalled();
         });
 
         test('should trigger an error if we have hit our retry count limit', () => {
@@ -2278,7 +2278,7 @@ describe('lib/Preview', () => {
             preview.retryCount = 6;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.triggerError).toBeCalled();
+            expect(stubs.triggerError).toHaveBeenCalled();
         });
 
         test('should trigger a rate limit error if the status code is 429', () => {
@@ -2291,7 +2291,7 @@ describe('lib/Preview', () => {
 
             preview.handleFetchError(stubs.error);
             try {
-                expect(stubs.triggerError).toBeCalledWith(new Error(__('error_rate_limit')));
+                expect(stubs.triggerError).toHaveBeenCalledWith(new Error(__('error_rate_limit')));
             } catch (e) {
                 /* no op */
             }
@@ -2306,10 +2306,10 @@ describe('lib/Preview', () => {
             preview.file.id = 1;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.triggerError).not.toBeCalled();
+            expect(stubs.triggerError).not.toHaveBeenCalled();
 
             jest.advanceTimersByTime(2001);
-            expect(stubs.load).toBeCalledWith(1);
+            expect(stubs.load).toHaveBeenCalledWith(1);
         });
 
         test('should retry using full jitter', () => {
@@ -2322,7 +2322,7 @@ describe('lib/Preview', () => {
             preview.handleFetchError(stubs.error);
 
             jest.advanceTimersByTime(8001);
-            expect(stubs.load).toBeCalled();
+            expect(stubs.load).toHaveBeenCalled();
         });
 
         test.each(['retry-after', 'Retry-After'])(
@@ -2343,10 +2343,10 @@ describe('lib/Preview', () => {
                 preview.handleFetchError(stubs.error);
 
                 jest.advanceTimersByTime(4000);
-                expect(stubs.load).not.toBeCalled();
+                expect(stubs.load).not.toHaveBeenCalled();
 
                 jest.advanceTimersByTime(5001);
-                expect(stubs.load).toBeCalled();
+                expect(stubs.load).toHaveBeenCalled();
             },
         );
     });
@@ -2379,33 +2379,33 @@ describe('lib/Preview', () => {
             preview.open = false;
 
             preview.triggerError(new PreviewError('fail'));
-            expect(stubs.uncacheFile).not.toBeCalled();
-            expect(stubs.destroy).not.toBeCalled();
-            expect(stubs.emitPreviewError).toBeCalled();
+            expect(stubs.uncacheFile).not.toHaveBeenCalled();
+            expect(stubs.destroy).not.toHaveBeenCalled();
+            expect(stubs.emitPreviewError).toHaveBeenCalled();
         });
 
         test('should only log an error if the error is silent', () => {
             preview.triggerError(new PreviewError('fail', '', { silent: true }));
-            expect(stubs.uncacheFile).not.toBeCalled();
-            expect(stubs.destroy).not.toBeCalled();
-            expect(stubs.emitPreviewError).toBeCalled();
+            expect(stubs.uncacheFile).not.toHaveBeenCalled();
+            expect(stubs.destroy).not.toHaveBeenCalled();
+            expect(stubs.emitPreviewError).toHaveBeenCalled();
         });
 
         test('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
             preview.triggerError();
             expect(preview.open).toBe(false);
-            expect(stubs.uncacheFile).toBeCalled();
-            expect(stubs.destroy).toBeCalled();
-            expect(stubs.setupUI).toBeCalled();
+            expect(stubs.uncacheFile).toHaveBeenCalled();
+            expect(stubs.destroy).toHaveBeenCalled();
+            expect(stubs.setupUI).toHaveBeenCalled();
         });
 
         test('should get the error viewer, attach viewer listeners, and load the error viewer', () => {
             const err = new PreviewError();
             preview.triggerError(err);
 
-            expect(stubs.getErrorViewer).toBeCalled();
-            expect(stubs.attachViewerListeners).toBeCalled();
-            expect(ErrorViewer.load).toBeCalledWith(err);
+            expect(stubs.getErrorViewer).toHaveBeenCalled();
+            expect(stubs.attachViewerListeners).toHaveBeenCalled();
+            expect(ErrorViewer.load).toHaveBeenCalledWith(err);
         });
     });
 
@@ -2418,7 +2418,7 @@ describe('lib/Preview', () => {
             preview.file = { id: '12345' };
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     content_type: '',
@@ -2433,7 +2433,7 @@ describe('lib/Preview', () => {
             preview.file = undefined;
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     file_id: '',
@@ -2448,7 +2448,7 @@ describe('lib/Preview', () => {
             };
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     file_version_id: '',
@@ -2463,7 +2463,7 @@ describe('lib/Preview', () => {
             preview.viewer = {};
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     rep_type: '',
@@ -2480,7 +2480,7 @@ describe('lib/Preview', () => {
             };
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     current_page_number: 5,
@@ -2493,7 +2493,7 @@ describe('lib/Preview', () => {
             preview.viewer = {};
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     current_page_number: '',
@@ -2509,7 +2509,7 @@ describe('lib/Preview', () => {
             preview.viewer = {};
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     file_size: 1024000,
@@ -2525,10 +2525,52 @@ describe('lib/Preview', () => {
             preview.viewer = {};
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toBeCalledWith(
+            expect(preview.emit).toHaveBeenCalledWith(
                 'test',
                 expect.objectContaining({
                     file_size: '',
+                }),
+            );
+        });
+
+        test('should include total_pages from viewer.pdfViewer.pdfDocument.numPages', () => {
+            preview.file = { id: '12345' };
+            preview.viewer = {
+                pdfViewer: {
+                    pdfDocument: {
+                        numPages: 25,
+                    },
+                },
+            };
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    total_pages: 25,
+                }),
+            );
+        });
+
+        test.each([
+            [
+                'pdfDocument not available',
+                {
+                    pdfViewer: {
+                        /* pdfDocument not set */
+                    },
+                },
+            ],
+            ['pdfViewer not available', {}],
+        ])('should use empty string for total_pages when %s', (description, viewer) => {
+            preview.file = { id: '12345' };
+            preview.viewer = viewer;
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    total_pages: '',
                 }),
             );
         });
@@ -2612,8 +2654,8 @@ describe('lib/Preview', () => {
             jest.spyOn(preview, 'emit');
             preview.file = undefined;
             preview.emitLoadMetrics();
-            expect(Timer.reset).not.toBeCalled();
-            expect(preview.emit).not.toBeCalled();
+            expect(Timer.reset).not.toHaveBeenCalled();
+            expect(preview.emit).not.toHaveBeenCalled();
         });
 
         test('should emit a preview_metric event', done => {
@@ -2647,8 +2689,8 @@ describe('lib/Preview', () => {
             jest.spyOn(Timer, 'reset');
             jest.spyOn(preview, 'emit');
             preview.emitLoadMetrics();
-            expect(Timer.reset).toBeCalled();
-            expect(preview.emit).toBeCalled();
+            expect(Timer.reset).toHaveBeenCalled();
+            expect(preview.emit).toHaveBeenCalled();
         });
     });
 
@@ -2670,14 +2712,14 @@ describe('lib/Preview', () => {
             stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders('token');
-            expect(stubs.getHeaders).toBeCalledWith(stubs.headers, 'token', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'token', 'link', 'Passw0rd!');
         });
 
         test('should get headers with the options token if none are provided', () => {
             stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders();
-            expect(stubs.getHeaders).toBeCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
 
         test('should add dash hints if the browser supports dash', () => {
@@ -2685,7 +2727,7 @@ describe('lib/Preview', () => {
             stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
 
             preview.getRequestHeaders();
-            expect(stubs.getHeaders).toBeCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
 
         test('should not add dash hints if the browser supports dash but dash is disabled', () => {
@@ -2694,7 +2736,7 @@ describe('lib/Preview', () => {
             stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders();
-            expect(stubs.getHeaders).toBeCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
     });
 
@@ -2727,14 +2769,14 @@ describe('lib/Preview', () => {
             preview.collection = [1];
 
             preview.prefetchNextFiles();
-            expect(stubs.getTokens).not.toBeCalled();
+            expect(stubs.getTokens).not.toHaveBeenCalled();
         });
 
         test('should not prefetch when skipServerUpdate option is present', () => {
             preview.options.skipServerUpdate = true;
 
             preview.prefetchNextFiles();
-            expect(stubs.getTokens).not.toBeCalled();
+            expect(stubs.getTokens).not.toHaveBeenCalled();
         });
 
         test('should do nothing if there are no new files to prefetch', () => {
@@ -2745,7 +2787,7 @@ describe('lib/Preview', () => {
             preview.collection = [1, 2, 3];
 
             preview.prefetchNextFiles();
-            expect(stubs.getTokens).not.toBeCalled();
+            expect(stubs.getTokens).not.toHaveBeenCalled();
         });
 
         test('should get tokens for the next PREFETCH_COUNT files in the collection', () => {
@@ -2758,7 +2800,7 @@ describe('lib/Preview', () => {
 
             preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
-                expect(stubs.getTokens).toBeCalledWith([1, 2, 3, 4], 'token');
+                expect(stubs.getTokens).toHaveBeenCalledWith([1, 2, 3, 4], 'token');
             });
         });
 
@@ -2772,8 +2814,8 @@ describe('lib/Preview', () => {
 
             preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
-                expect(stubs.getRequestHeaders).toBeCalledTimes(PREFETCH_COUNT);
-                expect(stubs.get).toBeCalledTimes(PREFETCH_COUNT);
+                expect(stubs.getRequestHeaders).toHaveBeenCalledTimes(PREFETCH_COUNT);
+                expect(stubs.get).toHaveBeenCalledTimes(PREFETCH_COUNT);
             });
         });
 
@@ -2788,8 +2830,8 @@ describe('lib/Preview', () => {
             preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
                 return stubs.getPromiseResolve.then(() => {
-                    expect(stubs.set).toBeCalledTimes(PREFETCH_COUNT);
-                    expect(stubs.prefetch).toBeCalledTimes(PREFETCH_COUNT);
+                    expect(stubs.set).toHaveBeenCalledTimes(PREFETCH_COUNT);
+                    expect(stubs.prefetch).toHaveBeenCalledTimes(PREFETCH_COUNT);
                     expect(preview.prefetchedCollection.length).toBe(PREFETCH_COUNT);
                 });
             });
@@ -2861,16 +2903,16 @@ describe('lib/Preview', () => {
         test('should do nothing if the collection is invalid', () => {
             preview.collection = 'foo';
             preview.navigateToIndex(1);
-            expect(stubs.emit).not.toBeCalled();
+            expect(stubs.emit).not.toHaveBeenCalled();
 
             preview.collection = [];
             preview.navigateToIndex(1);
-            expect(stubs.emit).not.toBeCalled();
+            expect(stubs.emit).not.toHaveBeenCalled();
         });
 
         test('should emit the navigation event', () => {
             preview.navigateToIndex(1);
-            expect(stubs.emit).toBeCalled();
+            expect(stubs.emit).toHaveBeenCalled();
         });
 
         test('should increment the navigation count', () => {
@@ -2880,7 +2922,7 @@ describe('lib/Preview', () => {
 
         test('should load the requested file', () => {
             preview.navigateToIndex(2);
-            expect(stubs.load).toBeCalledWith('file3');
+            expect(stubs.load).toHaveBeenCalledWith('file3');
         });
     });
 
@@ -2895,14 +2937,14 @@ describe('lib/Preview', () => {
 
         test('should navigate to index if it is not the first file in the collection', () => {
             preview.navigateLeft();
-            expect(stubs.navigateToIndex).toBeCalled();
+            expect(stubs.navigateToIndex).toHaveBeenCalled();
         });
 
         test('should not navigate to index if it is the first file in the collection', () => {
             preview.collection = [1, 2, 3];
 
             preview.navigateLeft();
-            expect(stubs.navigateToIndex).not.toBeCalled();
+            expect(stubs.navigateToIndex).not.toHaveBeenCalled();
         });
     });
 
@@ -2915,14 +2957,14 @@ describe('lib/Preview', () => {
 
         test('should navigate to index if it is not the last file in the collection', () => {
             preview.navigateRight();
-            expect(stubs.navigateToIndex).toBeCalled();
+            expect(stubs.navigateToIndex).toHaveBeenCalled();
         });
 
         test('should not navigate to index if it is the last file in the collection', () => {
             preview.collection = [3, 2, 1];
 
             preview.navigateRight();
-            expect(stubs.navigateToIndex).not.toBeCalled();
+            expect(stubs.navigateToIndex).not.toHaveBeenCalled();
         });
     });
 
@@ -2948,7 +2990,7 @@ describe('lib/Preview', () => {
 
             expect(loader.name).toBe('csv');
             preview.loaders.forEach(loaderMock => {
-                expect(loaderMock.canLoad).toBeCalledWith('file', ['Office'], { viewer: {} });
+                expect(loaderMock.canLoad).toHaveBeenCalledWith('file', ['Office'], { viewer: {} });
             });
         });
     });
@@ -2975,17 +3017,17 @@ describe('lib/Preview', () => {
             preview.options.useHotkeys = false;
 
             preview.keydownHandler({ target: undefined });
-            expect(stubs.decodeKeydown).not.toBeCalled();
+            expect(stubs.decodeKeydown).not.toHaveBeenCalled();
         });
 
         test('should do nothing if there is no target', () => {
             preview.keydownHandler({ target: undefined });
-            expect(stubs.decodeKeydown).not.toBeCalled();
+            expect(stubs.decodeKeydown).not.toHaveBeenCalled();
         });
 
         test('should do nothing if there is no target or the target is a keydown exception', () => {
             preview.keydownHandler(stubs.event);
-            expect(stubs.decodeKeydown).not.toBeCalled();
+            expect(stubs.decodeKeydown).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the target is a content editable div', () => {
@@ -2993,7 +3035,7 @@ describe('lib/Preview', () => {
             stubs.event.target.getAttribute = jest.fn(() => true);
 
             preview.keydownHandler(stubs.event);
-            expect(stubs.decodeKeydown).not.toBeCalled();
+            expect(stubs.decodeKeydown).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the target is not a decodable key', () => {
@@ -3002,7 +3044,7 @@ describe('lib/Preview', () => {
             stubs.decodeKeydown.mockReturnValue(false);
 
             preview.keydownHandler(stubs.event);
-            expect(stubs.event.preventDefault).not.toBeCalled();
+            expect(stubs.event.preventDefault).not.toHaveBeenCalled();
         });
 
         test('should navigate left is key is ArrowLeft and the event has not been consumed', () => {
@@ -3011,7 +3053,7 @@ describe('lib/Preview', () => {
             stubs.decodeKeydown.mockReturnValue('ArrowLeft');
 
             preview.keydownHandler(stubs.event);
-            expect(stubs.navigateLeft).toBeCalled();
+            expect(stubs.navigateLeft).toHaveBeenCalled();
         });
 
         test('should navigate right is key is ArrowRight and the event has not been consumed', () => {
@@ -3019,7 +3061,7 @@ describe('lib/Preview', () => {
             stubs.decodeKeydown.mockReturnValue('ArrowRight');
 
             preview.keydownHandler(stubs.event);
-            expect(stubs.navigateRight).toBeCalled();
+            expect(stubs.navigateRight).toHaveBeenCalled();
         });
 
         test('should prevent default and stop propagation if the event has been consumed by the viewer', () => {
@@ -3028,8 +3070,8 @@ describe('lib/Preview', () => {
             stubs.decodeKeydown.mockReturnValue('ArrowRight');
 
             preview.keydownHandler(stubs.event);
-            expect(stubs.event.preventDefault).toBeCalled();
-            expect(stubs.event.stopPropagation).toBeCalled();
+            expect(stubs.event.preventDefault).toHaveBeenCalled();
+            expect(stubs.event.stopPropagation).toHaveBeenCalled();
         });
     });
 
@@ -3115,7 +3157,7 @@ describe('lib/Preview', () => {
 
             expect(preview.options.features.advancedContentInsights).toBe(options);
             expect(preview.previewOptions.features.advancedContentInsights).toBe(options);
-            expect(stubs.updateOptions).toBeCalledWith(options);
+            expect(stubs.updateOptions).toHaveBeenCalledWith(options);
         });
     });
 });
