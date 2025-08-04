@@ -1699,12 +1699,15 @@ class Preview extends EventEmitter {
         this.emit(name, {
             ...payload,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
+            current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',
             file_id: getProp(file, 'id', ''),
+            file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             timestamp: getISOTime(),
+            total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
             ...getClientLogDetails(),
         });
     }
