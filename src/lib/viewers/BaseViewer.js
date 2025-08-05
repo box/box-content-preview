@@ -1011,10 +1011,6 @@ class BaseViewer extends EventEmitter {
         const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
-        if (this.annotatorConf.CONSTRUCTOR === global.BoxAnnotations) {
-            return;
-        }
-
         if (!this.annotatorConf) {
             return;
         }
@@ -1242,9 +1238,6 @@ class BaseViewer extends EventEmitter {
         const { showAnnotationsControls, file } = this.options;
         const { permissions, extension } = file || {};
 
-        if (file) {
-            return true;
-        }
         if (!this.hasAnnotationCreatePermission(permissions) && !this.hasAnnotationViewPermission(permissions)) {
             return false;
         }
