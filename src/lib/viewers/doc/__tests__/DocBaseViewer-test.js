@@ -40,8 +40,9 @@ import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, 
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { EXIF_READER, JS, CSS, JS_NO_EXIF } from '../docAssets';
+import { EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
+import * as featureChecking from '../../../featureChecking';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -415,6 +416,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.isDocFirstPrefetchEnabled = true;
                 docBase.prefetch({ assets: true, preload: true, content: false });
                 expect(docBase.prefetchPreloaderImages).toHaveBeenCalled();
+            });
+
+            test('should prefetch doc first assets if doc first pages is enabled', () => {
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+                jest.spyOn(featureChecking, 'getFeatureConfig').mockImplementation(feature => {
+                    if (feature === 'docFirstPages.enabled') {
+                        return true;
+                    }
+                    return false;
+                });
+                jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
+                docBase.options.isDocFirstPrefetchEnabled = true;
+                docBase.prefetch({ assets: true, preload: true, content: false });
+                expect(docBase.prefetchPreloaderImages).toHaveBeenCalled();
+                expect(docBase.prefetchAssets).toHaveBeenCalledWith([...JS_NO_EXIF, ...EXIF_READER], CSS);
+            });
+
+            test('should not prefetch doc first assets if doc first pages is disabled', () => {
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+                jest.spyOn(featureChecking, 'getFeatureConfig').mockImplementation(feature => {
+                    if (feature === 'docFirstPages.enabled') {
+                        return false;
+                    }
+                    return false;
+                });
+                jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
+                docBase.options.isDocFirstPrefetchEnabled = true;
+                docBase.prefetch({ assets: true, preload: true, content: false });
+                expect(docBase.prefetchAssets).toHaveBeenCalledWith(JS, CSS);
             });
 
             test('should not prefetch doc first pages if assets is true and ff is on and preload is true and is watermarked', () => {
@@ -907,6 +937,45 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
                     expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
                 });
+            });
+        });
+
+        describe('loadViewerAssets()', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase, 'loadAssets').mockImplementation();
+                jest.spyOn(console, 'log').mockImplementation();
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should load JS and CSS assets when docFirstPages is disabled', () => {
+                jest.spyOn(featureChecking, 'getFeatureConfig').mockImplementation(feature => {
+                    if (feature === 'docFirstPages.enabled') {
+                        return false;
+                    }
+                    return false;
+                });
+                docBase.loadViewerAssets();
+                expect(featureChecking.getFeatureConfig).toHaveBeenCalledWith('docFirstPages.enabled');
+                expect(docBase.loadAssets).toHaveBeenCalledTimes(2);
+                expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, JS, CSS);
+                expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, PRELOAD_JS, []);
+            });
+
+            test('should load JS_NO_EXIF and EXIF_READER assets when docFirstPages is enabled', () => {
+                jest.spyOn(featureChecking, 'getFeatureConfig').mockImplementation(feature => {
+                    if (feature === 'docFirstPages.enabled') {
+                        return true;
+                    }
+                    return false;
+                });
+                docBase.loadViewerAssets();
+                expect(featureChecking.getFeatureConfig).toHaveBeenCalledWith('docFirstPages.enabled');
+                expect(docBase.loadAssets).toHaveBeenCalledTimes(2);
+                expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, [...JS_NO_EXIF, ...EXIF_READER], CSS);
+                expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, PRELOAD_JS, []);
             });
         });
 

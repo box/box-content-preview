@@ -403,7 +403,7 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+            const ASSETS = getFeatureConfig('docFirstPages.enabled') ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
             this.prefetchAssets(ASSETS, CSS);
             this.prefetchAssets(PRELOAD_JS, [], true);
         }
@@ -435,7 +435,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets() {
-        const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+        const ASSETS = getFeatureConfig('docFirstPages.enabled') ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
     }
