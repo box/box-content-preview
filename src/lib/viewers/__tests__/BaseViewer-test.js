@@ -741,6 +741,27 @@ describe('lib/viewers/BaseViewer', () => {
                 }),
             );
         });
+
+        test('should not fail if file or viewer is not defined', () => {
+            const event = 'someEvent';
+            const data = {};
+            base = new BaseViewer({
+                container: containerEl,
+            });
+            const emitStub = jest.fn();
+            Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitStub });
+            base.emit(event, data);
+            expect(emitStub).toBeCalledWith(event, data);
+            expect(emitStub).toBeCalledWith(
+                VIEWER_EVENT.default,
+                expect.objectContaining({
+                    event,
+                    data,
+                    viewerName: '',
+                    fileId: '',
+                }),
+            );
+        });
     });
 
     describe('Pinch to Zoom Handlers', () => {
