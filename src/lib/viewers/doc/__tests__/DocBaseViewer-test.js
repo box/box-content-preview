@@ -42,7 +42,6 @@ import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
 import { EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
-import * as featureChecking from '../../../featureChecking';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -432,12 +431,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not prefetch doc first assets if doc first pages is disabled', () => {
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
-                jest.spyOn(featureChecking, 'getFeatureConfig').mockImplementation(feature => {
-                    if (feature === 'docFirstPages.enabled') {
-                        return false;
-                    }
-                    return false;
-                });
+                docBase.options.features = {
+                    'docFirstPages.enabled': false,
+                };
                 jest.spyOn(docBase, 'prefetchPreloaderImages').mockImplementation();
                 docBase.options.isDocFirstPrefetchEnabled = true;
                 docBase.prefetch({ assets: true, preload: true, content: false });
