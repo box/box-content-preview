@@ -52,6 +52,8 @@ import {
 import Timer from '../../Timer';
 import { getFeatureConfig, isFeatureEnabled } from '../../featureChecking';
 
+const DOC_FIRST_PAGES_ENABLED = 'docFirstPages.enabled';
+
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
     AnnotationState.NONE,
@@ -176,7 +178,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Call super() to set up common layout
         super.setup();
-        this.docFirstPagesEnabled = this.featureEnabled('docFirstPages.enabled');
+        this.docFirstPagesEnabled = this.featureEnabled(DOC_FIRST_PAGES_ENABLED);
         this.docEl = this.createViewer(document.createElement('div'));
         this.docEl.setAttribute('aria-label', __('document_label'));
         this.docEl.classList.add('bp-doc');
@@ -403,7 +405,7 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+            const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
             this.prefetchAssets(ASSETS, CSS);
             this.prefetchAssets(PRELOAD_JS, [], true);
         }
@@ -435,7 +437,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets() {
-        const ASSETS = this.docFirstPagesEnabled ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+        const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
     }
