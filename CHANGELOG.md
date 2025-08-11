@@ -1,3 +1,9 @@
+## 3.11.0 (2025-08-11)
+
+* fix(pdfjs-preload): removing doc first pages check (#1573) ([1e921be](https://github.com/box/box-content-preview/commit/1e921be)), closes [#1573](https://github.com/box/box-content-preview/issues/1573)
+
+
+
 ## 3.10.0 (2025-08-11)
 
 * fix(pdfjs-preleloader): adding exif reader to preload (#1571) ([e50dc33](https://github.com/box/box-content-preview/commit/e50dc33)), closes [#1571](https://github.com/box/box-content-preview/issues/1571)
