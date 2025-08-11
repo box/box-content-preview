@@ -1,3 +1,14 @@
+## 3.10.0 (2025-08-11)
+
+* fix(pdfjs-preleloader): adding exif reader to preload (#1571) ([e50dc33](https://github.com/box/box-content-preview/commit/e50dc33)), closes [#1571](https://github.com/box/box-content-preview/issues/1571)
+* fix(pdfjs-preload): adding null check to emmitter function (#1570) ([58fcecf](https://github.com/box/box-content-preview/commit/58fcecf)), closes [#1570](https://github.com/box/box-content-preview/issues/1570)
+* chore(i18n): Update Translations (#1567) ([f2281ed](https://github.com/box/box-content-preview/commit/f2281ed)), closes [#1567](https://github.com/box/box-content-preview/issues/1567)
+* chore(i18n): Update Translations (#1572) ([c0d6d6e](https://github.com/box/box-content-preview/commit/c0d6d6e)), closes [#1572](https://github.com/box/box-content-preview/issues/1572)
+* Surface file size, page number, and total pages metrics (#1568) ([c6ce6d8](https://github.com/box/box-content-preview/commit/c6ce6d8)), closes [#1568](https://github.com/box/box-content-preview/issues/1568)
+* feat(preview): throw error when there are too many operations (#1566) ([c00b497](https://github.com/box/box-content-preview/commit/c00b497)), closes [#1566](https://github.com/box/box-content-preview/issues/1566)
+
+
+
 ## 3.9.0 (2025-07-28)
 
 * feat(pdfjs-preloading): add function to preload pdfjs assets (#1565) ([4c6f142](https://github.com/box/box-content-preview/commit/4c6f142)), closes [#1565](https://github.com/box/box-content-preview/issues/1565)
