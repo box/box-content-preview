@@ -666,7 +666,7 @@ class BaseViewer extends EventEmitter {
             event,
             data,
             viewerName: viewer ? viewer.NAME : '',
-            fileId: file.id,
+            fileId: file?.id ?? '',
         });
     }
 
