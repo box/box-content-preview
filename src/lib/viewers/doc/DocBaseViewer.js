@@ -437,7 +437,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets() {
-        const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+        const ASSETS = [...JS_NO_EXIF, ...EXIF_READER];
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
     }

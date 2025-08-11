@@ -966,17 +966,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.restoreAllMocks();
             });
 
-            test('should load JS and CSS assets when docFirstPages is disabled', () => {
-                testDocBase.loadViewerAssets();
-                expect(testDocBase.loadAssets).toHaveBeenCalledTimes(2);
-                expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(1, JS, CSS);
-                expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(2, PRELOAD_JS, []);
-            });
-
-            test('should load JS_NO_EXIF and EXIF_READER assets when docFirstPages is enabled', () => {
-                testDocBase.options.features = {
-                    'docFirstPages.enabled': true,
-                };
+            test('should load PDFJS and EXIF_READER', () => {
                 testDocBase.loadViewerAssets();
                 expect(testDocBase.loadAssets).toHaveBeenCalledTimes(2);
                 expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(1, [...JS_NO_EXIF, ...EXIF_READER], CSS);
