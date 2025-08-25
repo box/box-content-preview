@@ -137,7 +137,7 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     prefetchFinishedLoading(event) {
-        document.body.removeChild(event.currentTarget);
+        document.body.removeChild(event?.currentTarget);
     }
 
     /**
