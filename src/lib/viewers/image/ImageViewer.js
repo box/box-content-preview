@@ -146,7 +146,7 @@ class ImageViewer extends ImageBaseViewer {
      * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch({ content = true, preload = false }) {
+    prefetch({ content = true, preload = false } = {}) {
         const { file, representation, viewer } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
