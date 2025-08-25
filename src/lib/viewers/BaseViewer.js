@@ -1400,6 +1400,30 @@ class BaseViewer extends EventEmitter {
     featureEnabled(feature) {
         return isFeatureEnabled(this.options.features, feature);
     }
+
+    /**
+     * Hides the preview mask element if it exists
+     *
+     * @return {void}
+     */
+    hidePreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = 'none';
+        }
+    }
+
+    /**
+     * Shows the preview mask element if it exists
+     *
+     * @return {void}
+     */
+    showPreviewMask() {
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        if (previewMask) {
+            previewMask.style.display = '';
+        }
+    }
 }
 
 export default BaseViewer;

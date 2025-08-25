@@ -57,6 +57,7 @@ export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
 export const CLASS_DOC_FIRST_IMAGE = 'doc-first-image';
 export const CLASS_CRAWLER = 'bp-crawler';
+export const CLASS_PREFETCHED_IMAGE = 'bp-prefetched-image';
 
 export const DISCOVERABILITY_ATTRIBUTE = 'data-resin-discoverability';
 
