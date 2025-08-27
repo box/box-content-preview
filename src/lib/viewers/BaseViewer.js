@@ -1407,7 +1407,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     hidePreviewMask() {
-        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')?.[0];
         if (previewMask) {
             previewMask.style.display = 'none';
         }
@@ -1419,7 +1419,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     showPreviewMask() {
-        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')[0];
+        const previewMask = document.getElementsByClassName('bcpr-PreviewMask')?.[0];
         if (previewMask) {
             previewMask.style.display = '';
         }
