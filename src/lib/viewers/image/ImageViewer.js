@@ -7,6 +7,7 @@ import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_INVISIBLE,
+    CLASS_PREFETCHED_IMAGE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../constants';
@@ -24,6 +25,7 @@ class ImageViewer extends ImageBaseViewer {
 
         // Bind context for callbacks
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
         this.getViewportDimensions = this.getViewportDimensions.bind(this);
         this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
         this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
@@ -122,7 +124,20 @@ class ImageViewer extends ImageBaseViewer {
         this.startLoadTimer();
         this.imageEl.src = downloadUrl;
 
+        if (this.imageEl.complete) {
+            this.finishLoading();
+        }
+
         super.handleAssetAndRepLoad();
+    }
+
+    finishLoading() {
+        this.hidePreviewMask();
+        return super.finishLoading();
+    }
+
+    prefetchFinishedLoading(event) {
+        document.body.removeChild(event?.currentTarget);
     }
 
     /**
@@ -131,13 +146,18 @@ class ImageViewer extends ImageBaseViewer {
      * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch({ content = true }) {
+    prefetch({ content = true, preload = false } = {}) {
         const { file, representation, viewer } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
-        if (content && !isWatermarked && this.isRepresentationReady(representation)) {
+        if ((content || preload) && !isWatermarked && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+            const preFetchedImg = document.createElement('img');
+            preFetchedImg.addEventListener('load', this.prefetchFinishedLoading);
+            preFetchedImg.classList.add(CLASS_PREFETCHED_IMAGE);
+            document.body.appendChild(preFetchedImg);
+
+            preFetchedImg.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
         }
     }
 

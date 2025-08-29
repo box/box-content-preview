@@ -122,7 +122,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                 .load(imageUrl)
                 .then(() => {
                     expect(image.bindDOMListeners).toBeCalled();
-                    expect(image.createContentUrlWithAuthParams).toBeCalledWith('foo', '1.png');
+                    expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
                 })
                 .catch(() => {});
         });
@@ -143,29 +143,109 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('prefetch()', () => {
-        test('should prefetch content if content is true and representation is ready', () => {
+        beforeEach(() => {
+            // Reset DOM
+            document.body.innerHTML = '';
             jest.spyOn(image, 'isRepresentationReady').mockReturnValue(true);
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue('somecontenturl');
-            image.prefetch({ content: true });
-            expect(image.createContentUrlWithAuthParams).toBeCalledWith('foo', '1.png');
+            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue('https://example.com/image.jpg');
+        });
+
+        afterEach(() => {
+            // Clean up any remaining prefetched images
+            const prefetchedImages = document.querySelectorAll('.bp-prefetched-image');
+            prefetchedImages.forEach(img => img.remove());
+        });
+
+        test.each`
+            options                               | shouldPrefetch | description
+            ${{ content: true }}                  | ${true}        | ${'content is true'}
+            ${{ preload: true }}                  | ${true}        | ${'preload is true'}
+            ${{ content: true, preload: true }}   | ${true}        | ${'both content and preload are true'}
+            ${{ content: false, preload: false }} | ${false}       | ${'both content and preload are false'}
+        `('should prefetch when $description if shouldPrefetch is $shouldPrefetch', ({ options, shouldPrefetch }) => {
+            image.prefetch(options);
+
+            if (shouldPrefetch) {
+                expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
+
+                const prefetchedImg = document.querySelector('.bp-prefetched-image');
+                expect(prefetchedImg).toBeTruthy();
+                expect(prefetchedImg.tagName).toBe('IMG');
+                expect(prefetchedImg.src).toBe('https://example.com/image.jpg');
+                expect(document.body.contains(prefetchedImg)).toBe(true);
+            } else {
+                expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+
+                const prefetchedImg = document.querySelector('.bp-prefetched-image');
+                expect(prefetchedImg).toBeFalsy();
+            }
         });
 
         test('should not prefetch content if content is true but representation is not ready', () => {
             jest.spyOn(image, 'isRepresentationReady').mockReturnValue(false);
-            jest.spyOn(image, 'createContentUrlWithAuthParams');
+
             image.prefetch({ content: true });
-            expect(image.createContentUrlWithAuthParams).not.toBeCalled();
+
+            expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeFalsy();
         });
 
         test('should not prefetch content if file is watermarked', () => {
             image.options.file.watermark_info = {
                 is_watermarked: true,
             };
-            jest.spyOn(image, 'createContentUrlWithAuthParams');
 
             image.prefetch({ content: true });
 
-            expect(image.createContentUrlWithAuthParams).not.toBeCalled();
+            expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeFalsy();
+        });
+
+        test('should add load event listener to prefetched image', () => {
+            const addEventListenerSpy = jest.spyOn(HTMLImageElement.prototype, 'addEventListener');
+
+            image.prefetch({ content: true });
+
+            expect(addEventListenerSpy).toHaveBeenCalledWith('load', image.prefetchFinishedLoading);
+
+            addEventListenerSpy.mockRestore();
+        });
+
+        test('should apply bp-prefetched-image class to prefetched image', () => {
+            image.prefetch({ content: true });
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeTruthy();
+            expect(prefetchedImg.classList.contains('bp-prefetched-image')).toBe(true);
+        });
+
+        test('should call prefetchFinishedLoading when prefetched image loads', () => {
+            jest.spyOn(image, 'prefetchFinishedLoading');
+
+            image.prefetch({ content: true });
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+
+            // Simulate image load event
+            const loadEvent = new Event('load');
+            Object.defineProperty(loadEvent, 'currentTarget', { value: prefetchedImg });
+            prefetchedImg.dispatchEvent(loadEvent);
+
+            expect(image.prefetchFinishedLoading).toHaveBeenCalledWith(loadEvent);
+        });
+
+        test('should use default parameters when no options provided', () => {
+            image.prefetch();
+
+            // Default is content: true, preload: false, so should prefetch
+            expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeTruthy();
         });
     });
 
@@ -662,6 +742,94 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.startLoadTimer).toBeCalled();
             expect(image.imageEl.src).toBe(url);
+        });
+
+        test('should call finishLoading immediately if image is already complete', () => {
+            jest.spyOn(image, 'startLoadTimer').mockImplementation();
+            jest.spyOn(image, 'finishLoading').mockImplementation();
+
+            const url = 'https://www.box.com/foo';
+            image.imageEl = document.createElement('img');
+
+            // Mock imageEl.complete to return true
+            Object.defineProperty(image.imageEl, 'complete', { value: true });
+
+            image.handleAssetAndRepLoad(url);
+
+            expect(image.finishLoading).toHaveBeenCalled();
+        });
+
+        test('should not call finishLoading if image is not complete', () => {
+            jest.spyOn(image, 'startLoadTimer').mockImplementation();
+            jest.spyOn(image, 'finishLoading').mockImplementation();
+
+            const url = 'https://www.box.com/foo';
+            image.imageEl = document.createElement('img');
+
+            // Mock imageEl.complete to return false
+            Object.defineProperty(image.imageEl, 'complete', { value: false });
+
+            image.handleAssetAndRepLoad(url);
+
+            expect(image.finishLoading).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('finishLoading', () => {
+        test('should call hidePreviewMask', () => {
+            jest.spyOn(image, 'hidePreviewMask').mockImplementation();
+            const superFinishLoading = jest
+                .spyOn(Object.getPrototypeOf(ImageViewer.prototype), 'finishLoading')
+                .mockImplementation();
+
+            image.finishLoading();
+
+            expect(image.hidePreviewMask).toHaveBeenCalled();
+            superFinishLoading.mockRestore();
+        });
+
+        test('should call super.finishLoading', () => {
+            jest.spyOn(image, 'hidePreviewMask').mockImplementation();
+            const superFinishLoading = jest
+                .spyOn(Object.getPrototypeOf(ImageViewer.prototype), 'finishLoading')
+                .mockImplementation();
+
+            image.finishLoading();
+
+            expect(superFinishLoading).toHaveBeenCalled();
+            superFinishLoading.mockRestore();
+        });
+
+        test('should return the result of super.finishLoading', () => {
+            jest.spyOn(image, 'hidePreviewMask').mockImplementation();
+            const expectedResult = 'test-result';
+            const superFinishLoading = jest
+                .spyOn(Object.getPrototypeOf(ImageViewer.prototype), 'finishLoading')
+                .mockReturnValue(expectedResult);
+
+            const result = image.finishLoading();
+
+            expect(result).toBe(expectedResult);
+            superFinishLoading.mockRestore();
+        });
+    });
+
+    describe('prefetchFinishedLoading', () => {
+        test('should remove image element from document body', () => {
+            const mockImg = document.createElement('img');
+            document.body.appendChild(mockImg);
+
+            const mockEvent = {
+                currentTarget: mockImg,
+            };
+
+            // Verify the image is in the DOM before calling the method
+            expect(document.body.contains(mockImg)).toBe(true);
+
+            image.prefetchFinishedLoading(mockEvent);
+
+            // Verify the image was removed from the DOM
+            expect(document.body.contains(mockImg)).toBe(false);
         });
     });
 
