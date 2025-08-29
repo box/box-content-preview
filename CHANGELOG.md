@@ -1,3 +1,10 @@
+## 3.12.0 (2025-08-29)
+
+* chore(i18n): Update Translations (#1574) ([7d5354a](https://github.com/box/box-content-preview/commit/7d5354a)), closes [#1574](https://github.com/box/box-content-preview/issues/1574)
+* feat(imageviewer): optimizations to prefetch (#1575) ([c741457](https://github.com/box/box-content-preview/commit/c741457)), closes [#1575](https://github.com/box/box-content-preview/issues/1575)
+
+
+
 ## 3.11.0 (2025-08-11)
 
 * fix(pdfjs-preload): removing doc first pages check (#1573) ([1e921be](https://github.com/box/box-content-preview/commit/1e921be)), closes [#1573](https://github.com/box/box-content-preview/issues/1573)
