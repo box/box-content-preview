@@ -11,6 +11,7 @@ export type Options = {
     fileId: string;
     onHide?: () => void;
     onShow?: () => void;
+    v2?: boolean;
 };
 
 export default class ControlsRoot {
@@ -30,9 +31,19 @@ export default class ControlsRoot {
 
     root: Root;
 
-    constructor({ className = 'bp-ControlsRoot', containerEl, fileId, onHide = noop, onShow = noop }: Options) {
+    constructor({
+        className = 'bp-ControlsRoot',
+        containerEl,
+        fileId,
+        onHide = noop,
+        onShow = noop,
+        v2 = false,
+    }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', className);
+        if (v2) {
+            this.controlsEl.classList.add('v2');
+        }
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
         this.controlsEl.setAttribute('data-resin-component', 'toolbar');
         this.controlsEl.setAttribute('data-resin-fileid', fileId);

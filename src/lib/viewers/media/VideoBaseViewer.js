@@ -120,6 +120,7 @@ class VideoBaseViewer extends MediaBaseViewer {
             fileId: this.options.file.id,
             onHide: this.handleControlsHide,
             onShow: this.handleControlsShow,
+            v2: true,
         });
         this.renderUI();
     }
@@ -293,6 +294,10 @@ class VideoBaseViewer extends MediaBaseViewer {
 
     handleControlsShow = () => {
         this.mediaContainerEl.classList.add('bp-media-controls-is-visible');
+    };
+
+    moveVideoPlayback = (forward, duration) => {
+        this.quickSeek(forward ? duration : -duration);
     };
 }
 

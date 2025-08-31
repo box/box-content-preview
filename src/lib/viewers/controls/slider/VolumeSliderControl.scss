@@ -1,0 +1,32 @@
+@import '../styles';
+@import './variables';
+
+.bp-VolumeSliderControl {
+    @include bp-Control--outline;
+
+    position: relative;
+    cursor: pointer;
+}
+
+.bp-VolumeSliderControl-thumb {
+    position: absolute;
+    top: calc(50% - #{$bp-SliderControl-thumb-radius});
+    width: 10px;
+    height: $bp-SliderControl-thumb-size;
+    margin-left: -#{$bp-SliderControl-thumb-radius};
+    background: $box-blue;
+    border: 0;
+    border-radius: $bp-SliderControl-thumb-size;
+    cursor: pointer;
+}
+
+.bp-VolumeSliderControl-track {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: $bp-SliderControl-track-size;
+    margin: auto $bp-SliderControl-track-space; // Center and allow the thumb to fully dock to edge of the track
+    background: transparent linear-gradient($white, $white) no-repeat center border-box;
+}

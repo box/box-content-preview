@@ -20,7 +20,13 @@
     background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
     visibility: hidden;
     opacity: 0;
-    transition: visibility .3s, opacity .3s;
+
+    &.v2 & {
+        position: relative;
+        width: 100%;
+        height: 60px;
+        visibility: visible;
+    }
 }
 
 .bp-media-time-scrubber-container {
@@ -203,6 +209,12 @@
 
     .bp-media-is-playing & {
         display: none;
+    }
+}
+
+.bp-VideoControlsRoot.v2 {
+    .bp-media-play-icon {
+        display: inline;
     }
 }
 

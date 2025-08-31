@@ -7,6 +7,7 @@ import IconVolumeMedium24 from '../icons/IconVolumeMedium24';
 import IconVolumeMute24 from '../icons/IconVolumeMute24';
 import MediaToggle from './MediaToggle';
 import SliderControl from '../slider';
+import VolumeSliderControl from '../slider/VolumeSliderControl';
 import useAttention from '../hooks/useAttention';
 import './VolumeControls.scss';
 
@@ -45,7 +46,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
     );
 
     return (
-        <div className="bp-VolumeControls" data-testid="bp-volume-controls">
+        <div className="bp-VolumeControls" data-testid="bp-volume-controls" style={{ position: 'relative' }}>
             <MediaToggle
                 className="bp-VolumeControls-toggle"
                 onClick={(): void => onMuteChange(!isMuted)}
@@ -56,7 +57,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
             </MediaToggle>
 
             <div className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isActive })}>
-                <SliderControl
+                {/* <VolumeSliderControl
                     className="bp-VolumeControls-slider"
                     max={100}
                     onUpdate={handleVolume}
@@ -65,7 +66,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
                     track={`linear-gradient(to right, ${bdlBoxBlue} ${value}%, ${white} ${value}%)`}
                     value={value}
                     {...handlers}
-                />
+                /> */}
             </div>
         </div>
     );

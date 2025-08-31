@@ -5,6 +5,14 @@
     align-items: center;
     margin-right: 5px;
     margin-left: 5px;
+
+    &.v2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-right: 5px;
+        margin-left: 5px;
+    }
 }
 
 .bp-DurationLabels-label {

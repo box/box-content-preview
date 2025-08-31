@@ -18,7 +18,8 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-
+const UI_V2_CONTROLS_ENABLED = 'uiV2Controls';
+const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
 class DashViewer extends VideoBaseViewer {
@@ -49,6 +50,10 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of text tracks for the video */
     textTracks = [];
 
+    uiV2ControlsEnabled = false;
+
+    videoAnnotationsEnabled = false;
+
     /**
      * @inheritdoc
      */
@@ -71,6 +76,7 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle = this.setSubtitle.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
+        this.moveVideoPlayback = this.moveVideoPlayback.bind(this);
     }
 
     /**
@@ -94,8 +100,15 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = []; // Must be sorted by representation id
         this.audioTracks = [];
 
+        this.uiV2ControlsEnabled = true; // this.featureEnabled(UI_V2_CONTROLS_ENABLED);
+        this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
+
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
+    }
+
+    useReactControls() {
+        return this.uiV2ControlsEnabled || this.videoAnnotationsEnabled;
     }
 
     /**
@@ -463,7 +476,7 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        if (!this.getViewerOption('useReactControls')) {
+        if (!this.useReactControls()) {
             this.showGearHdIcon(this.getActiveTrack());
         }
 
@@ -508,7 +521,7 @@ class DashViewer extends VideoBaseViewer {
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
 
-        if (!this.getViewerOption('useReactControls')) {
+        if (!this.useReactControls()) {
             this.showGearHdIcon(activeTrack);
         }
 
@@ -520,7 +533,7 @@ class DashViewer extends VideoBaseViewer {
         }
         this.hideLoadingIcon();
 
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             this.renderUI();
         }
     }
@@ -614,7 +627,7 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
 
         if (this.textTracks.length > 0) {
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.initSubtitles();
             } else {
                 this.mediaControls.initSubtitles(
@@ -699,7 +712,7 @@ class DashViewer extends VideoBaseViewer {
         } else {
             this.setupAutoCaptionDisplayer(textCues);
 
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.textTracks = [{ id: 0, language: __('auto_generated') }];
                 this.initSubtitles();
             } else {
@@ -772,7 +785,7 @@ class DashViewer extends VideoBaseViewer {
             const languages = this.audioTracks.map(track => getLanguageName(track.language) || track.language);
             this.selectedAudioTrack = this.audioTracks[0].id;
 
-            if (!this.getViewerOption('useReactControls')) {
+            if (!this.useReactControls()) {
                 this.mediaControls.initAlternateAudio(languages);
             }
         }
@@ -791,7 +804,7 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.calculateVideoDimensions();
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             this.loadUIReact();
         } else {
             this.loadUI();
@@ -816,7 +829,7 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
 
         // Show controls briefly after content loads
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             if (this.controls) {
                 this.showAndHideReactControls();
             }
@@ -868,7 +881,7 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus = this.getRepStatus(filmstrip);
             this.filmstripUrl = url;
 
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.filmstripStatus.getPromise().then(() => {
                     this.renderUI(); // Render once the filmstrip is ready
                 });
@@ -1179,6 +1192,7 @@ class DashViewer extends VideoBaseViewer {
                 isHDSupported={this.hdVideoId !== -1}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
+                moveVideoPlayback={this.moveVideoPlayback}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
