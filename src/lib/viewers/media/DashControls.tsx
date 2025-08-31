@@ -10,6 +10,7 @@ import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/
 import { SUBTITLES_OFF } from '../../constants';
 import './DashControls.scss';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
+import classNames from 'classnames';
 
 export type Props = DurationLabelsProps &
     MediaFullscreenToggleProps &
@@ -57,7 +58,12 @@ export default function DashControls({
     v2,
 }: Props): JSX.Element {
     return (
-        <div className="bp-DashControls" data-testid="media-controls-wrapper">
+        <div
+            className={classNames('bp-DashControls', {
+                v2,
+            })}
+            data-testid="media-controls-wrapper"
+        >
             <TimeControls
                 aspectRatio={aspectRatio}
                 bufferedRange={bufferedRange}

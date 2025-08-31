@@ -36,27 +36,57 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
         setActiveMenu(target);
     };
 
-    return (
-        <div
-            ref={ref}
-            aria-disabled={isDisabled}
-            aria-haspopup="true"
-            className={classNames(v2 ? 'bp-SettingsMenuItemV2' : 'bp-SettingsMenuItem', className)}
-            onClick={handleClick}
-            onKeyDown={handleKeydown}
-            role="menuitem"
-            tabIndex={0}
-            {...rest}
-        >
-            <div aria-label={label} className="bp-SettingsMenuItem-label">
-                {label}
+    const getV2Element = () => {
+        return (
+            <div
+                ref={ref}
+                aria-disabled={isDisabled}
+                aria-haspopup="true"
+                className="bp-SettingsMenuItemV2"
+                onClick={handleClick}
+                onKeyDown={handleKeydown}
+                role="menuitem"
+                tabIndex={0}
+                {...rest}
+            >
+                <div aria-label={label} className="bp-SettingsMenuItem-label">
+                    {label}
+                </div>
+                <div className="bp-SettingsMenuItem-value-container">
+                    <div className="bp-SettingsMenuItem-value">{value}</div>
+                    <div className="bp-SettingsMenuItem-arrow">
+                        {!isDisabled && <IconArrowRight24 height={18} width={18} />}
+                    </div>
+                </div>
             </div>
-            <div className="bp-SettingsMenuItem-value">{value}</div>
-            <div className="bp-SettingsMenuItem-arrow">
-                {!isDisabled && <IconArrowRight24 height={18} width={18} />}
+        );
+    };
+
+    const getV1Element = () => {
+        return (
+            <div
+                ref={ref}
+                aria-disabled={isDisabled}
+                aria-haspopup="true"
+                className="bp-SettingsMenuItem"
+                onClick={handleClick}
+                onKeyDown={handleKeydown}
+                role="menuitem"
+                tabIndex={0}
+                {...rest}
+            >
+                <div aria-label={label} className="bp-SettingsMenuItem-label">
+                    {label}
+                </div>
+                <div className="bp-SettingsMenuItem-value">{value}</div>
+                <div className="bp-SettingsMenuItem-arrow">
+                    {!isDisabled && <IconArrowRight24 height={18} width={18} />}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
+
+    return v2 ? getV2Element() : getV1Element();
 }
 
 export default React.forwardRef(SettingsMenuItem);

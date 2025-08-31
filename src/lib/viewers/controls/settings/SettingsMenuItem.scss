@@ -7,6 +7,9 @@
         cursor: default;
     }
 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     &:hover {
         background-color: $hover-blue-background;
 
@@ -42,6 +45,11 @@
      min-width: 160px;
      position: relative;
      border: var(--Border-01, 1px) solid transparent;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     align-self: stretch;
+     gap: 8px;
 
     &:hover {
         border-radius: var(--Radius-10, 20px);
@@ -61,4 +69,19 @@
 
 .bp-SettingsMenuItem-value {
     @include bp-SettingsRow-value;
+}
+
+
+
+.bp-SettingsMenuItem-value-container {
+    display: flex;
+    align-items: right;
+    gap: 8px;
+    .bp-SettingsMenuItem-label {
+        display: block;
+     }
+ 
+     .bp-SettingsMenuItem-value {
+         display: block;
+     }
 }
