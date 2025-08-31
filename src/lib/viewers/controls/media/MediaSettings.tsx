@@ -15,7 +15,7 @@ export type Props = Partial<AudioTracksProps> &
     Partial<SettingsProps> &
     Partial<SubtitlesProps> &
     AutoplayProps &
-    RateProps & { className?: string; isHDSupported?: boolean };
+    RateProps & { className?: string; isHDSupported?: boolean; v2?: boolean };
 
 export default function MediaSettings({
     audioTrack,
@@ -34,6 +34,7 @@ export default function MediaSettings({
     subtitle,
     subtitles = [],
     toggle,
+    v2,
 }: Props): JSX.Element {
     const subtitleDisplayLanguage = getDisplayLanguage(subtitle, subtitles);
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
@@ -51,12 +52,14 @@ export default function MediaSettings({
                     data-testid="bp-media-settings-autoplay"
                     label={__('media_autoplay')}
                     target={Menu.AUTOPLAY}
+                    v2={v2}
                     value={autoValue}
                 />
                 <Settings.MenuItem
                     data-testid="bp-media-settings-speed"
                     label={__('media_speed')}
                     target={Menu.RATE}
+                    v2={v2}
                     value={rateValue}
                 />
                 {quality && (
@@ -65,6 +68,7 @@ export default function MediaSettings({
                         isDisabled={!isHDSupported}
                         label={__('media_quality')}
                         target={Menu.QUALITY}
+                        v2={v2}
                         value={getQualityLabel(quality)}
                     />
                 )}
@@ -73,6 +77,7 @@ export default function MediaSettings({
                         data-testid="bp-media-settings-subtitles"
                         label={`${__('subtitles')}/CC`}
                         target={Menu.SUBTITLES}
+                        v2={v2}
                         value={subtitleDisplayLanguage}
                     />
                 )}

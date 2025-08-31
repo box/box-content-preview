@@ -11,13 +11,13 @@ export type Props = React.RefAttributes<HTMLDivElement> & {
     isDisabled?: boolean;
     target: Menu;
     value: string;
+    v2?: boolean;
 };
 export type Ref = HTMLDivElement;
 
 function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
-    const { className, label, isDisabled = false, target, value, ...rest } = props;
+    const { className, label, isDisabled = false, target, value, v2, ...rest } = props;
     const { setActiveMenu } = React.useContext(SettingsContext);
-
     const handleClick = (): void => {
         if (isDisabled) {
             return;
@@ -41,7 +41,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             ref={ref}
             aria-disabled={isDisabled}
             aria-haspopup="true"
-            className={classNames('bp-SettingsMenuItem', className)}
+            className={classNames(v2 ? 'bp-SettingsMenuItemV2' : 'bp-SettingsMenuItem', className)}
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"

@@ -20,6 +20,7 @@ export type Props = DurationLabelsProps &
     VolumeControlsProps & {
         isPlayingHD?: boolean;
         moveVideoPlayback: (forward: boolean, duration: number) => void;
+        v2?: boolean;
     };
 
 export default function DashControls({
@@ -53,11 +54,8 @@ export default function DashControls({
     subtitle,
     subtitles = [],
     volume,
+    v2,
 }: Props): JSX.Element {
-    React.useEffect(() => {
-        console.log('DashControls', currentTime);
-    }, [currentTime]);
-
     return (
         <div className="bp-DashControls" data-testid="media-controls-wrapper">
             <TimeControls
@@ -95,7 +93,7 @@ export default function DashControls({
                         audioTracks={audioTracks}
                         autoplay={autoplay}
                         badge={isPlayingHD ? <HDBadge /> : undefined}
-                        className="bp-DashControls-settings"
+                        className="bp-DashControls-settings v2"
                         isHDSupported={isHDSupported}
                         onAudioTrackChange={onAudioTrackChange}
                         onAutoplayChange={onAutoplayChange}
@@ -106,6 +104,7 @@ export default function DashControls({
                         rate={rate}
                         subtitle={subtitle}
                         subtitles={subtitles}
+                        v2
                     />
                     <MediaFullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                 </div>

@@ -27,3 +27,19 @@
         overflow-y: hidden; // Hide scrollbar during menu -> submenu transition
     }
 }
+
+
+.bp-DashControls-settings.v2 {
+    .bp-SettingsFlyout {
+    border-radius: var(--Radius-10, 20px);
+    border: var(--Border-01, 1px) solid var(--Border-Menu-border, #E8E8E8);
+    background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, 0.90));
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.10);
+    backdrop-filter: blur(16px);
+    min-width: 184px;
+    overflow: visible;
+      &.bp-is-open {
+        display: inline-block;
+      }
+    }
+}

@@ -33,6 +33,24 @@
     }
 }
 
+
+.bp-SettingsMenuItemV2 {
+    &[aria-disabled='true'] {
+        cursor: default;
+    }
+
+     min-width: 160px;
+     position: relative;
+     border: var(--Border-01, 1px) solid transparent;
+
+    &:hover {
+        border-radius: var(--Radius-10, 20px);
+        border: var(--Border-01, 1px) solid var(--Border-Menu-border, #E8E8E8);
+        background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, 0.90));
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.10);
+    }
+}
+
 .bp-SettingsMenuItem-arrow {
     @include bp-SettingsRow-cell;
 }
