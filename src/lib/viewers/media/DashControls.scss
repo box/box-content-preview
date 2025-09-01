@@ -6,6 +6,18 @@
 
 .bp-DashControls-bar {
     @include bp-VideoControls-bar;
+
+    justify-content: space-between;
+
+    .bp-DashControls-group:nth-child(2) {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .bp-DashControls-group:last-child {
+        margin-left: auto;
+    }
 }
 
 .bp-DashControls-group {
@@ -14,9 +26,8 @@
 
 .bp-DashControls-settings {
     @include bp-VideoControls-settings;
-
 }
 
 .bp-DashControls.v2 {
-   margin-top:40px;
+    margin-top: 40px;
 }

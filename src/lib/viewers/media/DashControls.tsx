@@ -1,5 +1,6 @@
 import React from 'react';
-import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
+import classNames from 'classnames';
+import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import HDBadge from '../controls/media/HDBadge';
 import MediaFullscreenToggle, { Props as MediaFullscreenToggleProps } from '../controls/media/MediaFullscreenToggle';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
@@ -10,7 +11,7 @@ import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/
 import { SUBTITLES_OFF } from '../../constants';
 import './DashControls.scss';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
-import classNames from 'classnames';
+import { AnnotationMode } from '../../types/annotations';
 
 export type Props = DurationLabelsProps &
     MediaFullscreenToggleProps &
@@ -22,6 +23,10 @@ export type Props = DurationLabelsProps &
         isPlayingHD?: boolean;
         moveVideoPlayback: (forward: boolean, duration: number) => void;
         v2?: boolean;
+        annotationColor?: string;
+        annotationMode?: AnnotationMode;
+        onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
+        onAnnotationModeEscape?: () => void;
     };
 
 export default function DashControls({
@@ -56,7 +61,12 @@ export default function DashControls({
     subtitles = [],
     volume,
     v2,
+    annotationColor,
+    annotationMode,
+    onAnnotationModeClick,
+    onAnnotationModeEscape,
 }: Props): JSX.Element {
+    const hasRegion = true;
     return (
         <div
             className={classNames('bp-DashControls', {
@@ -76,7 +86,14 @@ export default function DashControls({
 
             <div className="bp-DashControls-bar">
                 <div className="bp-AnnotationsControls-group">
-                    <AnnotationsControls />
+                    <AnnotationsControls
+                        annotationColor={annotationColor}
+                        annotationMode={annotationMode}
+                        hasDrawing
+                        hasRegion
+                        onAnnotationModeClick={onAnnotationModeClick}
+                        onAnnotationModeEscape={onAnnotationModeEscape}
+                    />
                 </div>
                 <div className="bp-DashControls-group">
                     <PlayPauseToggle
