@@ -33,23 +33,38 @@ export default function VolumeSliderControl({
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
 
-    const getPosition = React.useCallback((pageX: number) => {
+    /*
+
+{
+    "x": 1324,
+    "y": 645.515625,
+    "width": 34,
+    "height": 200,
+    "top": 645.515625,
+    "right": 1358,
+    "bottom": 845.515625,
+    "left": 1324
+}
+
+    */
+
+    const getPosition = React.useCallback((pageY: number) => {
         const { current: sliderEl } = sliderElRef;
 
         if (!sliderEl) return 0;
 
-        const { left: sliderLeft, width: sliderWidth } = sliderEl.getBoundingClientRect();
-        return Math.max(0, Math.min(pageX - sliderLeft, sliderWidth));
+        const { top: sliderTop, height: sliderHeight } = sliderEl.getBoundingClientRect();
+        return Math.max(0, Math.min(pageY - sliderTop, sliderHeight));
     }, []);
 
     const getPositionValue = React.useCallback(
-        (pageX: number) => {
+        (pageY: number) => {
             const { current: sliderEl } = sliderElRef;
 
             if (!sliderEl) return 0;
 
-            const { width: sliderWidth } = sliderEl.getBoundingClientRect();
-            const newValue = (getPosition(pageX) / sliderWidth) * max;
+            const { height: sliderHeight } = sliderEl.getBoundingClientRect();
+            const newValue = (getPosition(pageY) / sliderHeight) * max;
             return Math.max(min, Math.min(newValue, max));
         },
         [getPosition, max, min],
@@ -69,22 +84,22 @@ export default function VolumeSliderControl({
         }
     };
 
-    const handleMouseDown = ({ button, ctrlKey, metaKey, pageX }: React.MouseEvent<Ref>): void => {
+    const handleMouseDown = ({ button, ctrlKey, metaKey, pageY }: React.MouseEvent<Ref>): void => {
         if (button > 1 || ctrlKey || metaKey) return;
 
-        onUpdate(getPositionValue(pageX));
+        onUpdate(getPositionValue(pageY));
         setIsScrubbing(true);
     };
 
-    const handleMouseMove = ({ pageX }: React.MouseEvent<Ref>): void => {
+    const handleMouseMove = ({ pageY }: React.MouseEvent<Ref>): void => {
         const { current: sliderEl } = sliderElRef;
-        const { width: sliderWidth } = sliderEl ? sliderEl.getBoundingClientRect() : { width: 0 };
-
-        onMove(getPositionValue(pageX), getPosition(pageX), sliderWidth);
+        const { height: sliderHeight } = sliderEl ? sliderEl.getBoundingClientRect() : { height: 0 };
+        console.log('mouse move', getPositionValue(pageY), getPosition(pageY), sliderHeight);
+        onMove(getPositionValue(pageY), getPosition(pageY), sliderHeight);
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
-        onUpdate(getPositionValue(touches[0].pageX));
+        onUpdate(getPositionValue(touches[0].pageY));
         setIsScrubbing(true);
     };
 
@@ -94,13 +109,13 @@ export default function VolumeSliderControl({
             if (!isScrubbing || event.button > 1 || event.ctrlKey || event.metaKey) return;
 
             event.preventDefault();
-            onUpdate(getPositionValue(event.pageX));
+            onUpdate(getPositionValue(event.pageY));
         };
         const handleDocumentTouchMove = (event: TouchEvent): void => {
             if (!isScrubbing || !event.touches || !event.touches[0]) return;
 
             event.preventDefault();
-            onUpdate(getPositionValue(event.touches[0].pageX));
+            onUpdate(getPositionValue(event.touches[0].pageY));
         };
 
         if (isScrubbing) {
@@ -119,77 +134,62 @@ export default function VolumeSliderControl({
     }, [isScrubbing, getPositionValue, onUpdate]);
 
     return (
-        // <div
-        //     ref={sliderElRef}
-        //     aria-label={title}
-        //     aria-valuemax={max}
-        //     aria-valuemin={min}
-        //     aria-valuenow={value}
-        //     className={classNames('bp-VolumeSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
-        //     onKeyDown={handleKeydown}
-        //     onMouseDown={handleMouseDown}
-        //     onMouseMove={handleMouseMove}
-        //     onTouchStart={handleTouchStart}
-        //     role="slider"
-        //     style={{ transform: 'rotate(-90deg)' }}
-        //     tabIndex={0}
-        //     {...rest}
-        // >
-        //     <div
-        //         className="bp-VolumeSliderControl-track"
-        //         data-testid="bp-volume-slider-control-track"
-        //         style={{ backgroundImage: track }}
-        //     />
-        //     <div
-        //         className="bp-VolumeSliderControl-thumb"
-        //         data-testid="bp-volume-slider-control-thumb"
-        //         style={{
-        //             top: `${(value / max) * 100}%`,
-        //         }}
-        //     />
-        // </div>
-
-        <div
-            style={{
-                width: '100%',
-                height: '100%',
-                padding: 16,
-                left: 0,
-                top: '-100px',
-                position: 'absolute',
-                background: 'rgba(34, 34, 34, 0.90)',
-                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.25)',
-                borderRadius: 16,
-                outline: '1px rgba(255, 255, 255, 0.13) solid',
-                outlineOffset: '-1px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                display: 'inline-flex',
-            }}
-        >
-            <div style={{ width: 8, height: 108, position: 'relative' }}>
+        <>
+            <div
+                ref={sliderElRef}
+                aria-label={title}
+                aria-valuemax={max}
+                aria-valuemin={min}
+                aria-valuenow={value}
+                className={classNames('bp-VolumeSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
+                onKeyDown={handleKeydown}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onTouchStart={handleTouchStart}
+                role="slider"
+                style={{ transform: 'rotate(-90deg)', display: 'none' }}
+                tabIndex={0}
+                {...rest}
+            >
                 <div
-                    style={{
-                        width: 8,
-                        height: 107,
-                        left: 0,
-                        position: 'absolute',
-                        background: 'rgba(255, 255, 255, 0.20)',
-                        borderRadius: 20,
-                    }}
+                    className="bp-VolumeSliderControl-track"
+                    data-testid="bp-volume-slider-control-track"
+                    style={{ backgroundImage: track }}
                 />
                 <div
+                    className="bp-VolumeSliderControl-thumb"
+                    data-testid="bp-volume-slider-control-thumb"
                     style={{
-                        width: 8,
-                        height: 63,
-                        left: 0,
-                        position: 'absolute',
-                        background: 'white',
-                        borderRadius: 20,
                         top: `${(value / max) * 100}%`,
                     }}
                 />
             </div>
-        </div>
+
+            <div
+                className={classNames('bp-VolumeVerticalSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
+            >
+                <div className="bp-VolumeVerticalSliderControl-track-container">
+                    <div className="bp-VolumeVerticalSliderControl-track-background">
+                        <div
+                            ref={sliderElRef}
+                            aria-label={title}
+                            aria-valuemax={max}
+                            aria-valuemin={min}
+                            aria-valuenow={value}
+                            className="bp-VolumeVerticalSliderControl-track"
+                            onKeyDown={handleKeydown}
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onTouchStart={handleTouchStart}
+                            role="slider"
+                            style={{
+                                height: `${(value / max) * 100}%`,
+                            }}
+                            tabIndex={0}
+                        />
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

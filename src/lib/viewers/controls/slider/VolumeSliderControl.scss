@@ -8,6 +8,20 @@
     cursor: pointer;
 }
 
+.bp-VolumeVerticalSliderControl {
+    @include bp-Control--outline;
+    cursor: pointer;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    background: rgba(34, 34, 34, 0.90);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+    display: flex;
+    padding: 16px;
+    justify-content: center;
+    align-items: center;
+    
+}
+
 .bp-VolumeSliderControl-thumb {
     position: absolute;
     top: calc(50% - #{$bp-SliderControl-thumb-radius});
@@ -29,4 +43,35 @@
     height: $bp-SliderControl-track-size;
     margin: auto $bp-SliderControl-track-space; // Center and allow the thumb to fully dock to edge of the track
     background: transparent linear-gradient($white, $white) no-repeat center border-box;
+}
+
+
+.bp-VolumeVerticalSliderControl-track-container {
+    width: 8px;
+    min-height: 108px;
+    position: relative;
+}
+
+.bp-VolumeVerticalSliderControl-track-background {
+    width: 8px;
+    height: 150px;
+    width: 8;
+    left: 0;
+    width: 8;
+    position: relative;
+    background-color: #55554F;
+    border-radius: 20px;
+   
+}
+
+
+
+.bp-VolumeVerticalSliderControl-track {
+    width: 8px;
+    height: 63px;
+    left: 0;
+    position: absolute;
+    bottom: 0;
+    background: white;
+    border-radius: 20px;
 }

@@ -8,11 +8,13 @@ import MediaToggle from './MediaToggle';
 import useAttention from '../hooks/useAttention';
 import './VolumeControls.scss';
 import IconVolumeMax24 from '../icons/IconVolumeMax24';
+import VolumeSliderControl from '../slider/VolumeSliderControl';
 
 export type Props = {
     onMuteChange: (isMuted: boolean) => void;
     onVolumeChange: (volume: number) => void;
     volume?: number;
+    v2?: boolean;
 };
 
 export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) => JSX.Element {
@@ -29,7 +31,7 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
     return Icon;
 }
 
-export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1 }: Props): JSX.Element {
+export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1, v2 }: Props): JSX.Element {
     const [isActive, handlers] = useAttention();
     const isMuted = !volume;
     const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
@@ -45,6 +47,19 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
 
     return (
         <div className="bp-VolumeControls" data-testid="bp-volume-controls" style={{ position: 'relative' }}>
+            <div className={classNames('bp-VolumeControls-flyoutV2', { 'bp-is-open': isActive })}>
+                <VolumeSliderControl
+                    className="bp-VolumeControls-slider"
+                    max={100}
+                    onUpdate={handleVolume}
+                    step={1}
+                    title={__('media_volume_slider')}
+                    track={`linear-gradient(to right, #0061d5 ${value}%, #fff ${value}%)`}
+                    value={value}
+                    {...handlers}
+                />
+            </div>
+
             <MediaToggle
                 className="bp-VolumeControls-toggle"
                 onClick={(): void => onMuteChange(!isMuted)}
@@ -53,19 +68,6 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
             >
                 <Icon />
             </MediaToggle>
-
-            <div className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isActive })}>
-                {/* <VolumeSliderControl
-                    className="bp-VolumeControls-slider"
-                    max={100}
-                    onUpdate={handleVolume}
-                    step={1}
-                    title={__('media_volume_slider')}
-                    track={`linear-gradient(to right, ${bdlBoxBlue} ${value}%, ${white} ${value}%)`}
-                    value={value}
-                    {...handlers}
-                /> */}
-            </div>
         </div>
     );
 }

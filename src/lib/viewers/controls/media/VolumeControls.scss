@@ -17,6 +17,32 @@
     }
 }
 
+.bp-VolumeControls-flyoutV2 {
+    flex: 0 0 auto;
+    max-width: 0;
+    transition: max-width 200ms ease-in-out;
+    height: $bp-MediaControl-height;
+    overflow: hidden;
+    display: none;
+    &.bp-is-open {
+        max-width: 100px;
+        overflow: visible;
+        display: block;
+        max-width: 100px;
+        position: absolute;
+        height:300px;
+        top: -200px;
+        left: -5px;
+        height: 200px;
+    }
+}
+
+
+
+
+
+
+
 .bp-VolumeControls-slider {
     width: 10px;
     height: 100%;
