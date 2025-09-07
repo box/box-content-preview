@@ -27,6 +27,7 @@ export type Props = DurationLabelsProps &
         annotationMode?: AnnotationMode;
         onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
         onAnnotationModeEscape?: () => void;
+        videoAnnotationsEnabled?: boolean;
     };
 
 export default function DashControls({
@@ -65,8 +66,9 @@ export default function DashControls({
     annotationMode,
     onAnnotationModeClick,
     onAnnotationModeEscape,
+    videoAnnotationsEnabled = false,
 }: Props): JSX.Element {
-    const hasRegion = true;
+    const hasRegion = videoAnnotationsEnabled;
     return (
         <div
             className={classNames('bp-DashControls', {

@@ -40,13 +40,22 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
 
     const handleVolume = React.useCallback(
         (newValue: number): void => {
+            console.log('handleVolume', newValue);
             onVolumeChange(newValue / 100);
         },
         [onVolumeChange],
     );
 
     return (
-        <div className="bp-VolumeControls" data-testid="bp-volume-controls" style={{ position: 'relative' }}>
+        <div
+            className="bp-VolumeControls"
+            data-testid="bp-volume-controls"
+            onBlur={handlers.onBlur}
+            onFocus={handlers.onFocus}
+            onMouseOut={handlers.onMouseOut}
+            onMouseOver={handlers.onMouseOver}
+            style={{ position: 'relative' }}
+        >
             <div className={classNames('bp-VolumeControls-flyoutV2', { 'bp-is-open': isActive })}>
                 <VolumeSliderControl
                     className="bp-VolumeControls-slider"

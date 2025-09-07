@@ -16,7 +16,9 @@ export default function useAttention(): [isActive, handlers] {
     const handleBlur = (): void => setFocused(false);
     const handleFocus = (): void => setFocused(true);
     const handleMouseOut = (): void => setHovered(false);
-    const handleMouseOver = (): void => setHovered(true);
+    const handleMouseOver = (): void => {
+        setHovered(true);
+    };
 
     return [
         isFocused || isHovered,
