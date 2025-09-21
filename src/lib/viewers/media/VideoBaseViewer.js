@@ -1,9 +1,9 @@
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
+import { CLASS_DARK, CLASS_HIDDEN, CLASS_IS_BUFFERING } from '../../constants';
+import { ICON_PLAY_LARGE } from '../../icons';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
-import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
-import { ICON_PLAY_LARGE } from '../../icons';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
