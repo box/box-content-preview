@@ -409,7 +409,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleVolume() {
-        const volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        let volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+
+        volume = Math.min(1, volume);
         if (volume !== 0) {
             this.oldVolume = volume;
         }

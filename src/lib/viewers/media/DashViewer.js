@@ -1,15 +1,15 @@
 import React from 'react';
-import DashControls from './DashControls';
+import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
+import { getRepresentation } from '../../file';
 import fullscreen from '../../Fullscreen';
 import getLanguageName from '../../lang';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
-import VideoBaseViewer from './VideoBaseViewer';
 import { appendQueryParams, getProp } from '../../util';
-import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
-import { getRepresentation } from '../../file';
-import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import './Dash.scss';
+import DashControls from './DashControls';
+import VideoBaseViewer from './VideoBaseViewer';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -932,8 +932,11 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
+
+        const controls = this.mediaContainerEl.querySelector('.bp-VideoControlsRoot');
+        const controlsHeight = controls ? controls.clientHeight : 0;
         const viewport = {
-            height: this.wrapperEl.clientHeight,
+            height: this.wrapperEl.clientHeight - controlsHeight,
             width: this.wrapperEl.clientWidth,
         };
 

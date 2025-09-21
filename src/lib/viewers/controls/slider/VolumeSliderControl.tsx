@@ -1,6 +1,6 @@
-import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
+import React from 'react';
 import { decodeKeydown } from '../../../util';
 import './VolumeSliderControl.scss';
 
@@ -70,35 +70,13 @@ export default function VolumeSliderControl({
         return Math.max(5, distanceFromBottom);
     }, []);
 
-    /*
-
-    {
-    "x": 572,
-    "y": 487.59375,
-    "width": 8,
-    "height": 150,
-    "top": 487.59375,
-    "right": 580,
-    "bottom": 637.59375,
-    "left": 572
-}
-   
-    pageY = 632
-
-*/
-
     const getPositionValue = React.useCallback(
         (pageY: number, clientY: number) => {
             const { current: sliderEl } = sliderElRef;
             if (!sliderEl) return 0;
-
             const { height: sliderHeight, top: sliderTop } = sliderEl.getBoundingClientRect();
-
             const positionRelativeToSlider = getPositionRelativeToSlider(clientY);
-
-            console.log('positionRelativeToSlider', positionRelativeToSlider);
             const newValue = (positionRelativeToSlider / sliderHeight) * max;
-            console.log('newValue', newValue);
             return Math.max(min, Math.min(newValue, max));
         },
         [getPositionRelativeToSlider, max, min],
@@ -106,12 +84,12 @@ export default function VolumeSliderControl({
 
     const handleKeydown = (event: React.KeyboardEvent): void => {
         const key = decodeKeydown(event);
-        if (key === 'ArrowLeft') {
+        if (key === 'ArrowDown') {
             event.stopPropagation(); // Prevents global key handling
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
-        if (key === 'ArrowRight') {
+        if (key === 'ArrowUp') {
             event.stopPropagation(); // Prevents global key handling
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
@@ -165,8 +143,12 @@ export default function VolumeSliderControl({
         };
     }, [isScrubbing, getPositionRelativeToSlider, onUpdate]);
 
+    const defaultHeightValue = value === 0 ? 5 : value;
     return (
-        <div className={classNames('bp-VolumeVerticalSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}>
+        <div
+            className={classNames('bp-VolumeVerticalSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
+            {...rest}
+        >
             <div className="bp-VolumeVerticalSliderControl-track-container">
                 <div ref={sliderElRef} className="bp-VolumeVerticalSliderControl-track-background">
                     <div
@@ -183,7 +165,7 @@ export default function VolumeSliderControl({
                         onTouchStart={handleTouchStart}
                         role="slider"
                         style={{
-                            height: `${(value / max) * 100}%`,
+                            height: `${(defaultHeightValue / max) * 100}%`,
                         }}
                         tabIndex={0}
                     />

@@ -40,8 +40,8 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
 
     const handleVolume = React.useCallback(
         (newValue: number): void => {
-            console.log('handleVolume', newValue);
-            onVolumeChange(newValue / 100);
+            const newValueToUse = newValue <= 5 ? 0 : newValue;
+            onVolumeChange(newValueToUse / 100);
         },
         [onVolumeChange],
     );
