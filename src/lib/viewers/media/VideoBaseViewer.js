@@ -37,13 +37,8 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
-
-        const videoContainer = document.createElement('div');
-        videoContainer.classList.add('bp-video-container');
-        this.mediaContainerEl.appendChild(videoContainer);
-
         // Video element
-        this.mediaEl = videoContainer.appendChild(document.createElement('video'));
+        this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
         // Prevents native iOS UI from taking over
         this.mediaEl.setAttribute('playsinline', '');

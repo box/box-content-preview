@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
+
 import HDBadge from '../controls/media/HDBadge';
 import MediaFullscreenToggle, { Props as MediaFullscreenToggleProps } from '../controls/media/MediaFullscreenToggle';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
@@ -8,7 +9,7 @@ import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/P
 import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/media/SubtitlesToggle';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
-import { SUBTITLES_OFF } from '../../constants';
+import { CONTROLS_HEIGHT, SUBTITLES_OFF } from '../../constants';
 import './DashControls.scss';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
 import { AnnotationMode } from '../../types/annotations';
@@ -75,6 +76,7 @@ export default function DashControls({
                 v2,
             })}
             data-testid="media-controls-wrapper"
+            style={{ height: CONTROLS_HEIGHT }}
         >
             <TimeControls
                 aspectRatio={aspectRatio}
@@ -87,7 +89,7 @@ export default function DashControls({
             />
 
             <div className="bp-DashControls-bar">
-                <div className="bp-AnnotationsControls-group">
+                <div className="bp-DashControls-group bp-AnnotationsControls-group">
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}

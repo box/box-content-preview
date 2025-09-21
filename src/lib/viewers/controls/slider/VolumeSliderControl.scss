@@ -20,6 +20,13 @@
     border-radius: 16px;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .25);
     cursor: pointer;
+    height:140px;
+    //force this to bottom of it's parent
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 .bp-VolumeSliderControl-thumb {
@@ -48,16 +55,14 @@
 .bp-VolumeVerticalSliderControl-track-container {
     position: relative;
     width: 8px;
-    min-height: 108px;
+    height: 108px;
 }
 
 .bp-VolumeVerticalSliderControl-track-background {
     position: relative;
     left: 0;
     width: 8px;
-    width: 8;
-    width: 8;
-    height: 150px;
+    height: 108px;
     background-color: #55554f;
     border-radius: 20px;
 }
@@ -67,7 +72,6 @@
     bottom: 0;
     left: 0;
     width: 8px;
-    height: 63px;
     background: white;
     border-radius: 20px;
 }

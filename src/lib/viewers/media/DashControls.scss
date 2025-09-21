@@ -9,15 +9,11 @@
 
     justify-content: space-between;
 
-    .bp-DashControls-group:nth-child(2) {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+    //make each group no bigger than 33% of the width of the bar
+    .bp-DashControls-group {
+        max-width: 33%;
     }
-
-    .bp-DashControls-group:last-child {
-        margin-left: auto;
-    }
+   
 }
 
 .bp-DashControls-group {
@@ -29,5 +25,5 @@
 }
 
 .bp-DashControls.v2 {
-    padding: 40px 20px 8px 20px;
+    padding:40px 20px 8px 20px;
 }

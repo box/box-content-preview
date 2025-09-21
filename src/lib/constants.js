@@ -148,3 +148,5 @@ export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-document';
 export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-image';
 
 export const SUBTITLES_OFF = -1;
+
+export const CONTROLS_HEIGHT = 120;

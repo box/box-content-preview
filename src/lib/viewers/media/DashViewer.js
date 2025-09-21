@@ -1,5 +1,5 @@
 import React from 'react';
-import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import { CONTROLS_HEIGHT, MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import fullscreen from '../../Fullscreen';
@@ -932,11 +932,8 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
-
-        const controls = this.mediaContainerEl.querySelector('.bp-VideoControlsRoot');
-        const controlsHeight = controls ? controls.clientHeight : 0;
         const viewport = {
-            height: this.wrapperEl.clientHeight - controlsHeight,
+            height: this.wrapperEl.clientHeight - CONTROLS_HEIGHT,
             width: this.wrapperEl.clientWidth,
         };
 
@@ -944,7 +941,7 @@ class DashViewer extends VideoBaseViewer {
         // to not overflow and fit properly
         if (width < 420) {
             width = 420;
-            height = width / this.aspect;
+            height = width / this.aspect - CONTROLS_HEIGHT;
         }
 
         // Reset any prior set widths and heights
