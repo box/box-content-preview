@@ -295,10 +295,6 @@ class VideoBaseViewer extends MediaBaseViewer {
     handleControlsShow = () => {
         this.mediaContainerEl.classList.add('bp-media-controls-is-visible');
     };
-
-    moveVideoPlayback = (forward, duration) => {
-        this.quickSeek(forward ? duration : -duration);
-    };
 }
 
 export default VideoBaseViewer;

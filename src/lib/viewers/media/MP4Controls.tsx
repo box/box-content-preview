@@ -20,6 +20,7 @@ export default function MP4Controls({
     currentTime,
     durationTime,
     isPlaying,
+    movePlayback,
     onAutoplayChange,
     onFullscreenToggle,
     onMuteChange,
@@ -41,7 +42,7 @@ export default function MP4Controls({
 
             <div className="bp-MP4Controls-bar">
                 <div className="bp-MP4Controls-group">
-                    <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} />
+                    <PlayPauseToggle isPlaying={isPlaying} movePlayback={movePlayback} onPlayPause={onPlayPause} />
                     <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />
                     <DurationLabels currentTime={currentTime} durationTime={durationTime} />
                 </div>

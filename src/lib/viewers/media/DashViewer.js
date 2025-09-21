@@ -18,7 +18,7 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-const UI_V2_CONTROLS_ENABLED = 'uiV2Controls';
+const VIDEO_CONTROLS_V2 = 'videoControlsV2';
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
@@ -76,7 +76,7 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle = this.setSubtitle.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
-        this.moveVideoPlayback = this.moveVideoPlayback.bind(this);
+        this.movePlayback = this.movePlayback.bind(this);
     }
 
     /**
@@ -100,7 +100,7 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = []; // Must be sorted by representation id
         this.audioTracks = [];
 
-        this.uiV2ControlsEnabled = true; // this.featureEnabled(UI_V2_CONTROLS_ENABLED);
+        this.uiV2ControlsEnabled = true; // this.featureEnabled(VIDEO_CONTROLS_V2);
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
 
         // dash specific class
@@ -108,7 +108,8 @@ class DashViewer extends VideoBaseViewer {
     }
 
     useReactControls() {
-        return this.uiV2ControlsEnabled || this.videoAnnotationsEnabled;
+        // console.log('useReactControls', this.uiV2ControlsEnabled, this.videoAnnotationsEnabled);
+        return this.uiV2ControlsEnabled;
     }
 
     /**
@@ -932,8 +933,9 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
+        const controlsHeight = this.useReactControls() ? CONTROLS_HEIGHT : 0;
         const viewport = {
-            height: this.wrapperEl.clientHeight - CONTROLS_HEIGHT,
+            height: this.wrapperEl.clientHeight - controlsHeight,
             width: this.wrapperEl.clientWidth,
         };
 
@@ -1192,7 +1194,7 @@ class DashViewer extends VideoBaseViewer {
                 isHDSupported={this.hdVideoId !== -1}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
-                moveVideoPlayback={this.moveVideoPlayback}
+                movePlayback={this.movePlayback}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
