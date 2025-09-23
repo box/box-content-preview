@@ -1,8 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import IconVolumeMed24 from '../icons/IconVolumeMed24';
-import IconVolumeMute24 from '../icons/IconVolumeMute24';
-import IconVolumeNone24 from '../icons/IconVolumeNone24';
+import IconVolumeLow24 from '../icons/IconVolumeLow24';
 import IconVolumeMuted24 from '../icons/IconVolumeMuted24';
 import MediaToggle from './MediaToggle';
 import useAttention from '../hooks/useAttention';
@@ -24,7 +23,7 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
     } else if (volume >= 0.33) {
         Icon = IconVolumeMed24;
     } else if (volume >= 0.01) {
-        Icon = IconVolumeNone24;
+        Icon = IconVolumeLow24;
     }
 
     return Icon;

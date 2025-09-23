@@ -1,8 +1,7 @@
 import React from 'react';
 import noop from 'lodash/noop';
+import IconPlay24 from '../icons/IconPlay24';
 import IconPause24 from '../icons/IconPause24';
-import IconPlayNew24 from '../icons/IconPlayNew24';
-import IconPauseNew24 from '../icons/IconPauseNew24';
 import IconForward24 from '../icons/IconArrowCurveForward24';
 import IconBack24 from '../icons/IconArrowCurveBack24';
 import MediaToggle from './MediaToggle';
@@ -15,7 +14,7 @@ export type Props = {
 };
 
 export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePlayback = noop }: Props): JSX.Element {
-    const Icon = isPlaying ? IconPauseNew24 : IconPlayNew24;
+    const Icon = isPlaying ? IconPause24 : IconPlay24;
     const title = isPlaying ? __('media_pause') : __('media_play');
     const skipForwardTitle = __('media_skip_forward');
     const skipBackwardTitle = __('media_skip_backward');

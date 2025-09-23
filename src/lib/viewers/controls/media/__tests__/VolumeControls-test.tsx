@@ -35,15 +35,15 @@ describe('VolumeControls', () => {
         });
 
         test.each`
-            volume  | icon                    | title
-            ${0}    | ${'IconVolumeMute24'}   | ${'Unmute'}
-            ${0.0}  | ${'IconVolumeMute24'}   | ${'Unmute'}
-            ${0.01} | ${'IconVolumeLow24'}    | ${'Mute'}
-            ${0.25} | ${'IconVolumeLow24'}    | ${'Mute'}
-            ${0.33} | ${'IconVolumeMedium24'} | ${'Mute'}
-            ${0.51} | ${'IconVolumeMedium24'} | ${'Mute'}
-            ${0.66} | ${'IconVolumeHigh24'}   | ${'Mute'}
-            ${1.0}  | ${'IconVolumeHigh24'}   | ${'Mute'}
+            volume  | icon                   | title
+            ${0}    | ${'IconVolumeMuted24'} | ${'Unmute'}
+            ${0.0}  | ${'IconVolumeMuted24'} | ${'Unmute'}
+            ${0.01} | ${'IconVolumeLow24'}   | ${'Mute'}
+            ${0.25} | ${'IconVolumeLow24'}   | ${'Mute'}
+            ${0.33} | ${'IconVolumeMed24'}   | ${'Mute'}
+            ${0.51} | ${'IconVolumeMed24'}   | ${'Mute'}
+            ${0.66} | ${'IconVolumeMax24'}   | ${'Mute'}
+            ${1.0}  | ${'IconVolumeMax24'}   | ${'Mute'}
         `('should render the correct icon and title for volume $volume', async ({ icon, title, volume }) => {
             getWrapper({ volume });
             const iconElement = await screen.findByTestId(icon);
@@ -54,23 +54,21 @@ describe('VolumeControls', () => {
         });
 
         test.each`
-            volume   | track                                                   | value
-            ${0}     | ${`linear-gradient(to right, #0061d5 0%, #fff 0%)`}     | ${0}
-            ${0.0}   | ${`linear-gradient(to right, #0061d5 0%, #fff 0%)`}     | ${0}
-            ${0.01}  | ${`linear-gradient(to right, #0061d5 1%, #fff 1%)`}     | ${1}
-            ${0.25}  | ${`linear-gradient(to right, #0061d5 25%, #fff 25%)`}   | ${25}
-            ${0.254} | ${`linear-gradient(to right, #0061d5 25%, #fff 25%)`}   | ${25}
-            ${0.255} | ${`linear-gradient(to right, #0061d5 26%, #fff 26%)`}   | ${26}
-            ${1.0}   | ${`linear-gradient(to right, #0061d5 100%, #fff 100%)`} | ${100}
-        `('should render the correct track and value for volume $volume', async ({ track, value, volume }) => {
+            volume   | value
+            ${0}     | ${5}
+            ${0.0}   | ${5}
+            ${0.01}  | ${1}
+            ${0.25}  | ${25}
+            ${0.254} | ${25}
+            ${0.255} | ${26}
+            ${1.0}   | ${100}
+        `('should render the correct track height for volume $volume', async ({ value, volume }) => {
             const max = 100;
             getWrapper({ volume, max });
 
-            const sliderTrack = await screen.findByTestId('bp-slider-control-track');
-            const sliderThumb = await screen.findByTestId('bp-slider-control-thumb');
+            const sliderTrack = await screen.findByTestId('bp-volume-slider-control-track');
 
-            expect(sliderTrack).toHaveStyle({ backgroundImage: track });
-            expect(sliderThumb).toHaveStyle({ left: `${(value / max) * 100}%` });
+            expect(sliderTrack).toHaveStyle({ height: `${value}%` });
         });
     });
 });
