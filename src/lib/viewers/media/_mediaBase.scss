@@ -63,6 +63,42 @@
     }
 }
 
+.bp-media-play-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+    font-size: 40px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: all .2s;
+
+    // move this to the center of the container height
+
+    button {
+        @include bp-reset-default-styling-button;
+
+        width: 40px;
+        height: 40px;
+        font-size: 40px;
+        text-align: center;
+        background: $black;
+        border-radius: 40px;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+    .play-button {
+        width: 60px;
+        height: 60px;
+    }
+}
+
 .bp-has-keyboard-focus {
     .bp-media-time-scrubber-container,
     .bp-media-volume-scrubber-container,
@@ -104,16 +140,8 @@
 }
 
 .bp-VideoControlsRoot {
-    position: absolute;
-    right: 0;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-
-    &.v2 {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        left: auto;
-    }
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
 }

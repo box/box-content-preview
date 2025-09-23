@@ -2,18 +2,47 @@
 
 .bp-DashControls {
     @include bp-VideoControls;
+
+    padding: 40px 20px 8px 20px;
 }
 
 .bp-DashControls-bar {
     @include bp-VideoControls-bar;
 
-    justify-content: space-between;
+    // Simple flexbox solution for equal spacing
+    display: flex;
+    align-items: center;
 
-    //make each group no bigger than 33% of the width of the bar
-    .bp-DashControls-group {
-        max-width: 33%;
+    // When annotations are not present, center the middle element and keep last element on the right
+    &.bp-DashControls-bar--two-groups {
+        position: relative;
+        justify-content: flex-end;
+
+        // Center the middle element (play controls)
+        .bp-DashControls-group:nth-child(2) {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        // Keep the last element on the far right (positioned by justify-content: flex-end)
     }
-   
+
+    // When 3 groups are present, position first on left, middle centered, last on right
+    &.bp-DashControls-bar--three-groups {
+        position: relative;
+        justify-content: space-between;
+
+        // Center the middle element (play controls)
+        .bp-DashControls-group:nth-child(2) {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        // First element (annotations) and last element (volume/settings)
+        // are positioned by justify-content: space-between
+    }
 }
 
 .bp-DashControls-group {
@@ -22,8 +51,4 @@
 
 .bp-DashControls-settings {
     @include bp-VideoControls-settings;
-}
-
-.bp-DashControls.v2 {
-    padding:40px 20px 8px 20px;
 }

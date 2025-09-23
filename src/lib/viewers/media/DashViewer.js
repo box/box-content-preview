@@ -18,7 +18,6 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-const VIDEO_CONTROLS_V2 = 'videoControlsV2';
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
@@ -100,7 +99,6 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = []; // Must be sorted by representation id
         this.audioTracks = [];
 
-        this.uiV2ControlsEnabled = true; // this.featureEnabled(VIDEO_CONTROLS_V2);
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
 
         // dash specific class
@@ -108,8 +106,7 @@ class DashViewer extends VideoBaseViewer {
     }
 
     useReactControls() {
-        // console.log('useReactControls', this.uiV2ControlsEnabled, this.videoAnnotationsEnabled);
-        return this.uiV2ControlsEnabled;
+        return this.getViewerOption('useReactControls');
     }
 
     /**
@@ -1210,7 +1207,6 @@ class DashViewer extends VideoBaseViewer {
                 rate={this.getRate()}
                 subtitle={this.getSubtitleId()}
                 subtitles={this.textTracks}
-                v2={this.uiV2ControlsEnabled}
                 videoAnnotationsEnabled={this.videoAnnotationsEnabled}
                 volume={this.mediaEl.volume}
             />,

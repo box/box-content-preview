@@ -252,8 +252,7 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
-        const isMp3Viewer = this.constructor.name === 'MP3Viewer';
-        if (this.getViewerOption('useReactControls') && !isMp3Viewer) {
+        if (this.getViewerOption('useReactControls')) {
             this.loadUIReact();
         } else {
             this.loadUI();
@@ -741,7 +740,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     showPlayButton() {
-        if (this.playButtonEl) {
+        if (this.playContainerEl) {
+            this.playContainerEl.classList.remove(CLASS_HIDDEN);
+        } else if (this.playButtonEl) {
             this.playButtonEl.classList.remove(CLASS_HIDDEN);
         }
     }
@@ -753,7 +754,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     hidePlayButton() {
-        if (this.playButtonEl) {
+        if (this.playContainerEl) {
+            this.playContainerEl.classList.add(CLASS_HIDDEN);
+        } else if (this.playButtonEl) {
             this.playButtonEl.classList.add(CLASS_HIDDEN);
         }
     }

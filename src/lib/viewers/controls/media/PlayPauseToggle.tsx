@@ -11,10 +11,10 @@ import './PlayPauseToggle.scss';
 export type Props = {
     isPlaying?: boolean;
     onPlayPause: (isPlaying: boolean) => void;
-    movePlayback: (forward: boolean, duration: number) => void;
+    movePlayback?: (forward: boolean, duration: number) => void;
 };
 
-export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePlayback }: Props): JSX.Element {
+export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePlayback = noop }: Props): JSX.Element {
     const Icon = isPlaying ? IconPauseNew24 : IconPlayNew24;
     const title = isPlaying ? __('media_pause') : __('media_play');
     const skipForwardTitle = __('media_skip_forward');

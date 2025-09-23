@@ -9,24 +9,14 @@
 }
 
 .bp-media-controls-wrapper {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 60px;
     margin: auto;
     overflow: hidden;
     background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
-    visibility: hidden;
+    visibility: visible;
     opacity: 0;
-
-    &.v2 & {
-        position: relative;
-        width: 100%;
-        height: 60px;
-        visibility: visible;
-    }
 }
 
 .bp-media-time-scrubber-container {
@@ -209,12 +199,6 @@
 
     .bp-media-is-playing & {
         display: none;
-    }
-}
-
-.bp-DashControls.v2 {
-    .bp-media-play-icon {
-        display: inline;
     }
 }
 

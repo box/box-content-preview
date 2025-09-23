@@ -3,18 +3,9 @@
     padding: 8px;
 
     &.bp-is-active {
-        display: table;
-    }
-}
-
-.bp-DashControls.v2 {
-    .bp-SettingsMenu {
-        &.bp-is-active {
         display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 184px;
-        }
-        
+        flex-direction: column;
+        gap: 8px;
+        min-width: 184px;
     }
 }

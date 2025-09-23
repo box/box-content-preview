@@ -6,18 +6,6 @@
 }
 
 .bp-VolumeControls-flyout {
-    flex: 0 0 auto;
-    max-width: 0;
-    height: $bp-MediaControl-height;
-    overflow: hidden;
-    transition: max-width 200ms ease-in-out;
-
-    &.bp-is-open {
-        max-width: 100px;
-    }
-}
-
-.bp-VolumeControls-flyoutV2 {
     display: none;
     flex: 0 0 auto;
     max-width: 0;
@@ -31,8 +19,6 @@
         left: -5px;
         display: block;
         max-width: 100px;
-        max-width: 100px;
-        height: 300px;
         height: 200px;
         overflow: visible;
     }

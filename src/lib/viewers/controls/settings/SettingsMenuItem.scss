@@ -1,61 +1,24 @@
 @import './styles';
 
 .bp-SettingsMenuItem {
-    @include bp-SettingsRow;
-
-    &[aria-disabled='true'] {
-        cursor: default;
-    }
-
+    position: relative;
     display: flex;
+    gap: 8px;
     align-items: center;
+    align-self: stretch;
     justify-content: space-between;
-    &:hover {
-        background-color: $hover-blue-background;
+    min-width: 160px;
+    border: var(--Border-01, 1px) solid transparent;
 
-        .bp-SettingsMenuItem-label {
-            color: lighten($blue-steel, 50%);
-        }
-
-        .bp-SettingsMenuItem-value {
-            color: $blue-steel;
-        }
-    }
-
-    .bp-is-focused &:focus {
-        background-color: $box-blue;
-
-        .bp-SettingsMenuItem-arrow {
-            fill: $white;
-        }
-
-        .bp-SettingsMenuItem-label,
-        .bp-SettingsMenuItem-value {
-            color: $white;
-        }
-    }
-}
-
-
-.bp-SettingsMenuItemV2 {
     &[aria-disabled='true'] {
         cursor: default;
     }
 
-     min-width: 160px;
-     position: relative;
-     border: var(--Border-01, 1px) solid transparent;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     align-self: stretch;
-     gap: 8px;
-
     &:hover {
+        background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, .9));
+        border: var(--Border-01, 1px) solid var(--Border-Menu-border, #e8e8e8);
         border-radius: var(--Radius-10, 20px);
-        border: var(--Border-01, 1px) solid var(--Border-Menu-border, #E8E8E8);
-        background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, 0.90));
-        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.10);
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .1);
     }
 }
 
@@ -71,17 +34,16 @@
     @include bp-SettingsRow-value;
 }
 
-
-
 .bp-SettingsMenuItem-value-container {
     display: flex;
-    align-items: right;
     gap: 8px;
+    align-items: right;
+
     .bp-SettingsMenuItem-label {
         display: block;
-     }
- 
-     .bp-SettingsMenuItem-value {
-         display: block;
-     }
+    }
+
+    .bp-SettingsMenuItem-value {
+        display: block;
+    }
 }

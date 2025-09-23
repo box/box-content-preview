@@ -22,7 +22,6 @@ $bp-MediaControl-width: 36px;
 
 @mixin bp-VideoControls-bar {
     display: flex;
-    justify-content: space-between;
     padding: 0 10px 5px;
 }
 

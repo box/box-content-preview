@@ -14,7 +14,6 @@ export type Props = {
     onMuteChange: (isMuted: boolean) => void;
     onVolumeChange: (volume: number) => void;
     volume?: number;
-    v2?: boolean;
 };
 
 export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) => JSX.Element {
@@ -31,7 +30,7 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
     return Icon;
 }
 
-export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1, v2 }: Props): JSX.Element {
+export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1 }: Props): JSX.Element {
     const [isActive, handlers] = useAttention();
     const isMuted = !volume;
     const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
@@ -56,7 +55,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
             onMouseOver={handlers.onMouseOver}
             style={{ position: 'relative' }}
         >
-            <div className={classNames('bp-VolumeControls-flyoutV2', { 'bp-is-open': isActive })}>
+            <div className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isActive })}>
                 <VolumeSliderControl
                     className="bp-VolumeControls-slider"
                     max={100}
