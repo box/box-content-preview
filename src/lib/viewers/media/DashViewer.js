@@ -49,8 +49,6 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of text tracks for the video */
     textTracks = [];
 
-    uiV2ControlsEnabled = false;
-
     videoAnnotationsEnabled = false;
 
     /**
