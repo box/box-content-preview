@@ -1299,6 +1299,27 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.resize();
             expect(dash.mediaEl.style.width).toBe('325px');
         });
+
+        describe('Video width adjusts to account for the control bar height', () => {
+            test('Video width is affected by the control bar height if using react controls', () => {
+                jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
+                dash.videoWidth = 800;
+                dash.videoHeight = 480;
+                dash.aspect = 1;
+                dash.resize();
+                expect(dash.mediaEl.style.width).toBe('600px');
+            });
+
+            test('Video width is unaffectd by the control bar height if not using react controls', () => {
+                jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
+                dash.videoWidth = 600;
+                dash.videoHeight = 400;
+                dash.aspect = 1;
+                dash.resize();
+                expect(dash.mediaEl.style.width).toBe('600px');
+            });
+        });
+
         describe('Video fits in the viewport of preview', () => {
             test('should set mediaEl width to video width if aspect ratio is >= 1', () => {
                 dash.resize();

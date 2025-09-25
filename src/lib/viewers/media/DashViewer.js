@@ -1,5 +1,5 @@
 import React from 'react';
-import { CONTROLS_HEIGHT, MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import { VIDEO_PLAYER_CONTROL_BAR_HEIGHT, MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import fullscreen from '../../Fullscreen';
@@ -930,7 +930,11 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
-        const controlsHeight = this.useReactControls() ? CONTROLS_HEIGHT : 0;
+        const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+
+        // Calculate the viewport height minus the control bar height if using react controls
+        // This is necessary to prevent the control bar from overflowing the viewport when the video scale
+        // is expanded.
         const viewport = {
             height: this.wrapperEl.clientHeight - controlsHeight,
             width: this.wrapperEl.clientWidth,
@@ -940,7 +944,7 @@ class DashViewer extends VideoBaseViewer {
         // to not overflow and fit properly
         if (width < 420) {
             width = 420;
-            height = width / this.aspect - CONTROLS_HEIGHT;
+            height = width / this.aspect;
         }
 
         // Reset any prior set widths and heights

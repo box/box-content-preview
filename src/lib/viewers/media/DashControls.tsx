@@ -9,7 +9,7 @@ import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/P
 import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/media/SubtitlesToggle';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
-import { CONTROLS_HEIGHT, SUBTITLES_OFF } from '../../constants';
+import { VIDEO_PLAYER_CONTROL_BAR_HEIGHT, SUBTITLES_OFF } from '../../constants';
 import './DashControls.scss';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
 import { AnnotationMode } from '../../types/annotations';
@@ -72,7 +72,7 @@ export default function DashControls({
         <div
             className={classNames('bp-DashControls')}
             data-testid="media-controls-wrapper"
-            style={{ height: CONTROLS_HEIGHT }}
+            style={{ height: VIDEO_PLAYER_CONTROL_BAR_HEIGHT }}
         >
             <TimeControls
                 aspectRatio={aspectRatio}
