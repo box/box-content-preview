@@ -125,6 +125,13 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.hdVideoId).toBe(-1);
             expect(dash.sdVideoId).toBe(-1);
             expect(dash.wrapperEl).toHaveClass(CSS_CLASS_MEDIA);
+            expect(dash.videoAnnotationsEnabled).toBe(false);
+        });
+
+        test('should set videoAnnotationsEnabled to true if feature is enabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'videoAnnotations.enabled');
+            dash.setup();
+            expect(dash.videoAnnotationsEnabled).toBe(true);
         });
     });
 
@@ -765,6 +772,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.hdVideoId = 123;
             jest.spyOn(dash, 'setQuality').mockImplementation();
             jest.spyOn(VideoBaseViewer.prototype, 'loadUIReact').mockImplementation();
+            dash.videoAnnotationsEnabled = false;
         });
 
         test('should set quality to sd if HD is not supported', () => {
@@ -1851,6 +1859,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should render react controls with the correct props', () => {
+            dash.videoAnnotationsEnabled = true;
             dash.renderUI();
 
             expect(getProps(dash)).toMatchObject({
@@ -1860,6 +1869,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 currentTime: expect.any(Number),
                 isPlaying: expect.any(Boolean),
                 isPlayingHD: false,
+                videoAnnotationsEnabled: true,
                 onAudioTrackChange: dash.setAudioTrack,
                 onAutoplayChange: dash.setAutoplay,
                 onFullscreenToggle: dash.toggleFullscreen,
