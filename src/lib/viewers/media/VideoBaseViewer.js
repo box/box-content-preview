@@ -7,10 +7,9 @@ import MediaBaseViewer from './MediaBaseViewer';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
-const CLASS_PLAY_CONTAINER = 'bp-media-play-container';
-const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'play-button';
-const CLASS_SEEK_FORWARD_BUTTON = 'bp-media-seek-forward-button';
-const CLASS_SEEK_BACKWARD_BUTTON = 'bp-media-seek-backward-button';
+const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
+const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
+const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
 
 class VideoBaseViewer extends MediaBaseViewer {
     /**
@@ -68,23 +67,22 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playContainerEl.classList.add(CLASS_HIDDEN);
 
         this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_FORWARD_BUTTON);
+        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
         this.seekBackwardButtonEl.setAttribute('type', 'button');
         this.seekBackwardButtonEl.setAttribute('title', __('media_seek_forward'));
-        this.seekBackwardButtonEl.innerHTML = ICON_BACKWARD;
+        this.seekBackwardButtonEl.innerHTML = ICON_FORWARD;
 
         this.playButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-
         this.playButtonEl.classList.add(CLASS_PLAY_CONTAINER_PLAY_BUTTON);
         this.playButtonEl.setAttribute('type', 'button');
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
         this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BACKWARD_BUTTON);
+        this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
         this.seekForwardButtonEl.setAttribute('type', 'button');
         this.seekForwardButtonEl.setAttribute('title', __('media_seek_backward'));
-        this.seekForwardButtonEl.innerHTML = ICON_FORWARD;
+        this.seekForwardButtonEl.innerHTML = ICON_BACKWARD;
     }
 
     /**

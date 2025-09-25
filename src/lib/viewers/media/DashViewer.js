@@ -18,7 +18,7 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations';
+const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
 class DashViewer extends VideoBaseViewer {

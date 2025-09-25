@@ -63,7 +63,7 @@
     }
 }
 
-.bp-media-play-container {
+.bp-media-overlay-play-container {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -93,9 +93,13 @@
         transition: all .2s;
     }
 
-    .play-button {
+    .bp-media-overlay-play-button {
         width: 60px;
         height: 60px;
+    }
+
+    .bp-media-overlay-seek-button {
+        display: none;
     }
 }
 

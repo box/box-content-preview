@@ -37,3 +37,18 @@
     font-size: 12px;
     text-align: left;
 }
+
+@mixin bp-SettingsRow-hover {
+    background-color: #f4f4f4;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .1);
+    backdrop-filter: blur(16px);
+}
+
+@mixin bp-SettingsMenuItem {
+    padding: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    outline: 0 none;
+    cursor: pointer;
+}

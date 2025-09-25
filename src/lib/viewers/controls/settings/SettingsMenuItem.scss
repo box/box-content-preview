@@ -8,17 +8,15 @@
     align-self: stretch;
     justify-content: space-between;
     min-width: 160px;
-    border: var(--Border-01, 1px) solid transparent;
+    padding: 8px;
+    border: 1px solid transparent;
 
     &[aria-disabled='true'] {
         cursor: default;
     }
 
     &:hover {
-        background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, .9));
-        border: var(--Border-01, 1px) solid var(--Border-Menu-border, #e8e8e8);
-        border-radius: var(--Radius-10, 20px);
-        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .1);
+        @include bp-SettingsRow-hover;
     }
 }
 
@@ -36,7 +34,6 @@
 
 .bp-SettingsMenuItem-value-container {
     display: flex;
-    gap: 8px;
     align-items: right;
 
     .bp-SettingsMenuItem-label {

@@ -7,15 +7,14 @@
     display: none;
     min-width: 184px;
     max-width: 400px;
-    max-height: 210px;
     overflow-x: hidden;
     overflow-y: hidden; // Prevent scrollbar from showing on hover in IE/Edge
     color: $fours;
     font-size: 13px;
     line-height: normal;
-    background: var(--Surface-Menu-surface-dropdown, rgba(255, 255, 255, .9));
-    border: var(--Border-01, 1px) solid var(--Border-Menu-border, #e8e8e8);
-    border-radius: var(--Radius-10, 20px);
+    background: rgba(255, 255, 255, .9);
+    border: 1px solid #e8e8e8;
+    border-radius: 20px;
     box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgba(0, 0, 0, .1);
     transform: translateY(-100%);
     backdrop-filter: blur(16px);
