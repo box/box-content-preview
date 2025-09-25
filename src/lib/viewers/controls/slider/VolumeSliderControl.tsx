@@ -19,6 +19,12 @@ export type Props = React.HTMLAttributes<Ref> & {
     onMouseOver: () => void;
 };
 
+// VolumeSliderControls is a veritical slider that controls the volume of the media player.
+// It is different from the SliderControl in that it is vertical and the track is not a horizontal gradient.
+// Instead, it sets the tracks height relative to the volume value. As the volume goes up the tracks height goes up
+// and vice versa. The callbacks are the same as the SliderControl except the mouse movents are tracked vertically
+// instead of horizontally. With this comoponent, the only other use for the SliderControl is for the tracking the play
+// progress of a media player.
 export default function VolumeSliderControl({
     className,
     max = 100,
@@ -34,28 +40,6 @@ export default function VolumeSliderControl({
 }: Props): JSX.Element {
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
-    const getPosition = React.useCallback((pageY: number) => {
-        const { current: sliderEl } = sliderElRef;
-        if (!sliderEl) return 0;
-
-        const { top: sliderTop, height: sliderHeight } = sliderEl.getBoundingClientRect();
-
-        const totalHeight = sliderTop + sliderHeight;
-        const val = totalHeight - pageY;
-        const valToUse = 100 - (totalHeight - pageY);
-        return Math.max(0, Math.min(valToUse, sliderHeight));
-    }, []);
-
-    const getPositionRelativeToTheTopOfTheSlider = React.useCallback((clientY: number) => {
-        const { current: sliderEl } = sliderElRef;
-        if (!sliderEl) return 0;
-
-        const { top: sliderTop, height: sliderHeight } = sliderEl.getBoundingClientRect();
-
-        const mouseY = clientY - sliderTop;
-
-        return Math.max(0, Math.min(mouseY, sliderHeight));
-    }, []);
 
     const getPositionRelativeToSlider = React.useCallback((clientY: number) => {
         const { current: sliderEl } = sliderElRef;
@@ -74,7 +58,7 @@ export default function VolumeSliderControl({
         (pageY: number, clientY: number) => {
             const { current: sliderEl } = sliderElRef;
             if (!sliderEl) return 0;
-            const { height: sliderHeight, top: sliderTop } = sliderEl.getBoundingClientRect();
+            const { height: sliderHeight } = sliderEl.getBoundingClientRect();
             const positionRelativeToSlider = getPositionRelativeToSlider(clientY);
             const newValue = (positionRelativeToSlider / sliderHeight) * max;
             return Math.max(min, Math.min(newValue, max));
@@ -143,7 +127,7 @@ export default function VolumeSliderControl({
         };
     }, [isScrubbing, getPositionRelativeToSlider, onUpdate]);
 
-    const defaultHeightValue = value === 0 ? 5 : value;
+    const heightValueBasedOnVolume = value === 0 ? 5 : value;
     return (
         <div
             className={classNames('bp-VolumeVerticalSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
@@ -166,7 +150,7 @@ export default function VolumeSliderControl({
                         onTouchStart={handleTouchStart}
                         role="slider"
                         style={{
-                            height: `${(defaultHeightValue / max) * 100}%`,
+                            height: `${(heightValueBasedOnVolume / max) * 100}%`,
                         }}
                         tabIndex={0}
                     />
