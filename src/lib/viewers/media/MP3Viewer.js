@@ -59,7 +59,6 @@ class MP3Viewer extends MediaBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
-                movePlayback={this.movePlayback}
                 onAutoplayChange={this.setAutoplay}
                 onMuteChange={this.toggleMute}
                 onPlayPause={this.togglePlay}

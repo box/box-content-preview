@@ -6,7 +6,6 @@
 }
 
 .bp-VolumeControls-flyout {
-    display: none;
     flex: 0 0 auto;
     max-width: 0;
     height: $bp-MediaControl-height;
@@ -14,18 +13,12 @@
     transition: max-width 200ms ease-in-out;
 
     &.bp-is-open {
-        position: absolute;
-        top: -200px;
-        left: -5px;
-        display: block;
         max-width: 100px;
-        height: 200px;
-        overflow: visible;
     }
 }
 
 .bp-VolumeControls-slider {
-    width: 10px;
+    width: 100px - $bp-SliderControl-thumb-size;
     height: 100%;
     margin-right: $bp-SliderControl-thumb-radius;
     margin-left: $bp-SliderControl-thumb-radius;

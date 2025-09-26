@@ -36,7 +36,6 @@ class MP4Viewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 isPlaying={!this.mediaEl.paused}
-                movePlayback={this.movePlayback}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}

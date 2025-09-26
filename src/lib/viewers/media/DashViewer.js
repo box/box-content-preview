@@ -73,7 +73,6 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle = this.setSubtitle.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
-        this.movePlayback = this.movePlayback.bind(this);
     }
 
     /**
@@ -1193,7 +1192,6 @@ class DashViewer extends VideoBaseViewer {
                 isHDSupported={this.hdVideoId !== -1}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
-                movePlayback={this.movePlayback}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}

@@ -19,7 +19,6 @@ export default function MP3Controls({
     currentTime,
     durationTime,
     isPlaying,
-    movePlayback,
     onAutoplayChange,
     onMuteChange,
     onPlayPause,
@@ -40,7 +39,7 @@ export default function MP3Controls({
 
             <div className="bp-MP3Controls-bar">
                 <div className="bp-MP3Controls-group">
-                    <PlayPauseToggle isPlaying={isPlaying} movePlayback={movePlayback} onPlayPause={onPlayPause} />
+                    <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} />
                     <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />
                 </div>
 

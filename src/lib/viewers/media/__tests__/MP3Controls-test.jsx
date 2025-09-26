@@ -8,7 +8,6 @@ describe('MP3Controls', () => {
         render(
             <MP3Controls
                 autoplay={false}
-                movePlayback={jest.fn()}
                 onAutoplayChange={jest.fn()}
                 onMuteChange={jest.fn()}
                 onPlayPause={jest.fn()}
