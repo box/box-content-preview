@@ -1,4 +1,5 @@
 import React from 'react';
+import noop from 'lodash/noop';
 import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
@@ -18,6 +19,7 @@ export default function MP3Controls({
     currentTime,
     durationTime,
     isPlaying,
+    movePlayback,
     onAutoplayChange,
     onMuteChange,
     onPlayPause,
@@ -38,9 +40,8 @@ export default function MP3Controls({
 
             <div className="bp-MP3Controls-bar">
                 <div className="bp-MP3Controls-group">
-                    <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} />
+                    <PlayPauseToggle isPlaying={isPlaying} movePlayback={movePlayback} onPlayPause={onPlayPause} />
                     <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />
-                    <DurationLabels currentTime={currentTime} durationTime={durationTime} />
                 </div>
 
                 <div className="bp-MP3Controls-group">

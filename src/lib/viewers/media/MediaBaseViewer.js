@@ -71,6 +71,7 @@ class MediaBaseViewer extends BaseViewer {
         this.togglePlay = this.togglePlay.bind(this);
         this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
+        this.movePlayback = this.movePlayback.bind(this);
 
         window.addEventListener('beforeunload', this.processMetrics);
     }
@@ -1221,6 +1222,17 @@ class MediaBaseViewer extends BaseViewer {
      */
     createTimerTag(tagName) {
         return Timer.createTag(this.options.file.id, tagName);
+    }
+
+    /**
+     * Moves playback forward or backward by a specified duration
+     *
+     * @param {boolean} forward - true to move forward, false to move backward
+     * @param {number} duration - duration in seconds to move
+     * @return {void}
+     */
+    movePlayback(forward, duration) {
+        this.quickSeek(forward ? duration : -duration);
     }
 }
 
