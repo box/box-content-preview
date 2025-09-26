@@ -1,7 +1,7 @@
 @import './styles';
 
 .bp-SettingsRadioItem {
-    @include bp-SettingsMenuItem;
+    @include bp-SettingsRow;
 
     &.bp-is-selected {
         .bp-SettingsRadioItem-check-icon {
@@ -14,7 +14,7 @@
     }
 
     &:hover {
-        @include bp-SettingsRow-hover;
+        background-color: $hover-blue-background;
 
         .bp-SettingsRadioItem-check-icon {
             fill: $blue-steel;
@@ -26,6 +26,8 @@
     }
 
     .bp-is-focused &:focus {
+        background-color: $box-blue;
+
         .bp-SettingsRadioItem-check-icon {
             fill: $white;
         }

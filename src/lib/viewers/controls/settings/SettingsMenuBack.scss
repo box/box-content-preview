@@ -1,10 +1,14 @@
 @import './styles';
 
 .bp-SettingsMenuBack {
-    @include bp-SettingsMenuItem;
+    @include bp-SettingsRow;
 
     &:hover {
-        @include bp-SettingsRow-hover;
+        background-color: $hover-blue-background;
+
+        .bp-SettingsMenuBack-label {
+            color: lighten($blue-steel, 50%);
+        }
     }
 
     .bp-is-focused &:focus {

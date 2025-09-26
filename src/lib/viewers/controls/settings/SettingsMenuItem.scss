@@ -1,22 +1,35 @@
 @import './styles';
 
 .bp-SettingsMenuItem {
-    position: relative;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    align-self: stretch;
-    justify-content: space-between;
-    min-width: 160px;
-    padding: 8px;
-    border: 1px solid transparent;
+    @include bp-SettingsRow;
 
     &[aria-disabled='true'] {
         cursor: default;
     }
 
     &:hover {
-        @include bp-SettingsRow-hover;
+        background-color: $hover-blue-background;
+
+        .bp-SettingsMenuItem-label {
+            color: lighten($blue-steel, 50%);
+        }
+
+        .bp-SettingsMenuItem-value {
+            color: $blue-steel;
+        }
+    }
+
+    .bp-is-focused &:focus {
+        background-color: $box-blue;
+
+        .bp-SettingsMenuItem-arrow {
+            fill: $white;
+        }
+
+        .bp-SettingsMenuItem-label,
+        .bp-SettingsMenuItem-value {
+            color: $white;
+        }
     }
 }
 
@@ -30,17 +43,4 @@
 
 .bp-SettingsMenuItem-value {
     @include bp-SettingsRow-value;
-}
-
-.bp-SettingsMenuItem-value-container {
-    display: flex;
-    align-items: right;
-
-    .bp-SettingsMenuItem-label {
-        display: block;
-    }
-
-    .bp-SettingsMenuItem-value {
-        display: block;
-    }
 }

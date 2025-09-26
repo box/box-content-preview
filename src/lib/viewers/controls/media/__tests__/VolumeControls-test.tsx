@@ -54,21 +54,23 @@ describe('VolumeControls', () => {
         });
 
         test.each`
-            volume   | value
-            ${0}     | ${5}
-            ${0.0}   | ${5}
-            ${0.01}  | ${1}
-            ${0.25}  | ${25}
-            ${0.254} | ${25}
-            ${0.255} | ${26}
-            ${1.0}   | ${100}
-        `('should render the correct track height for volume $volume', async ({ value, volume }) => {
+            volume   | track                                                   | value
+            ${0}     | ${`linear-gradient(to right, #0061d5 0%, #fff 0%)`}     | ${0}
+            ${0.0}   | ${`linear-gradient(to right, #0061d5 0%, #fff 0%)`}     | ${0}
+            ${0.01}  | ${`linear-gradient(to right, #0061d5 1%, #fff 1%)`}     | ${1}
+            ${0.25}  | ${`linear-gradient(to right, #0061d5 25%, #fff 25%)`}   | ${25}
+            ${0.254} | ${`linear-gradient(to right, #0061d5 25%, #fff 25%)`}   | ${25}
+            ${0.255} | ${`linear-gradient(to right, #0061d5 26%, #fff 26%)`}   | ${26}
+            ${1.0}   | ${`linear-gradient(to right, #0061d5 100%, #fff 100%)`} | ${100}
+        `('should render the correct track and value for volume $volume', async ({ track, value, volume }) => {
             const max = 100;
             getWrapper({ volume, max });
 
-            const sliderTrack = await screen.findByTestId('bp-volume-slider-control-track');
+            const sliderTrack = await screen.findByTestId('bp-slider-control-track');
+            const sliderThumb = await screen.findByTestId('bp-slider-control-thumb');
 
-            expect(sliderTrack).toHaveStyle({ height: `${value}%` });
+            expect(sliderTrack).toHaveStyle({ backgroundImage: track });
+            expect(sliderThumb).toHaveStyle({ left: `${(value / max) * 100}%` });
         });
     });
 });

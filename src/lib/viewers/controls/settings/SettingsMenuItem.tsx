@@ -17,6 +17,7 @@ export type Ref = HTMLDivElement;
 function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
     const { className, label, isDisabled = false, target, value, ...rest } = props;
     const { setActiveMenu } = React.useContext(SettingsContext);
+
     const handleClick = (): void => {
         if (isDisabled) {
             return;
@@ -40,7 +41,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             ref={ref}
             aria-disabled={isDisabled}
             aria-haspopup="true"
-            className="bp-SettingsMenuItem"
+            className={classNames('bp-SettingsMenuItem', className)}
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"
@@ -50,11 +51,9 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             <div aria-label={label} className="bp-SettingsMenuItem-label">
                 {label}
             </div>
-            <div className="bp-SettingsMenuItem-value-container">
-                <div className="bp-SettingsMenuItem-value">{value}</div>
-                <div className="bp-SettingsMenuItem-arrow">
-                    {!isDisabled && <IconArrowRight24 height={18} width={18} />}
-                </div>
+            <div className="bp-SettingsMenuItem-value">{value}</div>
+            <div className="bp-SettingsMenuItem-arrow">
+                {!isDisabled && <IconArrowRight24 height={18} width={18} />}
             </div>
         </div>
     );
