@@ -5,6 +5,7 @@ import { bdlBoxBlue, bdlGray65, white } from 'box-ui-elements/es/styles/variable
 import Filmstrip from './Filmstrip';
 import SliderControl from '../slider';
 import './TimeControls.scss';
+import DurationLabels from './DurationLabels';
 
 export type Props = {
     aspectRatio?: number;
@@ -62,7 +63,7 @@ export default function TimeControls({
                     time={hoverTime}
                 />
             )}
-
+            <DurationLabels currentTime={currentTime} durationTime={durationTime} />
             <SliderControl
                 className="bp-TimeControls-slider"
                 max={durationValue}

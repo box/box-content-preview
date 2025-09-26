@@ -1,12 +1,14 @@
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
+import { CLASS_DARK, CLASS_HIDDEN, CLASS_IS_BUFFERING } from '../../constants';
+import { ICON_PLAY_LARGE } from '../../icons';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
-import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
-import { ICON_PLAY_LARGE } from '../../icons';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
+const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
+const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 
 class VideoBaseViewer extends MediaBaseViewer {
     /**
@@ -43,15 +45,31 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Prevents native iOS UI from taking over
         this.mediaEl.setAttribute('playsinline', '');
 
-        // Play button
-        this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('button'));
-        this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
-        this.playButtonEl.classList.add(CLASS_HIDDEN);
+        if (this.getViewerOption('useReactControls')) {
+            this.buildPlayButtonWithSeekButtons();
+        } else {
+            // Play button
+            this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('button'));
+            this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
+            this.playButtonEl.classList.add(CLASS_HIDDEN);
+            this.playButtonEl.setAttribute('type', 'button');
+            this.playButtonEl.setAttribute('title', __('media_play'));
+            this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
+        }
+
+        this.lowerLights();
+    }
+
+    buildPlayButtonWithSeekButtons() {
+        this.playContainerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.playContainerEl.classList.add(CLASS_PLAY_CONTAINER);
+        this.playContainerEl.classList.add(CLASS_HIDDEN);
+
+        this.playButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
+        this.playButtonEl.classList.add(CLASS_PLAY_CONTAINER_PLAY_BUTTON);
         this.playButtonEl.setAttribute('type', 'button');
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
-
-        this.lowerLights();
     }
 
     /**

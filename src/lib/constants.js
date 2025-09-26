@@ -148,3 +148,5 @@ export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-document';
 export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-image';
 
 export const SUBTITLES_OFF = -1;
+
+export const VIDEO_PLAYER_CONTROL_BAR_HEIGHT = 120;

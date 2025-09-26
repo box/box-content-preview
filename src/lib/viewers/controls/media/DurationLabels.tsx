@@ -22,9 +22,9 @@ export function formatTime(time: number): string {
 export default function DurationLabels({ currentTime = 0, durationTime = 0 }: Props): JSX.Element {
     return (
         <div className="bp-DurationLabels" data-testid="bp-DurationLabels">
-            <span className="bp-DurationLabels-label">{formatTime(currentTime)}</span>
-            <span className="bp-DurationLabels-label">/</span>
-            <span className="bp-DurationLabels-label">{formatTime(durationTime)}</span>
+            <div className="bp-DurationLabels-label">{formatTime(currentTime)}</div>
+
+            <div className="bp-DurationLabels-label">{formatTime(durationTime)}</div>
         </div>
     );
 }

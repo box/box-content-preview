@@ -56,6 +56,39 @@ describe('DashControls', () => {
             expect(onVolumeChange).toHaveBeenCalledTimes(1);
         });
 
+        test.each([true, false])(
+            'should not see annotations controls if feature is disabled',
+            async isVideoAnnotationsEnabled => {
+                render(
+                    <DashControls
+                        audioTrack={1}
+                        audioTracks={[]}
+                        autoplay={false}
+                        isHDSupported
+                        isPlaying={false}
+                        isPlayingHD={false}
+                        onAudioTrackChange={jest.fn()}
+                        onAutoplayChange={jest.fn()}
+                        onFullscreenToggle={jest.fn()}
+                        onMuteChange={jest.fn()}
+                        onPlayPause={jest.fn()}
+                        onQualityChange={jest.fn()}
+                        onRateChange={jest.fn()}
+                        onTimeChange={jest.fn()}
+                        onVolumeChange={jest.fn()}
+                        quality={Quality.AUTO}
+                        rate="1.0"
+                        videoAnnotationsEnabled={isVideoAnnotationsEnabled}
+                    />,
+                );
+
+                if (isVideoAnnotationsEnabled) {
+                    expect(screen.getByTestId('bp-annotations-controls')).toBeInTheDocument();
+                } else {
+                    expect(screen.queryByTestId('bp-annotations-controls')).not.toBeInTheDocument();
+                }
+            },
+        );
         test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', async isHDSupported => {
             const user = userEvent.setup();
             render(

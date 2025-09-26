@@ -1,15 +1,15 @@
 import React from 'react';
-import DashControls from './DashControls';
+import { VIDEO_PLAYER_CONTROL_BAR_HEIGHT, MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
+import { getRepresentation } from '../../file';
 import fullscreen from '../../Fullscreen';
 import getLanguageName from '../../lang';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
-import VideoBaseViewer from './VideoBaseViewer';
 import { appendQueryParams, getProp } from '../../util';
-import { ERROR_CODE, VIEWER_EVENT, MEDIA_METRIC, MEDIA_METRIC_EVENTS } from '../../events';
-import { getRepresentation } from '../../file';
-import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import './Dash.scss';
+import DashControls from './DashControls';
+import VideoBaseViewer from './VideoBaseViewer';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -18,7 +18,7 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-
+const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 
 class DashViewer extends VideoBaseViewer {
@@ -48,6 +48,8 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {Array<Object>} - Array of text tracks for the video */
     textTracks = [];
+
+    videoAnnotationsEnabled = false;
 
     /**
      * @inheritdoc
@@ -94,8 +96,14 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = []; // Must be sorted by representation id
         this.audioTracks = [];
 
+        this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
+
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
+    }
+
+    useReactControls() {
+        return this.getViewerOption('useReactControls');
     }
 
     /**
@@ -463,7 +471,7 @@ class DashViewer extends VideoBaseViewer {
                 break;
         }
 
-        if (!this.getViewerOption('useReactControls')) {
+        if (!this.useReactControls()) {
             this.showGearHdIcon(this.getActiveTrack());
         }
 
@@ -508,7 +516,7 @@ class DashViewer extends VideoBaseViewer {
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
 
-        if (!this.getViewerOption('useReactControls')) {
+        if (!this.useReactControls()) {
             this.showGearHdIcon(activeTrack);
         }
 
@@ -520,7 +528,7 @@ class DashViewer extends VideoBaseViewer {
         }
         this.hideLoadingIcon();
 
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             this.renderUI();
         }
     }
@@ -614,7 +622,7 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
 
         if (this.textTracks.length > 0) {
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.initSubtitles();
             } else {
                 this.mediaControls.initSubtitles(
@@ -699,7 +707,7 @@ class DashViewer extends VideoBaseViewer {
         } else {
             this.setupAutoCaptionDisplayer(textCues);
 
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.textTracks = [{ id: 0, language: __('auto_generated') }];
                 this.initSubtitles();
             } else {
@@ -772,7 +780,7 @@ class DashViewer extends VideoBaseViewer {
             const languages = this.audioTracks.map(track => getLanguageName(track.language) || track.language);
             this.selectedAudioTrack = this.audioTracks[0].id;
 
-            if (!this.getViewerOption('useReactControls')) {
+            if (!this.useReactControls()) {
                 this.mediaControls.initAlternateAudio(languages);
             }
         }
@@ -791,7 +799,7 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.calculateVideoDimensions();
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             this.loadUIReact();
         } else {
             this.loadUI();
@@ -816,7 +824,7 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
 
         // Show controls briefly after content loads
-        if (this.getViewerOption('useReactControls')) {
+        if (this.useReactControls()) {
             if (this.controls) {
                 this.showAndHideReactControls();
             }
@@ -868,7 +876,7 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus = this.getRepStatus(filmstrip);
             this.filmstripUrl = url;
 
-            if (this.getViewerOption('useReactControls')) {
+            if (this.useReactControls()) {
                 this.filmstripStatus.getPromise().then(() => {
                     this.renderUI(); // Render once the filmstrip is ready
                 });
@@ -919,8 +927,13 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
+        const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+
+        // Calculate the viewport height minus the control bar height if using react controls
+        // This is necessary to prevent the control bar from overflowing the viewport when the video scale
+        // is expanded.
         const viewport = {
-            height: this.wrapperEl.clientHeight,
+            height: this.wrapperEl.clientHeight - controlsHeight,
             width: this.wrapperEl.clientWidth,
         };
 
@@ -1194,6 +1207,7 @@ class DashViewer extends VideoBaseViewer {
                 rate={this.getRate()}
                 subtitle={this.getSubtitleId()}
                 subtitles={this.textTracks}
+                videoAnnotationsEnabled={this.videoAnnotationsEnabled}
                 volume={this.mediaEl.volume}
             />,
         );

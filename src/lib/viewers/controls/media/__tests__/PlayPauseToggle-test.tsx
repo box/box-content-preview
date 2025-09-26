@@ -5,7 +5,7 @@ import PlayPauseToggle from '../PlayPauseToggle';
 
 describe('PlayPauseToggle', () => {
     const getWrapper = (props = {}) => render(<PlayPauseToggle onPlayPause={jest.fn()} {...props} />);
-    const getToggle = async () => screen.findByRole('button');
+    const getToggle = async () => screen.findByTitle(__('media_play'));
 
     describe('event handlers', () => {
         test('should toggle isPlaying when clicked', async () => {

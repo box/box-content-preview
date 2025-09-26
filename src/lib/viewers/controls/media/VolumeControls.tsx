@@ -1,14 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import { bdlBoxBlue, white } from 'box-ui-elements/es/styles/variables';
-import IconVolumeHigh24 from '../icons/IconVolumeHigh24';
+import IconVolumeMed24 from '../icons/IconVolumeMed24';
 import IconVolumeLow24 from '../icons/IconVolumeLow24';
-import IconVolumeMedium24 from '../icons/IconVolumeMedium24';
-import IconVolumeMute24 from '../icons/IconVolumeMute24';
+import IconVolumeMuted24 from '../icons/IconVolumeMuted24';
 import MediaToggle from './MediaToggle';
-import SliderControl from '../slider';
 import useAttention from '../hooks/useAttention';
 import './VolumeControls.scss';
+import IconVolumeMax24 from '../icons/IconVolumeMax24';
+import SliderControl from '../slider/SliderControl';
 
 export type Props = {
     onMuteChange: (isMuted: boolean) => void;
@@ -17,12 +17,12 @@ export type Props = {
 };
 
 export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) => JSX.Element {
-    let Icon = IconVolumeMute24;
+    let Icon = IconVolumeMuted24;
 
     if (volume >= 0.66) {
-        Icon = IconVolumeHigh24;
+        Icon = IconVolumeMax24;
     } else if (volume >= 0.33) {
-        Icon = IconVolumeMedium24;
+        Icon = IconVolumeMed24;
     } else if (volume >= 0.01) {
         Icon = IconVolumeLow24;
     }
@@ -33,7 +33,7 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
 export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1 }: Props): JSX.Element {
     const [isActive, handlers] = useAttention();
     const isMuted = !volume;
-    const Icon = isMuted ? IconVolumeMute24 : getIcon(volume);
+    const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
     const title = isMuted ? __('media_unmute') : __('media_mute');
     const value = Math.round(volume * 100);
 

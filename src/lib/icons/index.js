@@ -13,5 +13,7 @@ export { default as ICON_GEAR } from './gear_24px.svg';
 export { default as ICON_PAUSE } from './pause_24px.svg';
 export { default as ICON_PLAY } from './play_24px.svg';
 export { default as ICON_PLAY_LARGE } from './play_48px.svg';
+export { default as ICON_FORWARD } from './arrow_curved_forward_24px.svg';
+export { default as ICON_BACKWARD } from './arrow_curved_back_24px.svg';
 export { default as ICON_PRINT_CHECKMARK } from './print_checkmark.svg';
 export { default as ICON_SEARCH } from './search.svg';

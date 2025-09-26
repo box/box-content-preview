@@ -35,15 +35,15 @@ describe('VolumeControls', () => {
         });
 
         test.each`
-            volume  | icon                    | title
-            ${0}    | ${'IconVolumeMute24'}   | ${'Unmute'}
-            ${0.0}  | ${'IconVolumeMute24'}   | ${'Unmute'}
-            ${0.01} | ${'IconVolumeLow24'}    | ${'Mute'}
-            ${0.25} | ${'IconVolumeLow24'}    | ${'Mute'}
-            ${0.33} | ${'IconVolumeMedium24'} | ${'Mute'}
-            ${0.51} | ${'IconVolumeMedium24'} | ${'Mute'}
-            ${0.66} | ${'IconVolumeHigh24'}   | ${'Mute'}
-            ${1.0}  | ${'IconVolumeHigh24'}   | ${'Mute'}
+            volume  | icon                   | title
+            ${0}    | ${'IconVolumeMuted24'} | ${'Unmute'}
+            ${0.0}  | ${'IconVolumeMuted24'} | ${'Unmute'}
+            ${0.01} | ${'IconVolumeLow24'}   | ${'Mute'}
+            ${0.25} | ${'IconVolumeLow24'}   | ${'Mute'}
+            ${0.33} | ${'IconVolumeMed24'}   | ${'Mute'}
+            ${0.51} | ${'IconVolumeMed24'}   | ${'Mute'}
+            ${0.66} | ${'IconVolumeMax24'}   | ${'Mute'}
+            ${1.0}  | ${'IconVolumeMax24'}   | ${'Mute'}
         `('should render the correct icon and title for volume $volume', async ({ icon, title, volume }) => {
             getWrapper({ volume });
             const iconElement = await screen.findByTestId(icon);

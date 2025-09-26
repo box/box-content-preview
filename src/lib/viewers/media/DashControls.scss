@@ -2,10 +2,35 @@
 
 .bp-DashControls {
     @include bp-VideoControls;
+
+    padding: 40px 20px 8px 20px;
 }
 
 .bp-DashControls-bar {
     @include bp-VideoControls-bar;
+
+    display: flex;
+    align-items: center;
+
+    //make sure the middle element is always centered in it's parent
+    .bp-DashControls-group.bp-DashControls-group--play-pause {
+        transform: translateX(-50%);
+    }
+
+    // When annotations are not present, center the middle element and keep last element on the right
+    &.bp-DashControls-bar--two-groups {
+        justify-content: flex-end;
+
+        .bp-DashControls-group--play-pause {
+            position: absolute;
+            left: 50%;
+        }
+    }
+
+    // When 3 groups are present, position first on left, middle centered, last on right
+    &.bp-DashControls-bar--three-groups {
+        justify-content: space-between;
+    }
 }
 
 .bp-DashControls-group {
