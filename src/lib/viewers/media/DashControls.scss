@@ -13,7 +13,7 @@
     align-items: center;
 
     //make sure the middle element is always centered in it's parent
-    .bp-DashControls-group:nth-child(2) {
+    .bp-DashControls-group.bp-DashControls-group--play-pause {
         transform: translateX(-50%);
     }
 
@@ -21,7 +21,7 @@
     &.bp-DashControls-bar--two-groups {
         justify-content: flex-end;
 
-        .bp-DashControls-group:nth-child(2) {
+        .bp-DashControls-group--play-pause {
             position: absolute;
             left: 50%;
         }

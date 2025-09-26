@@ -99,7 +99,7 @@ export default function DashControls({
                         />
                     )}
                 </div>
-                <div className="bp-DashControls-group">
+                <div className="bp-DashControls-group bp-DashControls-group--play-pause">
                     <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} />
                 </div>
 
