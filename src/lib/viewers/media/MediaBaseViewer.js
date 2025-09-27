@@ -1227,12 +1227,12 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Moves playback forward or backward by a specified duration
      *
-     * @param {boolean} forward - true to move forward, false to move backward
+     * @param {boolean} isForward - true to move forward, false to move backward
      * @param {number} duration - duration in seconds to move
      * @return {void}
      */
-    movePlayback(forward, duration) {
-        this.quickSeek(forward ? duration : -duration);
+    movePlayback(isForward, duration) {
+        this.quickSeek(isForward ? duration : -duration);
     }
 }
 

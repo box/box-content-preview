@@ -14,7 +14,7 @@ export type Props = {
 };
 
 export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePlayback = noop }: Props): JSX.Element {
-    const Icon = isPlaying ? IconPause24 : IconPlay24;
+    const PlayPauseIcon = isPlaying ? IconPause24 : IconPlay24;
     const title = isPlaying ? __('media_pause') : __('media_play');
     const skipForwardTitle = __('media_skip_forward');
     const skipBackwardTitle = __('media_skip_backward');
@@ -34,7 +34,7 @@ export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePla
             </MediaToggle>
 
             <MediaToggle className="bp-PlayPauseToggle" onClick={(): void => onPlayPause(!isPlaying)} title={title}>
-                <Icon />
+                <PlayPauseIcon />
             </MediaToggle>
 
             <MediaToggle className="bp-PlayPauseToggle" onClick={moveBackward} title={skipBackwardTitle}>
