@@ -144,7 +144,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.emit).toBeCalledWith('bandwidthhistory', []);
             expect(stubs.emit).toBeCalledWith('switchhistory', []);
             expect(stubs.emit).toBeCalledWith('destroy');
-            expect(stubs.removeStats).toBeCalled();
+            expect(stubs.removeStats).toHaveBeenCalled();
 
             // Ensures that afterEach() cleanup doesn't trigger destroy() again
             dash = null;
@@ -168,11 +168,11 @@ describe('lib/viewers/media/DashViewer', () => {
             return dash
                 .load()
                 .then(() => {
-                    expect(dash.setup).toBeCalled();
-                    expect(dash.loadDashPlayer).toBeCalled();
-                    expect(dash.resetLoadTimeout).toBeCalled();
-                    expect(dash.autoplay).toBeCalled();
-                    expect(dash.loadUI).toBeCalled();
+                    expect(dash.setup).toHaveBeenCalled();
+                    expect(dash.loadDashPlayer).toHaveBeenCalled();
+                    expect(dash.resetLoadTimeout).toHaveBeenCalled();
+                    expect(dash.autoplay).toHaveBeenCalled();
+                    expect(dash.loadUI).toHaveBeenCalled();
                 })
                 .catch(() => {});
         });
@@ -187,7 +187,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should prefetch static assets assets if assets are true', () => {
             dash.prefetch({ assets: true, content: false });
-            expect(stubs.prefetchAssets).toBeCalled();
+            expect(stubs.prefetchAssets).toHaveBeenCalled();
         });
 
         test('should not prefetch rep content if content is false', () => {
@@ -196,7 +196,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 .expects('get')
                 .never();
             dash.prefetch({ assets: false, content: false });
-            expect(stubs.prefetchAssets).not.toBeCalled();
+            expect(stubs.prefetchAssets).not.toHaveBeenCalled();
         });
 
         test('should not prefetch rep content if representation is not ready', () => {
@@ -207,7 +207,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 .never();
 
             dash.prefetch({ assets: false, content: true });
-            expect(stubs.prefetchAssets).not.toBeCalled();
+            expect(stubs.prefetchAssets).not.toHaveBeenCalled();
         });
 
         test('should prefetch rep content if representation is ready', () => {
@@ -219,7 +219,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 .withArgs(contentUrl, { type: 'document' });
 
             dash.prefetch({ assets: false, content: true });
-            expect(stubs.prefetchAssets).not.toBeCalled();
+            expect(stubs.prefetchAssets).not.toHaveBeenCalled();
         });
     });
 
@@ -256,7 +256,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.loadDashPlayer();
 
-            expect(dash.startLoadTimer).toBeCalled();
+            expect(dash.startLoadTimer).toHaveBeenCalled();
         });
 
         test('should load the player with the start time', () => {
@@ -369,7 +369,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.enableVideoId(2);
 
-            expect(dash.showLoadingIcon).not.toBeCalled();
+            expect(dash.showLoadingIcon).not.toHaveBeenCalled();
         });
 
         test('should do nothing if enabling an invalid videoId', () => {
@@ -382,7 +382,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.enableVideoId(-1);
 
-            expect(dash.showLoadingIcon).not.toBeCalled();
+            expect(dash.showLoadingIcon).not.toHaveBeenCalled();
         });
     });
 
@@ -416,7 +416,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.enableAudioId('2');
 
-            expect(dash.showLoadingIcon).not.toBeCalled();
+            expect(dash.showLoadingIcon).not.toHaveBeenCalled();
         });
 
         test('should do nothing if enabling an invalid audioId', () => {
@@ -429,7 +429,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.enableAudioId(-1);
 
-            expect(dash.showLoadingIcon).not.toBeCalled();
+            expect(dash.showLoadingIcon).not.toHaveBeenCalled();
         });
     });
 
@@ -491,7 +491,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash.cache, 'get');
             dash.handleQuality();
             expect(stubs.adapt).toBeCalledWith(true); // default to adapt=true
-            expect(dash.emit).not.toBeCalled();
+            expect(dash.emit).not.toHaveBeenCalled();
         });
 
         test('should enable SD if there is no HD rep available', () => {
@@ -508,7 +508,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
                 dash.handleQuality();
 
-                expect(dash.showGearHdIcon).not.toBeCalled();
+                expect(dash.showGearHdIcon).not.toHaveBeenCalled();
             });
         });
     });
@@ -526,7 +526,7 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should handle change to HD resolution', () => {
             dash.adaptationHandler();
             expect(dash.wrapperEl).toHaveClass(CSS_CLASS_HD);
-            expect(stubs.hide).toBeCalled();
+            expect(stubs.hide).toHaveBeenCalled();
         });
 
         test('should handle change from HD resolution', () => {
@@ -534,27 +534,27 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.wrapperEl.classList.add(CSS_CLASS_HD);
             dash.adaptationHandler();
             expect(dash.wrapperEl).not.toHaveClass(CSS_CLASS_HD);
-            expect(stubs.hide).toBeCalled();
+            expect(stubs.hide).toHaveBeenCalled();
         });
 
         test('should not hide loading indicator if video is still loading', () => {
             stubs.loaded.mockReturnValue(false);
             dash.adaptationHandler();
-            expect(stubs.hide).not.toBeCalled();
+            expect(stubs.hide).not.toHaveBeenCalled();
         });
 
         test('should emit bandwidth if video resolution is adapting', () => {
             dash.adapting = true;
             dash.adaptationHandler();
             expect(dash.emit).toBeCalledWith('adaptation', stubs.active.bandwidth);
-            expect(stubs.hide).toBeCalled();
+            expect(stubs.hide).toHaveBeenCalled();
         });
 
         test('should not emit bandwidth if video resolution is not adapting', () => {
             dash.adapting = false;
             dash.adaptationHandler();
-            expect(dash.emit).not.toBeCalled();
-            expect(stubs.hide).toBeCalled();
+            expect(dash.emit).not.toHaveBeenCalled();
+            expect(stubs.hide).toHaveBeenCalled();
         });
 
         describe('With React controls', () => {
@@ -562,7 +562,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 jest.spyOn(dash, 'getViewerOption').mockImplementation(() => true);
                 jest.spyOn(dash, 'renderUI').mockImplementation();
                 dash.adaptationHandler();
-                expect(dash.renderUI).toBeCalled();
+                expect(dash.renderUI).toHaveBeenCalled();
             });
         });
     });
@@ -603,7 +603,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.shakaErrorHandler(shakaError);
 
-            expect(dash.emit).not.toBeCalled();
+            expect(dash.emit).not.toHaveBeenCalled();
         });
 
         test('should work when the error does not contain a details object', () => {
@@ -630,7 +630,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'handleDownloadError');
             dash.shakaErrorHandler(shakaError);
 
-            expect(dash.handleDownloadError).toBeCalled();
+            expect(dash.handleDownloadError).toHaveBeenCalled();
         });
     });
 
@@ -659,7 +659,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(true);
             jest.spyOn(dash, 'showMedia');
             dash.loadeddataHandler();
-            expect(dash.showMedia).not.toBeCalled();
+            expect(dash.showMedia).not.toHaveBeenCalled();
         });
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus', () => {
@@ -680,17 +680,17 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.options.autoFocus = true;
             dash.loadeddataHandler();
-            expect(dash.autoplay).toBeCalled();
-            expect(dash.showMedia).toBeCalled();
-            expect(dash.showPlayButton).toBeCalled();
-            expect(dash.calculateVideoDimensions).toBeCalled();
-            expect(dash.loadSubtitles).toBeCalled();
-            expect(dash.loadAlternateAudio).toBeCalled();
+            expect(dash.autoplay).toHaveBeenCalled();
+            expect(dash.showMedia).toHaveBeenCalled();
+            expect(dash.showPlayButton).toHaveBeenCalled();
+            expect(dash.calculateVideoDimensions).toHaveBeenCalled();
+            expect(dash.loadSubtitles).toHaveBeenCalled();
+            expect(dash.loadAlternateAudio).toHaveBeenCalled();
             expect(dash.emit).toBeCalledWith(VIEWER_EVENT.load);
             expect(dash.loaded).toBe(true);
             expect(document.activeElement).toBe(dash.mediaContainerEl);
-            expect(dash.mediaControls.show).toBeCalled();
-            expect(dash.loadUI).toBeCalled();
+            expect(dash.mediaControls.show).toHaveBeenCalled();
+            expect(dash.loadUI).toHaveBeenCalled();
         });
 
         describe('With react controls', () => {
@@ -709,11 +709,11 @@ describe('lib/viewers/media/DashViewer', () => {
             test('should call loadUIReact', () => {
                 dash.loadeddataHandler();
 
-                expect(dash.loadUIReact).toBeCalled();
-                expect(dash.loadUI).not.toBeCalled();
-                expect(dash.loadFilmStrip).toBeCalled();
-                expect(dash.loadSubtitles).toBeCalled();
-                expect(dash.loadAlternateAudio).toBeCalled();
+                expect(dash.loadUIReact).toHaveBeenCalled();
+                expect(dash.loadUI).not.toHaveBeenCalled();
+                expect(dash.loadFilmStrip).toHaveBeenCalled();
+                expect(dash.loadSubtitles).toHaveBeenCalled();
+                expect(dash.loadAlternateAudio).toHaveBeenCalled();
             });
 
             test('should retry showAndHideReactControls 10 times if show === noop', () => {
@@ -757,13 +757,13 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should enable HD settings if an HD rep exists', () => {
             dash.hdVideoId = 3;
             dash.loadUI();
-            expect(dash.mediaControls.enableHDSettings).toBeCalled();
+            expect(dash.mediaControls.enableHDSettings).toHaveBeenCalled();
         });
 
         test('should do nothing if there is no HD rep', () => {
             dash.hdVideoId = -1;
             dash.loadUI();
-            expect(dash.mediaControls.enableHDSettings).not.toBeCalled();
+            expect(dash.mediaControls.enableHDSettings).not.toHaveBeenCalled();
         });
     });
 
@@ -825,7 +825,7 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should do nothing if the filmstrip does not exist', () => {
             dash.options.file.representations.entries = [];
             dash.loadFilmStrip();
-            expect(stubs.createUrl).not.toBeCalled();
+            expect(stubs.createUrl).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the filmstrip metadata field does not exist', () => {
@@ -835,30 +835,30 @@ describe('lib/viewers/media/DashViewer', () => {
                 // Missing metadata field
             };
             dash.loadFilmStrip();
-            expect(stubs.createUrl).not.toBeCalled();
+            expect(stubs.createUrl).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the filmstrip interval does not exist', () => {
             dash.options.file.representations.entries[1].metadata = {};
             dash.loadFilmStrip();
-            expect(stubs.createUrl).not.toBeCalled();
+            expect(stubs.createUrl).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the filmstrip interval is 0', () => {
             dash.options.file.representations.entries[1].metadata.interval = 0;
             dash.loadFilmStrip();
-            expect(stubs.createUrl).not.toBeCalled();
+            expect(stubs.createUrl).not.toHaveBeenCalled();
         });
 
         test('should do nothing if the filmstrip interval is negative', () => {
             dash.options.file.representations.entries[1].metadata.interval = -2;
             dash.loadFilmStrip();
-            expect(stubs.createUrl).not.toBeCalled();
+            expect(stubs.createUrl).not.toHaveBeenCalled();
         });
 
         test('should load the film strip', () => {
             dash.loadFilmStrip();
-            expect(stubs.createUrl).toBeCalled();
+            expect(stubs.createUrl).toHaveBeenCalled();
         });
 
         test('should render the controls again after the filmstrip is ready', done => {
@@ -879,7 +879,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadFilmStrip();
 
             mockPromise.then(() => {
-                expect(stubs.renderUI).toBeCalled();
+                expect(stubs.renderUI).toHaveBeenCalled();
                 done();
             });
         });
@@ -955,8 +955,8 @@ describe('lib/viewers/media/DashViewer', () => {
             test('should call initSubtitles instead', () => {
                 dash.loadSubtitles();
 
-                expect(dash.initSubtitles).toBeCalled();
-                expect(dash.mediaControls.initSubtitles).not.toBeCalled();
+                expect(dash.initSubtitles).toHaveBeenCalled();
+                expect(dash.mediaControls.initSubtitles).not.toHaveBeenCalled();
             });
         });
     });
@@ -990,7 +990,7 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should do nothing if the transcript has not changed', () => {
             dash.transcript = transcript;
             dash.loadAutoGeneratedCaptions(transcript);
-            expect(dash.createTextCues).not.toBeCalled();
+            expect(dash.createTextCues).not.toHaveBeenCalled();
         });
 
         test('should do nothing if no text cues are found', () => {
@@ -998,7 +998,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setupAutoCaptionDisplayer = jest.fn();
 
             dash.loadAutoGeneratedCaptions(transcript);
-            expect(dash.setupAutoCaptionDisplayer).not.toBeCalled();
+            expect(dash.setupAutoCaptionDisplayer).not.toHaveBeenCalled();
         });
 
         test('should destroy and reset an existing autoCaptionDisplayer', () => {
@@ -1033,10 +1033,10 @@ describe('lib/viewers/media/DashViewer', () => {
                 dash.createTextCues.mockReturnValue(cues);
                 dash.loadAutoGeneratedCaptions(transcript);
 
-                expect(dash.initSubtitles).toBeCalled();
+                expect(dash.initSubtitles).toHaveBeenCalled();
                 expect(dash.textTracks).toEqual([{ id: 0, language: __('auto_generated') }]);
-                expect(dash.mediaControls.setLabel).not.toBeCalled();
-                expect(dash.mediaControls.initSubtitles).not.toBeCalled();
+                expect(dash.mediaControls.setLabel).not.toHaveBeenCalled();
+                expect(dash.mediaControls.initSubtitles).not.toHaveBeenCalled();
             });
         });
     });
@@ -1066,7 +1066,7 @@ describe('lib/viewers/media/DashViewer', () => {
             });
 
             dash.setupAutoCaptionDisplayer('foo');
-            expect(stubs.appendStub).toBeCalled();
+            expect(stubs.appendStub).toHaveBeenCalled();
         });
     });
 
@@ -1221,7 +1221,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash.cache, 'get').mockReturnValue('3');
 
             dash.handleAudioTrack();
-            expect(dash.enableAudioId).not.toBeCalled();
+            expect(dash.enableAudioId).not.toHaveBeenCalled();
         });
     });
 
@@ -1446,14 +1446,14 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should hide the stats if they were being shown', () => {
             dash.statsEl = { className: '' };
             dash.toggleStats();
-            expect(dash.removeStats).toBeCalled();
+            expect(dash.removeStats).toHaveBeenCalled();
             expect(dash.statsEl.className).toBe('');
             dash.statsEl = null;
         });
 
         test('should show the stats if they were being hidden', () => {
             dash.toggleStats();
-            expect(dash.removeStats).not.toBeCalled();
+            expect(dash.removeStats).not.toHaveBeenCalled();
             expect(dash.statsEl).toHaveClass('bp-media-dash-stats');
         });
     });
@@ -1470,14 +1470,14 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should toggle the stats on Shift+I', () => {
             jest.spyOn(dash, 'toggleStats');
             const result = dash.onKeydown('Shift+I');
-            expect(dash.toggleStats).toBeCalled();
+            expect(dash.toggleStats).toHaveBeenCalled();
             expect(result).toBe(true);
         });
 
         test('should call super keydown handler for all other keys', () => {
             jest.spyOn(dash, 'toggleStats');
             const result = dash.onKeydown('blah');
-            expect(dash.toggleStats).not.toBeCalled();
+            expect(dash.toggleStats).not.toHaveBeenCalled();
             expect(result).not.toBe(true);
         });
     });
@@ -1521,17 +1521,17 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should start a timer if buffering is true', () => {
             dash.handleBuffering({ buffering: true });
-            expect(Timer.start).toBeCalled();
-            expect(Timer.stop).not.toBeCalled();
-            expect(Timer.reset).not.toBeCalled();
+            expect(Timer.start).toHaveBeenCalled();
+            expect(Timer.stop).not.toHaveBeenCalled();
+            expect(Timer.reset).not.toHaveBeenCalled();
             expect(dash.metrics.totalBufferLag).toBe(0);
         });
 
         test('should stop the timer if buffering is false', () => {
             dash.handleBuffering({ buffering: false });
-            expect(Timer.start).not.toBeCalled();
-            expect(Timer.stop).toBeCalled();
-            expect(Timer.reset).toBeCalled();
+            expect(Timer.start).not.toHaveBeenCalled();
+            expect(Timer.stop).toHaveBeenCalled();
+            expect(Timer.reset).toHaveBeenCalled();
             expect(dash.metrics.totalBufferLag).toBe(5);
         });
     });
@@ -1573,7 +1573,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.processMetrics();
 
-            expect(dash.emitMetric).not.toBeCalled();
+            expect(dash.emitMetric).not.toHaveBeenCalled();
             expect(dash.metrics).toEqual(expMetrics);
         });
 
@@ -1652,15 +1652,15 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should do nothing if the audioTrackId is not found', () => {
             dash.setAudioTrack(-1);
 
-            expect(dash.enableAudioId).not.toBeCalled();
-            expect(dash.renderUI).not.toBeCalled();
+            expect(dash.enableAudioId).not.toHaveBeenCalled();
+            expect(dash.renderUI).not.toHaveBeenCalled();
         });
 
         test('should update the UI', () => {
             dash.setAudioTrack(1);
 
-            expect(dash.enableAudioId).toBeCalled();
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.enableAudioId).toHaveBeenCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
             expect(dash.selectedAudioTrack).toBe(1);
         });
     });
@@ -1690,7 +1690,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.enableAdaptation).toBeCalledWith(false);
             expect(dash.enableVideoId).toBeCalledWith(videoId);
             expect(dash.emit).toBeCalledWith('qualitychange', quality);
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should set the quality to auto', () => {
@@ -1698,9 +1698,9 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.selectedQuality).toBe('auto');
             expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', true);
             expect(dash.enableAdaptation).toBeCalledWith(true);
-            expect(dash.enableVideoId).not.toBeCalled();
+            expect(dash.enableVideoId).not.toHaveBeenCalled();
             expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should set unknown quality to auto', () => {
@@ -1708,9 +1708,9 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.selectedQuality).toBe('auto');
             expect(dash.cache.set).toBeCalledWith('media-quality', 'auto', true);
             expect(dash.enableAdaptation).toBeCalledWith(true);
-            expect(dash.enableVideoId).not.toBeCalled();
+            expect(dash.enableVideoId).not.toHaveBeenCalled();
             expect(dash.emit).toBeCalledWith('qualitychange', 'auto');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should not save to cache if saveToCache is false', () => {
@@ -1802,7 +1802,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setSubtitle(5);
 
             expect(dash.emit).toBeCalledWith('subtitlechange', 'Auto-Generated');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should select track from front of text track list', () => {
@@ -1814,7 +1814,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setSubtitle(5);
 
             expect(dash.emit).toBeCalledWith('subtitlechange', 'eng');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should select track from end of text track list', () => {
@@ -1826,7 +1826,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setSubtitle(7);
 
             expect(dash.emit).toBeCalledWith('subtitlechange', 'zho');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should select track from middle of text track list', () => {
@@ -1838,7 +1838,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setSubtitle(6);
 
             expect(stubs.emit).toBeCalledWith('subtitlechange', 'es');
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should turn off subtitles when idx out of bounds', () => {
@@ -1849,7 +1849,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setSubtitle(-1);
 
             expect(stubs.emit).toBeCalledWith('subtitlechange', null);
-            expect(dash.renderUI).toBeCalled();
+            expect(dash.renderUI).toHaveBeenCalled();
         });
 
         test('should not set the subtitle ID to cache when turning off', () => {
@@ -1904,6 +1904,284 @@ describe('lib/viewers/media/DashViewer', () => {
                 rate: '1.0',
                 volume: expect.any(Number),
             });
+        });
+    });
+
+    describe('handleAnnotationColorChange', () => {
+        beforeEach(() => {
+            dash.annotationModule = {
+                setColor: jest.fn(),
+            };
+            dash.annotator = {
+                emit: jest.fn(),
+            };
+            dash.renderUI = jest.fn();
+        });
+
+        test('should call setColor and renderUI, and emit color', () => {
+            const color = '#fff';
+            dash.handleAnnotationColorChange(color);
+
+            expect(dash.annotationModule.setColor).toBeCalledWith(color);
+            expect(dash.annotator.emit).toBeCalledWith('annotations_color_set', color);
+            expect(dash.renderUI).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleAnnotationControlsClick', () => {
+        beforeEach(() => {
+            dash.mediaEl = {
+                pause: jest.fn(),
+                removeEventListener: jest.fn(),
+            };
+            dash.annotationControlsFSM = {
+                transition: jest.fn(),
+            };
+            dash.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            dash.processAnnotationModeChange = jest.fn();
+        });
+
+        test('should pause media, transition FSM, toggle annotation mode, and process mode change', () => {
+            const mode = 'region';
+            const nextMode = 'none';
+            dash.annotationControlsFSM.transition.mockReturnValue(nextMode);
+
+            dash.handleAnnotationControlsClick({ mode });
+
+            expect(dash.mediaEl.pause).toHaveBeenCalled();
+            expect(dash.annotationControlsFSM.transition).toHaveBeenCalledWith('click', mode);
+            expect(dash.annotator.toggleAnnotationMode).toHaveBeenCalledWith(nextMode);
+            expect(dash.processAnnotationModeChange).toHaveBeenCalledWith(nextMode);
+        });
+    });
+
+    describe('handleAnnotationCreateEvent', () => {
+        beforeEach(() => {
+            dash.annotator = {
+                emit: jest.fn(),
+            };
+        });
+
+        test('should not emit if status is not success', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'error' },
+            };
+
+            dash.handleAnnotationCreateEvent(event);
+
+            expect(dash.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not emit if status is pending', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'pending' },
+            };
+
+            dash.handleAnnotationCreateEvent(event);
+
+            expect(dash.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should emit annotations_active_set if status is success', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'success' },
+            };
+
+            dash.handleAnnotationCreateEvent(event);
+
+            expect(dash.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+        });
+
+        test('should handle missing annotation or meta gracefully', () => {
+            const event = {};
+
+            dash.handleAnnotationCreateEvent(event);
+
+            expect(dash.annotator.emit).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('applyCursorFtux', () => {
+        beforeEach(() => {
+            dash.containerEl = {
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+                removeEventListener: jest.fn(),
+            };
+            dash.cache = {
+                get: jest.fn(),
+                set: jest.fn(),
+            };
+            dash.annotationControlsFSM = {
+                getState: jest.fn(),
+            };
+        });
+
+        test('should do nothing if containerEl does not exist', () => {
+            dash.containerEl = null;
+
+            dash.applyCursorFtux();
+
+            expect(dash.cache.get).not.toHaveBeenCalled();
+            expect(dash.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing if annotation state is not REGION', () => {
+            dash.annotationControlsFSM.getState.mockReturnValue('drawing');
+
+            dash.applyCursorFtux();
+
+            expect(dash.cache.get).not.toHaveBeenCalled();
+            expect(dash.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should add cursor seen class if cache contains VIDEO_FTUX_CURSOR_SEEN_KEY', () => {
+            dash.annotationControlsFSM.getState.mockReturnValue('region');
+            dash.cache.get.mockReturnValue(true);
+
+            dash.applyCursorFtux();
+
+            expect(dash.containerEl.classList.add).toBeCalledWith('bp-annotations-ftux-video-cursor-seen');
+            expect(dash.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should set VIDEO_FTUX_CURSOR_SEEN_KEY in cache if not present', () => {
+            dash.annotationControlsFSM.getState.mockReturnValue('region');
+            dash.cache.get.mockReturnValue(false);
+
+            dash.applyCursorFtux();
+
+            expect(dash.cache.set).toBeCalledWith('ftux-cursor-seen-video', true, true);
+            expect(dash.containerEl.classList.add).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('updateDiscoverabilityResinTag', () => {
+        beforeEach(() => {
+            dash.containerEl = {
+                setAttribute: jest.fn(),
+                removeEventListener: jest.fn(),
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+            };
+            dash.annotationControlsFSM = {
+                getState: jest.fn(),
+            };
+            dash.options = {
+                enableAnnotationsDiscoverability: false,
+            };
+        });
+
+        test('should do nothing if containerEl does not exist', () => {
+            dash.containerEl = null;
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.annotationControlsFSM.getState).not.toHaveBeenCalled();
+        });
+
+        test('should set discoverability attribute to false if enableAnnotationsDiscoverability is false', () => {
+            dash.annotationControlsFSM.getState.mockReturnValue('region_temp');
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', false);
+        });
+
+        test('should set discoverability attribute to false if state is not discoverable', () => {
+            dash.options.enableAnnotationsDiscoverability = true;
+            dash.annotationControlsFSM.getState.mockReturnValue('highlight');
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', false);
+        });
+
+        test('should set discoverability attribute to true if state is discoverable and enabled', () => {
+            dash.options.enableAnnotationsDiscoverability = true;
+            dash.annotationControlsFSM.getState.mockReturnValue('region_temp');
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+
+        test('should set discoverability attribute to true for drawing state', () => {
+            dash.options.enableAnnotationsDiscoverability = true;
+            dash.annotationControlsFSM.getState.mockReturnValue('drawing');
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+
+        test('should set discoverability attribute to true for none state', () => {
+            dash.options.enableAnnotationsDiscoverability = true;
+            dash.annotationControlsFSM.getState.mockReturnValue('none');
+
+            dash.updateDiscoverabilityResinTag();
+
+            expect(dash.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+    });
+
+    describe('scaleAnnotations', () => {
+        beforeEach(() => {
+            dash.videoWidth = 1920;
+            dash.videoHeight = 1080;
+            dash.rotationAngle = 0;
+            jest.spyOn(dash, 'emit');
+        });
+
+        test('should emit scale event with width-based scale', () => {
+            const width = '960';
+            const height = '540';
+
+            dash.scaleAnnotations(width, height);
+
+            expect(dash.emit).toHaveBeenCalledWith('scale', {
+                scale: 0.5,
+                rotationAngle: 0,
+            });
+        });
+    });
+
+    describe('initAnnotations', () => {
+        beforeEach(() => {
+            dash.annotator = {
+                addListener: jest.fn(),
+            };
+            jest.spyOn(dash, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(VideoBaseViewer.prototype, 'initAnnotations').mockImplementation();
+        });
+
+        test('should call super initAnnotations', () => {
+            dash.initAnnotations();
+
+            expect(VideoBaseViewer.prototype.initAnnotations).toHaveBeenCalled();
+        });
+
+        test('should add annotations_create listener if new annotations are enabled', () => {
+            dash.initAnnotations();
+
+            expect(dash.annotator.addListener).toBeCalledWith('annotations_create', dash.handleAnnotationCreateEvent);
+        });
+
+        test('should not add annotations_create listener if new annotations are disabled', () => {
+            jest.spyOn(dash, 'areNewAnnotationsEnabled').mockReturnValue(false);
+
+            dash.initAnnotations();
+
+            expect(dash.annotator.addListener).not.toHaveBeenCalled();
         });
     });
 });
