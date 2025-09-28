@@ -60,12 +60,14 @@ describe('DashControls', () => {
 
         test.each([true, false])(
             'should not see annotations controls if feature is disabled',
-            async isVideoAnnotationsEnabled => {
+            isVideoAnnotationsEnabled => {
                 render(
                     <DashControls
                         audioTrack={1}
                         audioTracks={[]}
                         autoplay={false}
+                        hasDrawing
+                        hasRegion
                         isHDSupported
                         isPlaying={false}
                         isPlayingHD={false}
