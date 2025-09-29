@@ -51,9 +51,11 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             <div aria-label={label} className="bp-SettingsMenuItem-label">
                 {label}
             </div>
-            <div className="bp-SettingsMenuItem-value">{value}</div>
-            <div className="bp-SettingsMenuItem-arrow">
-                {!isDisabled && <IconArrowRight24 height={18} width={18} />}
+            <div className="bp-SettingsMenuItem-value-container">
+                <div className="bp-SettingsMenuItem-value">{value}</div>
+                <div className="bp-SettingsMenuItem-arrow">
+                    {!isDisabled && <IconArrowRight24 height={18} width={18} />}
+                </div>
             </div>
         </div>
     );

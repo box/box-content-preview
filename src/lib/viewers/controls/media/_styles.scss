@@ -31,6 +31,9 @@ $bp-MediaControl-width: 36px;
 }
 
 @mixin bp-VideoControls-settings {
+    // need to position absoltutely positioned flyouts relative to the settings bar
+    position: relative;
+
     .bp-SettingsFlyout {
         right: 15px;
     }

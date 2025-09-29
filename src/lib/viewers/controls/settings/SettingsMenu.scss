@@ -1,8 +1,10 @@
 .bp-SettingsMenu {
     display: none;
+    min-width: 184px;
     padding: 8px;
 
     &.bp-is-active {
-        display: table;
+        display: flex;
+        flex-direction: column;
     }
 }

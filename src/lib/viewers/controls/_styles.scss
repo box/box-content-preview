@@ -10,6 +10,7 @@ $bp-controls-size-default: 44px;
 $bp-controls-size-large: 56px;
 $bp-controls-size-small: 32px;
 $bp-controls-spacing: 6px;
+$bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
 
 @mixin bp-Control($height: $bp-controls-size-default, $width: $bp-controls-size-default) {
     @include bp-Control--fade;

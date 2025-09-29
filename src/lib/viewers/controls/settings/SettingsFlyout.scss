@@ -5,17 +5,19 @@
     top: -5px;
     right: 0;
     display: none;
+    min-width: 184px;
     max-width: 400px;
-    max-height: 210px;
     overflow-x: hidden;
-    overflow-y: auto; // Prevent scrollbar from showing on hover in IE/Edge
+    overflow-y: hidden; // Prevent scrollbar from showing on hover in IE/Edge
     color: $fours;
     font-size: 13px;
     line-height: normal;
-    background-color: $white;
-    border-radius: 2px;
-    box-shadow: 0 0 1px 1px $sf-fog; // Prevent overflow due to global box-sizing: border-box
+    background: $bp-controls-settings-flyout-background;
+    border: 1px solid $bdl-gray-10;
+    border-radius: 20px;
+    box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgba(0, 0, 0, .1);
     transform: translateY(-100%);
+    backdrop-filter: blur(16px);
     transition: width 200ms, height 200ms;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 
