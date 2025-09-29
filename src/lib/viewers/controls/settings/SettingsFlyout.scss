@@ -12,8 +12,8 @@
     color: $fours;
     font-size: 13px;
     line-height: normal;
-    background: rgba(255, 255, 255, .9);
-    border: 1px solid #e8e8e8;
+    background: $bp-controls-settings-flyout-background;
+    border: 1px solid $bdl-gray-10;
     border-radius: 20px;
     box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgba(0, 0, 0, .1);
     transform: translateY(-100%);

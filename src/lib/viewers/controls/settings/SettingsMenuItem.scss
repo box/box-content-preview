@@ -21,7 +21,9 @@
 }
 
 .bp-SettingsMenuItem-arrow {
-    @include bp-SettingsRow-cell;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .bp-SettingsMenuItem-label {
