@@ -66,11 +66,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playContainerEl.classList.add(CLASS_PLAY_CONTAINER);
         this.playContainerEl.classList.add(CLASS_HIDDEN);
 
-        this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
-        this.seekBackwardButtonEl.setAttribute('type', 'button');
-        this.seekBackwardButtonEl.setAttribute('title', __('media_seek_forward'));
-        this.seekBackwardButtonEl.innerHTML = ICON_FORWARD;
+        this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
+        this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
+        this.seekForwardButtonEl.setAttribute('type', 'button');
+        this.seekForwardButtonEl.setAttribute('title', __('media_seek_forward'));
+        this.seekForwardButtonEl.innerHTML = ICON_FORWARD;
 
         this.playButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
         this.playButtonEl.classList.add(CLASS_PLAY_CONTAINER_PLAY_BUTTON);
@@ -78,11 +78,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
-        this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
-        this.seekForwardButtonEl.setAttribute('type', 'button');
-        this.seekForwardButtonEl.setAttribute('title', __('media_seek_backward'));
-        this.seekForwardButtonEl.innerHTML = ICON_BACKWARD;
+        this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
+        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
+        this.seekBackwardButtonEl.setAttribute('type', 'button');
+        this.seekBackwardButtonEl.setAttribute('title', __('media_seek_backward'));
+        this.seekBackwardButtonEl.innerHTML = ICON_BACKWARD;
     }
 
     /**

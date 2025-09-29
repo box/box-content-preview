@@ -22,7 +22,7 @@ export type Props = DurationLabelsProps &
     TimeControlsProps &
     VolumeControlsProps & {
         isPlayingHD?: boolean;
-        movePlayback: (forward: boolean, duration: number) => void;
+        movePlayback: (isForward: boolean, duration: number) => void;
         annotationColor?: string;
         annotationMode?: AnnotationMode;
         onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;

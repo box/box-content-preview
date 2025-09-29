@@ -19,7 +19,7 @@ describe('PlayPauseToggle', () => {
             expect(onPlayPause).toHaveBeenCalledWith(true);
         });
 
-        test('should move call movePlayback when seek backward and forward buttons are clicked', async () => {
+        test('should call movePlayback when seek backward and forward buttons are clicked', async () => {
             const movePlayback = jest.fn();
             getWrapper({ movePlayback });
             const toggle = await getForwardToggle();

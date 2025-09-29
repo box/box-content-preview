@@ -1,6 +1,5 @@
 import React from 'react';
-import noop from 'lodash/noop';
-import DurationLabels, { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
+import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import TimeControls, { Props as TimeControlsProps } from '../controls/media/TimeControls';
