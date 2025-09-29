@@ -6,6 +6,8 @@ import PlayPauseToggle from '../PlayPauseToggle';
 describe('PlayPauseToggle', () => {
     const getWrapper = (props = {}) => render(<PlayPauseToggle onPlayPause={jest.fn()} {...props} />);
     const getToggle = async () => screen.findByTitle(__('media_play'));
+    const getForwardToggle = async () => screen.findByTitle(__('media_skip_forward'));
+    const getBackwardToggle = async () => screen.findByTitle(__('media_skip_backward'));
 
     describe('event handlers', () => {
         test('should toggle isPlaying when clicked', async () => {
@@ -15,6 +17,18 @@ describe('PlayPauseToggle', () => {
 
             await userEvent.click(toggle);
             expect(onPlayPause).toHaveBeenCalledWith(true);
+        });
+
+        test('should call movePlayback when seek backward and forward buttons are clicked', async () => {
+            const movePlayback = jest.fn();
+            getWrapper({ movePlayback });
+            const toggle = await getForwardToggle();
+            await userEvent.click(toggle);
+            expect(movePlayback).toHaveBeenCalledWith(true, 5);
+
+            const backwardToggle = await getBackwardToggle();
+            await userEvent.click(backwardToggle);
+            expect(movePlayback).toHaveBeenCalledWith(false, 5);
         });
     });
 

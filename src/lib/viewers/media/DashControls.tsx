@@ -22,6 +22,7 @@ export type Props = DurationLabelsProps &
     TimeControlsProps &
     VolumeControlsProps & {
         isPlayingHD?: boolean;
+        movePlayback: (isForward: boolean, duration: number) => void;
         annotationColor?: string;
         annotationMode?: AnnotationMode;
         onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
@@ -54,6 +55,7 @@ export default function DashControls({
     onSubtitlesToggle,
     onTimeChange,
     onVolumeChange,
+    movePlayback,
     quality,
     rate,
     subtitle,
@@ -100,7 +102,7 @@ export default function DashControls({
                     )}
                 </div>
                 <div className="bp-DashControls-group bp-DashControls-group--play-pause">
-                    <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} />
+                    <PlayPauseToggle isPlaying={isPlaying} movePlayback={movePlayback} onPlayPause={onPlayPause} />
                 </div>
 
                 <div className="bp-DashControls-group">
