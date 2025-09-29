@@ -12,11 +12,6 @@
     display: flex;
     align-items: center;
 
-    //make sure the middle element is always centered in it's parent
-    .bp-DashControls-group.bp-DashControls-group--play-pause {
-        transform: translateX(-50%);
-    }
-
     // When annotations are not present, center the middle element and keep last element on the right
     &.bp-DashControls-bar--two-groups {
         justify-content: flex-end;
@@ -24,6 +19,7 @@
         .bp-DashControls-group--play-pause {
             position: absolute;
             left: 50%;
+            transform: translateX(-50%);
         }
     }
 
