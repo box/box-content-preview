@@ -410,7 +410,11 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleVolume() {
-        const volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        let volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        // Make sure the value is always between 0 and 1. If the value in the local storage is greater than
+        // 1 then video player will error out and the only way to fix it is to clear the local storage and reload
+        // the page. Theoretically this should not happen but as this is a known possibility, we are adding this check.
+        volume = Math.min(1, volume);
         if (volume !== 0) {
             this.oldVolume = volume;
         }
