@@ -71,7 +71,6 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
                     onUpdate={handleVolume}
                     step={1}
                     title={__('media_volume_slider')}
-                    track={`linear-gradient(to right, #0061d5 ${value}%, #fff ${value}%)`}
                     value={value}
                     {...handlers}
                 />

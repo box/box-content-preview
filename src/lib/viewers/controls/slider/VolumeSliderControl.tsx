@@ -14,7 +14,6 @@ export type Props = React.HTMLAttributes<Ref> & {
     onUpdate?: (value: number) => void;
     step?: number;
     title: string;
-    track?: string;
     value: number;
     onMouseOver: () => void;
 };
@@ -33,7 +32,6 @@ export default function VolumeSliderControl({
     onUpdate = noop,
     step = 1,
     title,
-    track,
     value,
     onMouseOver,
     ...rest
@@ -79,11 +77,13 @@ export default function VolumeSliderControl({
         }
     };
 
-    const handleMouseDown = ({ button, ctrlKey, metaKey, pageY, clientY }: React.MouseEvent<Ref>): void => {
+    const handleMouseDown = (event: React.MouseEvent<Ref>): void => {
+        const { button, ctrlKey, metaKey, pageY, clientY, stopPropagation } = event;
         if (button > 1 || ctrlKey || metaKey) return;
-
         onUpdate(getPositionValue(pageY, clientY));
         setIsScrubbing(true);
+        // Prevent clicking on the slider from triggering the mouse down event on the parent slider track
+        event.stopPropagation();
     };
 
     const handleMouseMove = ({ pageY, clientY }: React.MouseEvent<Ref>): void => {
