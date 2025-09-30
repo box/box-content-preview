@@ -4,6 +4,8 @@ import React from 'react';
 import { decodeKeydown } from '../../../util';
 import './VolumeSliderControl.scss';
 
+const MIN_VOLUME_HEIGHT = 5;
+
 export type Ref = HTMLDivElement;
 
 export type Props = React.HTMLAttributes<Ref> & {
@@ -49,13 +51,14 @@ export default function VolumeSliderControl({
         const sliderBottom = sliderTop + sliderHeight;
         const distanceFromBottom = sliderBottom - clientY;
 
-        return Math.max(5, distanceFromBottom);
+        return Math.max(MIN_VOLUME_HEIGHT, distanceFromBottom);
     }, []);
 
     const getPositionValue = React.useCallback(
         (pageY: number, clientY: number) => {
             const { current: sliderEl } = sliderElRef;
             if (!sliderEl) return 0;
+
             const { height: sliderHeight } = sliderEl.getBoundingClientRect();
             const positionRelativeToSlider = getPositionRelativeToSlider(clientY);
             const newValue = (positionRelativeToSlider / sliderHeight) * max;
@@ -127,7 +130,7 @@ export default function VolumeSliderControl({
         };
     }, [isScrubbing, getPositionRelativeToSlider, onUpdate]);
 
-    const heightValueBasedOnVolume = value === 0 ? 5 : value;
+    const heightValueBasedOnVolume = value === 0 ? MIN_VOLUME_HEIGHT : value;
     return (
         <div
             className={classNames('bp-VolumeVerticalSliderControl', className, { 'bp-is-scrubbing': isScrubbing })}

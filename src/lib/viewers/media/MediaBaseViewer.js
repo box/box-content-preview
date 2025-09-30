@@ -629,7 +629,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setVolume(volume) {
-        console.log('setVolume', volume);
         this.cache.set(MEDIA_VOLUME_CACHE_KEY, volume, true);
         this.handleVolume();
     }

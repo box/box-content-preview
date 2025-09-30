@@ -7,6 +7,9 @@
 }
 
 .bp-VolumeControls-flyout {
+    position: absolute;
+    top: -40px;
+    left: -5px;
     display: none;
     flex: 0 0 auto;
     max-width: 0;
@@ -15,9 +18,6 @@
     transition: max-width 200ms ease-in-out;
 
     &.bp-is-open {
-        position: absolute;
-        top: -40px;
-        left: -5px;
         display: block;
         overflow: visible;
     }
