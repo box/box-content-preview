@@ -70,7 +70,7 @@ describe('MP3Controls', () => {
             const volume = await screen.findByRole('slider', { name: __('media_volume_slider') });
             const muteButton = await screen.findByTitle(__('media_mute'));
 
-            fireEvent.keyDown(volume, { key: 'ArrowLeft' });
+            fireEvent.keyDown(volume, { key: 'ArrowUp' });
             await userEvent.click(muteButton);
 
             expect(onVolumeChange).toHaveBeenCalled();

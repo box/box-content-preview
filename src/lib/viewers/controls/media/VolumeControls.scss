@@ -1,11 +1,13 @@
 @import './styles';
 
 .bp-VolumeControls {
+    position: relative;
     display: flex;
     align-items: center;
 }
 
 .bp-VolumeControls-flyout {
+    display: none;
     flex: 0 0 auto;
     max-width: 0;
     height: $bp-MediaControl-height;
@@ -13,12 +15,16 @@
     transition: max-width 200ms ease-in-out;
 
     &.bp-is-open {
-        max-width: 100px;
+        position: absolute;
+        top: -40px;
+        left: -5px;
+        display: block;
+        overflow: visible;
     }
 }
 
 .bp-VolumeControls-slider {
-    width: 100px - $bp-SliderControl-thumb-size;
+    width: 15px;
     height: 100%;
     margin-right: $bp-SliderControl-thumb-radius;
     margin-left: $bp-SliderControl-thumb-radius;
