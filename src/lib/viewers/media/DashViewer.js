@@ -71,7 +71,6 @@ class DashViewer extends VideoBaseViewer {
 
         this.api = options.api;
         // Bind context for callbacks
-        // this.loadBoxAnnotations().then(this.createAnnotator);
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
@@ -270,7 +269,9 @@ class DashViewer extends VideoBaseViewer {
 
     handleAnnotationColorChange(color) {
         this.annotationModule.setColor(color);
-        this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
+        if (this.annotator) {
+            this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
+        }
         this.renderUI();
     }
 
@@ -284,7 +285,9 @@ class DashViewer extends VideoBaseViewer {
     handleAnnotationControlsClick({ mode }) {
         this.mediaEl.pause();
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-        this.annotator.toggleAnnotationMode(nextMode);
+        if (this.annotator) {
+            this.annotator.toggleAnnotationMode(nextMode);
+        }
         this.processAnnotationModeChange(nextMode);
     }
 
@@ -678,7 +681,7 @@ class DashViewer extends VideoBaseViewer {
     initAnnotations() {
         super.initAnnotations();
 
-        if (this.areNewAnnotationsEnabled()) {
+        if (this.areNewAnnotationsEnabled() && this.annotator) {
             this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
         }
     }
@@ -1266,7 +1269,9 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        this.annotator.emit('annotations_active_set', id);
+        if (this.annotator) {
+            this.annotator.emit('annotations_active_set', id);
+        }
     }
 
     /**
@@ -1284,6 +1289,7 @@ class DashViewer extends VideoBaseViewer {
         const canAnnotate =
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
+        const annotationsEnabled = !!this.annotatorModule?.isEnabled && this.videoAnnotationsEnabled;
         this.controls.render(
             <DashControls
                 annotationColor={this.annotationModule.getColor()}
@@ -1323,7 +1329,7 @@ class DashViewer extends VideoBaseViewer {
                 rate={this.getRate()}
                 subtitle={this.getSubtitleId()}
                 subtitles={this.textTracks}
-                videoAnnotationsEnabled={this.videoAnnotationsEnabled}
+                videoAnnotationsEnabled={annotationsEnabled}
                 videoElement={this.mediaEl}
                 volume={this.mediaEl.volume}
             />,
