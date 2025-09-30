@@ -81,7 +81,7 @@ export default function VolumeSliderControl({
     };
 
     const handleMouseDown = (event: React.MouseEvent<Ref>): void => {
-        const { button, ctrlKey, metaKey, pageY, clientY, stopPropagation } = event;
+        const { button, ctrlKey, metaKey, pageY, clientY } = event;
         if (button > 1 || ctrlKey || metaKey) return;
         onUpdate(getPositionValue(pageY, clientY));
         setIsScrubbing(true);
