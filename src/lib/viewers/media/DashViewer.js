@@ -267,8 +267,8 @@ class DashViewer extends VideoBaseViewer {
     }
 
     handleAnnotationColorChange(color) {
-        this.annotationModule.setColor(color);
         if (this.annotator) {
+            this.annotationModule.setColor(color);
             this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
         }
         this.renderUI();
@@ -282,12 +282,14 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     handleAnnotationControlsClick({ mode }) {
-        this.mediaEl.pause();
-        const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
         if (this.annotator) {
+            this.mediaEl.pause();
+            const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
+
             this.annotator.toggleAnnotationMode(nextMode);
+
+            this.processAnnotationModeChange(nextMode);
         }
-        this.processAnnotationModeChange(nextMode);
     }
 
     /**
@@ -1062,6 +1064,9 @@ class DashViewer extends VideoBaseViewer {
     }
 
     scaleAnnotations(width, height) {
+        if (!width && !height) {
+            return;
+        }
         const scale = width ? width / this.videoWidth : height / this.videoHeight;
         this.emit('scale', {
             scale,
