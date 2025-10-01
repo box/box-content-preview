@@ -29,11 +29,10 @@ export type Props = DurationLabelsProps &
         annotationMode?: AnnotationMode;
         hasDrawing?: boolean;
         hasRegion?: boolean;
-        onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
-        onAnnotationModeEscape?: () => void;
+        onAnnotationModeClick: ({ mode }: { mode: AnnotationMode }) => void;
+        onAnnotationModeEscape: () => void;
         videoAnnotationsEnabled?: boolean;
-        onAnnotationColorChange?: (color: string) => void | undefined;
-        videoElement?: HTMLVideoElement | null;
+        onAnnotationColorChange: (color: string) => void | undefined;
     };
 
 export default function DashControls({
@@ -74,10 +73,7 @@ export default function DashControls({
     onAnnotationModeClick,
     onAnnotationModeEscape,
     videoAnnotationsEnabled = false,
-    onAnnotationColorChange = (color: string) => {
-        /* noop */
-    },
-    videoElement,
+    onAnnotationColorChange,
 }: Props): JSX.Element {
     return (
         <div

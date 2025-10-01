@@ -1332,7 +1332,6 @@ class DashViewer extends VideoBaseViewer {
                 subtitle={this.getSubtitleId()}
                 subtitles={this.textTracks}
                 videoAnnotationsEnabled={annotationsEnabled}
-                videoElement={this.mediaEl}
                 volume={this.mediaEl.volume}
             />,
         );
