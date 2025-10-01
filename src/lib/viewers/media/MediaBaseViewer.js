@@ -5,6 +5,7 @@ import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
+import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
@@ -865,6 +866,13 @@ class MediaBaseViewer extends BaseViewer {
         }
     }
 
+    closeAnnotationControls() {
+        if (this.annotator && this.annotationControlsFSM) {
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+            this.annotator.toggleAnnotationMode(AnnotationState.NONE);
+        }
+    }
+
     /**
      * Toggle playback
      *
@@ -876,6 +884,9 @@ class MediaBaseViewer extends BaseViewer {
             this.play();
         } else {
             this.pause(undefined, true);
+        }
+        if (this.annotator) {
+            this.closeAnnotationControls();
         }
     }
 

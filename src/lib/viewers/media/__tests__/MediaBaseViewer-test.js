@@ -787,6 +787,26 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.pause).toBeCalledTimes(0);
             expect(media.play).toBeCalledTimes(1);
         });
+
+        test('should close annotation controls when annotator exists', () => {
+            jest.spyOn(media, 'closeAnnotationControls').mockImplementation();
+            media.annotator = { toggleAnnotationMode: jest.fn() };
+            media.mediaEl = { paused: false };
+
+            media.togglePlay();
+
+            expect(media.closeAnnotationControls).toBeCalledTimes(1);
+        });
+
+        test('should not call closeAnnotationControls when annotator does not exist', () => {
+            jest.spyOn(media, 'closeAnnotationControls').mockImplementation();
+            media.annotator = null;
+            media.mediaEl = { paused: false };
+
+            media.togglePlay();
+
+            expect(media.closeAnnotationControls).toBeCalledTimes(0);
+        });
     });
 
     describe('toggleMute()', () => {
@@ -1406,6 +1426,56 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const expWhitelist = ['media_metric_buffer_fill', 'media_metric_end_playback'];
 
             expect(media.getMetricsWhitelist()).toEqual(expWhitelist);
+        });
+    });
+
+    describe('closeAnnotationControls()', () => {
+        beforeEach(() => {
+            media.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            media.annotationControlsFSM = {
+                transition: jest.fn(),
+            };
+            media.processAnnotationModeChange = jest.fn();
+        });
+
+        test('should reset annotation controls when annotator and FSM are available', () => {
+            const resetMode = 'none';
+            media.annotationControlsFSM.transition.mockReturnValue(resetMode);
+
+            media.closeAnnotationControls();
+
+            expect(media.annotationControlsFSM.transition).toHaveBeenCalledWith('reset');
+            expect(media.processAnnotationModeChange).toHaveBeenCalledWith(resetMode);
+            expect(media.annotator.toggleAnnotationMode).toHaveBeenCalledWith('none');
+        });
+
+        test('should not call methods when annotator is missing', () => {
+            media.annotator = null;
+
+            media.closeAnnotationControls();
+
+            expect(media.annotationControlsFSM.transition).not.toHaveBeenCalled();
+            expect(media.processAnnotationModeChange).not.toHaveBeenCalled();
+        });
+
+        test('should not call methods when annotationControlsFSM is missing', () => {
+            media.annotationControlsFSM = null;
+
+            media.closeAnnotationControls();
+
+            expect(media.annotator.toggleAnnotationMode).not.toHaveBeenCalled();
+            expect(media.processAnnotationModeChange).not.toHaveBeenCalled();
+        });
+
+        test('should not call methods when both annotator and FSM are missing', () => {
+            media.annotator = null;
+            media.annotationControlsFSM = null;
+
+            media.closeAnnotationControls();
+
+            expect(media.processAnnotationModeChange).not.toHaveBeenCalled();
         });
     });
 });

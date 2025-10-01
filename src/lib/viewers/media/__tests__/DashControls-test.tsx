@@ -28,6 +28,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD={false}
                     movePlayback={movePlayback}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={onAudioTrackChange}
                     onAutoplayChange={onAutoplayChange}
                     onFullscreenToggle={onFullscreenToggle}
@@ -60,16 +63,21 @@ describe('DashControls', () => {
 
         test.each([true, false])(
             'should not see annotations controls if feature is disabled',
-            async isVideoAnnotationsEnabled => {
+            isVideoAnnotationsEnabled => {
                 render(
                     <DashControls
                         audioTrack={1}
                         audioTracks={[]}
                         autoplay={false}
+                        hasDrawing
+                        hasRegion
                         isHDSupported
                         isPlaying={false}
                         isPlayingHD={false}
                         movePlayback={jest.fn()}
+                        onAnnotationColorChange={jest.fn()}
+                        onAnnotationModeClick={jest.fn()}
+                        onAnnotationModeEscape={jest.fn()}
                         onAudioTrackChange={jest.fn()}
                         onAutoplayChange={jest.fn()}
                         onFullscreenToggle={jest.fn()}
@@ -103,6 +111,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD={false}
                     movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={jest.fn()}
                     onAutoplayChange={jest.fn()}
                     onFullscreenToggle={jest.fn()}
@@ -135,6 +146,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD={false}
                     movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={jest.fn()}
                     onAutoplayChange={jest.fn()}
                     onFullscreenToggle={jest.fn()}
@@ -161,6 +175,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD
                     movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={jest.fn()}
                     onAutoplayChange={jest.fn()}
                     onFullscreenToggle={jest.fn()}
@@ -190,6 +207,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD={false}
                     movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={jest.fn()}
                     onAutoplayChange={jest.fn()}
                     onFullscreenToggle={jest.fn()}
@@ -224,6 +244,9 @@ describe('DashControls', () => {
                     isPlaying={false}
                     isPlayingHD={false}
                     movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
                     onAudioTrackChange={jest.fn()}
                     onAutoplayChange={jest.fn()}
                     onFullscreenToggle={jest.fn()}

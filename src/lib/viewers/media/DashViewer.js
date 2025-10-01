@@ -1,10 +1,20 @@
 import React from 'react';
-import { VIDEO_PLAYER_CONTROL_BAR_HEIGHT, MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import {
+    ANNOTATOR_EVENT,
+    VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
+    MEDIA_STATIC_ASSETS_VERSION,
+    SUBTITLES_OFF,
+    VIDEO_FTUX_CURSOR_SEEN_KEY,
+    CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
+    DISCOVERABILITY_ATTRIBUTE,
+} from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import fullscreen from '../../Fullscreen';
 import getLanguageName from '../../lang';
 import PreviewError from '../../PreviewError';
+import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
+
 import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
 import './Dash.scss';
@@ -20,6 +30,8 @@ const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
+
+export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -59,12 +71,16 @@ class DashViewer extends VideoBaseViewer {
 
         this.api = options.api;
         // Bind context for callbacks
+        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.handleBuffering = this.handleBuffering.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
+        this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
+        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
+        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
@@ -74,6 +90,29 @@ class DashViewer extends VideoBaseViewer {
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
+        this.scaleAnnotations = this.scaleAnnotations.bind(this);
+        this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
+
+        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
+        this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
+    }
+
+    /**
+     * Hides the create region cursor popup for a document
+     *
+     * @protected
+     * @return {void}
+     */
+    applyCursorFtux() {
+        if (!this.containerEl || this.annotationControlsFSM.getState() !== AnnotationState.REGION) {
+            return;
+        }
+
+        if (this.cache.get(VIDEO_FTUX_CURSOR_SEEN_KEY)) {
+            this.containerEl.classList.add(CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN);
+        } else {
+            this.cache.set(VIDEO_FTUX_CURSOR_SEEN_KEY, true, true);
+        }
     }
 
     /**
@@ -154,6 +193,7 @@ class DashViewer extends VideoBaseViewer {
         return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()])
             .then(() => {
                 this.loadDashPlayer();
+                this.handleAssetAndRepLoad();
                 this.resetLoadTimeout();
             })
             .catch(this.handleAssetError);
@@ -224,6 +264,32 @@ class DashViewer extends VideoBaseViewer {
 
         this.startLoadTimer();
         this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
+    }
+
+    handleAnnotationColorChange(color) {
+        if (this.annotator) {
+            this.annotationModule.setColor(color);
+            this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
+        }
+        this.renderUI();
+    }
+
+    /**
+     * Handler for annotation controls button click event.
+     *
+     * @private
+     * @param {AnnotationMode} mode one of annotation modes
+     * @return {void}
+     */
+    handleAnnotationControlsClick({ mode }) {
+        if (this.annotator) {
+            this.mediaEl.pause();
+            const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
+
+            this.annotator.toggleAnnotationMode(nextMode);
+
+            this.processAnnotationModeChange(nextMode);
+        }
     }
 
     /**
@@ -613,6 +679,14 @@ class DashViewer extends VideoBaseViewer {
         this.mediaControls.addListener('audiochange', this.handleAudioTrack);
     }
 
+    initAnnotations() {
+        super.initAnnotations();
+
+        if (this.areNewAnnotationsEnabled() && this.annotator) {
+            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
+        }
+    }
+
     /**
      * Loads captions/subtitles into the settings menu
      *
@@ -854,7 +928,7 @@ class DashViewer extends VideoBaseViewer {
      */
     loadUIReact() {
         super.loadUIReact();
-
+        this.annotationControlsFSM.subscribe(() => this.renderUI());
         const isHDSupported = this.hdVideoId !== -1;
         this.selectedQuality = isHDSupported ? this.cache.get('media-quality') || 'auto' : 'sd';
         this.setQuality(this.selectedQuality, false);
@@ -980,9 +1054,24 @@ class DashViewer extends VideoBaseViewer {
             } else if (newWidthIfHeightUsed <= viewport.width) {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
+
+            if (this.videoAnnotationsEnabled && this.annotator) {
+                this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
+            }
         }
 
         super.resize();
+    }
+
+    scaleAnnotations(width, height) {
+        if (!width && !height) {
+            return;
+        }
+        const scale = width ? width / this.videoWidth : height / this.videoHeight;
+        this.emit('scale', {
+            scale,
+            rotationAngle: this.rotationAngle,
+        });
     }
 
     /**
@@ -1167,6 +1256,30 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle(showSubtitles ? this.selectedSubtitle : SUBTITLES_OFF);
     }
 
+    updateDiscoverabilityResinTag() {
+        if (!this.containerEl) {
+            return;
+        }
+
+        const controlsState = this.annotationControlsFSM.getState();
+        const isDiscoverable = DISCOVERABILITY_STATES.includes(controlsState);
+        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverable;
+
+        // For tracking purposes, set property to true when the annotation controls are in a state
+        // in which the default discoverability experience is enabled
+        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
+    }
+
+    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
+        if (status !== 'success') {
+            return;
+        }
+
+        if (this.annotator) {
+            this.annotator.emit('annotations_active_set', id);
+        }
+    }
+
     /**
      * @inheritdoc
      */
@@ -1178,8 +1291,15 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
+        const { showAnnotationsDrawingCreate: canDraw } = this.options;
+        const canAnnotate =
+            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
+
+        const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
         this.controls.render(
             <DashControls
+                annotationColor={this.annotationModule.getColor()}
+                annotationMode={this.annotationControlsFSM.getMode()}
                 aspectRatio={this.aspect}
                 audioTrack={this.selectedAudioTrack}
                 audioTracks={this.audioTracks}
@@ -1189,11 +1309,17 @@ class DashViewer extends VideoBaseViewer {
                 durationTime={this.mediaEl.duration}
                 filmstripInterval={this.filmstripInterval}
                 filmstripUrl={this.filmstripUrl}
+                hasDrawing={canDraw}
+                hasHighlight={false}
+                hasRegion={canAnnotate}
                 isAutoGeneratedSubtitles={!!this.autoCaptionDisplayer}
                 isHDSupported={this.hdVideoId !== -1}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
                 movePlayback={this.movePlayback}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
+                onAnnotationModeClick={this.handleAnnotationControlsClick}
+                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onAudioTrackChange={this.setAudioTrack}
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
@@ -1209,7 +1335,7 @@ class DashViewer extends VideoBaseViewer {
                 rate={this.getRate()}
                 subtitle={this.getSubtitleId()}
                 subtitles={this.textTracks}
-                videoAnnotationsEnabled={this.videoAnnotationsEnabled}
+                videoAnnotationsEnabled={annotationsEnabled}
                 volume={this.mediaEl.volume}
             />,
         );

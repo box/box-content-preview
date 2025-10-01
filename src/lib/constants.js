@@ -6,6 +6,7 @@ export const CLASS_ANNOTATIONS_DISCOVERABLE = 'bp-annotations-discoverable';
 export const CLASS_ANNOTATIONS_ONLY_CONTROLS = 'bp-annotations-only-controls';
 export const CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN = 'bp-annotations-ftux-image-cursor-seen';
 export const CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN = 'bp-annotations-ftux-document-cursor-seen';
+export const CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN = 'bp-annotations-ftux-video-cursor-seen';
 export const CLASS_NAVIGATION_VISIBILITY = 'bp-is-navigation-visible';
 export const CLASS_HIDDEN = 'bp-is-hidden';
 export const CLASS_PREVIEW_LOADED = 'bp-loaded';
@@ -146,6 +147,7 @@ export const ERROR_CODE_403_FORBIDDEN_BY_POLICY = 'forbidden_by_policy';
 // LocalStorage Keys
 export const DOCUMENT_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-document';
 export const IMAGE_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-image';
+export const VIDEO_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-video';
 
 export const SUBTITLES_OFF = -1;
 
