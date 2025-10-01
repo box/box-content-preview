@@ -2,7 +2,7 @@
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v3.12.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v3.13.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 # [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -22,11 +22,11 @@ We encourage all users to update their applications to utilize modern browsers f
 
 ## Current Version
 
-- Version: v3.12.0
+- Version: v3.13.0
 - Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/3.12.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/3.12.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/3.13.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/3.13.0/en-US/preview.css
 
 ## Supported Locales
 
@@ -52,10 +52,10 @@ You can self-host the Box Content Preview library or reference the versions avai
     <title>Box Content Preview Demo</title>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/3.12.0/en-US/preview.js"></script>
+    <script src="https://cdn01.boxcdn.net/platform/preview/3.13.0/en-US/preview.js"></script>
     <link
       rel="stylesheet"
-      href="https://cdn01.boxcdn.net/platform/preview/3.12.0/en-US/preview.css"
+      href="https://cdn01.boxcdn.net/platform/preview/3.13.0/en-US/preview.css"
     />
   </head>
   <body>
@@ -76,7 +76,7 @@ To self-host the Box Content Preview library, follow these steps:
 
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
 
-- Check out a specific version with `git checkout v3.12.0`
+- Check out a specific version with `git checkout v3.13.0`
 - Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn build:prod`

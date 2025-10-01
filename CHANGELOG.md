@@ -1,3 +1,13 @@
+## 3.13.0 (2025-10-01)
+
+* feat(video_ui_updatess): adding seek forward seek backward support (#1578) ([7291522](https://github.com/box/box-content-preview/commit/7291522)), closes [#1578](https://github.com/box/box-content-preview/issues/1578)
+* feat(video-annotations): enabling video annotations for preview (#1582) ([03b05d5](https://github.com/box/box-content-preview/commit/03b05d5)), closes [#1582](https://github.com/box/box-content-preview/issues/1582)
+* feat(video-ui-upates): settings menu restyling (#1580) ([be32e3f](https://github.com/box/box-content-preview/commit/be32e3f)), closes [#1580](https://github.com/box/box-content-preview/issues/1580)
+* feat(video-ui-updates): adding vertical media volume controls. (#1581) ([cf8d91c](https://github.com/box/box-content-preview/commit/cf8d91c)), closes [#1581](https://github.com/box/box-content-preview/issues/1581)
+* feat(video-ui-updates): new video player ui initial PR (#1577) ([197bf28](https://github.com/box/box-content-preview/commit/197bf28)), closes [#1577](https://github.com/box/box-content-preview/issues/1577)
+
+
+
 ## 3.12.0 (2025-08-29)
 
 * chore(i18n): Update Translations (#1574) ([7d5354a](https://github.com/box/box-content-preview/commit/7d5354a)), closes [#1574](https://github.com/box/box-content-preview/issues/1574)
