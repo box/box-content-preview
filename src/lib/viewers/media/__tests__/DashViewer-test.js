@@ -1275,6 +1275,7 @@ describe('lib/viewers/media/DashViewer', () => {
             },
         };
 
+        const scaleAnnotations = jest.fn();
         beforeEach(() => {
             stubs.resizeFunc = DashViewer.prototype.resize;
             Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: jest.fn() });
@@ -1284,6 +1285,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.videoHeight = 500;
             dash.wrapperEl.style.width = '600px';
             dash.wrapperEl.style.height = '650px';
+            dash.scaleAnnotations = scaleAnnotations;
 
             Object.defineProperty(dash.wrapperEl, 'clientHeight', clientHeight);
             Object.defineProperty(dash.wrapperEl, 'clientWidth', clientWidth);
@@ -1291,6 +1293,34 @@ describe('lib/viewers/media/DashViewer', () => {
 
         afterEach(() => {
             Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: stubs.resizeFunc });
+            jest.clearAllMocks();
+        });
+
+        test('should scale annotations if video annotations are enabled and annotator exists', () => {
+            dash.aspect = 0.5;
+            dash.videoWidth = 0;
+            dash.videoAnnotationsEnabled = true;
+            dash.annotator = {};
+            dash.resize();
+            expect(scaleAnnotations).toBeCalled();
+        });
+
+        test('should not scale annotations if video annotations are disabled but annotator exists', () => {
+            dash.aspect = 0.5;
+            dash.videoWidth = 0;
+            dash.videoAnnotationsEnabled = false;
+            dash.annotator = {};
+            dash.resize();
+            expect(scaleAnnotations).not.toBeCalled();
+        });
+
+        test('should not scale annotations if video annotations are enabled but annotator does not exist', () => {
+            dash.aspect = 0.5;
+            dash.videoWidth = 0;
+            dash.videoAnnotationsEnabled = true;
+            dash.annotator = null;
+            dash.resize();
+            expect(scaleAnnotations).not.toBeCalled();
         });
 
         test('should fit video to at least 420px wide for calculation', () => {
@@ -1880,6 +1910,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should render react controls with the correct props', () => {
             dash.videoAnnotationsEnabled = true;
+            dash.annotator = {};
             dash.renderUI();
 
             expect(getProps(dash)).toMatchObject({
@@ -1904,6 +1935,31 @@ describe('lib/viewers/media/DashViewer', () => {
                 volume: expect.any(Number),
             });
         });
+
+        test('should not enable annotations if video annotations are disabled', () => {
+            dash.videoAnnotationsEnabled = false;
+            dash.annotator = {};
+            dash.renderUI();
+            const props = getProps(dash);
+            expect(props).toHaveProperty('videoAnnotationsEnabled', false);
+        });
+
+        test('should not enable annotations if annotator does not exist', () => {
+            dash.videoAnnotationsEnabled = true;
+            dash.annotator = null;
+            dash.renderUI();
+
+            const props = getProps(dash);
+            expect(props).toHaveProperty('videoAnnotationsEnabled', false);
+        });
+
+        test('should not enable annotations if video annotations are not enabled and no annotator exists', () => {
+            dash.videoAnnotationsEnabled = false;
+            dash.annotator = null;
+            dash.renderUI();
+            const props = getProps(dash);
+            expect(props).toHaveProperty('videoAnnotationsEnabled', false);
+        });
     });
 
     describe('handleAnnotationColorChange', () => {
@@ -1924,6 +1980,12 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.annotationModule.setColor).toBeCalledWith(color);
             expect(dash.annotator.emit).toBeCalledWith('annotations_color_set', color);
             expect(dash.renderUI).toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing', () => {
+            dash.annotator = null;
+            const color = '#fff';
+            expect(() => dash.handleAnnotationColorChange(color)).not.toThrow();
         });
     });
 
@@ -1954,57 +2016,14 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.annotator.toggleAnnotationMode).toHaveBeenCalledWith(nextMode);
             expect(dash.processAnnotationModeChange).toHaveBeenCalledWith(nextMode);
         });
-    });
 
-    describe('handle annotator', () => {
-        const getProps = instance => instance.controls.render.mock.calls[0][0].props;
-        beforeEach(() => {
+        test('should not fail if annotator is missing', () => {
             dash.annotator = null;
-            dash.controls = {
-                destroy: jest.fn(),
-                render: jest.fn(),
-            };
-            jest.spyOn(dash, 'isPlayingHD').mockImplementation(() => false);
-        });
+            const mode = 'region';
+            const nextMode = 'none';
+            dash.annotationControlsFSM.transition.mockReturnValue(nextMode);
 
-        test('should handle missing annotator gracefully', () => {
-            dash.annotator = null;
-            dash.videoAnnotationsEnabled = true;
-            dash.renderUI();
-            expect(getProps(dash)).toMatchObject({
-                audioTrack: undefined,
-                audioTracks: [],
-                autoplay: false,
-                annotationColor: undefined,
-                annotationMode: 'none',
-                hasDrawing: false,
-                hasHighlight: false,
-                hasRegion: false,
-                isAutoGeneratedSubtitles: false,
-                isHDSupported: false,
-                currentTime: expect.any(Number),
-                isPlaying: expect.any(Boolean),
-                isPlayingHD: false,
-                videoAnnotationsEnabled: false,
-                onAudioTrackChange: dash.setAudioTrack,
-                onAutoplayChange: dash.setAutoplay,
-                onFullscreenToggle: dash.toggleFullscreen,
-                onMuteChange: dash.toggleMute,
-                onPlayPause: dash.togglePlay,
-                onQualityChange: dash.setQuality,
-                onRateChange: dash.setRate,
-                onTimeChange: dash.handleTimeupdateFromMediaControls,
-                onVolumeChange: dash.setVolume,
-                quality: 'sd',
-                rate: '1.0',
-                volume: expect.any(Number),
-            });
-
-            // should not throw if event is missing annotation or meta
-
-            expect(() => {
-                dash.handleAnnotationCreateEvent({});
-            }).not.toThrow();
+            expect(() => dash.handleAnnotationControlsClick({ mode })).not.toThrow();
         });
     });
 
@@ -2054,6 +2073,16 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.handleAnnotationCreateEvent(event);
 
             expect(dash.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annoator is missing', () => {
+            dash.annotator = null;
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'success' },
+            };
+
+            expect(() => dash.handleAnnotationCreateEvent(event)).not.toThrow();
         });
     });
 
@@ -2233,6 +2262,11 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.initAnnotations();
 
             expect(dash.annotator.addListener).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing', () => {
+            dash.annotator = null;
+            expect(() => dash.initAnnotations()).not.toThrow();
         });
     });
 });

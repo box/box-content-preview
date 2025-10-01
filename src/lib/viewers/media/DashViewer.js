@@ -90,7 +90,6 @@ class DashViewer extends VideoBaseViewer {
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
-        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
         this.scaleAnnotations = this.scaleAnnotations.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
 
@@ -284,6 +283,7 @@ class DashViewer extends VideoBaseViewer {
      */
     handleAnnotationControlsClick({ mode }) {
         this.mediaEl.pause();
+        console.log('handleAnnotationControlsClick', mode);
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
         if (this.annotator) {
             this.annotator.toggleAnnotationMode(nextMode);
@@ -1054,7 +1054,9 @@ class DashViewer extends VideoBaseViewer {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
 
-            this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
+            if (this.videoAnnotationsEnabled && this.annotator) {
+                this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
+            }
         }
 
         super.resize();
@@ -1289,7 +1291,7 @@ class DashViewer extends VideoBaseViewer {
         const canAnnotate =
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
-        const annotationsEnabled = !!this.annotatorModule?.isEnabled && this.videoAnnotationsEnabled;
+        const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
         this.controls.render(
             <DashControls
                 annotationColor={this.annotationModule.getColor()}
