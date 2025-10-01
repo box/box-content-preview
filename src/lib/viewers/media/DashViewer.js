@@ -283,7 +283,6 @@ class DashViewer extends VideoBaseViewer {
      */
     handleAnnotationControlsClick({ mode }) {
         this.mediaEl.pause();
-        console.log('handleAnnotationControlsClick', mode);
         const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
         if (this.annotator) {
             this.annotator.toggleAnnotationMode(nextMode);
