@@ -30,16 +30,16 @@ export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePla
 
     return (
         <>
-            <MediaToggle className="bp-PlayPauseToggle" onClick={moveForward} title={skipForwardTitle}>
-                <IconForward24 />
+            <MediaToggle className="bp-PlayPauseToggle" onClick={moveBackward} title={skipBackwardTitle}>
+                <IconBack24 />
             </MediaToggle>
 
             <MediaToggle className="bp-PlayPauseToggle" onClick={() => onPlayPause(!isPlaying)} title={title}>
                 <PlayPauseIcon />
             </MediaToggle>
 
-            <MediaToggle className="bp-PlayPauseToggle" onClick={moveBackward} title={skipBackwardTitle}>
-                <IconBack24 />
+            <MediaToggle className="bp-PlayPauseToggle" onClick={moveForward} title={skipForwardTitle}>
+                <IconForward24 />
             </MediaToggle>
         </>
     );
