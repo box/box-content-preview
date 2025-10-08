@@ -1377,6 +1377,20 @@ describe('lib/viewers/media/DashViewer', () => {
                 expect(dash.mediaEl.style.width).toBe('325px');
             });
         });
+
+        describe('should handle narrow video', () => {
+            test('should ad bp-is-narrow-video class to mediaContainerEl if video width is less than 580px', () => {
+                dash.videoWidth = 579;
+                dash.resize();
+                expect(dash.mediaContainerEl).toHaveClass('bp-is-narrow-video');
+            });
+
+            test('should remove bp-is-narrow-video class from mediaContainerEl if video width is greater than 580px', () => {
+                dash.videoWidth = 580;
+                dash.resize();
+                expect(dash.mediaContainerEl).not.toHaveClass('bp-is-narrow-video');
+            });
+        });
     });
 
     describe('getBandwidthInterval()', () => {

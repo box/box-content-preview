@@ -29,6 +29,12 @@
     }
 }
 
+.bp-is-narrow-video {
+    .bp-DashControls-group--play-pause {
+        display: none;
+    }
+}
+
 .bp-DashControls-group {
     @include bp-VideoControls-group;
 }

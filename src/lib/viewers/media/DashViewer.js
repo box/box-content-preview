@@ -30,6 +30,7 @@ const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
+const CSS_CLASS_NARROW_VIDEO = 'bp-is-narrow-video';
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
 
@@ -1063,6 +1064,17 @@ class DashViewer extends VideoBaseViewer {
 
             if (this.videoAnnotationsEnabled && this.annotator) {
                 this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
+            }
+        }
+
+        const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
+
+        if (!Number.isNaN(mediaElWidthNumber)) {
+            if (mediaElWidthNumber >= 580) {
+                // add hidden class to elemen
+                this.mediaContainerEl.classList.remove(CSS_CLASS_NARROW_VIDEO);
+            } else {
+                this.mediaContainerEl.classList.add(CSS_CLASS_NARROW_VIDEO);
             }
         }
 
