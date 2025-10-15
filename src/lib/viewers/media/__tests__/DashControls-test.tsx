@@ -5,6 +5,7 @@ import DashControls from '../DashControls';
 import subtitles from '../../controls/media/__mocks__/subtitles';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
+import { Experiences } from '../../../types/targeting';
 
 describe('DashControls', () => {
     describe('render', () => {
@@ -20,6 +21,7 @@ describe('DashControls', () => {
             const onTimeChange = jest.fn();
             const onVolumeChange = jest.fn();
             const movePlayback = jest.fn();
+
             render(
                 <DashControls
                     audioTrack={1}
@@ -64,11 +66,20 @@ describe('DashControls', () => {
         test.each([true, false])(
             'should not see annotations controls if feature is disabled',
             isVideoAnnotationsEnabled => {
+                const experiences: Experiences = {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow: false,
+                        onClose: jest.fn(),
+                        onShow: jest.fn(),
+                        onComplete: jest.fn(),
+                    },
+                };
                 render(
                     <DashControls
                         audioTrack={1}
                         audioTracks={[]}
                         autoplay={false}
+                        experiences={experiences}
                         hasDrawing
                         hasRegion
                         isHDSupported
@@ -95,6 +106,7 @@ describe('DashControls', () => {
 
                 if (isVideoAnnotationsEnabled) {
                     expect(screen.getByTestId('bp-annotations-controls')).toBeInTheDocument();
+                    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
                 } else {
                     expect(screen.queryByTestId('bp-annotations-controls')).not.toBeInTheDocument();
                 }
