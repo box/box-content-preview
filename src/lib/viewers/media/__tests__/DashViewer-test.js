@@ -1378,17 +1378,36 @@ describe('lib/viewers/media/DashViewer', () => {
             });
         });
 
-        describe('should handle narrow video', () => {
-            test('should ad bp-is-narrow-video class to mediaContainerEl if video width is less than 580px', () => {
-                dash.videoWidth = 579;
-                dash.resize();
-                expect(dash.mediaContainerEl).toHaveClass('bp-is-narrow-video');
+        describe('should handle narrow video widths', () => {
+            let mockAddClass;
+            let mockRemoveClass;
+            beforeEach(() => {
+                dash.mediaContainerEl.classList.remove('bp-is-small-width-video');
+                mockAddClass = jest.spyOn(dash.mediaContainerEl.classList, 'add');
+                mockRemoveClass = jest.spyOn(dash.mediaContainerEl.classList, 'remove');
             });
 
-            test('should remove bp-is-narrow-video class from mediaContainerEl if video width is greater than 580px', () => {
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should add bp-is-small-width-video class to mediaContainerEl if video width is less than 580px', () => {
+                dash.videoWidth = 579;
+                dash.resize();
+                expect(mockAddClass).toHaveBeenCalledWith('bp-is-small-width-video');
+            });
+
+            test('should remove bp-is-small-width-video class from mediaContainerEl if video width is greater than 580px', () => {
                 dash.videoWidth = 580;
                 dash.resize();
-                expect(dash.mediaContainerEl).not.toHaveClass('bp-is-narrow-video');
+                expect(mockRemoveClass).toHaveBeenCalledWith('bp-is-small-width-video');
+            });
+
+            test('should handle width not a number', () => {
+                jest.spyOn(window, 'parseInt').mockReturnValue(NaN);
+                dash.resize();
+                expect(mockAddClass).not.toHaveBeenCalled();
+                expect(mockRemoveClass).not.toHaveBeenCalled();
             });
         });
     });
