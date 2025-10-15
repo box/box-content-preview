@@ -69,7 +69,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
         this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
         this.seekBackwardButtonEl.setAttribute('type', 'button');
-        this.seekBackwardButtonEl.setAttribute('title', __('media_seek_backward'));
+        this.seekBackwardButtonEl.setAttribute('title', __('media_skip_backward'));
         this.seekBackwardButtonEl.innerHTML = ICON_BACKWARD;
 
         this.playButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
@@ -81,7 +81,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
         this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
         this.seekForwardButtonEl.setAttribute('type', 'button');
-        this.seekForwardButtonEl.setAttribute('title', __('media_seek_forward'));
+        this.seekForwardButtonEl.setAttribute('title', __('media_skip_forward'));
         this.seekForwardButtonEl.innerHTML = ICON_FORWARD;
     }
 
