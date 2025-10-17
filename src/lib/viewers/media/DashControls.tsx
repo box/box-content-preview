@@ -37,6 +37,7 @@ export type Props = DurationLabelsProps &
         onAnnotationModeEscape: () => void;
         videoAnnotationsEnabled?: boolean;
         onAnnotationColorChange: (color: string) => void | undefined;
+        isNarrowVideo?: boolean;
     };
 
 export default function DashControls({
@@ -56,6 +57,7 @@ export default function DashControls({
     isHDSupported,
     isPlaying,
     isPlayingHD,
+    isNarrowVideo,
     onAudioTrackChange,
     onAutoplayChange,
     onFullscreenToggle,
@@ -122,9 +124,15 @@ export default function DashControls({
                             </>
                         )}
                     </div>
-                    <div className="bp-DashControls-group bp-DashControls-group--play-pause">
-                        <PlayPauseToggle isPlaying={isPlaying} movePlayback={movePlayback} onPlayPause={onPlayPause} />
-                    </div>
+                    {!isNarrowVideo && (
+                        <div className="bp-DashControls-group bp-DashControls-group--play-pause">
+                            <PlayPauseToggle
+                                isPlaying={isPlaying}
+                                movePlayback={movePlayback}
+                                onPlayPause={onPlayPause}
+                            />
+                        </div>
+                    )}
 
                     <div className="bp-DashControls-group">
                         <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />

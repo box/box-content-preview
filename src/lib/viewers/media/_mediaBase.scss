@@ -67,7 +67,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    display: none;
+    display: flex;
     gap: 28px;
     align-items: center;
     justify-content: center;
@@ -96,12 +96,6 @@
     .bp-media-overlay-play-button {
         width: 60px;
         height: 60px;
-    }
-}
-
-.bp-is-small-width-video {
-    .bp-media-overlay-play-container {
-        display: flex;
     }
 }
 
