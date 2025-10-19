@@ -67,7 +67,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    display: none;
+    display: flex;
     gap: 28px;
     align-items: center;
     justify-content: center;
@@ -97,11 +97,9 @@
         width: 60px;
         height: 60px;
     }
-}
 
-.bp-is-small-width-video {
-    .bp-media-overlay-play-container {
-        display: flex;
+    .bp-media-overlay-seek-button {
+        display: none;
     }
 }
 
@@ -150,14 +148,4 @@
     right: auto;
     bottom: auto;
     left: auto;
-}
-
-.bp-video-360 {
-    .bp-VideoControlsRoot {
-        position: absolute;
-        right: 0;
-        bottom: -1px;
-        left: 0;
-        width: 100%;
-    }
 }

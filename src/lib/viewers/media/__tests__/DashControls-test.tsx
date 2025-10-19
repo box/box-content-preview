@@ -21,7 +21,6 @@ describe('DashControls', () => {
             const onTimeChange = jest.fn();
             const onVolumeChange = jest.fn();
             const movePlayback = jest.fn();
-
             render(
                 <DashControls
                     audioTrack={1}
