@@ -52,6 +52,12 @@ describe('DashControls', () => {
             await user.click(screen.getByTitle('Play'));
             expect(onPlayPause).toHaveBeenCalledTimes(1);
 
+            await user.click(screen.getByTitle('Skip forward'));
+            expect(movePlayback).toHaveBeenCalledTimes(1);
+
+            await user.click(screen.getByTitle('Skip backward'));
+            expect(movePlayback).toHaveBeenCalledTimes(2);
+
             fireEvent.mouseDown(screen.getByLabelText('Media Slider'));
             expect(onTimeChange).toHaveBeenCalledTimes(1);
 
@@ -277,6 +283,39 @@ describe('DashControls', () => {
             expect(screen.queryByTitle('Auto-Generated Captions')).not.toBeInTheDocument();
             expect(screen.getByTitle('Subtitles/Closed Captions')).toBeInTheDocument();
             expect(screen.getByTitle('Subtitles/Closed Captions')).toHaveAttribute('aria-pressed', 'false');
+        });
+
+        test('should not render play button with seek buttons if isNarrowVideo is true', () => {
+            render(
+                <DashControls
+                    audioTrack={1}
+                    audioTracks={[]}
+                    autoplay={false}
+                    isNarrowVideo
+                    isPlaying={false}
+                    isPlayingHD={false}
+                    movePlayback={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onAnnotationModeClick={jest.fn()}
+                    onAnnotationModeEscape={jest.fn()}
+                    onAudioTrackChange={jest.fn()}
+                    onAutoplayChange={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onQualityChange={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    quality={Quality.AUTO}
+                    rate="1.0"
+                    subtitle={SUBTITLES_OFF}
+                    subtitles={subtitles}
+                />,
+            );
+            expect(screen.queryByTitle('Play')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Seek forward')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Seek backward')).not.toBeInTheDocument();
         });
     });
 });

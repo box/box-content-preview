@@ -84,6 +84,30 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 value: lowerLights,
             });
         });
+
+        test('should not build play button with seek buttons if useReactControls is true', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.getViewerOption = jest.fn().mockReturnValue(true);
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+            expect(videoBase.playButtonEl).toBeUndefined();
+            expect(videoBase.seekForwardButtonEl).toBeUndefined();
+            expect(videoBase.seekBackwardButtonEl).toBeUndefined();
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
     });
 
     describe('destroy()', () => {
@@ -287,6 +311,90 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.resize();
             expect(videoBase.mediaControls.resizeTimeScrubber).toBeCalled();
         });
+
+        describe('should handle narrow video widths', () => {
+            let mockBuildPlayButtonWithSeekButtons;
+            let mockRemovePlayButtonWithSeekButtons;
+            let videoBaseViewer;
+            let mockRenderUI;
+            beforeEach(() => {
+                videoBaseViewer = new VideoBaseViewer({
+                    file: {
+                        id: 1,
+                    },
+                    container: containerEl,
+                });
+
+                mockRenderUI = jest.spyOn(videoBaseViewer, 'renderUI').mockImplementation();
+                videoBaseViewer.getViewerOption = jest.fn().mockReturnValue(true);
+                mockBuildPlayButtonWithSeekButtons = jest
+                    .spyOn(videoBaseViewer, 'buildPlayButtonWithSeekButtons')
+                    .mockImplementation();
+                mockRemovePlayButtonWithSeekButtons = jest
+                    .spyOn(videoBaseViewer, 'removePlayButtonWithSeekButtons')
+                    .mockImplementation();
+                jest.spyOn(videoBaseViewer, 'renderUI').mockImplementation();
+                videoBaseViewer.containerEl = containerEl;
+                videoBaseViewer.mediaEl = document.createElement('video');
+                videoBaseViewer.isNarrowVideo = false;
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should not call any functions if useReactControls is false', () => {
+                videoBaseViewer.getViewerOption = jest.fn().mockReturnValue(false);
+                videoBaseViewer.resize();
+                expect(mockBuildPlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(mockRemovePlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(videoBaseViewer.renderUI).not.toHaveBeenCalled();
+                expect(mockRenderUI).not.toHaveBeenCalled();
+            });
+
+            test('should add play button controls if video width is less than 580px', () => {
+                videoBaseViewer.mediaEl.style.width = '579px';
+                videoBaseViewer.resize();
+                expect(mockBuildPlayButtonWithSeekButtons).toHaveBeenCalled();
+                expect(mockRenderUI).toHaveBeenCalled();
+                expect(videoBaseViewer.isNarrowVideo).toBe(true);
+            });
+
+            test('should not add play button controls if video width is less than 580px and playContainerEl is present', () => {
+                videoBaseViewer.mediaEl.style.width = '579px';
+                videoBaseViewer.playContainerEl = document.createElement('div');
+                videoBaseViewer.resize();
+                expect(mockBuildPlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(mockRenderUI).not.toHaveBeenCalled();
+                expect(videoBaseViewer.isNarrowVideo).toBe(false);
+            });
+
+            test('should remove play button with seek buttons if video width is greater than 580px and playContainerEl is present', () => {
+                videoBaseViewer.mediaEl.style.width = '580px';
+                videoBaseViewer.playContainerEl = document.createElement('div');
+                videoBaseViewer.resize();
+                expect(mockRemovePlayButtonWithSeekButtons).toHaveBeenCalled();
+                expect(mockRenderUI).toHaveBeenCalled();
+                expect(videoBaseViewer.isNarrowVideo).toBe(false);
+            });
+
+            test('should not call removePLayButtonWithSeekButtons if playContainerEl is not present', () => {
+                videoBaseViewer.mediaEl.style.width = '580px';
+                videoBaseViewer.resize();
+                expect(mockRemovePlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(mockRenderUI).not.toHaveBeenCalled();
+                expect(videoBaseViewer.isNarrowVideo).toBe(false);
+            });
+
+            test('should handle width not a number', () => {
+                jest.spyOn(window, 'parseInt').mockReturnValue(NaN);
+                videoBaseViewer.resize();
+                expect(mockBuildPlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(mockRemovePlayButtonWithSeekButtons).not.toHaveBeenCalled();
+                expect(mockRenderUI).not.toHaveBeenCalled();
+                expect(videoBaseViewer.isNarrowVideo).toBe(false);
+            });
+        });
     });
 
     describe('allowNavigationArrows', () => {
@@ -322,6 +430,78 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.setVolume).toBeCalledWith(0);
             expect(videoBase.play).toBeCalled();
+        });
+    });
+
+    describe('buildPlayButtonWithSeekButtons()', () => {
+        let videoBaseViewer;
+        beforeEach(() => {
+            videoBaseViewer = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBaseViewer.mediaContainerEl = document.createElement('div');
+            jest.spyOn(videoBaseViewer, 'togglePlay').mockImplementation();
+            jest.spyOn(videoBaseViewer, 'movePlayback').mockImplementation();
+        });
+
+        test('should build the play button with seek buttons', () => {
+            videoBaseViewer.buildPlayButtonWithSeekButtons();
+            expect(videoBaseViewer.playButtonEl).toBeDefined();
+            expect(videoBaseViewer.seekForwardButtonEl).toBeDefined();
+            expect(videoBaseViewer.seekBackwardButtonEl).toBeDefined();
+            expect(videoBaseViewer.playContainerEl).toBeDefined();
+            expect(videoBaseViewer.playContainerEl.classList).toContain('bp-media-overlay-play-container');
+            expect(videoBaseViewer.playButtonEl.classList).toContain('bp-media-overlay-play-button');
+            expect(videoBaseViewer.seekForwardButtonEl.classList).toContain('bp-media-overlay-seek-button');
+            expect(videoBaseViewer.seekBackwardButtonEl.classList).toContain('bp-media-overlay-seek-button');
+            videoBaseViewer.playButtonEl.click();
+            expect(videoBaseViewer.togglePlay).toHaveBeenCalled();
+            videoBaseViewer.seekForwardButtonEl.click();
+            expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(true, 5);
+            videoBaseViewer.seekBackwardButtonEl.click();
+            expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(false, 5);
+        });
+    });
+
+    describe('removePlayButtonWithSeekButtons()', () => {
+        let videoBaseViewer;
+        let mockRemoveListenerFromPlayButton;
+        let mockRemoveListenerFromSeekForwardButton;
+        let mockRemoveListenerFromSeekBackwardButton;
+
+        beforeEach(() => {
+            videoBaseViewer = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBaseViewer.mediaContainerEl = document.createElement('div');
+            videoBaseViewer.buildPlayButtonWithSeekButtons();
+            jest.spyOn(videoBaseViewer, 'togglePlay').mockImplementation();
+            jest.spyOn(videoBaseViewer, 'movePlayback').mockImplementation();
+            mockRemoveListenerFromPlayButton = jest
+                .spyOn(videoBaseViewer.playButtonEl, 'removeEventListener')
+                .mockImplementation();
+            mockRemoveListenerFromSeekForwardButton = jest
+                .spyOn(videoBaseViewer.seekForwardButtonEl, 'removeEventListener')
+                .mockImplementation();
+            mockRemoveListenerFromSeekBackwardButton = jest
+                .spyOn(videoBaseViewer.seekBackwardButtonEl, 'removeEventListener')
+                .mockImplementation();
+        });
+        test('should remove the play button with seek buttons', () => {
+            videoBaseViewer.removePlayButtonWithSeekButtons();
+            expect(videoBaseViewer.playContainerEl).toBeNull();
+            expect(videoBaseViewer.playButtonEl).toBeNull();
+            expect(videoBaseViewer.seekForwardButtonEl).toBeNull();
+            expect(videoBaseViewer.seekBackwardButtonEl).toBeNull();
+            expect(mockRemoveListenerFromSeekBackwardButton).toHaveBeenCalledWith('click', expect.any(Function));
+            expect(mockRemoveListenerFromSeekForwardButton).toHaveBeenCalledWith('click', expect.any(Function));
+            expect(mockRemoveListenerFromPlayButton).toHaveBeenCalledWith('click', videoBaseViewer.togglePlay);
         });
     });
 

@@ -97,10 +97,6 @@
         width: 60px;
         height: 60px;
     }
-
-    .bp-media-overlay-seek-button {
-        display: none;
-    }
 }
 
 .bp-has-keyboard-focus {
@@ -148,4 +144,14 @@
     right: auto;
     bottom: auto;
     left: auto;
+}
+
+.bp-video-360 {
+    .bp-VideoControlsRoot {
+        position: absolute;
+        right: 0;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+    }
 }

@@ -10,7 +10,7 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
 const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
-
+const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
 class VideoBaseViewer extends MediaBaseViewer {
     /**
      * @inheritdoc
@@ -40,15 +40,14 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
+        this.isNarrowVideo = false;
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
         // Prevents native iOS UI from taking over
         this.mediaEl.setAttribute('playsinline', '');
 
-        if (this.getViewerOption('useReactControls')) {
-            this.buildPlayButtonWithSeekButtons();
-        } else {
+        if (!this.getViewerOption('useReactControls')) {
             // Play button
             this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('button'));
             this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
@@ -66,23 +65,52 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playContainerEl.classList.add(CLASS_PLAY_CONTAINER);
         this.playContainerEl.classList.add(CLASS_HIDDEN);
 
-        this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
-        this.seekForwardButtonEl.setAttribute('type', 'button');
-        this.seekForwardButtonEl.setAttribute('title', __('media_seek_forward'));
-        this.seekForwardButtonEl.innerHTML = ICON_FORWARD;
+        this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
+        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
+        this.seekBackwardButtonEl.setAttribute('type', 'button');
+        this.seekBackwardButtonEl.setAttribute('title', __('media_skip_backward'));
+        this.seekBackwardButtonEl.innerHTML = ICON_BACKWARD;
 
         this.playButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
         this.playButtonEl.classList.add(CLASS_PLAY_CONTAINER_PLAY_BUTTON);
         this.playButtonEl.setAttribute('type', 'button');
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
+        this.playButtonEl.addEventListener('click', this.togglePlay);
 
-        this.seekBackwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
-        this.seekBackwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
-        this.seekBackwardButtonEl.setAttribute('type', 'button');
-        this.seekBackwardButtonEl.setAttribute('title', __('media_seek_backward'));
-        this.seekBackwardButtonEl.innerHTML = ICON_BACKWARD;
+        this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
+        this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
+        this.seekForwardButtonEl.setAttribute('type', 'button');
+        this.seekForwardButtonEl.setAttribute('title', __('media_skip_forward'));
+        this.seekForwardButtonEl.innerHTML = ICON_FORWARD;
+        if (this.seekForwardButtonEl) {
+            this.seekForwardButtonEl.addEventListener('click', () => this.movePlayback(true, 5));
+        }
+        if (this.seekBackwardButtonEl) {
+            this.seekBackwardButtonEl.addEventListener('click', () => this.movePlayback(false, 5));
+        }
+    }
+
+    removePlayButtonWithSeekButtons() {
+        if (this.playContainerEl) {
+            if (this.seekForwardButtonEl) {
+                this.seekForwardButtonEl.removeEventListener('click', () => this.movePlayback(true, 5));
+                this.seekForwardButtonEl.remove();
+                this.seekForwardButtonEl = null;
+            }
+            if (this.seekBackwardButtonEl) {
+                this.seekBackwardButtonEl.removeEventListener('click', () => this.movePlayback(false, 5));
+                this.seekBackwardButtonEl.remove();
+                this.seekBackwardButtonEl = null;
+            }
+            if (this.playButtonEl) {
+                this.playButtonEl.removeEventListener('click', this.togglePlay);
+                this.playButtonEl.remove();
+                this.playButtonEl = null;
+            }
+            this.playContainerEl.remove();
+            this.playContainerEl = null;
+        }
     }
 
     /**
@@ -260,12 +288,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         this.mediaEl.addEventListener('click', this.pointerHandler);
         this.mediaEl.addEventListener('waiting', this.waitingHandler);
-        this.playButtonEl.addEventListener('click', this.togglePlay);
-        if (this.seekForwardButtonEl) {
-            this.seekForwardButtonEl.addEventListener('click', () => this.movePlayback(true, 5));
-        }
-        if (this.seekBackwardButtonEl) {
-            this.seekBackwardButtonEl.addEventListener('click', () => this.movePlayback(false, 5));
+
+        if (this.playButtonEl) {
+            this.playButtonEl.addEventListener('click', this.togglePlay);
         }
     }
 
@@ -287,6 +312,23 @@ class VideoBaseViewer extends MediaBaseViewer {
     resize() {
         if (this.mediaControls) {
             this.mediaControls.resizeTimeScrubber();
+        }
+
+        if (this.getViewerOption('useReactControls')) {
+            const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
+
+            if (!Number.isNaN(mediaElWidthNumber)) {
+                // check if play and seek buttons exist in the dom
+                if (this.playContainerEl && mediaElWidthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
+                    this.isNarrowVideo = false;
+                    this.removePlayButtonWithSeekButtons();
+                    this.renderUI();
+                } else if (!this.playContainerEl && mediaElWidthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
+                    this.buildPlayButtonWithSeekButtons();
+                    this.isNarrowVideo = true;
+                    this.renderUI();
+                }
+            }
         }
         super.resize();
     }
