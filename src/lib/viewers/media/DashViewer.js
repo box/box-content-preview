@@ -92,7 +92,7 @@ class DashViewer extends VideoBaseViewer {
         this.movePlayback = this.movePlayback.bind(this);
         this.scaleAnnotations = this.scaleAnnotations.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
-
+        this.updateExperiences = this.updateExperiences.bind(this);
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
     }
@@ -708,6 +708,12 @@ class DashViewer extends VideoBaseViewer {
         }
     }
 
+    updateExperiences(experiences) {
+        this.experiences = experiences;
+
+        this.renderUI();
+    }
+
     /**
      * Gets the subtitle track ID based on whether subtitles are being shown
      *
@@ -1307,6 +1313,7 @@ class DashViewer extends VideoBaseViewer {
                 bufferedRange={this.mediaEl.buffered}
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
+                experiences={this.experiences}
                 filmstripInterval={this.filmstripInterval}
                 filmstripUrl={this.filmstripUrl}
                 hasDrawing={canDraw}

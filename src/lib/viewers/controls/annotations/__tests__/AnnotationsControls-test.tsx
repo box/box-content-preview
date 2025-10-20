@@ -26,6 +26,42 @@ describe('AnnotationsControls', () => {
             });
         });
 
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        test('should not render tooltip if annoation experience can show is false', () => {
+            jest.spyOn(React, 'useContext').mockImplementation(() => ({
+                experiences: {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow: false,
+                        onClose: jest.fn(),
+                        onComplete: jest.fn(),
+                        onShow: jest.fn(),
+                    },
+                },
+                setIsForced: jest.fn(),
+            }));
+            render(<AnnotationsControls annotationMode={AnnotationMode.REGION} hasHighlight hasRegion />);
+            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+        });
+
+        test('should render tooltip if annotations experience can show is true', () => {
+            jest.spyOn(React, 'useContext').mockImplementation(() => ({
+                experiences: {
+                    tooltipFlowAnnotationsExperience: {
+                        canShow: true,
+                        onClose: jest.fn(),
+                        onComplete: jest.fn(),
+                        onShow: jest.fn(),
+                    },
+                },
+                setIsForced: jest.fn(),
+            }));
+            render(<AnnotationsControls annotationMode={AnnotationMode.REGION} hasHighlight hasRegion />);
+            expect(screen.getByRole('tooltip')).toBeInTheDocument();
+        });
+
         test('should add and remove its event handlers on mount and unmount', () => {
             render(<AnnotationsControls annotationMode={AnnotationMode.REGION} hasHighlight hasRegion />);
 
