@@ -1,3 +1,9 @@
+## 3.15.0 (2025-10-20)
+
+* feat(video-ui-update): hiding and showing control over video based on video width and fixing seek ic ([67696ea](https://github.com/box/box-content-preview/commit/67696ea)), closes [#1585](https://github.com/box/box-content-preview/issues/1585)
+
+
+
 ## 3.14.0 (2025-10-20)
 
 * fix(video-annotations): fix  video annotation tooltip handling for regions (#1586) ([a5899e5](https://github.com/box/box-content-preview/commit/a5899e5)), closes [#1586](https://github.com/box/box-content-preview/issues/1586)
