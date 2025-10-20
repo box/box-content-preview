@@ -103,7 +103,7 @@ export default function DashControls({
                         'bp-DashControls-bar--three-groups': videoAnnotationsEnabled,
                     })}
                 >
-                    <div className="bp-DashControls-group bp-AnnotationsControls-group">
+                    <div className="bp-DashControls-group">
                         {videoAnnotationsEnabled && (
                             <>
                                 <AnnotationsControls
