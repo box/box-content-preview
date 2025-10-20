@@ -1,3 +1,11 @@
+## 3.14.0 (2025-10-20)
+
+* fix(video-annotations): fix  video annotation tooltip handling for regions (#1586) ([a5899e5](https://github.com/box/box-content-preview/commit/a5899e5)), closes [#1586](https://github.com/box/box-content-preview/issues/1586)
+* chore(i18n): Update Translations (#1579) ([2b31d8a](https://github.com/box/box-content-preview/commit/2b31d8a)), closes [#1579](https://github.com/box/box-content-preview/issues/1579)
+* chore(i18n): Update Translations (#1583) ([a72de99](https://github.com/box/box-content-preview/commit/a72de99)), closes [#1583](https://github.com/box/box-content-preview/issues/1583)
+
+
+
 ## 3.13.0 (2025-10-01)
 
 * feat(video_ui_updatess): adding seek forward seek backward support (#1578) ([7291522](https://github.com/box/box-content-preview/commit/7291522)), closes [#1578](https://github.com/box/box-content-preview/issues/1578)
