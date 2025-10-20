@@ -1066,16 +1066,6 @@ class DashViewer extends VideoBaseViewer {
             }
         }
 
-        // const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
-
-        // if (!Number.isNaN(mediaElWidthNumber)) {
-        //     if (mediaElWidthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
-        //         this.mediaContainerEl.classList.remove(CSS_CLASS_SMALL_WIDTH_VIDEO);
-        //     } else {
-        //         this.mediaContainerEl.classList.add(CSS_CLASS_SMALL_WIDTH_VIDEO);
-        //     }
-        // }
-
         super.resize();
     }
 
