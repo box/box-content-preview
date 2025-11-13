@@ -16,4 +16,11 @@
             fill: $black;
         }
     }
+
+    &--modernized {
+        &.bp-is-active {
+            background-color: $bp-controls-background;
+            fill: $black;
+        }
+    }
 }

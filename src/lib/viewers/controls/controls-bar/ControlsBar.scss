@@ -6,6 +6,12 @@
     background: $bp-controls-background;
     border-radius: $bp-controls-radius-outer;
 
+    &--modernized {
+        height: $bp-controls-height-modernized;
+        padding: 0 2px;
+        border-radius: $bp-controls-radius-outer-modernized;
+    }
+
     &:empty {
         display: none;
     }

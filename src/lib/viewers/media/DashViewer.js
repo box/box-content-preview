@@ -17,6 +17,7 @@ import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 
 import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
+import { isFeatureEnabled } from '../../featureChecking';
 import './Dash.scss';
 import DashControls from './DashControls';
 import VideoBaseViewer from './VideoBaseViewer';
@@ -1302,6 +1303,8 @@ class DashViewer extends VideoBaseViewer {
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
+        const modernizationEnabled = isFeatureEnabled(this.options.features, 'previewModernization.enabled');
+
         this.controls.render(
             <DashControls
                 annotationColor={this.annotationModule.getColor()}
@@ -1324,6 +1327,7 @@ class DashViewer extends VideoBaseViewer {
                 isNarrowVideo={this.isNarrowVideo}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
+                modernizationEnabled={modernizationEnabled}
                 movePlayback={this.movePlayback}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}

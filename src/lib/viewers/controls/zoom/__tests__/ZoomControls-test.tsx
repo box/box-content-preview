@@ -99,5 +99,19 @@ describe('ZoomControls', () => {
             expect(zoomOut).toBeInTheDocument();
             expect(currentZoom).toBeInTheDocument();
         });
+
+        test('should apply modernized class when modernizationEnabled is true', () => {
+            const { container } = getWrapper({ modernizationEnabled: true });
+            const zoomControls = container.querySelector('.bp-ZoomControls');
+
+            expect(zoomControls).toHaveClass('bp-ZoomControls--modernized');
+        });
+
+        test('should not apply modernized class when modernizationEnabled is false', () => {
+            const { container } = getWrapper({ modernizationEnabled: false });
+            const zoomControls = container.querySelector('.bp-ZoomControls');
+
+            expect(zoomControls).not.toHaveClass('bp-ZoomControls--modernized');
+        });
     });
 });

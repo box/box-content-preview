@@ -37,5 +37,33 @@ describe('FindBarToggle', () => {
             expect(button).toBeNull();
             expect(icon).toBeNull();
         });
+
+        test('should apply modernized class when modernizationEnabled is true', async () => {
+            getWrapper({ onFindBarToggle: jest.fn(), modernizationEnabled: true });
+            const button = await screen.findByRole('button');
+
+            expect(button).toHaveClass('bp-FindBarToggle--modernized');
+        });
+
+        test('should not apply modernized class when modernizationEnabled is false', async () => {
+            getWrapper({ onFindBarToggle: jest.fn(), modernizationEnabled: false });
+            const button = await screen.findByRole('button');
+
+            expect(button).not.toHaveClass('bp-FindBarToggle--modernized');
+        });
+
+        test('should render IconSearchMedium24 when modernizationEnabled is true', async () => {
+            getWrapper({ onFindBarToggle: jest.fn(), modernizationEnabled: true });
+
+            expect(await screen.findByTestId('IconSearchMedium24')).toBeInTheDocument();
+            expect(screen.queryByTestId('IconSearch24')).not.toBeInTheDocument();
+        });
+
+        test('should render IconSearch24 when modernizationEnabled is false', async () => {
+            getWrapper({ onFindBarToggle: jest.fn(), modernizationEnabled: false });
+
+            expect(await screen.findByTestId('IconSearch24')).toBeInTheDocument();
+            expect(screen.queryByTestId('IconSearchMedium24')).not.toBeInTheDocument();
+        });
     });
 });

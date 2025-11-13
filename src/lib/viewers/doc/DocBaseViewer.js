@@ -1262,6 +1262,7 @@ class DocBaseViewer extends BaseViewer {
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        const modernizationEnabled = isFeatureEnabled(this.options.features, 'previewModernization.enabled');
 
         this.controls.render(
             <DocControls
@@ -1274,6 +1275,7 @@ class DocBaseViewer extends BaseViewer {
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
+                modernizationEnabled={modernizationEnabled}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}

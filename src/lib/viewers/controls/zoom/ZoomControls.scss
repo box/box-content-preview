@@ -3,6 +3,11 @@
 .bp-ZoomControls {
     display: flex;
     align-items: center;
+    border-radius: $bp-controls-radius-outer;
+
+    &--modernized {
+        border-radius: $bp-controls-radius-outer-modernized;
+    }
 }
 
 .bp-ZoomControls-button {

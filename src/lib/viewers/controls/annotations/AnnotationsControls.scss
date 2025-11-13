@@ -4,6 +4,16 @@
 .bp-AnnotationsControls {
     display: flex;
     align-items: center;
+
+    &--modernized {
+        gap: $bp-controls-button-gap;
+        padding-left: $bp-controls-button-gap;
+        border-left: $bp-controls-button-separator;
+
+        svg {
+            border-radius: $bp-controls-button-radius-modernized;
+        }
+    }
 }
 
 .bp-AnnotationsControls-exitBtn {

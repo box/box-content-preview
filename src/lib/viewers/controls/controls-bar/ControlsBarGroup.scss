@@ -12,9 +12,17 @@
     &:last-child {
         margin-right: $bp-controls-spacing;
     }
+
+    &--modernized:not(&--distinct) {
+        gap: $bp-controls-button-gap;
+    }
 }
 
 .bp-ControlsBarGroup--distinct {
     background-color: fade-out($bdl-gray-80, .2);
     border-radius: $bp-controls-radius-inner;
+
+    &.bp-ControlsBarGroup--modernized {
+        border-radius: $bp-controls-radius-inner-modernized;
+    }
 }

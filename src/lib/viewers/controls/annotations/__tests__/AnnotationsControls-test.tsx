@@ -184,5 +184,33 @@ describe('AnnotationsControls', () => {
 
             expect(icon?.children[0]).toHaveAttribute('fill', fill);
         });
+
+        test('should apply modernized class when modernizationEnabled is true', () => {
+            render(<AnnotationsControls hasHighlight hasRegion modernizationEnabled />);
+
+            expect(screen.getByTestId('bp-annotations-controls')).toHaveClass('bp-AnnotationsControls--modernized');
+        });
+
+        test('should not apply modernized class when modernizationEnabled is false', () => {
+            render(<AnnotationsControls hasHighlight hasRegion modernizationEnabled={false} />);
+
+            expect(screen.getByTestId('bp-annotations-controls')).not.toHaveClass('bp-AnnotationsControls--modernized');
+        });
+
+        test('should render modern icons when modernizationEnabled is true', () => {
+            render(<AnnotationsControls hasDrawing hasHighlight hasRegion modernizationEnabled />);
+
+            expect(screen.getByTestId('IconPencilScribbleMedium24')).toBeInTheDocument();
+            expect(screen.getByTestId('IconTextHighlightMedium24')).toBeInTheDocument();
+            expect(screen.getByTestId('IconDashedSquareBubbleMedium24')).toBeInTheDocument();
+        });
+
+        test('should render original icons when modernizationEnabled is false', () => {
+            render(<AnnotationsControls hasDrawing hasHighlight hasRegion modernizationEnabled={false} />);
+
+            expect(screen.getByTestId('IconDrawing24')).toBeInTheDocument();
+            expect(screen.getByTestId('IconHighlightText16')).toBeInTheDocument();
+            expect(screen.getByTestId('IconRegion24')).toBeInTheDocument();
+        });
     });
 });
