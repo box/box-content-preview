@@ -8,8 +8,8 @@ describe('FullscreenToggle', () => {
     const getWrapper = (props = {}) => render(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
     const getEnterToggleButton = async () => screen.findByTitle('Enter fullscreen');
     const getExitToggleButton = async () => screen.findByTitle('Exit fullscreen');
-    const getIconFullscreenIn = async () => screen.findByTestId('IconFullscreenIn24');
-    const getIconFullscreenOut = async () => screen.findByTestId('IconFullscreenOut24');
+    const getIconFullscreenIn = async () => screen.findByTestId('IconArrowsMaximizeMedium24');
+    const getIconFullscreenOut = async () => screen.findByTestId('IconArrowsMinimizeMedium24');
 
     describe('event handlers', () => {
         test('should respond to fullscreen events', async () => {
