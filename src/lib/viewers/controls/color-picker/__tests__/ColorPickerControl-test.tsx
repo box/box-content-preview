@@ -97,20 +97,4 @@ describe('ColorPickerControl', () => {
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
         });
     });
-
-    describe('modernization', () => {
-        test('should apply modernized class when modernizationEnabled is true', () => {
-            const { container } = getWrapper({ modernizationEnabled: true });
-            const colorPickerControl = container.querySelector('.bp-ColorPickerControl');
-
-            expect(colorPickerControl).toHaveClass('bp-ColorPickerControl--modernized');
-        });
-
-        test('should not apply modernized class when modernizationEnabled is false', () => {
-            const { container } = getWrapper({ modernizationEnabled: false });
-            const colorPickerControl = container.querySelector('.bp-ColorPickerControl');
-
-            expect(colorPickerControl).not.toHaveClass('bp-ColorPickerControl--modernized');
-        });
-    });
 });

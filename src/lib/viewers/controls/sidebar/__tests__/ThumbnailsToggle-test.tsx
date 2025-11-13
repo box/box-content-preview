@@ -47,32 +47,10 @@ describe('ThumbnailsToggle', () => {
             },
         );
 
-        test('should apply modernized class when modernizationEnabled is true', async () => {
-            getWrapper({ onThumbnailsToggle: jest.fn(), modernizationEnabled: true });
-            const button = await getButton();
-
-            expect(button).toHaveClass('bp-ThumbnailsToggle--modernized');
-        });
-
-        test('should not apply modernized class when modernizationEnabled is false', async () => {
-            getWrapper({ onThumbnailsToggle: jest.fn(), modernizationEnabled: false });
-            const button = await getButton();
-
-            expect(button).not.toHaveClass('bp-ThumbnailsToggle--modernized');
-        });
-
-        test('should render IconNavMediumFilled24 when modernizationEnabled is true', async () => {
-            getWrapper({ onThumbnailsToggle: jest.fn(), modernizationEnabled: true });
+        test('should render IconNavMediumFilled24', async () => {
+            getWrapper({ onThumbnailsToggle: jest.fn() });
 
             expect(await screen.findByTestId('IconNavMediumFilled24')).toBeInTheDocument();
-            expect(screen.queryByTestId('IconThumbnailsToggle24')).not.toBeInTheDocument();
-        });
-
-        test('should render IconThumbnailsToggle24 when modernizationEnabled is false', async () => {
-            getWrapper({ onThumbnailsToggle: jest.fn(), modernizationEnabled: false });
-
-            expect(await screen.findByTestId('IconThumbnailsToggle24')).toBeInTheDocument();
-            expect(screen.queryByTestId('IconNavMediumFilled24')).not.toBeInTheDocument();
         });
     });
 });

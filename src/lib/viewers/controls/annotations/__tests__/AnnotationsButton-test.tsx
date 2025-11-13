@@ -41,25 +41,5 @@ describe('AnnotationsButton', () => {
 
             expect(screen.getByRole('button', { name: 'Test' })).toBeInTheDocument();
         });
-
-        test('should apply modernized class when modernizationEnabled is true', () => {
-            render(
-                <AnnotationsButton mode={AnnotationMode.HIGHLIGHT} modernizationEnabled onClick={jest.fn()}>
-                    Test
-                </AnnotationsButton>,
-            );
-
-            expect(screen.getByRole('button', { name: 'Test' })).toHaveClass('bp-AnnotationsButton--modernized');
-        });
-
-        test('should not apply modernized class when modernizationEnabled is false', () => {
-            render(
-                <AnnotationsButton mode={AnnotationMode.HIGHLIGHT} modernizationEnabled={false} onClick={jest.fn()}>
-                    Test
-                </AnnotationsButton>,
-            );
-
-            expect(screen.getByRole('button', { name: 'Test' })).not.toHaveClass('bp-AnnotationsButton--modernized');
-        });
     });
 });

@@ -1,15 +1,11 @@
 import React from 'react';
-import classNames from 'classnames';
 import noop from 'lodash/noop';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
-import IconDrawing24 from '../icons/IconDrawing24';
 import IconPencilScribbleMedium24 from '../icons/IconPencilScribbleMedium24';
 import IconExit24 from '../icons/IconExit24';
-import IconHighlightText16 from '../icons/IconHighlightText16';
 import IconTextHighlightMedium24 from '../icons/IconTextHighlightMedium24';
-import IconRegion24 from '../icons/IconRegion24';
 import IconDashedSquareBubbleMedium24 from '../icons/IconDashedSquareBubbleMedium24';
 import useFullscreen from '../hooks/useFullscreen';
 import { AnnotationMode } from '../../../types';
@@ -23,7 +19,6 @@ export type Props = {
     hasRegion?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     onAnnotationModeEscape?: () => void;
-    modernizationEnabled?: boolean;
 };
 
 export default function AnnotationsControls({
@@ -34,7 +29,6 @@ export default function AnnotationsControls({
     hasRegion = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
-    modernizationEnabled = false,
 }: Props): JSX.Element | null {
     const annotationBtnRefs = {
         [AnnotationMode.DRAWING]: React.useRef<HTMLButtonElement | null>(null),
@@ -92,19 +86,13 @@ export default function AnnotationsControls({
     const isRegionActive = annotationMode === AnnotationMode.REGION;
 
     return (
-        <div
-            className={classNames('bp-AnnotationsControls', {
-                'bp-AnnotationsControls--modernized': modernizationEnabled,
-            })}
-            data-testid="bp-annotations-controls"
-        >
+        <div className="bp-AnnotationsControls" data-testid="bp-annotations-controls">
             <AnnotationsButton
                 ref={annotationBtnRefs[AnnotationMode.NONE]}
                 className="bp-AnnotationsControls-exitBtn"
                 data-resin-target="exit"
                 data-testid="bp-annotations-controls-exit-btn"
                 mode={AnnotationMode.NONE}
-                modernizationEnabled={modernizationEnabled}
                 onClick={handleExitClick}
                 title={__('exit_annotations')}
             >
@@ -117,11 +105,10 @@ export default function AnnotationsControls({
                 isActive={isDrawingActive}
                 isEnabled={showDrawing}
                 mode={AnnotationMode.DRAWING}
-                modernizationEnabled={modernizationEnabled}
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                {modernizationEnabled ? <IconPencilScribbleMedium24 /> : <IconDrawing24 />}
+                <IconPencilScribbleMedium24 />
             </AnnotationsButton>
             <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton
@@ -131,11 +118,10 @@ export default function AnnotationsControls({
                     isActive={isRegionActive}
                     isEnabled={showRegion}
                     mode={AnnotationMode.REGION}
-                    modernizationEnabled={modernizationEnabled}
                     onClick={handleModeClick}
                     title={__('region_comment')}
                 >
-                    {modernizationEnabled ? <IconDashedSquareBubbleMedium24 /> : <IconRegion24 />}
+                    <IconDashedSquareBubbleMedium24 />
                 </AnnotationsButton>
             </AnnotationsTargetedTooltip>
             <AnnotationsButton
@@ -145,11 +131,10 @@ export default function AnnotationsControls({
                 isActive={annotationMode === AnnotationMode.HIGHLIGHT}
                 isEnabled={showHighlight}
                 mode={AnnotationMode.HIGHLIGHT}
-                modernizationEnabled={modernizationEnabled}
                 onClick={handleModeClick}
                 title={__('highlight_text')}
             >
-                {modernizationEnabled ? <IconTextHighlightMedium24 /> : <IconHighlightText16 />}
+                <IconTextHighlightMedium24 />
             </AnnotationsButton>
         </div>
     );

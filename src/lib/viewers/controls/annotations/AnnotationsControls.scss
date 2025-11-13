@@ -3,16 +3,13 @@
 
 .bp-AnnotationsControls {
     display: flex;
+    gap: $bp-controls-button-gap;
     align-items: center;
+    padding-left: $bp-controls-button-gap;
+    border-left: $bp-controls-button-separator;
 
-    &--modernized {
-        gap: $bp-controls-button-gap;
-        padding-left: $bp-controls-button-gap;
-        border-left: $bp-controls-button-separator;
-
-        svg {
-            border-radius: $bp-controls-button-radius-modernized;
-        }
+    svg {
+        border-radius: $bp-controls-button-radius;
     }
 }
 

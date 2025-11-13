@@ -41,20 +41,15 @@ export default function DocControls({
     pageCount,
     pageNumber,
     scale,
-    modernizationEnabled,
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ControlsBar modernizationEnabled={modernizationEnabled}>
-                <ControlsBarGroup modernizationEnabled={modernizationEnabled}>
-                    <ThumbnailsToggle
-                        isThumbnailsOpen={isThumbnailsOpen}
-                        modernizationEnabled={modernizationEnabled}
-                        onThumbnailsToggle={onThumbnailsToggle}
-                    />
-                    <FindBarToggle modernizationEnabled={modernizationEnabled} onFindBarToggle={onFindBarToggle} />
+            <ControlsBar>
+                <ControlsBarGroup>
+                    <ThumbnailsToggle isThumbnailsOpen={isThumbnailsOpen} onThumbnailsToggle={onThumbnailsToggle} />
+                    <FindBarToggle onFindBarToggle={onFindBarToggle} />
                 </ControlsBarGroup>
-                <ControlsBarGroup isDistinct modernizationEnabled={modernizationEnabled}>
+                <ControlsBarGroup isDistinct>
                     <PageControls
                         onPageChange={onPageChange}
                         onPageSubmit={onPageSubmit}
@@ -62,38 +57,32 @@ export default function DocControls({
                         pageNumber={pageNumber}
                     />
                 </ControlsBarGroup>
-                <ControlsBarGroup isDistinct modernizationEnabled={modernizationEnabled}>
+                <ControlsBarGroup isDistinct>
                     <ZoomControls
                         maxScale={maxScale}
                         minScale={minScale}
-                        modernizationEnabled={modernizationEnabled}
                         onZoomIn={onZoomIn}
                         onZoomOut={onZoomOut}
                         scale={scale}
                     />
                 </ControlsBarGroup>
-                <ControlsBarGroup modernizationEnabled={modernizationEnabled}>
-                    <FullscreenToggle
-                        modernizationEnabled={modernizationEnabled}
-                        onFullscreenToggle={onFullscreenToggle}
-                    />
+                <ControlsBarGroup>
+                    <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
-                        modernizationEnabled={modernizationEnabled}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
                     />
                 </ControlsBarGroup>
             </ControlsBar>
-            <ControlsBar modernizationEnabled={modernizationEnabled}>
+            <ControlsBar>
                 <DrawingControls
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}
-                    modernizationEnabled={modernizationEnabled}
                     onAnnotationColorChange={onAnnotationColorChange}
                 />
             </ControlsBar>

@@ -17,19 +17,5 @@ describe('ControlsBar', () => {
 
             expect(screen.queryByText('Hello')).not.toBeInTheDocument();
         });
-
-        test('should apply modernized class when modernizationEnabled is true', () => {
-            const children = <div className="test">Hello</div>;
-            render(<ControlsBar modernizationEnabled>{children}</ControlsBar>);
-
-            expect(screen.getByTestId('bp-ControlsBar')).toHaveClass('bp-ControlsBar--modernized');
-        });
-
-        test('should not apply modernized class when modernizationEnabled is false', () => {
-            const children = <div className="test">Hello</div>;
-            render(<ControlsBar modernizationEnabled={false}>{children}</ControlsBar>);
-
-            expect(screen.getByTestId('bp-ControlsBar')).not.toHaveClass('bp-ControlsBar--modernized');
-        });
     });
 });

@@ -4,22 +4,15 @@ import './ControlsBarGroup.scss';
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement> {
     isDistinct?: boolean;
-    modernizationEnabled?: boolean;
 }
 
-export default function ControlsBarGroup({
-    children,
-    className,
-    isDistinct,
-    modernizationEnabled = false,
-}: Props): JSX.Element {
+export default function ControlsBarGroup({ children, className, isDistinct }: Props): JSX.Element {
     return (
         <div
             className={classNames(
                 'bp-ControlsBarGroup',
                 {
                     'bp-ControlsBarGroup--distinct': isDistinct,
-                    'bp-ControlsBarGroup--modernized': modernizationEnabled,
                 },
                 className,
             )}

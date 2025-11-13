@@ -38,7 +38,6 @@ export type Props = DurationLabelsProps &
         videoAnnotationsEnabled?: boolean;
         onAnnotationColorChange: (color: string) => void | undefined;
         isNarrowVideo?: boolean;
-        modernizationEnabled?: boolean;
     };
 
 export default function DashControls({
@@ -82,7 +81,6 @@ export default function DashControls({
     onAnnotationModeEscape,
     videoAnnotationsEnabled = false,
     onAnnotationColorChange,
-    modernizationEnabled,
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
@@ -115,14 +113,12 @@ export default function DashControls({
                                     annotationMode={annotationMode}
                                     hasDrawing={hasDrawing}
                                     hasRegion={hasRegion}
-                                    modernizationEnabled={modernizationEnabled}
                                     onAnnotationModeClick={onAnnotationModeClick}
                                     onAnnotationModeEscape={onAnnotationModeEscape}
                                 />
                                 <DrawingControls
                                     annotationColor={annotationColor}
                                     annotationMode={annotationMode}
-                                    modernizationEnabled={modernizationEnabled}
                                     onAnnotationColorChange={onAnnotationColorChange}
                                 />
                             </>

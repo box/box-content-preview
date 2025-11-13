@@ -52,25 +52,10 @@ describe('FullscreenToggle', () => {
             expect(enterToggleButton).toBeInTheDocument();
         });
 
-        test('should apply modernized class when modernizationEnabled is true', async () => {
-            getWrapper({ modernizationEnabled: true });
-            const button = await getEnterToggleButton();
-
-            expect(button).toHaveClass('bp-FullscreenToggle--modernized');
-        });
-
-        test('should not apply modernized class when modernizationEnabled is false', async () => {
-            getWrapper({ modernizationEnabled: false });
-            const button = await getEnterToggleButton();
-
-            expect(button).not.toHaveClass('bp-FullscreenToggle--modernized');
-        });
-
-        test('should render modern icons when modernizationEnabled is true', async () => {
-            getWrapper({ modernizationEnabled: true });
+        test('should render modern icons', async () => {
+            getWrapper();
 
             expect(await screen.findByTestId('IconArrowsMaximizeMedium24')).toBeInTheDocument();
-            expect(screen.queryByTestId('IconFullscreenIn24')).not.toBeInTheDocument();
 
             // Enter fullscreen
             act(() => {
@@ -78,22 +63,6 @@ describe('FullscreenToggle', () => {
             });
 
             expect(await screen.findByTestId('IconArrowsMinimizeMedium24')).toBeInTheDocument();
-            expect(screen.queryByTestId('IconFullscreenOut24')).not.toBeInTheDocument();
-        });
-
-        test('should render original icons when modernizationEnabled is false', async () => {
-            getWrapper({ modernizationEnabled: false });
-
-            expect(await getIconFullscreenIn()).toBeInTheDocument();
-            expect(screen.queryByTestId('IconArrowsMaximizeMedium24')).not.toBeInTheDocument();
-
-            // Enter fullscreen
-            act(() => {
-                fullscreen.enter();
-            });
-
-            expect(await getIconFullscreenOut()).toBeInTheDocument();
-            expect(screen.queryByTestId('IconArrowsMinimizeMedium24')).not.toBeInTheDocument();
         });
     });
 });

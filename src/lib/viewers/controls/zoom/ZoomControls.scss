@@ -3,16 +3,18 @@
 .bp-ZoomControls {
     display: flex;
     align-items: center;
+    padding: 0 $bp-controls-spacing;
     border-radius: $bp-controls-radius-outer;
-
-    &--modernized {
-        border-radius: $bp-controls-radius-outer-modernized;
-    }
 }
 
 .bp-ZoomControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
+
+    svg {
+        width: $bp-controls-distinct-button-size-small;
+        height: $bp-controls-distinct-button-size-small;
+    }
 }
 
 .bp-ZoomControls-current {

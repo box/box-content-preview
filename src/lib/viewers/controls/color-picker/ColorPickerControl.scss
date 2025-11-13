@@ -5,6 +5,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: $bp-controls-size-default;
 }
 
 .bp-ColorPickerControl-toggle {
@@ -17,10 +18,6 @@
             padding: 8px;
             background-color: $fours;
             border-radius: $bp-controls-radius-inner;
-
-            &--modernized {
-                border-radius: $bp-controls-button-radius-modernized;
-            }
         }
     }
 }

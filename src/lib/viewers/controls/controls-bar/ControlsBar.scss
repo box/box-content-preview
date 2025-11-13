@@ -3,14 +3,10 @@
 .bp-ControlsBar {
     display: flex;
     align-items: center;
+    height: $bp-controls-height;
+    padding: 0 2px;
     background: $bp-controls-background;
     border-radius: $bp-controls-radius-outer;
-
-    &--modernized {
-        height: $bp-controls-height-modernized;
-        padding: 0 2px;
-        border-radius: $bp-controls-radius-outer-modernized;
-    }
 
     &:empty {
         display: none;

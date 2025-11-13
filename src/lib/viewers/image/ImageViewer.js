@@ -11,7 +11,6 @@ import {
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../constants';
-import { isFeatureEnabled } from '../../featureChecking';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -409,7 +408,6 @@ class ImageViewer extends ImageBaseViewer {
         const canAnnotate =
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.currentRotationAngle === 0;
         const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
-        const modernizationEnabled = isFeatureEnabled(this.options.features, 'previewModernization.enabled');
 
         this.controls.render(
             <ImageControls
@@ -419,7 +417,6 @@ class ImageViewer extends ImageBaseViewer {
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
-                modernizationEnabled={modernizationEnabled}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}

@@ -1,6 +1,6 @@
 import React from 'react';
-import IconArrowDown24 from '../icons/IconArrowDown24';
-import IconArrowUp24 from '../icons/IconArrowUp24';
+import IconChevronUpMedium24 from '../icons/IconChevronUpMedium24';
+import IconChevronDownMedium24 from '../icons/IconChevronDownMedium24';
 import PageControlsForm from './PageControlsForm';
 import './PageControls.scss';
 
@@ -26,7 +26,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
                 title={__('previous_page')}
                 type="button"
             >
-                <IconArrowUp24 />
+                <IconChevronUpMedium24 />
             </button>
             <PageControlsForm onPageSubmit={onPageSubmit} pageCount={pageCount} pageNumber={pageNumber} />
             <button
@@ -37,7 +37,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
                 title={__('next_page')}
                 type="button"
             >
-                <IconArrowDown24 />
+                <IconChevronDownMedium24 />
             </button>
         </div>
     );

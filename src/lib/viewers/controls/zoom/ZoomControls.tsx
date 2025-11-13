@@ -1,14 +1,12 @@
 import React from 'react';
-import classNames from 'classnames';
 import isFinite from 'lodash/isFinite';
-import IconZoomIn24 from '../icons/IconZoomIn24';
-import IconZoomOut24 from '../icons/IconZoomOut24';
+import IconMinusMedium24 from '../icons/IconMinusMedium24';
+import IconPlusMedium24 from '../icons/IconPlusMedium24';
 import './ZoomControls.scss';
 
 export type Props = {
     maxScale?: number;
     minScale?: number;
-    modernizationEnabled?: boolean;
     onZoomIn: () => void;
     onZoomOut: () => void;
     scale?: number;
@@ -20,7 +18,6 @@ export const MIN_SCALE = 0.1;
 export default function ZoomControls({
     maxScale = MAX_SCALE,
     minScale = MIN_SCALE,
-    modernizationEnabled = false,
     onZoomIn,
     onZoomOut,
     scale = 1,
@@ -30,11 +27,7 @@ export default function ZoomControls({
     const minScaleValue = isFinite(minScale) ? Math.max(minScale, MIN_SCALE) : MIN_SCALE;
 
     return (
-        <div
-            className={classNames('bp-ZoomControls', {
-                'bp-ZoomControls--modernized': modernizationEnabled,
-            })}
-        >
+        <div className="bp-ZoomControls">
             <button
                 className="bp-ZoomControls-button"
                 data-testid="bp-ZoomControls-out"
@@ -43,7 +36,7 @@ export default function ZoomControls({
                 title={__('zoom_out')}
                 type="button"
             >
-                <IconZoomOut24 />
+                <IconMinusMedium24 />
             </button>
             <div
                 className="bp-ZoomControls-current"
@@ -58,7 +51,7 @@ export default function ZoomControls({
                 title={__('zoom_in')}
                 type="button"
             >
-                <IconZoomIn24 />
+                <IconPlusMedium24 />
             </button>
         </div>
     );

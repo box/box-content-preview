@@ -6,14 +6,12 @@ import { AnnotationMode } from '../../../types';
 export type Props = {
     annotationColor?: string;
     annotationMode?: AnnotationMode;
-    modernizationEnabled?: boolean;
     onAnnotationColorChange: (color: string) => void;
 };
 
 export default function DrawingControls({
     annotationColor,
     annotationMode,
-    modernizationEnabled = false,
     onAnnotationColorChange,
 }: Props): JSX.Element | null {
     if (annotationMode !== AnnotationMode.DRAWING) {
@@ -24,7 +22,6 @@ export default function DrawingControls({
         <ColorPickerControl
             activeColor={annotationColor}
             colors={ANNOTATION_COLORS}
-            modernizationEnabled={modernizationEnabled}
             onColorSelect={onAnnotationColorChange}
         />
     );

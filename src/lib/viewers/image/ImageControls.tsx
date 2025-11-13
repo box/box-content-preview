@@ -29,42 +29,31 @@ export default function ImageControls({
     onZoomIn,
     onZoomOut,
     scale,
-    modernizationEnabled,
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ControlsBar modernizationEnabled={modernizationEnabled}>
-                <ControlsBarGroup isDistinct modernizationEnabled={modernizationEnabled}>
-                    <ZoomControls
-                        modernizationEnabled={modernizationEnabled}
-                        onZoomIn={onZoomIn}
-                        onZoomOut={onZoomOut}
-                        scale={scale}
-                    />
+            <ControlsBar>
+                <ControlsBarGroup isDistinct>
+                    <ZoomControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} scale={scale} />
                 </ControlsBarGroup>
-                <ControlsBarGroup modernizationEnabled={modernizationEnabled}>
-                    <RotateControl modernizationEnabled={modernizationEnabled} onRotateLeft={onRotateLeft} />
-                    <FullscreenToggle
-                        modernizationEnabled={modernizationEnabled}
-                        onFullscreenToggle={onFullscreenToggle}
-                    />
+                <ControlsBarGroup>
+                    <RotateControl onRotateLeft={onRotateLeft} />
+                    <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                     <AnnotationsControls
                         annotationColor={annotationColor}
                         annotationMode={annotationMode}
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
-                        modernizationEnabled={modernizationEnabled}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
                     />
                 </ControlsBarGroup>
             </ControlsBar>
-            <ControlsBar modernizationEnabled={modernizationEnabled}>
+            <ControlsBar>
                 <DrawingControls
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}
-                    modernizationEnabled={modernizationEnabled}
                     onAnnotationColorChange={onAnnotationColorChange}
                 />
             </ControlsBar>

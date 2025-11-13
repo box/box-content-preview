@@ -7,14 +7,12 @@ import './ColorPickerControl.scss';
 export type Props = {
     activeColor?: string;
     colors: Array<string>;
-    modernizationEnabled?: boolean;
     onColorSelect: (color: string) => void;
 };
 
 export default function ColorPickerControl({
     activeColor = bdlBoxBlue,
     colors,
-    modernizationEnabled = false,
     onColorSelect,
     ...rest
 }: Props): React.JSX.Element | null {
@@ -56,12 +54,7 @@ export default function ColorPickerControl({
     };
 
     return (
-        <div
-            className={classNames('bp-ColorPickerControl', {
-                'bp-ColorPickerControl--modernized': modernizationEnabled,
-            })}
-            data-testid="bp-color-picker-control"
-        >
+        <div className="bp-ColorPickerControl" data-testid="bp-color-picker-control">
             <button
                 ref={toggleRef}
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
@@ -72,11 +65,7 @@ export default function ColorPickerControl({
                 type="button"
                 {...rest}
             >
-                <div
-                    className={classNames('bp-ColorPickerControl-toggle-background', {
-                        'bp-ColorPickerControl-toggle-background--modernized': modernizationEnabled,
-                    })}
-                >
+                <div className="bp-ColorPickerControl-toggle-background">
                     <div className="bp-ColorPickerControl-toggle-swatch" style={{ backgroundColor: activeColor }} />
                 </div>
             </button>

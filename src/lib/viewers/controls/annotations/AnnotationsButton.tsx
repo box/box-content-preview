@@ -10,21 +10,11 @@ export type Props = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick
     isActive?: boolean;
     isEnabled?: boolean;
     mode: AnnotationMode;
-    modernizationEnabled?: boolean;
     onClick?: (mode: AnnotationMode) => void;
 };
 
 function AnnotationsButton(props: Props, ref: React.Ref<HTMLButtonElement>): JSX.Element | null {
-    const {
-        children,
-        className,
-        isActive = false,
-        isEnabled = true,
-        mode,
-        modernizationEnabled = false,
-        onClick = noop,
-        ...rest
-    } = props;
+    const { children, className, isActive = false, isEnabled = true, mode, onClick = noop, ...rest } = props;
 
     if (!isEnabled) {
         return null;
@@ -35,7 +25,6 @@ function AnnotationsButton(props: Props, ref: React.Ref<HTMLButtonElement>): JSX
             ref={ref}
             className={classNames('bp-AnnotationsButton', className, {
                 'bp-is-active': isActive,
-                'bp-AnnotationsButton--modernized': modernizationEnabled,
             })}
             onClick={(): void => onClick(mode)}
             type="button"
