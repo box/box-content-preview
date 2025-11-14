@@ -1302,7 +1302,6 @@ class DashViewer extends VideoBaseViewer {
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
-
         this.controls.render(
             <DashControls
                 annotationColor={this.annotationModule.getColor()}
