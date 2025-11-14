@@ -65,6 +65,11 @@ $bp-controls-distinct-button-size-small: 24px;
     &:hover:not(:disabled) {
         background-color: $bp-controls-button-hover-background;
         opacity: 1;
+
+        svg {
+            transform: scale(1.09);
+            transition: transform 150ms;
+        }
     }
 
     &:active:not(:disabled) {
