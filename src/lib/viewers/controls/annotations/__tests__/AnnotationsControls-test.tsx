@@ -177,7 +177,7 @@ describe('AnnotationsControls', () => {
             fill          | mode
             ${bdlBoxBlue} | ${AnnotationMode.DRAWING}
             ${'#fff'}     | ${AnnotationMode.NONE}
-        `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
+        `('should return the drawing icon with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
             render(<AnnotationsControls annotationMode={mode} hasDrawing />);
 
             const icon = screen.getByTitle('Markup').querySelector('svg');
