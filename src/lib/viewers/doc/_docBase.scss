@@ -23,7 +23,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         display: none;
         flex: 0 0 auto;
         width: $thumbnail-sidebar-width;
-        border-right: solid 1px $seesee;
 
         &:focus {
             outline: none;
