@@ -4,6 +4,7 @@ function IconChevronUpMedium24(props: React.SVGProps<SVGSVGElement>): JSX.Elemen
     return (
         <svg
             data-testid="IconChevronUpMedium24"
+            fill="#fff"
             focusable="false"
             height="1em"
             role="img"
