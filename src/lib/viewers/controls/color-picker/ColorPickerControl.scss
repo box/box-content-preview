@@ -5,20 +5,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: $bp-controls-size-default;
+    padding: 0 6px;
 }
 
 .bp-ColorPickerControl-toggle {
     @include bp-Control;
 
+    padding: 4px 0 4px 5px;
+
     &.bp-is-active,
     &:focus,
     &:hover {
-        .bp-ColorPickerControl-toggle-background {
+        .bp-ColorPickerControl-toggle {
             padding: 8px;
             background-color: $fours;
             border-radius: $bp-controls-radius-inner;
         }
+    }
+
+    svg {
+        width: $bp-controls-distinct-button-size-small;
+        height: $bp-controls-distinct-button-size-small;
     }
 }
 
@@ -53,5 +60,5 @@
     width: 18px;
     height: 18px;
     border: 2px solid #fff;
-    border-radius: 2px;
+    border-radius: $bp-controls-button-radius;
 }

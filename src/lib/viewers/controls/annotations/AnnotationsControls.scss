@@ -7,10 +7,6 @@
     align-items: center;
     padding-left: $bp-controls-button-gap;
     border-left: $bp-controls-button-separator;
-
-    svg {
-        border-radius: $bp-controls-button-radius;
-    }
 }
 
 .bp-AnnotationsControls-exitBtn {

@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import ColorPickerPalette from './ColorPickerPalette';
+import IconChevronDownMedium24 from '../icons/IconChevronDownMedium24';
+import IconChevronUpMedium24 from '../icons/IconChevronUpMedium24';
 import './ColorPickerControl.scss';
 
 export type Props = {
@@ -68,6 +70,7 @@ export default function ColorPickerControl({
                 <div className="bp-ColorPickerControl-toggle-background">
                     <div className="bp-ColorPickerControl-toggle-swatch" style={{ backgroundColor: activeColor }} />
                 </div>
+                {isColorPickerToggled ? <IconChevronUpMedium24 /> : <IconChevronDownMedium24 />}
             </button>
             <div
                 ref={paletteRef}
