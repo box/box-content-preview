@@ -5,8 +5,11 @@
     display: flex;
     gap: $bp-controls-button-gap;
     align-items: center;
-    padding-left: $bp-controls-button-gap;
-    border-left: $bp-controls-button-separator;
+
+    &:not(:first-child) {
+        padding-left: $bp-controls-button-gap;
+        border-left: $bp-controls-button-separator;
+    }
 }
 
 .bp-AnnotationsControls-exitBtn {
