@@ -1,7 +1,7 @@
 language: node_js
 dist: 'focal'
 node_js:
-    - '20'
+    - '22'
 addons:
     apt:
         packages:
