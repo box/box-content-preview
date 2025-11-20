@@ -102,7 +102,7 @@
         "webpack-dev-server": "^3.11.2"
     },
     "engines": {
-        "node": ">=18.0.0",
+        "node": ">=20.0.0",
         "yarn": ">=1.19.x"
     },
     "scripts": {
