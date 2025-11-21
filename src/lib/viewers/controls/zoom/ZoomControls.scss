@@ -10,11 +10,7 @@
 .bp-ZoomControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
-
-    svg {
-        width: $bp-controls-distinct-button-size-small;
-        height: $bp-controls-distinct-button-size-small;
-    }
+    @include bp-Control--distinct-button-small;
 }
 
 .bp-ZoomControls-current {

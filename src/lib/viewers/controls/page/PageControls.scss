@@ -2,24 +2,17 @@
 @import '../styles';
 
 .bp-PageControls {
+    @include bp-Control--distinct-button-small;
+
     display: flex;
     align-items: center;
     padding: 0 $bp-controls-spacing;
-
-    svg {
-        width: $bp-controls-distinct-button-size-small;
-        height: $bp-controls-distinct-button-size-small;
-    }
 }
 
 .bp-PageControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
-
-    svg {
-        width: $bp-controls-distinct-button-size-small;
-        height: $bp-controls-distinct-button-size-small;
-    }
+    @include bp-Control--distinct-button-small;
 }
 
 @include breakpoint($medium-screen) {

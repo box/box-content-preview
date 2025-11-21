@@ -117,3 +117,10 @@ $bp-controls-distinct-button-size-small: 24px;
     opacity: $bp-controls-opacity;
     user-select: none;
 }
+
+@mixin bp-Control--distinct-button-small {
+    svg {
+        width: $bp-controls-distinct-button-size-small;
+        height: $bp-controls-distinct-button-size-small;
+    }
+}

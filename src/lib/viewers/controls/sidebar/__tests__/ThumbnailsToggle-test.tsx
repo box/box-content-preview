@@ -6,8 +6,6 @@ import ThumbnailsToggle from '../ThumbnailsToggle';
 describe('ThumbnailsToggle', () => {
     const getWrapper = (props = {}) => render(<ThumbnailsToggle {...props} />);
     const getButton = async () => screen.findByRole('button');
-    const getIcon = async () => screen.findByTestId('IconNavMedium24');
-    const getIconFilled = async () => screen.findByTestId('IconNavMediumFilled24');
 
     describe('event handlers', () => {
         test('should forward the click from the button', async () => {
@@ -25,10 +23,10 @@ describe('ThumbnailsToggle', () => {
         test('should return a valid wrapper', async () => {
             getWrapper({ onThumbnailsToggle: jest.fn() });
             const button = await getButton();
-            const icon = await getIcon();
 
             expect(button).toBeInTheDocument();
-            expect(icon).toBeInTheDocument();
+            expect(screen.getByTestId('IconNavMedium24')).toBeVisible();
+            expect(screen.queryByTestId('IconNavMediumFilled24')).not.toBeInTheDocument();
         });
 
         test('should return an empty wrapper if no callback is defined', () => {
@@ -51,7 +49,7 @@ describe('ThumbnailsToggle', () => {
         test('should render IconNavMediumFilled24 when isThumbnailsOpen is true', async () => {
             getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: true });
 
-            expect(await screen.getByTestId('IconNavMediumFilled24')).toBeInTheDocument();
+            expect(await screen.getByTestId('IconNavMediumFilled24')).toBeVisible();
             expect(await screen.queryByTestId('IconNavMedium24')).not.toBeInTheDocument();
         });
     });
