@@ -3,7 +3,13 @@
 
 .bp-AnnotationsControls {
     display: flex;
+    gap: $bp-controls-button-gap;
     align-items: center;
+
+    &:not(:first-child) {
+        padding-left: $bp-controls-button-gap;
+        border-left: $bp-controls-button-separator;
+    }
 }
 
 .bp-AnnotationsControls-exitBtn {

@@ -3,11 +3,14 @@
 .bp-ZoomControls {
     display: flex;
     align-items: center;
+    padding: 0 $bp-controls-spacing;
+    border-radius: $bp-controls-radius-outer;
 }
 
 .bp-ZoomControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
+    @include bp-Control--distinct-button-small;
 }
 
 .bp-ZoomControls-current {

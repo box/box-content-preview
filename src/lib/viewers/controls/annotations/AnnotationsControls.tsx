@@ -3,10 +3,10 @@ import noop from 'lodash/noop';
 import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
-import IconDrawing24 from '../icons/IconDrawing24';
+import IconPencilScribbleMedium24 from '../icons/IconPencilScribbleMedium24';
 import IconExit24 from '../icons/IconExit24';
-import IconHighlightText16 from '../icons/IconHighlightText16';
-import IconRegion24 from '../icons/IconRegion24';
+import IconTextHighlightMedium24 from '../icons/IconTextHighlightMedium24';
+import IconDashedSquareBubbleMedium24 from '../icons/IconDashedSquareBubbleMedium24';
 import useFullscreen from '../hooks/useFullscreen';
 import { AnnotationMode } from '../../../types';
 import './AnnotationsControls.scss';
@@ -83,6 +83,7 @@ export default function AnnotationsControls({
     }
 
     const isDrawingActive = annotationMode === AnnotationMode.DRAWING;
+    const isRegionActive = annotationMode === AnnotationMode.REGION;
 
     return (
         <div className="bp-AnnotationsControls" data-testid="bp-annotations-controls">
@@ -107,20 +108,20 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconDrawing24 fill={isDrawingActive ? annotationColor : '#fff'} />
+                <IconPencilScribbleMedium24 />
             </AnnotationsButton>
             <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton
                     ref={annotationBtnRefs[AnnotationMode.REGION]}
                     data-resin-target="highlightRegion"
                     data-testid="bp-AnnotationsControls-regionBtn"
-                    isActive={annotationMode === AnnotationMode.REGION}
+                    isActive={isRegionActive}
                     isEnabled={showRegion}
                     mode={AnnotationMode.REGION}
                     onClick={handleModeClick}
                     title={__('region_comment')}
                 >
-                    <IconRegion24 />
+                    <IconDashedSquareBubbleMedium24 />
                 </AnnotationsButton>
             </AnnotationsTargetedTooltip>
             <AnnotationsButton
@@ -133,7 +134,7 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('highlight_text')}
             >
-                <IconHighlightText16 />
+                <IconTextHighlightMedium24 />
             </AnnotationsButton>
         </div>
     );

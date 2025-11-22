@@ -173,16 +173,12 @@ describe('AnnotationsControls', () => {
             expect(screen.getByTestId('bp-annotations-controls')).toBeInTheDocument();
         });
 
-        test.each`
-            fill          | mode
-            ${bdlBoxBlue} | ${AnnotationMode.DRAWING}
-            ${'#fff'}     | ${AnnotationMode.NONE}
-        `('should return an IconDrawing24 with the fill set as $fill if annotationMode is $mode', ({ fill, mode }) => {
-            render(<AnnotationsControls annotationMode={mode} hasDrawing />);
+        test('should render icons', () => {
+            render(<AnnotationsControls hasDrawing hasHighlight hasRegion />);
 
-            const icon = screen.getByTitle('Markup').querySelector('svg');
-
-            expect(icon?.children[0]).toHaveAttribute('fill', fill);
+            expect(screen.getByTestId('IconPencilScribbleMedium24')).toBeInTheDocument();
+            expect(screen.getByTestId('IconTextHighlightMedium24')).toBeInTheDocument();
+            expect(screen.getByTestId('IconDashedSquareBubbleMedium24')).toBeInTheDocument();
         });
     });
 });

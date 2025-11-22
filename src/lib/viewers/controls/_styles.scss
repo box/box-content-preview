@@ -4,13 +4,21 @@
 $bp-controls-background: fade-out($black, .2);
 $bp-controls-opacity: .9;
 $bp-controls-outline: inset 0 0 0 1px fade-out($bdl-gray-20, .5), 0 1px 2px fade-out($black, .9);
-$bp-controls-radius-inner: 4px;
-$bp-controls-radius-outer: 6px;
+$bp-controls-radius-inner: 54px;
+$bp-controls-radius-outer: 46px;
 $bp-controls-size-default: 44px;
 $bp-controls-size-large: 56px;
 $bp-controls-size-small: 32px;
 $bp-controls-spacing: 6px;
 $bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
+$bp-controls-height: 48px;
+$bp-controls-button-gap: 4px;
+$bp-controls-button-separator: 1px solid #4e4e4e;
+$bp-controls-button-hover-background: rgba(255, 255, 255, .08);
+$bp-controls-button-active-background: rgba(255, 255, 255, .16);
+$bp-controls-button-active-hover-background: rgba(255, 255, 255, .2);
+$bp-controls-button-radius: 25px;
+$bp-controls-distinct-button-size-small: 24px;
 
 @mixin bp-Control($height: $bp-controls-size-default, $width: $bp-controls-size-default) {
     @include bp-Control--fade;
@@ -19,14 +27,12 @@ $bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: $width;
-    height: $height;
     margin: 0;
     padding: 0;
     color: $white;
     background: transparent;
     border: 0;
-    border-radius: $bp-controls-radius-outer;
+    border-radius: $bp-controls-button-radius;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
@@ -42,7 +48,6 @@ $bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
         width: $bp-controls-size-small;
         height: $bp-controls-size-small;
         padding: 5px;
-        border-radius: $bp-controls-radius-inner;
     }
 }
 
@@ -53,12 +58,32 @@ $bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
 
 @mixin bp-Control--fade {
     opacity: $bp-controls-opacity;
-    transition: opacity 150ms;
+    transition: opacity 150ms, background-color 150ms;
     will-change: opacity; // Prevent flickering in Safari
 
     &:focus:not(:disabled),
     &:hover:not(:disabled) {
+        background-color: $bp-controls-button-hover-background;
         opacity: 1;
+    }
+
+    &:focus:not(:disabled),
+    &:hover:not(:disabled),
+    &.bp-is-active {
+        svg {
+            transform: scale(1.09);
+            transition: transform 150ms;
+        }
+    }
+
+    &.bp-is-active,
+    &:active:not(:disabled) {
+        background-color: $bp-controls-button-active-background;
+    }
+
+    &.bp-is-active:focus:not(:disabled),
+    &.bp-is-active:hover:not(:disabled) {
+        background-color: $bp-controls-button-active-hover-background;
     }
 }
 
@@ -91,4 +116,11 @@ $bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
     white-space: nowrap;
     opacity: $bp-controls-opacity;
     user-select: none;
+}
+
+@mixin bp-Control--distinct-button-small {
+    svg {
+        width: $bp-controls-distinct-button-size-small;
+        height: $bp-controls-distinct-button-size-small;
+    }
 }

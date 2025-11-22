@@ -1,5 +1,5 @@
 import React from 'react';
-import IconSearch24 from '../icons/IconSearch24';
+import IconSearchMedium24 from '../icons/IconSearchMedium24';
 import './FindBarToggle.scss';
 
 export type Props = {
@@ -18,7 +18,7 @@ export default function FindBarToggle({ onFindBarToggle }: Props): JSX.Element |
             title={__('toggle_findbar')}
             type="button"
         >
-            <IconSearch24 />
+            <IconSearchMedium24 />
         </button>
     );
 }

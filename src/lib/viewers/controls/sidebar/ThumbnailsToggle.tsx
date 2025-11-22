@@ -1,5 +1,6 @@
 import React from 'react';
-import IconThumbnailsToggle24 from '../icons/IconThumbnailsToggle24';
+import IconNavMedium24 from '../icons/IconNavMedium24';
+import IconNavMediumFilled24 from '../icons/IconNavMediumFilled24';
 import './ThumbnailsToggle.scss';
 
 export type Props = {
@@ -20,7 +21,7 @@ export default function ThumbnailsToggle({ onThumbnailsToggle, isThumbnailsOpen 
             title={__('toggle_thumbnails')}
             type="button"
         >
-            <IconThumbnailsToggle24 />
+            {isThumbnailsOpen ? <IconNavMediumFilled24 /> : <IconNavMedium24 />}
         </button>
     );
 }

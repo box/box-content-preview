@@ -25,9 +25,13 @@ describe('ColorPickerControl', () => {
             getWrapper();
 
             const toggleButton = await getToggleButton();
+            const chevronIcon = await screen.findByTestId('IconChevronDownMedium24');
+            expect(chevronIcon).toBeVisible();
             await userEvent.click(toggleButton);
             const colorPickerPalette = await getColorPickerPalette();
             expect(colorPickerPalette).toHaveClass('bp-is-open');
+            expect(chevronIcon).not.toBeInTheDocument();
+            expect(screen.getByTestId('IconChevronUpMedium24')).toBeVisible();
         });
 
         test('should apply toggle background when the toggle button is clicked and remove the background when the button is blurred', async () => {

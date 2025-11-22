@@ -2,6 +2,7 @@
 
 .bp-ControlsBarGroup {
     display: flex;
+    gap: $bp-controls-button-gap;
     align-items: center;
     margin-left: $bp-controls-spacing;
 
@@ -15,6 +16,7 @@
 }
 
 .bp-ControlsBarGroup--distinct {
+    height: $bp-controls-size-small;
     background-color: fade-out($bdl-gray-80, .2);
     border-radius: $bp-controls-radius-inner;
 }

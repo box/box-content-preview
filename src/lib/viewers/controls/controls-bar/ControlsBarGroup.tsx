@@ -8,7 +8,15 @@ export interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function ControlsBarGroup({ children, className, isDistinct }: Props): JSX.Element {
     return (
-        <div className={classNames('bp-ControlsBarGroup', { 'bp-ControlsBarGroup--distinct': isDistinct }, className)}>
+        <div
+            className={classNames(
+                'bp-ControlsBarGroup',
+                {
+                    'bp-ControlsBarGroup--distinct': isDistinct,
+                },
+                className,
+            )}
+        >
             {children}
         </div>
     );

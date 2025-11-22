@@ -59,6 +59,9 @@ describe('PageControls', () => {
                 } else {
                     expect(nextPageButton).not.toBeDisabled();
                 }
+
+                expect(screen.getByTestId('IconChevronUpMedium24')).toBeVisible();
+                expect(screen.getByTestId('IconChevronDownMedium24')).toBeVisible();
             },
         );
 

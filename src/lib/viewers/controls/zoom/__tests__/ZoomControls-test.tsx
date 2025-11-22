@@ -50,6 +50,9 @@ describe('ZoomControls', () => {
                 } else {
                     expect(zoomOut).not.toBeDisabled();
                 }
+
+                expect(screen.getByTestId('IconMinusMedium24')).toBeVisible();
+                expect(screen.getByTestId('IconPlusMedium24')).toBeVisible();
             },
         );
 

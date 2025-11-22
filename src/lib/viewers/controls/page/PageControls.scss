@@ -2,13 +2,17 @@
 @import '../styles';
 
 .bp-PageControls {
+    @include bp-Control--distinct-button-small;
+
     display: flex;
     align-items: center;
+    padding: 0 $bp-controls-spacing;
 }
 
 .bp-PageControls-button {
     @include bp-Control($width: $bp-controls-size-small);
     @include bp-Control--expand;
+    @include bp-Control--distinct-button-small;
 }
 
 @include breakpoint($medium-screen) {
