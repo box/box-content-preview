@@ -17,6 +17,7 @@ export type Props = {
     hasDrawing?: boolean;
     hasHighlight?: boolean;
     hasRegion?: boolean;
+    isVideoAnnotationsEnabled?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     onAnnotationModeEscape?: () => void;
 };
@@ -27,6 +28,7 @@ export default function AnnotationsControls({
     hasDrawing = false,
     hasHighlight = false,
     hasRegion = false,
+    isVideoAnnotationsEnabled = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
@@ -87,17 +89,19 @@ export default function AnnotationsControls({
 
     return (
         <div className="bp-AnnotationsControls" data-testid="bp-annotations-controls">
-            <AnnotationsButton
-                ref={annotationBtnRefs[AnnotationMode.NONE]}
-                className="bp-AnnotationsControls-exitBtn"
-                data-resin-target="exit"
-                data-testid="bp-annotations-controls-exit-btn"
-                mode={AnnotationMode.NONE}
-                onClick={handleExitClick}
-                title={__('exit_annotations')}
-            >
-                <IconExit24 />
-            </AnnotationsButton>
+            {!isVideoAnnotationsEnabled && (
+                <AnnotationsButton
+                    ref={annotationBtnRefs[AnnotationMode.NONE]}
+                    className="bp-AnnotationsControls-exitBtn"
+                    data-resin-target="exit"
+                    data-testid="bp-annotations-controls-exit-btn"
+                    mode={AnnotationMode.NONE}
+                    onClick={handleExitClick}
+                    title={__('exit_annotations')}
+                >
+                    <IconExit24 />
+                </AnnotationsButton>
+            )}
             <AnnotationsButton
                 ref={annotationBtnRefs[AnnotationMode.DRAWING]}
                 data-resin-target="draw"

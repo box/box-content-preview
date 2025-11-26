@@ -9,7 +9,7 @@
 .bp-DashControls-bar {
     @include bp-VideoControls-bar;
 
-    display: flex;
+    display: grid;
     align-items: center;
 
     // When annotations are not present, center the middle element and keep last element on the right
@@ -25,7 +25,23 @@
 
     // When 3 groups are present, position first on left, middle centered, last on right
     &.bp-DashControls-bar--three-groups {
-        justify-content: space-between;
+        grid-template-columns: repeat(3, 1fr);
+
+        &.bp-DashControls-bar--narrow-video {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bp-DashControls-group--annotations {
+            justify-self: flex-start;
+        }
+
+        .bp-DashControls-group--play-pause {
+            justify-self: center;
+        }
+
+        .bp-DashControls-group--media-controls {
+            justify-self: flex-end;
+        }
     }
 }
 
