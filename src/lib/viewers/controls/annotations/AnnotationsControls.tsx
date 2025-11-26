@@ -17,7 +17,7 @@ export type Props = {
     hasDrawing?: boolean;
     hasHighlight?: boolean;
     hasRegion?: boolean;
-    isVideoAnnotationsEnabled?: boolean;
+    isVideo?: boolean;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
     onAnnotationModeEscape?: () => void;
 };
@@ -28,7 +28,7 @@ export default function AnnotationsControls({
     hasDrawing = false,
     hasHighlight = false,
     hasRegion = false,
-    isVideoAnnotationsEnabled = false,
+    isVideo = false,
     onAnnotationModeClick = noop,
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
@@ -89,7 +89,7 @@ export default function AnnotationsControls({
 
     return (
         <div className="bp-AnnotationsControls" data-testid="bp-annotations-controls">
-            {!isVideoAnnotationsEnabled && (
+            {!isVideo && (
                 <AnnotationsButton
                     ref={annotationBtnRefs[AnnotationMode.NONE]}
                     className="bp-AnnotationsControls-exitBtn"

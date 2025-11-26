@@ -113,7 +113,7 @@ export default function DashControls({
                                     annotationMode={annotationMode}
                                     hasDrawing={hasDrawing}
                                     hasRegion={hasRegion}
-                                    isVideoAnnotationsEnabled={videoAnnotationsEnabled}
+                                    isVideo
                                     onAnnotationModeClick={onAnnotationModeClick}
                                     onAnnotationModeEscape={onAnnotationModeEscape}
                                 />
