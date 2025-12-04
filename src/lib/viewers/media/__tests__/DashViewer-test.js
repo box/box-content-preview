@@ -1296,28 +1296,17 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.clearAllMocks();
         });
 
-        test('should scale annotations if video annotations are enabled and annotator exists', () => {
+        test('should scale annotations if an annotator exists', () => {
             dash.aspect = 0.5;
             dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = true;
             dash.annotator = {};
             dash.resize();
             expect(scaleAnnotations).toBeCalled();
         });
 
-        test('should not scale annotations if video annotations are disabled but annotator exists', () => {
+        test('should not scale annotations if annotator does not exist', () => {
             dash.aspect = 0.5;
             dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = false;
-            dash.annotator = {};
-            dash.resize();
-            expect(scaleAnnotations).not.toBeCalled();
-        });
-
-        test('should not scale annotations if video annotations are enabled but annotator does not exist', () => {
-            dash.aspect = 0.5;
-            dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = true;
             dash.annotator = null;
             dash.resize();
             expect(scaleAnnotations).not.toBeCalled();
