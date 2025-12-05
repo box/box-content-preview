@@ -1296,28 +1296,17 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.clearAllMocks();
         });
 
-        test('should scale annotations if video annotations are enabled and annotator exists', () => {
+        test('should scale annotations if an annotator exists', () => {
             dash.aspect = 0.5;
             dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = true;
             dash.annotator = {};
             dash.resize();
             expect(scaleAnnotations).toBeCalled();
         });
 
-        test('should not scale annotations if video annotations are disabled but annotator exists', () => {
+        test('should not scale annotations if annotator does not exist', () => {
             dash.aspect = 0.5;
             dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = false;
-            dash.annotator = {};
-            dash.resize();
-            expect(scaleAnnotations).not.toBeCalled();
-        });
-
-        test('should not scale annotations if video annotations are enabled but annotator does not exist', () => {
-            dash.aspect = 0.5;
-            dash.videoWidth = 0;
-            dash.videoAnnotationsEnabled = true;
             dash.annotator = null;
             dash.resize();
             expect(scaleAnnotations).not.toBeCalled();
@@ -2267,6 +2256,27 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should not fail if annotator is missing', () => {
             dash.annotator = null;
             expect(() => dash.initAnnotations()).not.toThrow();
+        });
+    });
+
+    describe('handleScrollToAnnotation', () => {
+        beforeEach(() => {
+            dash.annotator = {
+                scrollToAnnotation: jest.fn(),
+            };
+        });
+
+        test('should call scrollToAnnotation with the correct arguments', () => {
+            const event = { id: '123' };
+            dash.handleScrollToAnnotation(event);
+
+            expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', undefined);
+        });
+        test('should call scrollToAnnotation with the correct arguments if target location is provided', () => {
+            const event = { id: '123', target: { location: { value: 5 } } };
+            dash.handleScrollToAnnotation(event);
+
+            expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
         });
     });
 });

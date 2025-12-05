@@ -1061,7 +1061,7 @@ class DashViewer extends VideoBaseViewer {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
 
-            if (this.videoAnnotationsEnabled && this.annotator) {
+            if (this.annotator) {
                 this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
             }
         }
@@ -1284,6 +1284,18 @@ class DashViewer extends VideoBaseViewer {
         if (this.annotator) {
             this.annotator.emit('annotations_active_set', id);
         }
+    }
+
+    /**
+     * Handles the 'scrolltoannotation' event and calls the annotator scroll method
+     * @param {string | Object} event - Annotation Event
+     * @param {string} event.id - Annotation Id
+     * @return {void}
+     */
+    handleScrollToAnnotation(event) {
+        const data = event && event.id ? event.id : event;
+        const defaultLocaton = event?.target?.location?.value;
+        this.annotator.scrollToAnnotation(data, defaultLocaton);
     }
 
     /**
