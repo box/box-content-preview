@@ -2265,18 +2265,18 @@ describe('lib/viewers/media/DashViewer', () => {
                 scrollToAnnotation: jest.fn(),
             };
         });
-    });
 
-    test('should call scrollToAnnotation with the correct arguments', () => {
-        const event = { id: '123' };
-        dash.handleScrollToAnnotation(event);
+        test('should call scrollToAnnotation with the correct arguments', () => {
+            const event = { id: '123' };
+            dash.handleScrollToAnnotation(event);
 
-        expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', undefined);
-    });
-    test('should call scrollToAnnotation with the correct arguments if target location is provided', () => {
-        const event = { id: '123', target: { location: { value: 5 } } };
-        dash.handleScrollToAnnotation(event);
+            expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', undefined);
+        });
+        test('should call scrollToAnnotation with the correct arguments if target location is provided', () => {
+            const event = { id: '123', target: { location: { value: 5 } } };
+            dash.handleScrollToAnnotation(event);
 
-        expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
+            expect(dash.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
+        });
     });
 });
