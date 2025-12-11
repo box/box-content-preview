@@ -1,3 +1,14 @@
+## 3.16.0 (2025-12-11)
+
+* feat(nodejs): update to node 22 (#1590) ([6fc65f5](https://github.com/box/box-content-preview/commit/6fc65f5)), closes [#1590](https://github.com/box/box-content-preview/issues/1590)
+* feat(preview-modernization): Remove border from thumbnail container (#1589) ([ca24377](https://github.com/box/box-content-preview/commit/ca24377)), closes [#1589](https://github.com/box/box-content-preview/issues/1589)
+* feat(preview-modernization): Update Control bar (#1588) ([0baac75](https://github.com/box/box-content-preview/commit/0baac75)), closes [#1588](https://github.com/box/box-content-preview/issues/1588)
+* feat(video-annotations): add default annotation location (#1592) ([d802717](https://github.com/box/box-content-preview/commit/d802717)), closes [#1592](https://github.com/box/box-content-preview/issues/1592)
+* chore(i18n): Update Translations (#1587) ([c3d171f](https://github.com/box/box-content-preview/commit/c3d171f)), closes [#1587](https://github.com/box/box-content-preview/issues/1587)
+* fix(dash-controls): fix alignment when the annotations button is clicked (#1591) ([f4f6a44](https://github.com/box/box-content-preview/commit/f4f6a44)), closes [#1591](https://github.com/box/box-content-preview/issues/1591)
+
+
+
 ## 3.15.0 (2025-10-20)
 
 * feat(video-ui-update): hiding and showing control over video based on video width and fixing seek ic ([67696ea](https://github.com/box/box-content-preview/commit/67696ea)), closes [#1585](https://github.com/box/box-content-preview/issues/1585)
