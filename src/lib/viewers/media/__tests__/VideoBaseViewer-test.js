@@ -656,4 +656,336 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaContainerEl.classList).toContain('bp-media-controls-is-visible');
         });
     });
+
+    describe('scaleAnnotations()', () => {
+        beforeEach(() => {
+            videoBase.videoWidth = 1920;
+            videoBase.videoHeight = 1080;
+            videoBase.rotationAngle = 0;
+            jest.spyOn(videoBase, 'emit');
+        });
+
+        test('should emit scale event with width-based scale', () => {
+            const width = '960';
+            const height = '540';
+
+            videoBase.scaleAnnotations(width, height);
+
+            expect(videoBase.emit).toHaveBeenCalledWith('scale', {
+                scale: 0.5,
+                rotationAngle: 0,
+            });
+        });
+    });
+
+    describe('initAnnotations', () => {
+        beforeEach(() => {
+            videoBase.annotator = {
+                addListener: jest.fn(),
+            };
+            jest.spyOn(videoBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(BaseViewer.prototype, 'initAnnotations').mockImplementation();
+        });
+
+        test('should call super initAnnotations', () => {
+            videoBase.initAnnotations();
+
+            expect(BaseViewer.prototype.initAnnotations).toHaveBeenCalled();
+        });
+
+        test('should add annotations_create listener if new annotations are enabled', () => {
+            videoBase.initAnnotations();
+
+            expect(videoBase.annotator.addListener).toBeCalledWith(
+                'annotations_create',
+                videoBase.handleAnnotationCreateEvent,
+            );
+        });
+
+        test('should not add annotations_create listener if new annotations are disabled', () => {
+            jest.spyOn(videoBase, 'areNewAnnotationsEnabled').mockReturnValue(false);
+
+            videoBase.initAnnotations();
+
+            expect(videoBase.annotator.addListener).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing', () => {
+            videoBase.annotator = null;
+            expect(() => videoBase.initAnnotations()).not.toThrow();
+        });
+    });
+
+    describe('handleAnnotationColorChange', () => {
+        beforeEach(() => {
+            videoBase.annotationModule = {
+                setColor: jest.fn(),
+            };
+            videoBase.annotator = {
+                emit: jest.fn(),
+            };
+            videoBase.renderUI = jest.fn();
+        });
+
+        test('should call setColor and renderUI, and emit color', () => {
+            const color = '#fff';
+            videoBase.handleAnnotationColorChange(color);
+
+            expect(videoBase.annotationModule.setColor).toBeCalledWith(color);
+            expect(videoBase.annotator.emit).toBeCalledWith('annotations_color_set', color);
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing', () => {
+            videoBase.annotator = null;
+            const color = '#fff';
+            expect(() => videoBase.handleAnnotationColorChange(color)).not.toThrow();
+        });
+    });
+
+    describe('handleAnnotationControlsClick', () => {
+        beforeEach(() => {
+            videoBase.mediaEl = {
+                pause: jest.fn(),
+                removeEventListener: jest.fn(),
+            };
+            videoBase.annotationControlsFSM = {
+                transition: jest.fn(),
+            };
+            videoBase.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            videoBase.processAnnotationModeChange = jest.fn();
+        });
+
+        test('should pause media, transition FSM, toggle annotation mode, and process mode change', () => {
+            const mode = 'region';
+            const nextMode = 'none';
+            videoBase.annotationControlsFSM.transition.mockReturnValue(nextMode);
+
+            videoBase.handleAnnotationControlsClick({ mode });
+
+            expect(videoBase.mediaEl.pause).toHaveBeenCalled();
+            expect(videoBase.annotationControlsFSM.transition).toHaveBeenCalledWith('click', mode);
+            expect(videoBase.annotator.toggleAnnotationMode).toHaveBeenCalledWith(nextMode);
+            expect(videoBase.processAnnotationModeChange).toHaveBeenCalledWith(nextMode);
+        });
+
+        test('should not fail if annotator is missing', () => {
+            videoBase.annotator = null;
+            const mode = 'region';
+            const nextMode = 'none';
+            videoBase.annotationControlsFSM.transition.mockReturnValue(nextMode);
+
+            expect(() => videoBase.handleAnnotationControlsClick({ mode })).not.toThrow();
+        });
+    });
+
+    describe('handleAnnotationCreateEvent', () => {
+        beforeEach(() => {
+            videoBase.annotator = {
+                emit: jest.fn(),
+            };
+        });
+
+        test('should not emit if status is not success', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'error' },
+            };
+
+            videoBase.handleAnnotationCreateEvent(event);
+
+            expect(videoBase.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not emit if status is pending', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'pending' },
+            };
+
+            videoBase.handleAnnotationCreateEvent(event);
+
+            expect(videoBase.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should emit annotations_active_set if status is success', () => {
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'success' },
+            };
+
+            videoBase.handleAnnotationCreateEvent(event);
+
+            expect(videoBase.annotator.emit).toBeCalledWith('annotations_active_set', '123');
+        });
+
+        test('should handle missing annotation or meta gracefully', () => {
+            const event = {};
+
+            videoBase.handleAnnotationCreateEvent(event);
+
+            expect(videoBase.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annoator is missing', () => {
+            videoBase.annotator = null;
+            const event = {
+                annotation: { id: '123' },
+                meta: { status: 'success' },
+            };
+
+            expect(() => videoBase.handleAnnotationCreateEvent(event)).not.toThrow();
+        });
+    });
+
+    describe('applyCursorFtux', () => {
+        beforeEach(() => {
+            videoBase.containerEl = {
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+                removeEventListener: jest.fn(),
+            };
+            videoBase.cache = {
+                get: jest.fn(),
+                set: jest.fn(),
+            };
+            videoBase.annotationControlsFSM = {
+                getState: jest.fn(),
+            };
+        });
+
+        test('should do nothing if containerEl does not exist', () => {
+            videoBase.containerEl = null;
+
+            videoBase.applyCursorFtux();
+
+            expect(videoBase.cache.get).not.toHaveBeenCalled();
+            expect(videoBase.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing if annotation state is not REGION', () => {
+            videoBase.annotationControlsFSM.getState.mockReturnValue('drawing');
+
+            videoBase.applyCursorFtux();
+
+            expect(videoBase.cache.get).not.toHaveBeenCalled();
+            expect(videoBase.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should add cursor seen class if cache contains VIDEO_FTUX_CURSOR_SEEN_KEY', () => {
+            videoBase.annotationControlsFSM.getState.mockReturnValue('region');
+            videoBase.cache.get.mockReturnValue(true);
+
+            videoBase.applyCursorFtux();
+
+            expect(videoBase.containerEl.classList.add).toBeCalledWith('bp-annotations-ftux-video-cursor-seen');
+            expect(videoBase.cache.set).not.toHaveBeenCalled();
+        });
+
+        test('should set VIDEO_FTUX_CURSOR_SEEN_KEY in cache if not present', () => {
+            videoBase.annotationControlsFSM.getState.mockReturnValue('region');
+            videoBase.cache.get.mockReturnValue(false);
+
+            videoBase.applyCursorFtux();
+
+            expect(videoBase.cache.set).toBeCalledWith('ftux-cursor-seen-video', true, true);
+            expect(videoBase.containerEl.classList.add).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('updateDiscoverabilityResinTag', () => {
+        beforeEach(() => {
+            videoBase.containerEl = {
+                setAttribute: jest.fn(),
+                removeEventListener: jest.fn(),
+                classList: {
+                    add: jest.fn(),
+                    remove: jest.fn(),
+                },
+            };
+            videoBase.annotationControlsFSM = {
+                getState: jest.fn(),
+            };
+            videoBase.options = {
+                enableAnnotationsDiscoverability: false,
+            };
+        });
+
+        test('should do nothing if containerEl does not exist', () => {
+            videoBase.containerEl = null;
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.annotationControlsFSM.getState).not.toHaveBeenCalled();
+        });
+
+        test('should set discoverability attribute to false if enableAnnotationsDiscoverability is false', () => {
+            videoBase.annotationControlsFSM.getState.mockReturnValue('region_temp');
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', false);
+        });
+
+        test('should set discoverability attribute to false if state is not discoverable', () => {
+            videoBase.options.enableAnnotationsDiscoverability = true;
+            videoBase.annotationControlsFSM.getState.mockReturnValue('highlight');
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', false);
+        });
+
+        test('should set discoverability attribute to true if state is discoverable and enabled', () => {
+            videoBase.options.enableAnnotationsDiscoverability = true;
+            videoBase.annotationControlsFSM.getState.mockReturnValue('region_temp');
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+
+        test('should set discoverability attribute to true for drawing state', () => {
+            videoBase.options.enableAnnotationsDiscoverability = true;
+            videoBase.annotationControlsFSM.getState.mockReturnValue('drawing');
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+
+        test('should set discoverability attribute to true for none state', () => {
+            videoBase.options.enableAnnotationsDiscoverability = true;
+            videoBase.annotationControlsFSM.getState.mockReturnValue('none');
+
+            videoBase.updateDiscoverabilityResinTag();
+
+            expect(videoBase.containerEl.setAttribute).toBeCalledWith('data-resin-discoverability', true);
+        });
+    });
+
+    describe('handleScrollToAnnotation', () => {
+        beforeEach(() => {
+            videoBase.annotator = {
+                scrollToAnnotation: jest.fn(),
+            };
+        });
+
+        test('should call scrollToAnnotation with the correct arguments', () => {
+            const event = { id: '123' };
+            videoBase.handleScrollToAnnotation(event);
+
+            expect(videoBase.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', undefined);
+        });
+        test('should call scrollToAnnotation with the correct arguments if target location is provided', () => {
+            const event = { id: '123', target: { location: { value: 5 } } };
+            videoBase.handleScrollToAnnotation(event);
+
+            expect(videoBase.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
+        });
+    });
 });
