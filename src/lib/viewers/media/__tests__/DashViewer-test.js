@@ -88,6 +88,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         dash.mediaControls = {
             addListener: () => {},
+            resizeTimeScrubber: () => {},
             enableHDSettings: () => {},
             destroy: () => {},
             initFilmstrip: () => {},
