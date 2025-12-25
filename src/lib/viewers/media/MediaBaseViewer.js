@@ -253,7 +253,7 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
-        if (this.getViewerOption('useReactControls')) {
+        if (this.getViewerOption('useReactControls') || this.useReactControls()) {
             this.loadUIReact();
         } else {
             this.loadUI();
@@ -1248,6 +1248,17 @@ class MediaBaseViewer extends BaseViewer {
      */
     movePlayback(isForward, duration) {
         this.quickSeek(isForward ? duration : -duration);
+    }
+
+    /**
+     * Determines if the viewer should use react controls
+     *
+     * @override
+     * @return {boolean} Indicates if react controls should be used, default to false
+     */
+
+    useReactControls() {
+        return false; // override in child classes if needed
     }
 }
 

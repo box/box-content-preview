@@ -88,6 +88,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         dash.mediaControls = {
             addListener: () => {},
+            resizeTimeScrubber: () => {},
             enableHDSettings: () => {},
             destroy: () => {},
             initFilmstrip: () => {},
@@ -1263,111 +1264,6 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('resize()', () => {
-        const clientHeight = {
-            get() {
-                return parseInt(this.style.height, 10);
-            },
-        };
-        const clientWidth = {
-            get() {
-                return parseInt(this.style.width, 10);
-            },
-        };
-
-        const scaleAnnotations = jest.fn();
-        beforeEach(() => {
-            stubs.resizeFunc = DashViewer.prototype.resize;
-            Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: jest.fn() });
-
-            dash.aspect = 1;
-            dash.videoWidth = 500;
-            dash.videoHeight = 500;
-            dash.wrapperEl.style.width = '600px';
-            dash.wrapperEl.style.height = '650px';
-            dash.scaleAnnotations = scaleAnnotations;
-
-            Object.defineProperty(dash.wrapperEl, 'clientHeight', clientHeight);
-            Object.defineProperty(dash.wrapperEl, 'clientWidth', clientWidth);
-        });
-
-        afterEach(() => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'resize', { value: stubs.resizeFunc });
-            jest.clearAllMocks();
-        });
-
-        test('should scale annotations if an annotator exists', () => {
-            dash.aspect = 0.5;
-            dash.videoWidth = 0;
-            dash.annotator = {};
-            dash.resize();
-            expect(scaleAnnotations).toBeCalled();
-        });
-
-        test('should not scale annotations if annotator does not exist', () => {
-            dash.aspect = 0.5;
-            dash.videoWidth = 0;
-            dash.annotator = null;
-            dash.resize();
-            expect(scaleAnnotations).not.toBeCalled();
-        });
-
-        test('should fit video to at least 420px wide for calculation', () => {
-            dash.aspect = 0.5;
-            dash.videoWidth = 0;
-            dash.resize();
-            expect(dash.mediaEl.style.width).toBe('325px');
-        });
-
-        describe('Video width adjusts to account for the control bar height', () => {
-            test('Video width is affected by the control bar height if using react controls', () => {
-                jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
-                dash.videoWidth = 800;
-                dash.videoHeight = 480;
-                dash.aspect = 1;
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('600px');
-            });
-
-            test('Video width is unaffectd by the control bar height if not using react controls', () => {
-                jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
-                dash.videoWidth = 600;
-                dash.videoHeight = 400;
-                dash.aspect = 1;
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('600px');
-            });
-        });
-
-        describe('Video fits in the viewport of preview', () => {
-            test('should set mediaEl width to video width if aspect ratio is >= 1', () => {
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('500px');
-            });
-
-            test('should set mediaEl width to adjusted video height if aspect ratio is < 1', () => {
-                dash.aspect = 0.5;
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('250px');
-            });
-        });
-
-        describe('Video overflows the viewport of preview', () => {
-            test('should set mediaEl width to viewport width if video is stretched horizontally', () => {
-                dash.videoWidth = 800;
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('600px');
-            });
-
-            test('should set mediaEl width to adjusted viewport height if video is stretched vertically', () => {
-                dash.videoHeight = 800;
-                dash.aspect = 0.5;
-                dash.resize();
-                expect(dash.mediaEl.style.width).toBe('325px');
-            });
-        });
-    });
-
     describe('getBandwidthInterval()', () => {
         beforeEach(() => {
             stubs.destroyed = jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
@@ -2229,14 +2125,14 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.annotator = {
                 addListener: jest.fn(),
             };
-            jest.spyOn(dash, 'areNewAnnotationsEnabled').mockReturnValue(true);
-            jest.spyOn(VideoBaseViewer.prototype, 'initAnnotations').mockImplementation();
+            jest.spyOn(VideoBaseViewer.prototype, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(BaseViewer.prototype, 'initAnnotations').mockImplementation();
         });
 
         test('should call super initAnnotations', () => {
             dash.initAnnotations();
 
-            expect(VideoBaseViewer.prototype.initAnnotations).toHaveBeenCalled();
+            expect(BaseViewer.prototype.initAnnotations).toHaveBeenCalled();
         });
 
         test('should add annotations_create listener if new annotations are enabled', () => {

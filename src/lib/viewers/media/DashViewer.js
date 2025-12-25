@@ -1,24 +1,14 @@
 import React from 'react';
-import {
-    ANNOTATOR_EVENT,
-    VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
-    MEDIA_STATIC_ASSETS_VERSION,
-    SUBTITLES_OFF,
-    VIDEO_FTUX_CURSOR_SEEN_KEY,
-    CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
-    DISCOVERABILITY_ATTRIBUTE,
-} from '../../constants';
+import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
-import fullscreen from '../../Fullscreen';
 import getLanguageName from '../../lang';
 import PreviewError from '../../PreviewError';
-import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 
 import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
 import './Dash.scss';
-import DashControls from './DashControls';
+import VideoControls from './VideoControls';
 import VideoBaseViewer from './VideoBaseViewer';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -28,10 +18,7 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
-const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
-
-export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -61,8 +48,6 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of text tracks for the video */
     textTracks = [];
 
-    videoAnnotationsEnabled = false;
-
     /**
      * @inheritdoc
      */
@@ -71,16 +56,12 @@ class DashViewer extends VideoBaseViewer {
 
         this.api = options.api;
         // Bind context for callbacks
-        this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.handleBuffering = this.handleBuffering.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
-        this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
-        this.handleAnnotationControlsClick = this.handleAnnotationControlsClick.bind(this);
-        this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
@@ -90,29 +71,7 @@ class DashViewer extends VideoBaseViewer {
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
-        this.scaleAnnotations = this.scaleAnnotations.bind(this);
-        this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
-        this.annotationControlsFSM.subscribe(this.applyCursorFtux);
-        this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
-    }
-
-    /**
-     * Hides the create region cursor popup for a document
-     *
-     * @protected
-     * @return {void}
-     */
-    applyCursorFtux() {
-        if (!this.containerEl || this.annotationControlsFSM.getState() !== AnnotationState.REGION) {
-            return;
-        }
-
-        if (this.cache.get(VIDEO_FTUX_CURSOR_SEEN_KEY)) {
-            this.containerEl.classList.add(CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN);
-        } else {
-            this.cache.set(VIDEO_FTUX_CURSOR_SEEN_KEY, true, true);
-        }
     }
 
     /**
@@ -136,11 +95,16 @@ class DashViewer extends VideoBaseViewer {
         this.textTracks = []; // Must be sorted by representation id
         this.audioTracks = [];
 
-        this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
-
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
     }
+
+    /**
+     * Determines if the viewer should use react controls
+     *
+     * @protected
+     * @return {boolean} Indicates if react controls should be used
+     */
 
     useReactControls() {
         return this.getViewerOption('useReactControls');
@@ -264,32 +228,6 @@ class DashViewer extends VideoBaseViewer {
 
         this.startLoadTimer();
         this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
-    }
-
-    handleAnnotationColorChange(color) {
-        if (this.annotator) {
-            this.annotationModule.setColor(color);
-            this.annotator.emit(ANNOTATOR_EVENT.setColor, color);
-        }
-        this.renderUI();
-    }
-
-    /**
-     * Handler for annotation controls button click event.
-     *
-     * @private
-     * @param {AnnotationMode} mode one of annotation modes
-     * @return {void}
-     */
-    handleAnnotationControlsClick({ mode }) {
-        if (this.annotator) {
-            this.mediaEl.pause();
-            const nextMode = this.annotationControlsFSM.transition(AnnotationInput.CLICK, mode);
-
-            this.annotator.toggleAnnotationMode(nextMode);
-
-            this.processAnnotationModeChange(nextMode);
-        }
     }
 
     /**
@@ -679,14 +617,6 @@ class DashViewer extends VideoBaseViewer {
         this.mediaControls.addListener('audiochange', this.handleAudioTrack);
     }
 
-    initAnnotations() {
-        super.initAnnotations();
-
-        if (this.areNewAnnotationsEnabled() && this.annotator) {
-            this.annotator.addListener('annotations_create', this.handleAnnotationCreateEvent);
-        }
-    }
-
     /**
      * Loads captions/subtitles into the settings menu
      *
@@ -999,88 +929,6 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Resizes the video to be of fixed dimensions.
-     * Should work in most common scenarios.
-     *
-     * @override
-     * @return {void}
-     */
-    resize() {
-        let width = this.videoWidth || 0;
-        let height = this.videoHeight || 0;
-        const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
-
-        // Calculate the viewport height minus the control bar height if using react controls
-        // This is necessary to prevent the control bar from overflowing the viewport when the video scale
-        // is expanded.
-        const viewport = {
-            height: this.wrapperEl.clientHeight - controlsHeight,
-            width: this.wrapperEl.clientWidth,
-        };
-
-        // We need the width to be atleast wide enough for the controls
-        // to not overflow and fit properly
-        if (width < 420) {
-            width = 420;
-            height = width / this.aspect;
-        }
-
-        // Reset any prior set widths and heights
-        // We are only going to modify the widths and not heights
-        // This is because in Chrome its not possible to set a height
-        // that larger than the current videoHeight.
-        this.mediaEl.style.width = '';
-
-        if (!fullscreen.isFullscreen(this.containerEl) && width <= viewport.width && height <= viewport.height) {
-            // Case 1: The video ends up fitting within the viewport of preview
-            // For this case, just set the video player dimensions to match the
-            // actual video's dimenstions.
-            if (this.aspect >= 1) {
-                this.mediaEl.style.width = `${width}px`;
-            } else {
-                this.mediaEl.style.width = `${height * this.aspect}px`;
-            }
-        } else {
-            // Case 2: The video is now in fullscreen and needs to be scaled
-            // Case 3: The video overflows the viewport of preview
-            // For this case, try fitting in the video by reducing
-            // either its width or its height.
-
-            // If video were to be stretched vertically, then figure out by how much and if that causes the width to overflow
-            const percentIncreaseInHeightToFitViewport = (viewport.height - height) / height;
-            const newWidthIfHeightUsed = width + width * percentIncreaseInHeightToFitViewport;
-
-            // If video were to be stretched horizontally, then figure out how much and if that causes the height to overflow
-            const percentIncreaseInWidthToFitViewport = (viewport.width - width) / width;
-            const newHeightIfWidthUsed = height + height * percentIncreaseInWidthToFitViewport;
-
-            // One of the two cases will end up fitting
-            if (newHeightIfWidthUsed <= viewport.height) {
-                this.mediaEl.style.width = `${viewport.width}px`;
-            } else if (newWidthIfHeightUsed <= viewport.width) {
-                this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
-            }
-
-            if (this.annotator) {
-                this.scaleAnnotations(this.mediaEl.style.width, this.mediaEl.style.height);
-            }
-        }
-
-        super.resize();
-    }
-
-    scaleAnnotations(width, height) {
-        if (!width && !height) {
-            return;
-        }
-        const scale = width ? width / this.videoWidth : height / this.videoHeight;
-        this.emit('scale', {
-            scale,
-            rotationAngle: this.rotationAngle,
-        });
-    }
-
-    /**
      * Get bandwidth tracking stats
      *
      * @private
@@ -1262,42 +1110,6 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle(showSubtitles ? this.selectedSubtitle : SUBTITLES_OFF);
     }
 
-    updateDiscoverabilityResinTag() {
-        if (!this.containerEl) {
-            return;
-        }
-
-        const controlsState = this.annotationControlsFSM.getState();
-        const isDiscoverable = DISCOVERABILITY_STATES.includes(controlsState);
-        const isUsingDiscoverability = this.options.enableAnnotationsDiscoverability && isDiscoverable;
-
-        // For tracking purposes, set property to true when the annotation controls are in a state
-        // in which the default discoverability experience is enabled
-        this.containerEl.setAttribute(DISCOVERABILITY_ATTRIBUTE, isUsingDiscoverability);
-    }
-
-    handleAnnotationCreateEvent({ annotation: { id } = {}, meta: { status } = {} }) {
-        if (status !== 'success') {
-            return;
-        }
-
-        if (this.annotator) {
-            this.annotator.emit('annotations_active_set', id);
-        }
-    }
-
-    /**
-     * Handles the 'scrolltoannotation' event and calls the annotator scroll method
-     * @param {string | Object} event - Annotation Event
-     * @param {string} event.id - Annotation Id
-     * @return {void}
-     */
-    handleScrollToAnnotation(event) {
-        const data = event && event.id ? event.id : event;
-        const defaultLocaton = event?.target?.location?.value;
-        this.annotator.scrollToAnnotation(data, defaultLocaton);
-    }
-
     /**
      * @inheritdoc
      */
@@ -1315,7 +1127,7 @@ class DashViewer extends VideoBaseViewer {
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
         this.controls.render(
-            <DashControls
+            <VideoControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 aspectRatio={this.aspect}

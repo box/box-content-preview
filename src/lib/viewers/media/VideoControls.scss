@@ -1,22 +1,22 @@
 @import '../controls/media/styles';
 
-.bp-DashControls {
+.bp-VideoControls {
     @include bp-VideoControls;
 
     padding: 40px 20px 8px 20px;
 }
 
-.bp-DashControls-bar {
+.bp-VideoControls-bar {
     @include bp-VideoControls-bar;
 
     display: grid;
     align-items: center;
 
     // When annotations are not present, center the middle element and keep last element on the right
-    &.bp-DashControls-bar--two-groups {
+    &.bp-VideoControls-bar--two-groups {
         justify-content: flex-end;
 
-        .bp-DashControls-group--play-pause {
+        .bp-VideoControls-group--play-pause {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -24,31 +24,31 @@
     }
 
     // When 3 groups are present, position first on left, middle centered, last on right
-    &.bp-DashControls-bar--three-groups {
+    &.bp-VideoControls-bar--three-groups {
         grid-template-columns: repeat(3, 1fr);
 
-        &.bp-DashControls-bar--narrow-video {
+        &.bp-VideoControls-bar--narrow-video {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .bp-DashControls-group--annotations {
+        .bp-VideoControls-group--annotations {
             justify-self: flex-start;
         }
 
-        .bp-DashControls-group--play-pause {
+        .bp-VideoControls-group--play-pause {
             justify-self: center;
         }
 
-        .bp-DashControls-group--media-controls {
+        .bp-VideoControls-group--media-controls {
             justify-self: flex-end;
         }
     }
 }
 
-.bp-DashControls-group {
+.bp-VideoControls-group {
     @include bp-VideoControls-group;
 }
 
-.bp-DashControls-settings {
+.bp-VideoControls-settings {
     @include bp-VideoControls-settings;
 }
