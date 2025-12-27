@@ -119,7 +119,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
         });
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus with react controls', () => {
-            jest.spyOn(mp4, 'useReactControls').mockImplementation(() => true);
+            jest.spyOn(mp4, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
             mp4.options.autoFocus = true;
             mp4.loadeddataHandler();
             expect(mp4.autoplay).toHaveBeenCalled();
