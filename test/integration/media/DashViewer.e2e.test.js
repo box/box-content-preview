@@ -1,5 +1,6 @@
 import {
     runAudioTracksTests,
+    runAnnotationsTests,
     runBaseMediaSettingsTests,
     runLowQualityMenuTests,
     runQualityMenuTests,
@@ -15,6 +16,14 @@ describe('Dash Viewer', () => {
         cy.visit('/');
         cy.showPreview(token, fileId, {
             viewers: { Dash: { useReactControls } },
+            features: {
+                videoAnnotations: {
+                    enabled: true,
+                },
+            },
+            showAnnotations: true,
+            showAnnotationsControls: true,
+            showAnnotationsDrawingCreate: true,
         });
 
         cy.showMediaControls();
@@ -47,6 +56,8 @@ describe('Dash Viewer', () => {
                 it('react controls should be visible', () => {
                     cy.get('.bp-VideoControls').should('exist');
                 });
+
+                runAnnotationsTests();
 
                 runBaseMediaSettingsTests();
 
