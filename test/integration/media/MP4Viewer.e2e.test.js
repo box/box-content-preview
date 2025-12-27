@@ -5,24 +5,24 @@ describe('MP4 Viewer', () => {
     const fileIdVideo = Cypress.env('FILE_ID_VIDEO');
 
     describe('Media Settings Controls', () => {
-        // describe('Without react controls', () => {
-        //     beforeEach(() => {
-        //         cy.visit('/');
-        //         cy.showPreview(token, fileIdVideo, {
-        //             viewers: { Dash: { disabled: true }, MP4: { useReactControls: false } },
-        //         });
+        describe('Without react controls', () => {
+            beforeEach(() => {
+                cy.visit('/');
+                cy.showPreview(token, fileIdVideo, {
+                    viewers: { Dash: { disabled: true }, MP4: { useReactControls: false } },
+                });
 
-        //         cy.showMediaControls();
+                cy.showMediaControls();
 
-        //         // Open the menu
-        //         cy.getByTitle('Settings').click();
-        //     });
+                // Open the menu
+                cy.getByTitle('Settings').click();
+            });
 
-        //     it('react controls should not be visible', () => {
-        //         cy.get('.bp-VideoControls').should('not.exist');
-        //     });
-        //     runBaseMediaSettingsTests();
-        // });
+            it('react controls should not be visible', () => {
+                cy.get('.bp-VideoControls').should('not.exist');
+            });
+            runBaseMediaSettingsTests();
+        });
 
         describe('With react controls', () => {
             beforeEach(() => {
