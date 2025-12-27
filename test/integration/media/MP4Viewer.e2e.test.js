@@ -18,6 +18,9 @@ describe('MP4 Viewer', () => {
                 cy.getByTitle('Settings').click();
             });
 
+            it('react controls should not be visible', () => {
+                cy.get('.bp-VideoControls').should('not.exist');
+            });
             runBaseMediaSettingsTests();
         });
 
@@ -34,6 +37,9 @@ describe('MP4 Viewer', () => {
                 cy.getByTitle('Settings').click();
             });
 
+            it('react controls should be visible', () => {
+                cy.get('.bp-VideoControls').should('exist');
+            });
             runBaseMediaSettingsTests();
         });
     });

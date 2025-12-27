@@ -37,7 +37,7 @@ class MP4Viewer extends VideoBaseViewer {
     }
 
     useReactControls() {
-        return true;
+        return this.getViewerOption('useReactControls');
     }
 
     load() {
@@ -80,10 +80,8 @@ class MP4Viewer extends VideoBaseViewer {
         this.showMedia();
 
         // Show controls briefly after content loads
-        if (this.useReactControls()) {
-            if (this.controls) {
-                this.showAndHideReactControls();
-            }
+        if (this.useReactControls() && this.controls) {
+            this.showAndHideReactControls();
         } else {
             this.mediaControls.show();
         }
