@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-import noop from 'lodash/noop';
 import MP4Viewer from '../MP4Viewer';
 import BaseViewer from '../../BaseViewer';
 import { VIEWER_EVENT } from '../../../events';
@@ -28,6 +26,37 @@ describe('lib/viewers/media/MP4Viewer', () => {
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
         mp4.containerEl = containerEl;
+        mp4.mediaControls = {
+            addListener: () => {},
+            enableHDSettings: () => {},
+            destroy: () => {},
+            initFilmstrip: () => {},
+            initSubtitles: () => {},
+            initAlternateAudio: () => {},
+            removeAllListeners: () => {},
+            removeListener: () => {},
+            show: jest.fn(),
+            setLabel: () => {},
+        };
+
+        mp4.mediaEl = {
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+            paused: false,
+            volume: 1,
+            buffered: {},
+            currentTime: 0,
+            duration: 0,
+        };
+        mp4.mediaContainerEl = {
+            clientWidth: 100,
+            clientHeight: 100,
+            focus: jest.fn(),
+        };
+        mp4.annotationControlsFSM = {
+            subscribe: jest.fn(),
+            getMode: jest.fn(() => 'none'),
+        };
     });
 
     afterEach(() => {
@@ -51,34 +80,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
     });
 
     describe('loadeddataHandler()', () => {
-        test('should do nothing if the player is destroyed', () => {
-            jest.spyOn(mp4, 'isDestroyed').mockReturnValue(true);
-            jest.spyOn(mp4, 'showMedia');
-            mp4.loadeddataHandler();
-            expect(mp4.showMedia).not.toBeCalled();
-        });
-
-        test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus', () => {
-            // Set up required properties first
-            mp4.mediaEl = {
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                paused: false,
-                volume: 1,
-                buffered: {},
-                currentTime: 0,
-                duration: 0,
-            };
-            mp4.mediaContainerEl = {
-                clientWidth: 100,
-                clientHeight: 100,
-                focus: jest.fn(),
-            };
-            mp4.annotationControlsFSM = {
-                subscribe: jest.fn(),
-                getMode: jest.fn(() => 'none'),
-            };
-
+        beforeEach(() => {
             jest.spyOn(mp4, 'isDestroyed').mockReturnValue(false);
             jest.spyOn(mp4, 'showMedia').mockImplementation();
             jest.spyOn(mp4, 'isAutoplayEnabled').mockReturnValue(true);
@@ -88,81 +90,50 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'showPlayButton').mockImplementation();
             jest.spyOn(mp4, 'calculateVideoDimensions').mockImplementation();
             jest.spyOn(mp4, 'addEventListenersForMediaElement').mockImplementation();
+            jest.spyOn(mp4, 'loadUI').mockImplementation();
             jest.spyOn(mp4, 'loadUIReact').mockImplementation();
             jest.spyOn(mp4, 'emit').mockImplementation();
-
-            mp4.options.autoFocus = true;
-            mp4.loadeddataHandler();
-            expect(mp4.autoplay).toBeCalled();
-            expect(mp4.showMedia).toBeCalled();
-            expect(mp4.showPlayButton).toBeCalled();
-            expect(mp4.calculateVideoDimensions).toBeCalled();
-            expect(mp4.emit).toBeCalledWith(VIEWER_EVENT.load);
-            expect(mp4.loaded).toBe(true);
-            expect(mp4.mediaContainerEl.focus).toBeCalled();
-            expect(mp4.loadUIReact).toBeCalled();
+            jest.spyOn(mp4, 'showAndHideReactControls').mockImplementation();
         });
 
-        describe('With react controls', () => {
-            beforeEach(() => {
-                // Set up required properties
-                mp4.mediaEl = {
-                    addEventListener: jest.fn(),
-                    removeEventListener: jest.fn(),
-                    paused: false,
-                    volume: 1,
-                    buffered: {},
-                    currentTime: 0,
-                    duration: 0,
-                };
-                mp4.mediaContainerEl = {
-                    clientWidth: 100,
-                    clientHeight: 100,
-                    focus: jest.fn(),
-                };
-                mp4.annotationControlsFSM = {
-                    subscribe: jest.fn(),
-                    getMode: jest.fn(() => 'none'),
-                };
+        test('should do nothing if the player is destroyed', () => {
+            jest.spyOn(mp4, 'isDestroyed').mockReturnValue(true);
+            jest.spyOn(mp4, 'showMedia');
+            mp4.loadeddataHandler();
+            expect(mp4.showMedia).not.toHaveBeenCalled();
+        });
 
-                jest.spyOn(mp4, 'calculateVideoDimensions').mockImplementation();
-                jest.spyOn(mp4, 'getViewerOption').mockImplementation(() => true);
-                jest.spyOn(mp4, 'loadUIReact').mockImplementation();
-                jest.spyOn(mp4, 'loadUI').mockImplementation();
-                jest.spyOn(mp4, 'resize').mockImplementation();
-                jest.spyOn(mp4, 'isDestroyed').mockReturnValue(false);
-                jest.spyOn(mp4, 'showMedia').mockImplementation();
-                jest.spyOn(mp4, 'handleVolume').mockImplementation();
-                jest.spyOn(mp4, 'showPlayButton').mockImplementation();
-                jest.spyOn(mp4, 'emit').mockImplementation();
-            });
+        test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus without react controls', () => {
+            mp4.options.autoFocus = true;
+            mp4.loadeddataHandler();
+            expect(mp4.autoplay).toHaveBeenCalled();
+            expect(mp4.showMedia).toHaveBeenCalled();
+            expect(mp4.showPlayButton).toHaveBeenCalled();
+            expect(mp4.calculateVideoDimensions).toHaveBeenCalled();
+            expect(mp4.emit).toHaveBeenCalledWith(VIEWER_EVENT.load);
+            expect(mp4.loaded).toBe(true);
+            expect(mp4.mediaContainerEl.focus).toHaveBeenCalled();
+            expect(mp4.loadUI).toHaveBeenCalled();
+            expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
+            expect(mp4.mediaControls.show).toHaveBeenCalled();
+        });
 
-            test('should call loadUIReact', () => {
-                mp4.loadeddataHandler();
-
-                expect(mp4.loadUIReact).toBeCalled();
-                expect(mp4.loadUI).not.toBeCalled();
-            });
-
-            test('should retry showAndHideReactControls 10 times if show === noop', () => {
-                jest.spyOn(mp4, 'showAndHideReactControls');
-
-                jest.useFakeTimers();
-
-                mp4.controls = {
-                    controlsLayer: {
-                        hide: jest.fn(),
-                        show: noop,
-                    },
-                };
-
-                mp4.loadeddataHandler();
-
-                jest.runAllTimers();
-
-                expect(mp4.showAndHideReactControls).toHaveBeenCalledTimes(11);
-                jest.useRealTimers();
-            });
+        test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus with react controls', () => {
+            jest.spyOn(mp4, 'useReactControls').mockImplementation(() => true);
+            mp4.options.autoFocus = true;
+            mp4.loadeddataHandler();
+            expect(mp4.autoplay).toHaveBeenCalled();
+            expect(mp4.showMedia).toHaveBeenCalled();
+            expect(mp4.showPlayButton).toHaveBeenCalled();
+            expect(mp4.calculateVideoDimensions).toHaveBeenCalled();
+            expect(mp4.emit).toHaveBeenCalledWith(VIEWER_EVENT.load);
+            expect(mp4.loaded).toBe(true);
+            expect(mp4.mediaContainerEl.focus).toHaveBeenCalled();
+            expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
+            expect(mp4.mediaControls.show).toHaveBeenCalled();
+            expect(mp4.loadUIReact).toHaveBeenCalled();
+            expect(mp4.loadUI).not.toHaveBeenCalled();
+            expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
         });
     });
 
