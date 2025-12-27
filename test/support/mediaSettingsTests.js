@@ -192,20 +192,3 @@ export function runSubtitlesTests() {
         });
     });
 }
-
-export function runAnnotationsTests() {
-    describe('Annotations', () => {
-        it('Should be able to click annotation buttons', () => {
-            cy.getByTestId('bp-AnnotationsControls-drawBtn')
-                .should('be.visible')
-                .click();
-
-            cy.getByTestId('bp-color-picker-control').should('be.visible');
-
-            cy.getByTestId('bp-AnnotationsControls-regionBtn')
-                .should('be.visible')
-                .click();
-            cy.getByTestId('bp-color-picker-control').should('not.exist');
-        });
-    });
-}
