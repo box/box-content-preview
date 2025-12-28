@@ -94,6 +94,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'loadUIReact').mockImplementation();
             jest.spyOn(mp4, 'emit').mockImplementation();
             jest.spyOn(mp4, 'showAndHideReactControls').mockImplementation();
+            jest.spyOn(mp4, 'setMediaTime').mockImplementation();
         });
 
         test('should do nothing if the player is destroyed', () => {
@@ -105,6 +106,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus without react controls', () => {
             mp4.options.autoFocus = true;
+            mp4.startTimeInSeconds = 10;
             mp4.loadeddataHandler();
             expect(mp4.autoplay).toHaveBeenCalled();
             expect(mp4.showMedia).toHaveBeenCalled();
@@ -116,11 +118,13 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(mp4.loadUI).toHaveBeenCalled();
             expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
             expect(mp4.mediaControls.show).toHaveBeenCalled();
+            expect(mp4.setMediaTime).toHaveBeenCalledWith(10);
         });
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus with react controls', () => {
             jest.spyOn(mp4, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
             mp4.options.autoFocus = true;
+            mp4.startTimeInSeconds = 10;
             mp4.loadeddataHandler();
             expect(mp4.autoplay).toHaveBeenCalled();
             expect(mp4.showMedia).toHaveBeenCalled();
@@ -134,6 +138,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(mp4.loadUIReact).toHaveBeenCalled();
             expect(mp4.loadUI).not.toHaveBeenCalled();
             expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
+            expect(mp4.setMediaTime).toHaveBeenCalledWith(10);
         });
     });
 

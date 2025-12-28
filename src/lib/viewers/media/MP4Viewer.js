@@ -72,7 +72,7 @@ class MP4Viewer extends VideoBaseViewer {
         this.resize();
         this.handleVolume();
         this.showPlayButton();
-
+        this.setMediaTime(this.startTimeInSeconds);
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
 
