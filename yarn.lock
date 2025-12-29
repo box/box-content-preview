@@ -3468,10 +3468,10 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==
 
-box-annotations@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-2.3.0.tgz#5cac38171f7f8d9283659e2b243310f19d5ab7d3"
-  integrity sha512-Ea7tPgyJjX7vcnmZIfCorbzHd6oYx/OHVMPnZVQL/dUHR5vRKhLM0610xqwmVlUpk627sqHw5x/APaa+kt4SXg==
+box-annotations@^5.2.1-beta.0:
+  version "5.2.1-beta.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-5.2.1-beta.0.tgz#09ebd0538e045797f5d0c8cc893addf8ded28351"
+  integrity sha512-M6ZqiMWkm5rYqQHBLxNtjbEaZsvtzzxdGMsrhGxL+7+sbo4NpgCqNvV875DMqh4nSvLRQbUrPrIe32iYZxKxxw==
 
 box-ui-elements@^20.0.0:
   version "20.0.0"

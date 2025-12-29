@@ -37,7 +37,7 @@
         "axios": "^0.24.0",
         "babel-loader": "^8.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
-        "box-annotations": "^2.3.0",
+        "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",
         "chai": "^4.2.0",
         "classnames": "^2.2.6",
