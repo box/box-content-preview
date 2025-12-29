@@ -100,17 +100,6 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Determines if the viewer should use react controls
-     *
-     * @protected
-     * @return {boolean} Indicates if react controls should be used
-     */
-
-    useReactControls() {
-        return this.getViewerOption('useReactControls');
-    }
-
-    /**
      * [destructor]
      *
      * @override

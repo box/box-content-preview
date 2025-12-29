@@ -102,7 +102,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 },
                 container: containerEl,
             });
-            videoBase.useReactControls = jest.fn().mockReturnValue(true);
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
             videoBase.containerEl = containerEl;
             videoBase.setup();
             expect(videoBase.playButtonEl).toBeUndefined();
@@ -335,7 +335,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
 
         test('should call proper functions if using react controls', () => {
-            jest.spyOn(videoBase, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
             videoBase.annotator = {};
             videoBase.resize();
             expect(videoBase.mediaControls.resizeTimeScrubber).toHaveBeenCalled();
@@ -368,10 +368,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 },
                 container: containerEl,
             });
-
+            jest.spyOn(videoBaseViewer, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
             mockRenderUI = jest.spyOn(videoBaseViewer, 'renderUI').mockImplementation();
-            videoBaseViewer.getViewerOption = jest.fn().mockReturnValue(true);
-            videoBaseViewer.useReactControls = jest.fn().mockReturnValue(false);
             mockBuildPlayButtonWithSeekButtons = jest
                 .spyOn(videoBaseViewer, 'buildPlayButtonWithSeekButtons')
                 .mockImplementation();

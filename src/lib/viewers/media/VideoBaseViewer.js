@@ -423,7 +423,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     handleNarrowVideoUI() {
-        if (this.getViewerOption('useReactControls') || this.useReactControls()) {
+        if (this.useReactControls()) {
             const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
 
             if (!Number.isNaN(mediaElWidthNumber)) {

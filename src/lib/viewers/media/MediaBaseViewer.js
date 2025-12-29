@@ -253,7 +253,7 @@ class MediaBaseViewer extends BaseViewer {
             return;
         }
 
-        if (this.getViewerOption('useReactControls') || this.useReactControls()) {
+        if (this.useReactControls()) {
             this.loadUIReact();
         } else {
             this.loadUI();
@@ -1253,12 +1253,11 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Determines if the viewer should use react controls
      *
-     * @override
-     * @return {boolean} Indicates if react controls should be used, default to false
+     * @protected
+     * @return {boolean} Indicates if react controls should be used
      */
-
     useReactControls() {
-        return false; // override in child classes if needed
+        return this.getViewerOption('useReactControls');
     }
 }
 

@@ -36,10 +36,6 @@ class MP4Viewer extends VideoBaseViewer {
         this.renderUI();
     }
 
-    useReactControls() {
-        return this.getViewerOption('useReactControls');
-    }
-
     load() {
         super.load();
         this.handleAssetAndRepLoad();
