@@ -1,13 +1,13 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import DashControls from '../DashControls';
+import VideoControls from '../VideoControls';
 import subtitles from '../../controls/media/__mocks__/subtitles';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
 import { Experiences } from '../../../types/targeting';
 
-describe('DashControls', () => {
+describe('VideoControls', () => {
     describe('render', () => {
         test('should return a valid wrapper', async () => {
             const user = userEvent.setup();
@@ -22,7 +22,7 @@ describe('DashControls', () => {
             const onVolumeChange = jest.fn();
             const movePlayback = jest.fn();
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -80,7 +80,7 @@ describe('DashControls', () => {
                     },
                 };
                 render(
-                    <DashControls
+                    <VideoControls
                         audioTrack={1}
                         audioTracks={[]}
                         autoplay={false}
@@ -120,7 +120,7 @@ describe('DashControls', () => {
         test.each([true, false])('should set isHDSupported prop on MediaSettings as %s', async isHDSupported => {
             const user = userEvent.setup();
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -155,7 +155,7 @@ describe('DashControls', () => {
 
         test('should not pass along badge if not playing HD', () => {
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -185,7 +185,7 @@ describe('DashControls', () => {
 
         test('should pass along badge if playing HD', () => {
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -216,7 +216,7 @@ describe('DashControls', () => {
             const user = userEvent.setup();
             const onSubtitlesToggle = jest.fn();
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -254,7 +254,7 @@ describe('DashControls', () => {
 
         test('should render with isShowingSubtitles as false if subtitle is SUBTITLES_OFF', () => {
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
@@ -287,7 +287,7 @@ describe('DashControls', () => {
 
         test('should not render play button with seek buttons if isNarrowVideo is true', () => {
             render(
-                <DashControls
+                <VideoControls
                     audioTrack={1}
                     audioTracks={[]}
                     autoplay={false}
