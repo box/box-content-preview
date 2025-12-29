@@ -1,3 +1,10 @@
+## 3.17.0 (2025-12-29)
+
+* test(video-ui): updating e2e tests to test for new react controls (#1594) ([7aa3945](https://github.com/box/box-content-preview/commit/7aa3945)), closes [#1594](https://github.com/box/box-content-preview/issues/1594)
+* feat(video-player-ui): adding mp4 viewer support (#1593) ([b013502](https://github.com/box/box-content-preview/commit/b013502)), closes [#1593](https://github.com/box/box-content-preview/issues/1593)
+
+
+
 ## 3.16.0 (2025-12-11)
 
 * feat(nodejs): update to node 22 (#1590) ([6fc65f5](https://github.com/box/box-content-preview/commit/6fc65f5)), closes [#1590](https://github.com/box/box-content-preview/issues/1590)
