@@ -623,10 +623,14 @@ describe('lib/viewers/BaseViewer', () => {
     describe('createContentUrlWithAuthParams()', () => {
         beforeEach(() => {
             base.options.queryParams = {};
+            // Ensure window.Box is deleted and getCachedPreloadUrl returns undefined by default
+            delete window.Box;
+            jest.spyOn(base, 'getCachedPreloadUrl').mockReturnValue(undefined);
         });
 
         afterEach(() => {
             delete window.Box;
+            jest.restoreAllMocks();
         });
 
         test('should use cached URL when getCachedPreloadUrl() returns a URL', () => {
@@ -634,15 +638,8 @@ describe('lib/viewers/BaseViewer', () => {
             const expectedResult =
                 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc&foo=bar';
 
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': cachedUrl,
-                        },
-                    },
-                },
-            };
+            // Override the mock to return cached URL
+            base.getCachedPreloadUrl = jest.fn().mockReturnValue(cachedUrl);
 
             base.options.file = { id: '123' };
             base.options.queryParams = { foo: 'bar' };
@@ -656,21 +653,27 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should fall back to normal URL generation when no cached URL found', () => {
-            delete window.Box;
-            jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
-            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
+            // Ensure getCachedPreloadUrl returns undefined (override beforeEach mock if needed)
+            base.getCachedPreloadUrl = jest.fn().mockReturnValue(undefined);
+            // Mock base.createContentUrl directly (it internally calls util.createContentUrl and util.appendQueryParams)
+            jest.spyOn(base, 'createContentUrl').mockReturnValue('foo');
+            const appendAuthParamsSpy = jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
             jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
 
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
 
             expect(result).toBe('bar');
-            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
-            expect(base.appendAuthParams).toBeCalledWith('foo');
+            expect(base.getCachedPreloadUrl).toBeCalledWith('boo', 'hoo');
+            expect(base.createContentUrl).toBeCalledWith('boo', 'hoo');
+            // appendAuthParams should be called with the result of createContentUrl ('foo')
+            expect(appendAuthParamsSpy).toHaveBeenCalledTimes(1);
+            // Check the actual argument passed to appendAuthParams
+            const callArgs = appendAuthParamsSpy.mock.calls[0];
+            expect(callArgs[0]).toBe('foo');
         });
 
         test('should call getCachedPreloadUrl() before generating new URL', () => {
-            delete window.Box;
-            jest.spyOn(base, 'getCachedPreloadUrl').mockReturnValue(undefined);
+            // getCachedPreloadUrl is already mocked to return undefined in beforeEach
             jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
             jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
             jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
