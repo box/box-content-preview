@@ -761,7 +761,28 @@ export function handleRepresentationBlobFetch(response) {
 }
 
 /**
+ * Tries to load an image from browser cache, returns a promise that resolves with blob if cached
+ * Uses fetch with cache: 'force-cache' to leverage browser cache
+ *
+ * @param {string} url - Image URL
+ * @return {Promise<Blob|null>} Promise that resolves with blob if cached, null if not cached
+ */
+function tryLoadImageFromCache(url) {
+    return fetch(url, { cache: 'force-cache' })
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            }
+            return null;
+        })
+        .catch(() => {
+            return null;
+        });
+}
+
+/**
  * Gets preload image request promises for document preview
+ * Checks prefetchedData first, then browser cache, then makes API calls
  *
  * @param {Api} api - API instance for making requests
  * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
@@ -774,19 +795,60 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
     const MAX_PRELOAD_PAGES = 8;
 
     const promises = [];
+
+    // Check for prefetched preload image URLs in Box.prefetchedData or Box.postStreamData
+    const prefetchedUrls =
+        typeof window !== 'undefined' &&
+        window.Box &&
+        ((window.Box.prefetchedData && window.Box.prefetchedData.preloadImageUrls) ||
+            (window.Box.postStreamData && window.Box.postStreamData.preloadImageUrls));
+
+    // If we have prefetched URLs, use them (they should be cached by browser from hidden img tags)
+    if (prefetchedUrls && Array.isArray(prefetchedUrls) && prefetchedUrls.length > 0) {
+        for (let i = 0; i < prefetchedUrls.length; i += 1) {
+            const url = prefetchedUrls[i];
+            // Try cache first (images should be cached from hidden img tags), then fallback to API
+            const promise = tryLoadImageFromCache(url).then(cachedBlob => {
+                if (cachedBlob) {
+                    return cachedBlob;
+                }
+                // Only make API call if cache failed
+                return api.get(url, { type: 'blob' });
+            });
+            promises.push(promise.catch(e => e));
+        }
+
+        return promises;
+    }
+
+    // Fallback to original logic if no prefetched URLs
     if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
         return promises;
     }
 
     const useNonPagedJpegRep = !pagedPreLoadUrlWithAuth && preloadUrlWithAuth;
     if (useNonPagedJpegRep) {
-        const promise = api.get(preloadUrlWithAuth, { type: 'blob' });
+        // Try cache first, then fallback to API
+        const promise = tryLoadImageFromCache(preloadUrlWithAuth).then(cachedBlob => {
+            if (cachedBlob) {
+                return cachedBlob;
+            }
+            // Only make API call if cache failed
+            return api.get(preloadUrlWithAuth, { type: 'blob' });
+        });
         promises.push(promise.catch(e => e));
     } else if (pagedPreLoadUrlWithAuth) {
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         for (let i = 1; i <= count; i += 1) {
             const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
-            const promise = api.get(url, { type: 'blob' });
+            // Try cache first, then fallback to API
+            const promise = tryLoadImageFromCache(url).then(cachedBlob => {
+                if (cachedBlob) {
+                    return cachedBlob;
+                }
+                // Only make API call if cache failed
+                return api.get(url, { type: 'blob' });
+            });
             promises.push(promise.catch(e => e));
         }
     }
