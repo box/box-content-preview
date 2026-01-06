@@ -397,14 +397,11 @@ describe('lib/viewers/BaseViewer', () => {
             delete window.Box;
         });
 
-        test('should return cached URL when window.Box.prefetchedData.preloadUrlMap exists and matches', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc',
-                        },
-                    },
+        test('should return cached URL from options.preloadUrlMap when available', () => {
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc',
                 },
             };
 
@@ -414,31 +411,35 @@ describe('lib/viewers/BaseViewer', () => {
             expect(result).toBe('https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc');
         });
 
-        test('should return cached URL when window.Box.postStreamData.preloadUrlMap exists', () => {
-            window.Box = {
-                postStreamData: {
-                    preloadUrlMap: {
-                        webp: {
-                            '1': 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024?token=abc',
-                        },
-                    },
+        test('should return cached URL from options.preloadUrlMap', () => {
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/options-url.jpg',
                 },
             };
 
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.webp');
+            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
+            const result = base.getCachedPreloadUrl(template, '1.jpg');
 
-            expect(result).toBe('https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024?token=abc');
+            expect(result).toBe('https://api.box.com/options-url.jpg');
+        });
+
+        test('should return undefined when no preloadUrlMap in options', () => {
+            delete window.Box;
+            base.options = { file: { id: '123' } };
+
+            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
+            const result = base.getCachedPreloadUrl(template, '1.jpg');
+
+            expect(result).toBeUndefined();
         });
 
         test('should extract repType from template URL patterns (jpg)', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -449,13 +450,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should extract repType from template URL patterns (webp)', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        webp: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                webp: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -466,13 +464,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should extract repType from asset parameter', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -482,13 +477,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should extract page number from asset parameter', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        webp: {
-                            '2': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                webp: {
+                    '2': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -499,27 +491,23 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should validate file ID matches current file', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/2.0/internal_files/456/versions/1/jpg_1024x1024?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/2.0/internal_files/456/versions/1/jpg_1024x1024?token=abc',
                 },
             };
-
             base.options.file = { id: '123' };
+
             const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
             const result = base.getCachedPreloadUrl(template, '1.jpg');
 
             expect(result).toBeUndefined();
         });
 
-        test('should return undefined when preloadUrlMap does not exist', () => {
-            window.Box = {
-                prefetchedData: {},
-            };
+        test('should return undefined when preloadUrlMap does not exist in options', () => {
+            delete window.Box;
+            base.options = { file: { id: '123' } };
 
             const result = base.getCachedPreloadUrl('template', '1.jpg');
 
@@ -527,13 +515,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should return undefined when repType does not match', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -544,13 +529,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should return undefined when pageNumber does not match', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -560,22 +542,11 @@ describe('lib/viewers/BaseViewer', () => {
             expect(result).toBeUndefined();
         });
 
-        test('should return undefined when window.Box does not exist', () => {
-            delete window.Box;
-
-            const result = base.getCachedPreloadUrl('template', '1.jpg');
-
-            expect(result).toBeUndefined();
-        });
-
         test('should handle missing template and asset gracefully', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -585,13 +556,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should prioritize template URL patterns over asset parameter for repType', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        webp: {
-                            '1': 'https://api.box.com/...?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                webp: {
+                    '1': 'https://api.box.com/...?token=abc',
                 },
             };
 
@@ -602,17 +570,14 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         test('should handle legacy representation URL format for file ID validation', () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadUrlMap: {
-                        jpg: {
-                            '1': 'https://api.box.com/representation/f_123/jpg_1024x1024?token=abc',
-                        },
-                    },
+            delete window.Box;
+            base.options.preloadUrlMap = {
+                jpg: {
+                    '1': 'https://api.box.com/representation/f_123/jpg_1024x1024?token=abc',
                 },
             };
-
             base.options.file = { id: '123' };
+
             const template = 'https://api.box.com/representation/f_123/jpg_1024x1024';
             const result = base.getCachedPreloadUrl(template, '1.jpg');
 
@@ -643,6 +608,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.options.file = { id: '123' };
             base.options.queryParams = { foo: 'bar' };
+            base.options.preloadUrlMap = { jpg: { '1': cachedUrl } }; // Set preloadUrlMap so the check runs
             jest.spyOn(util, 'appendQueryParams').mockReturnValue(expectedResult);
 
             const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
@@ -655,6 +621,8 @@ describe('lib/viewers/BaseViewer', () => {
         test('should fall back to normal URL generation when no cached URL found', () => {
             // Ensure getCachedPreloadUrl returns undefined (override beforeEach mock if needed)
             base.getCachedPreloadUrl = jest.fn().mockReturnValue(undefined);
+            // Set preloadUrlMap so the check runs, but it will return undefined
+            base.options.preloadUrlMap = { jpg: {} };
             // Mock base.createContentUrl directly (it internally calls util.createContentUrl and util.appendQueryParams)
             jest.spyOn(base, 'createContentUrl').mockReturnValue('foo');
             const appendAuthParamsSpy = jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
@@ -672,8 +640,9 @@ describe('lib/viewers/BaseViewer', () => {
             expect(callArgs[0]).toBe('foo');
         });
 
-        test('should call getCachedPreloadUrl() before generating new URL', () => {
+        test('should call getCachedPreloadUrl() before generating new URL when preloadUrlMap exists', () => {
             // getCachedPreloadUrl is already mocked to return undefined in beforeEach
+            base.options.preloadUrlMap = { jpg: {} }; // Set preloadUrlMap so the check runs
             jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
             jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
             jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
@@ -681,6 +650,19 @@ describe('lib/viewers/BaseViewer', () => {
             base.createContentUrlWithAuthParams('boo', 'hoo');
 
             expect(base.getCachedPreloadUrl).toBeCalledWith('boo', 'hoo');
+        });
+
+        test('should not call getCachedPreloadUrl() when preloadUrlMap does not exist', () => {
+            // Ensure preloadUrlMap is not set
+            base.options.preloadUrlMap = undefined;
+            const createContentUrlSpy = jest.spyOn(base, 'createContentUrl').mockReturnValue('foo');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
+            jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
+
+            base.createContentUrlWithAuthParams('boo', 'hoo');
+
+            expect(base.getCachedPreloadUrl).not.toHaveBeenCalled();
+            expect(createContentUrlSpy).toBeCalledWith('boo', 'hoo');
         });
     });
 

@@ -378,14 +378,26 @@ class DocBaseViewer extends BaseViewer {
         if (onlyJpegRepAvailable) {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
             const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
-            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
+            const promises = getPreloadImageRequestPromises(
+                this.api,
+                jpegUrlAuthTemplate,
+                1,
+                '',
+                this.options?.preloadUrlMap,
+            );
             Promise.all(promises);
         } else if (pagedWebpRepReady) {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
+            const promises = getPreloadImageRequestPromises(
+                this.api,
+                '',
+                pageCount,
+                pagedUrlAuthTemplate,
+                this.options?.preloadUrlMap,
+            );
             Promise.all(promises);
         }
         this.options.sharedLink = sharedLink;

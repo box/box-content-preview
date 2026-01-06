@@ -484,24 +484,25 @@ class BaseViewer extends EventEmitter {
     createContentUrlWithAuthParams(template, asset) {
         const { queryParams } = this.options;
 
-        // Check for cached preload URL in prefetchedData
-        const cachedUrl = this.getCachedPreloadUrl(template, asset);
-
-        if (cachedUrl) {
-            // Append optional query params to cached URL
-            return appendQueryParams(cachedUrl, queryParams);
+        // Only check for cached preload URL if preloadUrlMap is provided (doc first pages optimization)
+        let cachedUrl = null;
+        if (this.options?.preloadUrlMap) {
+            cachedUrl = this.getCachedPreloadUrl(template, asset);
         }
 
-        // Fall back to normal URL generation
-        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
+        // Use cached URL if available, otherwise fall back to normal URL generation
+        const urlWithAuthParams = cachedUrl || this.appendAuthParams(this.createContentUrl(template, asset));
 
         // Append optional query params
         return appendQueryParams(urlWithAuthParams, queryParams);
     }
 
     /**
-     * Gets cached preload URL from prefetchedData if available
-     * Matches by representation type (jpg/webp) and page number
+     * Gets cached preload URL from options.preloadUrlMap if available.
+     * Matches by representation type (jpg/webp) and page number.
+     *
+     * The preloadUrlMap is passed from preview.show() options and contains
+     * URLs that were prefetched by the backend and should be in browser cache.
      *
      * @private
      * @param {string} template - url template
@@ -509,109 +510,132 @@ class BaseViewer extends EventEmitter {
      * @return {string|void} Cached URL if found, undefined otherwise
      */
     getCachedPreloadUrl(template, asset) {
-        // Check if prefetchedData/preloadUrlMap or postStreamData/preloadUrlMap exist
-        const hasWindow = typeof window !== 'undefined';
-        const hasBox = hasWindow && !!window.Box;
-        const hasPrefetchedData = hasBox && !!window.Box.prefetchedData;
-        const hasPostStreamData = hasBox && !!window.Box.postStreamData;
-        const prefetchedUrlMap = hasPrefetchedData && window.Box.prefetchedData.preloadUrlMap;
-        const postStreamUrlMap = hasPostStreamData && window.Box.postStreamData.preloadUrlMap;
-        const preloadUrlMap = prefetchedUrlMap || postStreamUrlMap;
-
-        if (!hasWindow || !hasBox || !preloadUrlMap) {
+        const preloadUrlMap = this.options?.preloadUrlMap;
+        if (!preloadUrlMap) {
             return undefined;
         }
 
-        // Extract representation type from representation object or template/asset
-        let repType = null;
-        let pageNumber = '1'; // Default to page 1
+        const repType = this.extractRepresentationType(template, asset);
+        const pageNumber = this.extractPageNumber(asset);
 
+        if (!repType || !preloadUrlMap[repType] || !preloadUrlMap[repType][pageNumber]) {
+            return undefined;
+        }
+
+        const cachedUrl = preloadUrlMap[repType][pageNumber];
+        if (!this.validateCachedUrlFileId(cachedUrl)) {
+            return undefined;
+        }
+
+        return cachedUrl;
+    }
+
+    /**
+     * Extracts representation type from template, asset, or options.
+     *
+     * @private
+     * @param {string} template - url template
+     * @param {string|void} [asset] - optional asset name (e.g., "1.jpg", "2.webp")
+     * @return {string|null} Representation type (jpg, webp, png, original) or null
+     */
+    extractRepresentationType(template, asset) {
         // PRIORITY: Check template URL first (most reliable indicator)
         // Template URLs contain patterns like "jpg_1024x1024", "webp_1024x1024", "png_2048x2048"
         if (template) {
-            // Check for jpg patterns in template (e.g., "jpg_1024x1024", "/jpg", "jpeg")
             if (
                 template.includes('jpg_') ||
                 template.includes('/jpg') ||
                 template.includes('/jpeg') ||
                 template.includes('jpeg_')
             ) {
-                repType = 'jpg';
-            } else if (template.includes('webp_') || template.includes('/webp')) {
-                repType = 'webp';
-            } else if (template.includes('png_') || template.includes('/png')) {
-                repType = 'png';
-            } else if (template.includes('/original') || template.includes('original')) {
-                repType = 'original';
+                return 'jpg';
+            }
+            if (template.includes('webp_') || template.includes('/webp')) {
+                return 'webp';
+            }
+            if (template.includes('png_') || template.includes('/png')) {
+                return 'png';
+            }
+            if (template.includes('/original') || template.includes('original')) {
+                return 'original';
+            }
+        }
+
+        // Extract from asset parameter (e.g., "1.jpg", "2.webp", "1.png")
+        if (asset) {
+            const pageMatch = asset.match(/^(\d+)\.(jpg|jpeg|webp|png)$/i);
+            if (pageMatch) {
+                const assetRepType = pageMatch[2].toLowerCase();
+                return assetRepType === 'jpeg' ? 'jpg' : assetRepType;
             }
         }
 
         // Fallback: Try to get representation type from options.representation
-        // Note: representation name might be 'original' even for jpg representations
-        if (!repType && this.options?.representation?.representation) {
-            const repName = this.options.representation.representation.toLowerCase();
-            // Normalize 'original' to 'jpg' if template suggests it (handled above)
-            // Otherwise use the representation name directly
-            repType = repName;
+        if (this.options?.representation?.representation) {
+            return this.options.representation.representation.toLowerCase();
         }
 
-        // Extract page number from asset parameter (e.g., "1.jpg", "2.webp", "1.png", "page_number.webp")
-        if (asset) {
-            // Match patterns like "1.jpg", "2.webp", "1.png", etc.
-            const pageMatch = asset.match(/^(\d+)\.(jpg|jpeg|webp|png)$/i);
-            if (pageMatch) {
-                pageNumber = pageMatch[1];
-                // Also set repType from asset if not already set
-                if (!repType) {
-                    const assetRepType = pageMatch[2].toLowerCase();
-                    repType = assetRepType === 'jpeg' ? 'jpg' : assetRepType;
-                }
-            }
-        }
-
-        // If we still don't have repType, try to infer from template
-        if (!repType && template) {
-            // Check for common patterns in template URLs
+        // Final fallback: Try to infer from template
+        if (template) {
             if (template.includes('jpg') || template.includes('jpeg')) {
-                repType = 'jpg';
-            } else if (template.includes('webp')) {
-                repType = 'webp';
-            } else if (template.includes('png')) {
-                repType = 'png';
-            } else if (template.includes('original')) {
-                repType = 'original';
+                return 'jpg';
+            }
+            if (template.includes('webp')) {
+                return 'webp';
+            }
+            if (template.includes('png')) {
+                return 'png';
+            }
+            if (template.includes('original')) {
+                return 'original';
             }
         }
 
-        // Look up cached URL in map
-        if (repType && preloadUrlMap[repType] && preloadUrlMap[repType][pageNumber]) {
-            const cachedUrl = preloadUrlMap[repType][pageNumber];
+        return null;
+    }
 
-            // CRITICAL: Validate that the cached URL belongs to the current file
-            // Representation URLs contain file IDs in various formats:
-            // - API format: /2.0/internal_files/{fileId}/versions/...
-            // - Legacy format: /representation/f_{fileId}/...
-            // Extract file ID from cached URL and compare with current file ID
-            const currentFileId = this.options?.file?.id;
-            if (currentFileId) {
-                // Try API format first: /2.0/internal_files/{fileId}/
-                let fileIdMatch = cachedUrl.match(/\/internal_files\/(\d+)\//);
-                // If not found, try legacy format: /representation/f_{fileId}/ or /representation/{fileId}/
-                if (!fileIdMatch) {
-                    fileIdMatch = cachedUrl.match(/\/representation\/(?:f_)?(\d+)\//);
-                }
-                const cachedFileId = fileIdMatch ? fileIdMatch[1] : null;
-
-                if (cachedFileId && cachedFileId !== currentFileId.toString()) {
-                    // File ID mismatch - reject cached URL
-                    return undefined;
-                }
-            }
-
-            return cachedUrl;
+    /**
+     * Extracts page number from asset parameter.
+     *
+     * @private
+     * @param {string|void} [asset] - optional asset name (e.g., "1.jpg", "2.webp")
+     * @return {string} Page number (defaults to '1')
+     */
+    extractPageNumber(asset) {
+        if (!asset) {
+            return '1';
         }
 
-        return undefined;
+        const pageMatch = asset.match(/^(\d+)\.(jpg|jpeg|webp|png)$/i);
+        return pageMatch ? pageMatch[1] : '1';
+    }
+
+    /**
+     * Validates that the cached URL belongs to the current file.
+     *
+     * @private
+     * @param {string} cachedUrl - Cached URL to validate
+     * @return {boolean} True if file ID matches or cannot be determined, false otherwise
+     */
+    validateCachedUrlFileId(cachedUrl) {
+        const currentFileId = this.options?.file?.id;
+        if (!currentFileId) {
+            return true; // No file ID to validate against
+        }
+
+        // Try API format first: /2.0/internal_files/{fileId}/
+        let fileIdMatch = cachedUrl.match(/\/internal_files\/(\d+)\//);
+        // If not found, try legacy format: /representation/f_{fileId}/ or /representation/{fileId}/
+        if (!fileIdMatch) {
+            fileIdMatch = cachedUrl.match(/\/representation\/(?:f_)?(\d+)\//);
+        }
+
+        const cachedFileId = fileIdMatch ? fileIdMatch[1] : null;
+        if (!cachedFileId) {
+            return true; // Cannot determine file ID from URL, allow it
+        }
+
+        return cachedFileId === currentFileId.toString();
     }
 
     /**

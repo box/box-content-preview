@@ -714,187 +714,107 @@ describe('lib/util', () => {
 
     describe('getPreloadImageRequestPromises()', () => {
         const mockApi = new Api();
-        let originalFetch;
 
         beforeEach(() => {
             jest.spyOn(mockApi, 'get').mockResolvedValue({});
-            originalFetch = global.fetch;
-            // Always mock fetch to prevent "fetch is not a function" errors
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
         });
 
         afterEach(() => {
-            global.fetch = originalFetch;
             delete window.Box;
             jest.clearAllMocks();
         });
 
-        test('should use prefetched URLs from window.Box.prefetchedData.preloadImageUrls when available', async () => {
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                blob: () => Promise.resolve(mockBlob),
-            });
-
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: ['https://api.box.com/image1.jpg', 'https://api.box.com/image2.jpg'],
-                },
+        test('should use preloadUrlMap parameter when provided', async () => {
+            const preloadUrlMap = {
+                jpg: { '1': 'https://api.box.com/image1.jpg' },
+                webp: { '1': 'https://api.box.com/image2.webp', '2': 'https://api.box.com/image3.webp' },
             };
 
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '');
+            delete window.Box;
+            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
 
-            expect(promises.length).toBe(2);
-            expect(global.fetch).toHaveBeenCalledTimes(2);
-            expect(global.fetch).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { cache: 'force-cache' });
-            expect(global.fetch).toHaveBeenCalledWith('https://api.box.com/image2.jpg', { cache: 'force-cache' });
-            expect(mockApi.get).not.toHaveBeenCalled();
+            expect(promises.length).toBe(3);
+            expect(mockApi.get).toHaveBeenCalledTimes(3);
+            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image2.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image3.webp', { type: 'blob' });
 
             // Wait for promises to resolve
             await Promise.all(promises);
-            // API should still not be called since cache succeeded
-            expect(mockApi.get).not.toHaveBeenCalled();
         });
 
-        test('should use prefetched URLs from window.Box.postStreamData.preloadImageUrls when prefetchedData not available', async () => {
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                blob: () => Promise.resolve(mockBlob),
-            });
-
-            window.Box = {
-                postStreamData: {
-                    preloadImageUrls: ['https://api.box.com/image1.jpg'],
-                },
+        test('should make API calls for preloadUrlMap URLs', async () => {
+            const preloadUrlMap = {
+                jpg: { '1': 'https://api.box.com/image1.jpg' },
             };
 
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '');
+            delete window.Box;
+            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
 
             expect(promises.length).toBe(1);
-            expect(global.fetch).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { cache: 'force-cache' });
-            expect(mockApi.get).not.toHaveBeenCalled();
-
-            await Promise.all(promises);
-            expect(mockApi.get).not.toHaveBeenCalled();
-        });
-
-        test('should try cache first, then API when prefetched URLs exist and cache fails', async () => {
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
-
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: ['https://api.box.com/image1.jpg'],
-                },
-            };
-
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '');
-
-            expect(promises.length).toBe(1);
-            expect(global.fetch).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { cache: 'force-cache' });
-            // API call should be made lazily (inside promise chain), so we check the promise resolves
-            await promises[0];
             expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
+
+            await promises[0];
         });
 
-        test('should only make API call if cache fails (lazy execution)', async () => {
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                blob: () => Promise.resolve(mockBlob),
-            });
-
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: ['https://api.box.com/image1.jpg'],
-                },
+        test('should make API calls immediately for preloadUrlMap URLs', async () => {
+            const preloadUrlMap = {
+                jpg: { '1': 'https://api.box.com/image1.jpg' },
             };
 
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '');
+            delete window.Box;
+            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
 
             expect(promises.length).toBe(1);
-            // API should not be called immediately when cache succeeds
-            expect(mockApi.get).not.toHaveBeenCalled();
+            // API should be called immediately
+            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
 
-            // After promise resolves, API should still not be called
             await promises[0];
-            expect(mockApi.get).not.toHaveBeenCalled();
         });
 
-        test('should return promises for all prefetched URLs', () => {
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                blob: () => Promise.resolve(mockBlob),
-            });
-
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: [
-                        'https://api.box.com/image1.jpg',
-                        'https://api.box.com/image2.jpg',
-                        'https://api.box.com/image3.jpg',
-                    ],
-                },
+        test('should return promises for all URLs in preloadUrlMap', () => {
+            const preloadUrlMap = {
+                jpg: { '1': 'https://api.box.com/image1.jpg' },
+                webp: { '1': 'https://api.box.com/image2.webp', '2': 'https://api.box.com/image3.webp' },
             };
 
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '');
+            delete window.Box;
+            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
 
             expect(promises.length).toBe(3);
+            expect(mockApi.get).toHaveBeenCalledTimes(3);
         });
 
         test('should fall back to original logic when no prefetched URLs', async () => {
             delete window.Box;
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
 
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = '';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
 
             expect(promises.length).toBe(1);
-            // Wait for promise to resolve (API call is lazy)
+            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
+
             await promises[0];
-            expect(mockApi.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
         });
 
-        test('should try cache first even in fallback scenarios (non-prefetched URLs)', async () => {
+        test('should make API calls in fallback scenarios (non-prefetched URLs)', async () => {
             delete window.Box;
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                blob: () => Promise.resolve(mockBlob),
-            });
 
             const jpegPagedUrl = 'jpeg-url';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '');
 
-            expect(global.fetch).toHaveBeenCalledWith('jpeg-url', { cache: 'force-cache' });
-            expect(mockApi.get).not.toHaveBeenCalled();
+            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
 
             await promises[0];
-            expect(mockApi.get).not.toHaveBeenCalled();
         });
 
-        test('should handle empty prefetched URLs array', async () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: [],
-                },
-            };
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
+        test('should handle empty preloadUrlMap gracefully (fallback to original logic)', async () => {
+            delete window.Box;
 
+            const emptyPreloadUrlMap = {};
             const jpegPagedUrl = 'jpeg-url';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '');
+            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '', emptyPreloadUrlMap);
 
             expect(promises.length).toBe(1);
             // Wait for promise to resolve (API call is lazy)
@@ -902,100 +822,64 @@ describe('lib/util', () => {
             expect(mockApi.get).toHaveBeenCalled();
         });
 
-        test('should handle non-array prefetched URLs gracefully', async () => {
-            window.Box = {
-                prefetchedData: {
-                    preloadImageUrls: 'not-an-array',
-                },
-            };
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
-
-            const jpegPagedUrl = 'jpeg-url';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '');
-
-            expect(promises.length).toBe(1);
-            // Wait for promise to resolve (API call is lazy)
-            await promises[0];
-            expect(mockApi.get).toHaveBeenCalled();
-        });
-
-        test('should work when window.Box does not exist (fallback to original logic)', async () => {
+        test('should fallback to original logic when no preloadUrlMap provided', async () => {
             delete window.Box;
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
 
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = '';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
 
             expect(promises.length).toBe(1);
-            // Wait for promise to resolve (API call is lazy)
+            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
+
             await promises[0];
-            expect(mockApi.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
         });
 
         test('should create only the jpeg promise if webp is unavailable', async () => {
             delete window.Box;
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
 
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = '';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
             expect(promises.length).toBe(1);
-            // Wait for promise to resolve (API call is lazy)
+            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
+
             await promises[0];
-            expect(mockApi.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
         });
 
         test('should create only the webp promises if both reps are available', async () => {
             delete window.Box;
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
 
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
             expect(promises.length).toBe(3);
-            // Wait for promises to resolve (API calls are lazy)
-            await Promise.all(promises);
             expect(mockApi.get).toHaveBeenCalledTimes(3);
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', { type: 'blob' });
+
+            await Promise.all(promises);
         });
 
         test('should create only the webp promises if only webp is available with a max of 8 pages', async () => {
             delete window.Box;
-            // Mock fetch for tryLoadImageFromCache (cache miss scenario)
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false,
-            });
 
             const jpegPagedUrl = '';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 27, webpPagedUrl);
             expect(promises.length).toBe(8);
-            // Wait for promises to resolve (API calls are lazy)
-            await Promise.all(promises);
             expect(mockApi.get).toHaveBeenCalledTimes(8);
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url4.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url5.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url6.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url7.webp', expect.any(Object));
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url4.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url5.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url6.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url7.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', { type: 'blob' });
+
+            await Promise.all(promises);
         });
     });
 });

@@ -160,11 +160,13 @@ class DocFirstPreloader extends EventEmitter {
             this.isWebp = !!pagedPreLoadUrlWithAuth;
             this.initializePreloadContainerComponents(containerEl);
 
+            const preloadUrlMap = docBaseViewer?.options?.preloadUrlMap;
             const promises = getPreloadImageRequestPromises(
                 this.api,
                 preloadUrlWithAuth,
                 pages,
                 pagedPreLoadUrlWithAuth,
+                preloadUrlMap,
             );
 
             await Promise.all(promises)
