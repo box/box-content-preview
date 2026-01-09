@@ -264,6 +264,46 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
             expect(stubs.api.reachability.setDownloadReachability).toBeCalled();
         });
+
+        test('should clear preloadToken from file on 401 error', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            const error = {
+                response: {
+                    status: 401,
+                },
+                message: 'Unauthorized',
+            };
+            base.hasRetriedContentDownload = false;
+            jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(base, 'load').mockImplementation();
+
+            base.handleDownloadError(error, 'https://dl.boxcloud.com');
+
+            expect(base.options.file.preloadToken).toBeUndefined();
+        });
+
+        test('should not clear preloadToken on non-401 error', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            const error = {
+                response: {
+                    status: 404,
+                },
+                message: 'Not Found',
+            };
+            base.hasRetriedContentDownload = false;
+            jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(base, 'load').mockImplementation();
+
+            base.handleDownloadError(error, 'https://dl.boxcloud.com');
+
+            expect(base.options.file.preloadToken).toBe('preload-token-123');
+        });
     });
 
     describe('triggerError()', () => {
@@ -388,14 +428,79 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('appendAuthParams() with preloadToken', () => {
+        test('should use preloadToken from file when available', () => {
+            base.options.token = 'regular-token';
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            base.options.sharedLink = '';
+            base.options.sharedLinkPassword = '';
+
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue('url-with-preload-token');
+
+            const result = base.appendAuthParams('https://api.box.com/test');
+
+            expect(util.appendAuthParams).toHaveBeenCalledWith('https://api.box.com/test', 'preload-token-123', '', '');
+            expect(result).toBe('url-with-preload-token');
+        });
+
+        test('should fall back to regular token when preloadToken is not available on file', () => {
+            base.options.token = 'regular-token';
+            base.options.file = {
+                id: '0',
+            };
+            base.options.sharedLink = '';
+            base.options.sharedLinkPassword = '';
+
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue('url-with-regular-token');
+
+            const result = base.appendAuthParams('https://api.box.com/test');
+
+            expect(util.appendAuthParams).toHaveBeenCalledWith('https://api.box.com/test', 'regular-token', '', '');
+            expect(result).toBe('url-with-regular-token');
+        });
+    });
+
     describe('createContentUrlWithAuthParams()', () => {
-        test('should return content url with no asset path', () => {
-            jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
-            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
-            const result = base.createContentUrlWithAuthParams('boo', 'hoo');
-            expect(result).toBe('bar');
-            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
-            expect(base.appendAuthParams).toBeCalledWith('foo');
+        beforeEach(() => {
+            base.options.queryParams = {};
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        test('should generate URL with auth params and append query params', () => {
+            jest.spyOn(base, 'createContentUrl').mockReturnValue('https://api.box.com/test');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('https://api.box.com/test?token=abc');
+            jest.spyOn(util, 'appendQueryParams').mockReturnValue('https://api.box.com/test?token=abc&foo=bar');
+
+            base.options.queryParams = { foo: 'bar' };
+            const result = base.createContentUrlWithAuthParams('template', 'asset');
+
+            expect(base.createContentUrl).toBeCalledWith('template', 'asset');
+            expect(base.appendAuthParams).toBeCalledWith('https://api.box.com/test');
+            expect(util.appendQueryParams).toBeCalledWith('https://api.box.com/test?token=abc', { foo: 'bar' });
+            expect(result).toBe('https://api.box.com/test?token=abc&foo=bar');
+        });
+
+        test('should use preloadToken from file when available for URL generation', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            base.options.token = 'regular-token';
+            jest.spyOn(base, 'createContentUrl').mockReturnValue('https://api.box.com/test');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('https://api.box.com/test?token=preload-token-123');
+            jest.spyOn(util, 'appendQueryParams').mockReturnValue('https://api.box.com/test?token=preload-token-123');
+
+            const result = base.createContentUrlWithAuthParams('template', 'asset');
+
+            expect(base.appendAuthParams).toBeCalledWith('https://api.box.com/test');
+            // appendAuthParams will use preloadToken from file internally
+            expect(result).toBe('https://api.box.com/test?token=preload-token-123');
         });
     });
 

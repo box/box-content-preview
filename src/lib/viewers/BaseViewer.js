@@ -378,6 +378,12 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleDownloadError(err, downloadURL) {
+        // If 401 error and preloadToken was used, clear it to fallback to regular token
+        const status = err?.response?.status || err?.status || getProp(err, 'details.status');
+        if (status === 401 && this.options.file?.preloadToken) {
+            delete this.options.file.preloadToken;
+        }
+
         const isRepDeleted = getProp(err, 'details.isRepDeleted', false);
 
         if (this.hasRetriedContentDownload || isRepDeleted) {
@@ -446,8 +452,11 @@ class BaseViewer extends EventEmitter {
      * @return {string} url with appended auth params
      */
     appendAuthParams(url) {
-        const { token, sharedLink, sharedLinkPassword } = this.options;
-        return appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+        const { token, sharedLink, sharedLinkPassword, file } = this.options;
+        const preloadToken = file?.preloadToken;
+        const tokenToUse = preloadToken || token;
+
+        return appendAuthParams(url, tokenToUse, sharedLink, sharedLinkPassword);
     }
 
     /**
