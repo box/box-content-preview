@@ -714,98 +714,43 @@ describe('lib/util', () => {
 
     describe('getPreloadImageRequestPromises()', () => {
         const mockApi = new Api();
-
         beforeEach(() => {
             jest.spyOn(mockApi, 'get').mockResolvedValue({});
         });
 
-        afterEach(() => {
-            delete window.Box;
-            jest.clearAllMocks();
-        });
-
-        test('should fall back to original logic when no prefetched URLs', async () => {
-            delete window.Box;
-
+        it('should create only the jpeg promise if webp is unavailable', () => {
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = '';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
-
+            expect(mockApi.get).toHaveBeenNthCalledWith(1, 'jpeg-url', expect.any(Object));
             expect(promises.length).toBe(1);
-            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
-
-            await promises[0];
         });
 
-        test('should make API calls in fallback scenarios (non-prefetched URLs)', async () => {
-            delete window.Box;
-
-            const jpegPagedUrl = 'jpeg-url';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '');
-
-            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
-
-            await promises[0];
-        });
-
-        test('should fallback to original logic', async () => {
-            delete window.Box;
-
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = '';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
-
-            expect(promises.length).toBe(1);
-            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
-
-            await promises[0];
-        });
-
-        test('should create only the jpeg promise if webp is unavailable', async () => {
-            delete window.Box;
-
-            const jpegPagedUrl = 'jpeg-url';
-            const webpPagedUrl = '';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
-            expect(promises.length).toBe(1);
-            expect(mockApi.get).toHaveBeenCalledWith('jpeg-url', { type: 'blob' });
-
-            await promises[0];
-        });
-
-        test('should create only the webp promises if both reps are available', async () => {
-            delete window.Box;
-
+        it('should create only the webp promises if both reps are available', () => {
             const jpegPagedUrl = 'jpeg-url';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl);
-            expect(promises.length).toBe(3);
             expect(mockApi.get).toHaveBeenCalledTimes(3);
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', { type: 'blob' });
-
-            await Promise.all(promises);
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
+            expect(promises.length).toBe(3);
         });
 
-        test('should create only the webp promises if only webp is available with a max of 8 pages', async () => {
-            delete window.Box;
-
+        it('should create only the webp promises if only webp is availabl with a max of 8 pages', () => {
             const jpegPagedUrl = '';
             const webpPagedUrl = 'webp-urlpage_number';
             const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 27, webpPagedUrl);
-            expect(promises.length).toBe(8);
             expect(mockApi.get).toHaveBeenCalledTimes(8);
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url4.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url5.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url6.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url7.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', { type: 'blob' });
-
-            await Promise.all(promises);
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url4.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url5.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url6.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url7.webp', expect.any(Object));
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', expect.any(Object));
+            expect(promises.length).toBe(8);
         });
     });
 });

@@ -761,10 +761,7 @@ export function handleRepresentationBlobFetch(response) {
 }
 
 /**
- * Gets preload image request promises for document preview.
- *
- * Generates URLs from templates and makes API calls. URLs should already include
- * auth params (using preloadToken if available) to match prefetched URLs for cache hits.
+ * Gets preload image request promises for document preview
  *
  * @param {Api} api - API instance for making requests
  * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
@@ -777,7 +774,6 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
     const MAX_PRELOAD_PAGES = 8;
 
     const promises = [];
-
     if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
         return promises;
     }

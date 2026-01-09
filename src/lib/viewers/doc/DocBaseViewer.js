@@ -894,6 +894,7 @@ class DocBaseViewer extends BaseViewer {
             .catch(err => {
                 console.error(err); // eslint-disable-line
 
+                // pdf.js gives us the status code in their error message
                 const { status, message } = err;
                 const isTooManyOps = message === MAX_OPERATIONS_ERROR_MESSAGE;
 
