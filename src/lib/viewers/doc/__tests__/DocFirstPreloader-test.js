@@ -185,7 +185,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 'mock-url',
                 4,
                 'mock-paged-image-url',
-                undefined, // preloadUrlMap not set in this test
             );
             expect(Object.keys(preloader.preloadedImages).length).toBe(4);
             expect(preloader.preloadedImages[1]).toBe('mock-object-url1');
@@ -282,30 +281,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.hidePreviewMask).toHaveBeenCalled();
             expect(preloader.showPreviewMask).toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalledWith('preload');
-        });
-
-        it('should pass preloadUrlMap to getPreloadImageRequestPromises when available', async () => {
-            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockPromises = [Promise.resolve(mockBlob)];
-            const preloadUrlMap = {
-                jpg: { '1': 'https://api.box.com/image1.jpg' },
-                webp: { '1': 'https://api.box.com/image2.webp' },
-            };
-
-            jest.spyOn(preloader, 'loadImage').mockReturnValue(new Image(100, 200));
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-
-            mockDocBaseViewer.options = { preloadUrlMap };
-
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
-
-            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                mockApi,
-                'mock-url',
-                1,
-                'mock-paged-image-url',
-                preloadUrlMap,
-            );
         });
 
         it('should show preview mask when initialization throws an error', async () => {

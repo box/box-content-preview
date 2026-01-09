@@ -990,8 +990,8 @@ class Preview extends EventEmitter {
         // Optional additional query params to append to requests
         this.options.queryParams = options.queryParams || {};
 
-        // Preload URL map for prefetched image URLs
-        this.options.preloadUrlMap = options.preloadUrlMap;
+        // Token can be a string or function
+        this.options.token = options.token;
 
         // Option to patch AMD module definitions while Preview loads the third party dependencies it expects in the
         // browser global scope. Definitions will be re-enabled on the 'assetsloaded' event

@@ -378,6 +378,12 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     handleDownloadError(err, downloadURL) {
+        // If 401 error and preloadToken was used, clear it to fallback to regular token
+        const status = err?.response?.status || err?.status || getProp(err, 'details.status');
+        if (status === 401 && this.options.file?.preloadToken) {
+            delete this.options.file.preloadToken;
+        }
+
         const isRepDeleted = getProp(err, 'details.isRepDeleted', false);
 
         if (this.hasRetriedContentDownload || isRepDeleted) {
@@ -446,8 +452,11 @@ class BaseViewer extends EventEmitter {
      * @return {string} url with appended auth params
      */
     appendAuthParams(url) {
-        const { token, sharedLink, sharedLinkPassword } = this.options;
-        return appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+        const { token, sharedLink, sharedLinkPassword, file } = this.options;
+        const preloadToken = file?.preloadToken;
+        const tokenToUse = preloadToken || token;
+
+        return appendAuthParams(url, tokenToUse, sharedLink, sharedLinkPassword);
     }
 
     /**
@@ -484,158 +493,9 @@ class BaseViewer extends EventEmitter {
     createContentUrlWithAuthParams(template, asset) {
         const { queryParams } = this.options;
 
-        // Only check for cached preload URL if preloadUrlMap is provided (doc first pages optimization)
-        let cachedUrl = null;
-        if (this.options?.preloadUrlMap) {
-            cachedUrl = this.getCachedPreloadUrl(template, asset);
-        }
+        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
 
-        // Use cached URL if available, otherwise fall back to normal URL generation
-        const urlWithAuthParams = cachedUrl || this.appendAuthParams(this.createContentUrl(template, asset));
-
-        // Append optional query params
         return appendQueryParams(urlWithAuthParams, queryParams);
-    }
-
-    /**
-     * Gets cached preload URL from options.preloadUrlMap if available.
-     * Matches by representation type (jpg/webp) and page number.
-     *
-     * The preloadUrlMap is passed from preview.show() options and contains
-     * URLs that were prefetched by the backend and should be in browser cache.
-     *
-     * @private
-     * @param {string} template - url template
-     * @param {string|void} [asset] - optional asset name (e.g., "1.jpg", "2.webp")
-     * @return {string|void} Cached URL if found, undefined otherwise
-     */
-    getCachedPreloadUrl(template, asset) {
-        const preloadUrlMap = this.options?.preloadUrlMap;
-        if (!preloadUrlMap) {
-            return undefined;
-        }
-
-        const repType = this.extractRepresentationType(template, asset);
-        const pageNumber = this.extractPageNumber(asset);
-
-        if (!repType || !preloadUrlMap[repType] || !preloadUrlMap[repType][pageNumber]) {
-            return undefined;
-        }
-
-        const cachedUrl = preloadUrlMap[repType][pageNumber];
-        if (!this.validateCachedUrlFileId(cachedUrl)) {
-            return undefined;
-        }
-
-        return cachedUrl;
-    }
-
-    /**
-     * Extracts representation type from template, asset, or options.
-     *
-     * @private
-     * @param {string} template - url template
-     * @param {string|void} [asset] - optional asset name (e.g., "1.jpg", "2.webp")
-     * @return {string|null} Representation type (jpg, webp, png, original) or null
-     */
-    extractRepresentationType(template, asset) {
-        // PRIORITY: Check template URL first (most reliable indicator)
-        // Template URLs contain patterns like "jpg_1024x1024", "webp_1024x1024", "png_2048x2048"
-        if (template) {
-            if (
-                template.includes('jpg_') ||
-                template.includes('/jpg') ||
-                template.includes('/jpeg') ||
-                template.includes('jpeg_')
-            ) {
-                return 'jpg';
-            }
-            if (template.includes('webp_') || template.includes('/webp')) {
-                return 'webp';
-            }
-            if (template.includes('png_') || template.includes('/png')) {
-                return 'png';
-            }
-            if (template.includes('/original') || template.includes('original')) {
-                return 'original';
-            }
-        }
-
-        // Extract from asset parameter (e.g., "1.jpg", "2.webp", "1.png")
-        if (asset) {
-            const pageMatch = asset.match(/^(\d+)\.(jpg|jpeg|webp|png)$/i);
-            if (pageMatch) {
-                const assetRepType = pageMatch[2].toLowerCase();
-                return assetRepType === 'jpeg' ? 'jpg' : assetRepType;
-            }
-        }
-
-        // Fallback: Try to get representation type from options.representation
-        if (this.options?.representation?.representation) {
-            return this.options.representation.representation.toLowerCase();
-        }
-
-        // Final fallback: Try to infer from template
-        if (template) {
-            if (template.includes('jpg') || template.includes('jpeg')) {
-                return 'jpg';
-            }
-            if (template.includes('webp')) {
-                return 'webp';
-            }
-            if (template.includes('png')) {
-                return 'png';
-            }
-            if (template.includes('original')) {
-                return 'original';
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Extracts page number from asset parameter.
-     *
-     * @private
-     * @param {string|void} [asset] - optional asset name (e.g., "1.jpg", "2.webp")
-     * @return {string} Page number (defaults to '1')
-     */
-    extractPageNumber(asset) {
-        if (!asset) {
-            return '1';
-        }
-
-        const pageMatch = asset.match(/^(\d+)\.(jpg|jpeg|webp|png)$/i);
-        return pageMatch ? pageMatch[1] : '1';
-    }
-
-    /**
-     * Validates that the cached URL belongs to the current file.
-     *
-     * @private
-     * @param {string} cachedUrl - Cached URL to validate
-     * @return {boolean} True if file ID matches or cannot be determined, false otherwise
-     */
-    validateCachedUrlFileId(cachedUrl) {
-        const currentFileId = this.options?.file?.id;
-        if (!currentFileId) {
-            return true; // No file ID to validate against
-        }
-
-        // Try API format first: /2.0/internal_files/{fileId}/
-        let fileIdMatch = cachedUrl.match(/\/internal_files\/(\d+)\//);
-        // If not found, try legacy format: /representation/f_{fileId}/ or /representation/{fileId}/
-        if (!fileIdMatch) {
-            fileIdMatch = cachedUrl.match(/\/representation\/(?:f_)?(\d+)\//);
-        }
-
-        const cachedFileId = fileIdMatch ? fileIdMatch[1] : null;
-        if (!cachedFileId) {
-            return true; // Cannot determine file ID from URL, allow it
-        }
-
-        return cachedFileId === currentFileId.toString();
     }
 
     /**

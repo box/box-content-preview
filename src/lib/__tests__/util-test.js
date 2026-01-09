@@ -724,67 +724,6 @@ describe('lib/util', () => {
             jest.clearAllMocks();
         });
 
-        test('should use preloadUrlMap parameter when provided', async () => {
-            const preloadUrlMap = {
-                jpg: { '1': 'https://api.box.com/image1.jpg' },
-                webp: { '1': 'https://api.box.com/image2.webp', '2': 'https://api.box.com/image3.webp' },
-            };
-
-            delete window.Box;
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
-
-            expect(promises.length).toBe(3);
-            expect(mockApi.get).toHaveBeenCalledTimes(3);
-            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image2.webp', { type: 'blob' });
-            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image3.webp', { type: 'blob' });
-
-            // Wait for promises to resolve
-            await Promise.all(promises);
-        });
-
-        test('should make API calls for preloadUrlMap URLs', async () => {
-            const preloadUrlMap = {
-                jpg: { '1': 'https://api.box.com/image1.jpg' },
-            };
-
-            delete window.Box;
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
-
-            expect(promises.length).toBe(1);
-            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
-
-            await promises[0];
-        });
-
-        test('should make API calls immediately for preloadUrlMap URLs', async () => {
-            const preloadUrlMap = {
-                jpg: { '1': 'https://api.box.com/image1.jpg' },
-            };
-
-            delete window.Box;
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
-
-            expect(promises.length).toBe(1);
-            // API should be called immediately
-            expect(mockApi.get).toHaveBeenCalledWith('https://api.box.com/image1.jpg', { type: 'blob' });
-
-            await promises[0];
-        });
-
-        test('should return promises for all URLs in preloadUrlMap', () => {
-            const preloadUrlMap = {
-                jpg: { '1': 'https://api.box.com/image1.jpg' },
-                webp: { '1': 'https://api.box.com/image2.webp', '2': 'https://api.box.com/image3.webp' },
-            };
-
-            delete window.Box;
-            const promises = util.getPreloadImageRequestPromises(mockApi, '', 0, '', preloadUrlMap);
-
-            expect(promises.length).toBe(3);
-            expect(mockApi.get).toHaveBeenCalledTimes(3);
-        });
-
         test('should fall back to original logic when no prefetched URLs', async () => {
             delete window.Box;
 
@@ -809,20 +748,7 @@ describe('lib/util', () => {
             await promises[0];
         });
 
-        test('should handle empty preloadUrlMap gracefully (fallback to original logic)', async () => {
-            delete window.Box;
-
-            const emptyPreloadUrlMap = {};
-            const jpegPagedUrl = 'jpeg-url';
-            const promises = util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 1, '', emptyPreloadUrlMap);
-
-            expect(promises.length).toBe(1);
-            // Wait for promise to resolve (API call is lazy)
-            await promises[0];
-            expect(mockApi.get).toHaveBeenCalled();
-        });
-
-        test('should fallback to original logic when no preloadUrlMap provided', async () => {
+        test('should fallback to original logic', async () => {
             delete window.Box;
 
             const jpegPagedUrl = 'jpeg-url';

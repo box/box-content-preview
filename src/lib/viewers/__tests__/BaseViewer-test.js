@@ -264,6 +264,46 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleDownloadError('error', 'https://dl3.boxcloud.com');
             expect(stubs.api.reachability.setDownloadReachability).toBeCalled();
         });
+
+        test('should clear preloadToken from file on 401 error', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            const error = {
+                response: {
+                    status: 401,
+                },
+                message: 'Unauthorized',
+            };
+            base.hasRetriedContentDownload = false;
+            jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(base, 'load').mockImplementation();
+
+            base.handleDownloadError(error, 'https://dl.boxcloud.com');
+
+            expect(base.options.file.preloadToken).toBeUndefined();
+        });
+
+        test('should not clear preloadToken on non-401 error', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            const error = {
+                response: {
+                    status: 404,
+                },
+                message: 'Not Found',
+            };
+            base.hasRetriedContentDownload = false;
+            jest.spyOn(base, 'triggerError').mockImplementation();
+            jest.spyOn(base, 'load').mockImplementation();
+
+            base.handleDownloadError(error, 'https://dl.boxcloud.com');
+
+            expect(base.options.file.preloadToken).toBe('preload-token-123');
+        });
     });
 
     describe('triggerError()', () => {
@@ -388,281 +428,79 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('getCachedPreloadUrl()', () => {
-        beforeEach(() => {
-            base.options.file = { id: '123' };
-        });
-
-        afterEach(() => {
-            delete window.Box;
-        });
-
-        test('should return cached URL from options.preloadUrlMap when available', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc',
-                },
+    describe('appendAuthParams() with preloadToken', () => {
+        test('should use preloadToken from file when available', () => {
+            base.options.token = 'regular-token';
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
             };
+            base.options.sharedLink = '';
+            base.options.sharedLinkPassword = '';
 
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue('url-with-preload-token');
 
-            expect(result).toBe('https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc');
+            const result = base.appendAuthParams('https://api.box.com/test');
+
+            expect(util.appendAuthParams).toHaveBeenCalledWith('https://api.box.com/test', 'preload-token-123', '', '');
+            expect(result).toBe('url-with-preload-token');
         });
 
-        test('should return cached URL from options.preloadUrlMap', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/options-url.jpg',
-                },
+        test('should fall back to regular token when preloadToken is not available on file', () => {
+            base.options.token = 'regular-token';
+            base.options.file = {
+                id: '0',
             };
+            base.options.sharedLink = '';
+            base.options.sharedLinkPassword = '';
 
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
+            jest.spyOn(util, 'appendAuthParams').mockReturnValue('url-with-regular-token');
 
-            expect(result).toBe('https://api.box.com/options-url.jpg');
-        });
+            const result = base.appendAuthParams('https://api.box.com/test');
 
-        test('should return undefined when no preloadUrlMap in options', () => {
-            delete window.Box;
-            base.options = { file: { id: '123' } };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should extract repType from template URL patterns (jpg)', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, null);
-
-            expect(result).toBe('https://api.box.com/...?token=abc');
-        });
-
-        test('should extract repType from template URL patterns (webp)', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                webp: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024';
-            const result = base.getCachedPreloadUrl(template, null);
-
-            expect(result).toBe('https://api.box.com/...?token=abc');
-        });
-
-        test('should extract repType from asset parameter', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const result = base.getCachedPreloadUrl(null, '1.jpg');
-
-            expect(result).toBe('https://api.box.com/...?token=abc');
-        });
-
-        test('should extract page number from asset parameter', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                webp: {
-                    '2': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '2.webp');
-
-            expect(result).toBe('https://api.box.com/...?token=abc');
-        });
-
-        test('should validate file ID matches current file', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/2.0/internal_files/456/versions/1/jpg_1024x1024?token=abc',
-                },
-            };
-            base.options.file = { id: '123' };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should return undefined when preloadUrlMap does not exist in options', () => {
-            delete window.Box;
-            base.options = { file: { id: '123' } };
-
-            const result = base.getCachedPreloadUrl('template', '1.jpg');
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should return undefined when repType does not match', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024';
-            const result = base.getCachedPreloadUrl(template, null);
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should return undefined when pageNumber does not match', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '2.jpg');
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should handle missing template and asset gracefully', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const result = base.getCachedPreloadUrl(null, null);
-
-            expect(result).toBeUndefined();
-        });
-
-        test('should prioritize template URL patterns over asset parameter for repType', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                webp: {
-                    '1': 'https://api.box.com/...?token=abc',
-                },
-            };
-
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/webp_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
-
-            expect(result).toBe('https://api.box.com/...?token=abc');
-        });
-
-        test('should handle legacy representation URL format for file ID validation', () => {
-            delete window.Box;
-            base.options.preloadUrlMap = {
-                jpg: {
-                    '1': 'https://api.box.com/representation/f_123/jpg_1024x1024?token=abc',
-                },
-            };
-            base.options.file = { id: '123' };
-
-            const template = 'https://api.box.com/representation/f_123/jpg_1024x1024';
-            const result = base.getCachedPreloadUrl(template, '1.jpg');
-
-            expect(result).toBe('https://api.box.com/representation/f_123/jpg_1024x1024?token=abc');
+            expect(util.appendAuthParams).toHaveBeenCalledWith('https://api.box.com/test', 'regular-token', '', '');
+            expect(result).toBe('url-with-regular-token');
         });
     });
 
     describe('createContentUrlWithAuthParams()', () => {
         beforeEach(() => {
             base.options.queryParams = {};
-            // Ensure window.Box is deleted and getCachedPreloadUrl returns undefined by default
-            delete window.Box;
-            jest.spyOn(base, 'getCachedPreloadUrl').mockReturnValue(undefined);
         });
 
         afterEach(() => {
-            delete window.Box;
             jest.restoreAllMocks();
         });
 
-        test('should use cached URL when getCachedPreloadUrl() returns a URL', () => {
-            const cachedUrl = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc';
-            const expectedResult =
-                'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024?token=abc&foo=bar';
+        test('should generate URL with auth params and append query params', () => {
+            jest.spyOn(base, 'createContentUrl').mockReturnValue('https://api.box.com/test');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('https://api.box.com/test?token=abc');
+            jest.spyOn(util, 'appendQueryParams').mockReturnValue('https://api.box.com/test?token=abc&foo=bar');
 
-            // Override the mock to return cached URL
-            base.getCachedPreloadUrl = jest.fn().mockReturnValue(cachedUrl);
-
-            base.options.file = { id: '123' };
             base.options.queryParams = { foo: 'bar' };
-            base.options.preloadUrlMap = { jpg: { '1': cachedUrl } }; // Set preloadUrlMap so the check runs
-            jest.spyOn(util, 'appendQueryParams').mockReturnValue(expectedResult);
+            const result = base.createContentUrlWithAuthParams('template', 'asset');
 
-            const template = 'https://api.box.com/2.0/internal_files/123/versions/1/jpg_1024x1024';
-            const result = base.createContentUrlWithAuthParams(template, '1.jpg');
-
-            expect(result).toBe(expectedResult);
-            expect(util.appendQueryParams).toBeCalledWith(cachedUrl, { foo: 'bar' });
+            expect(base.createContentUrl).toBeCalledWith('template', 'asset');
+            expect(base.appendAuthParams).toBeCalledWith('https://api.box.com/test');
+            expect(util.appendQueryParams).toBeCalledWith('https://api.box.com/test?token=abc', { foo: 'bar' });
+            expect(result).toBe('https://api.box.com/test?token=abc&foo=bar');
         });
 
-        test('should fall back to normal URL generation when no cached URL found', () => {
-            // Ensure getCachedPreloadUrl returns undefined (override beforeEach mock if needed)
-            base.getCachedPreloadUrl = jest.fn().mockReturnValue(undefined);
-            // Set preloadUrlMap so the check runs, but it will return undefined
-            base.options.preloadUrlMap = { jpg: {} };
-            // Mock base.createContentUrl directly (it internally calls util.createContentUrl and util.appendQueryParams)
-            jest.spyOn(base, 'createContentUrl').mockReturnValue('foo');
-            const appendAuthParamsSpy = jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
-            jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
+        test('should use preloadToken from file when available for URL generation', () => {
+            base.options.file = {
+                id: '0',
+                preloadToken: 'preload-token-123',
+            };
+            base.options.token = 'regular-token';
+            jest.spyOn(base, 'createContentUrl').mockReturnValue('https://api.box.com/test');
+            jest.spyOn(base, 'appendAuthParams').mockReturnValue('https://api.box.com/test?token=preload-token-123');
+            jest.spyOn(util, 'appendQueryParams').mockReturnValue('https://api.box.com/test?token=preload-token-123');
 
-            const result = base.createContentUrlWithAuthParams('boo', 'hoo');
+            const result = base.createContentUrlWithAuthParams('template', 'asset');
 
-            expect(result).toBe('bar');
-            expect(base.getCachedPreloadUrl).toBeCalledWith('boo', 'hoo');
-            expect(base.createContentUrl).toBeCalledWith('boo', 'hoo');
-            // appendAuthParams should be called with the result of createContentUrl ('foo')
-            expect(appendAuthParamsSpy).toHaveBeenCalledTimes(1);
-            // Check the actual argument passed to appendAuthParams
-            const callArgs = appendAuthParamsSpy.mock.calls[0];
-            expect(callArgs[0]).toBe('foo');
-        });
-
-        test('should call getCachedPreloadUrl() before generating new URL when preloadUrlMap exists', () => {
-            // getCachedPreloadUrl is already mocked to return undefined in beforeEach
-            base.options.preloadUrlMap = { jpg: {} }; // Set preloadUrlMap so the check runs
-            jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
-            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
-            jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
-
-            base.createContentUrlWithAuthParams('boo', 'hoo');
-
-            expect(base.getCachedPreloadUrl).toBeCalledWith('boo', 'hoo');
-        });
-
-        test('should not call getCachedPreloadUrl() when preloadUrlMap does not exist', () => {
-            // Ensure preloadUrlMap is not set
-            base.options.preloadUrlMap = undefined;
-            const createContentUrlSpy = jest.spyOn(base, 'createContentUrl').mockReturnValue('foo');
-            jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
-            jest.spyOn(util, 'appendQueryParams').mockReturnValue('bar');
-
-            base.createContentUrlWithAuthParams('boo', 'hoo');
-
-            expect(base.getCachedPreloadUrl).not.toHaveBeenCalled();
-            expect(createContentUrlSpy).toBeCalledWith('boo', 'hoo');
+            expect(base.appendAuthParams).toBeCalledWith('https://api.box.com/test');
+            // appendAuthParams will use preloadToken from file internally
+            expect(result).toBe('https://api.box.com/test?token=preload-token-123');
         });
     });
 

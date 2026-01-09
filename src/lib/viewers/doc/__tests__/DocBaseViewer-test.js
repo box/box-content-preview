@@ -3801,13 +3801,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should clear sharedLink and sharedLinkPassword options and reset them after prefetching', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '',
-                    5,
-                    webpUrl,
-                    undefined,
-                );
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
                 expect(docBase.options.sharedLink).toBe('original-shared-link');
                 expect(docBase.options.sharedLinkPassword).toBe('original-password');
             });
@@ -3837,19 +3831,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     jpegUrl,
                     1, // default fallback page count when webp metadata is not available
                     '',
-                    undefined,
                 );
             });
 
             test('should only prefetch webp representations when webp is ready', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '',
-                    5,
-                    webpUrl,
-                    undefined,
-                );
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
             });
 
             test('should handle webp representation without metadata pages', () => {
@@ -3861,7 +3848,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '',
                     8,
                     expect.any(String),
-                    undefined,
                 );
             });
 
@@ -3875,7 +3861,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '', // jpegUrlAuthTemplate should be false when webp is available
                     8, // default page count when pages is not specified
                     expect.any(String),
-                    undefined,
                 );
             });
 
@@ -3887,20 +3872,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '', // jpegUrlAuthTemplate should be false when webp is available
                     5,
                     webpUrl,
-                    undefined,
                 );
             });
 
             test('should handle webp representation without content', () => {
                 webpRep.content = null;
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    jpegUrl,
-                    1,
-                    '',
-                    undefined,
-                );
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, jpegUrl, 1, '');
             });
 
             test('should call Promise.all with the returned promises', () => {

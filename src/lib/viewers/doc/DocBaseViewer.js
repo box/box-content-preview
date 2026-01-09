@@ -378,26 +378,14 @@ class DocBaseViewer extends BaseViewer {
         if (onlyJpegRepAvailable) {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
             const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
-            const promises = getPreloadImageRequestPromises(
-                this.api,
-                jpegUrlAuthTemplate,
-                1,
-                '',
-                this.options?.preloadUrlMap,
-            );
+            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
             Promise.all(promises);
         } else if (pagedWebpRepReady) {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-            const promises = getPreloadImageRequestPromises(
-                this.api,
-                '',
-                pageCount,
-                pagedUrlAuthTemplate,
-                this.options?.preloadUrlMap,
-            );
+            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
             Promise.all(promises);
         }
         this.options.sharedLink = sharedLink;
@@ -906,7 +894,6 @@ class DocBaseViewer extends BaseViewer {
             .catch(err => {
                 console.error(err); // eslint-disable-line
 
-                // pdf.js gives us the status code in their error message
                 const { status, message } = err;
                 const isTooManyOps = message === MAX_OPERATIONS_ERROR_MESSAGE;
 

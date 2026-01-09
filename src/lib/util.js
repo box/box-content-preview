@@ -763,61 +763,21 @@ export function handleRepresentationBlobFetch(response) {
 /**
  * Gets preload image request promises for document preview.
  *
- * If preloadUrlMap is provided (from backend prefetch), uses those URLs directly.
- * The browser will automatically serve these from cache if they were prefetched
- * via <link rel="prefetch"> tags. Otherwise, falls back to original logic of
- * generating URLs from templates and making API calls.
+ * Generates URLs from templates and makes API calls. URLs should already include
+ * auth params (using preloadToken if available) to match prefetched URLs for cache hits.
  *
  * @param {Api} api - API instance for making requests
  * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
  * @param {number} pages - Total number of pages in the document
  * @param {string} pagedPreLoadUrlWithAuth - Paged preload URL template with auth
- * @param {Object} [preloadUrlMap] - Optional map of repType -> pageNumber -> URL (e.g., { jpg: { '1': 'url' }, webp: { '1': 'url', '2': 'url' } })
  * @return {Array<Promise>} Array of promises for image requests
  */
-export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth, preloadUrlMap) {
+export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
     const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
     const MAX_PRELOAD_PAGES = 8;
 
     const promises = [];
 
-    // Helper function to flatten preloadUrlMap to array of URLs
-    const flattenPreloadUrlMap = urlMap => {
-        const urls = [];
-        if (urlMap && typeof urlMap === 'object') {
-            Object.keys(urlMap).forEach(repType => {
-                const pageMap = urlMap[repType];
-                if (pageMap && typeof pageMap === 'object') {
-                    Object.keys(pageMap).forEach(pageNumber => {
-                        const url = pageMap[pageNumber];
-                        if (url && typeof url === 'string') {
-                            urls.push(url);
-                        }
-                    });
-                }
-            });
-        }
-        return urls;
-    };
-
-    // Check if preloadUrlMap was passed as parameter
-    let prefetchedUrls = null;
-    if (preloadUrlMap) {
-        prefetchedUrls = flattenPreloadUrlMap(preloadUrlMap);
-    }
-
-    // If we have prefetched URLs, use them (they should be cached by browser from link tags)
-    if (prefetchedUrls && Array.isArray(prefetchedUrls) && prefetchedUrls.length > 0) {
-        for (let i = 0; i < prefetchedUrls.length; i += 1) {
-            const url = prefetchedUrls[i];
-            const promise = api.get(url, { type: 'blob' });
-            promises.push(promise.catch(e => e));
-        }
-
-        return promises;
-    }
-
-    // Fallback to original logic if no prefetched URLs
     if (!preloadUrlWithAuth && !pagedPreLoadUrlWithAuth) {
         return promises;
     }
