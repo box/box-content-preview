@@ -491,10 +491,10 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        const { queryParams } = this.options;
-
         const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
 
+        // Append optional query params
+        const { queryParams } = this.options;
         return appendQueryParams(urlWithAuthParams, queryParams);
     }
 
