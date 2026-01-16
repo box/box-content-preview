@@ -9,12 +9,15 @@ import {
     VIDEO_FTUX_CURSOR_SEEN_KEY,
     CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
     VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
+    PRELOAD_REP_NAME,
 } from '../../constants';
 import fullscreen from '../../Fullscreen';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
+import VideoPreloader from './VideoPreloader';
+import { isWatermarked, getRepresentation } from '../../file';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
@@ -28,6 +31,9 @@ export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.
 
 class VideoBaseViewer extends MediaBaseViewer {
     videoAnnotationsEnabled = false;
+
+    /** @property {VideoPreloader} - Video preloader instance */
+    preloader;
 
     /**
      * @inheritdoc
@@ -86,6 +92,56 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         this.lowerLights();
+    }
+
+    /**
+     * Loads a media source.
+     *
+     * @override
+     * @return {Promise} Promise to load representations
+     */
+    load() {
+        this.showPreload();
+        return super.load();
+    }
+
+    /**
+     * Shows a preload (thumbnail image) while the full video loads.
+     *
+     * @return {void}
+     */
+    showPreload() {
+        const { file } = this.options;
+        const isWatermarkedFile = isWatermarked(file);
+
+        // Don't show preload for watermarked files
+        if (isWatermarkedFile || !this.getViewerOption('preload')) {
+            return;
+        }
+
+        const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        if (!preloadRep || !this.isRepresentationReady(preloadRep)) {
+            return;
+        }
+
+        if (!this.preloader) {
+            this.preloader = new VideoPreloader({ api: this.api });
+        }
+
+        const { url_template: template } = preloadRep.content;
+        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl);
+    }
+
+    /**
+     * Cleans up the preload (thumbnail image). Should be called when video is loaded.
+     *
+     * @return {void}
+     */
+    hidePreload() {
+        if (this.preloader) {
+            this.preloader.hidePreload();
+        }
     }
 
     buildPlayButtonWithSeekButtons() {
@@ -178,6 +234,10 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     loadeddataHandler() {
         super.loadeddataHandler();
+
+        // Hide thumbnail when video metadata is loaded
+        this.hidePreload();
+
         this.showPlayButton();
 
         if (this.mediaControls) {

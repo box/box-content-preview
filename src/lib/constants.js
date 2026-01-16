@@ -35,6 +35,7 @@ export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
 export const CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER = 'bp-preload-placeholder';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO = 'bp-video-preload-wrapper';
 export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
@@ -105,7 +106,7 @@ export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_
 export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
 export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
 
-export const DOC_STATIC_ASSETS_VERSION = '2.107.0';
+export const DOC_STATIC_ASSETS_VERSION = '2.100.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '2.93.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
