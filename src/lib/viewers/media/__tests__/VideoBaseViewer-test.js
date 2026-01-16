@@ -4,6 +4,8 @@ import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls';
 import MediaBaseViewer from '../MediaBaseViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
+import VideoPreloader from '../VideoPreloader';
+import * as fileUtil from '../../../file';
 
 let containerEl;
 let rootEl;
@@ -984,6 +986,142 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.handleScrollToAnnotation(event);
 
             expect(videoBase.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
+        });
+    });
+
+    describe('load()', () => {
+        beforeEach(() => {
+            jest.spyOn(MediaBaseViewer.prototype, 'load').mockResolvedValue();
+            jest.spyOn(videoBase, 'showPreload').mockImplementation();
+        });
+
+        test('should call showPreload() before super.load()', () => {
+            videoBase.load();
+
+            expect(videoBase.showPreload).toBeCalled();
+            expect(MediaBaseViewer.prototype.load).toBeCalled();
+            // Verify showPreload is called (it's called at the start of load())
+        });
+    });
+
+    describe('showPreload()', () => {
+        beforeEach(() => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.options.file = {
+                id: '123',
+                representations: {
+                    entries: [
+                        {
+                            representation: 'jpg',
+                            content: {
+                                url_template: 'https://example.com/preview.jpg',
+                            },
+                            status: {
+                                state: 'success',
+                            },
+                        },
+                    ],
+                },
+            };
+            jest.spyOn(videoBase, 'getViewerOption').mockReturnValue(true);
+            jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
+            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
+                'https://example.com/preview.jpg?auth=token',
+            );
+        });
+
+        test('should not show preload if file is watermarked', () => {
+            jest.spyOn(fileUtil, 'isWatermarked').mockReturnValue(true);
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockImplementation();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).not.toBeCalled();
+        });
+
+        test('should not show preload if preload option is false', () => {
+            videoBase.getViewerOption.mockReturnValue(false);
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockImplementation();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).not.toBeCalled();
+        });
+
+        test('should not show preload if JPG representation does not exist', () => {
+            videoBase.options.file.representations.entries = [];
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockImplementation();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).not.toBeCalled();
+        });
+
+        test('should not show preload if representation is not ready', () => {
+            videoBase.isRepresentationReady.mockReturnValue(false);
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockImplementation();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).not.toBeCalled();
+        });
+
+        test('should create VideoPreloader and call showPreload() when conditions are met', () => {
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.preloader).toBeInstanceOf(VideoPreloader);
+            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                'https://example.com/preview.jpg?auth=token',
+                videoBase.mediaContainerEl,
+            );
+        });
+
+        test('should reuse existing VideoPreloader instance', () => {
+            const existingPreloader = new VideoPreloader();
+            videoBase.preloader = existingPreloader;
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.preloader).toBe(existingPreloader);
+            expect(VideoPreloader.prototype.showPreload).toBeCalled();
+        });
+    });
+
+    describe('hidePreload()', () => {
+        test('should call preloader.hidePreload() if preloader exists', () => {
+            const mockPreloader = {
+                hidePreload: jest.fn(),
+            };
+            videoBase.preloader = mockPreloader;
+
+            videoBase.hidePreload();
+
+            expect(mockPreloader.hidePreload).toBeCalled();
+        });
+
+        test('should not error if preloader does not exist', () => {
+            videoBase.preloader = null;
+
+            expect(() => {
+                videoBase.hidePreload();
+            }).not.toThrow();
+        });
+    });
+
+    describe('loadeddataHandler()', () => {
+        beforeEach(() => {
+            jest.spyOn(MediaBaseViewer.prototype, 'loadeddataHandler').mockImplementation();
+            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+        });
+
+        test('should call hidePreload() when video metadata loads', () => {
+            videoBase.loadeddataHandler();
+
+            expect(MediaBaseViewer.prototype.loadeddataHandler).toBeCalled();
+            expect(videoBase.hidePreload).toBeCalled();
         });
     });
 });

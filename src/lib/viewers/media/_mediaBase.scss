@@ -155,3 +155,52 @@
         width: 100%;
     }
 }
+
+// Used for showing video thumbnail preload, aka Instant Preview
+.bp-video-preload-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    overflow: hidden;
+    background-color: transparent;
+    opacity: 1;
+    transition: opacity .5s;
+
+    &.bp-is-invisible {
+        visibility: hidden;
+    }
+
+    &.bp-is-transparent {
+        opacity: 0;
+    }
+
+    .bp-preload {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .bp-preload-content {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bp-preload-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+}

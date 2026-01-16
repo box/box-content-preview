@@ -138,6 +138,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     load() {
+        this.showPreload();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
 
@@ -797,6 +798,9 @@ class DashViewer extends VideoBaseViewer {
         if (this.isDestroyed()) {
             return;
         }
+
+        // Hide thumbnail when video metadata is loaded
+        this.hidePreload();
 
         this.calculateVideoDimensions();
         if (this.useReactControls()) {

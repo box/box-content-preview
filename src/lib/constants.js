@@ -35,6 +35,7 @@ export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
 export const CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER = 'bp-preload-placeholder';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO = 'bp-video-preload-wrapper';
 export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
@@ -152,5 +153,6 @@ export const VIDEO_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-video';
 export const SUBTITLES_OFF = -1;
 
 export const VIDEO_PLAYER_CONTROL_BAR_HEIGHT = 120;
+export const MIN_VIDEO_WIDTH_PX = 420;
 
 export const MEDIA_PLAYBACK_SKIP_DURATION = 5;
