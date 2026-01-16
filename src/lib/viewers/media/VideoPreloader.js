@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import Api from '../../api';
 import {
+    CLASS_BOX_PREVIEW_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
@@ -8,6 +9,7 @@ import {
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
+    MIN_VIDEO_WIDTH_PX,
 } from '../../constants';
 import { handleRepresentationBlobFetch } from '../../util';
 
@@ -109,6 +111,13 @@ class VideoPreloader extends EventEmitter {
             return;
         }
 
+        // Clear inline styles we set on the container to restore natural flexbox sizing
+        // This prevents the video controls from being off-screen after video loads
+        if (this.containerEl) {
+            this.containerEl.style.width = '';
+            this.containerEl.style.height = '';
+        }
+
         this.unbindDOMListeners();
         this.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
 
@@ -186,10 +195,6 @@ class VideoPreloader extends EventEmitter {
         // Make media wrapper visible so thumbnail can be seen
         // The media wrapper (bp-media) is hidden by default and only shown when video is ready
         // We need to show it early so the thumbnail is visible
-        // Note: We don't set container dimensions - they will be set by resize() when video is ready
-        // The preload wrapper is absolutely positioned (top:0, right:0, bottom:0, left:0) and will
-        // fill the container regardless of its size. The container will be properly sized when
-        // calculateVideoDimensions() and resize() are called in loadeddataHandler().
         if (this.containerEl && this.containerEl.parentNode) {
             const mediaWrapper = this.containerEl.parentNode;
             if (mediaWrapper && mediaWrapper.classList && mediaWrapper.classList.contains('bp-media')) {
@@ -197,9 +202,83 @@ class VideoPreloader extends EventEmitter {
             }
         }
 
+        // Size the container based on viewport and image aspect ratio to prevent jarring transition
+        // This matches the logic in VideoBaseViewer.setVideoDimensions()
+        this.sizeContainerToViewport();
+
         // Emit message that preload has occurred
         this.emit('preload');
     };
+
+    /**
+     * Sizes the container based on viewport dimensions and image aspect ratio to match video player sizing.
+     * This prevents the thumbnail from appearing small and then jumping to the correct size.
+     *
+     * @private
+     * @return {void}
+     */
+    sizeContainerToViewport() {
+        if (!this.containerEl || !this.imageEl) {
+            return;
+        }
+
+        // Find the preview content wrapper (.bp-content) which has the viewport dimensions
+        let contentWrapper = this.containerEl;
+        while (contentWrapper && contentWrapper.parentNode) {
+            contentWrapper = contentWrapper.parentNode;
+            if (contentWrapper.classList && contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)) {
+                break;
+            }
+        }
+
+        // If we couldn't find the content wrapper, use the container's parent as fallback
+        if (
+            !contentWrapper ||
+            !contentWrapper.classList ||
+            !contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)
+        ) {
+            contentWrapper = this.containerEl.parentNode;
+            if (!contentWrapper) {
+                return;
+            }
+        }
+
+        // Calculate viewport dimensions (similar to VideoBaseViewer.setVideoDimensions())
+        const viewport = {
+            height: contentWrapper.clientHeight,
+            width: contentWrapper.clientWidth,
+        };
+
+        // Apply minimum width to match video sizing logic
+        // This ensures controls don't overflow
+        const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
+
+        // Calculate container height based on image aspect ratio
+        // Use natural dimensions if available (image has loaded), otherwise use current dimensions
+        const imageWidth = this.imageEl.naturalWidth || this.imageEl.width || 1;
+        const imageHeight = this.imageEl.naturalHeight || this.imageEl.height || 1;
+        const aspectRatio = imageWidth / imageHeight;
+
+        // Calculate height based on width and aspect ratio
+        let containerHeight = containerWidth / aspectRatio;
+        let finalWidth = containerWidth;
+
+        // Ensure height doesn't exceed viewport height
+        if (containerHeight > viewport.height) {
+            containerHeight = viewport.height;
+            // If height is constrained, recalculate width to maintain aspect ratio
+            finalWidth = containerHeight * aspectRatio;
+            // Ensure we still meet minimum width requirement
+            if (finalWidth < MIN_VIDEO_WIDTH_PX) {
+                finalWidth = MIN_VIDEO_WIDTH_PX;
+                containerHeight = finalWidth / aspectRatio;
+            }
+        }
+
+        // Set container dimensions
+        this.containerEl.style.width = `${finalWidth}px`;
+        this.containerEl.style.height = `${containerHeight}px`;
+    }
 
     /**
      * Handler for when preload image fails to load

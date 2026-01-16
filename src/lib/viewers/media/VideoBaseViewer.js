@@ -9,6 +9,7 @@ import {
     VIDEO_FTUX_CURSOR_SEEN_KEY,
     CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
     VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
+    MIN_VIDEO_WIDTH_PX,
     PRELOAD_REP_NAME,
 } from '../../constants';
 import fullscreen from '../../Fullscreen';
@@ -439,8 +440,8 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         // We need the width to be atleast wide enough for the controls
         // to not overflow and fit properly
-        if (width < 420) {
-            width = 420;
+        if (width < MIN_VIDEO_WIDTH_PX) {
+            width = MIN_VIDEO_WIDTH_PX;
             height = width / this.aspect;
         }
         if (!fullscreen.isFullscreen(this.containerEl) && width <= viewport.width && height <= viewport.height) {

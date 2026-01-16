@@ -153,5 +153,6 @@ export const VIDEO_FTUX_CURSOR_SEEN_KEY = 'ftux-cursor-seen-video';
 export const SUBTITLES_OFF = -1;
 
 export const VIDEO_PLAYER_CONTROL_BAR_HEIGHT = 120;
+export const MIN_VIDEO_WIDTH_PX = 420;
 
 export const MEDIA_PLAYBACK_SKIP_DURATION = 5;
