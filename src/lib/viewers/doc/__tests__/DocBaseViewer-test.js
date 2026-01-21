@@ -93,6 +93,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockImplementation();
         stubs.urlCreator = jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(() => 'asset');
         stubs.getPreloadImageRequestPromises = jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
+        stubs.getStaggeredPreloadPromises = jest.spyOn(util, 'getStaggeredPreloadPromises').mockReturnValue({
+            priorityPromises: [Promise.resolve()],
+            getRemainingPromises: () => [],
+            priorityCount: 1,
+            totalToFetch: 1,
+        });
     });
 
     afterEach(() => {
@@ -531,7 +537,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
                 docBase.prefetch({ assets: false, preload: true, content: true });
-                expect(stubs.getPreloadImageRequestPromises).toBeCalled();
+                // WebP uses staggered prefetch when isDocFirstPrefetchEnabled is true
+                expect(stubs.getStaggeredPreloadPromises).toBeCalled();
             });
 
             test('should not prefetch content if content is true but representation is not ready', () => {
@@ -820,7 +827,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.docFirstPagesEnabled = true;
                 docBase.showPreload();
                 expect(startPreloadTimerStub).toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase);
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(null, containerEl, 'paged-url', 4, docBase, {
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
             });
 
             test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
@@ -843,6 +853,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     null,
                     1,
                     docBase,
+                    { priorityPages: 1, maxPages: 8 },
                 );
             });
 
@@ -878,6 +889,140 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     null,
                     1,
                     docBase,
+                    { priorityPages: 1, maxPages: 8 },
+                );
+            });
+
+            test('should use page count from PDF representation metadata for JPEG fallback', () => {
+                const pdfRep = {
+                    content: {
+                        url_template: 'pdf-url-template',
+                    },
+                    metadata: {
+                        pages: 10,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                webpRep = null;
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return jpegRep;
+                    }
+                    if (theFile && repName === 'webp') {
+                        return null;
+                    }
+                    if (theFile && repName === 'pdf') {
+                        return pdfRep;
+                    }
+                    return null;
+                });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+                    return 'url';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(startPreloadTimerStub).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    null,
+                    10, // Should use PDF rep's page count
+                    docBase,
+                    { priorityPages: 1, maxPages: 8 },
+                );
+            });
+
+            test('should use page count from JPEG representation metadata if available', () => {
+                const jpegRepWithMetadata = {
+                    content: {
+                        url_template: jpegUrlTemplate,
+                    },
+                    metadata: {
+                        pages: 5,
+                    },
+                    status: {
+                        state: STATUS_SUCCESS,
+                    },
+                };
+
+                webpRep = null;
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return jpegRepWithMetadata;
+                    }
+                    if (theFile && repName === 'webp') {
+                        return null;
+                    }
+                    if (theFile && repName === 'pdf') {
+                        return { metadata: { pages: 10 } }; // PDF has different count
+                    }
+                    return null;
+                });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+                    return 'url';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    null,
+                    5, // Should prefer JPEG rep's metadata over PDF
+                    docBase,
+                    { priorityPages: 1, maxPages: 8 },
+                );
+            });
+
+            test('should fallback to 1 page for JPEG when no metadata available', () => {
+                webpRep = null;
+
+                jest.spyOn(file, 'getRepresentation').mockImplementation((theFile, repName) => {
+                    if (theFile && repName === 'jpg') {
+                        return jpegRep; // No metadata.pages
+                    }
+                    if (theFile && repName === 'webp') {
+                        return null;
+                    }
+                    if (theFile && repName === 'pdf') {
+                        return { content: {} }; // No metadata
+                    }
+                    return null;
+                });
+
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+                    return 'url';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.showPreload();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    null,
+                    1, // Fallback to 1 when no metadata
+                    docBase,
+                    { priorityPages: 1, maxPages: 8 },
                 );
             });
         });
@@ -3801,7 +3946,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should clear sharedLink and sharedLinkPassword options and reset them after prefetching', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
+                // WebP uses getStaggeredPreloadPromises
+                expect(stubs.getStaggeredPreloadPromises).toHaveBeenCalledWith({
+                    api: docBase.api,
+                    pagedUrlTemplate: webpUrl,
+                    totalPages: 5,
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
                 expect(docBase.options.sharedLink).toBe('original-shared-link');
                 expect(docBase.options.sharedLinkPassword).toBe('original-password');
             });
@@ -3836,19 +3988,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should only prefetch webp representations when webp is ready', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl);
+                // WebP uses getStaggeredPreloadPromises
+                expect(stubs.getStaggeredPreloadPromises).toHaveBeenCalledWith({
+                    api: docBase.api,
+                    pagedUrlTemplate: webpUrl,
+                    totalPages: 5,
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
             });
 
             test('should handle webp representation without metadata pages', () => {
                 webpRep.metadata.pages = null;
                 docBase.prefetchPreloaderImages(mockFile);
 
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '',
-                    8,
-                    expect.any(String),
-                );
+                // WebP uses getStaggeredPreloadPromises with default pageCount of 8
+                expect(stubs.getStaggeredPreloadPromises).toHaveBeenCalledWith({
+                    api: docBase.api,
+                    pagedUrlTemplate: expect.any(String),
+                    totalPages: 8,
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
             });
 
             test('should handle webp representation with empty metadata', () => {
@@ -3856,23 +4017,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.prefetchPreloaderImages(mockFile);
 
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '', // jpegUrlAuthTemplate should be false when webp is available
-                    8, // default page count when pages is not specified
-                    expect.any(String),
-                );
+                // WebP uses getStaggeredPreloadPromises with default pageCount of 8
+                expect(stubs.getStaggeredPreloadPromises).toHaveBeenCalledWith({
+                    api: docBase.api,
+                    pagedUrlTemplate: expect.any(String),
+                    totalPages: 8,
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
             });
 
             test('should handle jpeg representation without content', () => {
                 jpegRep.content = null;
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '', // jpegUrlAuthTemplate should be false when webp is available
-                    5,
-                    webpUrl,
-                );
+                // WebP uses getStaggeredPreloadPromises (jpeg is fallback only)
+                expect(stubs.getStaggeredPreloadPromises).toHaveBeenCalledWith({
+                    api: docBase.api,
+                    pagedUrlTemplate: webpUrl,
+                    totalPages: 5,
+                    priorityPages: 1,
+                    maxPages: 8,
+                });
             });
 
             test('should handle webp representation without content', () => {
@@ -3881,14 +4046,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, jpegUrl, 1, '');
             });
 
-            test('should call Promise.all with the returned promises', () => {
-                const mockPromises = [Promise.resolve('promise1'), Promise.resolve('promise2')];
-                stubs.getPreloadImageRequestPromises.mockReturnValue(mockPromises);
+            test('should call Promise.all with priority promises for staggered fetch', () => {
+                const mockPriorityPromises = [Promise.resolve('priority1')];
+                const mockRemainingPromises = [Promise.resolve('remaining1')];
+                stubs.getStaggeredPreloadPromises.mockReturnValue({
+                    priorityPromises: mockPriorityPromises,
+                    getRemainingPromises: () => mockRemainingPromises,
+                    priorityCount: 1,
+                    totalToFetch: 2,
+                });
                 const promiseAllSpy = jest.spyOn(Promise, 'all');
 
                 docBase.prefetchPreloaderImages(mockFile);
 
-                expect(promiseAllSpy).toHaveBeenCalledWith(mockPromises);
+                // First call is for priority promises
+                expect(promiseAllSpy).toHaveBeenCalledWith(mockPriorityPromises);
 
                 promiseAllSpy.mockRestore();
             });

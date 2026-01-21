@@ -36,6 +36,7 @@ import {
     getDistance,
     getMidpoint,
     getPreloadImageRequestPromises,
+    getStaggeredPreloadPromises,
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
@@ -343,7 +344,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles preload prefetching for non-watermarked files
+     * Handles preload prefetching for non-watermarked files.
+     * Uses staggered fetching for WebP: priority pages first, then remaining in background.
      *
      * @private
      * @param {Object} file - The file object
@@ -363,7 +365,7 @@ class DocBaseViewer extends BaseViewer {
           to the query params for the representations api call. This stops this from happening.
           */
 
-        const { sharedLink = '', sharedLinkPassword = '' } = this.options;
+        const { sharedLink = '', sharedLinkPassword = '', docFirstPagesConfig = {} } = this.options;
         this.options.sharedLink = '';
         this.options.sharedLinkPassword = '';
 
@@ -376,17 +378,41 @@ class DocBaseViewer extends BaseViewer {
         const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
 
         if (onlyJpegRepAvailable) {
+            // JPEG fallback - single page, no staggering needed
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
             const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
             const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
             Promise.all(promises);
         } else if (pagedWebpRepReady) {
+            // WebP paged - use staggered fetching for better performance
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
-            Promise.all(promises);
+
+            // Get config: priorityPages (default 1) fetched first
+            // fetchRemainingImmediately controls whether to auto-fetch remaining pages after priority
+            const { priorityPages = 1, maxPages = 8, fetchRemainingImmediately = false } = docFirstPagesConfig;
+
+            const { priorityPromises, getRemainingPromises } = getStaggeredPreloadPromises({
+                api: this.api,
+                pagedUrlTemplate: pagedUrlAuthTemplate,
+                totalPages: pageCount,
+                priorityPages,
+                maxPages,
+            });
+
+            // Phase 1: Fetch priority pages immediately
+            Promise.all(priorityPromises).then(() => {
+                // Phase 2: Only fetch remaining if explicitly requested
+                // Otherwise, caller (EUA) controls when to fetch remaining (e.g., after delay + hover check)
+                if (fetchRemainingImmediately) {
+                    const remainingPromises = getRemainingPromises();
+                    if (remainingPromises.length > 0) {
+                        Promise.all(remainingPromises);
+                    }
+                }
+            });
         }
         this.options.sharedLink = sharedLink;
         this.options.sharedLinkPassword = sharedLinkPassword;
@@ -445,11 +471,20 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Shows a preload (first page as an image) while the full document loads.
      *
+     * @param {Object} [options] - Configuration options (overrides this.options.docFirstPagesConfig)
+     * @param {number} [options.priorityPages] - Pages to fetch at high priority (default: 1)
+     * @param {number} [options.maxPages] - Maximum pages to fetch (default: 8)
      * @return {void}
      */
-    showPreload() {
-        const { file } = this.options;
+    showPreload(options = {}) {
+        const { file, docFirstPagesConfig = {} } = this.options;
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+
+        // Merge options: call options > config options > defaults
+        const preloadOptions = {
+            priorityPages: options.priorityPages ?? docFirstPagesConfig.priorityPages ?? 1,
+            maxPages: options.maxPages ?? docFirstPagesConfig.maxPages ?? 8,
+        };
 
         // Don't show preload if there's a cached page or startAt is set and > 1 since preloads are only for the 1st page
         // Also don't show preloads for watermarked files
@@ -467,7 +502,9 @@ class DocBaseViewer extends BaseViewer {
         const preloadRepPaged = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
         const pagedWebpRepReady = preloadRepPaged && this.isRepresentationReady(preloadRepPaged);
         const jpegRepReady = preloadRep && this.isRepresentationReady(preloadRep);
-        if ((!pagedWebpRepReady && !jpegRepReady) || !this.getViewerOption('preload')) {
+        const preloadViewerOption = this.getViewerOption('preload');
+
+        if ((!pagedWebpRepReady && !jpegRepReady) || !preloadViewerOption) {
             return;
         }
 
@@ -480,14 +517,33 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.startPreloadTimer();
             if (!pagedWebpRepReady) {
-                this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
+                // JPEG fallback: Get page count from representation metadata if available
+                // Currently JPEG/PDF reps don't have metadata.pages (only WebP does)
+                // Falls back to EXIF parsing in DocFirstPreloader, then to 1 if unavailable
+                const pdfRep = getRepresentation(file, 'pdf');
+                const jpegPageCount = preloadRep?.metadata?.pages || pdfRep?.metadata?.pages || 1;
+                this.preloader.showPreload(
+                    preloadUrlWithAuth,
+                    this.containerEl,
+                    null,
+                    jpegPageCount,
+                    this,
+                    preloadOptions,
+                );
             } else {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
                 const pagedPreLoadUrlWithAuth =
                     newPagedUrlTemplate && this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+                this.preloader.showPreload(
+                    null,
+                    this.containerEl,
+                    pagedPreLoadUrlWithAuth,
+                    pageCount,
+                    this,
+                    preloadOptions,
+                );
             }
         }
     }

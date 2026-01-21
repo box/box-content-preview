@@ -620,6 +620,10 @@ class Preview extends EventEmitter {
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
      * @param {boolean} options.preload - Is this prefetch for a preload
+     * @param {boolean} options.isDocFirstPrefetchEnabled - Whether doc first prefetch is enabled
+     * @param {Object} options.docFirstPagesConfig - Configuration for doc first pages
+     * @param {number} options.docFirstPagesConfig.priorityPages - Pages to fetch at high priority
+     * @param {number} options.docFirstPagesConfig.maxPages - Maximum pages to fetch
      * @param {string} token - Access token
      * @return {void}
      */
@@ -631,6 +635,7 @@ class Preview extends EventEmitter {
         sharedLinkPassword = '',
         preload = false,
         isDocFirstPrefetchEnabled = false,
+        docFirstPagesConfig = {},
     }) {
         let file;
         let loader;
@@ -670,6 +675,7 @@ class Preview extends EventEmitter {
             options.sharedLink = sharedLink;
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
+            options.docFirstPagesConfig = docFirstPagesConfig;
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));

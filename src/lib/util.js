@@ -792,3 +792,60 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
     }
     return promises;
 }
+
+/**
+ * Default values for staggered preload
+ */
+const DEFAULT_PRIORITY_PAGES = 1;
+const DEFAULT_MAX_PRELOAD_PAGES = 8;
+const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
+
+/**
+ * Gets staggered preload image request promises for document preview.
+ * Returns priority pages first (for immediate rendering) and a function
+ * to get remaining pages (for background fetching).
+ *
+ * @param {Object} options - Configuration options
+ * @param {Api} options.api - API instance for making requests
+ * @param {string} options.pagedUrlTemplate - Paged preload URL template with auth
+ * @param {number} options.totalPages - Total number of pages in the document
+ * @param {number} [options.priorityPages=1] - Pages to fetch at high priority
+ * @param {number} [options.maxPages=8] - Maximum pages to fetch
+ * @return {Object} { priorityPromises, getRemainingPromises, priorityCount, totalToFetch }
+ */
+export function getStaggeredPreloadPromises({
+    api,
+    pagedUrlTemplate,
+    totalPages,
+    priorityPages = DEFAULT_PRIORITY_PAGES,
+    maxPages = DEFAULT_MAX_PRELOAD_PAGES,
+}) {
+    const pagesToFetch = Math.min(totalPages, maxPages);
+    const priorityCount = Math.min(priorityPages, pagesToFetch);
+
+    const buildUrl = pageNum => pagedUrlTemplate.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${pageNum}.webp`);
+
+    const fetchPage = url => api.get(url, { type: 'blob' }).catch(e => e);
+
+    // Phase 1: Priority pages (fetch immediately)
+    const priorityPromises = [];
+    for (let i = 1; i <= priorityCount; i += 1) {
+        priorityPromises.push(fetchPage(buildUrl(i)));
+    }
+
+    // Phase 2: Remaining pages (lazy - only fetched when called)
+    const getRemainingPromises = () => {
+        const remaining = [];
+        for (let i = priorityCount + 1; i <= pagesToFetch; i += 1) {
+            remaining.push(fetchPage(buildUrl(i)));
+        }
+        return remaining;
+    };
+
+    return {
+        priorityPromises,
+        getRemainingPromises,
+        priorityCount,
+        totalToFetch: pagesToFetch,
+    };
+}
