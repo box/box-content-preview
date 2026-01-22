@@ -55,20 +55,6 @@ const VIEWERS = [
         REP: 'mp3',
         EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
     },
-    // Add ORIGINAL fallbacks for videos (similar to DocLoader)
-    // These allow MediaLoader to work when video files only have ORIGINAL representation
-    {
-        NAME: 'Dash',
-        CONSTRUCTOR: DashViewer,
-        REP: ORIGINAL_REP_NAME,
-        EXT: VIDEO_FORMATS,
-    },
-    {
-        NAME: 'MP4',
-        CONSTRUCTOR: MP4Viewer,
-        REP: ORIGINAL_REP_NAME,
-        EXT: VIDEO_FORMATS,
-    },
 ];
 
 class MediaLoader extends AssetLoader {
