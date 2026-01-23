@@ -35,7 +35,7 @@ import {
     STATUS_VIEWABLE,
 } from '../constants';
 import { EXCLUDED_EXTENSIONS } from '../extensions';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS } from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS, FIRST_RENDER_METRIC } from '../events';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
@@ -99,6 +99,9 @@ class BaseViewer extends EventEmitter {
 
     /** @property {Cache} - Preview's cache instance */
     cache;
+
+    /** @property {boolean} - Flag to track if first render metric has been emitted */
+    firstRenderEmitted = false;
 
     /** @property {PreviewUI} - Preview's UI instance */
     previewUI;
@@ -701,6 +704,33 @@ class BaseViewer extends EventEmitter {
      */
     getMetricsWhitelist() {
         return [];
+    }
+
+    /**
+     * Emits first render time metric. This should be called when the first visual content
+     * is displayed to the user (e.g., when an image loads or first document page renders).
+     * Uses the FIRST_RENDER_METRIC timer tag that was started in Preview.js.
+     *
+     * @protected
+     * @return {void}
+     */
+    emitFirstRenderMetric() {
+        if (this.firstRenderEmitted) {
+            return;
+        }
+
+        const { file } = this.options;
+        const tag = Timer.createTag(file.id, FIRST_RENDER_METRIC);
+        const time = Timer.stop(tag);
+
+        if (time && time.elapsed) {
+            const metricName = LOAD_METRIC.firstRenderTime;
+            const metricValue = time.elapsed;
+
+            this.emitMetric({ name: metricName, data: metricValue });
+
+            this.firstRenderEmitted = true;
+        }
     }
 
     /**
