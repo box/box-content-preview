@@ -1859,7 +1859,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.emitFirstRenderMetric();
 
             expect(base.emitMetric).not.toHaveBeenCalled();
-            expect(base.firstRenderEmitted).toBeUndefined();
+            expect(base.firstRenderEmitted).toBe(false);
         });
     });
 
