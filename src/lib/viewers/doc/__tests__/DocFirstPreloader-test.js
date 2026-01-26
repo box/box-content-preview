@@ -199,6 +199,19 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.showPreviewMask).not.toHaveBeenCalled();
         });
 
+        it('should emit firstRender event after first image is added to container', async () => {
+            const mockBlob = new Blob(['mock-content1'], { type: 'image/webp' });
+            const mockPromises = [Promise.resolve(mockBlob)];
+
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
+            jest.spyOn(preloader, 'emit');
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(false);
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
+
+            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
+        });
+
         it('should stop on first image retrieval failure', async () => {
             const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
             const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];

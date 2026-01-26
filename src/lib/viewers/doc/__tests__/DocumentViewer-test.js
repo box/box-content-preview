@@ -7,6 +7,8 @@ import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
+import Timer from '../../../Timer';
+import { FIRST_RENDER_METRIC, LOAD_METRIC } from '../../../events';
 import { OFFICE_ONLINE_EXTENSIONS } from '../../../extensions';
 
 let containerEl;
@@ -222,6 +224,65 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             expect(result2).toBe(true);
 
             expect(docbaseStub).toBeCalledTimes(2);
+        });
+    });
+
+    describe('handleFirstRender()', () => {
+        beforeEach(() => {
+            doc.options = { file: { id: '123' } };
+            jest.spyOn(doc, 'emitMetric').mockImplementation();
+        });
+
+        test('should call emitFirstRenderMetric from base class', () => {
+            jest.spyOn(doc, 'emitFirstRenderMetric').mockImplementation();
+
+            doc.handleFirstRender();
+
+            expect(doc.emitFirstRenderMetric).toHaveBeenCalled();
+        });
+
+        test('should emit first render time metric when timer is available', () => {
+            const mockTime = {
+                elapsed: 250,
+            };
+
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            doc.handleFirstRender();
+
+            expect(Timer.createTag).toHaveBeenCalledWith('123', FIRST_RENDER_METRIC);
+            expect(Timer.stop).toHaveBeenCalledWith('test-tag');
+            expect(doc.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+            expect(doc.firstRenderEmitted).toBe(true);
+        });
+
+        test('should not emit first render time metric multiple times', () => {
+            const mockTime = {
+                elapsed: 250,
+            };
+
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            doc.handleFirstRender();
+            doc.handleFirstRender();
+
+            expect(doc.emitMetric).toHaveBeenCalledTimes(1);
+            expect(doc.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+        });
+
+        test('should not emit first render time metric if timer has no elapsed time', () => {
+            const mockTime = {
+                elapsed: undefined,
+            };
+
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            doc.handleFirstRender();
+
+            expect(doc.emitMetric).not.toHaveBeenCalled();
         });
     });
 });

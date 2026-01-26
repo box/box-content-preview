@@ -11,6 +11,8 @@ import {
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../constants';
+import { LOAD_METRIC, FIRST_RENDER_METRIC } from '../../events';
+import Timer from '../../Timer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -133,7 +135,31 @@ class ImageViewer extends ImageBaseViewer {
 
     finishLoading() {
         this.hidePreviewMask();
+        this.emitFirstRenderMetric();
+
         return super.finishLoading();
+    }
+
+    /**
+     * Emits first render time metric.
+     * Overrides base implementation to use BaseViewer's emitMetric(event, data) format.
+     *
+     * @protected
+     * @return {void}
+     */
+    emitFirstRenderMetric() {
+        if (this.firstRenderEmitted) {
+            return;
+        }
+
+        const { file } = this.options;
+        const tag = Timer.createTag(file.id, FIRST_RENDER_METRIC);
+        const time = Timer.stop(tag);
+
+        if (time && time.elapsed) {
+            this.emitMetric(LOAD_METRIC.firstRenderTime, time.elapsed);
+            this.firstRenderEmitted = true;
+        }
     }
 
     prefetchFinishedLoading(event) {
