@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import noop from 'lodash/noop';
+import * as file from '../../../file';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
@@ -220,6 +221,56 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).not.toBeCalled();
+        });
+
+        test('should prefetch preload if preload is true and representation is ready', () => {
+            const template = 'somePreloadTemplate';
+            const preloadRep = {
+                content: {
+                    url_template: template,
+                },
+                status: {
+                    state: 'success',
+                },
+            };
+            jest.spyOn(stubs.api, 'get').mockImplementation();
+            jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
+            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('preloadUrl');
+
+            dash.prefetch({ assets: false, preload: true, content: false });
+
+            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith(template);
+            expect(stubs.api.get).toHaveBeenCalledWith('preloadUrl', { type: 'blob' });
+        });
+
+        test('should not prefetch preload if preload is true and representation is not ready', () => {
+            const preloadRep = {
+                content: {
+                    url_template: 'someTemplate',
+                },
+                status: {
+                    state: 'pending',
+                },
+            };
+            jest.spyOn(stubs.api, 'get');
+            jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
+            jest.spyOn(dash, 'isRepresentationReady').mockReturnValue(false);
+            jest.spyOn(dash, 'createContentUrlWithAuthParams');
+
+            dash.prefetch({ assets: false, preload: true, content: false });
+
+            expect(dash.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+        });
+
+        test('should not prefetch preload if file is watermarked', () => {
+            dash.options.file.watermark_info = {
+                is_watermarked: true,
+            };
+            jest.spyOn(dash, 'createContentUrlWithAuthParams');
+
+            dash.prefetch({ assets: false, preload: true, content: false });
+
+            expect(dash.createContentUrlWithAuthParams).not.toHaveBeenCalled();
         });
     });
 

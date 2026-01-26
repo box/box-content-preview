@@ -1,5 +1,5 @@
 import React from 'react';
-import { MEDIA_STATIC_ASSETS_VERSION, SUBTITLES_OFF } from '../../constants';
+import { MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import getLanguageName from '../../lang';
@@ -154,15 +154,28 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Prefetches assets for dash.
+     * Prefetches assets, content, and preload representation
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
      * @param {boolean} [options.content] - Whether or not to prefetch rep content
+     * @param {boolean} [options.preload] - Whether or not to prefetch preload content
      * @return {void}
      */
-    prefetch({ assets = true, content = true }) {
+    prefetch({ assets = true, content = true, preload = false }) {
+        const { file } = this.options;
+        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+
         if (assets) {
             this.prefetchAssets(this.getJSAssets());
+        }
+
+        if (preload && !isWatermarked) {
+            const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+            if (preloadRep && this.isRepresentationReady(preloadRep)) {
+                const { url_template: template } = preloadRep.content;
+                // Prefetch as blob since preload needs to load image as a blob
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+            }
         }
 
         const { representation } = this.options;
