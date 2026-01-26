@@ -3900,6 +3900,113 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }).not.toThrow();
                 expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
             });
+
+            test('should use staggered loading when docFirstPagesConfig is provided with priorityPages', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPageBatchPromises for priority batch (pages 1-2)
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledWith(docBase.api, expect.any(String), 1, 2);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was set up with correct delay
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
+
+            test('should apply secondBatchDelayMs when using staggered loading', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 1,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 300,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // First batch should be called immediately
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledTimes(1);
+
+                // Wait for promise to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was called with correct delay
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 300);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
+
+            test('should use default secondBatchDelayMs of 100ms when not specified in config', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 1,
+                    maxPreloadPages: 8,
+                    // secondBatchDelayMs not specified
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // First batch called immediately
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledTimes(1);
+
+                // Wait for promise to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was called with default delay of 100ms
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
+
+            test('should fall back to non-staggered loading when docFirstPagesConfig has no priorityPages', () => {
+                const getPageBatchPromisesSpy = jest.spyOn(util, 'getPageBatchPromises').mockReturnValue([]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 0, // Invalid/disabled
+                    maxPreloadPages: 8,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should use the legacy getPreloadImageRequestPromises path
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalled();
+                expect(getPageBatchPromisesSpy).not.toHaveBeenCalled();
+
+                getPageBatchPromisesSpy.mockRestore();
+            });
         });
 
         describe('countPdfOperations', () => {
