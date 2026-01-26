@@ -5,7 +5,6 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_IS_TRANSPARENT,
-    CLASS_PREVIEW_LOADED,
     PDFJS_CSS_UNITS,
     PDFJS_HEIGHT_PADDING_PX,
     PDFJS_MAX_AUTO_SCALE,
@@ -17,7 +16,7 @@ import {
 } from '../../constants';
 
 import { VIEWER_EVENT } from '../../events';
-import { handleRepresentationBlobFetch, getPreloadImageRequestPromises } from '../../util';
+import { handleRepresentationBlobFetch, getPreloadImageRequestPromises, getPageBatchPromises } from '../../util';
 // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
 const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
@@ -80,15 +79,37 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {boolean} - Preloader used webp */
     isPresentation = false;
 
+    /** @property {Object} - Configuration for staggered loading */
+    config = {};
+
+    /** @property {boolean} - Whether first page has been rendered */
+    firstPageRendered = false;
+
+    /** @property {boolean} - Whether second batch has started */
+    secondBatchStarted = false;
+
+    /** @property {number|null} - Timeout ID for second batch */
+    secondBatchTimeoutId = null;
+
+    /** @property {Map} - Map of page number to blob data */
+    pageDataMap = new Map();
+
+    /** @property {string} - Stored paged URL for second batch */
+    storedPagedUrl = null;
+
+    /** @property {Object} - Stored docBaseViewer reference */
+    storedDocBaseViewer = null;
+
     /**
      * [constructor]
      *
      * @param {PreviewUI} previewUI - UI instance
      * @param {Object} options - Preloader options
      * @param {Api} options.api - API Instance
+     * @param {Object} options.config - Additional configuration
      * @return {DocPreloader} DocPreloader instance
      */
-    constructor(previewUI, { api } = {}, isPresentation = false) {
+    constructor(previewUI, { api, config = {} } = {}, isPresentation = false) {
         super();
         this.api = api;
         this.previewUI = previewUI;
@@ -96,6 +117,28 @@ class DocFirstPreloader extends EventEmitter {
         this.wrapperClassName = isPresentation
             ? CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION
             : CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
+
+        this.config = {
+            ...this.config,
+            ...config,
+        };
+    }
+
+    isStaggeredLoadingEnabled() {
+        return this.config.priorityPages !== undefined && this.config.priorityPages >= 1;
+    }
+
+    /**
+     * Clears the second batch timeout if it exists
+     *
+     * @private
+     * @return {void}
+     */
+    clearBatchTimeouts() {
+        if (this.secondBatchTimeoutId) {
+            clearTimeout(this.secondBatchTimeoutId);
+            this.secondBatchTimeoutId = null;
+        }
     }
 
     buildPreloaderImagePlaceHolder(image) {
@@ -160,92 +203,235 @@ class DocFirstPreloader extends EventEmitter {
             this.isWebp = !!pagedPreLoadUrlWithAuth;
             this.initializePreloadContainerComponents(containerEl);
 
-            const promises = getPreloadImageRequestPromises(
-                this.api,
-                preloadUrlWithAuth,
-                pages,
-                pagedPreLoadUrlWithAuth,
-            );
+            // Store references for second batch
+            this.storedPagedUrl = pagedPreLoadUrlWithAuth;
+            this.storedDocBaseViewer = docBaseViewer;
 
-            await Promise.all(promises)
-                .then(responses => {
-                    const results = responses.map(response => handleRepresentationBlobFetch(response)); // Assuming the responses are JSON
-                    return Promise.all(results); // Parse all JSON responses
-                })
-                .then(async data => {
-                    this.wrapperEl.appendChild(this.preloadEl);
-                    const firstPageImage = data.shift();
-                    if (firstPageImage instanceof Error || !firstPageImage) {
-                        this.showPreviewMask();
-                        return;
-                    }
+            // Use staggered loading if enabled, otherwise fall back to original behavior
+            const useStaggered = this.isStaggeredLoadingEnabled() && pagedPreLoadUrlWithAuth;
 
-                    // index at 1 for thumbnails
-                    const preloaderFirstImageIndex = 1;
-                    this.preloadedImages[preloaderFirstImageIndex] = URL.createObjectURL(firstPageImage);
-                    // make sure first image is loaded before dimesions are extracted
-                    const imageDomElement = await this.loadImage(this.preloadedImages[preloaderFirstImageIndex]);
-                    await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
-                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderFirstImageIndex);
-
-                    this.emit('firstRender');
-
-                    if (!this.pdfJsDocLoadComplete()) {
-                        this.processAdditionalPages(data);
-                        this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
-                        this.handleThumbnailToggling(docBaseViewer);
-                        if (this.retrievedPagesCount) {
-                            this.emit('preload');
-                            this.loadTime = Date.now();
-                            this.wrapperEl.classList.add('loaded');
-                        }
-                    } else {
-                        this.wrapperEl.classList.add('loaded');
-                    }
-                })
-                .catch(() => {
-                    this.showPreviewMask();
-                });
+            if (useStaggered) {
+                await this.showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
+            } else {
+                await this.showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
+            }
         } catch (error) {
             this.showPreviewMask();
         }
     }
 
     /**
-     * Processes additional pages after the first page has been loaded
+     * Preload method that fetches all pages at once (non-staggered)
      *
      * @private
-     * @param {Array} data - Array of image blobs for additional pages
-     * @return {number} The starting index for additional pages
      */
-    processAdditionalPages(data) {
-        let preloaderImageIndex = 1; // Start from 1 since first page is already processed
-        let foundError = false;
+    async showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
+        const promises = getPreloadImageRequestPromises(this.api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth);
 
-        data.forEach(element => {
-            foundError = foundError || element instanceof Error;
-            if (!foundError) {
-                preloaderImageIndex += 1;
-                this.preloadedImages[preloaderImageIndex] = URL.createObjectURL(element);
-
-                // presentations only show one page at a time. We don't need to add more images to the preloader container.
-                if (!this.isPresentation) {
-                    const imageDomElement = document.createElement('img');
-                    imageDomElement.src = this.preloadedImages[preloaderImageIndex];
-                    this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderImageIndex);
+        await Promise.all(promises)
+            .then(responses => {
+                const results = responses.map(response => handleRepresentationBlobFetch(response));
+                return Promise.all(results);
+            })
+            .then(async data => {
+                this.wrapperEl.appendChild(this.preloadEl);
+                const firstPageImage = data.shift();
+                if (firstPageImage instanceof Error || !firstPageImage) {
+                    this.showPreviewMask();
+                    return;
                 }
-            }
-        });
 
-        // pfdData is set by reading the EXIF data from the first image. If we have a value for the number of pages,
-        // we can add up to 10 placeholders to show the user that content exists beyond the pages represented by the
-        // preloaded images we retrieved. This is to prevent users from thinking that a doucment only has 8 pages when in
-        // reality it has 20 but the maximum number of doc first pages we can return is 8.
-        if (preloaderImageIndex < this.pdfData?.numPages && !this.isPresentation) {
+                const preloaderFirstImageIndex = 1;
+                this.preloadedImages[preloaderFirstImageIndex] = URL.createObjectURL(firstPageImage);
+                const imageDomElement = await this.loadImage(this.preloadedImages[preloaderFirstImageIndex]);
+                await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
+                this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderFirstImageIndex);
+
+                this.emit('firstRender');
+
+                if (!this.pdfJsDocLoadComplete()) {
+                    this.processAdditionalPages(data);
+                    this.finalizePreload(docBaseViewer);
+                } else {
+                    this.wrapperEl.classList.add('loaded');
+                }
+            })
+            .catch(() => {
+                this.showPreviewMask();
+            });
+    }
+
+    /**
+     * Staggered preload method - fetches priority batch first, then remaining pages
+     *
+     * @private
+     */
+    async showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
+        const { priorityPages, maxPreloadPages, secondBatchDelayMs } = this.config;
+        const totalPages = Math.min(pages, maxPreloadPages);
+
+        try {
+            const priorityPromises = getPageBatchPromises(this.api, pagedPreLoadUrlWithAuth, 1, priorityPages);
+
+            const priorityResponses = await Promise.all(priorityPromises);
+            const priorityData = await Promise.all(
+                priorityResponses.map(response => handleRepresentationBlobFetch(response)),
+            );
+
+            this.wrapperEl.appendChild(this.preloadEl);
+
+            await this.processBatch(priorityData, 1, docBaseViewer, { isPriorityBatch: true });
+            this.handleThumbnailToggling(docBaseViewer);
+
+            // Non priority batch - single timeout with secondBatchDelayMs
+            // The secondBatchStarted flag prevents duplicate execution
+            if (totalPages > priorityPages && !this.pdfJsDocLoadComplete()) {
+                this.secondBatchTimeoutId = setTimeout(() => {
+                    this.startSecondBatch(pagedPreLoadUrlWithAuth, priorityPages + 1, totalPages, docBaseViewer);
+                }, secondBatchDelayMs);
+            } else {
+                this.finalizePreload(docBaseViewer);
+            }
+        } catch (error) {
+            this.showPreviewMask();
+        }
+    }
+
+    /**
+     * Process and render a batch of pages
+     *
+     * @private
+     * @param {Array} batchData - Array of blobs for the batch
+     * @param {number} startPage - Starting page number
+     * @param {Object} docBaseViewer - The document base viewer instance
+     * @param {Object} options - Processing options
+     * @param {boolean} options.isPriorityBatch - Whether this is the priority batch
+     * @return {Promise} Promise that resolves when batch is processed
+     */
+    // eslint-disable-next-line no-await-in-loop
+    async processBatch(batchData, startPage, docBaseViewer, { isPriorityBatch = false } = {}) {
+        for (let i = 0; i < batchData.length; i += 1) {
+            const pageNum = startPage + i;
+            const blob = batchData[i];
+
+            if (blob instanceof Error || !blob) {
+                if (isPriorityBatch && pageNum === 1) {
+                    this.showPreviewMask();
+                    return;
+                }
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
+            this.pageDataMap.set(pageNum, blob);
+            // eslint-disable-next-line no-await-in-loop
+            await this.renderPage(pageNum, blob, isPriorityBatch && pageNum === 1);
+
+            // Update count and trigger thumbnail rendering for this page
+            this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
+            if (docBaseViewer?.thumbnailsSidebar) {
+                docBaseViewer.thumbnailsSidebar.renderNextThumbnailImage();
+            }
+
+            if (isPriorityBatch && pageNum === 1) {
+                this.firstPageRendered = true;
+                this.emit('firstRender');
+            }
+        }
+    }
+
+    /**
+     * Start fetching and rendering the second batch of pages
+     *
+     * @private
+     */
+    async startSecondBatch(pagedPreLoadUrlWithAuth, startPage, endPage, docBaseViewer) {
+        // Prevent duplicate execution
+        if (this.secondBatchStarted || this.pdfJsDocLoadComplete()) {
+            return;
+        }
+        this.secondBatchStarted = true;
+
+        this.clearBatchTimeouts();
+
+        try {
+            const remainingPromises = getPageBatchPromises(this.api, pagedPreLoadUrlWithAuth, startPage, endPage);
+
+            const remainingResponses = await Promise.all(remainingPromises);
+            const remainingData = await Promise.all(
+                remainingResponses.map(response => handleRepresentationBlobFetch(response)),
+            );
+
+            // Process and render remaining pages
+            await this.processBatch(remainingData, startPage, docBaseViewer, { isPriorityBatch: false });
+
+            // Finalize preload
+            this.finalizePreload(docBaseViewer);
+        } catch (error) {
+            // Still try to finalize with whatever pages we have
+            this.finalizePreload(docBaseViewer);
+        }
+    }
+
+    /**
+     * Render a single page
+     *
+     * @private
+     */
+    async renderPage(pageNum, blob, isFirstPage = false) {
+        if (this.pdfJsDocLoadComplete() || this.preloadedImages[pageNum]) {
+            return;
+        }
+
+        this.preloadedImages[pageNum] = URL.createObjectURL(blob);
+
+        if (isFirstPage) {
+            // First page needs special handling for dimensions
+            const imageDomElement = await this.loadImage(this.preloadedImages[pageNum]);
+            await this.setPreloadImageDimensions(blob, imageDomElement);
+            this.addPreloadImageToPreloaderContainer(imageDomElement, pageNum);
+        } else if (!this.isPresentation) {
+            // Additional pages for documents (presentations only show one page)
+            const imageDomElement = document.createElement('img');
+            imageDomElement.src = this.preloadedImages[pageNum];
+            this.addPreloadImageToPreloaderContainer(imageDomElement, pageNum);
+        }
+    }
+
+    /**
+     * Finalize the preload process
+     *
+     * @private
+     */
+    finalizePreload(docBaseViewer) {
+        this.clearBatchTimeouts();
+
+        this.retrievedPagesCount = Object.keys(this.preloadedImages).length;
+
+        // Add placeholders for remaining pages
+        this.addPlaceholdersForRemainingPages();
+
+        this.handleThumbnailToggling(docBaseViewer);
+
+        if (this.retrievedPagesCount) {
+            this.emit('preload');
+            this.loadTime = Date.now();
+            this.wrapperEl.classList.add('loaded');
+        }
+    }
+
+    /**
+     * Add placeholder divs for pages beyond what was preloaded
+     *
+     * @private
+     */
+    addPlaceholdersForRemainingPages() {
+        const lastPreloadedPage = Math.max(...Object.keys(this.preloadedImages).map(Number));
+
+        if (lastPreloadedPage < this.pdfData?.numPages && !this.isPresentation && this.imageDimensions) {
             let counter = 1;
-            const indexToStart = preloaderImageIndex + 1;
+            const indexToStart = lastPreloadedPage + 1;
             for (let i = indexToStart; i <= this.pdfData?.numPages; i += 1) {
-                // don't add more than 10 placeholders.
                 if (counter > 10) {
                     break;
                 }
@@ -260,6 +446,24 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     /**
+     * Processes additional pages after the first page has been loaded
+     *
+     * @private
+     * @param {Array} data - Array of image blobs for additional pages
+     */
+    processAdditionalPages(data) {
+        let pageNum = 1; // First page already processed
+        for (let i = 0; i < data.length; i += 1) {
+            const element = data[i];
+            pageNum += 1;
+            if (element instanceof Error || !element) {
+                break; // Stop on first error (matches original behavior)
+            }
+            this.renderPage(pageNum, element, false);
+        }
+    }
+
+    /**
      * Handles thumbnail toggling and initialization if needed
      *
      * @private
@@ -267,6 +471,10 @@ class DocFirstPreloader extends EventEmitter {
      * @return {void}
      */
     handleThumbnailToggling(docBaseViewer) {
+        if (this.thumbnailsOpen) {
+            return;
+        }
+
         if (docBaseViewer.shouldThumbnailsBeToggled()) {
             docBaseViewer.rootEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN);
             docBaseViewer.rootEl.classList.add(CLASS_BOX_PRELOAD_COMPLETE);
@@ -325,6 +533,8 @@ class DocFirstPreloader extends EventEmitter {
      * @return {void}
      */
     cleanupPreload = () => {
+        this.clearBatchTimeouts();
+
         if (this.wrapperEl) {
             this.wrapperEl.parentNode.removeChild(this.wrapperEl);
             this.wrapperEl = undefined;
@@ -337,6 +547,13 @@ class DocFirstPreloader extends EventEmitter {
             URL.revokeObjectURL(image);
         });
         this.preloadedImages = {};
+
+        // Clear staggered loading state
+        this.firstPageRendered = false;
+        this.secondBatchStarted = false;
+        this.pageDataMap.clear();
+        this.storedPagedUrl = null;
+        this.storedDocBaseViewer = null;
     };
 
     /**
@@ -526,7 +743,8 @@ class DocFirstPreloader extends EventEmitter {
      */
     pdfJsDocLoadComplete() {
         // If document is already loaded, hide the preload and short circuit
-        if (this.previewUI?.previewContainer?.classList?.contains(CLASS_PREVIEW_LOADED)) {
+        // Using string literal 'bp-loaded' directly to avoid webpack bundling issues
+        if (this.previewUI?.previewContainer?.classList?.contains('bp-loaded')) {
             this.hidePreload();
             return true;
         }

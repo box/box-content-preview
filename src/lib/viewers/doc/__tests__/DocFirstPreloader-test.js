@@ -876,38 +876,33 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
         });
 
-        it('should not add placeholders if the number of pages equals the number of images', () => {
+        it('should not add placeholders (placeholders are handled by finalizePreload)', () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
+            // Only the loaded image placeholders should be present, not empty placeholders
             expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should add placeholder divs for missing pages', () => {
+        it('should not add placeholder divs for missing pages (handled by finalizePreload)', () => {
             const data = [new Blob(), new Blob()];
 
             preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
+            // processAdditionalPages no longer adds placeholders - only 3 loaded placeholders
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
-            expect(placeholders.length).toBe(5);
-            const placeholder4 = placeholders[3];
-            const placeholder5 = placeholders[4];
-            expect(placeholder4.style.width).toBe(`${widthDimension}px`);
-            expect(placeholder4.style.height).toBe(`${heightDimension}px`);
-            expect(placeholder5.style.width).toBe(`${widthDimension}px`);
-            expect(placeholder5.style.height).toBe(`${heightDimension}px`);
-            expect(placeholder4.classList.contains('loaded')).not.toBe(true);
-            expect(placeholder5.classList.contains('loaded')).not.toBe(true);
+            expect(placeholders.length).toBe(3);
         });
 
-        it('should add a max of 10 placeholders', () => {
+        it('should not add empty placeholders (handled by finalizePreload)', () => {
             // 7 additional doc first pages, total will be 8 including the first one.
             const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
             preloader.pdfData = { numPages: 321 };
             preloader.processAdditionalPages(data);
-            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(18);
+            // Only loaded placeholders for actual images, no empty placeholders
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(8);
         });
 
         it('should not add empty placeholders if the number of pages is less than the number of images', () => {
@@ -937,6 +932,189 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.pdfData = { numPages: 10 };
             preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
+        });
+    });
+
+    describe('clearBatchTimeouts()', () => {
+        it('should clear the timeout when secondBatchTimeoutId exists', () => {
+            const timeoutId = setTimeout(() => {}, 10000);
+            preloader.secondBatchTimeoutId = timeoutId;
+            jest.spyOn(global, 'clearTimeout');
+
+            preloader.clearBatchTimeouts();
+
+            expect(clearTimeout).toHaveBeenCalledWith(timeoutId);
+            expect(preloader.secondBatchTimeoutId).toBeNull();
+        });
+
+        it('should not throw when secondBatchTimeoutId is null', () => {
+            preloader.secondBatchTimeoutId = null;
+
+            expect(() => preloader.clearBatchTimeouts()).not.toThrow();
+            expect(preloader.secondBatchTimeoutId).toBeNull();
+        });
+    });
+
+    describe('processBatch()', () => {
+        let batchDocBaseViewer;
+
+        beforeEach(() => {
+            batchDocBaseViewer = {
+                thumbnailsSidebar: {
+                    renderNextThumbnailImage: jest.fn(),
+                },
+            };
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 200 };
+            preloader.preloadedImages = {};
+            jest.spyOn(preloader, 'renderPage').mockResolvedValue();
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'showPreviewMask');
+        });
+
+        it('should process pages starting from the given startPage', async () => {
+            const mockBlob1 = new Blob(['data1']);
+            const mockBlob2 = new Blob(['data2']);
+            const batchData = [mockBlob1, mockBlob2];
+
+            await preloader.processBatch(batchData, 5, batchDocBaseViewer, { isPriorityBatch: false });
+
+            expect(preloader.pageDataMap.get(5)).toBe(mockBlob1);
+            expect(preloader.pageDataMap.get(6)).toBe(mockBlob2);
+            expect(preloader.renderPage).toHaveBeenCalledWith(5, mockBlob1, false);
+            expect(preloader.renderPage).toHaveBeenCalledWith(6, mockBlob2, false);
+        });
+
+        it('should emit firstRender and set firstPageRendered when isPriorityBatch and page 1', async () => {
+            const mockBlob = new Blob(['data']);
+            const batchData = [mockBlob];
+
+            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
+
+            expect(preloader.firstPageRendered).toBe(true);
+            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
+            expect(preloader.renderPage).toHaveBeenCalledWith(1, mockBlob, true);
+        });
+
+        it('should not emit firstRender when isPriorityBatch is false', async () => {
+            const mockBlob = new Blob(['data']);
+            const batchData = [mockBlob];
+
+            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: false });
+
+            expect(preloader.firstPageRendered).toBeFalsy();
+            expect(preloader.emit).not.toHaveBeenCalledWith('firstRender');
+        });
+
+        it('should show preview mask and return early on page 1 error in priority batch', async () => {
+            const batchData = [new Error('Failed'), new Blob(['data'])];
+
+            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
+
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.renderPage).not.toHaveBeenCalled();
+        });
+
+        it('should skip errors and continue for non-page-1 errors in priority batch', async () => {
+            const mockBlob1 = new Blob(['data1']);
+            const mockBlob3 = new Blob(['data3']);
+            const batchData = [mockBlob1, new Error('Failed'), mockBlob3];
+
+            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
+
+            expect(preloader.renderPage).toHaveBeenCalledTimes(2);
+            expect(preloader.renderPage).toHaveBeenCalledWith(1, mockBlob1, true);
+            expect(preloader.renderPage).toHaveBeenCalledWith(3, mockBlob3, false);
+        });
+
+        it('should skip errors silently in non-priority batch', async () => {
+            const mockBlob1 = new Blob(['data1']);
+            const batchData = [new Error('Failed'), mockBlob1];
+
+            await preloader.processBatch(batchData, 5, batchDocBaseViewer, { isPriorityBatch: false });
+
+            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
+            expect(preloader.renderPage).toHaveBeenCalledTimes(1);
+            expect(preloader.renderPage).toHaveBeenCalledWith(6, mockBlob1, false);
+        });
+
+        it('should trigger thumbnail rendering for each page', async () => {
+            const mockBlob1 = new Blob(['data1']);
+            const mockBlob2 = new Blob(['data2']);
+            const batchData = [mockBlob1, mockBlob2];
+
+            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: false });
+
+            expect(batchDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('finalizePreload()', () => {
+        const widthDimension = 100;
+        const heightDimension = 200;
+        let finalizeDocBaseViewer;
+
+        beforeEach(() => {
+            finalizeDocBaseViewer = {
+                initThumbnails: jest.fn(),
+                shouldThumbnailsBeToggled: jest.fn().mockReturnValue(false),
+                rootEl: document.createElement('div'),
+                emit: jest.fn(),
+            };
+            preloader.preloadEl = document.createElement('div');
+            preloader.wrapperEl = document.createElement('div');
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'clearBatchTimeouts');
+        });
+
+        it('should clear batch timeouts', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.clearBatchTimeouts).toHaveBeenCalled();
+        });
+
+        it('should set retrievedPagesCount from preloadedImages', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.retrievedPagesCount).toBe(3);
+        });
+
+        it('should add placeholders for remaining pages', () => {
+            preloader.pdfData = { numPages: 5 };
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(2); // pages 4 and 5
+        });
+
+        it('should emit preload event when pages exist', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.emit).toHaveBeenCalledWith('preload');
+            expect(preloader.loadTime).toBeDefined();
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+        });
+
+        it('should not emit preload event when no pages exist', () => {
+            preloader.preloadedImages = {};
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
+            expect(preloader.loadTime).toBeUndefined();
+        });
+
+        it('should add a maximum of 10 placeholders', () => {
+            preloader.pdfData = { numPages: 100 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(10);
         });
     });
 });
