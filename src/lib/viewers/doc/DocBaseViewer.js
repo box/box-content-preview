@@ -387,12 +387,21 @@ class DocBaseViewer extends BaseViewer {
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
 
-            // Use staggered loading if config is available
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
-                const { priorityPages = 1, maxPreloadPages = 8, secondBatchDelayMs = 100 } = docFirstPagesConfig;
+                const {
+                    priorityPages = 1,
+                    maxPreloadPages = 8,
+                    secondBatchDelayMs = 100,
+                    prefetchPriorityPagesOnly = false,
+                } = docFirstPagesConfig;
 
                 const priorityPromises = getPageBatchPromises(this.api, pagedUrlAuthTemplate, 1, priorityPages);
                 Promise.all(priorityPromises).then(() => {
+                    // Skip second batch if prefetchPriorityPagesOnly is true
+                    if (prefetchPriorityPagesOnly) {
+                        return;
+                    }
+
                     // Add staggered delay before fetching remaining pages
                     setTimeout(() => {
                         const remainingPromises = getPageBatchPromises(

@@ -4007,6 +4007,100 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 getPageBatchPromisesSpy.mockRestore();
             });
+
+            test('should only prefetch priority pages when prefetchPriorityPagesOnly is true', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    prefetchPriorityPagesOnly: true,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPageBatchPromises for priority batch only (pages 1-2)
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledWith(docBase.api, expect.any(String), 1, 2);
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledTimes(1);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was NOT called (second batch skipped)
+                expect(setTimeoutSpy).not.toHaveBeenCalled();
+
+                // Verify no additional batch was fetched
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledTimes(1);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
+
+            test('should prefetch both batches when prefetchPriorityPagesOnly is false', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    prefetchPriorityPagesOnly: false,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPageBatchPromises for priority batch (pages 1-2)
+                expect(getPageBatchPromisesSpy).toHaveBeenCalledWith(docBase.api, expect.any(String), 1, 2);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout WAS called (second batch scheduled)
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
+
+            test('should prefetch both batches when prefetchPriorityPagesOnly is not specified (default false)', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPageBatchPromisesSpy = jest
+                    .spyOn(util, 'getPageBatchPromises')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    // prefetchPriorityPagesOnly not specified
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout WAS called (second batch scheduled by default)
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPageBatchPromisesSpy.mockRestore();
+            });
         });
 
         describe('countPdfOperations', () => {
