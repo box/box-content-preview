@@ -314,10 +314,20 @@ class DocFirstPreloader extends EventEmitter {
      * @private
      */
     async showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
-        const { priorityPages, maxPreloadPages, secondBatchDelayMs } = this.config;
+        const { priorityPages, maxPreloadPages, secondBatchDelayMs, startSecondBatchAfterFetch = true } = this.config;
         const totalPages = Math.min(pages, maxPreloadPages);
 
         const blobs = await this.loadBatchAsBlobs(null, pagedPreLoadUrlWithAuth, priorityPages);
+
+        if (totalPages > priorityPages && startSecondBatchAfterFetch) {
+            this.scheduleSecondBatch(
+                pagedPreLoadUrlWithAuth,
+                priorityPages + 1,
+                totalPages,
+                docBaseViewer,
+                secondBatchDelayMs,
+            );
+        }
 
         this.wrapperEl.appendChild(this.preloadEl);
         const [firstBlob, ...remainingBlobs] = blobs;
@@ -335,7 +345,7 @@ class DocFirstPreloader extends EventEmitter {
         await this.processAdditionalPages(remainingBlobs, docBaseViewer);
         this.handleThumbnailToggling(docBaseViewer);
 
-        if (totalPages > priorityPages) {
+        if (totalPages > priorityPages && !startSecondBatchAfterFetch) {
             this.scheduleSecondBatch(
                 pagedPreLoadUrlWithAuth,
                 priorityPages + 1,
@@ -343,7 +353,7 @@ class DocFirstPreloader extends EventEmitter {
                 docBaseViewer,
                 secondBatchDelayMs,
             );
-        } else {
+        } else if (totalPages <= priorityPages) {
             this.finalizePreload(docBaseViewer);
         }
     }

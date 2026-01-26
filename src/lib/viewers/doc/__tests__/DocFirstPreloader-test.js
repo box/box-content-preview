@@ -1244,4 +1244,109 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.secondBatchTimeoutId).not.toBeNull();
         });
     });
+
+    describe('showPreloadStaggered() - startSecondBatchAfterFetch configuration', () => {
+        let mockBlob;
+
+        beforeEach(() => {
+            mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob]);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            jest.spyOn(preloader, 'processAdditionalPages').mockResolvedValue();
+            jest.spyOn(preloader, 'handleThumbnailToggling').mockImplementation(() => {});
+            jest.spyOn(preloader, 'scheduleSecondBatch').mockImplementation(() => {});
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+        });
+
+        it('should schedule second batch after fetch when startSecondBatchAfterFetch is true (default)', async () => {
+            preloader.config = {
+                priorityPages: 1,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: true,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
+
+            // scheduleSecondBatch should be called exactly once (after fetch, before render)
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
+
+            // Verify it was called before renderFirstPage by checking call order
+            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
+            const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
+            expect(scheduleCallOrder).toBeLessThan(renderCallOrder);
+        });
+
+        it('should schedule second batch after rendering when startSecondBatchAfterFetch is false', async () => {
+            preloader.config = {
+                priorityPages: 1,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: false,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
+
+            // scheduleSecondBatch should be called exactly once (after rendering)
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
+
+            // Verify it was called after processAdditionalPages by checking call order
+            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
+            const processCallOrder = preloader.processAdditionalPages.mock.invocationCallOrder[0];
+            expect(scheduleCallOrder).toBeGreaterThan(processCallOrder);
+        });
+
+        it('should default to true when startSecondBatchAfterFetch is not specified', async () => {
+            preloader.config = {
+                priorityPages: 1,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                // startSecondBatchAfterFetch not specified - should default to true
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
+
+            // Should schedule after fetch (before render) since default is true
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
+            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
+            const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
+            expect(scheduleCallOrder).toBeLessThan(renderCallOrder);
+        });
+
+        it('should not schedule second batch at all when totalPages <= priorityPages', async () => {
+            preloader.config = {
+                priorityPages: 8,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: true,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 5, mockDocBaseViewer);
+
+            // Should not schedule second batch since totalPages (5) <= priorityPages (8)
+            expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).toHaveBeenCalled();
+        });
+
+        it('should finalize instead of scheduling when startSecondBatchAfterFetch is false and no second batch needed', async () => {
+            preloader.config = {
+                priorityPages: 8,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: false,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 5, mockDocBaseViewer);
+
+            expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).toHaveBeenCalled();
+        });
+    });
 });
