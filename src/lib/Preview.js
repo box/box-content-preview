@@ -56,6 +56,7 @@ import {
 import {
     DURATION_METRIC,
     ERROR_CODE,
+    FIRST_RENDER_METRIC,
     LOAD_METRIC,
     PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
     PREVIEW_END_EVENT,
@@ -810,6 +811,7 @@ class Preview extends EventEmitter {
         // Start the preview load and render timers when the user starts to perceive preview's load
         Timer.start(Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime));
         Timer.start(Timer.createTag(this.file.id, RENDER_METRIC));
+        Timer.start(Timer.createTag(this.file.id, FIRST_RENDER_METRIC));
 
         // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {

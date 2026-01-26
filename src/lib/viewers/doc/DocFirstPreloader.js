@@ -188,6 +188,8 @@ class DocFirstPreloader extends EventEmitter {
                     await this.setPreloadImageDimensions(firstPageImage, imageDomElement);
                     this.addPreloadImageToPreloaderContainer(imageDomElement, preloaderFirstImageIndex);
 
+                    this.emit('firstRender');
+
                     if (!this.pdfJsDocLoadComplete()) {
                         this.processAdditionalPages(data);
                         this.retrievedPagesCount = Object.keys(this.preloadedImages).length;

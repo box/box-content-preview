@@ -50,6 +50,20 @@ class PresentationViewer extends DocBaseViewer {
             : new PresentationPreloader(this.previewUI, { api: this.api });
 
         this.preloader.addListener('preload', this.onPreload.bind(this));
+
+        if (this.docFirstPagesEnabled) {
+            this.preloader.addListener('firstRender', this.handleFirstRender.bind(this));
+        }
+    }
+
+    /**
+     * Handles first render event from preloader and emits first render time metric
+     *
+     * @private
+     * @return {void}
+     */
+    handleFirstRender() {
+        this.emitFirstRenderMetric();
     }
 
     /**

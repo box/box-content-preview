@@ -10,6 +10,8 @@ import {
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../../constants';
+import { FIRST_RENDER_METRIC, LOAD_METRIC } from '../../../events';
+import Timer from '../../../Timer';
 
 jest.mock('../../controls/controls-root');
 
@@ -811,6 +813,64 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(result).toBe(expectedResult);
             superFinishLoading.mockRestore();
+        });
+
+        test('should call emitFirstRenderMetric from base class', () => {
+            jest.spyOn(image, 'hidePreviewMask').mockImplementation();
+            jest.spyOn(Object.getPrototypeOf(ImageViewer.prototype), 'finishLoading').mockImplementation();
+            jest.spyOn(image, 'emitFirstRenderMetric').mockImplementation();
+
+            image.finishLoading();
+
+            expect(image.emitFirstRenderMetric).toHaveBeenCalled();
+        });
+
+        test('should emit first render time metric when timer is available', () => {
+            const mockTime = {
+                elapsed: 250,
+            };
+
+            jest.spyOn(image, 'emitMetric').mockImplementation();
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            image.emitFirstRenderMetric();
+
+            expect(Timer.createTag).toHaveBeenCalledWith('1', FIRST_RENDER_METRIC);
+            expect(Timer.stop).toHaveBeenCalledWith('test-tag');
+            expect(image.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
+            expect(image.firstRenderEmitted).toBe(true);
+        });
+
+        test('should not emit first render time metric multiple times', () => {
+            const mockTime = {
+                elapsed: 250,
+            };
+
+            jest.spyOn(image, 'emitMetric').mockImplementation();
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            // Call emitFirstRenderMetric twice
+            image.emitFirstRenderMetric();
+            image.emitFirstRenderMetric();
+
+            expect(image.emitMetric).toHaveBeenCalledTimes(1);
+            expect(image.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
+        });
+
+        test('should not emit metric if timer returns no elapsed time', () => {
+            const mockTime = {
+                elapsed: undefined,
+            };
+
+            jest.spyOn(image, 'emitMetric').mockImplementation();
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            image.emitFirstRenderMetric();
+
+            expect(image.emitMetric).not.toHaveBeenCalled();
         });
     });
 

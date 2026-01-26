@@ -12,7 +12,7 @@ import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
 import { AnnotationMode } from '../../types';
-import { ERROR_CODE, LOAD_METRIC, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
 
 let base;
@@ -1819,6 +1819,47 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.emittedMetrics.foo).toBe(true);
             expect(stubs.emit).not.toBeCalled();
+        });
+    });
+
+    describe('emitFirstRenderMetric()', () => {
+        beforeEach(() => {
+            base.options = { file: { id: '123' } };
+            jest.spyOn(base, 'emitMetric').mockImplementation();
+        });
+
+        test('should emit first render time metric with { name, data } format', () => {
+            const mockTime = { elapsed: 250 };
+
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            base.emitFirstRenderMetric();
+
+            expect(Timer.createTag).toHaveBeenCalledWith('123', FIRST_RENDER_METRIC);
+            expect(Timer.stop).toHaveBeenCalledWith('test-tag');
+            expect(base.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+            expect(base.firstRenderEmitted).toBe(true);
+        });
+
+        test('should not emit if already emitted', () => {
+            base.firstRenderEmitted = true;
+
+            base.emitFirstRenderMetric();
+
+            expect(base.emitMetric).not.toHaveBeenCalled();
+        });
+
+        test('should not emit if no elapsed time', () => {
+            const mockTime = { elapsed: undefined };
+
+            jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
+            jest.spyOn(Timer, 'stop').mockReturnValue(mockTime);
+
+            base.emitFirstRenderMetric();
+
+            expect(base.emitMetric).not.toHaveBeenCalled();
+            expect(base.firstRenderEmitted).toBe(false);
         });
     });
 
