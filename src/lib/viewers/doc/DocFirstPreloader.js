@@ -5,6 +5,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_IS_TRANSPARENT,
+    CLASS_PREVIEW_LOADED,
     PDFJS_CSS_UNITS,
     PDFJS_HEIGHT_PADDING_PX,
     PDFJS_MAX_AUTO_SCALE,
@@ -760,8 +761,7 @@ class DocFirstPreloader extends EventEmitter {
      */
     pdfJsDocLoadComplete() {
         // If document is already loaded, hide the preload and short circuit
-        // Using string literal 'bp-loaded' directly to avoid webpack bundling issues
-        if (this.previewUI?.previewContainer?.classList?.contains('bp-loaded')) {
+        if (this.previewUI?.previewContainer?.classList?.contains(CLASS_PREVIEW_LOADED)) {
             this.hidePreload();
             return true;
         }
