@@ -826,7 +826,7 @@ export function fetchPageImage(api, url) {
  * @param {number} endPage - Last page to fetch (inclusive)
  * @return {Array<Promise>} Array of promises that resolve with blobs
  */
-export function getPageBatchPromises(api, pagedPreLoadUrlWithAuth, startPage, endPage) {
+export function getPreloadImageRequestPromisesByBatch(api, pagedPreLoadUrlWithAuth, startPage, endPage) {
     const promises = [];
     if (!pagedPreLoadUrlWithAuth || startPage > endPage) {
         return promises;

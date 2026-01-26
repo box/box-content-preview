@@ -860,78 +860,98 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.restoreAllMocks();
         });
 
-        it('should set the preloaded images object with the correct number of pages', () => {
+        it('should set the preloaded images object with the correct number of pages', async () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(Object.keys(preloader.preloadedImages).length).toBe(3);
         });
 
-        it('should not add additional pages if it is for a presentation', () => {
+        it('should not add additional pages if it is for a presentation', async () => {
             const data = [new Blob(), new Blob()];
             const addPreloadImageToPreloaderContainer = jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
             preloader.isPresentation = true;
             preloader.pdfData = { numPages: 3 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
         });
 
-        it('should not add placeholders (placeholders are handled by finalizePreload)', () => {
+        it('should not add placeholders (placeholders are handled by finalizePreload)', async () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             // Only the loaded image placeholders should be present, not empty placeholders
             expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should not add placeholder divs for missing pages (handled by finalizePreload)', () => {
+        it('should not add placeholder divs for missing pages (handled by finalizePreload)', async () => {
             const data = [new Blob(), new Blob()];
 
             preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.pdfData = { numPages: 5 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             // processAdditionalPages no longer adds placeholders - only 3 loaded placeholders
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
             expect(placeholders.length).toBe(3);
         });
 
-        it('should not add empty placeholders (handled by finalizePreload)', () => {
+        it('should not add empty placeholders (handled by finalizePreload)', async () => {
             // 7 additional doc first pages, total will be 8 including the first one.
             const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
             preloader.pdfData = { numPages: 321 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             // Only loaded placeholders for actual images, no empty placeholders
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(8);
         });
 
-        it('should not add empty placeholders if the number of pages is less than the number of images', () => {
+        it('should not add empty placeholders if the number of pages is less than the number of images', async () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 2 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should not add empty placeholders if there is no pdfData', () => {
+        it('should not add empty placeholders if there is no pdfData', async () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = null;
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should not add empty placeholders if the number of pages in pdfData is null', () => {
+        it('should not add empty placeholders if the number of pages in pdfData is null', async () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: null };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should not add empty placeholders if this is a presentation', () => {
+        it('should not add empty placeholders if this is a presentation', async () => {
             const data = [new Blob(), new Blob()];
             preloader.isPresentation = true;
             preloader.pdfData = { numPages: 10 };
-            preloader.processAdditionalPages(data);
+            await preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
+        });
+
+        it('should trigger thumbnail rendering for each page when docBaseViewer is provided', async () => {
+            const docBaseViewerWithThumbnails = {
+                thumbnailsSidebar: {
+                    renderNextThumbnailImage: jest.fn(),
+                },
+            };
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            await preloader.processAdditionalPages(data, docBaseViewerWithThumbnails);
+
+            expect(docBaseViewerWithThumbnails.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalledTimes(2);
+            expect(preloader.retrievedPagesCount).toBe(3);
+        });
+
+        it('should not throw when docBaseViewer is not provided', async () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            await expect(preloader.processAdditionalPages(data)).resolves.not.toThrow();
         });
     });
 
@@ -952,100 +972,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             expect(() => preloader.clearBatchTimeouts()).not.toThrow();
             expect(preloader.secondBatchTimeoutId).toBeNull();
-        });
-    });
-
-    describe('processBatch()', () => {
-        let batchDocBaseViewer;
-
-        beforeEach(() => {
-            batchDocBaseViewer = {
-                thumbnailsSidebar: {
-                    renderNextThumbnailImage: jest.fn(),
-                },
-            };
-            preloader.preloadEl = document.createElement('div');
-            preloader.imageDimensions = { width: 100, height: 200 };
-            preloader.preloadedImages = {};
-            jest.spyOn(preloader, 'renderPage').mockResolvedValue();
-            jest.spyOn(preloader, 'emit');
-            jest.spyOn(preloader, 'showPreviewMask');
-        });
-
-        it('should process pages starting from the given startPage', async () => {
-            const mockBlob1 = new Blob(['data1']);
-            const mockBlob2 = new Blob(['data2']);
-            const batchData = [mockBlob1, mockBlob2];
-
-            await preloader.processBatch(batchData, 5, batchDocBaseViewer, { isPriorityBatch: false });
-
-            expect(preloader.pageDataMap.get(5)).toBe(mockBlob1);
-            expect(preloader.pageDataMap.get(6)).toBe(mockBlob2);
-            expect(preloader.renderPage).toHaveBeenCalledWith(5, mockBlob1, false);
-            expect(preloader.renderPage).toHaveBeenCalledWith(6, mockBlob2, false);
-        });
-
-        it('should emit firstRender and set firstPageRendered when isPriorityBatch and page 1', async () => {
-            const mockBlob = new Blob(['data']);
-            const batchData = [mockBlob];
-
-            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
-
-            expect(preloader.firstPageRendered).toBe(true);
-            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
-            expect(preloader.renderPage).toHaveBeenCalledWith(1, mockBlob, true);
-        });
-
-        it('should not emit firstRender when isPriorityBatch is false', async () => {
-            const mockBlob = new Blob(['data']);
-            const batchData = [mockBlob];
-
-            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: false });
-
-            expect(preloader.firstPageRendered).toBeFalsy();
-            expect(preloader.emit).not.toHaveBeenCalledWith('firstRender');
-        });
-
-        it('should show preview mask and return early on page 1 error in priority batch', async () => {
-            const batchData = [new Error('Failed'), new Blob(['data'])];
-
-            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
-
-            expect(preloader.showPreviewMask).toHaveBeenCalled();
-            expect(preloader.renderPage).not.toHaveBeenCalled();
-        });
-
-        it('should skip errors and continue for non-page-1 errors in priority batch', async () => {
-            const mockBlob1 = new Blob(['data1']);
-            const mockBlob3 = new Blob(['data3']);
-            const batchData = [mockBlob1, new Error('Failed'), mockBlob3];
-
-            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: true });
-
-            expect(preloader.renderPage).toHaveBeenCalledTimes(2);
-            expect(preloader.renderPage).toHaveBeenCalledWith(1, mockBlob1, true);
-            expect(preloader.renderPage).toHaveBeenCalledWith(3, mockBlob3, false);
-        });
-
-        it('should skip errors silently in non-priority batch', async () => {
-            const mockBlob1 = new Blob(['data1']);
-            const batchData = [new Error('Failed'), mockBlob1];
-
-            await preloader.processBatch(batchData, 5, batchDocBaseViewer, { isPriorityBatch: false });
-
-            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
-            expect(preloader.renderPage).toHaveBeenCalledTimes(1);
-            expect(preloader.renderPage).toHaveBeenCalledWith(6, mockBlob1, false);
-        });
-
-        it('should trigger thumbnail rendering for each page', async () => {
-            const mockBlob1 = new Blob(['data1']);
-            const mockBlob2 = new Blob(['data2']);
-            const batchData = [mockBlob1, mockBlob2];
-
-            await preloader.processBatch(batchData, 1, batchDocBaseViewer, { isPriorityBatch: false });
-
-            expect(batchDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalledTimes(2);
         });
     });
 

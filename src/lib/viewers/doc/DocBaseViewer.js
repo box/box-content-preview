@@ -36,7 +36,7 @@ import {
     getDistance,
     getMidpoint,
     getPreloadImageRequestPromises,
-    getPageBatchPromises,
+    getPreloadImageRequestPromisesByBatch,
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
@@ -395,7 +395,12 @@ class DocBaseViewer extends BaseViewer {
                     prefetchPriorityPagesOnly = false,
                 } = docFirstPagesConfig;
 
-                const priorityPromises = getPageBatchPromises(this.api, pagedUrlAuthTemplate, 1, priorityPages);
+                const priorityPromises = getPreloadImageRequestPromisesByBatch(
+                    this.api,
+                    pagedUrlAuthTemplate,
+                    1,
+                    priorityPages,
+                );
                 Promise.all(priorityPromises).then(() => {
                     // Skip second batch if prefetchPriorityPagesOnly is true
                     if (prefetchPriorityPagesOnly) {
@@ -404,7 +409,7 @@ class DocBaseViewer extends BaseViewer {
 
                     // Add staggered delay before fetching remaining pages
                     setTimeout(() => {
-                        const remainingPromises = getPageBatchPromises(
+                        const remainingPromises = getPreloadImageRequestPromisesByBatch(
                             this.api,
                             pagedUrlAuthTemplate,
                             priorityPages + 1,
