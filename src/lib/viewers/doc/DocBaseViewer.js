@@ -389,17 +389,20 @@ class DocBaseViewer extends BaseViewer {
 
             // Use staggered loading if config is available
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
-                const { priorityPages = 1, maxPreloadPages = 8 } = docFirstPagesConfig;
+                const { priorityPages = 1, maxPreloadPages = 8, secondBatchDelayMs = 100 } = docFirstPagesConfig;
 
                 const priorityPromises = getPageBatchPromises(this.api, pagedUrlAuthTemplate, 1, priorityPages);
                 Promise.all(priorityPromises).then(() => {
-                    const remainingPromises = getPageBatchPromises(
-                        this.api,
-                        pagedUrlAuthTemplate,
-                        priorityPages + 1,
-                        Math.min(pageCount, maxPreloadPages),
-                    );
-                    Promise.all(remainingPromises);
+                    // Add staggered delay before fetching remaining pages
+                    setTimeout(() => {
+                        const remainingPromises = getPageBatchPromises(
+                            this.api,
+                            pagedUrlAuthTemplate,
+                            priorityPages + 1,
+                            Math.min(pageCount, maxPreloadPages),
+                        );
+                        Promise.all(remainingPromises);
+                    }, secondBatchDelayMs);
                 });
             } else {
                 const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
