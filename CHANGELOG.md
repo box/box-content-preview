@@ -1,3 +1,11 @@
+## 3.18.0 (2026-01-27)
+
+* feat: first render metric for preview loaders (#1600) ([5bdf556](https://github.com/box/box-content-preview/commit/5bdf556)), closes [#1600](https://github.com/box/box-content-preview/issues/1600)
+* feat(video-prefetch): Prefetch image representation for videos (#1599) ([f2c35a5](https://github.com/box/box-content-preview/commit/f2c35a5)), closes [#1599](https://github.com/box/box-content-preview/issues/1599)
+* feat(video-preview): Show image preview for video files (#1598) ([73b38a1](https://github.com/box/box-content-preview/commit/73b38a1)), closes [#1598](https://github.com/box/box-content-preview/issues/1598)
+
+
+
 ## 3.17.0 (2025-12-29)
 
 * test(video-ui): updating e2e tests to test for new react controls (#1594) ([7aa3945](https://github.com/box/box-content-preview/commit/7aa3945)), closes [#1594](https://github.com/box/box-content-preview/issues/1594)
