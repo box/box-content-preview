@@ -4,6 +4,7 @@ import DocBaseViewer from './DocBaseViewer';
 import DocFirstPreloader from './DocFirstPreloader';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
+import { getFeatureConfig } from '../../featureChecking';
 import { getProp } from '../../util';
 import './Presentation.scss';
 
@@ -45,8 +46,9 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
+        const docFirstPagesConfig = getFeatureConfig(this.options.features, 'docFirstPages');
         this.preloader = this.docFirstPagesEnabled
-            ? new DocFirstPreloader(this.previwewUI, { api: this.api }, true)
+            ? new DocFirstPreloader(this.previewUI, { api: this.api, config: docFirstPagesConfig }, true)
             : new PresentationPreloader(this.previewUI, { api: this.api });
 
         this.preloader.addListener('preload', this.onPreload.bind(this));

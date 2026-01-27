@@ -600,6 +600,7 @@ describe('lib/Preview', () => {
                 sharedLink,
                 sharedLinkPassword,
                 isDocFirstPrefetchEnabled: false,
+                docFirstPagesConfig: null,
             });
         });
 

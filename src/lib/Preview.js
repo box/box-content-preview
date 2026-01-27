@@ -632,6 +632,7 @@ class Preview extends EventEmitter {
         sharedLinkPassword = '',
         preload = false,
         isDocFirstPrefetchEnabled = false,
+        docFirstPagesConfig = null,
     }) {
         let file;
         let loader;
@@ -671,6 +672,7 @@ class Preview extends EventEmitter {
             options.sharedLink = sharedLink;
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
+            options.docFirstPagesConfig = docFirstPagesConfig;
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
