@@ -753,4 +753,90 @@ describe('lib/util', () => {
             expect(promises.length).toBe(8);
         });
     });
+
+    describe('createPageUrl()', () => {
+        it('should replace page_number placeholder with page number and .webp extension', () => {
+            const url = 'https://example.com/preload/page_number';
+            const result = util.createPageUrl(url, 5);
+            expect(result).toBe('https://example.com/preload/5.webp');
+        });
+
+        it('should handle page number 1', () => {
+            const url = 'https://example.com/file/page_number?token=abc';
+            const result = util.createPageUrl(url, 1);
+            expect(result).toBe('https://example.com/file/1.webp?token=abc');
+        });
+    });
+
+    describe('fetchPageImage()', () => {
+        const mockApi = new Api();
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it('should call api.get with blob type and return the result', async () => {
+            const mockBlob = new Blob(['test']);
+            jest.spyOn(mockApi, 'get').mockResolvedValue(mockBlob);
+
+            const result = await util.fetchPageImage(mockApi, 'https://example.com/page.webp');
+
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/page.webp', { type: 'blob' });
+            expect(result).toBe(mockBlob);
+        });
+
+        it('should return the error instead of throwing when fetch fails', async () => {
+            const mockError = new Error('Network error');
+            jest.spyOn(mockApi, 'get').mockRejectedValue(mockError);
+
+            const result = await util.fetchPageImage(mockApi, 'https://example.com/page.webp');
+
+            expect(result).toBe(mockError);
+        });
+    });
+
+    describe('getPreloadImageRequestPromisesByBatch()', () => {
+        const mockApi = new Api();
+
+        beforeEach(() => {
+            jest.spyOn(mockApi, 'get').mockResolvedValue({});
+        });
+
+        it('should return empty array when pagedPreLoadUrlWithAuth is empty', () => {
+            const promises = util.getPreloadImageRequestPromisesByBatch(mockApi, '', 1, 5);
+            expect(promises).toEqual([]);
+            expect(mockApi.get).not.toHaveBeenCalled();
+        });
+
+        it('should return empty array when startPage is greater than endPage', () => {
+            const promises = util.getPreloadImageRequestPromisesByBatch(
+                mockApi,
+                'https://example.com/page_number',
+                5,
+                3,
+            );
+            expect(promises).toEqual([]);
+            expect(mockApi.get).not.toHaveBeenCalled();
+        });
+
+        it('should create promises for page range from startPage to endPage', () => {
+            const pagedUrl = 'https://example.com/page_number';
+            const promises = util.getPreloadImageRequestPromisesByBatch(mockApi, pagedUrl, 2, 4);
+
+            expect(promises.length).toBe(3);
+            expect(mockApi.get).toHaveBeenCalledTimes(3);
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/2.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/3.webp', { type: 'blob' });
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/4.webp', { type: 'blob' });
+        });
+
+        it('should create single promise when startPage equals endPage', () => {
+            const pagedUrl = 'https://example.com/page_number';
+            const promises = util.getPreloadImageRequestPromisesByBatch(mockApi, pagedUrl, 3, 3);
+
+            expect(promises.length).toBe(1);
+            expect(mockApi.get).toHaveBeenCalledTimes(1);
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/3.webp', { type: 'blob' });
+        });
+    });
 });

@@ -876,38 +876,33 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
         });
 
-        it('should not add placeholders if the number of pages equals the number of images', () => {
+        it('should not add placeholders (placeholders are handled by finalizePreload)', () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
+            // Only the loaded image placeholders should be present, not empty placeholders
             expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should add placeholder divs for missing pages', () => {
+        it('should not add placeholder divs for missing pages (handled by finalizePreload)', () => {
             const data = [new Blob(), new Blob()];
 
             preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
+            // processAdditionalPages no longer adds placeholders - only 3 loaded placeholders
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
-            expect(placeholders.length).toBe(5);
-            const placeholder4 = placeholders[3];
-            const placeholder5 = placeholders[4];
-            expect(placeholder4.style.width).toBe(`${widthDimension}px`);
-            expect(placeholder4.style.height).toBe(`${heightDimension}px`);
-            expect(placeholder5.style.width).toBe(`${widthDimension}px`);
-            expect(placeholder5.style.height).toBe(`${heightDimension}px`);
-            expect(placeholder4.classList.contains('loaded')).not.toBe(true);
-            expect(placeholder5.classList.contains('loaded')).not.toBe(true);
+            expect(placeholders.length).toBe(3);
         });
 
-        it('should add a max of 10 placeholders', () => {
+        it('should not add empty placeholders (handled by finalizePreload)', () => {
             // 7 additional doc first pages, total will be 8 including the first one.
             const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
             preloader.pdfData = { numPages: 321 };
             preloader.processAdditionalPages(data);
-            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(18);
+            // Only loaded placeholders for actual images, no empty placeholders
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(8);
         });
 
         it('should not add empty placeholders if the number of pages is less than the number of images', () => {
@@ -937,6 +932,404 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.pdfData = { numPages: 10 };
             preloader.processAdditionalPages(data);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
+        });
+
+        it('should trigger thumbnail rendering for each page when docBaseViewer is provided', () => {
+            const docBaseViewerWithThumbnails = {
+                thumbnailsSidebar: {
+                    renderNextThumbnailImage: jest.fn(),
+                },
+            };
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            preloader.processAdditionalPages(data, docBaseViewerWithThumbnails);
+
+            expect(docBaseViewerWithThumbnails.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalledTimes(2);
+            expect(preloader.retrievedPagesCount).toBe(3);
+        });
+
+        it('should not throw when docBaseViewer is not provided', () => {
+            const data = [new Blob(), new Blob()];
+            preloader.pdfData = { numPages: 3 };
+            expect(() => preloader.processAdditionalPages(data)).not.toThrow();
+        });
+    });
+
+    describe('clearBatchTimeouts()', () => {
+        it('should clear the timeout when secondBatchTimeoutId exists', () => {
+            const timeoutId = setTimeout(() => {}, 10000);
+            preloader.secondBatchTimeoutId = timeoutId;
+            jest.spyOn(global, 'clearTimeout');
+
+            preloader.clearBatchTimeouts();
+
+            expect(clearTimeout).toHaveBeenCalledWith(timeoutId);
+            expect(preloader.secondBatchTimeoutId).toBeNull();
+        });
+
+        it('should not throw when secondBatchTimeoutId is null', () => {
+            preloader.secondBatchTimeoutId = null;
+
+            expect(() => preloader.clearBatchTimeouts()).not.toThrow();
+            expect(preloader.secondBatchTimeoutId).toBeNull();
+        });
+    });
+
+    describe('finalizePreload()', () => {
+        const widthDimension = 100;
+        const heightDimension = 200;
+        let finalizeDocBaseViewer;
+
+        beforeEach(() => {
+            finalizeDocBaseViewer = {
+                initThumbnails: jest.fn(),
+                shouldThumbnailsBeToggled: jest.fn().mockReturnValue(false),
+                rootEl: document.createElement('div'),
+                emit: jest.fn(),
+            };
+            preloader.preloadEl = document.createElement('div');
+            preloader.wrapperEl = document.createElement('div');
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'clearBatchTimeouts');
+        });
+
+        it('should clear batch timeouts', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.clearBatchTimeouts).toHaveBeenCalled();
+        });
+
+        it('should set retrievedPagesCount from preloadedImages', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.retrievedPagesCount).toBe(3);
+        });
+
+        it('should add placeholders for remaining pages', () => {
+            preloader.pdfData = { numPages: 5 };
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(2); // pages 4 and 5
+        });
+
+        it('should emit preload event when pages exist', () => {
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.emit).toHaveBeenCalledWith('preload');
+            expect(preloader.loadTime).toBeDefined();
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+        });
+
+        it('should not emit preload event when no pages exist', () => {
+            preloader.preloadedImages = {};
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
+            expect(preloader.loadTime).toBeUndefined();
+        });
+
+        it('should add a maximum of 10 placeholders', () => {
+            preloader.pdfData = { numPages: 100 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.finalizePreload(finalizeDocBaseViewer);
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(10);
+        });
+    });
+
+    describe('renderFirstPage()', () => {
+        let testFirstImage;
+
+        beforeEach(() => {
+            testFirstImage = new Image(100, 200);
+            preloader.preloadEl = document.createElement('div');
+            preloader.wrapperEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+            preloader.preloadedImages = {};
+            jest.spyOn(preloader, 'loadImage').mockResolvedValue(testFirstImage);
+            jest.spyOn(preloader, 'setPreloadImageDimensions').mockResolvedValue();
+            jest.spyOn(preloader, 'emit');
+        });
+
+        it('should return false if blob is null', async () => {
+            const result = await preloader.renderFirstPage(null, mockDocBaseViewer);
+            expect(result).toBe(false);
+        });
+
+        it('should return false if blob is an Error', async () => {
+            const result = await preloader.renderFirstPage(new Error('test'), mockDocBaseViewer);
+            expect(result).toBe(false);
+        });
+
+        it('should render first page and return true on success', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+
+            const result = await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+
+            expect(result).toBe(true);
+            expect(preloader.preloadedImages[1]).toBe('mock-url');
+            expect(preloader.loadImage).toHaveBeenCalledWith('mock-url');
+            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, testFirstImage);
+            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
+        });
+
+        it('should trigger thumbnail rendering when docBaseViewer has thumbnailsSidebar', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            mockDocBaseViewer.thumbnailsSidebar = { renderNextThumbnailImage: jest.fn() };
+
+            await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+
+            expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateThumbnailProgress()', () => {
+        it('should update retrievedPagesCount', () => {
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.updateThumbnailProgress(mockDocBaseViewer);
+
+            expect(preloader.retrievedPagesCount).toBe(3);
+        });
+
+        it('should call renderNextThumbnailImage when thumbnailsSidebar exists', () => {
+            mockDocBaseViewer.thumbnailsSidebar = { renderNextThumbnailImage: jest.fn() };
+            preloader.preloadedImages = { 1: 'url1' };
+
+            preloader.updateThumbnailProgress(mockDocBaseViewer);
+
+            expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
+        });
+
+        it('should not throw when docBaseViewer is undefined', () => {
+            preloader.preloadedImages = { 1: 'url1' };
+
+            expect(() => preloader.updateThumbnailProgress(undefined)).not.toThrow();
+        });
+    });
+
+    describe('addPageToPreload()', () => {
+        beforeEach(() => {
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+            preloader.preloadedImages = {};
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+        });
+
+        it('should add page to preloadedImages', () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            expect(preloader.preloadedImages[2]).toBe('mock-url');
+        });
+
+        it('should not add page if already exists', () => {
+            preloader.preloadedImages = { 2: 'existing-url' };
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('new-url');
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            expect(preloader.preloadedImages[2]).toBe('existing-url');
+        });
+
+        it('should not add page if pdfJsDocLoadComplete returns true', () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            expect(preloader.preloadedImages[2]).toBeUndefined();
+        });
+
+        it('should not add image element for presentations', () => {
+            preloader.isPresentation = true;
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            expect(preloader.preloadedImages[2]).toBe('mock-url');
+            expect(preloader.addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
+        });
+
+        it('should add image element for documents', () => {
+            preloader.isPresentation = false;
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            expect(preloader.addPreloadImageToPreloaderContainer).toHaveBeenCalled();
+        });
+    });
+
+    describe('loadBatchAsBlobs()', () => {
+        beforeEach(() => {
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([Promise.resolve({})]);
+            jest.spyOn(util, 'getPreloadImageRequestPromisesByBatch').mockReturnValue([Promise.resolve({})]);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(new Blob());
+        });
+
+        it('should use getPreloadImageRequestPromises when preloadUrl is provided and startPage is 1', async () => {
+            await preloader.loadBatchAsBlobs('preload-url', 'paged-url', 5, 1);
+
+            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                preloader.api,
+                'preload-url',
+                5,
+                'paged-url',
+            );
+        });
+
+        it('should use getPreloadImageRequestPromisesByBatch when preloadUrl is null', async () => {
+            await preloader.loadBatchAsBlobs(null, 'paged-url', 5, 1);
+
+            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(preloader.api, 'paged-url', 1, 5);
+        });
+
+        it('should use getPreloadImageRequestPromisesByBatch when startPage is not 1', async () => {
+            await preloader.loadBatchAsBlobs('preload-url', 'paged-url', 10, 6);
+
+            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(preloader.api, 'paged-url', 6, 10);
+        });
+
+        it('should return array of blobs', async () => {
+            const mockBlob = new Blob(['test']);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+
+            const result = await preloader.loadBatchAsBlobs(null, 'paged-url', 1);
+
+            expect(result).toHaveLength(1);
+            expect(result[0]).toBe(mockBlob);
+        });
+    });
+
+    describe('scheduleSecondBatch()', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+            jest.spyOn(preloader, 'showSecondBatch').mockImplementation(() => {});
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        it('should schedule showSecondBatch after delay', () => {
+            preloader.scheduleSecondBatch('paged-url', 4, 8, mockDocBaseViewer, 1000);
+
+            expect(preloader.showSecondBatch).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(1000);
+
+            expect(preloader.showSecondBatch).toHaveBeenCalledWith('paged-url', 4, 8, mockDocBaseViewer);
+        });
+
+        it('should store timeout ID', () => {
+            preloader.scheduleSecondBatch('paged-url', 4, 8, mockDocBaseViewer, 1000);
+
+            expect(preloader.secondBatchTimeoutId).not.toBeNull();
+        });
+    });
+
+    describe('showPreloadStaggered() - startSecondBatchAfterFetch configuration', () => {
+        let mockBlob;
+
+        beforeEach(() => {
+            mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob]);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            jest.spyOn(preloader, 'processAdditionalPages').mockResolvedValue();
+            jest.spyOn(preloader, 'handleThumbnailToggling').mockImplementation(() => {});
+            jest.spyOn(preloader, 'scheduleSecondBatch').mockImplementation(() => {});
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+        });
+
+        it('should schedule second batch after fetch when startSecondBatchAfterFetch is true (default)', async () => {
+            preloader.config = {
+                priorityPages: 1,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: true,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
+
+            // scheduleSecondBatch should be called exactly once (after fetch, before render)
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
+
+            // Verify it was called before renderFirstPage by checking call order
+            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
+            const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
+            expect(scheduleCallOrder).toBeLessThan(renderCallOrder);
+        });
+
+        it('should schedule second batch after rendering when startSecondBatchAfterFetch is false', async () => {
+            preloader.config = {
+                priorityPages: 1,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: false,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
+
+            // scheduleSecondBatch should be called exactly once (after rendering)
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
+            expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
+
+            // Verify it was called after processAdditionalPages by checking call order
+            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
+            const processCallOrder = preloader.processAdditionalPages.mock.invocationCallOrder[0];
+            expect(scheduleCallOrder).toBeGreaterThan(processCallOrder);
+        });
+
+        it('should not schedule second batch at all when totalPages <= priorityPages', async () => {
+            preloader.config = {
+                priorityPages: 8,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: true,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 5, mockDocBaseViewer);
+
+            // Should not schedule second batch since totalPages (5) <= priorityPages (8)
+            expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).toHaveBeenCalled();
+        });
+
+        it('should finalize instead of scheduling when startSecondBatchAfterFetch is false and no second batch needed', async () => {
+            preloader.config = {
+                priorityPages: 8,
+                maxPreloadPages: 8,
+                secondBatchDelayMs: 100,
+                startSecondBatchAfterFetch: false,
+            };
+
+            await preloader.showPreloadStaggered(null, 'paged-url', 5, mockDocBaseViewer);
+
+            expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).toHaveBeenCalled();
         });
     });
 });

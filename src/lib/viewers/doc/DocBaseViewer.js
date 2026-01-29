@@ -36,6 +36,7 @@ import {
     getDistance,
     getMidpoint,
     getPreloadImageRequestPromises,
+    getPreloadImageRequestPromisesByBatch,
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
@@ -355,15 +356,15 @@ class DocBaseViewer extends BaseViewer {
         }
         /*
           Prefetched image urls will not match the urls that the preloader uses when shared link or shared password is set. This negates the benefit
-          of prefetching the images. As a result we need to set the shared link and shared password to empty strings. It is possible 
-          that these values are not even necessary for the representations api call as the code that sets them is old and 
+          of prefetching the images. As a result we need to set the shared link and shared password to empty strings. It is possible
+          that these values are not even necessary for the representations api call as the code that sets them is old and
           the reps api does not seem to use them when it retreives the image reps. Preloading can also include the actual pdf itself
           so we need to set the share link and shared link password back to what it was before after we are done prefetching the images.
           The options object is used downstream in thee url auth append logic and if the sharedLink and sharedLinkPassword are set it appends them
           to the query params for the representations api call. This stops this from happening.
           */
 
-        const { sharedLink = '', sharedLinkPassword = '' } = this.options;
+        const { sharedLink = '', sharedLinkPassword = '', docFirstPagesConfig } = this.options;
         this.options.sharedLink = '';
         this.options.sharedLinkPassword = '';
 
@@ -385,8 +386,42 @@ class DocBaseViewer extends BaseViewer {
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
             const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-            const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
-            Promise.all(promises);
+
+            if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
+                const {
+                    priorityPages,
+                    maxPreloadPages,
+                    secondBatchDelayMs,
+                    prefetchPriorityPagesOnly,
+                } = docFirstPagesConfig;
+
+                const priorityPromises = getPreloadImageRequestPromisesByBatch(
+                    this.api,
+                    pagedUrlAuthTemplate,
+                    1,
+                    priorityPages,
+                );
+                Promise.all(priorityPromises).then(() => {
+                    // Skip second batch if prefetchPriorityPagesOnly is true
+                    if (prefetchPriorityPagesOnly) {
+                        return;
+                    }
+
+                    // Add staggered delay before fetching remaining pages
+                    setTimeout(() => {
+                        const remainingPromises = getPreloadImageRequestPromisesByBatch(
+                            this.api,
+                            pagedUrlAuthTemplate,
+                            priorityPages + 1,
+                            Math.min(pageCount, maxPreloadPages),
+                        );
+                        Promise.all(remainingPromises);
+                    }, secondBatchDelayMs);
+                });
+            } else {
+                const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
+                Promise.all(promises);
+            }
         }
         this.options.sharedLink = sharedLink;
         this.options.sharedLinkPassword = sharedLinkPassword;
@@ -467,7 +502,9 @@ class DocBaseViewer extends BaseViewer {
         const preloadRepPaged = getRepresentation(file, PRELOAD_PAGED_REP_NAME);
         const pagedWebpRepReady = preloadRepPaged && this.isRepresentationReady(preloadRepPaged);
         const jpegRepReady = preloadRep && this.isRepresentationReady(preloadRep);
-        if ((!pagedWebpRepReady && !jpegRepReady) || !this.getViewerOption('preload')) {
+        const preloadOption = this.getViewerOption('preload');
+
+        if ((!pagedWebpRepReady && !jpegRepReady) || !preloadOption) {
             return;
         }
 

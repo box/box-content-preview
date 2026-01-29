@@ -3900,6 +3900,194 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }).not.toThrow();
                 expect(stubs.getPreloadImageRequestPromises).not.toHaveBeenCalled();
             });
+
+            test('should use staggered loading when docFirstPagesConfig is provided with priorityPages', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPreloadImageRequestPromisesByBatch for priority batch (pages 1-2)
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledWith(
+                    docBase.api,
+                    expect.any(String),
+                    1,
+                    2,
+                );
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was set up with correct delay
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should apply secondBatchDelayMs when using staggered loading', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 1,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 300,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // First batch should be called immediately
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledTimes(1);
+
+                // Wait for promise to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was called with correct delay
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 300);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should fall back to non-staggered loading when docFirstPagesConfig has no priorityPages', () => {
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 0, // Invalid/disabled
+                    maxPreloadPages: 8,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should use the legacy getPreloadImageRequestPromises path
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalled();
+                expect(getPreloadImageRequestPromisesByBatchSpy).not.toHaveBeenCalled();
+
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should only prefetch priority pages when prefetchPriorityPagesOnly is true', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    prefetchPriorityPagesOnly: true,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPreloadImageRequestPromisesByBatch for priority batch only (pages 1-2)
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledWith(
+                    docBase.api,
+                    expect.any(String),
+                    1,
+                    2,
+                );
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledTimes(1);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout was NOT called (second batch skipped)
+                expect(setTimeoutSpy).not.toHaveBeenCalled();
+
+                // Verify no additional batch was fetched
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledTimes(1);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should prefetch both batches when prefetchPriorityPagesOnly is false', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    prefetchPriorityPagesOnly: false,
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Should call getPreloadImageRequestPromisesByBatch for priority batch (pages 1-2)
+                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledWith(
+                    docBase.api,
+                    expect.any(String),
+                    1,
+                    2,
+                );
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout WAS called (second batch scheduled)
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should prefetch both batches when prefetchPriorityPagesOnly is not specified (default false)', async () => {
+                jest.useFakeTimers();
+                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                    // prefetchPriorityPagesOnly not specified
+                };
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Wait for promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                // Verify setTimeout WAS called (second batch scheduled by default)
+                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
+
+                jest.useRealTimers();
+                setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
         });
 
         describe('countPdfOperations', () => {

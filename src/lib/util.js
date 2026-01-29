@@ -792,3 +792,48 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
     }
     return promises;
 }
+
+const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
+
+/**
+ * Creates URL for a specific page number from a paged URL template
+ *
+ * @param {string} pagedPreLoadUrlWithAuth - Paged preload URL template with auth
+ * @param {number} pageNumber - The page number
+ * @return {string} URL for the specific page
+ */
+export function createPageUrl(pagedPreLoadUrlWithAuth, pageNumber) {
+    return pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${pageNumber}.webp`);
+}
+
+/**
+ * Fetches a single page image
+ *
+ * @param {Api} api - API instance for making requests
+ * @param {string} url - URL to fetch
+ * @return {Promise} Promise that resolves with blob or error
+ */
+export function fetchPageImage(api, url) {
+    return api.get(url, { type: 'blob' }).catch(e => e);
+}
+
+/**
+ * Gets preload image request promises for a range of pages
+ *
+ * @param {Api} api - API instance for making requests
+ * @param {string} pagedPreLoadUrlWithAuth - Paged preload URL template with auth
+ * @param {number} startPage - First page to fetch (inclusive)
+ * @param {number} endPage - Last page to fetch (inclusive)
+ * @return {Array<Promise>} Array of promises that resolve with blobs
+ */
+export function getPreloadImageRequestPromisesByBatch(api, pagedPreLoadUrlWithAuth, startPage, endPage) {
+    const promises = [];
+    if (!pagedPreLoadUrlWithAuth || startPage > endPage) {
+        return promises;
+    }
+    for (let i = startPage; i <= endPage; i += 1) {
+        const url = createPageUrl(pagedPreLoadUrlWithAuth, i);
+        promises.push(fetchPageImage(api, url));
+    }
+    return promises;
+}
