@@ -344,10 +344,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
     });
 
     describe('showPreloadSingleImage()', () => {
-        let mockContainer;
-
         beforeEach(() => {
-            mockContainer = document.createElement('div');
             preloader.wrapperEl = document.createElement('div');
             preloader.preloadEl = document.createElement('div');
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
