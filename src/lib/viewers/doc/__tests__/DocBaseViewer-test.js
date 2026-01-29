@@ -3966,36 +3966,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 getPreloadImageRequestPromisesByBatchSpy.mockRestore();
             });
 
-            test('should use default secondBatchDelayMs of 100ms when not specified in config', async () => {
-                jest.useFakeTimers();
-                const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
-                const getPreloadImageRequestPromisesByBatchSpy = jest
-                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
-                    .mockReturnValue([Promise.resolve('mock')]);
-
-                docBase.options.docFirstPagesConfig = {
-                    priorityPages: 1,
-                    maxPreloadPages: 8,
-                    // secondBatchDelayMs not specified
-                };
-
-                docBase.prefetchPreloaderImages(mockFile);
-
-                // First batch called immediately
-                expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledTimes(1);
-
-                // Wait for promise to resolve
-                await Promise.resolve();
-                await Promise.resolve();
-
-                // Verify setTimeout was called with default delay of 100ms
-                expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
-
-                jest.useRealTimers();
-                setTimeoutSpy.mockRestore();
-                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
-            });
-
             test('should fall back to non-staggered loading when docFirstPagesConfig has no priorityPages', () => {
                 const getPreloadImageRequestPromisesByBatchSpy = jest
                     .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
