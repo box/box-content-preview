@@ -87,23 +87,11 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {Object} - Configuration for staggered loading */
     config = {};
 
-    /** @property {boolean} - Whether first page has been rendered */
-    firstPageRendered = false;
-
     /** @property {boolean} - Whether second batch has started */
     secondBatchStarted = false;
 
     /** @property {number|null} - Timeout ID for second batch */
     secondBatchTimeoutId = null;
-
-    /** @property {Map} - Map of page number to blob data */
-    pageDataMap = new Map();
-
-    /** @property {string} - Stored paged URL for second batch */
-    storedPagedUrl = null;
-
-    /** @property {Object} - Stored docBaseViewer reference */
-    storedDocBaseViewer = null;
 
     /**
      * [constructor]
@@ -130,7 +118,14 @@ class DocFirstPreloader extends EventEmitter {
     }
 
     isStaggeredLoadingEnabled() {
-        return this.config.priorityPages !== undefined && this.config.priorityPages >= 1;
+        const { priorityPages, maxPreloadPages, secondBatchDelayMs, startSecondBatchAfterFetch } = this.config;
+        return (
+            priorityPages !== undefined &&
+            priorityPages >= 1 &&
+            maxPreloadPages !== undefined &&
+            secondBatchDelayMs !== undefined &&
+            startSecondBatchAfterFetch !== undefined
+        );
     }
 
     /**
@@ -207,10 +202,6 @@ class DocFirstPreloader extends EventEmitter {
             this.numPages = pages;
             this.isWebp = !!pagedPreLoadUrlWithAuth;
             this.initializePreloadContainerComponents(containerEl);
-
-            // Store references for second batch
-            this.storedPagedUrl = pagedPreLoadUrlWithAuth;
-            this.storedDocBaseViewer = docBaseViewer;
 
             // Use staggered loading if enabled, otherwise fall back to original behavior
             const useStaggered = this.isStaggeredLoadingEnabled() && pagedPreLoadUrlWithAuth;
@@ -314,7 +305,7 @@ class DocFirstPreloader extends EventEmitter {
      * @private
      */
     async showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
-        const { priorityPages, maxPreloadPages, secondBatchDelayMs, startSecondBatchAfterFetch = true } = this.config;
+        const { priorityPages, maxPreloadPages, secondBatchDelayMs, startSecondBatchAfterFetch } = this.config;
         const totalPages = Math.min(pages, maxPreloadPages);
 
         const blobs = await this.loadBatchAsBlobs(null, pagedPreLoadUrlWithAuth, priorityPages);
@@ -577,11 +568,7 @@ class DocFirstPreloader extends EventEmitter {
         this.preloadedImages = {};
 
         // Clear staggered loading state
-        this.firstPageRendered = false;
         this.secondBatchStarted = false;
-        this.pageDataMap.clear();
-        this.storedPagedUrl = null;
-        this.storedDocBaseViewer = null;
     };
 
     /**

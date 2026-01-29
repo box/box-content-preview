@@ -389,10 +389,10 @@ class DocBaseViewer extends BaseViewer {
 
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
                 const {
-                    priorityPages = 1,
-                    maxPreloadPages = 8,
-                    secondBatchDelayMs = 100,
-                    prefetchPriorityPagesOnly = false,
+                    priorityPages,
+                    maxPreloadPages,
+                    secondBatchDelayMs,
+                    prefetchPriorityPagesOnly,
                 } = docFirstPagesConfig;
 
                 const priorityPromises = getPreloadImageRequestPromisesByBatch(

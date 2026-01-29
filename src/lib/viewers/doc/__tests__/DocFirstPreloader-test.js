@@ -1303,23 +1303,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(scheduleCallOrder).toBeGreaterThan(processCallOrder);
         });
 
-        it('should default to true when startSecondBatchAfterFetch is not specified', async () => {
-            preloader.config = {
-                priorityPages: 1,
-                maxPreloadPages: 8,
-                secondBatchDelayMs: 100,
-                // startSecondBatchAfterFetch not specified - should default to true
-            };
-
-            await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
-
-            // Should schedule after fetch (before render) since default is true
-            expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
-            const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
-            const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
-            expect(scheduleCallOrder).toBeLessThan(renderCallOrder);
-        });
-
         it('should not schedule second batch at all when totalPages <= priorityPages', async () => {
             preloader.config = {
                 priorityPages: 8,
