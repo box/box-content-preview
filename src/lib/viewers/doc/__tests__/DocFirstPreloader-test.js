@@ -307,6 +307,110 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.showPreviewMask).toHaveBeenCalled();
             expect(preloader.emit).not.toHaveBeenCalledWith('preload');
         });
+
+        it('should dispatch to showPreloadSingleImage when only single-image URL is provided', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'showPreloadAll');
+            jest.spyOn(preloader, 'showPreloadStaggered');
+
+            await preloader.showPreload('mock-single-url', mockContainer, null, 1, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).toHaveBeenCalledWith('mock-single-url', 1, mockDocBaseViewer);
+            expect(preloader.showPreloadAll).not.toHaveBeenCalled();
+            expect(preloader.showPreloadStaggered).not.toHaveBeenCalled();
+        });
+
+        it('should dispatch to showPreloadAll when paged URL is provided and staggered is disabled', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage');
+            jest.spyOn(preloader, 'showPreloadAll').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+
+            await preloader.showPreload(null, mockContainer, 'mock-paged-url', 8, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).not.toHaveBeenCalled();
+            expect(preloader.showPreloadAll).toHaveBeenCalled();
+        });
+
+        it('should show preview mask when no preload URLs are provided', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage');
+            jest.spyOn(preloader, 'showPreloadAll');
+
+            await preloader.showPreload(null, mockContainer, null, 1, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).not.toHaveBeenCalled();
+            expect(preloader.showPreloadAll).not.toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+        });
+    });
+
+    describe('showPreloadSingleImage()', () => {
+        let mockContainer;
+
+        beforeEach(() => {
+            mockContainer = document.createElement('div');
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'emit');
+            jest.spyOn(preloader, 'showPreviewMask');
+            jest.spyOn(preloader, 'handleThumbnailToggling').mockImplementation(() => {});
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+        });
+
+        it('should fetch single image and render first page with natural dimensions', async () => {
+            const mockBlob = new Blob(['mock-image-content'], { type: 'image/jpeg' });
+            preloader.api.get = jest.fn().mockResolvedValue(mockBlob);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+
+            await preloader.showPreloadSingleImage('mock-single-url', 5, mockDocBaseViewer);
+
+            expect(preloader.api.get).toHaveBeenCalledWith('mock-single-url', { type: 'blob' });
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer, {
+                exifAvailable: false,
+            });
+            expect(preloader.handleThumbnailToggling).toHaveBeenCalledWith(mockDocBaseViewer);
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+        });
+
+        it('should show preview mask when JPEG fetch fails to render', async () => {
+            const mockBlob = new Blob(['mock-jpeg-content'], { type: 'image/jpeg' });
+            preloader.api.get = jest.fn().mockResolvedValue(mockBlob);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(false);
+
+            await preloader.showPreloadSingleImage('mock-jpeg-url', 5, mockDocBaseViewer);
+
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should not finalize if pdfJs doc load completes during render', async () => {
+            const mockBlob = new Blob(['mock-jpeg-content'], { type: 'image/jpeg' });
+            preloader.api.get = jest.fn().mockResolvedValue(mockBlob);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+
+            // Simulate pdfJs loading completing after first page renders
+            // showPreloadSingleImage checks pdfJsDocLoadComplete after renderFirstPage
+            preloader.pdfJsDocLoadComplete.mockReturnValue(true);
+
+            await preloader.showPreloadSingleImage('mock-jpeg-url', 5, mockDocBaseViewer);
+
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should append preloadEl to wrapperEl', async () => {
+            const mockBlob = new Blob(['mock-jpeg-content'], { type: 'image/jpeg' });
+            preloader.api.get = jest.fn().mockResolvedValue(mockBlob);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+
+            await preloader.showPreloadSingleImage('mock-jpeg-url', 1, mockDocBaseViewer);
+
+            expect(preloader.wrapperEl.contains(preloader.preloadEl)).toBe(true);
+        });
     });
 
     describe('addPreloadImageToPreloaderContainer()', () => {
@@ -1089,6 +1193,142 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
 
             expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
+        });
+
+        it('should use setPreloadImageDimensions when exifAvailable is true (default)', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            jest.spyOn(preloader, 'scaleImageToViewport');
+
+            await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+
+            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, testFirstImage);
+            expect(preloader.scaleImageToViewport).not.toHaveBeenCalled();
+        });
+
+        it('should use scaleImageToViewport when exifAvailable is false', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            jest.spyOn(preloader, 'scaleImageToViewport').mockImplementation(() => {});
+
+            await preloader.renderFirstPage(mockBlob, mockDocBaseViewer, { exifAvailable: false });
+
+            expect(preloader.scaleImageToViewport).toHaveBeenCalledWith(testFirstImage);
+            expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('scaleImageToViewport()', () => {
+        it('should scale image to fit viewport while maintaining aspect ratio', () => {
+            const mockImg = new Image();
+            Object.defineProperty(mockImg, 'naturalWidth', { value: 800, writable: false });
+            Object.defineProperty(mockImg, 'naturalHeight', { value: 600, writable: false });
+
+            // Setup wrapper with viewport dimensions
+            preloader.wrapperEl = document.createElement('div');
+            Object.defineProperty(preloader.wrapperEl, 'clientWidth', { value: 1000, writable: false });
+            Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 800, writable: false });
+
+            preloader.scaleImageToViewport(mockImg);
+
+            expect(preloader.imageDimensions).toBeDefined();
+            expect(preloader.imageDimensions.width).toBeGreaterThan(0);
+            expect(preloader.imageDimensions.height).toBeGreaterThan(0);
+            expect(mockImg.classList.contains('loaded')).toBe(true);
+        });
+
+        it('should not throw if wrapperEl is null', () => {
+            preloader.wrapperEl = null;
+            const mockImg = new Image();
+
+            expect(() => preloader.scaleImageToViewport(mockImg)).not.toThrow();
+        });
+
+        it('should not throw if imageEl is null', () => {
+            preloader.wrapperEl = document.createElement('div');
+
+            expect(() => preloader.scaleImageToViewport(null)).not.toThrow();
+        });
+    });
+
+    describe('estimatePdfDimensionsFromImage()', () => {
+        it('should match portrait US Letter aspect ratio (8.5x11")', () => {
+            // US Letter is 612x792 points, aspect ratio ~0.773
+            // JPEG 565x732 has ratio 0.772 which is close
+            const result = preloader.estimatePdfDimensionsFromImage(565, 732);
+
+            expect(result.width).toBe(612);
+            expect(result.height).toBe(792);
+        });
+
+        it('should match portrait A4 aspect ratio when close', () => {
+            // A4 is 595x842 points, aspect ratio ~0.707
+            // Use dimensions that produce ratio ~0.707
+            const result = preloader.estimatePdfDimensionsFromImage(595, 842);
+
+            expect(result.width).toBe(595);
+            expect(result.height).toBe(842);
+        });
+
+        it('should match landscape Letter aspect ratio', () => {
+            // Landscape Letter is 792x612 points, aspect ratio ~1.294
+            const result = preloader.estimatePdfDimensionsFromImage(732, 565);
+
+            expect(result.width).toBe(792);
+            expect(result.height).toBe(612);
+        });
+
+        it('should match landscape A4 aspect ratio when close', () => {
+            // Landscape A4 is 842x595 points, aspect ratio ~1.415
+            const result = preloader.estimatePdfDimensionsFromImage(842, 595);
+
+            expect(result.width).toBe(842);
+            expect(result.height).toBe(595);
+        });
+
+        it('should match US Legal aspect ratio', () => {
+            // US Legal is 612x1008 points, aspect ratio ~0.607
+            const result = preloader.estimatePdfDimensionsFromImage(607, 1000);
+
+            expect(result.width).toBe(612);
+            expect(result.height).toBe(1008);
+        });
+
+        it('should scale up proportionally for non-standard aspect ratios', () => {
+            // Use a very non-standard aspect ratio (4:3 = 0.75 is close to Letter, try 16:9)
+            // 16:9 = ~0.5625 is different from all standard sizes
+            const result = preloader.estimatePdfDimensionsFromImage(562, 1000);
+
+            // Should scale to fit 1024 max dimension: 562 * (1024/1000) = 575.488 → 575
+            expect(result.width).toBe(575);
+            expect(result.height).toBe(1024);
+        });
+
+        it('should scale up landscape non-standard ratios', () => {
+            // Wide aspect ratio like 21:9 (~2.33)
+            const result = preloader.estimatePdfDimensionsFromImage(1000, 429);
+
+            // Should scale to fit 1024 max dimension (width is longest)
+            expect(result.width).toBe(1024);
+            expect(result.height).toBe(439); // 429 * (1024/1000) = 439.3 → 439
+        });
+
+        it('should handle square images', () => {
+            // Square image doesn't match any standard page size
+            const result = preloader.estimatePdfDimensionsFromImage(700, 700);
+
+            // Should scale up proportionally to 1024x1024
+            expect(result.width).toBe(1024);
+            expect(result.height).toBe(1024);
+        });
+
+        it('should return best matching standard size when multiple are close', () => {
+            // Test that algorithm picks the closest match
+            const result = preloader.estimatePdfDimensionsFromImage(612, 792);
+
+            // Exact US Letter dimensions should return US Letter
+            expect(result.width).toBe(612);
+            expect(result.height).toBe(792);
         });
     });
 

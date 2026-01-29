@@ -207,22 +207,53 @@ class DocFirstPreloader extends EventEmitter {
             this.numPages = pages;
             this.isWebp = !!pagedPreLoadUrlWithAuth;
             this.initializePreloadContainerComponents(containerEl);
-
-            // Store references for second batch
             this.storedPagedUrl = pagedPreLoadUrlWithAuth;
             this.storedDocBaseViewer = docBaseViewer;
 
-            // Use staggered loading if enabled, otherwise fall back to original behavior
-            const useStaggered = this.isStaggeredLoadingEnabled() && pagedPreLoadUrlWithAuth;
+            const useStaggered = this.isStaggeredLoadingEnabled();
 
-            if (useStaggered) {
+            if (pagedPreLoadUrlWithAuth && useStaggered) {
                 await this.showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
-            } else {
+            } else if (pagedPreLoadUrlWithAuth) {
                 await this.showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
+            } else if (preloadUrlWithAuth) {
+                await this.showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer);
+            } else {
+                this.showPreviewMask();
             }
         } catch (error) {
             this.showPreviewMask();
         }
+    }
+
+    /**
+     * Shows preload using a single image representation (non-paged).
+     * This is used for documents that don't have paged representations available.
+     *
+     * @private
+     * @param {string} preloadUrlWithAuth - URL for single-image preload content with authorization
+     * @param {number} pages - Total number of pages in the document (from metadata)
+     * @param {Object} docBaseViewer - Document base viewer instance
+     * @return {Promise} Promise that resolves when preload is shown
+     */
+    async showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer) {
+        const response = await this.api.get(preloadUrlWithAuth, { type: 'blob' });
+        const blob = await handleRepresentationBlobFetch(response);
+
+        this.wrapperEl.appendChild(this.preloadEl);
+
+        if (!(await this.renderFirstPage(blob, docBaseViewer))) {
+            this.showPreviewMask();
+            return;
+        }
+
+        if (this.pdfJsDocLoadComplete()) {
+            this.wrapperEl.classList.add('loaded');
+            return;
+        }
+
+        this.handleThumbnailToggling(docBaseViewer);
+        this.finalizePreload(docBaseViewer);
     }
 
     /**
@@ -691,13 +722,17 @@ class DocFirstPreloader extends EventEmitter {
      */
     readEXIF(imageBlob, imageEl) {
         return new Promise((resolve, reject) => {
-            try {
-                let tags = {};
-                const reader = new FileReader();
-                reader.onload = () => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
                     const arrayBuffer = reader.result;
                     /* global ExifReader */
-                    tags = ExifReader.load(arrayBuffer);
+                    const tags = ExifReader.load(arrayBuffer);
+
+                    if (!tags || !tags.UserComment) {
+                        reject(new Error('No EXIF UserComment found'));
+                        return;
+                    }
 
                     const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
@@ -751,15 +786,15 @@ class DocFirstPreloader extends EventEmitter {
                         pdfHeight,
                         numPages,
                     });
-                };
+                } catch (parseError) {
+                    reject(new Error(`Error parsing EXIF data: ${parseError.message}`));
+                }
+            };
 
-                reader.onerror = () => {
-                    reject(new Error('Error reading blob as ArrayBuffer'));
-                };
-                reader.readAsArrayBuffer(imageBlob);
-            } catch (e) {
-                reject(new Error('Error reading EXIF data'));
-            }
+            reader.onerror = () => {
+                reject(new Error('Error reading blob as ArrayBuffer'));
+            };
+            reader.readAsArrayBuffer(imageBlob);
         });
     }
 
