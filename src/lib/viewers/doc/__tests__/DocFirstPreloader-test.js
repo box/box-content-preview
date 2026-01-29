@@ -120,180 +120,16 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
 
         it('should set isWebp to true if pagedPreLoadUrlWithAuth is provided', async () => {
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(preloader, 'showPreloadAll').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
             await preloader.showPreload(null, mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(true);
         });
 
         it('should set isWebp to false if pagedPreLoadUrlWithAuth is not provided', async () => {
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
             await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(false);
-        });
-
-        it('should handle thubmnail sidebar correctly', async () => {
-            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockPromises = [Promise.resolve(mockBlob)];
-            jest.spyOn(preloader, 'loadImage').mockReturnValue(new Image(100, 200));
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
-            expect(mockElement.style.display).toBe('none');
-            expect(mockDocBaseViewer.emit).toHaveBeenCalledWith(VIEWER_EVENT.thumbnailsOpen);
-            expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PRELOAD_COMPLETE)).toBe(true);
-            expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN)).toBe(true);
-        });
-
-        it('should initialize preload components and fetch preload images and add images in order', async () => {
-            const mockBlob = new Blob(['mock-content1'], { type: 'image/webp' });
-            const mockBlob2 = new Blob(['mock-content2'], { type: 'image/webp' });
-            const mockBlob3 = new Blob(['mock-content3'], { type: 'image/webp' });
-            const mockBlob4 = new Blob(['mock-content4'], { type: 'image/webp' });
-            const mockPromises = [
-                Promise.resolve(mockBlob),
-                Promise.resolve(mockBlob2),
-                Promise.resolve(mockBlob3),
-                Promise.resolve(mockBlob4),
-            ];
-
-            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
-            jest.spyOn(preloader, 'initializePreloadContainerComponents');
-
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
-                if (blob === mockBlob) {
-                    return 'mock-object-url1';
-                }
-                if (blob === mockBlob2) {
-                    return 'mock-object-url2';
-                }
-                if (blob === mockBlob3) {
-                    return 'mock-object-url3';
-                }
-                if (blob === mockBlob4) {
-                    return 'mock-object-url4';
-                }
-                return '';
-            });
-            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 4, mockDocBaseViewer);
-            expect(preloader.numPages).toBe(4);
-            expect(preloader.retrievedPagesCount).toBe(4);
-            expect(preloader.initializePreloadContainerComponents).toHaveBeenCalledWith(mockContainer);
-            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                mockApi,
-                'mock-url',
-                4,
-                'mock-paged-image-url',
-            );
-            expect(Object.keys(preloader.preloadedImages).length).toBe(4);
-            expect(preloader.preloadedImages[1]).toBe('mock-object-url1');
-            expect(preloader.preloadedImages[2]).toBe('mock-object-url2');
-            expect(preloader.preloadedImages[3]).toBe('mock-object-url3');
-            expect(preloader.preloadedImages[4]).toBe('mock-object-url4');
-            expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, mockFirstImage);
-            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
-            expect(preloader.emit).toHaveBeenCalledWith('preload');
-            expect(preloader.loadTime).toBeDefined();
-            expect(preloader.hidePreviewMask).toHaveBeenCalled();
-            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
-        });
-
-        it('should emit firstRender event after first image is added to container', async () => {
-            const mockBlob = new Blob(['mock-content1'], { type: 'image/webp' });
-            const mockPromises = [Promise.resolve(mockBlob)];
-
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(preloader, 'emit');
-            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(false);
-
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
-
-            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
-        });
-
-        it('should stop on first image retrieval failure', async () => {
-            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockPromises = [Promise.resolve(new Error('error')), Promise.resolve(mockBlob)];
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 2, mockDocBaseViewer);
-            expect(preloader.retrievedPagesCount).toBe(0);
-            expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
-            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
-            expect(preloader.emit).not.toHaveBeenCalled();
-            expect(preloader.loadTime).toBeUndefined();
-            expect(preloader.showPreviewMask).toHaveBeenCalled();
-            expect(preloader.hidePreviewMask).toHaveBeenCalled();
-        });
-
-        it('should only show the first image if a failure occurs in the second image but not the third', async () => {
-            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockPromises = [
-                Promise.resolve(mockBlob),
-                Promise.resolve(new Error('error')),
-                Promise.resolve(mockBlob),
-            ];
-
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
-
-            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 3, mockDocBaseViewer);
-            expect(preloader.retrievedPagesCount).toBe(1);
-            expect(preloader.preloadedImages[1]).toBe('mock-object-url');
-            expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
-            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
-            expect(preloader.emit).toHaveBeenCalled();
-            expect(preloader.loadTime).not.toBeUndefined();
-        });
-
-        it('should only add pages in order and stop as soon as there is an error', async () => {
-            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockBlob2 = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockBlob4 = new Blob(['mock-content'], { type: 'image/webp' });
-            const mockPromises = [
-                Promise.resolve(mockBlob),
-                Promise.resolve(mockBlob2),
-                Promise.resolve(new Error('error')),
-                Promise.resolve(mockBlob4),
-            ];
-
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-object-url');
-            jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
-                if (blob === mockBlob) {
-                    return 'mock-object-url1';
-                }
-                if (blob === mockBlob2) {
-                    return 'mock-object-url2';
-                }
-                if (blob === mockBlob4) {
-                    return 'mock-object-url4';
-                }
-                return '';
-            });
-
-            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 4, mockDocBaseViewer);
-            expect(preloader.retrievedPagesCount).toBe(2);
-            expect(preloader.preloadedImages[1]).toBe('mock-object-url1');
-            expect(preloader.preloadedImages[2]).toBe('mock-object-url2');
-            expect(preloader.setPreloadImageDimensions).toHaveBeenCalled();
-            expect(mockDocBaseViewer.rootEl.classList.contains('bp-thumbnails-open')).toBe(true);
-            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
-            expect(preloader.emit).toHaveBeenCalled();
-            expect(preloader.loadTime).not.toBeUndefined();
-        });
-
-        it('should show preview mask when Promise.all chain fails', async () => {
-            const mockPromises = [Promise.reject(new Error('Network error'))];
-            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue(mockPromises);
-
-            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
-
-            expect(preloader.hidePreviewMask).toHaveBeenCalled();
-            expect(preloader.showPreviewMask).toHaveBeenCalled();
-            expect(preloader.emit).not.toHaveBeenCalledWith('preload');
         });
 
         it('should show preview mask when initialization throws an error', async () => {
@@ -343,6 +179,89 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
+    describe('showPreloadAll()', () => {
+        let mockBlob;
+        let mockBlob2;
+        let mockBlob3;
+        let mockBlob4;
+
+        beforeEach(() => {
+            mockBlob = new Blob(['mock-content1'], { type: 'image/webp' });
+            mockBlob2 = new Blob(['mock-content2'], { type: 'image/webp' });
+            mockBlob3 = new Blob(['mock-content3'], { type: 'image/webp' });
+            mockBlob4 = new Blob(['mock-content4'], { type: 'image/webp' });
+            
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+            
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'loadBatchAsBlobs');
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            jest.spyOn(preloader, 'processAdditionalPages').mockResolvedValue();
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'showPreviewMask');
+        });
+
+        it('should handle thumbnail sidebar correctly', async () => {
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob]);
+            preloader.finalizePreload.mockRestore();
+            jest.spyOn(preloader, 'finalizePreload');
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
+            
+            await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 1, mockDocBaseViewer);
+            
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
+        });
+
+        it('should fetch preload images and add images in order', async () => {
+            const mockBlobs = [mockBlob, mockBlob2, mockBlob3, mockBlob4];
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue(mockBlobs);
+            jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+                if (blob === mockBlob) return 'mock-object-url1';
+                if (blob === mockBlob2) return 'mock-object-url2';
+                if (blob === mockBlob3) return 'mock-object-url3';
+                if (blob === mockBlob4) return 'mock-object-url4';
+                return '';
+            });
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
+            
+            await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 4, mockDocBaseViewer);
+            
+            expect(preloader.loadBatchAsBlobs).toHaveBeenCalledWith('mock-url', 'mock-paged-image-url', 4);
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
+            expect(preloader.processAdditionalPages).toHaveBeenCalledWith([mockBlob2, mockBlob3, mockBlob4], mockDocBaseViewer);
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+        });
+
+        it('should stop on first image retrieval failure', async () => {
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([new Error('error'), mockBlob]);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(false);
+            
+            await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 2, mockDocBaseViewer);
+            
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should handle early pdfJs doc load completion', async () => {
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob]);
+            preloader.renderFirstPage.mockRestore();
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            const pdfJsMock = jest.spyOn(preloader, 'pdfJsDocLoadComplete')
+                .mockReturnValueOnce(true);  // After rendering first page (line 275)
+            
+            await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 1, mockDocBaseViewer);
+            
+            expect(pdfJsMock).toHaveBeenCalledTimes(1);
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+    });
+
     describe('showPreloadSingleImage()', () => {
         beforeEach(() => {
             preloader.wrapperEl = document.createElement('div');
@@ -363,9 +282,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             await preloader.showPreloadSingleImage('mock-single-url', 5, mockDocBaseViewer);
 
             expect(preloader.api.get).toHaveBeenCalledWith('mock-single-url', { type: 'blob' });
-            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer, {
-                exifAvailable: false,
-            });
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
             expect(preloader.handleThumbnailToggling).toHaveBeenCalledWith(mockDocBaseViewer);
             expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
         });
@@ -388,8 +305,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
             jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
 
-            // Simulate pdfJs loading completing after first page renders
-            // showPreloadSingleImage checks pdfJsDocLoadComplete after renderFirstPage
             preloader.pdfJsDocLoadComplete.mockReturnValue(true);
 
             await preloader.showPreloadSingleImage('mock-jpeg-url', 5, mockDocBaseViewer);
@@ -656,7 +571,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const pdfHeight = 600;
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
-            // Expect height scale to be used
             const expectedScale = (clientHeight - pdfjsHeightCSSUnits) / pdfHeight;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
@@ -674,7 +588,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const pdfHeight = 500;
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
-            // Expect width scale to be used
             const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
@@ -692,7 +605,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const pdfHeight = 1000;
             const scaledDimensions = preloader.getScaledDimensions(pdfWidth, pdfHeight);
 
-            // Expect width scale to be used
             const expectedScale = (clientWidth - pdfjsHWidthCSSUnits) / pdfWidth;
             expect(scaledDimensions).toEqual({
                 scaledWidth: Math.floor(expectedScale * pdfWidth),
@@ -723,17 +635,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         let docEl;
 
         beforeEach(() => {
-            // Create a document element with the expected class
             docEl = document.createElement('div');
             docEl.className = 'bp-doc';
 
-            // Set up the wrapper element with a parent node that contains the doc element
             preloader.wrapperEl = document.createElement('div');
             const parentNode = document.createElement('div');
             parentNode.appendChild(preloader.wrapperEl);
             parentNode.appendChild(docEl);
 
-            // Mock the scrollTop property
             Object.defineProperty(preloader.wrapperEl, 'scrollTop', {
                 value: 0,
                 writable: true,
@@ -741,35 +650,26 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
 
         test('should restore scroll position when scrollTop is greater than 0', () => {
-            // Set a non-zero scroll position
             preloader.wrapperEl.scrollTop = 150;
 
-            // Call the method
             preloader.restoreScrollPosition();
 
-            // Verify the document element's scroll position was updated
             expect(docEl.scrollTop).toBe(150);
         });
 
         test('should not restore scroll position when scrollTop is 0', () => {
-            // Set scroll position to 0
             preloader.wrapperEl.scrollTop = 0;
 
-            // Call the method
             preloader.restoreScrollPosition();
 
-            // Verify the document element's scroll position was not updated
             expect(docEl.scrollTop).toBe(0);
         });
 
         test('should not throw error when document element is not found', () => {
-            // Remove the document element
             docEl.remove();
 
-            // Set a non-zero scroll position
             preloader.wrapperEl.scrollTop = 150;
 
-            // Call the method - should not throw an error
             expect(() => preloader.restoreScrollPosition()).not.toThrow();
         });
     });
@@ -781,7 +681,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         let mockScaledDimensions;
         let readExif;
         beforeEach(() => {
-            // Create mock image blob and element
             mockImageBlob = new Blob(['mock-image-data'], { type: 'image/jpeg' });
 
             const mockImage = {
@@ -797,26 +696,22 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             });
             mockImageEl = document.createElement('img');
 
-            // Mock PDF data that would be returned from readEXIF
             mockPdfData = {
                 pdfWidth: 1000,
                 pdfHeight: 800,
                 numPages: 5,
             };
 
-            // Mock scaled dimensions that would be returned from getScaledWidthAndHeight
             mockScaledDimensions = {
                 scaledWidth: 900,
                 scaledHeight: 720,
             };
 
-            // Mock the methods used by setPreloadImageDimensions
             jest.spyOn(preloader, 'readEXIF').mockImplementation(() => Promise.resolve(mockPdfData));
             jest.spyOn(preloader, 'getScaledWidthAndHeight').mockReturnValue(mockScaledDimensions);
             jest.spyOn(preloader, 'getScaledDimensions').mockReturnValue(mockScaledDimensions);
             readExif = jest.spyOn(preloader, 'readEXIF');
 
-            // Set up wrapperEl for getScaledDimensions
             preloader.wrapperEl = document.createElement('div');
             Object.defineProperty(preloader.wrapperEl, 'clientWidth', { value: 1000, writable: true });
             Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 800, writable: true });
@@ -843,7 +738,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
 
         it('should fall back to natural dimensions when EXIF data is not available', async () => {
-            // Mock readEXIF to reject
             jest.spyOn(preloader, 'readEXIF').mockImplementation(() => Promise.reject(new Error('EXIF error')));
 
             await preloader.setPreloadImageDimensions(mockImageBlob, mockImageEl);
@@ -874,69 +768,52 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 scaledHeight: 800,
             };
 
-            // Mock the getScaledDimensions method
             jest.spyOn(preloader, 'getScaledDimensions').mockReturnValue(mockScaledDimensions);
         });
 
         test('should return the scaled width and height from getScaledDimensions', () => {
-            // Call the method
             const result = preloader.getScaledWidthAndHeight(mockPdfData);
 
-            // Verify getScaledDimensions was called with the correct parameters
             expect(preloader.getScaledDimensions).toHaveBeenCalledWith(mockPdfData.pdfWidth, mockPdfData.pdfHeight);
 
-            // Verify the returned object matches the mock scaled dimensions
             expect(result).toEqual(mockScaledDimensions);
         });
     });
 
     describe('hidePreviewMask()', () => {
         it('should hide the preview mask element when it exists', () => {
-            // Call the method
             preloader.hidePreviewMask();
 
-            // Verify that getElementsByClassName was called with the correct class name
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
 
-            // Verify that the display style was set to 'none'
             expect(mockElement.style.display).toBe('none');
         });
 
         it('should not throw an error when preview mask element does not exist', () => {
-            // Mock getElementsByClassName to return an empty array
             jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
 
-            // Call the method - should not throw an error
             expect(() => preloader.hidePreviewMask()).not.toThrow();
 
-            // Verify that getElementsByClassName was called
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
         });
     });
 
     describe('showPreviewMask()', () => {
         it('should show the preview mask element when it exists', () => {
-            // Set initial display style to 'none' to simulate hidden state
             mockElement.style.display = 'none';
 
-            // Call the method
             preloader.showPreviewMask();
 
-            // Verify that getElementsByClassName was called with the correct class name
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
 
-            // Verify that the display style was set to empty string (default display)
             expect(mockElement.style.display).toBe('');
         });
 
         it('should not throw an error when preview mask element does not exist', () => {
-            // Mock getElementsByClassName to return an empty array
             jest.spyOn(document, 'getElementsByClassName').mockReturnValue([]);
 
-            // Call the method - should not throw an error
             expect(() => preloader.showPreviewMask()).not.toThrow();
 
-            // Verify that getElementsByClassName was called
             expect(document.getElementsByClassName).toHaveBeenCalledWith('bcpr-PreviewMask');
         });
     });
@@ -946,7 +823,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         const heightDimension = 456;
 
         beforeEach(() => {
-            // Set up preloader instance
             preloader.pdfData = { numPages: 5 };
             preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.preloadEl = document.createElement('div');
@@ -981,7 +857,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             const data = [new Blob(), new Blob()];
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
-            // Only the loaded image placeholders should be present, not empty placeholders
             expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
@@ -992,17 +867,14 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.imageDimensions = { width: widthDimension, height: heightDimension };
             preloader.pdfData = { numPages: 5 };
             preloader.processAdditionalPages(data);
-            // processAdditionalPages no longer adds placeholders - only 3 loaded placeholders
             const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
             expect(placeholders.length).toBe(3);
         });
 
         it('should not add empty placeholders (handled by finalizePreload)', () => {
-            // 7 additional doc first pages, total will be 8 including the first one.
             const data = [new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob(), new Blob()];
             preloader.pdfData = { numPages: 321 };
             preloader.processAdditionalPages(data);
-            // Only loaded placeholders for actual images, no empty placeholders
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(8);
         });
 
@@ -1192,140 +1064,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
         });
 
-        it('should use setPreloadImageDimensions when exifAvailable is true (default)', async () => {
+        it('should always use setPreloadImageDimensions', async () => {
             const mockBlob = new Blob(['test'], { type: 'image/webp' });
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
-            jest.spyOn(preloader, 'scaleImageToViewport');
 
             await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
 
             expect(preloader.setPreloadImageDimensions).toHaveBeenCalledWith(mockBlob, testFirstImage);
-            expect(preloader.scaleImageToViewport).not.toHaveBeenCalled();
-        });
-
-        it('should use scaleImageToViewport when exifAvailable is false', async () => {
-            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
-            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
-            jest.spyOn(preloader, 'scaleImageToViewport').mockImplementation(() => {});
-
-            await preloader.renderFirstPage(mockBlob, mockDocBaseViewer, { exifAvailable: false });
-
-            expect(preloader.scaleImageToViewport).toHaveBeenCalledWith(testFirstImage);
-            expect(preloader.setPreloadImageDimensions).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('scaleImageToViewport()', () => {
-        it('should scale image to fit viewport while maintaining aspect ratio', () => {
-            const mockImg = new Image();
-            Object.defineProperty(mockImg, 'naturalWidth', { value: 800, writable: false });
-            Object.defineProperty(mockImg, 'naturalHeight', { value: 600, writable: false });
-
-            // Setup wrapper with viewport dimensions
-            preloader.wrapperEl = document.createElement('div');
-            Object.defineProperty(preloader.wrapperEl, 'clientWidth', { value: 1000, writable: false });
-            Object.defineProperty(preloader.wrapperEl, 'clientHeight', { value: 800, writable: false });
-
-            preloader.scaleImageToViewport(mockImg);
-
-            expect(preloader.imageDimensions).toBeDefined();
-            expect(preloader.imageDimensions.width).toBeGreaterThan(0);
-            expect(preloader.imageDimensions.height).toBeGreaterThan(0);
-            expect(mockImg.classList.contains('loaded')).toBe(true);
-        });
-
-        it('should not throw if wrapperEl is null', () => {
-            preloader.wrapperEl = null;
-            const mockImg = new Image();
-
-            expect(() => preloader.scaleImageToViewport(mockImg)).not.toThrow();
-        });
-
-        it('should not throw if imageEl is null', () => {
-            preloader.wrapperEl = document.createElement('div');
-
-            expect(() => preloader.scaleImageToViewport(null)).not.toThrow();
-        });
-    });
-
-    describe('estimatePdfDimensionsFromImage()', () => {
-        it('should match portrait US Letter aspect ratio (8.5x11")', () => {
-            // US Letter is 612x792 points, aspect ratio ~0.773
-            // JPEG 565x732 has ratio 0.772 which is close
-            const result = preloader.estimatePdfDimensionsFromImage(565, 732);
-
-            expect(result.width).toBe(612);
-            expect(result.height).toBe(792);
-        });
-
-        it('should match portrait A4 aspect ratio when close', () => {
-            // A4 is 595x842 points, aspect ratio ~0.707
-            // Use dimensions that produce ratio ~0.707
-            const result = preloader.estimatePdfDimensionsFromImage(595, 842);
-
-            expect(result.width).toBe(595);
-            expect(result.height).toBe(842);
-        });
-
-        it('should match landscape Letter aspect ratio', () => {
-            // Landscape Letter is 792x612 points, aspect ratio ~1.294
-            const result = preloader.estimatePdfDimensionsFromImage(732, 565);
-
-            expect(result.width).toBe(792);
-            expect(result.height).toBe(612);
-        });
-
-        it('should match landscape A4 aspect ratio when close', () => {
-            // Landscape A4 is 842x595 points, aspect ratio ~1.415
-            const result = preloader.estimatePdfDimensionsFromImage(842, 595);
-
-            expect(result.width).toBe(842);
-            expect(result.height).toBe(595);
-        });
-
-        it('should match US Legal aspect ratio', () => {
-            // US Legal is 612x1008 points, aspect ratio ~0.607
-            const result = preloader.estimatePdfDimensionsFromImage(607, 1000);
-
-            expect(result.width).toBe(612);
-            expect(result.height).toBe(1008);
-        });
-
-        it('should scale up proportionally for non-standard aspect ratios', () => {
-            // Use a very non-standard aspect ratio (4:3 = 0.75 is close to Letter, try 16:9)
-            // 16:9 = ~0.5625 is different from all standard sizes
-            const result = preloader.estimatePdfDimensionsFromImage(562, 1000);
-
-            // Should scale to fit 1024 max dimension: 562 * (1024/1000) = 575.488 → 575
-            expect(result.width).toBe(575);
-            expect(result.height).toBe(1024);
-        });
-
-        it('should scale up landscape non-standard ratios', () => {
-            // Wide aspect ratio like 21:9 (~2.33)
-            const result = preloader.estimatePdfDimensionsFromImage(1000, 429);
-
-            // Should scale to fit 1024 max dimension (width is longest)
-            expect(result.width).toBe(1024);
-            expect(result.height).toBe(439); // 429 * (1024/1000) = 439.3 → 439
-        });
-
-        it('should handle square images', () => {
-            // Square image doesn't match any standard page size
-            const result = preloader.estimatePdfDimensionsFromImage(700, 700);
-
-            // Should scale up proportionally to 1024x1024
-            expect(result.width).toBe(1024);
-            expect(result.height).toBe(1024);
-        });
-
-        it('should return best matching standard size when multiple are close', () => {
-            // Test that algorithm picks the closest match
-            const result = preloader.estimatePdfDimensionsFromImage(612, 792);
-
-            // Exact US Letter dimensions should return US Letter
-            expect(result.width).toBe(612);
-            expect(result.height).toBe(792);
         });
     });
 
@@ -1510,11 +1255,9 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
 
-            // scheduleSecondBatch should be called exactly once (after fetch, before render)
             expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
             expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
 
-            // Verify it was called before renderFirstPage by checking call order
             const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
             const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
             expect(scheduleCallOrder).toBeLessThan(renderCallOrder);
@@ -1530,11 +1273,9 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
 
-            // scheduleSecondBatch should be called exactly once (after rendering)
             expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
             expect(preloader.scheduleSecondBatch).toHaveBeenCalledWith('paged-url', 2, 8, mockDocBaseViewer, 100);
 
-            // Verify it was called after processAdditionalPages by checking call order
             const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
             const processCallOrder = preloader.processAdditionalPages.mock.invocationCallOrder[0];
             expect(scheduleCallOrder).toBeGreaterThan(processCallOrder);
@@ -1545,12 +1286,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 priorityPages: 1,
                 maxPreloadPages: 8,
                 secondBatchDelayMs: 100,
-                // startSecondBatchAfterFetch not specified - should default to true
             };
 
             await preloader.showPreloadStaggered(null, 'paged-url', 8, mockDocBaseViewer);
 
-            // Should schedule after fetch (before render) since default is true
             expect(preloader.scheduleSecondBatch).toHaveBeenCalledTimes(1);
             const scheduleCallOrder = preloader.scheduleSecondBatch.mock.invocationCallOrder[0];
             const renderCallOrder = preloader.renderFirstPage.mock.invocationCallOrder[0];
@@ -1567,7 +1306,6 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             await preloader.showPreloadStaggered(null, 'paged-url', 5, mockDocBaseViewer);
 
-            // Should not schedule second batch since totalPages (5) <= priorityPages (8)
             expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
             expect(preloader.finalizePreload).toHaveBeenCalled();
         });
