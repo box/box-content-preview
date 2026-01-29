@@ -1,8 +1,6 @@
 import DocFirstPreloader from '../DocFirstPreloader';
 import Api from '../../../api';
 import * as util from '../../../util';
-import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
-import { VIEWER_EVENT } from '../../../events';
 
 jest.mock('../../../api');
 
@@ -190,11 +188,11 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             mockBlob2 = new Blob(['mock-content2'], { type: 'image/webp' });
             mockBlob3 = new Blob(['mock-content3'], { type: 'image/webp' });
             mockBlob4 = new Blob(['mock-content4'], { type: 'image/webp' });
-            
+
             preloader.wrapperEl = document.createElement('div');
             preloader.preloadEl = document.createElement('div');
             preloader.imageDimensions = { width: 100, height: 100 };
-            
+
             jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
             jest.spyOn(preloader, 'loadBatchAsBlobs');
             jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
@@ -208,9 +206,9 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.finalizePreload.mockRestore();
             jest.spyOn(preloader, 'finalizePreload');
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            
+
             await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 1, mockDocBaseViewer);
-            
+
             expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
         });
@@ -226,21 +224,24 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 return '';
             });
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(true);
-            
+
             await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 4, mockDocBaseViewer);
-            
+
             expect(preloader.loadBatchAsBlobs).toHaveBeenCalledWith('mock-url', 'mock-paged-image-url', 4);
             expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
-            expect(preloader.processAdditionalPages).toHaveBeenCalledWith([mockBlob2, mockBlob3, mockBlob4], mockDocBaseViewer);
+            expect(preloader.processAdditionalPages).toHaveBeenCalledWith(
+                [mockBlob2, mockBlob3, mockBlob4],
+                mockDocBaseViewer,
+            );
             expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
         });
 
         it('should stop on first image retrieval failure', async () => {
             jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([new Error('error'), mockBlob]);
             jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(false);
-            
+
             await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 2, mockDocBaseViewer);
-            
+
             expect(preloader.showPreviewMask).toHaveBeenCalled();
             expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
             expect(preloader.finalizePreload).not.toHaveBeenCalled();
@@ -250,11 +251,10 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob]);
             preloader.renderFirstPage.mockRestore();
             jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
-            const pdfJsMock = jest.spyOn(preloader, 'pdfJsDocLoadComplete')
-                .mockReturnValueOnce(true);  // After rendering first page (line 275)
-            
+            const pdfJsMock = jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValueOnce(true); // After rendering first page (line 275)
+
             await preloader.showPreloadAll('mock-url', 'mock-paged-image-url', 1, mockDocBaseViewer);
-            
+
             expect(pdfJsMock).toHaveBeenCalledTimes(1);
             expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
             expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
