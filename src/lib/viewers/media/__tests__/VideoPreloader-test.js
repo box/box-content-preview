@@ -204,6 +204,25 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.sizeContainerToViewport).toBeCalled();
             expect(videoPreloader.emit).toBeCalledWith('preload');
         });
+
+        test('should call sizeContainerToViewport with options.viewport when provided', () => {
+            videoPreloader.preloadOptions = { viewport: { width: 800, height: 450 } };
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 800, height: 450 });
+        });
+
+        test('should add click listener and invoke onImageClick when wrapper is clicked', () => {
+            const onImageClick = jest.fn();
+            videoPreloader.preloadOptions = { onImageClick };
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.wrapperEl.style.cursor).toBe('pointer');
+            videoPreloader.wrapperEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(onImageClick).toBeCalled();
+        });
     });
 
     describe('sizeContainerToViewport()', () => {
@@ -227,6 +246,14 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.containerEl.style.width).toBe('');
         });
 
+        test('should use viewportOverride when provided', () => {
+            videoPreloader.sizeContainerToViewport({ width: 640, height: 360 });
+
+            expect(videoPreloader.containerEl.style.width).toBe('640px');
+            const height = parseFloat(videoPreloader.containerEl.style.height);
+            expect(height).toBeCloseTo(360, 0);
+        });
+
         test('should find .bp-content wrapper by traversing DOM', () => {
             const contentWrapper = document.querySelector(`.${CLASS_BOX_PREVIEW_CONTENT}`);
             Object.defineProperty(contentWrapper, 'clientWidth', { value: 1200, writable: false });
@@ -248,8 +275,9 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             videoPreloader.sizeContainerToViewport();
 
-            // Should use parentNode (bp-media) as fallback and set width to calculated pixel value
-            expect(videoPreloader.containerEl.style.width).toBe('1000px');
+            // Should use parentNode (bp-media) as fallback; width constrained by viewport height minus control bar
+            // viewport height = 600 - 120 = 480; aspect 1920/1080; finalWidth = 480 * (1920/1080) ≈ 853.33
+            expect(videoPreloader.containerEl.style.width).toBe('853.3333333333333px');
         });
 
         test('should apply minimum width when viewport is smaller', () => {

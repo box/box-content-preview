@@ -10,6 +10,7 @@ import {
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
     MIN_VIDEO_WIDTH_PX,
+    VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
 } from '../../constants';
 import { handleRepresentationBlobFetch } from '../../util';
 
@@ -59,10 +60,14 @@ class VideoPreloader extends EventEmitter {
      *
      * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
      * @param {HTMLElement} containerEl - Container element to append preload to
+     * @param {Object} [options] - Optional options
+     * @param {Object} [options.viewport] - { width, height } to use for sizing (same as video viewport to avoid jump)
+     * @param {Function} [options.onImageClick] - Called when user clicks the preload image
      * @return {Promise} Promise to show preload
      */
-    showPreload(preloadUrlWithAuth, containerEl) {
+    showPreload(preloadUrlWithAuth, containerEl, options = {}) {
         this.containerEl = containerEl;
+        this.preloadOptions = options;
 
         return this.api
             .get(preloadUrlWithAuth, { type: 'blob' })
@@ -176,6 +181,10 @@ class VideoPreloader extends EventEmitter {
             this.imageEl.removeEventListener('load', this.loadHandler);
             this.imageEl.removeEventListener('error', this.errorHandler);
         }
+        if (this.wrapperEl && this.imageClickHandler) {
+            this.wrapperEl.removeEventListener('click', this.imageClickHandler);
+            this.imageClickHandler = undefined;
+        }
     }
 
     /**
@@ -189,12 +198,10 @@ class VideoPreloader extends EventEmitter {
             return;
         }
 
-        // Show preload element after image is loaded
+        this.sizeContainerToViewport(this.preloadOptions?.viewport);
+
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
 
-        // Make media wrapper visible so thumbnail can be seen
-        // The media wrapper (bp-media) is hidden by default and only shown when video is ready
-        // We need to show it early so the thumbnail is visible
         if (this.containerEl && this.containerEl.parentNode) {
             const mediaWrapper = this.containerEl.parentNode;
             if (mediaWrapper && mediaWrapper.classList && mediaWrapper.classList.contains('bp-media')) {
@@ -202,11 +209,17 @@ class VideoPreloader extends EventEmitter {
             }
         }
 
-        // Size the container based on viewport and image aspect ratio to prevent jarring transition
-        // This matches the logic in VideoBaseViewer.setVideoDimensions()
-        this.sizeContainerToViewport();
+        const onImageClick = this.preloadOptions?.onImageClick;
+        if (onImageClick && this.wrapperEl) {
+            this.wrapperEl.style.cursor = 'pointer';
+            this.imageClickHandler = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                onImageClick();
+            };
+            this.wrapperEl.addEventListener('click', this.imageClickHandler);
+        }
 
-        // Emit message that preload has occurred
         this.emit('preload');
     };
 
@@ -214,40 +227,46 @@ class VideoPreloader extends EventEmitter {
      * Sizes the container based on viewport dimensions and image aspect ratio to match video player sizing.
      * This prevents the thumbnail from appearing small and then jumping to the correct size.
      *
-     * @private
+     * @param {Object} [viewportOverride] - Optional { width, height }; when provided, use instead of walking DOM (same as video viewport)
      * @return {void}
      */
-    sizeContainerToViewport() {
+    sizeContainerToViewport(viewportOverride) {
         if (!this.containerEl || !this.imageEl) {
             return;
         }
 
-        // Find the preview content wrapper (.bp-content) which has the viewport dimensions
-        let contentWrapper = this.containerEl;
-        while (contentWrapper && contentWrapper.parentNode) {
-            contentWrapper = contentWrapper.parentNode;
-            if (contentWrapper.classList && contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)) {
-                break;
-            }
-        }
-
-        // If we couldn't find the content wrapper, use the container's parent as fallback
+        let viewport;
         if (
-            !contentWrapper ||
-            !contentWrapper.classList ||
-            !contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)
+            viewportOverride &&
+            typeof viewportOverride.width === 'number' &&
+            typeof viewportOverride.height === 'number'
         ) {
-            contentWrapper = this.containerEl.parentNode;
-            if (!contentWrapper) {
-                return;
+            viewport = { width: viewportOverride.width, height: viewportOverride.height };
+        } else {
+            let contentWrapper = this.containerEl;
+            while (contentWrapper && contentWrapper.parentNode) {
+                contentWrapper = contentWrapper.parentNode;
+                if (contentWrapper.classList && contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)) {
+                    break;
+                }
             }
-        }
 
-        // Calculate viewport dimensions (similar to VideoBaseViewer.setVideoDimensions())
-        const viewport = {
-            height: contentWrapper.clientHeight,
-            width: contentWrapper.clientWidth,
-        };
+            if (
+                !contentWrapper ||
+                !contentWrapper.classList ||
+                !contentWrapper.classList.contains(CLASS_BOX_PREVIEW_CONTENT)
+            ) {
+                contentWrapper = this.containerEl.parentNode;
+                if (!contentWrapper) {
+                    return;
+                }
+            }
+
+            viewport = {
+                height: contentWrapper.clientHeight - VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
+                width: contentWrapper.clientWidth,
+            };
+        }
 
         // Apply minimum width to match video sizing logic
         // This ensures controls don't overflow

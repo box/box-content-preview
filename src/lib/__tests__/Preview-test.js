@@ -1525,9 +1525,12 @@ describe('lib/Preview', () => {
             stubs.handleFileInfoResponse = jest.spyOn(preview, 'handleFileInfoResponse');
             stubs.handleFetchError = jest.spyOn(preview, 'handleFetchError');
             stubs.getURL = jest.spyOn(file, 'getURL').mockReturnValue('/get_url');
+            preview.open = true;
             preview.file = {
-                id: 0,
+                id: 1,
             };
+            preview.fileInfoRequestInFlight = false;
+            preview.options.apiHost = 'https://api.example.com';
         });
 
         test('should handle load response on a successful get', () => {
@@ -1542,7 +1545,7 @@ describe('lib/Preview', () => {
 
         test('should start a Timer for file info timing', () => {
             const startStub = jest.spyOn(Timer, 'start');
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            const expectedTag = Timer.createTag(1, LOAD_METRIC.fileInfoTime);
             preview.loadFromServer();
             expect(startStub).toHaveBeenCalledWith(expectedTag);
         });

@@ -1,6 +1,7 @@
 import MP4Viewer from '../MP4Viewer';
 import BaseViewer from '../../BaseViewer';
 import { VIEWER_EVENT } from '../../../events';
+import { PRELOAD_REP_NAME } from '../../../constants';
 
 const sandbox = sinon.createSandbox();
 let mp4;
@@ -42,6 +43,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
         mp4.mediaEl = {
             addEventListener: jest.fn(),
             removeEventListener: jest.fn(),
+            classList: { add: jest.fn(), remove: jest.fn() },
             paused: false,
             volume: 1,
             buffered: {},
@@ -139,6 +141,19 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(mp4.loadUI).not.toHaveBeenCalled();
             expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
             expect(mp4.setMediaTime).toHaveBeenCalledWith(10);
+        });
+    });
+
+    describe('load()', () => {
+        test('should not emit VIEWER_EVENT.load when representation is PRELOAD_REP_NAME (JPG-only)', () => {
+            mp4.options.representation = { representation: PRELOAD_REP_NAME };
+            jest.spyOn(mp4, 'showPreload').mockImplementation();
+            jest.spyOn(mp4, 'emit').mockImplementation();
+
+            mp4.load();
+
+            expect(mp4.showPreload).toHaveBeenCalled();
+            expect(mp4.emit).not.toHaveBeenCalledWith(VIEWER_EVENT.load);
         });
     });
 

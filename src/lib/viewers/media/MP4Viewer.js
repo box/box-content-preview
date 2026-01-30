@@ -1,4 +1,5 @@
 import React from 'react';
+import { CLASS_INVISIBLE, PRELOAD_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoControls from './VideoControls';
@@ -37,6 +38,11 @@ class MP4Viewer extends VideoBaseViewer {
     }
 
     load() {
+        const rep = this.options.representation;
+        if (rep && rep.representation === PRELOAD_REP_NAME) {
+            this.showPreload();
+            return;
+        }
         super.load();
         this.handleAssetAndRepLoad();
     }
@@ -54,6 +60,9 @@ class MP4Viewer extends VideoBaseViewer {
             return;
         }
 
+        if (!this.preloader?.wrapperEl) {
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
         if (this.useReactControls()) {
             this.loadUIReact();
         } else {
@@ -69,6 +78,11 @@ class MP4Viewer extends VideoBaseViewer {
         this.handleVolume();
         this.showPlayButton();
         this.setMediaTime(this.startTimeInSeconds);
+
+        if (this.userRequestedPlay) {
+            this.play();
+        }
+
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
 
@@ -121,7 +135,7 @@ class MP4Viewer extends VideoBaseViewer {
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}
-                onPlayPause={this.togglePlay}
+                onPlayPause={this.handlePlayRequest}
                 onRateChange={this.setRate}
                 onTimeChange={this.handleTimeupdateFromMediaControls}
                 onVolumeChange={this.setVolume}
@@ -133,8 +147,16 @@ class MP4Viewer extends VideoBaseViewer {
     }
 
     calculateVideoDimensions() {
-        this.videoWidth = this.mediaContainerEl.clientWidth;
-        this.videoHeight = this.mediaContainerEl.clientHeight;
+        const hasVideoDimensions =
+            this.mediaEl.readyState >= 1 && this.mediaEl.videoWidth > 0 && this.mediaEl.videoHeight > 0;
+
+        if (hasVideoDimensions) {
+            this.videoWidth = this.mediaEl.videoWidth;
+            this.videoHeight = this.mediaEl.videoHeight;
+        } else {
+            this.videoWidth = this.mediaContainerEl.clientWidth;
+            this.videoHeight = this.mediaContainerEl.clientHeight;
+        }
 
         this.aspect = this.videoWidth / this.videoHeight;
     }
