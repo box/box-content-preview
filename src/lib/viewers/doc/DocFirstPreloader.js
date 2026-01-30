@@ -209,8 +209,7 @@ class DocFirstPreloader extends EventEmitter {
                 await this.showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
             } else if (pagedPreLoadUrlWithAuth) {
                 await this.showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
-            } else if (preloadUrlWithAuth) {
-                // This is for documents with non paged representations (webp) Currenlly < 5mb
+            } else if (preloadUrlWithAuth && this.config.showPreloadForNonPaged) {
                 await this.showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer);
             } else {
                 this.showPreviewMask();

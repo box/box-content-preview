@@ -134,15 +134,28 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.initializePreloadContainerComponents).not.toHaveBeenCalled();
         });
 
-        it('should call showPreloadSingleImage when only preloadUrlWithAuth is provided (non-paged)', async () => {
+        it('should call showPreloadSingleImage when only preloadUrlWithAuth is provided and showPreloadForNonPaged is enabled', async () => {
             jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
             jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            preloader.config = { showPreloadForNonPaged: true };
 
             await preloader.showPreload('mock-url', mockContainer, null, 5, mockDocBaseViewer);
 
             expect(preloader.showPreloadSingleImage).toHaveBeenCalledWith('mock-url', 5, mockDocBaseViewer);
             expect(preloader.hidePreviewMask).toHaveBeenCalled();
             expect(preloader.showPreviewMask).not.toHaveBeenCalled();
+        });
+
+        it('should call showPreviewMask when preloadUrlWithAuth is provided but showPreloadForNonPaged is disabled', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            preloader.config = { showPreloadForNonPaged: false };
+
+            await preloader.showPreload('mock-url', mockContainer, null, 5, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).not.toHaveBeenCalled();
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
         });
 
         it('should call showPreviewMask when no URLs are provided', async () => {
@@ -187,6 +200,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should set isWebp to false if pagedPreLoadUrlWithAuth is not provided', async () => {
             jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            preloader.config = { showPreloadForNonPaged: true };
             await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(false);
         });
