@@ -1529,7 +1529,6 @@ describe('lib/Preview', () => {
             preview.file = {
                 id: 1,
             };
-            preview.fileInfoRequestInFlight = false;
             preview.options.apiHost = 'https://api.example.com';
         });
 
@@ -1541,6 +1540,14 @@ describe('lib/Preview', () => {
                 expect(stubs.handleFileInfoResponse).toHaveBeenCalled();
                 expect(stubs.handleFetchError).not.toHaveBeenCalled();
             });
+        });
+
+        test('should use getURL with file id, file version id, and apiHost for file info URL', () => {
+            preview.file = { id: '123' };
+            preview.options.apiHost = 'https://api.example.com';
+            preview.getFileOption = jest.fn().mockReturnValue('');
+            preview.loadFromServer();
+            expect(stubs.getURL).toHaveBeenCalledWith('123', '', 'https://api.example.com');
         });
 
         test('should start a Timer for file info timing', () => {

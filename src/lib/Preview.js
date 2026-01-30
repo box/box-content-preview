@@ -170,7 +170,6 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
-        this.fileInfoRequestInFlight = false;
 
         // Bind context for callbacks
         this.download = this.download.bind(this);
@@ -195,9 +194,6 @@ class Preview extends EventEmitter {
     destroy() {
         // Log all load metrics
         this.emitLoadMetrics();
-
-        this.fileInfoRequestInFlight = false;
-        this.clearVideoPreloadRefetchInterval();
 
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
@@ -999,11 +995,6 @@ class Preview extends EventEmitter {
         // Optional additional query params to append to requests
         this.options.queryParams = options.queryParams || {};
 
-        // Optional function (fileId, fileVersionId) => url for fetching file info. When provided, loadFromServer()
-        // uses this instead of the default getURL() so the host can use the same API that returns file metadata
-        // with representations (e.g. files/{fileId}/content) when there is no cached metadata.
-        this.options.getFileInfoUrl = options.getFileInfoUrl;
-
         // Option to patch AMD module definitions while Preview loads the third party dependencies it expects in the
         // browser global scope. Definitions will be re-enabled on the 'assetsloaded' event
         this.options.fixDependencies = !!options.fixDependencies || !!options.pauseRequireJS;
@@ -1097,8 +1088,8 @@ class Preview extends EventEmitter {
         // Finally load the viewer
         this.loadViewer();
 
-        // Refresh from server to update cache
-        if (!this.options.skipServerUpdate) {
+        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
+        if (!this.options.skipServerUpdate || needsVideoReps) {
             this.loadFromServer();
         }
     }
@@ -1111,9 +1102,6 @@ class Preview extends EventEmitter {
      */
     loadFromServer() {
         if (!this.open || !this.file?.id) {
-            return;
-        }
-        if (this.fileInfoRequestInFlight) {
             return;
         }
         const { apiHost, previewWMPref, queryParams } = this.options;
@@ -1130,19 +1118,11 @@ class Preview extends EventEmitter {
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
         Timer.start(tag);
 
-        let baseUrl;
-        if (typeof this.options.getFileInfoUrl === 'function') {
-            baseUrl = this.options.getFileInfoUrl(this.file.id, fileVersionId);
-        } else {
-            baseUrl = getURL(this.file.id, fileVersionId, apiHost);
-        }
-        const fileInfoUrl = appendQueryParams(baseUrl, params);
-        this.fileInfoRequestInFlight = true;
+        const fileInfoUrl = appendQueryParams(getURL(this.file.id, fileVersionId, apiHost), params);
         this.api
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(err => {
-                this.fileInfoRequestInFlight = false;
                 this.handleFetchError(err);
             });
     }
@@ -1155,7 +1135,6 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     handleFileInfoResponse(response) {
-        this.fileInfoRequestInFlight = false;
         const isWrapped =
             response && typeof response === 'object' && response.data && typeof response.data === 'object';
         let file = isWrapped ? response.data : response;
@@ -1203,7 +1182,6 @@ class Preview extends EventEmitter {
             if (this.viewer && hasPlayableRep) {
                 if (viewerName === 'Dash' || viewerName === 'MP4') {
                     if (repName === PRELOAD_REP_NAME) {
-                        this.clearVideoPreloadRefetchInterval();
                         const loader = this.getLoader(this.file);
                         const representation = loader.determineRepresentation(this.file, this.viewer.options.viewer);
                         if (representation) {
@@ -1327,31 +1305,6 @@ class Preview extends EventEmitter {
         // Reset retry count after successful load so we don't go into the retry short circuit when the same file
         // previewed again
         this.retryCount = 0;
-
-        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
-        const repName = getProp(this.viewer, 'options.representation.representation', '');
-        const isPreloadOnlyVideo = (viewerName === 'Dash' || viewerName === 'MP4') && repName === PRELOAD_REP_NAME;
-        if (isPreloadOnlyVideo) {
-            this.clearVideoPreloadRefetchInterval();
-            this.loadFromServer();
-            const VIDEO_PRELOAD_REFETCH_MS = 5000;
-            this.videoPreloadRefetchIntervalId = setInterval(() => {
-                this.loadFromServer();
-            }, VIDEO_PRELOAD_REFETCH_MS);
-        }
-    }
-
-    /**
-     * Clears the video preload refetch interval if set.
-     *
-     * @private
-     * @return {void}
-     */
-    clearVideoPreloadRefetchInterval() {
-        if (this.videoPreloadRefetchIntervalId) {
-            clearInterval(this.videoPreloadRefetchIntervalId);
-            this.videoPreloadRefetchIntervalId = undefined;
-        }
     }
 
     /**
@@ -1376,6 +1329,22 @@ class Preview extends EventEmitter {
                 viewer => videoViewerNames.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
             );
         });
+    }
+
+    /**
+     * Returns true if file has playable video representations (dash or mp4).
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {boolean}
+     */
+    hasPlayableVideoReps(file) {
+        return (
+            file &&
+            file.representations &&
+            file.representations.entries &&
+            file.representations.entries.some(e => e.representation === 'dash' || e.representation === 'mp4')
+        );
     }
 
     /**
