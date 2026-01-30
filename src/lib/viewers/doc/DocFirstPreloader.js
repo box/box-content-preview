@@ -203,17 +203,51 @@ class DocFirstPreloader extends EventEmitter {
             this.isWebp = !!pagedPreLoadUrlWithAuth;
             this.initializePreloadContainerComponents(containerEl);
 
-            // Use staggered loading if enabled, otherwise fall back to original behavior
-            const useStaggered = this.isStaggeredLoadingEnabled() && pagedPreLoadUrlWithAuth;
+            const useStaggered = this.isStaggeredLoadingEnabled();
 
-            if (useStaggered) {
+            if (pagedPreLoadUrlWithAuth && useStaggered) {
                 await this.showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
-            } else {
+            } else if (pagedPreLoadUrlWithAuth) {
                 await this.showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
+            } else if (preloadUrlWithAuth) {
+                // This is for documents with non paged representations (webp) Currenlly < 5mb
+                await this.showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer);
+            } else {
+                this.showPreviewMask();
             }
         } catch (error) {
             this.showPreviewMask();
         }
+    }
+
+    /**
+     * Shows preload using a single image representation (non-paged).
+     * This is used for documents that don't have paged representations available.
+     *
+     * @private
+     * @param {string} preloadUrlWithAuth - URL for single-image preload content with authorization
+     * @param {number} pages - Total number of pages in the document (from metadata)
+     * @param {Object} docBaseViewer - Document base viewer instance
+     * @return {Promise} Promise that resolves when preload is shown
+     */
+    async showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer) {
+        const response = await this.api.get(preloadUrlWithAuth, { type: 'blob' });
+        const blob = await handleRepresentationBlobFetch(response);
+
+        this.wrapperEl.appendChild(this.preloadEl);
+
+        if (!(await this.renderFirstPage(blob, docBaseViewer))) {
+            this.showPreviewMask();
+            return;
+        }
+
+        if (this.pdfJsDocLoadComplete()) {
+            this.wrapperEl.classList.add('loaded');
+            return;
+        }
+
+        this.handleThumbnailToggling(docBaseViewer);
+        this.finalizePreload(docBaseViewer);
     }
 
     /**

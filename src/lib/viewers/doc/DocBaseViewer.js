@@ -402,21 +402,21 @@ class DocBaseViewer extends BaseViewer {
                     priorityPages,
                 );
                 Promise.all(priorityPromises).then(() => {
-                    // Skip second batch if prefetchPriorityPagesOnly is true
                     if (prefetchPriorityPagesOnly) {
                         return;
                     }
 
-                    // Add staggered delay before fetching remaining pages
-                    setTimeout(() => {
-                        const remainingPromises = getPreloadImageRequestPromisesByBatch(
-                            this.api,
-                            pagedUrlAuthTemplate,
-                            priorityPages + 1,
-                            Math.min(pageCount, maxPreloadPages),
-                        );
-                        Promise.all(remainingPromises);
-                    }, secondBatchDelayMs);
+                    if (secondBatchDelayMs) {
+                        setTimeout(() => {
+                            const remainingPromises = getPreloadImageRequestPromisesByBatch(
+                                this.api,
+                                pagedUrlAuthTemplate,
+                                priorityPages + 1,
+                                Math.min(pageCount, maxPreloadPages),
+                            );
+                            Promise.all(remainingPromises);
+                        }, secondBatchDelayMs);
+                    }
                 });
             } else {
                 const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
