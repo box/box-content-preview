@@ -1105,9 +1105,6 @@ class Preview extends EventEmitter {
             return;
         }
         const { apiHost, previewWMPref, queryParams } = this.options;
-        if (!apiHost) {
-            return;
-        }
         const params = {
             watermark_preference: convertWatermarkPref(previewWMPref),
             ...queryParams,
@@ -1122,9 +1119,48 @@ class Preview extends EventEmitter {
         this.api
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
-            .catch(err => {
-                this.handleFetchError(err);
-            });
+            .catch(this.handleFetchError);
+    }
+
+    /**
+     * If the current viewer is a video preload (jpg) and the file now has a playable rep (dash/mp4),
+     * either upgrade the same viewer to that rep or switch viewer (e.g. Dash → MP4). Returns true
+     * if this path was taken so the caller can return.
+     *
+     * @private
+     * @param {Object} file - File from server
+     * @return {boolean} true if video preload was upgraded or viewer was switched
+     */
+    tryUpgradeVideoPreloadToPlayable(file) {
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
+        const repName = getProp(this.viewer, 'options.representation.representation', '');
+        const hasPlayableRep = file.representations?.entries?.some(
+            e => e.representation === 'dash' || e.representation === 'mp4',
+        );
+
+        if (!this.viewer || !hasPlayableRep || (viewerName !== 'Dash' && viewerName !== 'MP4')) {
+            return false;
+        }
+        if (repName !== PRELOAD_REP_NAME) {
+            return false;
+        }
+
+        const loader = this.getLoader(this.file);
+        const representation = loader.determineRepresentation(this.file, this.viewer.options.viewer);
+        const isPlayableRep =
+            representation && (representation.representation === 'dash' || representation.representation === 'mp4');
+        const matchesViewer =
+            (viewerName === 'Dash' && representation?.representation === 'dash') ||
+            (viewerName === 'MP4' && representation?.representation === 'mp4');
+
+        if (isPlayableRep && matchesViewer) {
+            this.viewer.options.file = this.file;
+            this.viewer.options.representation = representation;
+            this.viewer.load();
+            return true;
+        }
+        this.loadViewer();
+        return true;
     }
 
     /**
@@ -1135,9 +1171,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     handleFileInfoResponse(response) {
-        const isWrapped =
-            response && typeof response === 'object' && response.data && typeof response.data === 'object';
-        let file = isWrapped ? response.data : response;
+        let file = response;
 
         // Stop timer for file info time event.
         const tag = Timer.createTag(this.file.id, LOAD_METRIC.fileInfoTime);
@@ -1150,10 +1184,7 @@ class Preview extends EventEmitter {
 
         // If preview is closed or response comes back for an incorrect file, don't do anything
         const responseFileVersionId = file.file_version.id;
-        if (
-            !this.open ||
-            (this.file && this.file.file_version && this.file.file_version.id !== responseFileVersionId)
-        ) {
+        if (!this.open || (this.file?.file_version && this.file.file_version.id !== responseFileVersionId)) {
             return;
         }
 
@@ -1173,25 +1204,9 @@ class Preview extends EventEmitter {
                 cacheFile(this.cache, file);
             }
 
-            const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
-            const repName = getProp(this.viewer, 'options.representation.representation', '');
-            const hasPlayableRep =
-                file.representations &&
-                file.representations.entries &&
-                file.representations.entries.some(e => e.representation === 'dash' || e.representation === 'mp4');
-            if (this.viewer && hasPlayableRep) {
-                if (viewerName === 'Dash' || viewerName === 'MP4') {
-                    if (repName === PRELOAD_REP_NAME) {
-                        const loader = this.getLoader(this.file);
-                        const representation = loader.determineRepresentation(this.file, this.viewer.options.viewer);
-                        if (representation) {
-                            this.viewer.options.file = this.file;
-                            this.viewer.options.representation = representation;
-                            this.viewer.load();
-                        }
-                        return;
-                    }
-                }
+            // If we upgraded from video preload (jpg) to playable (dash/mp4) or switched viewer, we're done.
+            if (this.tryUpgradeVideoPreloadToPlayable(file)) {
+                return;
             }
 
             // Should load viewer for first time if:
@@ -1229,6 +1244,12 @@ class Preview extends EventEmitter {
         if (!this.open) {
             return;
         }
+
+        // Tear down current viewer so its DOM (e.g. preload image) is cleared before creating the new one.
+        if (this.viewer && typeof this.viewer.destroy === 'function') {
+            this.viewer.destroy();
+        }
+        this.viewer = undefined;
 
         // Check if file is downloadable
         if (this.file.is_download_available === false) {
