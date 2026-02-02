@@ -1,3 +1,9 @@
+## 3.19.0 (2026-02-02)
+
+* feat(doc-preview): implement configurable staggered loading for docfirst (#1601) ([d6817c5](https://github.com/box/box-content-preview/commit/d6817c5)), closes [#1601](https://github.com/box/box-content-preview/issues/1601)
+
+
+
 ## 3.18.0 (2026-01-27)
 
 * feat: first render metric for preview loaders (#1600) ([5bdf556](https://github.com/box/box-content-preview/commit/5bdf556)), closes [#1600](https://github.com/box/box-content-preview/issues/1600)
