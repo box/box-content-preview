@@ -891,6 +891,12 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     setupUI() {
+        /*
+
+        Note: this.file.name is not present when this function is called - therefore, have to set the name later
+
+        */
+
         // Setup the shell
         this.container = this.ui.setup(
             this.options,
@@ -963,6 +969,9 @@ class Preview extends EventEmitter {
 
         // Whether the loading indicator should be shown
         this.options.showLoading = options.showLoading !== false;
+
+        // Whether to show the file name in the header
+        this.options.showFileName = options.showFileName;
 
         // Whether annotations v4 buttons should be shown in toolbar
         this.options.showAnnotationsControls = !!options.showAnnotationsControls;
@@ -1357,6 +1366,10 @@ class Preview extends EventEmitter {
 
         if (this.canPrint()) {
             this.ui.showPrintButton(this.print);
+        }
+
+        if (this.options.showFileName && this.file.name) {
+            this.ui.showFileName(this.file.name);
         }
 
         const { error } = data;
