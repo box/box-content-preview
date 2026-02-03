@@ -1,5 +1,6 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
