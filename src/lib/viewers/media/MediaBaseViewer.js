@@ -1164,6 +1164,10 @@ class MediaBaseViewer extends BaseViewer {
             case 'shift+m':
                 this.toggleMute();
                 break;
+            case 'f':
+            case 'shift+f':
+                this.toggleFullscreen();
+                break;
             default:
                 return false;
         }
