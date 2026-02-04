@@ -53,6 +53,7 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID,
+    VIDEO_VIEWER_NAMES,
 } from './constants';
 import {
     DURATION_METRIC,
@@ -1101,6 +1102,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
+        // Skip request if preview is closed or no file id
+        // avoids no-op when e.g. user closed before a background refresh (loadFromCache)
         if (!this.open || !this.file?.id) {
             return;
         }
@@ -1132,28 +1135,23 @@ class Preview extends EventEmitter {
      * @return {boolean} true if video preload was upgraded or viewer was switched
      */
     tryUpgradeVideoPreloadToPlayable(file) {
-        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
-        const repName = getProp(this.viewer, 'options.representation.representation', '');
-        const hasPlayableRep = file.representations?.entries?.some(
-            e => e.representation === 'dash' || e.representation === 'mp4',
-        );
-
-        if (!this.viewer || !hasPlayableRep || (viewerName !== 'Dash' && viewerName !== 'MP4')) {
+        // Only proceed when file has playable video reps
+        if (!this.viewer || !this.hasPlayableVideoReps(file)) {
             return false;
         }
+        const repName = getProp(this.viewer, 'options.representation.representation', '');
+        // PRELOAD_REP_NAME is 'jpg' (instant preview). Only upgrade when we're currently showing that rep.
         if (repName !== PRELOAD_REP_NAME) {
             return false;
         }
 
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
         const loader = this.getLoader(this.file);
         const representation = loader.determineRepresentation(this.file, this.viewer.options.viewer);
-        const isPlayableRep =
-            representation && (representation.representation === 'dash' || representation.representation === 'mp4');
-        const matchesViewer =
-            (viewerName === 'Dash' && representation?.representation === 'dash') ||
-            (viewerName === 'MP4' && representation?.representation === 'mp4');
+        const expectedRep = viewerName === 'Dash' ? 'dash' : 'mp4';
+        const canUpgradeInPlace = representation?.representation === expectedRep;
 
-        if (isPlayableRep && matchesViewer) {
+        if (canUpgradeInPlace) {
             this.viewer.options.file = this.file;
             this.viewer.options.representation = representation;
             this.viewer.load();
@@ -1204,7 +1202,8 @@ class Preview extends EventEmitter {
                 cacheFile(this.cache, file);
             }
 
-            // If we upgraded from video preload (jpg) to playable (dash/mp4) or switched viewer, we're done.
+            // If we upgraded from video preload (jpg) to playable (dash/mp4) or switched viewer, we're done;
+            // return so we don't run the generic cache/viewer logic below.
             if (this.tryUpgradeVideoPreloadToPlayable(file)) {
                 return;
             }
@@ -1245,7 +1244,7 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Tear down current viewer so its DOM (e.g. preload image) is cleared before creating the new one.
+        // Tear down current viewer so its DOM (e.g. preload image for video) is cleared before creating the new one.
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
         }
@@ -1340,14 +1339,13 @@ class Preview extends EventEmitter {
             return false;
         }
         const ext = (this.file.extension || '').toLowerCase();
-        const videoViewerNames = ['Dash', 'MP4'];
         return this.loaders.some(loader => {
             if (typeof loader.getViewers !== 'function') {
                 return false;
             }
             const viewers = loader.getViewers();
             return viewers.some(
-                viewer => videoViewerNames.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
+                viewer => VIDEO_VIEWER_NAMES.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
             );
         });
     }

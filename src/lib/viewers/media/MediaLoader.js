@@ -5,7 +5,7 @@ import MP3Viewer from './MP3Viewer';
 import MP4Viewer from './MP4Viewer';
 import DashViewer from './DashViewer';
 import PreviewError from '../../PreviewError';
-import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME } from '../../constants';
+import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME, VIDEO_VIEWER_NAMES } from '../../constants';
 import { ERROR_CODE } from '../../events';
 
 const VIDEO_FORMATS = [
@@ -84,7 +84,9 @@ class MediaLoader extends AssetLoader {
             const isVideoByExt = file.extension && VIDEO_FORMATS.indexOf(file.extension) > -1;
             if (hasJpg && !hasPlayable && isVideoByExt) {
                 const useDash = Browser.canPlayDash() && disabledViewers.indexOf('Dash') === -1;
-                viewer = useDash ? this.viewers.find(v => v.NAME === 'Dash') : this.viewers.find(v => v.NAME === 'MP4');
+                viewer = this.viewers.find(
+                    v => VIDEO_VIEWER_NAMES.indexOf(v.NAME) > -1 && v.NAME === (useDash ? 'Dash' : 'MP4'),
+                );
             }
         }
         return viewer;
@@ -92,18 +94,16 @@ class MediaLoader extends AssetLoader {
 
     /**
      * @inheritdoc
+     * When super returns no rep, for Dash/MP4 viewers and file with representations, returns the preload (jpg) rep.
      */
     determineRepresentation(file, viewer) {
         const rep = super.determineRepresentation(file, viewer);
         if (rep) {
             return rep;
         }
-        if (
-            viewer &&
-            (viewer.NAME === 'Dash' || viewer.NAME === 'MP4') &&
-            file.representations &&
-            file.representations.entries
-        ) {
+        const isVideoViewer = viewer && VIDEO_VIEWER_NAMES.indexOf(viewer.NAME) > -1;
+        const hasRepEntries = file.representations && file.representations.entries;
+        if (isVideoViewer && hasRepEntries) {
             return file.representations.entries.find(e => e.representation === PRELOAD_REP_NAME);
         }
         return undefined;
