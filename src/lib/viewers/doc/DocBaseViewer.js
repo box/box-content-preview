@@ -406,17 +406,15 @@ class DocBaseViewer extends BaseViewer {
                         return;
                     }
 
-                    if (secondBatchDelayMs) {
-                        setTimeout(() => {
-                            const remainingPromises = getPreloadImageRequestPromisesByBatch(
-                                this.api,
-                                pagedUrlAuthTemplate,
-                                priorityPages + 1,
-                                Math.min(pageCount, maxPreloadPages),
-                            );
-                            Promise.all(remainingPromises);
-                        }, secondBatchDelayMs);
-                    }
+                    setTimeout(() => {
+                        const remainingPromises = getPreloadImageRequestPromisesByBatch(
+                            this.api,
+                            pagedUrlAuthTemplate,
+                            priorityPages + 1,
+                            Math.min(pageCount, maxPreloadPages),
+                        );
+                        Promise.all(remainingPromises);
+                    }, secondBatchDelayMs);
                 });
             } else {
                 const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
