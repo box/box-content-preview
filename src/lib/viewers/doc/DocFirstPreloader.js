@@ -758,7 +758,8 @@ class DocFirstPreloader extends EventEmitter {
      */
     pdfJsDocLoadComplete() {
         // If document is already loaded, hide the preload and short circuit
-        if (this.previewUI?.previewContainer?.classList?.contains(CLASS_PREVIEW_LOADED)) {
+        const loadedClass = CLASS_PREVIEW_LOADED;
+        if (this.previewUI?.previewContainer?.classList?.contains(loadedClass)) {
             this.hidePreload();
             return true;
         }
