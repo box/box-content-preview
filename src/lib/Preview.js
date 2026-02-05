@@ -45,6 +45,7 @@ import {
     CLASS_NAVIGATION_VISIBILITY,
     ERROR_CODE_403_FORBIDDEN_BY_POLICY,
     PERMISSION_PREVIEW,
+    PRELOAD_REP_NAME,
     PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
     X_REP_HINT_DOC_THUMBNAIL,
@@ -52,6 +53,7 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID,
+    VIDEO_VIEWER_NAMES,
 } from './constants';
 import {
     DURATION_METRIC,
@@ -1087,8 +1089,8 @@ class Preview extends EventEmitter {
         // Finally load the viewer
         this.loadViewer();
 
-        // Also refresh from server to update cache
-        if (!this.options.skipServerUpdate) {
+        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
+        if (!this.options.skipServerUpdate || needsVideoReps) {
             this.loadFromServer();
         }
     }
@@ -1100,6 +1102,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
+        // Skip request if preview is closed or no file id
+        // avoids no-op when e.g. user closed before a background refresh (loadFromCache)
+        if (!this.open || !this.file?.id) {
+            return;
+        }
         const { apiHost, previewWMPref, queryParams } = this.options;
         const params = {
             watermark_preference: convertWatermarkPref(previewWMPref),
@@ -1116,6 +1123,42 @@ class Preview extends EventEmitter {
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
             .catch(this.handleFetchError);
+    }
+
+    /**
+     * If the current viewer is a video preload (jpg) and the file now has a playable rep (dash/mp4),
+     * either upgrade the same viewer to that rep or switch viewer (e.g. Dash → MP4). Returns true
+     * if this path was taken so the caller can return.
+     *
+     * @private
+     * @param {Object} file - File from server
+     * @return {boolean} true if video preload was upgraded or viewer was switched
+     */
+    tryUpgradeVideoPreloadToPlayable(file) {
+        // Only proceed when file has playable video reps
+        if (!this.viewer || !this.hasPlayableVideoReps(file)) {
+            return false;
+        }
+        const repName = getProp(this.viewer, 'options.representation.representation', '');
+        // PRELOAD_REP_NAME is 'jpg' (instant preview). Only upgrade when we're currently showing that rep.
+        if (repName !== PRELOAD_REP_NAME) {
+            return false;
+        }
+
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
+        const loader = this.getLoader(this.file);
+        const representation = loader.determineRepresentation(this.file, this.viewer.options.viewer);
+        const expectedRep = viewerName === 'Dash' ? 'dash' : 'mp4';
+        const canUpgradeInPlace = representation?.representation === expectedRep;
+
+        if (canUpgradeInPlace) {
+            this.viewer.options.file = this.file;
+            this.viewer.options.representation = representation;
+            this.viewer.load();
+            return true;
+        }
+        this.loadViewer();
+        return true;
     }
 
     /**
@@ -1139,10 +1182,7 @@ class Preview extends EventEmitter {
 
         // If preview is closed or response comes back for an incorrect file, don't do anything
         const responseFileVersionId = file.file_version.id;
-        if (
-            !this.open ||
-            (this.file && this.file.file_version && this.file.file_version.id !== responseFileVersionId)
-        ) {
+        if (!this.open || (this.file?.file_version && this.file.file_version.id !== responseFileVersionId)) {
             return;
         }
 
@@ -1160,6 +1200,12 @@ class Preview extends EventEmitter {
                 uncacheFile(this.cache, file);
             } else {
                 cacheFile(this.cache, file);
+            }
+
+            // If we upgraded from video preload (jpg) to playable (dash/mp4) or switched viewer, we're done;
+            // return so we don't run the generic cache/viewer logic below.
+            if (this.tryUpgradeVideoPreloadToPlayable(file)) {
+                return;
             }
 
             // Should load viewer for first time if:
@@ -1197,6 +1243,12 @@ class Preview extends EventEmitter {
         if (!this.open) {
             return;
         }
+
+        // Tear down current viewer so its DOM (e.g. preload image for video) is cleared before creating the new one.
+        if (this.viewer && typeof this.viewer.destroy === 'function') {
+            this.viewer.destroy();
+        }
+        this.viewer = undefined;
 
         // Check if file is downloadable
         if (this.file.is_download_available === false) {
@@ -1273,6 +1325,45 @@ class Preview extends EventEmitter {
         // Reset retry count after successful load so we don't go into the retry short circuit when the same file
         // previewed again
         this.retryCount = 0;
+    }
+
+    /**
+     * Returns true if this.file is a video file by extension (would use Dash/MP4 viewer).
+     * Used when there is no viewer yet to decide whether to use content API for the first loadFromServer().
+     *
+     * @private
+     * @return {boolean}
+     */
+    isVideoFileByExtension() {
+        if (!this.file || !this.file.extension) {
+            return false;
+        }
+        const ext = (this.file.extension || '').toLowerCase();
+        return this.loaders.some(loader => {
+            if (typeof loader.getViewers !== 'function') {
+                return false;
+            }
+            const viewers = loader.getViewers();
+            return viewers.some(
+                viewer => VIDEO_VIEWER_NAMES.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
+            );
+        });
+    }
+
+    /**
+     * Returns true if file has playable video representations (dash or mp4).
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {boolean}
+     */
+    hasPlayableVideoReps(file) {
+        return (
+            file &&
+            file.representations &&
+            file.representations.entries &&
+            file.representations.entries.some(e => e.representation === 'dash' || e.representation === 'mp4')
+        );
     }
 
     /**

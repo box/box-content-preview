@@ -1,5 +1,5 @@
 import React from 'react';
-import { MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME, SUBTITLES_OFF } from '../../constants';
+import { CLASS_INVISIBLE, MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import getLanguageName from '../../lang';
@@ -135,10 +135,15 @@ class DashViewer extends VideoBaseViewer {
      * Loads a media source.
      *
      * @override
-     * @return {void}
+     * @return {Promise}
      */
     load() {
-        this.showPreload();
+        const rep = this.options.representation;
+        if (rep && rep.representation === PRELOAD_REP_NAME) {
+            this.showPreload();
+            return Promise.resolve();
+        }
+        if (!this.preloader?.wrapperEl) this.showPreload();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
 
@@ -154,28 +159,18 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Prefetches assets, content, and preload representation
+     * Prefetches assets for dash and optionally the JPG preload image (via super).
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
      * @param {boolean} [options.content] - Whether or not to prefetch rep content
-     * @param {boolean} [options.preload] - Whether or not to prefetch preload content
+     * @param {boolean} [options.preload] - Whether or not to prefetch JPG preload image
      * @return {void}
      */
     prefetch({ assets = true, content = true, preload = false }) {
-        const { file } = this.options;
-        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+        super.prefetch({ assets, content, preload });
 
         if (assets) {
             this.prefetchAssets(this.getJSAssets());
-        }
-
-        if (preload && !isWatermarked) {
-            const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-            if (preloadRep && this.isRepresentationReady(preloadRep)) {
-                const { url_template: template } = preloadRep.content;
-                // Prefetch as blob since preload needs to load image as a blob
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
-            }
         }
 
         const { representation } = this.options;
@@ -812,9 +807,9 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        // Hide thumbnail when video metadata is loaded
-        this.hidePreload();
-
+        if (!this.preloader?.wrapperEl) {
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
         this.calculateVideoDimensions();
         if (this.useReactControls()) {
             this.loadUIReact();
@@ -833,6 +828,10 @@ class DashViewer extends VideoBaseViewer {
         this.loadSubtitles();
         this.loadAlternateAudio();
         this.showPlayButton();
+
+        if (this.userRequestedPlay) {
+            this.play();
+        }
 
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
@@ -1162,7 +1161,7 @@ class DashViewer extends VideoBaseViewer {
                 onAutoplayChange={this.setAutoplay}
                 onFullscreenToggle={this.toggleFullscreen}
                 onMuteChange={this.toggleMute}
-                onPlayPause={this.togglePlay}
+                onPlayPause={this.handlePlayRequest}
                 onQualityChange={this.setQuality}
                 onRateChange={this.setRate}
                 onSubtitleChange={this.setSubtitle}

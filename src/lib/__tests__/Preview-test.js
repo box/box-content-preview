@@ -10,7 +10,7 @@ import PreviewError from '../PreviewError';
 import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PRELOAD_REP_NAME } from '../constants';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
@@ -1525,9 +1525,11 @@ describe('lib/Preview', () => {
             stubs.handleFileInfoResponse = jest.spyOn(preview, 'handleFileInfoResponse');
             stubs.handleFetchError = jest.spyOn(preview, 'handleFetchError');
             stubs.getURL = jest.spyOn(file, 'getURL').mockReturnValue('/get_url');
+            preview.open = true;
             preview.file = {
-                id: 0,
+                id: 1,
             };
+            preview.options.apiHost = 'https://api.example.com';
         });
 
         test('should handle load response on a successful get', () => {
@@ -1540,9 +1542,17 @@ describe('lib/Preview', () => {
             });
         });
 
+        test('should use getURL with file id, file version id, and apiHost for file info URL', () => {
+            preview.file = { id: '123' };
+            preview.options.apiHost = 'https://api.example.com';
+            preview.getFileOption = jest.fn().mockReturnValue('');
+            preview.loadFromServer();
+            expect(stubs.getURL).toHaveBeenCalledWith('123', '', 'https://api.example.com');
+        });
+
         test('should start a Timer for file info timing', () => {
             const startStub = jest.spyOn(Timer, 'start');
-            const expectedTag = Timer.createTag(preview.file.id, LOAD_METRIC.fileInfoTime);
+            const expectedTag = Timer.createTag(1, LOAD_METRIC.fileInfoTime);
             preview.loadFromServer();
             expect(startStub).toHaveBeenCalledWith(expectedTag);
         });
@@ -1641,6 +1651,49 @@ describe('lib/Preview', () => {
             });
             expect(stubs.cacheFile).toHaveBeenCalledWith(preview.cache, stubs.file);
             expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should upgrade video preload to playable rep when file has matching rep (MP4)', () => {
+            const viewerLoad = jest.fn();
+            preview.viewer = {
+                options: {
+                    viewer: { NAME: 'MP4' },
+                    representation: { representation: PRELOAD_REP_NAME },
+                },
+                load: viewerLoad,
+            };
+            stubs.file.representations.entries = [{ representation: 'mp4' }];
+            stubs.getCachedFile.mockReturnValue({ file_version: { sha1: 2 } });
+            const mp4Rep = { representation: 'mp4', content: { url_template: 'https://example.com/video.mp4' } };
+            stubs.getLoader = jest.spyOn(preview, 'getLoader').mockReturnValue({
+                determineRepresentation: jest.fn().mockReturnValue(mp4Rep),
+            });
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(preview.viewer.options.file).toBe(stubs.file);
+            expect(preview.viewer.options.representation).toBe(mp4Rep);
+            expect(viewerLoad).toHaveBeenCalled();
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should call loadViewer when video preload viewer (Dash) and file has only non-matching playable rep (mp4)', () => {
+            stubs.loadViewer.mockImplementation(() => {});
+            preview.viewer = {
+                options: {
+                    viewer: { NAME: 'Dash' },
+                    representation: { representation: PRELOAD_REP_NAME },
+                },
+            };
+            stubs.file.representations.entries = [{ representation: 'mp4' }];
+            stubs.getCachedFile.mockReturnValue({ file_version: { sha1: 2 } });
+            stubs.getLoader = jest.spyOn(preview, 'getLoader').mockReturnValue({
+                determineRepresentation: jest.fn().mockReturnValue({ representation: 'mp4' }),
+            });
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
         test('should uncache the file if the file is watermarked', () => {
@@ -1779,6 +1832,16 @@ describe('lib/Preview', () => {
             preview.open = false;
             preview.loadViewer();
             expect(stubs.destroy).not.toHaveBeenCalled();
+        });
+
+        test('should destroy existing viewer before creating new one', () => {
+            const existingViewer = { destroy: jest.fn() };
+            preview.viewer = existingViewer;
+
+            preview.loadViewer();
+
+            expect(existingViewer.destroy).toHaveBeenCalled();
+            expect(preview.viewer).toBe(stubs.viewer);
         });
 
         test('should trigger error if file is not downloadable', () => {

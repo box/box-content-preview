@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-expressions */
 import noop from 'lodash/noop';
-import * as file from '../../../file';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import PreviewError from '../../../PreviewError';
 import Timer from '../../../Timer';
-import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
+import { MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -177,6 +176,17 @@ describe('lib/viewers/media/DashViewer', () => {
                 })
                 .catch(() => {});
         });
+
+        test('should not emit VIEWER_EVENT.load when representation is PRELOAD_REP_NAME (JPG-only)', () => {
+            dash.options.representation = { representation: PRELOAD_REP_NAME };
+            jest.spyOn(dash, 'showPreload').mockImplementation();
+            jest.spyOn(dash, 'emit').mockImplementation();
+
+            return dash.load().then(() => {
+                expect(dash.showPreload).toBeCalled();
+                expect(dash.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+            });
+        });
     });
 
     describe('prefetch()', () => {
@@ -223,54 +233,23 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.prefetchAssets).not.toBeCalled();
         });
 
-        test('should prefetch preload if preload is true and representation is ready', () => {
-            const template = 'somePreloadTemplate';
-            const preloadRep = {
-                content: {
-                    url_template: template,
-                },
-                status: {
-                    state: 'success',
-                },
+        test('should fetch JPG preload image when preload is true and file has ready jpg rep', () => {
+            const jpgUrlWithAuth = 'https://example.com/preview.jpg?auth=token';
+            dash.options.file.representations = {
+                entries: [
+                    {
+                        representation: PRELOAD_REP_NAME,
+                        content: { url_template: 'https://example.com/preview.jpg' },
+                        status: { state: 'success' },
+                    },
+                ],
             };
-            jest.spyOn(stubs.api, 'get').mockImplementation();
-            jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
-            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('preloadUrl');
+            stubs.createUrl.mockReturnValue(jpgUrlWithAuth);
+            jest.spyOn(stubs.api, 'get').mockResolvedValue();
 
-            dash.prefetch({ assets: false, preload: true, content: false });
+            dash.prefetch({ assets: false, content: false, preload: true });
 
-            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith(template);
-            expect(stubs.api.get).toHaveBeenCalledWith('preloadUrl', { type: 'blob' });
-        });
-
-        test('should not prefetch preload if preload is true and representation is not ready', () => {
-            const preloadRep = {
-                content: {
-                    url_template: 'someTemplate',
-                },
-                status: {
-                    state: 'pending',
-                },
-            };
-            jest.spyOn(stubs.api, 'get');
-            jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
-            jest.spyOn(dash, 'isRepresentationReady').mockReturnValue(false);
-            jest.spyOn(dash, 'createContentUrlWithAuthParams');
-
-            dash.prefetch({ assets: false, preload: true, content: false });
-
-            expect(dash.createContentUrlWithAuthParams).not.toHaveBeenCalled();
-        });
-
-        test('should not prefetch preload if file is watermarked', () => {
-            dash.options.file.watermark_info = {
-                is_watermarked: true,
-            };
-            jest.spyOn(dash, 'createContentUrlWithAuthParams');
-
-            dash.prefetch({ assets: false, preload: true, content: false });
-
-            expect(dash.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+            expect(stubs.api.get).toHaveBeenCalledWith(jpgUrlWithAuth, { type: 'blob' });
         });
     });
 
@@ -1860,7 +1839,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 onAutoplayChange: dash.setAutoplay,
                 onFullscreenToggle: dash.toggleFullscreen,
                 onMuteChange: dash.toggleMute,
-                onPlayPause: dash.togglePlay,
+                onPlayPause: dash.handlePlayRequest,
                 onQualityChange: dash.setQuality,
                 onRateChange: dash.setRate,
                 onTimeChange: dash.handleTimeupdateFromMediaControls,
