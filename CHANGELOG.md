@@ -1,3 +1,10 @@
+## 3.20.0 (2026-02-06)
+
+* fix: doc preloader not finding Class variable import (#1607) ([a36bd0c](https://github.com/box/box-content-preview/commit/a36bd0c)), closes [#1607](https://github.com/box/box-content-preview/issues/1607)
+* feat(video-preload): Preload image reps for videos (#1603) ([fbecad4](https://github.com/box/box-content-preview/commit/fbecad4)), closes [#1603](https://github.com/box/box-content-preview/issues/1603)
+
+
+
 ## 3.19.0 (2026-02-02)
 
 * feat(doc-preview): implement configurable staggered loading for docfirst (#1601) ([d6817c5](https://github.com/box/box-content-preview/commit/d6817c5)), closes [#1601](https://github.com/box/box-content-preview/issues/1601)
