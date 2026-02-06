@@ -1254,6 +1254,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.toggleMute).toBeCalled();
         });
 
+        test('should toggle fullscreen and return true on f', () => {
+            jest.spyOn(media, 'toggleFullscreen').mockImplementation();
+
+            expect(media.handleKeydownReact('f')).toBe(true);
+            expect(media.toggleFullscreen).toBeCalled();
+        });
+
+        test('should toggle fullscreen and return true on Shift+F', () => {
+            jest.spyOn(media, 'toggleFullscreen').mockImplementation();
+
+            expect(media.handleKeydownReact('Shift+F')).toBe(true);
+            expect(media.toggleFullscreen).toBeCalled();
+        });
+
         test('should return false if another key is pressed', () => {
             expect(media.handleKeydownReact('Esc')).toBe(false);
         });
