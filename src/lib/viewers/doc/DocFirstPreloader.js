@@ -758,6 +758,7 @@ class DocFirstPreloader extends EventEmitter {
      */
     pdfJsDocLoadComplete() {
         // If document is already loaded, hide the preload and short circuit
+        // IMPORTANT: Do not use imported constants directly inside ?. expressions - babel/webpack bug (webpack#13792)
         const loadedClass = CLASS_PREVIEW_LOADED;
         if (this.previewUI?.previewContainer?.classList?.contains(loadedClass)) {
             this.hidePreload();
