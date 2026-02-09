@@ -402,12 +402,10 @@ class DocBaseViewer extends BaseViewer {
                     priorityPages,
                 );
                 Promise.all(priorityPromises).then(() => {
-                    // Skip second batch if prefetchPriorityPagesOnly is true
                     if (prefetchPriorityPagesOnly) {
                         return;
                     }
 
-                    // Add staggered delay before fetching remaining pages
                     setTimeout(() => {
                         const remainingPromises = getPreloadImageRequestPromisesByBatch(
                             this.api,

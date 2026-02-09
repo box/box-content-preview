@@ -63,6 +63,21 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.numPages).toBe(1);
             expect(preloader.preloadedImages).toEqual({});
         });
+
+        it('should set wrapperClassName to presentation class when isPresentation is true', () => {
+            const presentationPreloader = new DocFirstPreloader(mockPreviewUI, { api: mockApi }, true);
+            expect(presentationPreloader.wrapperClassName).toBe('bp-presentation-preload-wrapper');
+            expect(presentationPreloader.isPresentation).toBe(true);
+        });
+
+        it('should merge config options', () => {
+            const customConfig = {
+                priorityPages: 5,
+                maxPreloadPages: 20,
+            };
+            const configuredPreloader = new DocFirstPreloader(mockPreviewUI, { api: mockApi, config: customConfig });
+            expect(configuredPreloader.config).toEqual(customConfig);
+        });
     });
 
     describe('buildPreloaderImagePlaceHolder()', () => {
@@ -119,6 +134,64 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.initializePreloadContainerComponents).not.toHaveBeenCalled();
         });
 
+        it('should call showPreloadSingleImage when only preloadUrlWithAuth is provided and showPreloadForNonPaged is enabled', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            preloader.config = { showPreloadForNonPaged: true };
+
+            await preloader.showPreload('mock-url', mockContainer, null, 5, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).toHaveBeenCalledWith('mock-url', 5, mockDocBaseViewer);
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
+        });
+
+        it('should call showPreviewMask when preloadUrlWithAuth is provided but showPreloadForNonPaged is disabled', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            preloader.config = { showPreloadForNonPaged: false };
+
+            await preloader.showPreload('mock-url', mockContainer, null, 5, mockDocBaseViewer);
+
+            expect(preloader.showPreloadSingleImage).not.toHaveBeenCalled();
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+        });
+
+        it('should call showPreviewMask when no URLs are provided', async () => {
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+
+            await preloader.showPreload(null, mockContainer, null, 5, mockDocBaseViewer);
+
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+        });
+
+        it('should call showPreloadStaggered when staggered loading is enabled and pagedUrl exists', async () => {
+            jest.spyOn(preloader, 'showPreloadStaggered').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(true);
+
+            await preloader.showPreload('preload-url', mockContainer, 'paged-url', 10, mockDocBaseViewer);
+
+            expect(preloader.showPreloadStaggered).toHaveBeenCalledWith(
+                'preload-url',
+                'paged-url',
+                10,
+                mockDocBaseViewer,
+            );
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+        });
+
+        it('should call showPreloadAll when staggered loading is disabled and pagedUrl exists', async () => {
+            jest.spyOn(preloader, 'showPreloadAll').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+
+            await preloader.showPreload('preload-url', mockContainer, 'paged-url', 10, mockDocBaseViewer);
+
+            expect(preloader.showPreloadAll).toHaveBeenCalledWith('preload-url', 'paged-url', 10, mockDocBaseViewer);
+            expect(preloader.hidePreviewMask).toHaveBeenCalled();
+        });
+
         it('should set isWebp to true if pagedPreLoadUrlWithAuth is provided', async () => {
             jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload(null, mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
@@ -127,6 +200,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
         it('should set isWebp to false if pagedPreLoadUrlWithAuth is not provided', async () => {
             jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
+            preloader.config = { showPreloadForNonPaged: true };
             await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer);
             expect(preloader.isWebp).toBe(false);
         });
@@ -309,6 +383,227 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
+    describe('showPreloadSingleImage()', () => {
+        let mockBlob;
+        let mockResponse;
+
+        beforeEach(() => {
+            mockBlob = new Blob(['mock-content'], { type: 'image/jpeg' });
+            mockResponse = { data: mockBlob };
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+
+            jest.spyOn(preloader.api, 'get').mockResolvedValue(mockResponse);
+            jest.spyOn(util, 'handleRepresentationBlobFetch').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            jest.spyOn(preloader, 'handleThumbnailToggling').mockImplementation(() => {});
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'showPreviewMask');
+        });
+
+        it('should fetch the image and render it', async () => {
+            await preloader.showPreloadSingleImage('mock-url-with-auth', 5, mockDocBaseViewer);
+
+            expect(preloader.api.get).toHaveBeenCalledWith('mock-url-with-auth', { type: 'blob' });
+            expect(util.handleRepresentationBlobFetch).toHaveBeenCalledWith(mockResponse);
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
+            expect(preloader.handleThumbnailToggling).toHaveBeenCalledWith(mockDocBaseViewer);
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+        });
+
+        it('should show preview mask and return early if renderFirstPage fails', async () => {
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(false);
+
+            await preloader.showPreloadSingleImage('mock-url-with-auth', 5, mockDocBaseViewer);
+
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.handleThumbnailToggling).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should add loaded class and return early if pdfJsDocLoadComplete returns true', async () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+
+            await preloader.showPreloadSingleImage('mock-url-with-auth', 5, mockDocBaseViewer);
+
+            expect(preloader.renderFirstPage).toHaveBeenCalled();
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+            expect(preloader.handleThumbnailToggling).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should append preloadEl to wrapperEl', async () => {
+            jest.spyOn(preloader.wrapperEl, 'appendChild');
+
+            await preloader.showPreloadSingleImage('mock-url-with-auth', 5, mockDocBaseViewer);
+
+            expect(preloader.wrapperEl.appendChild).toHaveBeenCalledWith(preloader.preloadEl);
+        });
+    });
+
+    describe('showPreloadAll()', () => {
+        let mockBlob1;
+        let mockBlob2;
+        let mockBlob3;
+
+        beforeEach(() => {
+            mockBlob1 = new Blob(['content1'], { type: 'image/webp' });
+            mockBlob2 = new Blob(['content2'], { type: 'image/webp' });
+            mockBlob3 = new Blob(['content3'], { type: 'image/webp' });
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: 100, height: 100 };
+
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob1, mockBlob2, mockBlob3]);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            jest.spyOn(preloader, 'processAdditionalPages').mockResolvedValue();
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'showPreviewMask');
+        });
+
+        it('should load all blobs and process them', async () => {
+            await preloader.showPreloadAll('preload-url', 'paged-url', 3, mockDocBaseViewer);
+
+            expect(preloader.loadBatchAsBlobs).toHaveBeenCalledWith('preload-url', 'paged-url', 3);
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob1, mockDocBaseViewer);
+            expect(preloader.processAdditionalPages).toHaveBeenCalledWith([mockBlob2, mockBlob3], mockDocBaseViewer);
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+        });
+
+        it('should show preview mask if renderFirstPage fails', async () => {
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(false);
+
+            await preloader.showPreloadAll('preload-url', 'paged-url', 3, mockDocBaseViewer);
+
+            expect(preloader.showPreviewMask).toHaveBeenCalled();
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+
+        it('should add loaded class and return early if pdfJsDocLoadComplete returns true', async () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+
+            await preloader.showPreloadAll('preload-url', 'paged-url', 3, mockDocBaseViewer);
+
+            expect(preloader.wrapperEl.classList.contains('loaded')).toBe(true);
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('handleThumbnailToggling()', () => {
+        beforeEach(() => {
+            preloader.thumbnailsOpen = false;
+            mockDocBaseViewer.rootEl = document.createElement('div');
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn();
+            mockDocBaseViewer.initThumbnails = jest.fn();
+            mockDocBaseViewer.emit = jest.fn();
+        });
+
+        it('should toggle thumbnails when shouldThumbnailsBeToggled returns true', () => {
+            mockDocBaseViewer.shouldThumbnailsBeToggled.mockReturnValue(true);
+
+            preloader.handleThumbnailToggling(mockDocBaseViewer);
+
+            expect(mockDocBaseViewer.shouldThumbnailsBeToggled).toHaveBeenCalled();
+            expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN)).toBe(true);
+            expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PRELOAD_COMPLETE)).toBe(true);
+            expect(mockDocBaseViewer.emit).toHaveBeenCalledWith(VIEWER_EVENT.thumbnailsOpen);
+            expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
+            expect(preloader.thumbnailsOpen).toBe(true);
+        });
+
+        it('should not toggle thumbnails when shouldThumbnailsBeToggled returns false', () => {
+            mockDocBaseViewer.shouldThumbnailsBeToggled.mockReturnValue(false);
+
+            preloader.handleThumbnailToggling(mockDocBaseViewer);
+
+            expect(mockDocBaseViewer.shouldThumbnailsBeToggled).toHaveBeenCalled();
+            expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN)).toBe(false);
+            expect(mockDocBaseViewer.emit).not.toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
+            expect(preloader.thumbnailsOpen).toBe(false);
+        });
+
+        it('should not toggle thumbnails if already toggled', () => {
+            preloader.thumbnailsOpen = true;
+            mockDocBaseViewer.shouldThumbnailsBeToggled.mockReturnValue(true);
+
+            preloader.handleThumbnailToggling(mockDocBaseViewer);
+
+            expect(mockDocBaseViewer.shouldThumbnailsBeToggled).not.toHaveBeenCalled();
+            expect(mockDocBaseViewer.initThumbnails).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('isStaggeredLoadingEnabled()', () => {
+        it('should return true when all required config properties are present', () => {
+            preloader.config = {
+                priorityPages: 3,
+                maxPreloadPages: 10,
+                secondBatchDelayMs: 1000,
+                startSecondBatchAfterFetch: true,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(true);
+        });
+
+        it('should return false when priorityPages is undefined', () => {
+            preloader.config = {
+                maxPreloadPages: 10,
+                secondBatchDelayMs: 1000,
+                startSecondBatchAfterFetch: true,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(false);
+        });
+
+        it('should return false when priorityPages is 0', () => {
+            preloader.config = {
+                priorityPages: 0,
+                maxPreloadPages: 10,
+                secondBatchDelayMs: 1000,
+                startSecondBatchAfterFetch: true,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(false);
+        });
+
+        it('should return false when maxPreloadPages is undefined', () => {
+            preloader.config = {
+                priorityPages: 3,
+                secondBatchDelayMs: 1000,
+                startSecondBatchAfterFetch: true,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(false);
+        });
+
+        it('should return false when secondBatchDelayMs is undefined', () => {
+            preloader.config = {
+                priorityPages: 3,
+                maxPreloadPages: 10,
+                startSecondBatchAfterFetch: true,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(false);
+        });
+
+        it('should return false when startSecondBatchAfterFetch is undefined', () => {
+            preloader.config = {
+                priorityPages: 3,
+                maxPreloadPages: 10,
+                secondBatchDelayMs: 1000,
+            };
+
+            expect(preloader.isStaggeredLoadingEnabled()).toBe(false);
+        });
+    });
+
     describe('addPreloadImageToPreloaderContainer()', () => {
         it('should create and return a container with the correct attributes and append it to preloadEl', () => {
             const mockImage = document.createElement('img');
@@ -327,6 +622,156 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(result.classList.contains('loaded')).toBe(true);
             expect(preloader.preloadEl.contains(result)).toBe(true);
             expect(result.querySelector('img')).toBe(mockImage);
+        });
+    });
+
+    describe('addPlaceholdersForRemainingPages()', () => {
+        const widthDimension = 100;
+        const heightDimension = 200;
+
+        beforeEach(() => {
+            preloader.preloadEl = document.createElement('div');
+            preloader.imageDimensions = { width: widthDimension, height: heightDimension };
+            preloader.isPresentation = false;
+        });
+
+        it('should add placeholders for remaining pages up to 10', () => {
+            preloader.pdfData = { numPages: 15 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            // Should add max 10 placeholders (pages 4-13)
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(10);
+
+            // Check dimensions of placeholders
+            const firstPlaceholder = placeholders[0];
+            expect(firstPlaceholder.style.width).toBe(`${widthDimension}px`);
+            expect(firstPlaceholder.style.height).toBe(`${heightDimension}px`);
+        });
+
+        it('should add placeholders for all remaining pages if less than 10', () => {
+            preloader.pdfData = { numPages: 8 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            // Should add placeholders for pages 4-8 (5 placeholders)
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(5);
+        });
+
+        it('should not add placeholders if all pages are preloaded', () => {
+            preloader.pdfData = { numPages: 3 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2', 3: 'url3' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(0);
+        });
+
+        it('should not add placeholders if pdfData is not set', () => {
+            preloader.pdfData = null;
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(0);
+        });
+
+        it('should not add placeholders for presentations', () => {
+            preloader.isPresentation = true;
+            preloader.pdfData = { numPages: 10 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(0);
+        });
+
+        it('should not add placeholders if imageDimensions is not set', () => {
+            preloader.imageDimensions = null;
+            preloader.pdfData = { numPages: 10 };
+            preloader.preloadedImages = { 1: 'url1', 2: 'url2' };
+
+            preloader.addPlaceholdersForRemainingPages();
+
+            const placeholders = preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder');
+            expect(placeholders.length).toBe(0);
+        });
+    });
+
+    describe('showSecondBatch()', () => {
+        let mockBlob;
+
+        beforeEach(() => {
+            mockBlob = new Blob(['content'], { type: 'image/webp' });
+            preloader.secondBatchStarted = false;
+            preloader.secondBatchTimeoutId = 123;
+
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockResolvedValue([mockBlob, mockBlob]);
+            jest.spyOn(preloader, 'processAdditionalPages').mockResolvedValue();
+            jest.spyOn(preloader, 'finalizePreload').mockImplementation(() => {});
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+            jest.spyOn(preloader, 'clearBatchTimeouts');
+        });
+
+        it('should load and process second batch of blobs', async () => {
+            await preloader.showSecondBatch('paged-url', 4, 8, mockDocBaseViewer);
+
+            expect(preloader.secondBatchStarted).toBe(true);
+            expect(preloader.clearBatchTimeouts).toHaveBeenCalled();
+            expect(preloader.loadBatchAsBlobs).toHaveBeenCalledWith(null, 'paged-url', 8, 4);
+            expect(preloader.processAdditionalPages).toHaveBeenCalledWith([mockBlob, mockBlob], mockDocBaseViewer);
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+        });
+
+        it('should not load if second batch already started', async () => {
+            preloader.secondBatchStarted = true;
+
+            await preloader.showSecondBatch('paged-url', 4, 8, mockDocBaseViewer);
+
+            expect(preloader.loadBatchAsBlobs).not.toHaveBeenCalled();
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+        });
+
+        it('should not load if pdfJsDocLoadComplete returns true', async () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+
+            await preloader.showSecondBatch('paged-url', 4, 8, mockDocBaseViewer);
+
+            expect(preloader.loadBatchAsBlobs).not.toHaveBeenCalled();
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+        });
+
+        it('should finalize even if loading fails', async () => {
+            const loadError = new Error('Load failed');
+            jest.spyOn(preloader, 'loadBatchAsBlobs').mockRejectedValue(loadError);
+
+            // Error should propagate but finalize should still be called
+            await expect(preloader.showSecondBatch('paged-url', 4, 8, mockDocBaseViewer)).rejects.toThrow(
+                'Load failed',
+            );
+
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
+            expect(preloader.secondBatchStarted).toBe(true);
+            expect(preloader.clearBatchTimeouts).toHaveBeenCalled();
+        });
+
+        it('should not process additional pages if pdfJsDocLoadComplete becomes true after loading', async () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete')
+                .mockReturnValueOnce(false) // First check before loading
+                .mockReturnValueOnce(true); // Second check after loading
+
+            await preloader.showSecondBatch('paged-url', 4, 8, mockDocBaseViewer);
+
+            expect(preloader.loadBatchAsBlobs).toHaveBeenCalled();
+            expect(preloader.processAdditionalPages).not.toHaveBeenCalled();
+            expect(preloader.finalizePreload).toHaveBeenCalledWith(mockDocBaseViewer);
         });
     });
 
