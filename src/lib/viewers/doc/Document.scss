@@ -16,6 +16,7 @@
     height: 100%;
     margin: 0;
     overflow-y: scroll;
+    scrollbar-gutter: stable;
     background-color: $ffive;
     opacity: 1;
     transition: opacity .5s;
