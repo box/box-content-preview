@@ -5,6 +5,7 @@ import ControlsRoot from '../../controls';
 import MediaBaseViewer from '../MediaBaseViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import VideoPreloader from '../VideoPreloader';
+import { CLASS_INVISIBLE } from '../../../constants';
 import * as fileUtil from '../../../file';
 
 let containerEl;
@@ -127,7 +128,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('click', videoBase.pointerHandler);
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
-            expect(videoBase.playButtonEl.removeEventListener).toBeCalledWith('click', videoBase.togglePlay);
+            expect(videoBase.playButtonEl.removeEventListener).toBeCalledWith('click', videoBase.handlePlayRequest);
         });
     });
 
@@ -234,11 +235,11 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaControls.toggle).toBeCalled();
         });
 
-        test('should toggle play on click', () => {
-            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
+        test('should call handlePlayRequest on click', () => {
+            jest.spyOn(videoBase, 'handlePlayRequest').mockImplementation();
 
             videoBase.pointerHandler({ type: 'click' });
-            expect(videoBase.togglePlay).toBeCalled();
+            expect(videoBase.handlePlayRequest).toBeCalled();
         });
     });
 
@@ -251,6 +252,17 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.playingHandler();
 
             expect(videoBase.hidePlayButton).toBeCalled();
+        });
+
+        test('should not call hidePreload (thumbnail stays until user clicks)', () => {
+            jest.spyOn(videoBase, 'handleRate').mockImplementation();
+            jest.spyOn(videoBase, 'hidePlayButton').mockImplementation();
+            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+            videoBase.mediaControls.showPauseIcon = jest.fn();
+
+            videoBase.playingHandler();
+
+            expect(videoBase.hidePreload).not.toBeCalled();
         });
     });
 
@@ -308,7 +320,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('click', videoBase.pointerHandler);
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
-            expect(videoBase.playButtonEl.addEventListener).toBeCalledWith('click', videoBase.togglePlay);
+            expect(videoBase.playButtonEl.addEventListener).toBeCalledWith('click', videoBase.handlePlayRequest);
         });
     });
 
@@ -636,7 +648,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.seekBackwardButtonEl).toBeNull();
             expect(mockRemoveListenerFromSeekBackwardButton).toHaveBeenCalledWith('click', expect.any(Function));
             expect(mockRemoveListenerFromSeekForwardButton).toHaveBeenCalledWith('click', expect.any(Function));
-            expect(mockRemoveListenerFromPlayButton).toHaveBeenCalledWith('click', videoBaseViewer.togglePlay);
+            expect(mockRemoveListenerFromPlayButton).toHaveBeenCalledWith('click', videoBaseViewer.handlePlayRequest);
         });
     });
 
@@ -1066,7 +1078,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(VideoPreloader.prototype.showPreload).not.toBeCalled();
         });
 
-        test('should create VideoPreloader and call showPreload() when conditions are met', () => {
+        test('should create VideoPreloader and call showPreload() with url, container, and options', () => {
             jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
 
             videoBase.showPreload();
@@ -1075,6 +1087,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
                 'https://example.com/preview.jpg?auth=token',
                 videoBase.mediaContainerEl,
+                expect.objectContaining({ onImageClick: expect.any(Function) }),
             );
         });
 
@@ -1087,6 +1100,64 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.preloader).toBe(existingPreloader);
             expect(VideoPreloader.prototype.showPreload).toBeCalled();
+        });
+    });
+
+    describe('prefetch()', () => {
+        const jpgUrlWithAuth = 'https://example.com/preview.jpg?auth=token';
+
+        beforeEach(() => {
+            videoBase.api = { get: jest.fn().mockResolvedValue() };
+            videoBase.options.file = {
+                id: '123',
+                representations: {
+                    entries: [
+                        {
+                            representation: 'jpg',
+                            content: { url_template: 'https://example.com/preview.jpg' },
+                            status: { state: 'success' },
+                        },
+                    ],
+                },
+            };
+            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(jpgUrlWithAuth);
+            jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
+        });
+
+        test('should fetch JPG preload image when preload is true and file has ready jpg rep', () => {
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.api.get).toHaveBeenCalledWith(jpgUrlWithAuth, { type: 'blob' });
+        });
+
+        test('should not fetch JPG when preload is false', () => {
+            videoBase.prefetch({ preload: false });
+
+            expect(videoBase.api.get).not.toHaveBeenCalled();
+        });
+
+        test('should not fetch JPG when file is watermarked', () => {
+            jest.spyOn(fileUtil, 'isWatermarked').mockReturnValue(true);
+
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.api.get).not.toHaveBeenCalled();
+        });
+
+        test('should not fetch JPG when jpg representation does not exist', () => {
+            videoBase.options.file.representations.entries = [];
+
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.api.get).not.toHaveBeenCalled();
+        });
+
+        test('should not fetch JPG when representation is not ready', () => {
+            videoBase.isRepresentationReady.mockReturnValue(false);
+
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.api.get).not.toHaveBeenCalled();
         });
     });
 
@@ -1117,11 +1188,76 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             jest.spyOn(videoBase, 'hidePreload').mockImplementation();
         });
 
-        test('should call hidePreload() when video metadata loads', () => {
+        test('should not call hidePreload() when video metadata loads (preload hidden on click)', () => {
             videoBase.loadeddataHandler();
 
             expect(MediaBaseViewer.prototype.loadeddataHandler).toBeCalled();
-            expect(videoBase.hidePreload).toBeCalled();
+            expect(videoBase.hidePreload).not.toBeCalled();
+        });
+
+        test('should call play() when userRequestedPlay is true', () => {
+            jest.spyOn(videoBase, 'play').mockImplementation();
+            videoBase.userRequestedPlay = true;
+
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.play).toBeCalled();
+        });
+
+        test('should not call play() when userRequestedPlay is false', () => {
+            jest.spyOn(videoBase, 'play').mockImplementation();
+            videoBase.userRequestedPlay = false;
+
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.play).not.toBeCalled();
+        });
+
+        test('should not remove CLASS_INVISIBLE from mediaEl when preload is still visible', () => {
+            videoBase.preloader = { wrapperEl: document.createElement('div') };
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+            jest.spyOn(videoBase.mediaEl.classList, 'remove');
+
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.mediaEl.classList.remove).not.toHaveBeenCalledWith(CLASS_INVISIBLE);
+        });
+
+        test('should remove CLASS_INVISIBLE from mediaEl when preload is not showing', () => {
+            videoBase.preloader = null;
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+        });
+    });
+
+    describe('handlePlayRequest()', () => {
+        test('should hide preload, remove CLASS_INVISIBLE from mediaEl, call resize(), set userRequestedPlay, and call togglePlay when preload is visible', () => {
+            const mockPreloader = { wrapperEl: document.createElement('div'), hidePreload: jest.fn() };
+            videoBase.preloader = mockPreloader;
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+
+            videoBase.handlePlayRequest();
+
+            expect(mockPreloader.hidePreload).toBeCalled();
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoBase.resize).toBeCalled();
+            expect(videoBase.userRequestedPlay).toBe(true);
+            expect(videoBase.togglePlay).toBeCalled();
+        });
+
+        test('should only call togglePlay when preload is not visible', () => {
+            videoBase.preloader = null;
+            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
+
+            videoBase.handlePlayRequest();
+
+            expect(videoBase.userRequestedPlay).toBe(true);
+            expect(videoBase.togglePlay).toBeCalled();
         });
     });
 });

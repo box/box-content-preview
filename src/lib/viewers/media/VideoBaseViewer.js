@@ -4,6 +4,7 @@ import {
     ANNOTATOR_EVENT,
     CLASS_DARK,
     CLASS_HIDDEN,
+    CLASS_INVISIBLE,
     CLASS_IS_BUFFERING,
     DISCOVERABILITY_ATTRIBUTE,
     VIDEO_FTUX_CURSOR_SEEN_KEY,
@@ -45,6 +46,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Bind context for handlers
         this.handleControlsHide = this.handleControlsHide.bind(this);
         this.handleControlsShow = this.handleControlsShow.bind(this);
+        this.handlePlayRequest = this.handlePlayRequest.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.pointerHandler = this.pointerHandler.bind(this);
         this.waitingHandler = this.waitingHandler.bind(this);
@@ -76,6 +78,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
 
         this.isNarrowVideo = false;
+        this.userRequestedPlay = false;
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
@@ -102,8 +105,25 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {Promise} Promise to load representations
      */
     load() {
-        this.showPreload();
+        if (!this.preloader?.wrapperEl) {
+            this.showPreload();
+        }
         return super.load();
+    }
+
+    /**
+     * Handles user request to play (image click or play button). Hides preload if visible and sets userRequestedPlay before toggling play.
+     *
+     * @return {void}
+     */
+    handlePlayRequest() {
+        if (this.preloader?.wrapperEl) {
+            this.hidePreload();
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+            this.resize();
+        }
+        this.userRequestedPlay = true;
+        this.togglePlay();
     }
 
     /**
@@ -131,7 +151,18 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         const { url_template: template } = preloadRep.content;
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-        this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl);
+        const options = {
+            onImageClick: () => this.handlePlayRequest(),
+        };
+        if (this.wrapperEl) {
+            const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+            options.viewport = {
+                width: this.wrapperEl.clientWidth,
+                height: this.wrapperEl.clientHeight - controlsHeight,
+            };
+        }
+        this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);
+        this.mediaEl.classList.add(CLASS_INVISIBLE);
     }
 
     /**
@@ -143,6 +174,32 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.preloader) {
             this.preloader.hidePreload();
         }
+    }
+
+    /**
+     * Prefetches video viewer assets and optionally the JPG preload image so it is cached
+     * before the user opens the preview (e.g. on hover or adjacent-file prefetch).
+     *
+     * @param {boolean} [options.assets] - Whether to prefetch static assets (handled by subclasses)
+     * @param {boolean} [options.content] - Whether to prefetch rep content (handled by subclasses)
+     * @param {boolean} [options.preload] - Whether to prefetch the JPG preload image
+     * @return {void}
+     */
+    // eslint-disable-next-line no-unused-vars -- assets/content handled by subclasses
+    prefetch({ assets = true, content = true, preload = false }) {
+        if (!preload) {
+            return;
+        }
+        const { file } = this.options;
+        if (!file || isWatermarked(file)) {
+            return;
+        }
+        const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        if (!preloadRep || !this.isRepresentationReady(preloadRep) || !preloadRep.content?.url_template) {
+            return;
+        }
+        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(preloadRep.content.url_template);
+        this.api.get(preloadUrlWithAuth, { type: 'blob' }).catch(() => {});
     }
 
     buildPlayButtonWithSeekButtons() {
@@ -161,7 +218,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl.setAttribute('type', 'button');
         this.playButtonEl.setAttribute('title', __('media_play'));
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
-        this.playButtonEl.addEventListener('click', this.togglePlay);
+        this.playButtonEl.addEventListener('click', this.handlePlayRequest);
 
         this.seekForwardButtonEl = this.playContainerEl.appendChild(document.createElement('button'));
         this.seekForwardButtonEl.classList.add(CLASS_SEEK_BUTTON);
@@ -189,7 +246,7 @@ class VideoBaseViewer extends MediaBaseViewer {
                 this.seekBackwardButtonEl = null;
             }
             if (this.playButtonEl) {
-                this.playButtonEl.removeEventListener('click', this.togglePlay);
+                this.playButtonEl.removeEventListener('click', this.handlePlayRequest);
                 this.playButtonEl.remove();
                 this.playButtonEl = null;
             }
@@ -213,7 +270,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         if (this.playButtonEl) {
-            this.playButtonEl.removeEventListener('click', this.togglePlay);
+            this.playButtonEl.removeEventListener('click', this.handlePlayRequest);
         }
 
         if (this.seekForwardButtonEl) {
@@ -236,10 +293,14 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadeddataHandler() {
         super.loadeddataHandler();
 
-        // Hide thumbnail when video metadata is loaded
-        this.hidePreload();
-
+        if (!this.preloader?.wrapperEl) {
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
         this.showPlayButton();
+
+        if (this.userRequestedPlay) {
+            this.play();
+        }
 
         if (this.mediaControls) {
             this.mediaControls.show();
@@ -296,7 +357,7 @@ class VideoBaseViewer extends MediaBaseViewer {
                 this.mediaControls.toggle();
             }
         } else if (event.type === 'click') {
-            this.togglePlay();
+            this.handlePlayRequest();
         }
     }
 
@@ -379,7 +440,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.mediaEl.addEventListener('waiting', this.waitingHandler);
 
         if (this.playButtonEl) {
-            this.playButtonEl.addEventListener('click', this.togglePlay);
+            this.playButtonEl.addEventListener('click', this.handlePlayRequest);
         }
     }
 
@@ -402,6 +463,10 @@ class VideoBaseViewer extends MediaBaseViewer {
         // This is because in Chrome its not possible to set a height
         // that larger than the current videoHeight.
         this.mediaEl.style.width = '';
+        if (this.mediaContainerEl) {
+            this.mediaContainerEl.style.width = '';
+            this.mediaContainerEl.style.height = '';
+        }
 
         this.setVideoDimensions();
 
@@ -473,6 +538,10 @@ class VideoBaseViewer extends MediaBaseViewer {
             } else if (newWidthIfHeightUsed <= viewport.width) {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
+        }
+
+        if (this.mediaContainerEl && this.mediaEl.style.width) {
+            this.mediaContainerEl.style.width = this.mediaEl.style.width;
         }
     }
 
