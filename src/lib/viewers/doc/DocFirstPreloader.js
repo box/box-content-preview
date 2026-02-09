@@ -366,8 +366,9 @@ class DocFirstPreloader extends EventEmitter {
             return;
         }
 
-        await this.processAdditionalPages(remainingBlobs, docBaseViewer);
         this.handleThumbnailToggling(docBaseViewer);
+
+        await this.processAdditionalPages(remainingBlobs, docBaseViewer);
 
         if (totalPages > priorityPages && !startSecondBatchAfterFetch) {
             this.scheduleSecondBatch(
