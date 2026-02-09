@@ -129,6 +129,9 @@ class DocBaseViewer extends BaseViewer {
     /** @property {DocFirstPreloader|DocPreloader} - document preloader */
     preloader;
 
+    /** @property {boolean} - Whether preloader images have been prefetched */
+    preloaderImagesPrefetched = false;
+
     /**
      * @inheritdoc
      */
@@ -380,7 +383,9 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
             const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
             const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
-            Promise.all(promises);
+            Promise.all(promises).then(() => {
+                this.preloaderImagesPrefetched = true;
+            });
         } else if (pagedWebpRepReady) {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
@@ -402,6 +407,8 @@ class DocBaseViewer extends BaseViewer {
                     priorityPages,
                 );
                 Promise.all(priorityPromises).then(() => {
+                    this.preloaderImagesPrefetched = true;
+
                     if (prefetchPriorityPagesOnly) {
                         return;
                     }
@@ -418,7 +425,9 @@ class DocBaseViewer extends BaseViewer {
                 });
             } else {
                 const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
-                Promise.all(promises);
+                Promise.all(promises).then(() => {
+                    this.preloaderImagesPrefetched = true;
+                });
             }
         }
         this.options.sharedLink = sharedLink;
@@ -513,6 +522,11 @@ class DocBaseViewer extends BaseViewer {
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
+            // Skip single-page preload if images were prefetched on hover
+            // Since the PDF is likely cached and will load faster than the preload transition
+            if (!pagedWebpRepReady && this.preloaderImagesPrefetched) {
+                return;
+            }
             this.startPreloadTimer();
             if (!pagedWebpRepReady) {
                 this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
@@ -535,7 +549,9 @@ class DocBaseViewer extends BaseViewer {
      */
     hidePreload() {
         if (this.preloader) {
-            this.preloader.hidePreload();
+            // Use instant hide when showPreloadForNonPaged is enabled to avoid flicker
+            const useInstantHide = this.preloader.config?.showPreloadForNonPaged === true;
+            this.preloader.hidePreload(useInstantHide);
         }
     }
 

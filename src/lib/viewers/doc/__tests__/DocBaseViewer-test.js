@@ -880,6 +880,50 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase,
                 );
             });
+
+            test('should skip preload when preloaderImagesPrefetched is true and only jpeg rep available (single-page path)', () => {
+                webpRep = null;
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+                    return 'url without template';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloaderImagesPrefetched = true;
+
+                docBase.showPreload();
+
+                // Should NOT call preloader.showPreload because images were prefetched
+                expect(docBase.preloader.showPreload).not.toHaveBeenCalled();
+            });
+
+            test('should show preload when preloaderImagesPrefetched is false even for single-page path', () => {
+                webpRep = null;
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                    if (url === jpegUrlTemplate) {
+                        return 'jpeg-preload-url';
+                    }
+                    return 'url without template';
+                });
+
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                docBase.preloaderImagesPrefetched = false;
+
+                docBase.showPreload();
+
+                // Should call preloader.showPreload because images were NOT prefetched
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'jpeg-preload-url',
+                    containerEl,
+                    null,
+                    1,
+                    docBase,
+                );
+            });
         });
 
         describe('hidePreload', () => {
@@ -887,9 +931,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.preloader = new DocPreloader();
             });
 
-            test('should hide the preload', () => {
-                sandbox.mock(docBase.preloader).expects('hidePreload');
+            test('should hide the preload with instant=true when preloader.config.showPreloadForNonPaged is true', () => {
+                docBase.preloader.config = { showPreloadForNonPaged: true };
+                jest.spyOn(docBase.preloader, 'hidePreload');
                 docBase.hidePreload();
+                expect(docBase.preloader.hidePreload).toHaveBeenCalledWith(true);
+            });
+
+            test('should hide the preload with instant=false when preloader.config.showPreloadForNonPaged is false', () => {
+                docBase.preloader.config = { showPreloadForNonPaged: false };
+                jest.spyOn(docBase.preloader, 'hidePreload');
+                docBase.hidePreload();
+                expect(docBase.preloader.hidePreload).toHaveBeenCalledWith(false);
+            });
+
+            test('should hide the preload with instant=false when preloader.config is undefined', () => {
+                docBase.preloader.config = undefined;
+                jest.spyOn(docBase.preloader, 'hidePreload');
+                docBase.hidePreload();
+                expect(docBase.preloader.hidePreload).toHaveBeenCalledWith(false);
             });
         });
 
@@ -4086,6 +4146,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 jest.useRealTimers();
                 setTimeoutSpy.mockRestore();
+                getPreloadImageRequestPromisesByBatchSpy.mockRestore();
+            });
+
+            test('should set preloaderImagesPrefetched to true after JPEG prefetch completes', async () => {
+                webpRep.status.state = STATUS_NONE;
+                webpRep.metadata = null;
+                const mockPromises = [Promise.resolve('done')];
+                stubs.getPreloadImageRequestPromises.mockReturnValue(mockPromises);
+
+                expect(docBase.preloaderImagesPrefetched).toBe(false);
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Wait for Promise.all to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                expect(docBase.preloaderImagesPrefetched).toBe(true);
+            });
+
+            test('should set preloaderImagesPrefetched to true after WebP prefetch completes', async () => {
+                const mockPromises = [Promise.resolve('done')];
+                stubs.getPreloadImageRequestPromises.mockReturnValue(mockPromises);
+
+                expect(docBase.preloaderImagesPrefetched).toBe(false);
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Wait for Promise.all to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                expect(docBase.preloaderImagesPrefetched).toBe(true);
+            });
+
+            test('should set preloaderImagesPrefetched to true after staggered WebP priority pages prefetch completes', async () => {
+                jest.useFakeTimers();
+                const getPreloadImageRequestPromisesByBatchSpy = jest
+                    .spyOn(util, 'getPreloadImageRequestPromisesByBatch')
+                    .mockReturnValue([Promise.resolve('mock')]);
+
+                docBase.options.docFirstPagesConfig = {
+                    priorityPages: 2,
+                    maxPreloadPages: 8,
+                    secondBatchDelayMs: 200,
+                };
+
+                expect(docBase.preloaderImagesPrefetched).toBe(false);
+
+                docBase.prefetchPreloaderImages(mockFile);
+
+                // Wait for priority promises to resolve
+                await Promise.resolve();
+                await Promise.resolve();
+
+                expect(docBase.preloaderImagesPrefetched).toBe(true);
+
+                jest.useRealTimers();
                 getPreloadImageRequestPromisesByBatchSpy.mockRestore();
             });
         });
