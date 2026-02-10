@@ -6,6 +6,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO,
+    CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
@@ -87,6 +88,9 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 expect(videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`)).not.toBeNull();
                 expect(
                     videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`),
+                ).not.toBeNull();
+                expect(
+                    videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`),
                 ).not.toBeNull();
                 expect(containerEl).toContainElement(videoPreloader.wrapperEl);
                 expect(videoPreloader.bindDOMListeners).toBeCalled();

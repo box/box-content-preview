@@ -36,6 +36,7 @@ export const CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER = 'bp-preload-placeholder';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO = 'bp-video-preload-wrapper';
+export const CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY = 'bp-video-preload-play-overlay';
 export const CLASS_BOX_PREVIEW_NOTIFICATION = 'bp-notification';
 export const CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER = 'bp-notifications-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';

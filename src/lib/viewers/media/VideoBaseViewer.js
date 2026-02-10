@@ -14,6 +14,7 @@ import {
     PRELOAD_REP_NAME,
 } from '../../constants';
 import fullscreen from '../../Fullscreen';
+import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
@@ -147,6 +148,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         if (!this.preloader) {
             this.preloader = new VideoPreloader({ api: this.api });
+            this.preloader.once('preload', () => {
+                this.emit(VIEWER_EVENT.default, { event: 'preload', data: {} });
+            });
         }
 
         const { url_template: template } = preloadRep.content;

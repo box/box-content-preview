@@ -6,12 +6,14 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO,
+    CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
     MIN_VIDEO_WIDTH_PX,
     VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
 } from '../../constants';
+import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
 
 class VideoPreloader extends EventEmitter {
@@ -85,6 +87,7 @@ class VideoPreloader extends EventEmitter {
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
                         <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
+                        <div class="${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}">${ICON_PLAY_LARGE}</div>
                     </div>
                 </div>
             `.trim();
