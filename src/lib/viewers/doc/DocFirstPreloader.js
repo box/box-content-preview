@@ -366,8 +366,9 @@ class DocFirstPreloader extends EventEmitter {
             return;
         }
 
-        await this.processAdditionalPages(remainingBlobs, docBaseViewer);
         this.handleThumbnailToggling(docBaseViewer);
+
+        await this.processAdditionalPages(remainingBlobs, docBaseViewer);
 
         if (totalPages > priorityPages && !startSecondBatchAfterFetch) {
             this.scheduleSecondBatch(
@@ -560,22 +561,28 @@ class DocFirstPreloader extends EventEmitter {
     /**
      * Hides the preload if it exists.
      *
+     * @param {boolean} instant - Whether to hide instantly without fade transition (to avoid flicker when PDF loads fast)
      * @return {void}
      */
-    hidePreload() {
+    hidePreload(instant = false) {
         if (!this.wrapperEl) {
             return;
         }
 
         this.unbindDOMListeners();
         this.restoreScrollPosition();
-        this.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
 
-        // Cleanup preload DOM after fade out
-        this.wrapperEl.addEventListener('transitionend', this.cleanupPreload);
-        // Cleanup preload DOM immediately if user scrolls after the document is ready since we don't want half-faded
-        // out preload content to be on top of real document content while scrolling
-        this.wrapperEl.addEventListener('scroll', this.cleanupPreload);
+        if (instant) {
+            this.cleanupPreload();
+        } else {
+            this.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
+
+            // Cleanup preload DOM after fade out
+            this.wrapperEl.addEventListener('transitionend', this.cleanupPreload);
+            // Cleanup preload DOM immediately if user scrolls after the document is ready since we don't want half-faded
+            // out preload content to be on top of real document content while scrolling
+            this.wrapperEl.addEventListener('scroll', this.cleanupPreload);
+        }
     }
 
     /**
@@ -718,6 +725,11 @@ class DocFirstPreloader extends EventEmitter {
                     const arrayBuffer = reader.result;
                     /* global ExifReader */
                     tags = ExifReader.load(arrayBuffer);
+
+                    if (!tags.UserComment) {
+                        reject(new Error('No valid EXIF data found'));
+                        return;
+                    }
 
                     const userComment = tags.UserComment.description || tags.UserComment.value;
                     const match = EXIF_COMMENT_REGEX.exec(userComment);

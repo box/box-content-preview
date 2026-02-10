@@ -59,6 +59,7 @@ class ThumbnailsSidebar {
 
         this.createPlaceholderThumbnail = this.createPlaceholderThumbnail.bind(this);
         this.generateThumbnailImages = this.generateThumbnailImages.bind(this);
+        this.initVirtualScrollerIfReady = this.initVirtualScrollerIfReady.bind(this);
         this.renderNextThumbnailImage = this.renderNextThumbnailImage.bind(this);
         this.requestThumbnailImage = this.requestThumbnailImage.bind(this);
         this.thumbnailClickHandler = this.thumbnailClickHandler.bind(this);
@@ -162,20 +163,31 @@ class ThumbnailsSidebar {
             this.isOpen = !!options.isOpen;
         }
 
-        this.thumbnail.init().then(thumbnailHeight => {
-            if (thumbnailHeight) {
-                const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
-                this.virtualScroller.init({
-                    initialRowIndex: this.currentPage - 1,
-                    totalItems: count,
-                    itemHeight: thumbnailHeight,
-                    containerHeight: this.getContainerHeight(),
-                    margin: THUMBNAIL_MARGIN,
-                    renderItemFn: this.createPlaceholderThumbnail,
-                    onScrollEnd: this.generateThumbnailImages,
-                    onInit: this.generateThumbnailImages,
-                });
-            }
+        this.thumbnail.init().then(this.initVirtualScrollerIfReady);
+    }
+
+    /**
+     * Initializes the virtual scroller when thumbnail dimensions are available.
+     * Used by init() and by renderNextThumbnailImage() when the scroller was not
+     * inited earlier (e.g. PDF wasn't ready when init() ran).
+     *
+     * @param {number|null} thumbnailHeight - height from Thumbnail.init(), or null if not ready
+     * @return {void}
+     */
+    initVirtualScrollerIfReady(thumbnailHeight) {
+        if (!thumbnailHeight || !this.virtualScroller) {
+            return;
+        }
+        const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
+        this.virtualScroller.init({
+            initialRowIndex: this.currentPage - 1,
+            totalItems: count,
+            itemHeight: thumbnailHeight,
+            containerHeight: this.getContainerHeight(),
+            margin: THUMBNAIL_MARGIN,
+            renderItemFn: this.createPlaceholderThumbnail,
+            onScrollEnd: this.generateThumbnailImages,
+            onInit: this.generateThumbnailImages,
         });
     }
 
@@ -198,6 +210,15 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     renderNextThumbnailImage() {
+        const scrollerNotInited =
+            this.virtualScroller &&
+            this.virtualScroller instanceof VirtualScroller &&
+            typeof this.virtualScroller.totalItems === 'undefined';
+        if (scrollerNotInited) {
+            this.thumbnail.init().then(this.initVirtualScrollerIfReady);
+            return;
+        }
+
         // Iterates over the current thumbnails and requests rendering of the first
         // thumbnail it encounters that does not have an image loaded, starting with
         // the visible thumbnails first.
@@ -209,7 +230,7 @@ class ThumbnailsSidebar {
         if (nextThumbnailEl) {
             const parsedPageNum = parseInt(nextThumbnailEl.dataset.bpPageNum, 10);
             // max doc first pages is 8 and this prevents the 9th page from being blank if the pdfDocument is not loaded yet
-            if (parsedPageNum > this.preloader?.retrievedPagesCount && !this.pdfViewer.pdfDocument) {
+            if (parsedPageNum > this.preloader?.retrievedPagesCount && !this.pdfViewer?.pdfDocument) {
                 return;
             }
             this.requestThumbnailImage(parsedPageNum - 1, nextThumbnailEl);
@@ -273,17 +294,22 @@ class ThumbnailsSidebar {
     requestThumbnailImage(itemIndex, thumbnailEl) {
         const requestId = requestAnimationFrame(() => {
             this.animationFrameRequestIds = this.animationFrameRequestIds.filter(id => id !== requestId);
-            this.thumbnail.createThumbnailImage(itemIndex).then(imageEl => {
-                // Promise will resolve with null if create image request was already in progress
-                if (imageEl) {
-                    // Appends to the thumbnail nav element
-                    thumbnailEl.lastChild.appendChild(imageEl);
-                    thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
-                }
+            this.thumbnail
+                .createThumbnailImage(itemIndex)
+                .then(imageEl => {
+                    // Promise will resolve with null if create image request was already in progress
+                    if (imageEl) {
+                        // Appends to the thumbnail nav element
+                        thumbnailEl.lastChild.appendChild(imageEl);
+                        thumbnailEl.classList.add(CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED);
+                    }
 
-                // After generating the thumbnail image, render the next one
-                this.renderNextThumbnailImage();
-            });
+                    // After generating the thumbnail image, render the next one
+                    this.renderNextThumbnailImage();
+                })
+                .catch(() => {
+                    this.renderNextThumbnailImage();
+                });
         });
 
         this.animationFrameRequestIds.push(requestId);

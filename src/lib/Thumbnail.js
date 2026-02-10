@@ -59,8 +59,17 @@ class Thumbnail {
             return Promise.resolve(this.thumbnailHeight);
         }
 
-        return this.pdfViewer.pdfDocument.getPage(1).then(page => {
-            const { width, height } = page.getViewport({ scale: 1 });
+        const pdfDocument = this.pdfViewer?.pdfDocument;
+        if (!pdfDocument) {
+            return Promise.resolve(null);
+        }
+
+        return pdfDocument.getPage(1).then(page => {
+            const viewport = page.getViewport({ scale: 1 });
+            if (!viewport) {
+                return Promise.resolve(null);
+            }
+            const { width, height } = viewport;
 
             // If the dimensions of the page are invalid then don't proceed further
             if (!(isFinite(width) && width > 0 && isFinite(height) && height > 0)) {
@@ -132,6 +141,10 @@ class Thumbnail {
                 this.thumbnailImageCache.set(itemIndex, { inProgress: false, image: imageEl });
 
                 return imageEl;
+            })
+            .catch(() => {
+                this.thumbnailImageCache.set(itemIndex, { ...this.getImageFromCache(itemIndex), inProgress: false });
+                throw new Error('Thumbnail generation failed');
             });
     }
 
@@ -155,14 +168,23 @@ class Thumbnail {
             return Promise.resolve(this.preloader.preloadedImages[pageNum]);
         }
 
+        const pdfDocument = this.pdfViewer?.pdfDocument;
+        if (!pdfDocument) {
+            return Promise.reject(new Error('PDF document not ready'));
+        }
+
         const canvas = document.createElement('canvas');
         const thumbnailImageWidth =
             thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
 
-        return this.pdfViewer.pdfDocument
+        return pdfDocument
             .getPage(pageNum)
             .then(page => {
-                const { width, height } = page.getViewport({ scale: 1 });
+                const viewport = page.getViewport({ scale: 1 });
+                if (!viewport || !isFinite(viewport.width) || !isFinite(viewport.height)) {
+                    return Promise.reject(new Error('Invalid page viewport'));
+                }
+                const { width, height } = viewport;
                 // Get the current page w:h ratio in case it differs from the first page
                 const curPageRatio = width / height;
 
