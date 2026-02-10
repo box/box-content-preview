@@ -522,8 +522,11 @@ class DocBaseViewer extends BaseViewer {
             this.startPreloadTimer();
             this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
         } else {
-            // Skip single-page preload if images were prefetched on hover
-            // Since the PDF is likely cached and will load faster than the preload transition
+            // Skip single-page preload if images were prefetched via prefetch().
+            // When prefetch() is called (e.g., on hover), both the preload images and
+            // PDF content are fetched in parallel. Since both are likely cached in the
+            // browser, the PDF will render quickly, making the preload unnecessary and
+            // avoiding a visual flicker during the brief transition.
             if (!pagedWebpRepReady && this.preloaderImagesPrefetched) {
                 return;
             }
