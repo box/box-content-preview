@@ -786,6 +786,25 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockWrapperEl.addEventListener).toHaveBeenCalledWith('transitionend', preloader.cleanupPreload);
             expect(mockWrapperEl.addEventListener).toHaveBeenCalledWith('scroll', preloader.cleanupPreload);
         });
+
+        it('should cleanup immediately without fade transition when instant is true', () => {
+            const mockWrapperEl = document.createElement('div');
+            const mockParent = document.createElement('div');
+            mockParent.appendChild(mockWrapperEl);
+            jest.spyOn(mockWrapperEl, 'addEventListener');
+            jest.spyOn(preloader, 'restoreScrollPosition').mockImplementation(() => {});
+            jest.spyOn(preloader, 'cleanupPreload');
+            preloader.wrapperEl = mockWrapperEl;
+
+            preloader.hidePreload(true);
+
+            // Should NOT add transparent class (no fade)
+            expect(mockWrapperEl.classList.contains('bp-is-transparent')).toBe(false);
+            // Should NOT add event listeners for fade
+            expect(mockWrapperEl.addEventListener).not.toHaveBeenCalled();
+            // Should call cleanupPreload immediately
+            expect(preloader.cleanupPreload).toHaveBeenCalled();
+        });
     });
 
     describe('cleanupPreload()', () => {
@@ -962,6 +981,29 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             mockFileReader.onerror();
 
             await expect(promise).rejects.toThrow('Error reading blob as ArrayBuffer');
+        });
+
+        it('should reject if UserComment is missing from EXIF data', async () => {
+            const mockTags = {}; // No UserComment
+
+            global.ExifReader = {
+                load: jest.fn().mockReturnValue(mockTags),
+            };
+
+            const mockFileReader = {
+                readAsArrayBuffer: jest.fn(),
+                onerror: null,
+                onload: null,
+                result: new ArrayBuffer(8),
+            };
+            global.FileReader = jest.fn(() => mockFileReader);
+
+            const promise = preloader.readEXIF(mockImageBlob, mockImageEl);
+
+            // Trigger the onload callback
+            mockFileReader.onload();
+
+            await expect(promise).rejects.toThrow('No valid EXIF data found');
         });
     });
 
