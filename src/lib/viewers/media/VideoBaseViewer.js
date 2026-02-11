@@ -5,7 +5,6 @@ import {
     CLASS_DARK,
     CLASS_HIDDEN,
     CLASS_INVISIBLE,
-    CLASS_IS_BUFFERING,
     DISCOVERABILITY_ATTRIBUTE,
     VIDEO_FTUX_CURSOR_SEEN_KEY,
     CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
@@ -94,6 +93,14 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.playButtonEl.setAttribute('type', 'button');
             this.playButtonEl.setAttribute('title', __('media_play'));
             this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
+        }
+
+        // Buffering spinner
+        this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
+        this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
+        if (this.useReactControls()) {
+            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + 40}px`;
         }
 
         this.lowerLights();
@@ -285,6 +292,8 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.seekBackwardButtonEl.removeEventListener('click', () => this.movePlayback(false, 5));
         }
 
+        this.bufferingSpinnerEl = null;
+
         super.destroy();
     }
 
@@ -372,6 +381,12 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
+        if (this.preloader?.wrapperEl) {
+            this.hidePreload();
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+            this.resize();
+        }
+        this.hideBufferingSpinner();
         super.playingHandler();
         this.hidePlayButton();
     }
@@ -386,6 +401,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         super.pauseHandler();
         this.showPlayButton();
         this.hideLoadingIcon();
+        this.hideBufferingSpinner();
     }
 
     /**
@@ -395,9 +411,21 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     waitingHandler() {
-        if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_IS_BUFFERING);
-            this.hidePlayButton();
+        if (!this.containerEl) return;
+
+        this.showBufferingSpinner();
+        this.hidePlayButton();
+    }
+
+    showBufferingSpinner() {
+        if (this.bufferingSpinnerEl) {
+            this.bufferingSpinnerEl.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    hideBufferingSpinner() {
+        if (this.bufferingSpinnerEl) {
+            this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
         }
     }
 
@@ -597,13 +625,6 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.rootEl) {
             this.rootEl.classList.add(CLASS_DARK);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    onKeydown(key) {
-        return super.onKeydown(key);
     }
 
     /**
