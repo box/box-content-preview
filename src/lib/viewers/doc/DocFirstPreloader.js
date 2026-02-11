@@ -304,7 +304,7 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise<boolean>} True if successful, false otherwise
      */
     async renderFirstPage(blob, docBaseViewer) {
-        if (!blob || blob instanceof Error) {
+        if (!blob || blob instanceof Error || this.pdfJsDocLoadComplete()) {
             return false;
         }
 
@@ -315,10 +315,24 @@ class DocFirstPreloader extends EventEmitter {
         await this.setPreloadImageDimensions(blob, img);
         this.addPreloadImageToPreloaderContainer(img, pageIndex);
 
-        this.emit('firstRender');
+        this.emitFirstRender();
         this.updateThumbnailProgress(docBaseViewer);
 
         return true;
+    }
+
+    /**
+     * Emits the 'firstRender' event unless pdf.js has already finished loading.
+     *
+     * @private
+     * @return {void}
+     */
+    emitFirstRender() {
+        if (this.pdfJsDocLoadComplete()) {
+            return;
+        }
+
+        this.emit('firstRender');
     }
 
     /**

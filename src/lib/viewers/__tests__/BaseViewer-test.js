@@ -1828,7 +1828,7 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'emitMetric').mockImplementation();
         });
 
-        test('should emit first render time metric with { name, data } format', () => {
+        test('should emit first render time metric with event name and value', () => {
             const mockTime = { elapsed: 250 };
 
             jest.spyOn(Timer, 'createTag').mockReturnValue('test-tag');
@@ -1838,7 +1838,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(Timer.createTag).toHaveBeenCalledWith('123', FIRST_RENDER_METRIC);
             expect(Timer.stop).toHaveBeenCalledWith('test-tag');
-            expect(base.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+            expect(base.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
             expect(base.firstRenderEmitted).toBe(true);
         });
 

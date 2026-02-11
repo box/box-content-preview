@@ -1568,6 +1568,23 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.emit).toHaveBeenCalledWith('firstRender');
         });
 
+        it('should return false if pdfJsDocLoadComplete returns true at entry', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+            const result = await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+            expect(result).toBe(false);
+            expect(preloader.emit).not.toHaveBeenCalledWith('firstRender');
+        });
+
+        it('should call emitFirstRender after rendering the image', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+            jest.spyOn(preloader, 'emitFirstRender').mockImplementation();
+
+            await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+            expect(preloader.emitFirstRender).toHaveBeenCalled();
+        });
+
         it('should trigger thumbnail rendering when docBaseViewer has thumbnailsSidebar', async () => {
             const mockBlob = new Blob(['test'], { type: 'image/webp' });
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
@@ -1576,6 +1593,28 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
 
             expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
+        });
+    });
+
+    describe('emitFirstRender()', () => {
+        beforeEach(() => {
+            jest.spyOn(preloader, 'emit').mockImplementation();
+        });
+
+        it('should emit firstRender when pdfJsDocLoadComplete is false', () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+
+            preloader.emitFirstRender();
+
+            expect(preloader.emit).toHaveBeenCalledWith('firstRender');
+        });
+
+        it('should not emit firstRender when pdfJsDocLoadComplete is true', () => {
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(true);
+
+            preloader.emitFirstRender();
+
+            expect(preloader.emit).not.toHaveBeenCalledWith('firstRender');
         });
     });
 
