@@ -1,3 +1,14 @@
+## 3.21.0 (2026-02-11)
+
+* fix: fix first_render_time metric for document viewers (#1612) ([a6baeca](https://github.com/box/box-content-preview/commit/a6baeca)), closes [#1612](https://github.com/box/box-content-preview/issues/1612)
+* fix: fix sidebar gutter for stagger load (#1609) ([b80452c](https://github.com/box/box-content-preview/commit/b80452c)), closes [#1609](https://github.com/box/box-content-preview/issues/1609)
+* fix(doc-preview): prevent thumbnail getPage race before PDF ready (#1610) ([9369e26](https://github.com/box/box-content-preview/commit/9369e26)), closes [#1610](https://github.com/box/box-content-preview/issues/1610)
+* feat: small docs jpeg first without exif data (#1608) ([827ab81](https://github.com/box/box-content-preview/commit/827ab81)), closes [#1608](https://github.com/box/box-content-preview/issues/1608)
+* feat: support preload for documents with non paged representations (#1604) ([4e0bd75](https://github.com/box/box-content-preview/commit/4e0bd75)), closes [#1604](https://github.com/box/box-content-preview/issues/1604)
+* feat(media): add fullscreen keyboard shortcut to React controls #1605 (#1606) ([7c6ebf4](https://github.com/box/box-content-preview/commit/7c6ebf4)), closes [#1605](https://github.com/box/box-content-preview/issues/1605) [#1606](https://github.com/box/box-content-preview/issues/1606)
+
+
+
 ## 3.20.0 (2026-02-06)
 
 * fix: doc preloader not finding Class variable import (#1607) ([a36bd0c](https://github.com/box/box-content-preview/commit/a36bd0c)), closes [#1607](https://github.com/box/box-content-preview/issues/1607)
