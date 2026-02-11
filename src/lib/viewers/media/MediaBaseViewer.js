@@ -891,6 +891,17 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles a user-initiated play request. Subclasses can override to add
+     * behavior before toggling play (e.g. hiding a preload thumbnail).
+     *
+     * @protected
+     * @return {void}
+     */
+    handlePlayRequest() {
+        this.togglePlay();
+    }
+
+    /**
      * Toggle mute
      *
      * @protected
@@ -1066,7 +1077,7 @@ class MediaBaseViewer extends BaseViewer {
                 return false; // So that tab can proceed to do its default behavior of going to the next element
             case 'space':
             case 'k':
-                this.togglePlay();
+                this.handlePlayRequest();
                 break;
             case 'arrowleft':
                 if (this.mediaControls.isVolumeScrubberFocused()) {
@@ -1135,7 +1146,7 @@ class MediaBaseViewer extends BaseViewer {
         switch (key.toLowerCase()) {
             case 'space':
             case 'k':
-                this.togglePlay();
+                this.handlePlayRequest();
                 break;
             case 'arrowleft':
                 this.quickSeek(-5);

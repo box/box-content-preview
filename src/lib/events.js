@@ -8,6 +8,7 @@ export const VIEWER_EVENT = {
     metric: 'viewermetric', // A viewer metric.
     notificationHide: 'notificationhide', // Hide notification modal.
     notificationShow: 'notificationshow', // Show notification modal.
+    preload: 'preload', // Preload content (e.g. video thumbnail) is ready to display.
     printSuccess: 'printsuccess', // When printing is successful
     reload: 'reload', // Reload preview.
     thumbnailsClose: 'thumbnailsClose', // When thumbnails sidebar closes

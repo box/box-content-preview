@@ -243,6 +243,66 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
     });
 
+    describe('handlePlayRequest()', () => {
+        beforeEach(() => {
+            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
+        });
+
+        test('should call preloader.showLoading() when preloader exists', () => {
+            const mockPreloader = { showLoading: jest.fn() };
+            videoBase.preloader = mockPreloader;
+
+            videoBase.handlePlayRequest();
+
+            expect(mockPreloader.showLoading).toHaveBeenCalled();
+        });
+
+        test('should not throw when no preloader is present', () => {
+            videoBase.preloader = undefined;
+
+            expect(() => videoBase.handlePlayRequest()).not.toThrow();
+        });
+
+        test('should set userRequestedPlay and call togglePlay', () => {
+            videoBase.handlePlayRequest();
+
+            expect(videoBase.userRequestedPlay).toBe(true);
+            expect(videoBase.togglePlay).toHaveBeenCalled();
+        });
+    });
+
+    describe('dismissPreload()', () => {
+        test('should hide preload, remove CLASS_INVISIBLE, and resize when preload is visible', () => {
+            const mockPreloader = { wrapperEl: document.createElement('div'), hidePreload: jest.fn() };
+            videoBase.preloader = mockPreloader;
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+
+            videoBase.dismissPreload();
+
+            expect(mockPreloader.hidePreload).toHaveBeenCalled();
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoBase.resize).toHaveBeenCalled();
+        });
+
+        test('should not call hidePreload when no preloader is present', () => {
+            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+
+            videoBase.dismissPreload();
+
+            expect(videoBase.hidePreload).not.toBeCalled();
+        });
+
+        test('should not call hidePreload when preloader has no wrapperEl', () => {
+            videoBase.preloader = { wrapperEl: undefined };
+            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+
+            videoBase.dismissPreload();
+
+            expect(videoBase.hidePreload).not.toBeCalled();
+        });
+    });
+
     describe('playingHandler()', () => {
         test('should hide the play button', () => {
             jest.spyOn(videoBase, 'handleRate').mockImplementation();
@@ -254,15 +314,15 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.hidePlayButton).toBeCalled();
         });
 
-        test('should not call hidePreload (thumbnail stays until user clicks)', () => {
+        test('should call dismissPreload', () => {
             jest.spyOn(videoBase, 'handleRate').mockImplementation();
             jest.spyOn(videoBase, 'hidePlayButton').mockImplementation();
-            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+            jest.spyOn(videoBase, 'dismissPreload').mockImplementation();
             videoBase.mediaControls.showPauseIcon = jest.fn();
 
             videoBase.playingHandler();
 
-            expect(videoBase.hidePreload).not.toBeCalled();
+            expect(videoBase.dismissPreload).toHaveBeenCalled();
         });
     });
 
@@ -287,16 +347,50 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('waitingHandler()', () => {
-        test('should add the buffering class', () => {
-            videoBase.waitingHandler();
-            expect(videoBase.containerEl).toHaveClass('bp-is-buffering');
-        });
-
-        test('should hide the play button', () => {
+        test('should show the buffering spinner and hide the play button', () => {
+            jest.spyOn(videoBase, 'showBufferingSpinner').mockImplementation();
             jest.spyOn(videoBase, 'hidePlayButton');
 
             videoBase.waitingHandler();
-            expect(videoBase.hidePlayButton).toBeCalled();
+
+            expect(videoBase.showBufferingSpinner).toHaveBeenCalled();
+            expect(videoBase.hidePlayButton).toHaveBeenCalled();
+        });
+
+        test('should not throw if containerEl is missing', () => {
+            videoBase.containerEl = null;
+            expect(() => videoBase.waitingHandler()).not.toThrow();
+        });
+    });
+
+    describe('showBufferingSpinner()', () => {
+        test('should remove bp-is-hidden from the spinner element', () => {
+            videoBase.bufferingSpinnerEl = document.createElement('div');
+            videoBase.bufferingSpinnerEl.classList.add('bp-is-hidden');
+
+            videoBase.showBufferingSpinner();
+
+            expect(videoBase.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
+        });
+
+        test('should not throw if bufferingSpinnerEl is null', () => {
+            videoBase.bufferingSpinnerEl = null;
+            expect(() => videoBase.showBufferingSpinner()).not.toThrow();
+        });
+    });
+
+    describe('hideBufferingSpinner()', () => {
+        test('should add bp-is-hidden to the spinner element', () => {
+            videoBase.bufferingSpinnerEl = document.createElement('div');
+
+            videoBase.hideBufferingSpinner();
+
+            expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+        });
+
+        test('should not throw if bufferingSpinnerEl is null', () => {
+            videoBase.bufferingSpinnerEl = null;
+            expect(() => videoBase.hideBufferingSpinner()).not.toThrow();
         });
     });
 
@@ -1234,28 +1328,14 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('handlePlayRequest()', () => {
-        test('should hide preload, remove CLASS_INVISIBLE from mediaEl, call resize(), set userRequestedPlay, and call togglePlay when preload is visible', () => {
-            const mockPreloader = { wrapperEl: document.createElement('div'), hidePreload: jest.fn() };
+        test('should call preloader.showLoading(), set userRequestedPlay, and call togglePlay', () => {
+            const mockPreloader = { showLoading: jest.fn() };
             videoBase.preloader = mockPreloader;
-            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
-            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
-            jest.spyOn(videoBase, 'resize').mockImplementation();
-
-            videoBase.handlePlayRequest();
-
-            expect(mockPreloader.hidePreload).toBeCalled();
-            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
-            expect(videoBase.resize).toBeCalled();
-            expect(videoBase.userRequestedPlay).toBe(true);
-            expect(videoBase.togglePlay).toBeCalled();
-        });
-
-        test('should only call togglePlay when preload is not visible', () => {
-            videoBase.preloader = null;
             jest.spyOn(videoBase, 'togglePlay').mockImplementation();
 
             videoBase.handlePlayRequest();
 
+            expect(mockPreloader.showLoading).toHaveBeenCalled();
             expect(videoBase.userRequestedPlay).toBe(true);
             expect(videoBase.togglePlay).toBeCalled();
         });

@@ -809,6 +809,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('handlePlayRequest()', () => {
+        test('should call togglePlay', () => {
+            jest.spyOn(media, 'togglePlay').mockImplementation();
+
+            media.handlePlayRequest();
+
+            expect(media.togglePlay).toBeCalledTimes(1);
+        });
+    });
+
     describe('toggleMute()', () => {
         test('should mute if volume was on', () => {
             jest.spyOn(media.cache, 'set');
@@ -989,19 +999,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaControls.show).toBeCalled();
         });
 
-        test('should toggle play and return true on Space', () => {
-            jest.spyOn(media, 'togglePlay').mockImplementation();
+        test('should handle play request and return true on Space', () => {
+            jest.spyOn(media, 'handlePlayRequest').mockImplementation();
 
             expect(media.handleKeydown('Space')).toBe(true);
-            expect(media.togglePlay).toBeCalled();
+            expect(media.handlePlayRequest).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
-        test('should toggle play and return true on k', () => {
-            jest.spyOn(media, 'togglePlay').mockImplementation();
+        test('should handle play request and return true on k', () => {
+            jest.spyOn(media, 'handlePlayRequest').mockImplementation();
 
             expect(media.handleKeydown('k')).toBe(true);
-            expect(media.togglePlay).toBeCalled();
+            expect(media.handlePlayRequest).toBeCalled();
             expect(media.mediaControls.show).toBeCalled();
         });
 
@@ -1168,18 +1178,18 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             jest.spyOn(media, 'renderUI').mockImplementation();
         });
 
-        test('should toggle play and return true on Space', () => {
-            jest.spyOn(media, 'togglePlay').mockImplementation();
+        test('should handle play request and return true on Space', () => {
+            jest.spyOn(media, 'handlePlayRequest').mockImplementation();
 
             expect(media.handleKeydownReact('Space')).toBe(true);
-            expect(media.togglePlay).toBeCalled();
+            expect(media.handlePlayRequest).toBeCalled();
         });
 
-        test('should toggle play and return true on k', () => {
-            jest.spyOn(media, 'togglePlay').mockImplementation();
+        test('should handle play request and return true on k', () => {
+            jest.spyOn(media, 'handlePlayRequest').mockImplementation();
 
             expect(media.handleKeydownReact('k')).toBe(true);
-            expect(media.togglePlay).toBeCalled();
+            expect(media.handlePlayRequest).toBeCalled();
         });
 
         test('should seek backwards 5 seconds and return true on ArrowLeft', () => {

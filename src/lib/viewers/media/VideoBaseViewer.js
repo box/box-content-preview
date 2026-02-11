@@ -5,7 +5,6 @@ import {
     CLASS_DARK,
     CLASS_HIDDEN,
     CLASS_INVISIBLE,
-    CLASS_IS_BUFFERING,
     DISCOVERABILITY_ATTRIBUTE,
     VIDEO_FTUX_CURSOR_SEEN_KEY,
     CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
@@ -14,6 +13,7 @@ import {
     PRELOAD_REP_NAME,
 } from '../../constants';
 import fullscreen from '../../Fullscreen';
+import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
@@ -27,6 +27,7 @@ const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
 const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
 const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
+const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (defined in _mediaBase.scss)
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
@@ -95,6 +96,15 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
         }
 
+        // Buffering spinner
+        this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
+        this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
+        if (this.useReactControls()) {
+            // Shift up by half the control bar + half the spinner to visually center above the controls
+            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
+        }
+
         this.lowerLights();
     }
 
@@ -112,15 +122,28 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Dismisses the preload thumbnail if it is currently visible. Safe to call
+     * multiple times — hidePreload() guards on wrapperEl internally.
+     *
+     * @private
+     * @return {void}
+     */
+    dismissPreload() {
+        if (this.preloader?.wrapperEl) {
+            this.hidePreload();
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+            this.resize();
+        }
+    }
+
+    /**
      * Handles user request to play (image click or play button). Hides preload if visible and sets userRequestedPlay before toggling play.
      *
      * @return {void}
      */
     handlePlayRequest() {
-        if (this.preloader?.wrapperEl) {
-            this.hidePreload();
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-            this.resize();
+        if (this.preloader) {
+            this.preloader.showLoading();
         }
         this.userRequestedPlay = true;
         this.togglePlay();
@@ -147,6 +170,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         if (!this.preloader) {
             this.preloader = new VideoPreloader({ api: this.api });
+            this.preloader.once('preload', () => {
+                this.emit(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
+            });
         }
 
         const { url_template: template } = preloadRep.content;
@@ -281,6 +307,8 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.seekBackwardButtonEl.removeEventListener('click', () => this.movePlayback(false, 5));
         }
 
+        this.bufferingSpinnerEl = null;
+
         super.destroy();
     }
 
@@ -368,6 +396,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
+        this.dismissPreload();
+        this.hideBufferingSpinner();
         super.playingHandler();
         this.hidePlayButton();
     }
@@ -382,6 +412,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         super.pauseHandler();
         this.showPlayButton();
         this.hideLoadingIcon();
+        this.hideBufferingSpinner();
     }
 
     /**
@@ -391,9 +422,21 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     waitingHandler() {
-        if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_IS_BUFFERING);
-            this.hidePlayButton();
+        if (!this.containerEl) return;
+
+        this.showBufferingSpinner();
+        this.hidePlayButton();
+    }
+
+    showBufferingSpinner() {
+        if (this.bufferingSpinnerEl) {
+            this.bufferingSpinnerEl.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    hideBufferingSpinner() {
+        if (this.bufferingSpinnerEl) {
+            this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
         }
     }
 
@@ -593,13 +636,6 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.rootEl) {
             this.rootEl.classList.add(CLASS_DARK);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    onKeydown(key) {
-        return super.onKeydown(key);
     }
 
     /**

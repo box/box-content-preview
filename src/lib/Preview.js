@@ -1398,12 +1398,18 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.load:
                 this.finishLoading(data.data);
                 break;
+            case VIEWER_EVENT.preload:
+                // Dismiss the global loading spinner once the preload thumbnail is visible
+                this.ui.hideLoadingIndicator();
+                this.emit(data.event, data.data);
+                this.emit(VIEWER_EVENT.default, data);
+                break;
             case VIEWER_EVENT.error:
                 // Do nothing since 'error' event was already caught, and will be emitted
                 // as a 'preview_error' event
                 break;
             default:
-                // This includes 'notification', 'preload' and others
+                // This includes 'notification' and others
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
         }

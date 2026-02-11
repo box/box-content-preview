@@ -6,6 +6,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO,
+    CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
@@ -88,6 +89,9 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 expect(
                     videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`),
                 ).not.toBeNull();
+                expect(
+                    videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`),
+                ).not.toBeNull();
                 expect(containerEl).toContainElement(videoPreloader.wrapperEl);
                 expect(videoPreloader.bindDOMListeners).toBeCalled();
             });
@@ -162,6 +166,59 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.cleanupPreload.mockClear();
             videoPreloader.wrapperEl.dispatchEvent(new Event('click'));
             expect(videoPreloader.cleanupPreload).toBeCalled();
+        });
+    });
+
+    describe('showLoading()', () => {
+        beforeEach(() => {
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.placeholderEl = document.createElement('div');
+
+            const playOverlay = document.createElement('div');
+            playOverlay.classList.add(CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY);
+            videoPreloader.wrapperEl.appendChild(videoPreloader.placeholderEl);
+            videoPreloader.placeholderEl.appendChild(playOverlay);
+        });
+
+        test('should not throw if wrapperEl does not exist', () => {
+            videoPreloader.wrapperEl = null;
+
+            expect(() => videoPreloader.showLoading()).not.toThrow();
+        });
+
+        test('should hide the play overlay', () => {
+            videoPreloader.showLoading();
+
+            const overlay = videoPreloader.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+            expect(overlay).toHaveClass('bp-is-hidden');
+        });
+
+        test('should add a spinner element to the placeholder', () => {
+            videoPreloader.showLoading();
+
+            const spinner = videoPreloader.placeholderEl.querySelector('.bp-media-buffering-spinner');
+            expect(spinner).not.toBeNull();
+        });
+
+        test('should remove the click handler and reset cursor', () => {
+            const clickHandler = jest.fn();
+            videoPreloader.imageClickHandler = clickHandler;
+            jest.spyOn(videoPreloader.wrapperEl, 'removeEventListener');
+            videoPreloader.wrapperEl.style.cursor = 'pointer';
+
+            videoPreloader.showLoading();
+
+            expect(videoPreloader.wrapperEl.removeEventListener).toHaveBeenCalledWith('click', clickHandler);
+            expect(videoPreloader.imageClickHandler).toBeUndefined();
+            expect(videoPreloader.wrapperEl.style.cursor).toBe('');
+        });
+
+        test('should not add spinner if placeholderEl is missing', () => {
+            videoPreloader.placeholderEl = null;
+
+            videoPreloader.showLoading();
+
+            expect(videoPreloader.wrapperEl.querySelector('.bp-media-buffering-spinner')).toBeNull();
         });
     });
 

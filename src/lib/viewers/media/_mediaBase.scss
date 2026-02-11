@@ -127,7 +127,8 @@
     }
 }
 
-// When media is buffering, show only the crawler
+// Audio buffering indicator — the crawler is shown when audio media is buffering.
+// Video buffering uses a dedicated spinner element (bp-media-buffering-spinner) instead.
 .bp.bp-loaded .bp-is-buffering .bp-loading-wrapper {
     display: flex;
 
@@ -138,6 +139,26 @@
     .bp-icon {
         display: none;
     }
+}
+
+// Buffering spinner — positioned at the play button center
+@keyframes bp-spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.bp-media-buffering-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    margin: -40px 0 0 -40px;
+    border: 4px solid rgba($box-blue, .3);
+    border-top-color: $box-blue;
+    border-radius: 40px;
+    animation: bp-spinner-rotate .8s linear infinite;
 }
 
 .bp-is-mobile {
@@ -209,10 +230,32 @@
     }
 
     .bp-preload-placeholder {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         width: 100%;
         height: 100%;
+    }
+
+    .bp-video-preload-play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background: rgba($black, .5);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+
+        svg {
+            width: 48px;
+            height: 48px;
+            fill: $white;
+        }
     }
 }
