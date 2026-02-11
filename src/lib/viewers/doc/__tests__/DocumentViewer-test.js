@@ -253,7 +253,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
             expect(Timer.createTag).toHaveBeenCalledWith('123', FIRST_RENDER_METRIC);
             expect(Timer.stop).toHaveBeenCalledWith('test-tag');
-            expect(doc.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+            expect(doc.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
             expect(doc.firstRenderEmitted).toBe(true);
         });
 
@@ -269,7 +269,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             doc.handleFirstRender();
 
             expect(doc.emitMetric).toHaveBeenCalledTimes(1);
-            expect(doc.emitMetric).toHaveBeenCalledWith({ name: LOAD_METRIC.firstRenderTime, data: 250 });
+            expect(doc.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
         });
 
         test('should not emit first render time metric if timer has no elapsed time', () => {

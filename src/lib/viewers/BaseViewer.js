@@ -727,7 +727,7 @@ class BaseViewer extends EventEmitter {
             const metricName = LOAD_METRIC.firstRenderTime;
             const metricValue = time.elapsed;
 
-            this.emitMetric({ name: metricName, data: metricValue });
+            this.emitMetric(metricName, metricValue);
 
             this.firstRenderEmitted = true;
         }

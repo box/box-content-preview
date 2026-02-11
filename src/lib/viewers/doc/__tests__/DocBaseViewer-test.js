@@ -3192,6 +3192,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('emitMetric()', () => {
+            beforeEach(() => {
+                jest.spyOn(BaseViewer.prototype, 'emitMetric').mockImplementation();
+            });
+
+            test('should forward object { name, data } to super.emitMetric(name, data)', () => {
+                docBase.emitMetric({ name: 'test_event', data: 42 });
+                expect(BaseViewer.prototype.emitMetric).toHaveBeenCalledWith('test_event', 42);
+            });
+
+            test('should forward string args (event, data) to super.emitMetric(event, data)', () => {
+                docBase.emitMetric('test_event', 42);
+                expect(BaseViewer.prototype.emitMetric).toHaveBeenCalledWith('test_event', 42);
+            });
+        });
+
         describe('getMetricsWhitelist()', () => {
             test('should return the thumbnail sidebar events', () => {
                 const expWhitelist = [

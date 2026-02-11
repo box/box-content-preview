@@ -834,15 +834,22 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Emits a viewer metric. Useful for unpacking a message that comes from another class.
+     * Emits a viewer metric. Accepts either two arguments (event, data) or a single
+     * object ({ name, data }). The object form is used by DocBaseViewer callers;
+     * the two-argument form is used by BaseViewer (e.g. emitFirstRenderMetric).
      *
      * @protected
      * @emits metric
-     * @param {Object} event - Event object
+     * @param {string|Object} eventOrObject - Event name string or { name, data } object
+     * @param {*} [data] - Event data (only when first arg is a string)
      * @return {void}
      */
-    emitMetric({ name, data }) {
-        super.emitMetric(name, data);
+    emitMetric(eventOrObject, data) {
+        if (typeof eventOrObject === 'string') {
+            super.emitMetric(eventOrObject, data);
+        } else {
+            super.emitMetric(eventOrObject.name, eventOrObject.data);
+        }
     }
 
     //--------------------------------------------------------------------------
