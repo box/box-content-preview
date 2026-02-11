@@ -27,6 +27,7 @@ const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
 const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
 const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
+const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (defined in _mediaBase.scss)
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
@@ -100,7 +101,8 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
         if (this.useReactControls()) {
-            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + 40}px`;
+            // Shift up by half the control bar + half the spinner to visually center above the controls
+            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
 
         this.lowerLights();
@@ -120,16 +122,27 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
-     * Handles user request to play (image click or play button). Hides preload if visible and sets userRequestedPlay before toggling play.
+     * Dismisses the preload thumbnail if it is currently visible. Safe to call
+     * multiple times — hidePreload() guards on wrapperEl internally.
      *
+     * @private
      * @return {void}
      */
-    handlePlayRequest() {
+    dismissPreload() {
         if (this.preloader?.wrapperEl) {
             this.hidePreload();
             this.mediaEl.classList.remove(CLASS_INVISIBLE);
             this.resize();
         }
+    }
+
+    /**
+     * Handles user request to play (image click or play button). Hides preload if visible and sets userRequestedPlay before toggling play.
+     *
+     * @return {void}
+     */
+    handlePlayRequest() {
+        this.dismissPreload();
         this.userRequestedPlay = true;
         this.togglePlay();
     }
@@ -156,7 +169,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (!this.preloader) {
             this.preloader = new VideoPreloader({ api: this.api });
             this.preloader.once('preload', () => {
-                this.emit(VIEWER_EVENT.default, { event: 'preload', data: {} });
+                this.emit(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
             });
         }
 
@@ -381,11 +394,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
-        if (this.preloader?.wrapperEl) {
-            this.hidePreload();
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-            this.resize();
-        }
+        this.dismissPreload();
         this.hideBufferingSpinner();
         super.playingHandler();
         this.hidePlayButton();

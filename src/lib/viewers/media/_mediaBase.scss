@@ -127,7 +127,8 @@
     }
 }
 
-// When media is buffering, show only the crawler
+// Audio buffering indicator — the crawler is shown when audio media is buffering.
+// Video buffering uses a dedicated spinner element (bp-media-buffering-spinner) instead.
 .bp.bp-loaded .bp-is-buffering .bp-loading-wrapper {
     display: flex;
 
