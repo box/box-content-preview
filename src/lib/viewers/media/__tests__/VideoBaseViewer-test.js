@@ -243,6 +243,34 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
     });
 
+    describe('handlePlayRequest()', () => {
+        beforeEach(() => {
+            jest.spyOn(videoBase, 'togglePlay').mockImplementation();
+        });
+
+        test('should call preloader.showLoading() when preloader exists', () => {
+            const mockPreloader = { showLoading: jest.fn() };
+            videoBase.preloader = mockPreloader;
+
+            videoBase.handlePlayRequest();
+
+            expect(mockPreloader.showLoading).toHaveBeenCalled();
+        });
+
+        test('should not throw when no preloader is present', () => {
+            videoBase.preloader = undefined;
+
+            expect(() => videoBase.handlePlayRequest()).not.toThrow();
+        });
+
+        test('should set userRequestedPlay and call togglePlay', () => {
+            videoBase.handlePlayRequest();
+
+            expect(videoBase.userRequestedPlay).toBe(true);
+            expect(videoBase.togglePlay).toHaveBeenCalled();
+        });
+    });
+
     describe('dismissPreload()', () => {
         test('should hide preload, remove CLASS_INVISIBLE, and resize when preload is visible', () => {
             const mockPreloader = { wrapperEl: document.createElement('div'), hidePreload: jest.fn() };
@@ -1300,13 +1328,14 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('handlePlayRequest()', () => {
-        test('should call dismissPreload, set userRequestedPlay, and call togglePlay', () => {
-            jest.spyOn(videoBase, 'dismissPreload').mockImplementation();
+        test('should call preloader.showLoading(), set userRequestedPlay, and call togglePlay', () => {
+            const mockPreloader = { showLoading: jest.fn() };
+            videoBase.preloader = mockPreloader;
             jest.spyOn(videoBase, 'togglePlay').mockImplementation();
 
             videoBase.handlePlayRequest();
 
-            expect(videoBase.dismissPreload).toBeCalled();
+            expect(mockPreloader.showLoading).toHaveBeenCalled();
             expect(videoBase.userRequestedPlay).toBe(true);
             expect(videoBase.togglePlay).toBeCalled();
         });

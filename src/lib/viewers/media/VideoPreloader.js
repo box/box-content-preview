@@ -7,6 +7,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO,
     CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY,
+    CLASS_HIDDEN,
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
@@ -134,6 +135,36 @@ class VideoPreloader extends EventEmitter {
 
         // Cleanup preload DOM immediately if user interacts after the video is ready
         this.wrapperEl.addEventListener('click', this.cleanupPreload);
+    }
+
+    /**
+     * Swaps the play overlay for a loading spinner on the preload image.
+     * Called when the user clicks play so they get immediate visual feedback
+     * while the video buffers.
+     *
+     * @return {void}
+     */
+    showLoading() {
+        if (!this.wrapperEl) {
+            return;
+        }
+
+        const playOverlay = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+        if (playOverlay) {
+            playOverlay.classList.add(CLASS_HIDDEN);
+        }
+
+        if (this.imageClickHandler) {
+            this.wrapperEl.removeEventListener('click', this.imageClickHandler);
+            this.imageClickHandler = undefined;
+        }
+        this.wrapperEl.style.cursor = '';
+
+        if (this.placeholderEl) {
+            const spinner = document.createElement('div');
+            spinner.className = 'bp-media-buffering-spinner';
+            this.placeholderEl.appendChild(spinner);
+        }
     }
 
     /**

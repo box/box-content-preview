@@ -142,7 +142,9 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     handlePlayRequest() {
-        this.dismissPreload();
+        if (this.preloader) {
+            this.preloader.showLoading();
+        }
         this.userRequestedPlay = true;
         this.togglePlay();
     }
