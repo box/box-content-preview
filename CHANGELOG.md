@@ -1,3 +1,9 @@
+## 3.22.0 (2026-02-12)
+
+* feat(preview): add play button overlay on video preload thumbnail (#1611) ([d964bad](https://github.com/box/box-content-preview/commit/d964bad)), closes [#1611](https://github.com/box/box-content-preview/issues/1611)
+
+
+
 ## 3.21.0 (2026-02-11)
 
 * fix: fix first_render_time metric for document viewers (#1612) ([a6baeca](https://github.com/box/box-content-preview/commit/a6baeca)), closes [#1612](https://github.com/box/box-content-preview/issues/1612)
