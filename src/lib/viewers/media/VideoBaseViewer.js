@@ -171,6 +171,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (!this.preloader) {
             this.preloader = new VideoPreloader({ api: this.api });
             this.preloader.once('preload', () => {
+                this.emitFirstRenderMetric();
                 this.emit(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
             });
         }

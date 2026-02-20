@@ -142,6 +142,14 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(mp4.showAndHideReactControls).not.toHaveBeenCalled();
             expect(mp4.setMediaTime).toHaveBeenCalledWith(10);
         });
+
+        test('should call emitFirstRenderMetric', () => {
+            jest.spyOn(mp4, 'emitFirstRenderMetric').mockImplementation();
+
+            mp4.loadeddataHandler();
+
+            expect(mp4.emitFirstRenderMetric).toHaveBeenCalled();
+        });
     });
 
     describe('load()', () => {
