@@ -1195,6 +1195,16 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.preloader).toBe(existingPreloader);
             expect(VideoPreloader.prototype.showPreload).toBeCalled();
         });
+
+        test('should call emitFirstRenderMetric when preloader emits preload', () => {
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+            jest.spyOn(videoBase, 'emitFirstRenderMetric').mockImplementation();
+
+            videoBase.showPreload();
+            videoBase.preloader.emit('preload');
+
+            expect(videoBase.emitFirstRenderMetric).toBeCalled();
+        });
     });
 
     describe('prefetch()', () => {
