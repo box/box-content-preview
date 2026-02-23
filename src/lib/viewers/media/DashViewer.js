@@ -833,6 +833,7 @@ class DashViewer extends VideoBaseViewer {
             this.play();
         }
 
+        this.emitFirstRenderMetric();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
 

@@ -723,6 +723,26 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.loadUI).toBeCalled();
         });
 
+        test('should call emitFirstRenderMetric', () => {
+            jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
+            jest.spyOn(dash, 'showMedia').mockImplementation();
+            jest.spyOn(dash, 'isAutoplayEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'resize').mockImplementation();
+            jest.spyOn(dash, 'handleVolume').mockImplementation();
+            jest.spyOn(dash, 'startBandwidthTracking').mockImplementation();
+            jest.spyOn(dash, 'showPlayButton').mockImplementation();
+            jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
+            jest.spyOn(dash, 'loadSubtitles').mockImplementation();
+            jest.spyOn(dash, 'loadAlternateAudio').mockImplementation();
+            jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
+            jest.spyOn(dash, 'loadUI').mockImplementation();
+            jest.spyOn(dash, 'emitFirstRenderMetric').mockImplementation();
+
+            dash.loadeddataHandler();
+
+            expect(dash.emitFirstRenderMetric).toBeCalled();
+        });
+
         describe('With react controls', () => {
             beforeEach(() => {
                 jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
