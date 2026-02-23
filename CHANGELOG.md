@@ -1,3 +1,9 @@
+## 3.23.0 (2026-02-23)
+
+* feat(media): add first_render_time metric to video viewers (#1613) ([e32b892](https://github.com/box/box-content-preview/commit/e32b892)), closes [#1613](https://github.com/box/box-content-preview/issues/1613)
+
+
+
 ## 3.22.0 (2026-02-12)
 
 * feat(preview): add play button overlay on video preload thumbnail (#1611) ([d964bad](https://github.com/box/box-content-preview/commit/d964bad)), closes [#1611](https://github.com/box/box-content-preview/issues/1611)
