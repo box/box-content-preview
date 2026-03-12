@@ -1863,7 +1863,55 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('canHandleAnnotationControls()', () => {
+        test('should return false if viewer is destroyed', () => {
+            jest.spyOn(base, 'isDestroyed').mockReturnValue(true);
+            base.annotator = { toggleAnnotationMode: jest.fn() };
+
+            expect(base.canHandleAnnotationControls()).toBe(false);
+        });
+
+        test('should return false and log error if annotator is not set', () => {
+            jest.spyOn(base, 'isDestroyed').mockReturnValue(false);
+            jest.spyOn(console, 'error').mockImplementation(() => {});
+            base.annotator = null;
+
+            expect(base.canHandleAnnotationControls()).toBe(false);
+            expect(console.error).toBeCalled(); // eslint-disable-line no-console
+        });
+
+        test('should return true if viewer is alive and annotator is set', () => {
+            jest.spyOn(base, 'isDestroyed').mockReturnValue(false);
+            base.annotator = { toggleAnnotationMode: jest.fn() };
+
+            expect(base.canHandleAnnotationControls()).toBe(true);
+        });
+    });
+
     describe('handleAnnotationControlsEscape()', () => {
+        test('should return early if viewer is destroyed', () => {
+            base.annotator = {
+                toggleAnnotationMode: jest.fn(),
+            };
+            jest.spyOn(base, 'canHandleAnnotationControls').mockReturnValue(false);
+
+            base.handleAnnotationControlsEscape();
+
+            expect(base.annotator.toggleAnnotationMode).not.toBeCalled();
+        });
+
+        test('should return early and log error if annotator is not set', () => {
+            base.annotator = null;
+            jest.spyOn(base, 'isDestroyed').mockReturnValue(false);
+            jest.spyOn(base, 'processAnnotationModeChange');
+            jest.spyOn(console, 'error').mockImplementation(() => {});
+
+            base.handleAnnotationControlsEscape();
+
+            expect(base.processAnnotationModeChange).not.toBeCalled();
+            expect(console.error).toBeCalled(); // eslint-disable-line no-console
+        });
+
         test('should call toggleAnnotationMode with AnnotationMode.NONE', () => {
             base.annotator = {
                 toggleAnnotationMode: jest.fn(),
