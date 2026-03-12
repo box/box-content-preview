@@ -3523,16 +3523,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
             });
 
-            test('should return early and log error if annotator is not set', () => {
+            test('should return early if annotator is not set', () => {
                 docBase.annotator = null;
                 jest.spyOn(docBase, 'isDestroyed').mockReturnValue(false);
                 jest.spyOn(docBase, 'processAnnotationModeChange');
-                jest.spyOn(console, 'error').mockImplementation(() => {});
 
                 docBase.handleAnnotationControlsEscape();
 
                 expect(docBase.processAnnotationModeChange).not.toBeCalled();
-                expect(console.error).toBeCalled(); // eslint-disable-line no-console
             });
 
             test('should reset annotationControlsFSM state and call toggleAnnotationMode with AnnotationMode.REGION if enableAnnotationsDiscoverability is true', () => {

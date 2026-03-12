@@ -1871,13 +1871,11 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.canHandleAnnotationControls()).toBe(false);
         });
 
-        test('should return false and log error if annotator is not set', () => {
+        test('should return false if annotator is not set', () => {
             jest.spyOn(base, 'isDestroyed').mockReturnValue(false);
-            jest.spyOn(console, 'error').mockImplementation(() => {});
             base.annotator = null;
 
             expect(base.canHandleAnnotationControls()).toBe(false);
-            expect(console.error).toBeCalled(); // eslint-disable-line no-console
         });
 
         test('should return true if viewer is alive and annotator is set', () => {
@@ -1900,16 +1898,14 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.toggleAnnotationMode).not.toBeCalled();
         });
 
-        test('should return early and log error if annotator is not set', () => {
+        test('should return early if annotator is not set', () => {
             base.annotator = null;
             jest.spyOn(base, 'isDestroyed').mockReturnValue(false);
             jest.spyOn(base, 'processAnnotationModeChange');
-            jest.spyOn(console, 'error').mockImplementation(() => {});
 
             base.handleAnnotationControlsEscape();
 
             expect(base.processAnnotationModeChange).not.toBeCalled();
-            expect(console.error).toBeCalled(); // eslint-disable-line no-console
         });
 
         test('should call toggleAnnotationMode with AnnotationMode.NONE', () => {

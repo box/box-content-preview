@@ -1143,7 +1143,7 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Returns true if annotation control handlers can safely execute.
-     * Silent no-op when destroyed; logs an error if annotator is unexpectedly absent.
+     * Returns false silently when the viewer is destroyed or no annotator is attached.
      *
      * @protected
      * @return {boolean}
@@ -1153,7 +1153,6 @@ class BaseViewer extends EventEmitter {
             return false;
         }
         if (!this.annotator) {
-            console.error('Annotation escape handler called with no annotator'); // eslint-disable-line no-console
             return false;
         }
         return true;
