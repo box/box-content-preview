@@ -1,3 +1,9 @@
+## 3.24.0 (2026-03-12)
+
+* fix(annotations): Guard escape handler against destroyed viewer (#1615) ([9cd2f92](https://github.com/box/box-content-preview/commit/9cd2f92)), closes [#1615](https://github.com/box/box-content-preview/issues/1615)
+
+
+
 ## 3.23.0 (2026-02-23)
 
 * feat(media): add first_render_time metric to video viewers (#1613) ([e32b892](https://github.com/box/box-content-preview/commit/e32b892)), closes [#1613](https://github.com/box/box-content-preview/issues/1613)
