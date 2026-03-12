@@ -1915,6 +1915,10 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleAnnotationControlsEscape() {
+        if (!this.canHandleAnnotationControls()) {
+            return;
+        }
+
         if (this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
             this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));

@@ -1142,12 +1142,34 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handler for annotation toolbar button reset
+     * Returns true if annotation control handlers can safely execute.
+     * Returns false silently when the viewer is destroyed or no annotator is attached.
+     *
+     * @protected
+     * @return {boolean}
+     */
+    canHandleAnnotationControls() {
+        if (this.isDestroyed()) {
+            return false;
+        }
+        if (!this.annotator) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Handler for annotation toolbar button reset. No-op if the viewer
+     * has been destroyed or no annotator is attached.
      *
      * @private
      * @return {void}
      */
     handleAnnotationControlsEscape() {
+        if (!this.canHandleAnnotationControls()) {
+            return;
+        }
+
         this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
         this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
     }
