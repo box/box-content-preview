@@ -215,8 +215,8 @@ class Settings extends EventEmitter {
         const speed = this.cache.get('media-speed') || '1.0';
         const autoplay = this.cache.get('media-autoplay') || 'Disabled';
 
-        // We initialize quality with SD because we don't yet know if the video has an HD rep
-        this.chooseOption(TYPE_QUALITY, MEDIA_QUALITY_SD, false);
+        // Initialize quality to auto so ABR selects the best quality based on bandwidth
+        this.chooseOption(TYPE_QUALITY, MEDIA_QUALITY_AUTO, false);
         this.chooseOption(TYPE_SPEED, speed);
         this.chooseOption(TYPE_AUTOPLAY, autoplay);
     }
