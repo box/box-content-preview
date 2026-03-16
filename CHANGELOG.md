@@ -1,3 +1,9 @@
+## 3.25.0 (2026-03-16)
+
+* feat: upgrade shaka player to 4.16 (#1616) ([d4050b5](https://github.com/box/box-content-preview/commit/d4050b5)), closes [#1616](https://github.com/box/box-content-preview/issues/1616)
+
+
+
 ## 3.24.0 (2026-03-12)
 
 * fix(annotations): Guard escape handler against destroyed viewer (#1615) ([9cd2f92](https://github.com/box/box-content-preview/commit/9cd2f92)), closes [#1615](https://github.com/box/box-content-preview/issues/1615)
