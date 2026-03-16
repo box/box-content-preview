@@ -92,7 +92,7 @@ export function runLowQualityMenuTests(hasReactControls) {
     describe('Non HD Video', () => {
         it('Should not have the Quality settings menu enabled', () => {
             cy.getByTestId('bp-media-settings-quality')
-                .contains('Auto')
+                .contains(hasReactControls ? '480p' : 'Auto')
                 .click({ force: true });
 
             if (hasReactControls) {
