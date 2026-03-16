@@ -161,7 +161,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('init()', () => {
         test('should set the initial quality and speed', () => {
             jest.spyOn(settings, 'chooseOption');
-            const quality = 'sd';
+            const quality = 'auto';
             const speed = '2.0';
             const autoplay = 'Enabled';
 
