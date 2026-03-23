@@ -86,7 +86,7 @@ function updateConfig(conf, language, index) {
 
         if (rsyncApiLocation) {
             const serverResponse = execSync(
-                `curl -sk -H "Content-Type: application/json"  --connect-timeout 1 ${rsyncApiLocation.url}`,
+                `curl -sk -H "Content-Type: application/json"  --connect-timeout 3 ${rsyncApiLocation.url}`,
             )
                 .toString()
                 .replace('\n', '');
