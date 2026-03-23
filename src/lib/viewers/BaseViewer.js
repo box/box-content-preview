@@ -136,6 +136,9 @@ class BaseViewer extends EventEmitter {
     /** @property {boolean} - Stores whether the Viewer has been setup yet. */
     isSetup = false;
 
+    /** @property {string} - Current annotator view mode: 'annotations' or 'boundingBoxes' */
+    currentAnnotatorViewMode = 'annotations';
+
     /**
      * [constructor]
      *
