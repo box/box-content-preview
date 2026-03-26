@@ -2411,6 +2411,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     onThumbnailsToggle: option ? docBase.toggleThumbnails : undefined,
                 });
             });
+
+            test('should hide annotation create controls when in bounding box mode', () => {
+                docBase.currentAnnotatorViewMode = 'boundingBoxes';
+                docBase.options.showAnnotationsDrawingCreate = true;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                });
+            });
+
+            test('should show annotation create controls when in annotations mode', () => {
+                docBase.currentAnnotatorViewMode = 'annotations';
+                docBase.options.showAnnotationsDrawingCreate = true;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: true,
+                    hasHighlight: true,
+                    hasRegion: true,
+                });
+            });
         });
 
         describe('bindDOMListeners()', () => {

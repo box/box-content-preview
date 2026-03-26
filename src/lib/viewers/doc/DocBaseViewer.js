@@ -13,6 +13,7 @@ import Thumbnail from '../../Thumbnail';
 
 import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import {
+    ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
@@ -1323,15 +1324,16 @@ class DocBaseViewer extends BaseViewer {
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
 
         this.controls.render(
             <DocControls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
-                hasDrawing={canAnnotate && showAnnotationsDrawingCreate}
-                hasHighlight={canAnnotate && canDownload}
-                hasRegion={canAnnotate}
+                hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
+                hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
+                hasRegion={canAnnotate && isAnnotationsMode}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}

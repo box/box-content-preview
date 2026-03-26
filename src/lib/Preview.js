@@ -40,6 +40,7 @@ import {
     shouldDownloadWM,
 } from './file';
 import {
+    ANNOTATOR_VIEW_MODES,
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
@@ -421,6 +422,75 @@ class Preview extends EventEmitter {
      */
     getCurrentCollection() {
         return this.collection;
+    }
+
+    /**
+     * Switches between annotation and bounding box view modes.
+     *
+     * @private
+     * @param {string} viewMode - 'annotations' or 'boundingBoxes'
+     * @return {void}
+     */
+    setAnnotatorViewMode(viewMode) {
+        const VALID_VIEW_MODES = [ANNOTATOR_VIEW_MODES.ANNOTATIONS, ANNOTATOR_VIEW_MODES.BOUNDING_BOXES];
+        if (!VALID_VIEW_MODES.includes(viewMode)) {
+            return;
+        }
+
+        if (this.viewer.annotator?.setViewMode) {
+            // Update internal state
+            this.viewer.currentAnnotatorViewMode = viewMode;
+            // Update annotator
+            this.viewer.annotator.setViewMode(viewMode);
+            // Update toolbar to show/hide annotation buttons based on new view mode
+            if (this.viewer.renderUI) {
+                this.viewer.renderUI();
+            }
+        }
+    }
+
+    /**
+     * Hides bounding box highlights by switching the annotator back to annotations view mode.
+     *
+     * @public
+     * @return {void}
+     */
+    hideBoundingBoxHighlights() {
+        this.setAnnotatorViewMode(ANNOTATOR_VIEW_MODES.ANNOTATIONS);
+    }
+
+    /**
+     * Switches to bounding box mode, sets the given bounding boxes, selects the first one,
+     * and scrolls to it. Convenience method that combines setAnnotatorViewMode, setBoundingBoxHighlights,
+     * and selectBoundingBoxHighlight.
+     *
+     * @public
+     * @param {Object[]} boundingBoxes - Array of bounding box objects with id, x, y, width, height, pageNumber
+     * @return {void}
+     */
+    showBoundingBoxHighlights(boundingBoxes = []) {
+        if (
+            !this.options.enableBoundingBoxHighlights ||
+            !this.viewer?.annotator ||
+            !this.viewer.annotator.setViewMode ||
+            !this.viewer.annotator.setBoundingBoxHighlights ||
+            !this.viewer.annotator.selectBoundingBoxHighlight
+        ) {
+            return;
+        }
+
+        const firstBoundingBoxId = boundingBoxes[0]?.id;
+
+        if (!firstBoundingBoxId) {
+            return;
+        }
+
+        // Update the annotator view mode and set the bounding boxes
+        this.setAnnotatorViewMode(ANNOTATOR_VIEW_MODES.BOUNDING_BOXES);
+
+        // Set the bounding boxes and select the first one
+        this.viewer.annotator.setBoundingBoxHighlights(boundingBoxes);
+        this.viewer.annotator.selectBoundingBoxHighlight(firstBoundingBoxId);
     }
 
     /**
@@ -977,6 +1047,9 @@ class Preview extends EventEmitter {
 
         // Enable annotations-only control bar when selecting any annotation
         this.options.enableAnnotationsOnlyControls = !!options.enableAnnotationsOnlyControls;
+
+        // Enable bounding box highlights
+        this.options.enableBoundingBoxHighlights = !!options.enableBoundingBoxHighlights;
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;

@@ -1589,6 +1589,12 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('currentAnnotatorViewMode', () => {
+        test('should default to annotations', () => {
+            expect(base.currentAnnotatorViewMode).toBe('annotations');
+        });
+    });
+
     describe('getViewerAnnotationsConfig()', () => {
         test('should return an empty object if none options available', () => {
             jest.spyOn(base, 'getViewerOption').mockReturnValue(undefined);
