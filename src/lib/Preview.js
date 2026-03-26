@@ -432,7 +432,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     setAnnotatorViewMode(viewMode) {
-        const VALID_VIEW_MODES = ['annotations', 'boundingBoxes'];
+        const VALID_VIEW_MODES = [ANNOTATOR_VIEW_MODES.ANNOTATIONS, ANNOTATOR_VIEW_MODES.BOUNDING_BOXES];
         if (!VALID_VIEW_MODES.includes(viewMode)) {
             return;
         }
