@@ -1035,7 +1035,7 @@ class Preview extends EventEmitter {
         // Enable annotations-only control bar when selecting any annotation
         this.options.enableAnnotationsOnlyControls = !!options.enableAnnotationsOnlyControls;
 
-        // Enable bounding box highlights (HITL bounding boxes)
+        // Enable bounding box highlights
         this.options.enableBoundingBoxHighlights = !!options.enableBoundingBoxHighlights;
 
         // Enable or disable hotkeys
