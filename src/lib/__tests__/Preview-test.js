@@ -503,75 +503,6 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('setBoundingBoxHighlights()', () => {
-        beforeEach(() => {
-            preview.viewer = {
-                annotator: {
-                    setBoundingBoxHighlights: jest.fn(),
-                },
-            };
-        });
-
-        test('should do nothing when enableBoundingBoxHighlights is not set', () => {
-            preview.options.enableBoundingBoxHighlights = false;
-            preview.setBoundingBoxHighlights([{ id: '1' }]);
-            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
-        });
-
-        test('should delegate to annotator when enabled', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            const boxes = [{ id: '1', x: 10, y: 20, width: 30, height: 40, pageNumber: 1 }];
-            preview.setBoundingBoxHighlights(boxes);
-            expect(preview.viewer.annotator.setBoundingBoxHighlights).toHaveBeenCalledWith(boxes);
-        });
-
-        test('should do nothing when viewer is not available', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            preview.viewer = null;
-            expect(() => preview.setBoundingBoxHighlights([])).not.toThrow();
-        });
-
-        test('should do nothing when annotator is not available', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            preview.viewer = { annotator: null };
-            expect(() => preview.setBoundingBoxHighlights([])).not.toThrow();
-        });
-    });
-
-    describe('selectBoundingBoxHighlight()', () => {
-        beforeEach(() => {
-            preview.viewer = {
-                annotator: {
-                    selectBoundingBoxHighlight: jest.fn(),
-                },
-            };
-        });
-
-        test('should do nothing when enableBoundingBoxHighlights is not set', () => {
-            preview.options.enableBoundingBoxHighlights = false;
-            preview.selectBoundingBoxHighlight('highlight-1');
-            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
-        });
-
-        test('should delegate to annotator when enabled', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            preview.selectBoundingBoxHighlight('highlight-1');
-            expect(preview.viewer.annotator.selectBoundingBoxHighlight).toHaveBeenCalledWith('highlight-1');
-        });
-
-        test('should pass null to deselect', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            preview.selectBoundingBoxHighlight(null);
-            expect(preview.viewer.annotator.selectBoundingBoxHighlight).toHaveBeenCalledWith(null);
-        });
-
-        test('should do nothing when viewer is not available', () => {
-            preview.options.enableBoundingBoxHighlights = true;
-            preview.viewer = null;
-            expect(() => preview.selectBoundingBoxHighlight('id')).not.toThrow();
-        });
-    });
-
     describe('setAnnotatorViewMode()', () => {
         beforeEach(() => {
             preview.viewer = {
@@ -614,41 +545,68 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('showBoundingBoxHighlights()', () => {
+    describe('hideBoundingBoxHighlights()', () => {
         beforeEach(() => {
             jest.spyOn(preview, 'setAnnotatorViewMode').mockImplementation();
-            jest.spyOn(preview, 'setBoundingBoxHighlights').mockImplementation();
-            jest.spyOn(preview, 'selectBoundingBoxHighlight').mockImplementation();
+        });
+
+        test('should call setAnnotatorViewMode with annotations', () => {
+            preview.hideBoundingBoxHighlights();
+            expect(preview.setAnnotatorViewMode).toHaveBeenCalledWith('annotations');
+        });
+    });
+
+    describe('showBoundingBoxHighlights()', () => {
+        beforeEach(() => {
+            preview.viewer = {
+                annotator: {
+                    setBoundingBoxHighlights: jest.fn(),
+                    selectBoundingBoxHighlight: jest.fn(),
+                    setViewMode: jest.fn(),
+                },
+                renderUI: jest.fn(),
+            };
             preview.options.enableBoundingBoxHighlights = true;
         });
 
         test('should do nothing when enableBoundingBoxHighlights is not set', () => {
             preview.options.enableBoundingBoxHighlights = false;
             preview.showBoundingBoxHighlights([{ id: '1' }]);
-            expect(preview.setAnnotatorViewMode).not.toHaveBeenCalled();
-            expect(preview.setBoundingBoxHighlights).not.toHaveBeenCalled();
-            expect(preview.selectBoundingBoxHighlight).not.toHaveBeenCalled();
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
         });
 
-        test('should switch to bounding box mode', () => {
+        test('should do nothing when given an empty array', () => {
+            preview.showBoundingBoxHighlights([]);
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing when viewer has no annotator', () => {
+            preview.viewer = { annotator: null };
+            expect(() => preview.showBoundingBoxHighlights([{ id: '1' }])).not.toThrow();
+        });
+
+        test('should do nothing when viewer is not available', () => {
+            preview.viewer = null;
+            expect(() => preview.showBoundingBoxHighlights([{ id: '1' }])).not.toThrow();
+        });
+
+        test('should switch to bounding box view mode', () => {
             preview.showBoundingBoxHighlights([{ id: '1' }]);
-            expect(preview.setAnnotatorViewMode).toHaveBeenCalledWith('boundingBoxes');
+            expect(preview.viewer.currentAnnotatorViewMode).toBe('boundingBoxes');
+            expect(preview.viewer.annotator.setViewMode).toHaveBeenCalledWith('boundingBoxes');
         });
 
-        test('should set the bounding boxes', () => {
+        test('should set the bounding boxes on the annotator', () => {
             const boxes = [{ id: '1' }, { id: '2' }];
             preview.showBoundingBoxHighlights(boxes);
-            expect(preview.setBoundingBoxHighlights).toHaveBeenCalledWith(boxes);
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).toHaveBeenCalledWith(boxes);
         });
 
         test('should select the first bounding box', () => {
             preview.showBoundingBoxHighlights([{ id: 'first' }, { id: 'second' }]);
-            expect(preview.selectBoundingBoxHighlight).toHaveBeenCalledWith('first');
-        });
-
-        test('should select null when given an empty array', () => {
-            preview.showBoundingBoxHighlights([]);
-            expect(preview.selectBoundingBoxHighlight).toHaveBeenCalledWith(null);
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).toHaveBeenCalledWith('first');
         });
     });
 

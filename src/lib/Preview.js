@@ -424,53 +424,9 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Updates metadata highlight bounding boxes on the current viewer.
-     * Each bounding box should have: { id, x, y, width, height, pageNumber (1-indexed)  }
-     * Coordinates are percentages (0-100) relative to the page dimensions.
-     *
-     * @public
-     * @param {Object[]} boundingBoxes - Array of bounding box objects
-     * @return {void}
-     */
-    setBoundingBoxHighlights(boundingBoxes = []) {
-        if (!this.options.enableBoundingBoxHighlights) {
-            return;
-        }
-
-        if (
-            this.viewer &&
-            this.viewer.annotator &&
-            typeof this.viewer.annotator.setBoundingBoxHighlights === 'function'
-        ) {
-            this.viewer.annotator.setBoundingBoxHighlights(boundingBoxes);
-        }
-    }
-
-    /**
-     * Scrolls to and selects a specific bounding box highlight.
-     *
-     * @public
-     * @param {string|null} highlightId - ID of the bounding box to scroll to, or null to deselect
-     * @return {void}
-     */
-    selectBoundingBoxHighlight(highlightId = null) {
-        if (!this.options.enableBoundingBoxHighlights) {
-            return;
-        }
-
-        if (
-            this.viewer &&
-            this.viewer.annotator &&
-            typeof this.viewer.annotator.selectBoundingBoxHighlight === 'function'
-        ) {
-            this.viewer.annotator.selectBoundingBoxHighlight(highlightId);
-        }
-    }
-
-    /**
      * Switches between annotation and bounding box view modes.
      *
-     * @public
+     * @private
      * @param {string} viewMode - 'annotations' or 'boundingBoxes'
      * @return {void}
      */
@@ -493,6 +449,16 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Hides bounding box highlights by switching the annotator back to annotations view mode.
+     *
+     * @public
+     * @return {void}
+     */
+    hideBoundingBoxHighlights() {
+        this.setAnnotatorViewMode('annotations');
+    }
+
+    /**
      * Switches to bounding box mode, sets the given bounding boxes, selects the first one,
      * and scrolls to it. Convenience method that combines setAnnotatorViewMode, setBoundingBoxHighlights,
      * and selectBoundingBoxHighlight.
@@ -502,14 +468,16 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     showBoundingBoxHighlights(boundingBoxes = []) {
-        if (!this.options.enableBoundingBoxHighlights) {
+        if (!this.options.enableBoundingBoxHighlights || boundingBoxes.length === 0 || !this.viewer?.annotator) {
             return;
         }
 
+        // Update the annotator view mode and set the bounding boxes
         this.setAnnotatorViewMode('boundingBoxes');
-        this.setBoundingBoxHighlights(boundingBoxes);
-        const firstId = boundingBoxes.length > 0 ? boundingBoxes[0].id : null;
-        this.selectBoundingBoxHighlight(firstId);
+
+        // Set the bounding boxes and select the first one
+        this.viewer.annotator.setBoundingBoxHighlights?.(boundingBoxes);
+        this.viewer.annotator.selectBoundingBoxHighlight?.(boundingBoxes[0].id ?? null);
     }
 
     /**
