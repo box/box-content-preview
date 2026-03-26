@@ -40,6 +40,7 @@ import {
     shouldDownloadWM,
 } from './file';
 import {
+    ANNOTATOR_VIEW_MODES,
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
@@ -436,7 +437,7 @@ class Preview extends EventEmitter {
             return;
         }
 
-        if (this.viewer && this.viewer.annotator?.setViewMode) {
+        if (this.viewer.annotator?.setViewMode) {
             // Update internal state
             this.viewer.currentAnnotatorViewMode = viewMode;
             // Update annotator
@@ -455,7 +456,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     hideBoundingBoxHighlights() {
-        this.setAnnotatorViewMode('annotations');
+        this.setAnnotatorViewMode(ANNOTATOR_VIEW_MODES.ANNOTATIONS);
     }
 
     /**
@@ -468,16 +469,28 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     showBoundingBoxHighlights(boundingBoxes = []) {
-        if (!this.options.enableBoundingBoxHighlights || boundingBoxes.length === 0 || !this.viewer?.annotator) {
+        if (
+            !this.options.enableBoundingBoxHighlights ||
+            !this.viewer?.annotator ||
+            !this.viewer.annotator.setViewMode ||
+            !this.viewer.annotator.setBoundingBoxHighlights ||
+            !this.viewer.annotator.selectBoundingBoxHighlight
+        ) {
+            return;
+        }
+
+        const firstBoundingBoxId = boundingBoxes[0]?.id;
+
+        if (!firstBoundingBoxId) {
             return;
         }
 
         // Update the annotator view mode and set the bounding boxes
-        this.setAnnotatorViewMode('boundingBoxes');
+        this.setAnnotatorViewMode(ANNOTATOR_VIEW_MODES.BOUNDING_BOXES);
 
         // Set the bounding boxes and select the first one
-        this.viewer.annotator.setBoundingBoxHighlights?.(boundingBoxes);
-        this.viewer.annotator.selectBoundingBoxHighlight?.(boundingBoxes[0].id ?? null);
+        this.viewer.annotator.setBoundingBoxHighlights(boundingBoxes);
+        this.viewer.annotator.selectBoundingBoxHighlight(firstBoundingBoxId);
     }
 
     /**

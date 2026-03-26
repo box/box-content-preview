@@ -534,11 +534,6 @@ describe('lib/Preview', () => {
             expect(preview.viewer.renderUI).not.toHaveBeenCalled();
         });
 
-        test('should do nothing when viewer is not available', () => {
-            preview.viewer = null;
-            expect(() => preview.setAnnotatorViewMode('boundingBoxes')).not.toThrow();
-        });
-
         test('should do nothing when annotator does not have setViewMode', () => {
             preview.viewer = { annotator: {} };
             expect(() => preview.setAnnotatorViewMode('boundingBoxes')).not.toThrow();
@@ -590,6 +585,40 @@ describe('lib/Preview', () => {
         test('should do nothing when viewer is not available', () => {
             preview.viewer = null;
             expect(() => preview.showBoundingBoxHighlights([{ id: '1' }])).not.toThrow();
+        });
+
+        test('should do nothing when annotator lacks setViewMode', () => {
+            preview.viewer.annotator = {
+                setBoundingBoxHighlights: jest.fn(),
+                selectBoundingBoxHighlight: jest.fn(),
+            };
+            preview.showBoundingBoxHighlights([{ id: '1' }]);
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing when annotator lacks setBoundingBoxHighlights', () => {
+            preview.viewer.annotator = {
+                setViewMode: jest.fn(),
+                selectBoundingBoxHighlight: jest.fn(),
+            };
+            preview.showBoundingBoxHighlights([{ id: '1' }]);
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing when annotator lacks selectBoundingBoxHighlight', () => {
+            preview.viewer.annotator = {
+                setViewMode: jest.fn(),
+                setBoundingBoxHighlights: jest.fn(),
+            };
+            preview.showBoundingBoxHighlights([{ id: '1' }]);
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
+        });
+
+        test('should do nothing when first bounding box has no id', () => {
+            preview.showBoundingBoxHighlights([{ x: 10, y: 20 }]);
+            expect(preview.viewer.annotator.setBoundingBoxHighlights).not.toHaveBeenCalled();
+            expect(preview.viewer.annotator.selectBoundingBoxHighlight).not.toHaveBeenCalled();
         });
 
         test('should switch to bounding box view mode', () => {
