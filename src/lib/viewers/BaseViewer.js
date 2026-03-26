@@ -19,6 +19,7 @@ import {
     replacePlaceholders,
 } from '../util';
 import {
+    ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_CREATE_DRAWING,
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
@@ -137,7 +138,7 @@ class BaseViewer extends EventEmitter {
     isSetup = false;
 
     /** @property {string} - Current annotator view mode: 'annotations' or 'boundingBoxes' */
-    currentAnnotatorViewMode = 'annotations';
+    currentAnnotatorViewMode = ANNOTATOR_VIEW_MODES.ANNOTATIONS;
 
     /**
      * [constructor]
