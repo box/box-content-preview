@@ -436,7 +436,7 @@ class Preview extends EventEmitter {
             return;
         }
 
-        if (this.viewer && this.viewer.annotator && typeof this.viewer.annotator.setViewMode === 'function') {
+        if (this.viewer && this.viewer.annotator?.setViewMode) {
             // Update internal state
             this.viewer.currentAnnotatorViewMode = viewMode;
             // Update annotator
