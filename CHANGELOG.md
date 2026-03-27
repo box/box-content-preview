@@ -1,3 +1,9 @@
+## 3.26.0 (2026-03-27)
+
+* feat(bounding-box): support for rendering bounding boxes (#1617) ([62d34d6](https://github.com/box/box-content-preview/commit/62d34d6)), closes [#1617](https://github.com/box/box-content-preview/issues/1617)
+
+
+
 ## 3.25.0 (2026-03-16)
 
 * feat: upgrade shaka player to 4.16 (#1616) ([d4050b5](https://github.com/box/box-content-preview/commit/d4050b5)), closes [#1616](https://github.com/box/box-content-preview/issues/1616)
