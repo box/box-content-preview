@@ -33,6 +33,9 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
 
+    /** @property {Object} - Status of the extracted_text (transcription) representation */
+    transcriptionStatus;
+
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
 
@@ -115,6 +118,10 @@ class DashViewer extends VideoBaseViewer {
         // Stop polling for filmstrip
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
+        }
+
+        if (this.transcriptionStatus) {
+            this.transcriptionStatus.destroy();
         }
 
         clearInterval(this.statsIntervalId);
@@ -826,6 +833,7 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         this.loadFilmStrip();
         this.loadSubtitles();
+        this.loadTranscription();
         this.loadAlternateAudio();
         this.showPlayButton();
 
@@ -900,6 +908,46 @@ class DashViewer extends VideoBaseViewer {
             } else {
                 this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
             }
+        }
+    }
+
+    /**
+     * Loads the extracted_text transcription (.vtt) as a text track when available
+     *
+     * @private
+     * @return {void}
+     */
+    async loadTranscription() {
+        const extractedText = getRepresentation(this.options.file, 'extracted_text');
+        if (!extractedText || !extractedText.content || !extractedText.content.url_template) {
+            return;
+        }
+
+        const transcriptionUrl = this.createContentUrlWithAuthParams(extractedText.content.url_template);
+        const displayedLanguage = 'Auto';
+        this.transcriptionStatus = this.getRepStatus(extractedText);
+
+        try {
+            await this.transcriptionStatus.getPromise();
+
+            if (this.isDestroyed() || !this.player) {
+                return;
+            }
+
+            await this.player.addTextTrackAsync(
+                transcriptionUrl,
+                displayedLanguage,
+                'subtitles',
+                'text/vtt',
+                undefined,
+                __('transcription'),
+            );
+
+            if (!this.isDestroyed()) {
+                this.loadSubtitles();
+            }
+        } catch {
+            // Transcription is non-critical; allow the viewer to continue without it
         }
     }
 
