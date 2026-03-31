@@ -9,6 +9,7 @@ import { openContentInsideIframe } from '../../util';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
+const MIN_PINCH_SCALE_DELTA = 0.01;
 
 class ImageBaseViewer extends BaseViewer {
     /** @inheritdoc */
@@ -31,6 +32,8 @@ class ImageBaseViewer extends BaseViewer {
         this.finishLoading = this.finishLoading.bind(this);
         this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
 
+        // Trackpad pinch-to-zoom support
+        this.wheelZoomHandler = this.wheelZoomHandler.bind(this);
         if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
@@ -272,6 +275,8 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.cancelDragEvent);
+        // Trackpad pinch-to-zoom
+        this.imageEl.addEventListener('wheel', this.wheelZoomHandler, { passive: false });
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -302,12 +307,54 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
         this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         this.imageEl.removeEventListener('dragstart', this.cancelDragEvent);
+        this.imageEl.removeEventListener('wheel', this.wheelZoomHandler);
 
         this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
         this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
         this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+    }
+
+    /**
+     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
+     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     *
+     * @protected
+     * @param {WheelEvent} event - wheel event object
+     * @return {void}
+     */
+    wheelZoomHandler(event) {
+        if (!event.ctrlKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
+        const currentWidth = this.imageEl.offsetWidth;
+        const newWidth = currentWidth * (1 + delta);
+
+        this.imageEl.style.width = `${newWidth}px`;
+        this.imageEl.style.height = '';
+
+        if (typeof this.adjustImageZoomPadding === 'function') {
+            this.adjustImageZoomPadding();
+        }
+
+        if (typeof this.setScale === 'function') {
+            this.setScale(newWidth);
+        }
+
+        if (typeof this.updatePannability === 'function') {
+            setTimeout(this.updatePannability, 50);
+        }
+
+        this.emit('zoom', {
+            newScale: newWidth,
+            canZoomIn: true,
+            canZoomOut: true,
+        });
     }
 
     /**

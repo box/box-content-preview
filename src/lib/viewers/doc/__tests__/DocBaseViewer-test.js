@@ -2449,6 +2449,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(stubs.addEventListener).toBeCalledWith('keydown', docBase.handleDocElKeydown);
                 expect(stubs.addEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
+                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.wheelZoomHandler, { passive: false });
                 expect(stubs.addEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
                 expect(stubs.addEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.addEventListener).not.toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
@@ -2475,6 +2476,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(stubs.removeEventListener).toBeCalledWith('keydown', docBase.handleDocElKeydown);
                 expect(stubs.removeEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.wheelZoomHandler);
             });
 
             test('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -2858,6 +2860,62 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 jest.advanceTimersByTime(SCROLL_END_TIMEOUT + 1);
                 expect(stubs.emit).toBeCalledWith('scrollend', { scrollLeft: 0, scrollTop: 0 });
+            });
+        });
+
+        describe('wheelZoomHandler()', () => {
+            test('should do nothing if ctrlKey is not pressed', () => {
+                jest.spyOn(docBase, 'updateScale').mockImplementation();
+                const event = { ctrlKey: false, deltaY: -1, preventDefault: jest.fn() };
+
+                docBase.wheelZoomHandler(event);
+                expect(event.preventDefault).not.toBeCalled();
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should zoom in smoothly when deltaY is negative', () => {
+                docBase.pdfViewer = { currentScale: 1.0 };
+                jest.spyOn(docBase, 'updateScale').mockImplementation();
+                const event = { ctrlKey: true, deltaY: -10, preventDefault: jest.fn() };
+
+                docBase.wheelZoomHandler(event);
+                expect(event.preventDefault).toBeCalled();
+                expect(docBase.updateScale).toBeCalledWith(expect.any(Number));
+                expect(docBase.updateScale.mock.calls[0][0]).toBeGreaterThan(1.0);
+            });
+
+            test('should zoom out smoothly when deltaY is positive', () => {
+                docBase.pdfViewer = { currentScale: 1.0 };
+                jest.spyOn(docBase, 'updateScale').mockImplementation();
+                const event = { ctrlKey: true, deltaY: 10, preventDefault: jest.fn() };
+
+                docBase.wheelZoomHandler(event);
+                expect(event.preventDefault).toBeCalled();
+                expect(docBase.updateScale).toBeCalledWith(expect.any(Number));
+                expect(docBase.updateScale.mock.calls[0][0]).toBeLessThan(1.0);
+            });
+
+            test('should not exceed MAX_SCALE', () => {
+                docBase.pdfViewer = { currentScale: 10.0 };
+                jest.spyOn(docBase, 'updateScale').mockImplementation();
+                const event = { ctrlKey: true, deltaY: -100, preventDefault: jest.fn() };
+
+                docBase.wheelZoomHandler(event);
+                // Scale should be capped, so updateScale should not be called with a value above 10
+                if (docBase.updateScale.mock.calls.length > 0) {
+                    expect(docBase.updateScale.mock.calls[0][0]).toBeLessThanOrEqual(10.0);
+                }
+            });
+
+            test('should not go below MIN_SCALE', () => {
+                docBase.pdfViewer = { currentScale: 0.1 };
+                jest.spyOn(docBase, 'updateScale').mockImplementation();
+                const event = { ctrlKey: true, deltaY: 100, preventDefault: jest.fn() };
+
+                docBase.wheelZoomHandler(event);
+                if (docBase.updateScale.mock.calls.length > 0) {
+                    expect(docBase.updateScale.mock.calls[0][0]).toBeGreaterThanOrEqual(0.1);
+                }
             });
         });
 

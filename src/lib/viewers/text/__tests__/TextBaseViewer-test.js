@@ -1,4 +1,5 @@
 import React from 'react';
+import Browser from '../../../Browser';
 import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls/controls-root';
@@ -46,6 +47,13 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
             textBase.destroy();
             expect(textBase.controls.destroy).toBeCalled();
+        });
+
+        test('should call unbindDOMListeners', () => {
+            jest.spyOn(textBase, 'unbindDOMListeners');
+
+            textBase.destroy();
+            expect(textBase.unbindDOMListeners).toBeCalled();
         });
     });
 
@@ -95,6 +103,135 @@ describe('lib/viewers/text/TextBaseViewer', () => {
 
             textBase.zoomOut();
             expect(textBase.zoom).toBeCalledWith('out');
+        });
+    });
+
+    describe('bindDOMListeners()', () => {
+        test('should always add wheel listener for trackpad pinch-to-zoom', () => {
+            textBase.hasTouch = false;
+            jest.spyOn(textBase.containerEl, 'addEventListener');
+
+            textBase.bindDOMListeners();
+
+            expect(textBase.containerEl.addEventListener).toBeCalledWith('wheel', textBase.wheelZoomHandler, {
+                passive: false,
+            });
+        });
+
+        test('should add touch listeners if hasTouch is true and not iOS', () => {
+            textBase.hasTouch = true;
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
+            jest.spyOn(textBase.containerEl, 'addEventListener');
+
+            textBase.bindDOMListeners();
+
+            expect(textBase.containerEl.addEventListener).toBeCalledWith('touchstart', textBase.mobileZoomStartHandler);
+            expect(textBase.containerEl.addEventListener).toBeCalledWith('touchmove', textBase.mobileZoomChangeHandler);
+            expect(textBase.containerEl.addEventListener).toBeCalledWith('touchend', textBase.mobileZoomEndHandler);
+        });
+
+        test('should add gesture listeners if hasTouch is true and iOS', () => {
+            textBase.hasTouch = true;
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            jest.spyOn(textBase.containerEl, 'addEventListener');
+
+            textBase.bindDOMListeners();
+
+            expect(textBase.containerEl.addEventListener).toBeCalledWith(
+                'gesturestart',
+                textBase.mobileZoomStartHandler,
+            );
+            expect(textBase.containerEl.addEventListener).toBeCalledWith('gestureend', textBase.mobileZoomEndHandler);
+        });
+
+        test('should not add touch listeners if hasTouch is false', () => {
+            textBase.hasTouch = false;
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
+            jest.spyOn(textBase.containerEl, 'addEventListener');
+
+            textBase.bindDOMListeners();
+
+            expect(textBase.containerEl.addEventListener).not.toBeCalledWith(
+                'touchstart',
+                textBase.mobileZoomStartHandler,
+            );
+            expect(textBase.containerEl.addEventListener).not.toBeCalledWith(
+                'gesturestart',
+                textBase.mobileZoomStartHandler,
+            );
+        });
+    });
+
+    describe('unbindDOMListeners()', () => {
+        test('should remove all listeners', () => {
+            jest.spyOn(textBase.containerEl, 'removeEventListener');
+
+            textBase.unbindDOMListeners();
+
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith('wheel', textBase.wheelZoomHandler);
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith(
+                'gesturestart',
+                textBase.mobileZoomStartHandler,
+            );
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith(
+                'gestureend',
+                textBase.mobileZoomEndHandler,
+            );
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith(
+                'touchstart',
+                textBase.mobileZoomStartHandler,
+            );
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith(
+                'touchmove',
+                textBase.mobileZoomChangeHandler,
+            );
+            expect(textBase.containerEl.removeEventListener).toBeCalledWith('touchend', textBase.mobileZoomEndHandler);
+        });
+    });
+
+    describe('wheelZoomHandler()', () => {
+        let textEl;
+
+        beforeEach(() => {
+            textEl = document.createElement('div');
+            textEl.className = 'bp-text';
+            textBase.containerEl.appendChild(textEl);
+            textBase.renderUI = jest.fn();
+        });
+
+        afterEach(() => {
+            textBase.containerEl.removeChild(textEl);
+        });
+
+        test('should do nothing if ctrlKey is not pressed', () => {
+            jest.spyOn(textBase, 'emit');
+            const event = { ctrlKey: false, deltaY: -1, preventDefault: jest.fn() };
+
+            textBase.wheelZoomHandler(event);
+            expect(event.preventDefault).not.toBeCalled();
+            expect(textBase.emit).not.toBeCalled();
+        });
+
+        test('should zoom in smoothly when deltaY is negative', () => {
+            textBase.scale = 1.0;
+            jest.spyOn(textBase, 'emit');
+            const event = { ctrlKey: true, deltaY: -10, preventDefault: jest.fn() };
+
+            textBase.wheelZoomHandler(event);
+            expect(event.preventDefault).toBeCalled();
+            expect(textBase.scale).toBeGreaterThan(1.0);
+            expect(textBase.renderUI).toBeCalled();
+        });
+
+        test('should zoom out smoothly when deltaY is positive', () => {
+            textBase.scale = 1.0;
+            jest.spyOn(textBase, 'emit');
+            const event = { ctrlKey: true, deltaY: 10, preventDefault: jest.fn() };
+
+            textBase.wheelZoomHandler(event);
+            expect(event.preventDefault).toBeCalled();
+            expect(textBase.scale).toBeLessThan(1.0);
+            expect(textBase.renderUI).toBeCalled();
         });
     });
 
