@@ -3873,9 +3873,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let jpegRep;
             let webpRep;
             const webpUrl =
-                'https://example.com/webp/page_number?access_token=auth_token&box_client_name=name&box_client_version=version';
+                'https://example.com/webp/page_number?box_client_name=name&box_client_version=version&access_token=auth_token';
             const jpegUrl =
-                'https://example.com/jpeg/{+asset}?access_token=auth_token&box_client_name=name&box_client_version=version';
+                'https://example.com/jpeg/{+asset}?box_client_name=name&box_client_version=version&access_token=auth_token';
             beforeEach(() => {
                 // Mock representations
                 jpegRep = {

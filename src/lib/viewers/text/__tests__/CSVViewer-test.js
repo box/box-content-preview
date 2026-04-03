@@ -95,7 +95,7 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
 
-            const csvUrlWithAuth = `csvUrl/?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`;
+            const csvUrlWithAuth = `csvUrl/?shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}&access_token=token`;
 
             return csv.load().then(() => {
                 expect(window.Papa.parse).toBeCalledWith(

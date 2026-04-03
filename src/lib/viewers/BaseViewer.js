@@ -454,7 +454,8 @@ class BaseViewer extends EventEmitter {
      */
     appendAuthParams(url) {
         const { token, sharedLink, sharedLinkPassword } = this.options;
-        return appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+        const migrateAccessTokenToHeader = this.featureEnabled('migrateAccessTokenToHeader');
+        return appendAuthParams(url, token, sharedLink, sharedLinkPassword, { migrateAccessTokenToHeader });
     }
 
     /**
@@ -506,6 +507,23 @@ class BaseViewer extends EventEmitter {
     appendAuthHeader(headers = {}) {
         const { token, sharedLink, sharedLinkPassword } = this.options;
         return getHeaders(headers, token, sharedLink, sharedLinkPassword);
+    }
+
+    /**
+     * Fetches content from a URL using auth headers and returns a blob URL.
+     * Used for loading content into HTML elements (img, video, audio) that
+     * cannot send custom headers natively.
+     *
+     * @protected
+     * @param {string} url - Content URL (without access_token in query params)
+     * @return {Promise<string>} Promise resolving to a blob URL
+     */
+    fetchContentAsBlobUrl(url) {
+        const headers = this.appendAuthHeader();
+        return this.api.get(url, { type: 'blob', headers }).then(data => {
+            const blob = data instanceof Blob ? data : new Blob([data]);
+            return URL.createObjectURL(blob);
+        });
     }
 
     /**
@@ -902,6 +920,7 @@ class BaseViewer extends EventEmitter {
             sharedLinkPassword,
             fileId: file.id,
             logger: representation ? null : logger, // Do not log to main preview status if rep is passed in
+            migrateAccessTokenToHeader: this.featureEnabled('migrateAccessTokenToHeader'),
         });
 
         // Don't time out while conversion is pending

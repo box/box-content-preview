@@ -238,18 +238,23 @@ export function appendQueryParams(url, queryParams) {
  * @param {string} [password] - Optional shared link password
  * @return {string} Url with auth
  */
-export function appendAuthParams(url, token = '', sharedLink = '', password = '') {
+export function appendAuthParams(url, token = '', sharedLink = '', password = '', options = {}) {
     if (!token && !sharedLink) {
         return url;
     }
 
-    return appendQueryParams(url, {
-        access_token: token,
+    const queryParams = {
         shared_link: sharedLink,
         shared_link_password: password,
         [CLIENT_NAME_KEY]: CLIENT_NAME,
         [CLIENT_VERSION_KEY]: CLIENT_VERSION,
-    });
+    };
+
+    if (!options.migrateAccessTokenToHeader) {
+        queryParams.access_token = token;
+    }
+
+    return appendQueryParams(url, queryParams);
 }
 
 /**
