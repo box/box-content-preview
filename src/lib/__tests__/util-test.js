@@ -177,11 +177,9 @@ describe('lib/util', () => {
             const url = 'foo';
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
-            const result = util.appendAuthParams(url, token, sharedLink);
-            expect(result).toContain(`shared_link=${sharedLink}`);
-            expect(result).toContain(`access_token=${token}`);
-            expect(result).toContain(`box_client_name=${__NAME__}`);
-            expect(result).toContain(`box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink)).toBe(
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
+            );
         });
 
         test('should return correct url with password', () => {
@@ -189,23 +187,9 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
-            const result = util.appendAuthParams(url, token, sharedLink, sharedLinkPassword);
-            expect(result).toContain(`access_token=${token}`);
-            expect(result).toContain(`shared_link=${sharedLink}`);
-            expect(result).toContain(`shared_link_password=${sharedLinkPassword}`);
-            expect(result).toContain(`box_client_name=${__NAME__}`);
-            expect(result).toContain(`box_client_version=${__VERSION__}`);
-        });
-
-        test('should not include access_token when migrateAccessTokenToHeader is true', () => {
-            const url = 'foo';
-            const token = 'sometoken';
-            const sharedLink = 'someSharedLink';
-            const result = util.appendAuthParams(url, token, sharedLink, '', { migrateAccessTokenToHeader: true });
-            expect(result).not.toContain('access_token');
-            expect(result).toContain(`shared_link=${sharedLink}`);
-            expect(result).toContain(`box_client_name=${__NAME__}`);
-            expect(result).toContain(`box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).toBe(
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
+            );
         });
     });
     /* eslint-enable no-undef */

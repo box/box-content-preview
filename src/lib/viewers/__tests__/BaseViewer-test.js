@@ -347,9 +347,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             const result = base.appendAuthParams('');
             expect(result).toBe(url);
-            expect(util.appendAuthParams).toBeCalledWith('', token, sharedLink, sharedLinkPassword, {
-                migrateAccessTokenToHeader: false,
-            });
+            expect(util.appendAuthParams).toBeCalledWith('', token, sharedLink, sharedLinkPassword);
         });
     });
 

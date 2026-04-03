@@ -454,8 +454,7 @@ class BaseViewer extends EventEmitter {
      */
     appendAuthParams(url) {
         const { token, sharedLink, sharedLinkPassword } = this.options;
-        const migrateAccessTokenToHeader = this.featureEnabled('migrateAccessTokenToHeader');
-        return appendAuthParams(url, token, sharedLink, sharedLinkPassword, { migrateAccessTokenToHeader });
+        return appendAuthParams(url, token, sharedLink, sharedLinkPassword);
     }
 
     /**

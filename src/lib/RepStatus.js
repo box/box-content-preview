@@ -66,14 +66,12 @@ class RepStatus extends EventEmitter {
         this.representation = representation;
         this.logger = logger;
         this.fileId = fileId;
-        this.migrateAccessTokenToHeader = migrateAccessTokenToHeader;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
-        this.infoUrl = repInfo
-            ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword, { migrateAccessTokenToHeader })
-            : '';
+        this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
 
+        // When flag is on, also send auth via headers (token remains in URL as fallback)
         if (migrateAccessTokenToHeader) {
             this.headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
         }
