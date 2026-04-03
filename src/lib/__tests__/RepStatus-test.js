@@ -92,6 +92,26 @@ describe('lib/RepStatus', () => {
             expect(repStatus.infoUrl).toBe(infoUrl);
             expect(repStatus.promise).toBeInstanceOf(Promise);
         });
+
+        test('should use appendAuthParamsV2 and set headers when migrateAccessTokenToHeader is true', () => {
+            const v2Url = 'v2Url';
+            jest.spyOn(util, 'appendAuthParamsV2').mockReturnValue(v2Url);
+            jest.spyOn(util, 'getHeaders').mockReturnValue({ Authorization: 'Bearer token' });
+
+            repStatus = new RepStatus({
+                api: {},
+                representation: rep,
+                token: 'token',
+                sharedLink: 'sharedLink',
+                sharedLinkPassword: 'password',
+                logger: {},
+                migrateAccessTokenToHeader: true,
+            });
+
+            expect(util.appendAuthParamsV2).toBeCalledWith(rep.info.url, 'sharedLink', 'password');
+            expect(repStatus.infoUrl).toBe(v2Url);
+            expect(repStatus.headers).toEqual({ Authorization: 'Bearer token' });
+        });
     });
 
     describe('destroy()', () => {

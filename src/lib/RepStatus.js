@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { appendAuthParams, getHeaders } from './util';
+import { appendAuthParams, appendAuthParamsV2, getHeaders } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
 import Timer from './Timer';
@@ -69,11 +69,12 @@ class RepStatus extends EventEmitter {
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
-        this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
-
-        // When flag is on, also send auth via headers (token remains in URL as fallback)
         if (migrateAccessTokenToHeader) {
+            // Send auth via headers only — no access_token in URL
+            this.infoUrl = repInfo ? appendAuthParamsV2(repInfo.url, sharedLink, sharedLinkPassword) : '';
             this.headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+        } else {
+            this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
         }
 
         this.promise = new Promise((resolve, reject) => {
