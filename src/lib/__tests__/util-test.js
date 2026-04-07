@@ -192,6 +192,33 @@ describe('lib/util', () => {
             );
         });
     });
+
+    /* eslint-disable no-undef */
+    describe('appendAuthParamsV2()', () => {
+        test('should not include access_token in url', () => {
+            const url = 'foo';
+            const sharedLink = 'someSharedLink';
+            expect(util.appendAuthParamsV2(url, sharedLink)).toBe(
+                `${url}/?shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
+            );
+        });
+
+        test('should return url with client params even without shared link', () => {
+            const url = 'foo';
+            expect(util.appendAuthParamsV2(url)).toBe(
+                `${url}/?box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
+            );
+        });
+
+        test('should return correct url with shared link and password', () => {
+            const url = 'foobar';
+            const sharedLink = 'someSharedLink';
+            const sharedLinkPassword = 'somePass';
+            expect(util.appendAuthParamsV2(url, sharedLink, sharedLinkPassword)).toBe(
+                `${url}/?shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`,
+            );
+        });
+    });
     /* eslint-enable no-undef */
 
     describe('createContentUrl()', () => {

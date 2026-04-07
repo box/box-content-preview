@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { appendAuthParams } from './util';
+import { appendAuthParams, appendAuthParamsV2, getHeaders } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
 import Timer from './Timer';
@@ -50,7 +50,16 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ api, representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
+    constructor({
+        api,
+        representation,
+        token,
+        sharedLink,
+        sharedLinkPassword,
+        logger,
+        fileId,
+        migrateAccessTokenToHeader = false,
+    }) {
         super();
 
         this.api = api;
@@ -60,7 +69,13 @@ class RepStatus extends EventEmitter {
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
-        this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
+        if (migrateAccessTokenToHeader) {
+            // Send auth via headers only — no access_token in URL
+            this.infoUrl = repInfo ? appendAuthParamsV2(repInfo.url, sharedLink, sharedLinkPassword) : '';
+            this.headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+        } else {
+            this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
+        }
 
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -91,7 +106,8 @@ class RepStatus extends EventEmitter {
         const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
         Timer.start(tag);
 
-        return this.api.get(this.infoUrl).then(info => {
+        const options = this.headers ? { headers: this.headers } : {};
+        return this.api.get(this.infoUrl, options).then(info => {
             clearTimeout(this.statusTimeout);
 
             if (info.metadata) {

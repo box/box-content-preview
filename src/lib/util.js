@@ -253,6 +253,25 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
 }
 
 /**
+ * Appends auth params to a url, excluding access_token from query params.
+ * Used when auth is sent via Authorization header instead of URL params.
+ *
+ * @public
+ * @param {string} url - Content url
+ * @param {string} [sharedLink] - Optional shared link
+ * @param {string} [password] - Optional shared link password
+ * @return {string} Url with auth params (no access_token)
+ */
+export function appendAuthParamsV2(url, sharedLink = '', password = '') {
+    return appendQueryParams(url, {
+        shared_link: sharedLink,
+        shared_link_password: password,
+        [CLIENT_NAME_KEY]: CLIENT_NAME,
+        [CLIENT_VERSION_KEY]: CLIENT_VERSION,
+    });
+}
+
+/**
  * Create a content url from template
  *
  * @public

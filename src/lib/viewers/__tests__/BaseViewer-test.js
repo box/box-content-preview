@@ -423,6 +423,24 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('fetchContentAsBlobUrl()', () => {
+        test('should fetch content with auth headers and return a blob URL', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/png' });
+            const mockBlobUrl = 'blob:http://localhost/abc123';
+            const mockHeaders = { Authorization: 'Bearer token' };
+
+            jest.spyOn(base, 'appendAuthHeader').mockReturnValue(mockHeaders);
+            base.api = { get: jest.fn().mockResolvedValue(mockBlob) };
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue(mockBlobUrl);
+
+            const result = await base.fetchContentAsBlobUrl('https://example.com/content');
+
+            expect(base.api.get).toBeCalledWith('https://example.com/content', { type: 'blob', headers: mockHeaders });
+            expect(URL.createObjectURL).toBeCalledWith(mockBlob);
+            expect(result).toBe(mockBlobUrl);
+        });
+    });
+
     describe('addCommonListeners()', () => {
         beforeEach(() => {
             stubs.fullscreenAddListener = jest.spyOn(fullscreen, 'addListener');
