@@ -1,3 +1,9 @@
+## 3.27.0 (2026-04-07)
+
+* feat(auth): gate access_token removal behind feature flag (#1619) ([86927e6](https://github.com/box/box-content-preview/commit/86927e6)), closes [#1619](https://github.com/box/box-content-preview/issues/1619)
+
+
+
 ## 3.26.0 (2026-03-27)
 
 * feat(bounding-box): support for rendering bounding boxes (#1617) ([62d34d6](https://github.com/box/box-content-preview/commit/62d34d6)), closes [#1617](https://github.com/box/box-content-preview/issues/1617)
