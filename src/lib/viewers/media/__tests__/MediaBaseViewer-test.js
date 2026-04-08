@@ -1502,4 +1502,113 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.processAnnotationModeChange).not.toHaveBeenCalled();
         });
     });
+
+    describe('load() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            media.mediaEl = document.createElement('video');
+            media.mediaEl.addEventListener = jest.fn();
+        });
+
+        test('should use fetchContentAsBlobUrl when flag is enabled', () => {
+            const blobUrl = 'blob:http://localhost/abc-123';
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+
+            return media.load().then(() => {
+                expect(media.featureEnabled).toHaveBeenCalledWith('migrateAccessTokenToHeader');
+                expect(media.createContentUrlV2).toHaveBeenCalledWith('www.box.com');
+                expect(media.fetchContentAsBlobUrl).toHaveBeenCalledWith('http://localhost/content');
+                expect(media.mediaEl.src).toBe(blobUrl);
+                expect(media.mediaBlobUrl).toBe(blobUrl);
+                expect(media.mediaUrl).toBe(blobUrl);
+            });
+        });
+
+        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=abc');
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+
+            return media.load().then(() => {
+                expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
+                expect(media.mediaEl.src).toBe('http://localhost/content?token=abc');
+            });
+        });
+    });
+
+    describe('restartPlayback() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            media.mediaEl = document.createElement('video');
+            media.mediaEl.currentTime = 10;
+            media.options = {
+                token: 'old-token',
+                representation: {
+                    content: {
+                        url_template: 'www.box.com',
+                    },
+                },
+            };
+        });
+
+        test('should revoke old blob URL and fetch new one when flag is enabled', () => {
+            const oldBlobUrl = 'blob:http://localhost/old-123';
+            const newBlobUrl = 'blob:http://localhost/new-456';
+            media.mediaBlobUrl = oldBlobUrl;
+
+            jest.spyOn(URL, 'revokeObjectURL');
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(newBlobUrl));
+
+            media.restartPlayback('new-token');
+
+            expect(media.currentTime).toBe(10);
+            expect(media.options.token).toBe('new-token');
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith(oldBlobUrl);
+            expect(media.createContentUrlV2).toHaveBeenCalledWith('www.box.com');
+            expect(media.fetchContentAsBlobUrl).toHaveBeenCalledWith('http://localhost/content');
+
+            return media.fetchContentAsBlobUrl().then(() => {
+                expect(media.mediaBlobUrl).toBe(newBlobUrl);
+                expect(media.mediaUrl).toBe(newBlobUrl);
+                expect(media.mediaEl.src).toBe(newBlobUrl);
+            });
+        });
+
+        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=new');
+
+            media.restartPlayback('new-token');
+
+            expect(media.options.token).toBe('new-token');
+            expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
+            expect(media.mediaEl.src).toBe('http://localhost/content?token=new');
+        });
+    });
+
+    describe('destroy() with migrateAccessTokenToHeader', () => {
+        test('should revoke mediaBlobUrl if it exists', () => {
+            const blobUrl = 'blob:http://localhost/abc-123';
+            media.mediaBlobUrl = blobUrl;
+
+            jest.spyOn(URL, 'revokeObjectURL');
+
+            media.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
+        });
+
+        test('should not call revokeObjectURL if mediaBlobUrl does not exist', () => {
+            media.mediaBlobUrl = null;
+
+            jest.spyOn(URL, 'revokeObjectURL');
+
+            media.destroy();
+
+            expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+        });
+    });
 });

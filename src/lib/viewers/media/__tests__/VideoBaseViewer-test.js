@@ -1350,4 +1350,146 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.togglePlay).toBeCalled();
         });
     });
+
+    describe('showPreload() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            videoBase.options.file = {
+                id: 123,
+                watermark_info: { is_watermarked: false },
+                representations: {
+                    entries: [
+                        {
+                            representation: 'jpg',
+                            content: {
+                                url_template: 'www.box.com/preload.jpg',
+                            },
+                            status: {
+                                state: 'success',
+                            },
+                        },
+                    ],
+                },
+            };
+            videoBase.getViewerOption = jest.fn().mockReturnValue(true);
+            videoBase.wrapperEl = document.createElement('div');
+            videoBase.wrapperEl.style.width = '800px';
+            videoBase.wrapperEl.style.height = '600px';
+        });
+
+        test('should fetch blob URL for poster image when flag is enabled', () => {
+            const blobUrl = 'blob:http://localhost/preload-123';
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('http://localhost/preload.jpg');
+            jest.spyOn(videoBase, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.createContentUrlV2).toHaveBeenCalledWith('www.box.com/preload.jpg');
+            expect(videoBase.fetchContentAsBlobUrl).toHaveBeenCalledWith('http://localhost/preload.jpg');
+
+            return videoBase.fetchContentAsBlobUrl().then(() => {
+                expect(videoBase.preloadBlobUrl).toBe(blobUrl);
+                expect(VideoPreloader.prototype.showPreload).toHaveBeenCalledWith(
+                    blobUrl,
+                    videoBase.mediaContainerEl,
+                    expect.any(Object),
+                );
+            });
+        });
+
+        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
+                'http://localhost/preload.jpg?token=abc',
+            );
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/preload.jpg');
+            expect(VideoPreloader.prototype.showPreload).toHaveBeenCalledWith(
+                'http://localhost/preload.jpg?token=abc',
+                videoBase.mediaContainerEl,
+                expect.any(Object),
+            );
+        });
+    });
+
+    describe('prefetch() with migrateAccessTokenToHeader', () => {
+        let mockApi;
+
+        beforeEach(() => {
+            mockApi = { get: jest.fn().mockReturnValue(Promise.resolve()) };
+            videoBase.api = mockApi;
+            videoBase.options.file = {
+                id: 123,
+                watermark_info: { is_watermarked: false },
+                representations: {
+                    entries: [
+                        {
+                            representation: 'jpg',
+                            content: {
+                                url_template: 'www.box.com/preload.jpg',
+                            },
+                            status: {
+                                state: 'success',
+                            },
+                        },
+                    ],
+                },
+            };
+            jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
+        });
+
+        test('should use createContentUrlV2 with auth headers when flag is enabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('http://localhost/preload.jpg');
+            jest.spyOn(videoBase, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
+
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.createContentUrlV2).toHaveBeenCalledWith('www.box.com/preload.jpg');
+            expect(videoBase.appendAuthHeader).toHaveBeenCalled();
+            expect(mockApi.get).toHaveBeenCalledWith('http://localhost/preload.jpg', {
+                type: 'blob',
+                headers: { Authorization: 'Bearer token123' },
+            });
+        });
+
+        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
+                'http://localhost/preload.jpg?token=abc',
+            );
+
+            videoBase.prefetch({ preload: true });
+
+            expect(videoBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/preload.jpg');
+            expect(mockApi.get).toHaveBeenCalledWith('http://localhost/preload.jpg?token=abc', { type: 'blob' });
+        });
+    });
+
+    describe('destroy() with migrateAccessTokenToHeader', () => {
+        test('should revoke preloadBlobUrl if it exists', () => {
+            const blobUrl = 'blob:http://localhost/preload-123';
+            videoBase.preloadBlobUrl = blobUrl;
+
+            jest.spyOn(URL, 'revokeObjectURL');
+
+            videoBase.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
+        });
+
+        test('should not call revokeObjectURL if preloadBlobUrl does not exist', () => {
+            videoBase.preloadBlobUrl = null;
+
+            jest.spyOn(URL, 'revokeObjectURL');
+
+            videoBase.destroy();
+
+            expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+        });
+    });
 });

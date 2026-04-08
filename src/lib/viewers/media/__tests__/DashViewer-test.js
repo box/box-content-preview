@@ -1895,4 +1895,172 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(props).toHaveProperty('videoAnnotationsEnabled', false);
         });
     });
+
+    describe('requestFilter() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            dash.options.file.watermark_info = { is_watermarked: false };
+            dash.watermarkCacheBust = 12345;
+        });
+
+        test('should use createContentUrlV2 and append auth headers when flag is enabled for manifest', () => {
+            const request = {
+                uris: ['http://localhost/original/manifest.mpd'],
+                headers: {},
+            };
+
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/content/manifest.mpd');
+            jest.spyOn(dash, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
+
+            dash.requestFilter(shaka.net.NetworkingEngine.RequestType.MANIFEST, request);
+
+            expect(dash.createContentUrlV2).toHaveBeenCalledWith(
+                'http://localhost/original/manifest.mpd',
+                'manifest.mpd',
+            );
+            expect(dash.appendAuthHeader).toHaveBeenCalled();
+            expect(request.uris).toEqual(['http://localhost/content/manifest.mpd']);
+            expect(request.headers).toEqual({ Authorization: 'Bearer token123' });
+        });
+
+        test('should use createContentUrlV2 and append auth headers when flag is enabled for segments', () => {
+            const request = {
+                uris: ['http://localhost/original/segment1.m4s'],
+                headers: {},
+            };
+
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/content/segment1.m4s');
+            jest.spyOn(dash, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
+
+            dash.requestFilter(shaka.net.NetworkingEngine.RequestType.SEGMENT, request);
+
+            expect(dash.createContentUrlV2).toHaveBeenCalledWith('http://localhost/original/segment1.m4s', undefined);
+            expect(dash.appendAuthHeader).toHaveBeenCalled();
+            expect(request.uris).toEqual(['http://localhost/content/segment1.m4s']);
+            expect(request.headers).toEqual({ Authorization: 'Bearer token123' });
+        });
+
+        test('should append watermark query param for segments when watermarked and flag is enabled', () => {
+            dash.options.file.watermark_info = { is_watermarked: true };
+            const request = {
+                uris: ['http://localhost/original/segment1.m4s'],
+                headers: {},
+            };
+
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/content/segment1.m4s');
+            jest.spyOn(dash, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
+
+            dash.requestFilter(shaka.net.NetworkingEngine.RequestType.SEGMENT, request);
+
+            expect(request.uris[0]).toContain('watermark_content=12345');
+        });
+
+        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+            const request = {
+                uris: ['http://localhost/original/manifest.mpd'],
+                headers: {},
+            };
+
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=abc');
+
+            dash.requestFilter(shaka.net.NetworkingEngine.RequestType.MANIFEST, request);
+
+            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith(
+                'http://localhost/original/manifest.mpd',
+                'manifest.mpd',
+            );
+            expect(request.uris).toEqual(['http://localhost/content?token=abc']);
+        });
+    });
+
+    describe('prefetch() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            dash.options.representation = {
+                content: {
+                    url_template: 'www.box.com/dash',
+                },
+            };
+            jest.spyOn(dash, 'isRepresentationReady').mockReturnValue(true);
+        });
+
+        test('should use createContentUrlV2 with auth headers when flag is enabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/content/manifest.mpd');
+            jest.spyOn(dash, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
+            jest.spyOn(stubs.api, 'get').mockReturnValue(Promise.resolve());
+
+            dash.prefetch({ content: true });
+
+            expect(dash.createContentUrlV2).toHaveBeenCalledWith('www.box.com/dash', 'manifest.mpd');
+            expect(dash.appendAuthHeader).toHaveBeenCalled();
+            expect(stubs.api.get).toHaveBeenCalledWith('http://localhost/content/manifest.mpd', {
+                type: 'document',
+                headers: { Authorization: 'Bearer token123' },
+            });
+        });
+
+        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=abc');
+            jest.spyOn(stubs.api, 'get').mockReturnValue(Promise.resolve());
+
+            dash.prefetch({ content: true });
+
+            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/dash', 'manifest.mpd');
+            expect(stubs.api.get).toHaveBeenCalledWith('http://localhost/content?token=abc', { type: 'document' });
+        });
+    });
+
+    describe('loadFilmStrip() with migrateAccessTokenToHeader', () => {
+        beforeEach(() => {
+            dash.options.file = {
+                id: 123,
+                representations: {
+                    entries: [
+                        {
+                            representation: 'filmstrip',
+                            content: {
+                                url_template: 'www.box.com/filmstrip.jpg',
+                            },
+                            metadata: {
+                                interval: 2,
+                            },
+                        },
+                    ],
+                },
+            };
+            dash.aspect = 1.78;
+            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
+                getPromise: () => Promise.resolve(),
+                destroy: jest.fn(),
+            });
+        });
+
+        test('should use createContentUrlV2 when flag is enabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/filmstrip.jpg');
+            jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
+
+            dash.loadFilmStrip();
+
+            expect(dash.createContentUrlV2).toHaveBeenCalledWith('www.box.com/filmstrip.jpg');
+            expect(dash.filmstripUrl).toBe('http://localhost/filmstrip.jpg');
+        });
+
+        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue(
+                'http://localhost/filmstrip.jpg?token=abc',
+            );
+            jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
+
+            dash.loadFilmStrip();
+
+            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/filmstrip.jpg');
+            expect(dash.filmstripUrl).toBe('http://localhost/filmstrip.jpg?token=abc');
+        });
+    });
 });

@@ -176,7 +176,12 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
+            if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                const contentUrl = this.createContentUrlV2(template, MANIFEST);
+                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
+            } else {
+                this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
+            }
         }
     }
 
@@ -315,13 +320,24 @@ class DashViewer extends VideoBaseViewer {
     requestFilter(type, request) {
         const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
         /* eslint-disable no-param-reassign */
-        request.uris = request.uris.map(uri => {
-            let newUri = this.createContentUrlWithAuthParams(uri, asset);
-            if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
-            }
-            return newUri;
-        });
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            request.uris = request.uris.map(uri => {
+                let newUri = this.createContentUrlV2(uri, asset);
+                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
+                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
+                }
+                return newUri;
+            });
+            Object.assign(request.headers, this.appendAuthHeader());
+        } else {
+            request.uris = request.uris.map(uri => {
+                let newUri = this.createContentUrlWithAuthParams(uri, asset);
+                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
+                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
+                }
+                return newUri;
+            });
+        }
         /* eslint-enable no-param-reassign */
     }
 
@@ -887,7 +903,9 @@ class DashViewer extends VideoBaseViewer {
         const filmstripInterval = filmstrip && filmstrip.metadata && filmstrip.metadata.interval;
 
         if (filmstripInterval > 0) {
-            const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            const url = this.featureEnabled('migrateAccessTokenToHeader')
+                ? this.createContentUrlV2(filmstrip.content.url_template)
+                : this.createContentUrlWithAuthParams(filmstrip.content.url_template);
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
