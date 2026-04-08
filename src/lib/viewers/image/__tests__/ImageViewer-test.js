@@ -142,6 +142,64 @@ describe('lib/viewers/image/ImageViewer', () => {
                 })
                 .catch(() => {});
         });
+
+        test('should use createContentUrlV2 and fetchContentAsBlobUrl when migrateAccessTokenToHeader flag is on', () => {
+            const blobUrl = 'blob:http://example.com/blob-id';
+            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(image, 'startLoadTimer');
+            jest.spyOn(image, 'finishLoading');
+
+            return image
+                .load()
+                .then(() => {
+                    expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
+                    expect(image.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
+                    expect(image.imageEl.src).toBe(blobUrl);
+                    expect(image.startLoadTimer).toBeCalled();
+                })
+                .catch(() => {});
+        });
+
+        test('should reuse prefetchedBlobUrlPromise when migrateAccessTokenToHeader flag is on', () => {
+            const blobUrl = 'blob:http://example.com/prefetched-blob';
+            const prefetchedPromise = Promise.resolve(blobUrl);
+            image.prefetchedBlobUrlPromise = prefetchedPromise;
+
+            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'fetchContentAsBlobUrl');
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(image, 'startLoadTimer');
+
+            return image
+                .load()
+                .then(() => {
+                    expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
+                    expect(image.imageEl.src).toBe(blobUrl);
+                    expect(image.prefetchedBlobUrlPromise).toBeNull();
+                })
+                .catch(() => {});
+        });
+
+        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
+            jest.spyOn(image, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue(imageUrl);
+            jest.spyOn(image, 'createContentUrl');
+            jest.spyOn(image, 'fetchContentAsBlobUrl');
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+
+            return image
+                .load()
+                .then(() => {
+                    expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
+                    expect(image.createContentUrl).not.toHaveBeenCalled();
+                    expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
+                })
+                .catch(() => {});
+        });
     });
 
     describe('prefetch()', () => {
@@ -248,6 +306,42 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             const prefetchedImg = document.querySelector('.bp-prefetched-image');
             expect(prefetchedImg).toBeTruthy();
+        });
+
+        test('should use fetchContentAsBlobUrl and store promise when migrateAccessTokenToHeader flag is on', () => {
+            const blobUrl = 'blob:http://example.com/prefetch-blob';
+            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+
+            image.prefetch({ content: true });
+
+            expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
+            expect(image.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
+            expect(image.prefetchedBlobUrlPromise).toBeDefined();
+            expect(image.prefetchedBlobUrlPromise).toBeInstanceOf(Promise);
+
+            // Should not create an img element in the DOM
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeFalsy();
+        });
+
+        test('should create img prefetch element when migrateAccessTokenToHeader flag is off', () => {
+            jest.spyOn(image, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'createContentUrl');
+            jest.spyOn(image, 'fetchContentAsBlobUrl');
+
+            image.prefetch({ content: true });
+
+            expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
+            expect(image.createContentUrl).not.toHaveBeenCalled();
+            expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
+            expect(image.prefetchedBlobUrlPromise).toBeUndefined();
+
+            const prefetchedImg = document.querySelector('.bp-prefetched-image');
+            expect(prefetchedImg).toBeTruthy();
+            expect(prefetchedImg.src).toBe('https://example.com/image.jpg');
         });
     });
 
