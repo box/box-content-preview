@@ -64,6 +64,17 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 expect(docPreloader.bindDOMListeners).toBeCalled();
             });
         });
+
+        test('should spread options parameter into api.get call', () => {
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            jest.spyOn(stubs.api, 'get').mockResolvedValue({});
+            jest.spyOn(docPreloader, 'bindDOMListeners').mockImplementation();
+
+            return docPreloader.showPreload('someUrl', containerEl, options).then(() => {
+                expect(stubs.api.get).toHaveBeenCalledWith('someUrl', { type: 'blob', headers: mockHeaders });
+            });
+        });
     });
 
     describe('scaleAndShowPreload()', () => {
