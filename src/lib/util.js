@@ -788,7 +788,7 @@ export function handleRepresentationBlobFetch(response) {
  * @param {string} pagedPreLoadUrlWithAuth - Paged preload URL template with auth
  * @return {Array<Promise>} Array of promises for image requests
  */
-export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth) {
+export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, pagedPreLoadUrlWithAuth, options = {}) {
     const PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER = 'page_number';
     const MAX_PRELOAD_PAGES = 8;
 
@@ -799,13 +799,13 @@ export function getPreloadImageRequestPromises(api, preloadUrlWithAuth, pages, p
 
     const useNonPagedJpegRep = !pagedPreLoadUrlWithAuth && preloadUrlWithAuth;
     if (useNonPagedJpegRep) {
-        const promise = api.get(preloadUrlWithAuth, { type: 'blob' });
+        const promise = api.get(preloadUrlWithAuth, { type: 'blob', ...options });
         promises.push(promise.catch(e => e));
     } else if (pagedPreLoadUrlWithAuth) {
         const count = pages > MAX_PRELOAD_PAGES ? MAX_PRELOAD_PAGES : pages;
         for (let i = 1; i <= count; i += 1) {
             const url = pagedPreLoadUrlWithAuth.replace(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER, `${i}.webp`);
-            const promise = api.get(url, { type: 'blob' });
+            const promise = api.get(url, { type: 'blob', ...options });
             promises.push(promise.catch(e => e));
         }
     }
@@ -832,8 +832,8 @@ export function createPageUrl(pagedPreLoadUrlWithAuth, pageNumber) {
  * @param {string} url - URL to fetch
  * @return {Promise} Promise that resolves with blob or error
  */
-export function fetchPageImage(api, url) {
-    return api.get(url, { type: 'blob' }).catch(e => e);
+export function fetchPageImage(api, url, options = {}) {
+    return api.get(url, { type: 'blob', ...options }).catch(e => e);
 }
 
 /**
@@ -845,14 +845,14 @@ export function fetchPageImage(api, url) {
  * @param {number} endPage - Last page to fetch (inclusive)
  * @return {Array<Promise>} Array of promises that resolve with blobs
  */
-export function getPreloadImageRequestPromisesByBatch(api, pagedPreLoadUrlWithAuth, startPage, endPage) {
+export function getPreloadImageRequestPromisesByBatch(api, pagedPreLoadUrlWithAuth, startPage, endPage, options = {}) {
     const promises = [];
     if (!pagedPreLoadUrlWithAuth || startPage > endPage) {
         return promises;
     }
     for (let i = startPage; i <= endPage; i += 1) {
         const url = createPageUrl(pagedPreLoadUrlWithAuth, i);
-        promises.push(fetchPageImage(api, url));
+        promises.push(fetchPageImage(api, url, options));
     }
     return promises;
 }

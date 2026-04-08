@@ -259,6 +259,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 'mock-url',
                 4,
                 'mock-paged-image-url',
+                {},
             );
             expect(Object.keys(preloader.preloadedImages).length).toBe(4);
             expect(preloader.preloadedImages[1]).toBe('mock-object-url1');
@@ -271,6 +272,40 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.loadTime).toBeDefined();
             expect(preloader.hidePreviewMask).toHaveBeenCalled();
             expect(preloader.showPreviewMask).not.toHaveBeenCalled();
+        });
+
+        it('should pass options through showPreload to loadBatchAsBlobs', async () => {
+            const mockBlob = new Blob(['mock-content'], { type: 'image/webp' });
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([Promise.resolve(mockBlob)]);
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn().mockReturnValue(false);
+
+            await preloader.showPreload('mock-url', mockContainer, 'mock-paged-url', 1, mockDocBaseViewer, options);
+
+            expect(preloader.fetchOptions).toEqual(options);
+            expect(util.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                mockApi,
+                'mock-url',
+                1,
+                'mock-paged-url',
+                options,
+            );
+        });
+
+        it('should pass options through showPreloadSingleImage to api.get', async () => {
+            const mockBlob = new Blob(['mock-content'], { type: 'image/jpeg' });
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            jest.spyOn(mockApi, 'get').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            preloader.config = { showPreloadForNonPaged: true };
+
+            await preloader.showPreload('mock-url', mockContainer, null, 1, mockDocBaseViewer, options);
+
+            expect(mockApi.get).toHaveBeenCalledWith('mock-url', { type: 'blob', headers: mockHeaders });
         });
 
         it('should emit firstRender event after first image is added to container', async () => {
@@ -1718,19 +1753,32 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
                 'preload-url',
                 5,
                 'paged-url',
+                {},
             );
         });
 
         it('should use getPreloadImageRequestPromisesByBatch when preloadUrl is null', async () => {
             await preloader.loadBatchAsBlobs(null, 'paged-url', 5, 1);
 
-            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(preloader.api, 'paged-url', 1, 5);
+            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(
+                preloader.api,
+                'paged-url',
+                1,
+                5,
+                {},
+            );
         });
 
         it('should use getPreloadImageRequestPromisesByBatch when startPage is not 1', async () => {
             await preloader.loadBatchAsBlobs('preload-url', 'paged-url', 10, 6);
 
-            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(preloader.api, 'paged-url', 6, 10);
+            expect(util.getPreloadImageRequestPromisesByBatch).toHaveBeenCalledWith(
+                preloader.api,
+                'paged-url',
+                6,
+                10,
+                {},
+            );
         });
 
         it('should return array of blobs', async () => {
