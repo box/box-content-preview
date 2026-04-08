@@ -71,6 +71,35 @@ describe('lib/viewers/text/CSVViewer', () => {
         });
     });
 
+    describe('destroy()', () => {
+        test('should revoke blob URL if it exists', () => {
+            const blobUrl = 'blob:http://localhost/abc123';
+            csv.blobUrl = blobUrl;
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+
+            csv.destroy();
+
+            expect(URL.revokeObjectURL).toBeCalledWith(blobUrl);
+        });
+
+        test('should destroy csvComponent if it exists', () => {
+            csv.csvComponent = {
+                destroy: jest.fn(),
+            };
+
+            csv.destroy();
+
+            expect(csv.csvComponent.destroy).toBeCalled();
+        });
+
+        test('should not error if blobUrl does not exist', () => {
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+
+            expect(() => csv.destroy()).not.toThrow();
+            expect(URL.revokeObjectURL).not.toBeCalled();
+        });
+    });
+
     describe('load()', () => {
         const loadFunc = TextBaseViewer.prototype.load;
 
@@ -122,6 +151,54 @@ describe('lib/viewers/text/CSVViewer', () => {
                 expect(csv.startLoadTimer).toBeCalled();
             });
         });
+
+        test('should use fetchContentAsBlobUrl and pass blob URL to PapaParse when migrateAccessTokenToHeader flag is enabled', () => {
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
+            const contentUrl = 'someContentUrl';
+            const blobUrl = 'blob:http://localhost/abc123';
+
+            jest.spyOn(csv, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(csv, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(csv, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
+
+            return csv.load().then(() => {
+                expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+                expect(csv.createContentUrlV2).toBeCalled();
+                expect(csv.fetchContentAsBlobUrl).toBeCalledWith(contentUrl);
+                expect(csv.blobUrl).toBe(blobUrl);
+                expect(window.Papa.parse).toBeCalledWith(
+                    blobUrl,
+                    expect.objectContaining({
+                        download: true,
+                        error: expect.any(Function),
+                        complete: expect.any(Function),
+                        worker: true,
+                    }),
+                );
+            });
+        });
+
+        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is disabled', () => {
+            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
+            const contentUrlWithAuth = 'contentUrlWithAuth';
+
+            jest.spyOn(csv, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrlWithAuth);
+
+            return csv.load().then(() => {
+                expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+                expect(csv.createContentUrlWithAuthParams).toBeCalled();
+                expect(window.Papa.parse).toBeCalledWith(
+                    contentUrlWithAuth,
+                    expect.objectContaining({
+                        download: true,
+                        error: expect.any(Function),
+                        complete: expect.any(Function),
+                        worker: true,
+                    }),
+                );
+            });
+        });
     });
 
     describe('prefetch()', () => {
@@ -149,6 +226,37 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.prefetch({ assets: false, content: true });
 
             expect(csv.api.get).not.toBeCalled();
+        });
+
+        test('should prefetch content with auth header when migrateAccessTokenToHeader flag is enabled', () => {
+            const contentUrl = 'someContentUrl';
+            const headers = { Authorization: 'Bearer token' };
+            jest.spyOn(csv, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(csv, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(csv, 'appendAuthHeader').mockReturnValue(headers);
+            jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
+            jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
+
+            csv.prefetch({ assets: false, content: true });
+
+            expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+            expect(csv.createContentUrlV2).toBeCalled();
+            expect(csv.appendAuthHeader).toBeCalled();
+            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document', headers });
+        });
+
+        test('should prefetch content with auth params when migrateAccessTokenToHeader flag is disabled', () => {
+            const contentUrl = 'someContentUrl';
+            jest.spyOn(csv, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
+            jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
+
+            csv.prefetch({ assets: false, content: true });
+
+            expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+            expect(csv.createContentUrlWithAuthParams).toBeCalled();
+            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document' });
         });
     });
 
