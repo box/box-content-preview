@@ -161,6 +161,41 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 .never();
             text.prefetch({ assets: false, content: true });
         });
+
+        test('should prefetch content with auth header when migrateAccessTokenToHeader flag is enabled', () => {
+            const contentUrl = 'someContentUrl';
+            const headers = { Authorization: 'Bearer token' };
+            jest.spyOn(text, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(text, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(text, 'appendAuthHeader').mockReturnValue(headers);
+            jest.spyOn(text, 'isRepresentationReady').mockReturnValue(true);
+            sandbox
+                .mock(stubs.api)
+                .expects('get')
+                .withArgs(contentUrl, { type: 'document', headers });
+
+            text.prefetch({ assets: false, content: true });
+
+            expect(text.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+            expect(text.createContentUrlV2).toBeCalled();
+            expect(text.appendAuthHeader).toBeCalled();
+        });
+
+        test('should prefetch content with auth params when migrateAccessTokenToHeader flag is disabled', () => {
+            const contentUrl = 'someContentUrl';
+            jest.spyOn(text, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(text, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(text, 'isRepresentationReady').mockReturnValue(true);
+            sandbox
+                .mock(stubs.api)
+                .expects('get')
+                .withArgs(contentUrl, { type: 'document' });
+
+            text.prefetch({ assets: false, content: true });
+
+            expect(text.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+            expect(text.createContentUrlWithAuthParams).toBeCalled();
+        });
     });
 
     describe('print()', () => {
@@ -276,6 +311,67 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             return promise.catch(() => {
                 expect(text.handleDownloadError).toBeCalled();
+            });
+        });
+
+        test('should use createContentUrl and merge auth headers when migrateAccessTokenToHeader flag is enabled', () => {
+            const contentUrl = 'someContentUrl';
+            const authHeaders = { Authorization: 'Bearer token' };
+            const getPromise = Promise.resolve('content');
+            text.options.file.size = 196608 - 1; // Small file
+
+            jest.spyOn(text, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(text, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(text, 'appendAuthHeader').mockReturnValue(authHeaders);
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+
+            text.postLoad();
+
+            return getPromise.then(() => {
+                expect(text.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+                expect(text.createContentUrlV2).toBeCalled();
+                expect(text.appendAuthHeader).toBeCalled();
+                expect(stubs.api.get).toBeCalledWith(contentUrl, { headers: authHeaders, type: 'text' });
+            });
+        });
+
+        test('should merge auth headers with Range header when file is truncated and migrateAccessTokenToHeader flag is enabled', () => {
+            const contentUrl = 'someContentUrl';
+            const authHeaders = { Authorization: 'Bearer token' };
+            const getPromise = Promise.resolve('content');
+            text.options.file.size = 196608 + 1; // Large file requiring truncation
+
+            jest.spyOn(text, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(text, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(text, 'appendAuthHeader').mockReturnValue(authHeaders);
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+
+            text.postLoad();
+
+            return getPromise.then(() => {
+                expect(text.truncated).toBe(true);
+                expect(stubs.api.get).toBeCalledWith(contentUrl, {
+                    headers: { Range: 'bytes=0-196608', ...authHeaders },
+                    type: 'text',
+                });
+            });
+        });
+
+        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is disabled', () => {
+            const contentUrl = 'someContentUrl';
+            const getPromise = Promise.resolve('content');
+            text.options.file.size = 196608 - 1; // Small file
+
+            jest.spyOn(text, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(text, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(stubs.api, 'get').mockReturnValue(getPromise);
+
+            text.postLoad();
+
+            return getPromise.then(() => {
+                expect(text.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
+                expect(text.createContentUrlWithAuthParams).toBeCalled();
+                expect(stubs.api.get).toBeCalledWith(contentUrl, { headers: {}, type: 'text' });
             });
         });
     });
