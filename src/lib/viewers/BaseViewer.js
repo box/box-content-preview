@@ -10,6 +10,7 @@ import {
     getProp,
     appendQueryParams,
     appendAuthParams,
+    appendAuthParamsV2,
     createContentUrl,
     getHeaders,
     loadStylesheets,
@@ -494,6 +495,20 @@ class BaseViewer extends EventEmitter {
         // Append optional query params
         const { queryParams } = this.options;
         return appendQueryParams(urlWithAuthParams, queryParams);
+    }
+
+    /**
+     * Creates content url with shared link params but without access_token.
+     * Used when auth is sent via Authorization header.
+     *
+     * @protected
+     * @param {string} template - url template to attach param to
+     * @param {string|void} [asset] - optional asset name needed to access file
+     * @return {string} content url with shared link params
+     */
+    createContentUrlV2(template, asset) {
+        const { sharedLink, sharedLinkPassword } = this.options;
+        return appendAuthParamsV2(this.createContentUrl(template, asset), sharedLink, sharedLinkPassword);
     }
 
     /**

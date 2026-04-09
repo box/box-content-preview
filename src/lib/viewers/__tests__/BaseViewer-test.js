@@ -399,6 +399,19 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('createContentUrlV2()', () => {
+        test('should return content url with shared link params but no access_token', () => {
+            jest.spyOn(util, 'createContentUrl').mockReturnValue('foo');
+            jest.spyOn(util, 'appendAuthParamsV2').mockReturnValue('bar');
+            base.options.sharedLink = 'https://app.box.com/s/HASH';
+            base.options.sharedLinkPassword = 'pass';
+            const result = base.createContentUrlV2('boo', 'hoo');
+            expect(result).toBe('bar');
+            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
+            expect(util.appendAuthParamsV2).toBeCalledWith('foo', 'https://app.box.com/s/HASH', 'pass');
+        });
+    });
+
     describe('appendAuthHeader()', () => {
         test('should return fetch headers', () => {
             const token = 'TOKEN';
