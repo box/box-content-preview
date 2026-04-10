@@ -27,9 +27,12 @@ export default function Filmstrip({
     time = 0,
 }: Props): JSX.Element | null {
     const [isLoading, setIsLoading] = React.useState(true);
+    const [imageWidth, setImageWidth] = React.useState<number>(0);
     const frameNumber = Math.floor(time / interval); // Current frame based on current time
     const frameRow = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW); // Row number if there is more than one row
-    const frameWidth = Math.floor(aspectRatio * FILMSTRIP_FRAME_HEIGHT) || FILMSTRIP_FRAME_WIDTH;
+    const frameWidth = imageWidth
+        ? Math.floor(imageWidth / FILMSTRIP_FRAMES_PER_ROW)
+        : Math.floor(aspectRatio * FILMSTRIP_FRAME_HEIGHT) || FILMSTRIP_FRAME_WIDTH;
     const frameBackgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * frameWidth; // Frame position in its row
     const frameBackgroundTop = -(frameRow * FILMSTRIP_FRAME_HEIGHT); // Row position in its filmstrip
     const filmstripLeft = Math.min(Math.max(0, position - frameWidth / 2), positionMax - frameWidth);
@@ -38,7 +41,10 @@ export default function Filmstrip({
         if (!imageUrl) return;
 
         const filmstripImage = document.createElement('img');
-        filmstripImage.onload = (): void => setIsLoading(false);
+        filmstripImage.onload = (): void => {
+            setImageWidth(filmstripImage.naturalWidth);
+            setIsLoading(false);
+        };
         filmstripImage.src = imageUrl;
     }, [imageUrl]);
 
