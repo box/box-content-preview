@@ -80,13 +80,28 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        test('should call createContentUrlWithAuthParams with right template', () => {
+        test('should call createContentUrlWithAuthParams with right template when flag is off', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
 
+            jest.spyOn(archive, 'featureEnabled').mockReturnValue(false);
             jest.spyOn(archive, 'createContentUrlWithAuthParams');
 
             return archive.load().then(() => {
                 expect(archive.createContentUrlWithAuthParams).toBeCalledWith('archiveUrl{+asset_path}');
+            });
+        });
+
+        test('should use auth headers when migrateAccessTokenToHeader flag is on', () => {
+            Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
+
+            const mockHeaders = { Authorization: 'Bearer token' };
+            jest.spyOn(archive, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(archive, 'createContentUrlV2').mockReturnValue('contentUrl');
+            jest.spyOn(archive, 'appendAuthHeader').mockReturnValue(mockHeaders);
+
+            return archive.load().then(() => {
+                expect(archive.createContentUrlV2).toBeCalledWith('archiveUrl{+asset_path}');
+                expect(stubs.api.get).toBeCalledWith('contentUrl', { headers: mockHeaders });
             });
         });
 
