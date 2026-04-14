@@ -61,7 +61,12 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     destroy() {
         if (this.singleImageEls && this.singleImageEls.length > 0) {
+            // Auth header migration uses blob URLs for images (XHR fetch + createObjectURL).
+            // Revoke to free the memory since blobs persist until explicitly released.
             this.singleImageEls.forEach((el, index) => {
+                if (el.src && el.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(el.src);
+                }
                 this.unbindImageListeners(index);
             });
         }

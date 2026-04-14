@@ -85,6 +85,24 @@ describe('lib/viewers/image/ImageViewer', () => {
                 expect(image.removeListener).toBeCalledTimes(numberOfCalls);
             },
         );
+
+        test('should revoke blob URL on destroy', () => {
+            const revokeObjectURL = jest.spyOn(URL, 'revokeObjectURL');
+            image.imageEl.src = 'blob:http://localhost/fake-blob-url';
+
+            image.destroy();
+
+            expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/fake-blob-url');
+        });
+
+        test('should not revoke non-blob URL on destroy', () => {
+            const revokeObjectURL = jest.spyOn(URL, 'revokeObjectURL');
+            image.imageEl.src = 'https://example.com/image.jpg';
+
+            image.destroy();
+
+            expect(revokeObjectURL).not.toHaveBeenCalled();
+        });
     });
 
     describe('setup()', () => {

@@ -111,6 +111,21 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.destroy();
             expect(stubs.unbindImageListeners).toBeCalledTimes(3);
         });
+
+        test('should revoke blob URLs on destroy', () => {
+            const revokeObjectURL = jest.spyOn(URL, 'revokeObjectURL');
+            multiImage.singleImageEls = [
+                { src: 'blob:http://localhost/blob-1', removeEventListener: jest.fn() },
+                { src: 'blob:http://localhost/blob-2', removeEventListener: jest.fn() },
+                { src: 'https://example.com/image.jpg', removeEventListener: jest.fn() },
+            ];
+
+            multiImage.destroy();
+
+            expect(revokeObjectURL).toHaveBeenCalledTimes(2);
+            expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/blob-1');
+            expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/blob-2');
+        });
     });
 
     describe('load()', () => {

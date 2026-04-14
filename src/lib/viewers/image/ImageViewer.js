@@ -62,6 +62,12 @@ class ImageViewer extends ImageBaseViewer {
             this.removeListener('zoom', this.handleZoomEvent);
         }
 
+        // Auth header migration uses blob URLs for images (XHR fetch + createObjectURL).
+        // Revoke to free the memory since blobs persist until explicitly released.
+        if (this.imageEl && this.imageEl.src && this.imageEl.src.startsWith('blob:')) {
+            URL.revokeObjectURL(this.imageEl.src);
+        }
+
         super.destroy();
     }
 
