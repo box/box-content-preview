@@ -190,10 +190,15 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         if (this.featureEnabled('migrateAccessTokenToHeader')) {
             const contentUrl = this.createContentUrlV2(template);
-            this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
-                this.preloadBlobUrl = blobUrl;
-                this.preloader.showPreload(blobUrl, this.mediaContainerEl, options);
-            });
+            if (this.preloadBlobUrl) {
+                URL.revokeObjectURL(this.preloadBlobUrl);
+            }
+            this.fetchContentAsBlobUrl(contentUrl)
+                .then(blobUrl => {
+                    this.preloadBlobUrl = blobUrl;
+                    this.preloader.showPreload(blobUrl, this.mediaContainerEl, options);
+                })
+                .catch(this.handleAssetError);
         } else {
             const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
             this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);

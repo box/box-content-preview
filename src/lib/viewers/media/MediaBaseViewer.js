@@ -340,11 +340,13 @@ class MediaBaseViewer extends BaseViewer {
                 URL.revokeObjectURL(this.mediaBlobUrl);
             }
             const contentUrl = this.createContentUrlV2(this.options.representation.content.url_template);
-            this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
-                this.mediaBlobUrl = blobUrl;
-                this.mediaUrl = blobUrl;
-                this.mediaEl.src = blobUrl;
-            });
+            this.fetchContentAsBlobUrl(contentUrl)
+                .then(blobUrl => {
+                    this.mediaBlobUrl = blobUrl;
+                    this.mediaUrl = blobUrl;
+                    this.mediaEl.src = blobUrl;
+                })
+                .catch(this.handleAssetError);
             return;
         }
 
