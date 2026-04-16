@@ -779,6 +779,18 @@ describe('lib/util', () => {
             expect(mockApi.get).toHaveBeenCalledWith('webp-url8.webp', expect.any(Object));
             expect(promises.length).toBe(8);
         });
+
+        it('should pass options to api.get calls', () => {
+            const jpegPagedUrl = '';
+            const webpPagedUrl = 'webp-urlpage_number';
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            util.getPreloadImageRequestPromises(mockApi, jpegPagedUrl, 3, webpPagedUrl, options);
+
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url1.webp', { type: 'blob', headers: mockHeaders });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url2.webp', { type: 'blob', headers: mockHeaders });
+            expect(mockApi.get).toHaveBeenCalledWith('webp-url3.webp', { type: 'blob', headers: mockHeaders });
+        });
     });
 
     describe('createPageUrl()', () => {
@@ -819,6 +831,21 @@ describe('lib/util', () => {
             const result = await util.fetchPageImage(mockApi, 'https://example.com/page.webp');
 
             expect(result).toBe(mockError);
+        });
+
+        it('should pass options to api.get call', async () => {
+            const mockBlob = new Blob(['test']);
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            jest.spyOn(mockApi, 'get').mockResolvedValue(mockBlob);
+
+            const result = await util.fetchPageImage(mockApi, 'https://example.com/page.webp', options);
+
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/page.webp', {
+                type: 'blob',
+                headers: mockHeaders,
+            });
+            expect(result).toBe(mockBlob);
         });
     });
 
@@ -864,6 +891,27 @@ describe('lib/util', () => {
             expect(promises.length).toBe(1);
             expect(mockApi.get).toHaveBeenCalledTimes(1);
             expect(mockApi.get).toHaveBeenCalledWith('https://example.com/3.webp', { type: 'blob' });
+        });
+
+        it('should pass options to api.get calls', () => {
+            const pagedUrl = 'https://example.com/page_number';
+            const mockHeaders = { Authorization: 'Bearer token123' };
+            const options = { headers: mockHeaders };
+            const promises = util.getPreloadImageRequestPromisesByBatch(mockApi, pagedUrl, 2, 4, options);
+
+            expect(promises.length).toBe(3);
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/2.webp', {
+                type: 'blob',
+                headers: mockHeaders,
+            });
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/3.webp', {
+                type: 'blob',
+                headers: mockHeaders,
+            });
+            expect(mockApi.get).toHaveBeenCalledWith('https://example.com/4.webp', {
+                type: 'blob',
+                headers: mockHeaders,
+            });
         });
     });
 });
