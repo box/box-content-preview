@@ -62,6 +62,12 @@ class ImageViewer extends ImageBaseViewer {
             this.removeListener('zoom', this.handleZoomEvent);
         }
 
+        // Auth header migration uses blob URLs for images (XHR fetch + createObjectURL).
+        // Revoke to free the memory since blobs persist until explicitly released.
+        if (this.imageEl && this.imageEl.src && this.imageEl.src.startsWith('blob:')) {
+            URL.revokeObjectURL(this.imageEl.src);
+        }
+
         super.destroy();
     }
 
@@ -107,9 +113,30 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
-        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
+
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+            return this.getRepStatus()
+                .getPromise()
+                .then(() => {
+                    this.startLoadTimer();
+                    // Reuse prefetched blob URL if available, otherwise fetch now
+                    return this.prefetchedBlobUrlPromise || this.fetchContentAsBlobUrl(contentUrl);
+                })
+                .then(blobUrl => {
+                    this.prefetchedBlobUrlPromise = null;
+                    this.imageEl.src = blobUrl;
+                    if (this.imageEl.complete) {
+                        this.finishLoading();
+                    }
+                    super.handleAssetAndRepLoad();
+                })
+                .catch(this.handleAssetError);
+        }
+
+        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
         return this.getRepStatus()
             .getPromise()
             .then(() => this.handleAssetAndRepLoad(downloadUrl))
@@ -178,12 +205,18 @@ class ImageViewer extends ImageBaseViewer {
 
         if ((content || preload) && !isWatermarked && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            const preFetchedImg = document.createElement('img');
-            preFetchedImg.addEventListener('load', this.prefetchFinishedLoading);
-            preFetchedImg.classList.add(CLASS_PREFETCHED_IMAGE);
-            document.body.appendChild(preFetchedImg);
 
-            preFetchedImg.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+            if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+                this.prefetchedBlobUrlPromise = this.fetchContentAsBlobUrl(contentUrl);
+            } else {
+                const preFetchedImg = document.createElement('img');
+                preFetchedImg.addEventListener('load', this.prefetchFinishedLoading);
+                preFetchedImg.classList.add(CLASS_PREFETCHED_IMAGE);
+                document.body.appendChild(preFetchedImg);
+
+                preFetchedImg.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+            }
         }
     }
 
