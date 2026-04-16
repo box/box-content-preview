@@ -380,10 +380,15 @@ class DocBaseViewer extends BaseViewer {
             jpegPreloadRep && this.isRepresentationReady(jpegPreloadRep) && jpegPreloadRep.content?.url_template;
         const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
 
+        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
+        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+
         if (onlyJpegRepAvailable) {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
-            const jpegUrlAuthTemplate = this.createContentUrlWithAuthParams(jpegUrlTemplate);
-            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '');
+            const jpegUrlAuthTemplate = useHeaders
+                ? this.createContentUrlV2(jpegUrlTemplate)
+                : this.createContentUrlWithAuthParams(jpegUrlTemplate);
+            const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '', headersOption);
             Promise.all(promises).then(() => {
                 this.preloaderImagesPrefetched = true;
             });
@@ -391,7 +396,9 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-            const pagedUrlAuthTemplate = this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+            const pagedUrlAuthTemplate = useHeaders
+                ? this.createContentUrlV2(newPagedUrlTemplate)
+                : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
 
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
                 const {
@@ -406,6 +413,7 @@ class DocBaseViewer extends BaseViewer {
                     pagedUrlAuthTemplate,
                     1,
                     priorityPages,
+                    headersOption,
                 );
                 Promise.all(priorityPromises).then(() => {
                     this.preloaderImagesPrefetched = true;
@@ -420,12 +428,19 @@ class DocBaseViewer extends BaseViewer {
                             pagedUrlAuthTemplate,
                             priorityPages + 1,
                             Math.min(pageCount, maxPreloadPages),
+                            headersOption,
                         );
                         Promise.all(remainingPromises);
                     }, secondBatchDelayMs);
                 });
             } else {
-                const promises = getPreloadImageRequestPromises(this.api, '', pageCount, pagedUrlAuthTemplate);
+                const promises = getPreloadImageRequestPromises(
+                    this.api,
+                    '',
+                    pageCount,
+                    pagedUrlAuthTemplate,
+                    headersOption,
+                );
                 Promise.all(promises).then(() => {
                     this.preloaderImagesPrefetched = true;
                 });
@@ -460,7 +475,12 @@ class DocBaseViewer extends BaseViewer {
                     const { url_template: template } = preloadRep.content;
 
                     // Prefetch as blob since preload needs to load image as a blob
-                    this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                    if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                        const contentUrl = this.createContentUrlV2(template);
+                        this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() });
+                    } else {
+                        this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
+                    }
                 }
             } else {
                 this.prefetchPreloaderImages(file);
@@ -469,7 +489,12 @@ class DocBaseViewer extends BaseViewer {
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                const contentUrl = this.createContentUrlV2(template);
+                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
+            } else {
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            }
         }
     }
 
@@ -517,11 +542,15 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { url_template: template = '' } = preloadRep?.content || {};
-        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
+        const preloadUrl = useHeaders
+            ? this.createContentUrlV2(template)
+            : this.createContentUrlWithAuthParams(template);
+        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
 
         if (!this.docFirstPagesEnabled) {
             this.startPreloadTimer();
-            this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
+            this.preloader.showPreload(preloadUrl, this.containerEl, headersOption);
         } else {
             // Skip single-page preload if images were prefetched via prefetch().
             // When prefetch() is called (e.g., on hover), both the preload images and
@@ -533,14 +562,15 @@ class DocBaseViewer extends BaseViewer {
             }
             this.startPreloadTimer();
             if (!pagedWebpRepReady) {
-                this.preloader.showPreload(preloadUrlWithAuth, this.containerEl, null, 1, this);
+                this.preloader.showPreload(preloadUrl, this.containerEl, null, 1, this, headersOption);
             } else {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-                const pagedPreLoadUrlWithAuth =
-                    newPagedUrlTemplate && this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrlWithAuth, pageCount, this);
+                const pagedPreLoadUrl = useHeaders
+                    ? this.createContentUrlV2(newPagedUrlTemplate)
+                    : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrl, pageCount, this, headersOption);
             }
         }
     }
@@ -581,7 +611,11 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const template = this.options.representation.content.url_template;
-        this.pdfUrl = this.createContentUrlWithAuthParams(template);
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            this.pdfUrl = this.createContentUrlV2(template);
+        } else {
+            this.pdfUrl = this.createContentUrlWithAuthParams(template);
+        }
         const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
         return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
             .then(this.handleAssetAndRepLoad)
@@ -912,7 +946,7 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
-        this.pdfLoadingTask = this.pdfjsLib.getDocument({
+        const pdfDocConfig = {
             cMapPacked: true,
             cMapUrl: assetUrlCreator(CMAP),
             disableCreateObjectURL,
@@ -922,7 +956,13 @@ class DocBaseViewer extends BaseViewer {
             isEvalSupported: false,
             rangeChunkSize,
             url: pdfUrl,
-        });
+        };
+
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            pdfDocConfig.httpHeaders = this.appendAuthHeader();
+        }
+
+        this.pdfLoadingTask = this.pdfjsLib.getDocument(pdfDocConfig);
 
         if (this.pageTracker) {
             this.addListener('preview_event_report', this.handlePreviewEventReport);
@@ -1212,7 +1252,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return this.api.get(pdfUrl, { type: 'blob' }).then(blob => {
+        const options = { type: 'blob' };
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            options.headers = this.appendAuthHeader();
+        }
+        return this.api.get(pdfUrl, options).then(blob => {
             this.printBlob = blob;
         });
     }

@@ -87,6 +87,9 @@ class DocFirstPreloader extends EventEmitter {
     /** @property {Object} - Configuration for staggered loading */
     config = {};
 
+    /** @property {Object} - Options to pass to fetch calls (e.g. auth headers) */
+    fetchOptions = {};
+
     /** @property {boolean} - Whether second batch has started */
     secondBatchStarted = false;
 
@@ -192,11 +195,12 @@ class DocFirstPreloader extends EventEmitter {
      * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
      * @return {Promise} Promise to show preload
      */
-    async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer) {
+    async showPreload(preloadUrlWithAuth, containerEl, pagedPreLoadUrlWithAuth, pages, docBaseViewer, options = {}) {
         if (this.pdfJsDocLoadComplete()) {
             return;
         }
 
+        this.fetchOptions = options;
         this.hidePreviewMask();
         try {
             this.numPages = pages;
@@ -230,7 +234,7 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise} Promise that resolves when preload is shown
      */
     async showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer) {
-        const response = await this.api.get(preloadUrlWithAuth, { type: 'blob' });
+        const response = await this.api.get(preloadUrlWithAuth, { type: 'blob', ...this.fetchOptions });
         const blob = await handleRepresentationBlobFetch(response);
 
         this.wrapperEl.appendChild(this.preloadEl);
@@ -287,8 +291,8 @@ class DocFirstPreloader extends EventEmitter {
     async loadBatchAsBlobs(preloadUrl, pagedUrl, endPage, startPage = 1) {
         const promises =
             startPage === 1 && preloadUrl
-                ? getPreloadImageRequestPromises(this.api, preloadUrl, endPage, pagedUrl)
-                : getPreloadImageRequestPromisesByBatch(this.api, pagedUrl, startPage, endPage);
+                ? getPreloadImageRequestPromises(this.api, preloadUrl, endPage, pagedUrl, this.fetchOptions)
+                : getPreloadImageRequestPromisesByBatch(this.api, pagedUrl, startPage, endPage, this.fetchOptions);
 
         const responses = await Promise.all(promises);
         const blobs = await Promise.all(responses.map(r => handleRepresentationBlobFetch(r)));

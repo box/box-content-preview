@@ -80,13 +80,13 @@ class DocPreloader extends EventEmitter {
      * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
      * @return {Promise} Promise to show preload
      */
-    showPreload(preloadUrlWithAuth, containerEl) {
+    showPreload(preloadUrlWithAuth, containerEl, options = {}) {
         this.containerEl = containerEl;
 
         // Need to load image as a blob to read EXIF
 
         return this.api
-            .get(preloadUrlWithAuth, { type: 'blob' })
+            .get(preloadUrlWithAuth, { type: 'blob', ...options })
             .then(handleRepresentationBlobFetch)
             .then(imgBlob => {
                 if (this.checkDocumentLoaded()) {
