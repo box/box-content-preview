@@ -60,6 +60,37 @@ describe('Filmstrip', () => {
             expect(await screen.findByText('2:00')).toBeInTheDocument();
         });
 
+        test('should derive frame width from filmstrip image width after load', done => {
+            const mockImage = document.createElement('img');
+
+            Object.defineProperty(mockImage, 'naturalWidth', { value: 12800 });
+            Object.defineProperty(mockImage, 'src', {
+                set() {
+                    setTimeout(() => {
+                        React.act(() => {
+                            this.onload();
+                        });
+                        done();
+                    });
+                },
+            });
+
+            jest.useFakeTimers();
+
+            const { rerender } = getWrapper({ aspectRatio: 1.4167, imageUrl: null, time: 1 });
+            jest.spyOn(document, 'createElement').mockImplementation(() => mockImage);
+            rerender(getComponent({ aspectRatio: 1.4167, imageUrl: 'https://app.box.com', time: 1 }));
+
+            // Before image loads, frameWidth = Math.floor(1.4167 * 90) = 127
+            const frame = screen.getByTestId('bp-Filmstrip-frame');
+            expect(frame).toHaveStyle({ width: '127px' });
+
+            jest.advanceTimersByTime(0); // Simulate loading complete
+
+            // After image loads, frameWidth = Math.floor(12800 / 100) = 128
+            expect(frame).toHaveStyle({ width: '128px' });
+        });
+
         test('should display the crawler while the filmstrip image loads', done => {
             const mockImage = document.createElement('img');
 
