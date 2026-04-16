@@ -144,6 +144,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        if (this.mediaBlobUrl) {
+            URL.revokeObjectURL(this.mediaBlobUrl);
+        }
+
         // Attempt to process the playback metrics at whatever point of playback has occurred
         // before we destroy the viewer
         this.processMetrics();
@@ -192,7 +196,6 @@ class MediaBaseViewer extends BaseViewer {
         this.addEventListenersForMediaLoad();
 
         const template = this.options.representation.content.url_template;
-        this.mediaUrl = this.createContentUrlWithAuthParams(template);
 
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
@@ -204,6 +207,23 @@ class MediaBaseViewer extends BaseViewer {
             this.mediaEl.autoplay = true;
         }
 
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            const contentUrl = this.createContentUrlV2(template);
+            return this.getRepStatus()
+                .getPromise()
+                .then(() => {
+                    this.startLoadTimer();
+                    return this.fetchContentAsBlobUrl(contentUrl);
+                })
+                .then(blobUrl => {
+                    this.mediaBlobUrl = blobUrl;
+                    this.mediaUrl = blobUrl;
+                    this.mediaEl.src = blobUrl;
+                })
+                .catch(this.handleAssetError);
+        }
+
+        this.mediaUrl = this.createContentUrlWithAuthParams(template);
         return this.getRepStatus()
             .getPromise()
             .then(() => {
@@ -314,6 +334,22 @@ class MediaBaseViewer extends BaseViewer {
         const { currentTime } = this.mediaEl;
         this.currentTime = currentTime;
         this.options.token = newToken;
+
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            if (this.mediaBlobUrl) {
+                URL.revokeObjectURL(this.mediaBlobUrl);
+            }
+            const contentUrl = this.createContentUrlV2(this.options.representation.content.url_template);
+            this.fetchContentAsBlobUrl(contentUrl)
+                .then(blobUrl => {
+                    this.mediaBlobUrl = blobUrl;
+                    this.mediaUrl = blobUrl;
+                    this.mediaEl.src = blobUrl;
+                })
+                .catch(this.handleAssetError);
+            return;
+        }
+
         this.mediaUrl = this.createContentUrlWithAuthParams(this.options.representation.content.url_template);
         this.mediaEl.src = this.mediaUrl;
     }

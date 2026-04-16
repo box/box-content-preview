@@ -177,7 +177,6 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         const { url_template: template } = preloadRep.content;
-        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
         const options = {
             onImageClick: () => this.handlePlayRequest(),
         };
@@ -188,7 +187,22 @@ class VideoBaseViewer extends MediaBaseViewer {
                 height: this.wrapperEl.clientHeight - controlsHeight,
             };
         }
-        this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);
+
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            const contentUrl = this.createContentUrlV2(template);
+            if (this.preloadBlobUrl) {
+                URL.revokeObjectURL(this.preloadBlobUrl);
+            }
+            this.fetchContentAsBlobUrl(contentUrl)
+                .then(blobUrl => {
+                    this.preloadBlobUrl = blobUrl;
+                    this.preloader.showPreload(blobUrl, this.mediaContainerEl, options);
+                })
+                .catch(this.handleAssetError);
+        } else {
+            const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+            this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);
+        }
         this.mediaEl.classList.add(CLASS_INVISIBLE);
     }
 
@@ -225,8 +239,13 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (!preloadRep || !this.isRepresentationReady(preloadRep) || !preloadRep.content?.url_template) {
             return;
         }
-        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(preloadRep.content.url_template);
-        this.api.get(preloadUrlWithAuth, { type: 'blob' }).catch(() => {});
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            const contentUrl = this.createContentUrlV2(preloadRep.content.url_template);
+            this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() }).catch(() => {});
+        } else {
+            const preloadUrlWithAuth = this.createContentUrlWithAuthParams(preloadRep.content.url_template);
+            this.api.get(preloadUrlWithAuth, { type: 'blob' }).catch(() => {});
+        }
     }
 
     buildPlayButtonWithSeekButtons() {
@@ -289,6 +308,10 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     destroy() {
+        if (this.preloadBlobUrl) {
+            URL.revokeObjectURL(this.preloadBlobUrl);
+        }
+
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
             this.mediaEl.removeEventListener('click', this.pointerHandler);
