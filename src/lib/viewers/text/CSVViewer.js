@@ -38,6 +38,9 @@ class CSVViewer extends TextBaseViewer {
      * @return {void}
      */
     destroy() {
+        if (this.blobUrl) {
+            URL.revokeObjectURL(this.blobUrl);
+        }
         if (this.csvComponent) {
             this.csvComponent.destroy();
         }
@@ -58,25 +61,37 @@ class CSVViewer extends TextBaseViewer {
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(() => {
                 this.startLoadTimer();
-                const urlWithAuth = this.createContentUrlWithAuthParams(template);
-                Papa.parse(urlWithAuth, {
-                    download: true,
-                    error: (err, file, inputElem, reason) => {
-                        const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
-                        this.handleDownloadError(error, urlWithAuth);
-                    },
-                    complete: results => {
-                        if (this.isDestroyed() || !results) {
-                            return;
-                        }
+                const parseCSV = url => {
+                    Papa.parse(url, {
+                        download: true,
+                        error: (err, file, inputElem, reason) => {
+                            const error = new PreviewError(ERROR_CODE.LOAD_CSV, __('error_refresh'), { reason });
+                            this.handleDownloadError(error, url);
+                        },
+                        complete: results => {
+                            if (this.isDestroyed() || !results) {
+                                return;
+                            }
 
-                        this.checkForParseErrors(results);
+                            this.checkForParseErrors(results);
 
-                        this.data = results.data;
-                        this.finishLoading();
-                    },
-                    worker: true,
-                });
+                            this.data = results.data;
+                            this.finishLoading();
+                        },
+                        worker: true,
+                    });
+                };
+
+                if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                    const contentUrl = this.createContentUrlV2(template);
+                    return this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
+                        this.blobUrl = blobUrl;
+                        parseCSV(blobUrl);
+                    });
+                }
+
+                parseCSV(this.createContentUrlWithAuthParams(template));
+                return undefined;
             })
             .catch(this.handleAssetError);
     }
@@ -126,7 +141,12 @@ class CSVViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                const contentUrl = this.createContentUrlV2(template);
+                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
+            } else {
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            }
         }
     }
 

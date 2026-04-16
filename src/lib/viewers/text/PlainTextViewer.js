@@ -69,7 +69,12 @@ class PlainTextViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            if (this.featureEnabled('migrateAccessTokenToHeader')) {
+                const contentUrl = this.createContentUrlV2(template);
+                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
+            } else {
+                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
+            }
         }
     }
 
@@ -195,7 +200,13 @@ class PlainTextViewer extends TextBaseViewer {
         this.truncated = size > SIZE_LIMIT_BYTES;
         const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
-        const contentUrl = this.createContentUrlWithAuthParams(template);
+        let contentUrl;
+        if (this.featureEnabled('migrateAccessTokenToHeader')) {
+            contentUrl = this.createContentUrlV2(template);
+            Object.assign(headers, this.appendAuthHeader());
+        } else {
+            contentUrl = this.createContentUrlWithAuthParams(template);
+        }
         this.startLoadTimer();
         return this.api
             .get(contentUrl, { headers, type: 'text' })
