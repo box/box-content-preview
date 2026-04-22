@@ -22,6 +22,7 @@ const VIDEO_FORMATS = [
     'mpeg',
     'mpg',
     'mts',
+    'mxf',
     'ogg',
     'qt',
     'ts',
