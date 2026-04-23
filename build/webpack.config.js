@@ -8,6 +8,7 @@ const path = require('path');
 const locales = require('@box/languages');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { execSync } = require('child_process');
 const commonConfig = require('./webpack.common.config');
@@ -70,8 +71,36 @@ function updateConfig(conf, language, index) {
             host: '0.0.0.0',
             inline: true,
             port: 8000,
+            writeToDisk: true,
         },
     };
+
+    if (!config.plugins) {
+        config.plugins = [];
+    }
+
+    config.plugins.push(
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, '../node_modules/pdfjs-dist/build/pdf.min.mjs'),
+                    to: path.resolve(__dirname, '../src/static/pdfjs-dist/pdf.min.mjs'),
+                },
+                {
+                    from: path.resolve(__dirname, '../node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+                    to: path.resolve(__dirname, '../src/static/pdfjs-dist/pdf.worker.min.mjs'),
+                },
+                {
+                    from: path.resolve(__dirname, '../node_modules/pdfjs-dist/web/pdf_viewer.mjs'),
+                    to: path.resolve(__dirname, '../src/static/pdfjs-dist/pdf_viewer.mjs'),
+                },
+                {
+                    from: path.resolve(__dirname, '../node_modules/pdfjs-dist/web/pdf_viewer.css'),
+                    to: path.resolve(__dirname, '../src/static/pdfjs-dist/pdf_viewer.css'),
+                },
+            ],
+        }),
+    );
 
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
