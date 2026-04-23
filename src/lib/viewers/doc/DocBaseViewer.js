@@ -159,6 +159,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.wheelZoomHandler = this.wheelZoomHandler.bind(this); // Trackpad pinch-to-zoom support
         this.print = this.print.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
@@ -1411,6 +1412,7 @@ class DocBaseViewer extends BaseViewer {
     bindDOMListeners() {
         this.docEl.addEventListener('keydown', this.handleDocElKeydown);
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
+        this.docEl.addEventListener('wheel', this.wheelZoomHandler, { passive: false }); // Trackpad pinch-to-zoom
 
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
@@ -1429,6 +1431,7 @@ class DocBaseViewer extends BaseViewer {
         if (this.docEl) {
             this.docEl.removeEventListener('keydown', this.handleDocElKeydown);
             this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
+            this.docEl.removeEventListener('wheel', this.wheelZoomHandler);
 
             if (this.hasTouch) {
                 this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
@@ -1665,6 +1668,30 @@ class DocBaseViewer extends BaseViewer {
                 this.isMobile ? 500 : 250,
             );
         }, SCROLL_EVENT_THROTTLE_INTERVAL);
+    }
+
+    /**
+     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
+     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     *
+     * @protected
+     * @param {WheelEvent} event - wheel event object
+     * @return {void}
+     */
+    wheelZoomHandler(event) {
+        if (!event.ctrlKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const { currentScale } = this.pdfViewer;
+        const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
+        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale * (1 + delta)));
+
+        if (newScale !== currentScale) {
+            this.updateScale(parseFloat(newScale.toFixed(MAX_PINCH_SCALE_VALUE)));
+        }
     }
 
     /**
