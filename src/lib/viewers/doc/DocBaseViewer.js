@@ -160,6 +160,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
+        this.rotateLeft = this.rotateLeft.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
@@ -838,6 +839,26 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Rotates all pages 90 degrees counterclockwise.
+     *
+     * @return {void}
+     */
+    rotateLeft() {
+        this.rotationAngle = (((this.rotationAngle - 90) % 360) + 360) % 360;
+        this.pdfViewer.pagesRotation = this.rotationAngle;
+
+        this.emit('rotate');
+
+        if (this.rotationAngle === 0) {
+            this.enableAnnotationControls();
+        } else {
+            this.disableAnnotationControls();
+        }
+
+        this.renderUI();
+    }
+
+    /**
      * Handles keyboard events for document viewer.
      *
      * @param {string} key - keydown key
@@ -1369,6 +1390,8 @@ class DocBaseViewer extends BaseViewer {
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
+        // TODO: Replace with feature flag once wired through EUA → BUIE → BCP
+        const canRotate = true;
 
         this.controls.render(
             <DocControls
@@ -1388,6 +1411,7 @@ class DocBaseViewer extends BaseViewer {
                 onFullscreenToggle={this.toggleFullscreen}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
+                onRotateLeft={canRotate ? this.rotateLeft : undefined}
                 onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
                 onZoomIn={this.zoomIn}
                 onZoomOut={this.zoomOut}
