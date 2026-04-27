@@ -844,8 +844,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     rotateLeft() {
+        const currentPage = this.pdfViewer.currentPageNumber;
         this.rotationAngle = (((this.rotationAngle - 90) % 360) + 360) % 360;
         this.pdfViewer.pagesRotation = this.rotationAngle;
+        this.pdfViewer.currentPageNumber = currentPage;
 
         this.emit('rotate');
 
@@ -853,6 +855,10 @@ class DocBaseViewer extends BaseViewer {
             this.enableAnnotationControls();
         } else {
             this.disableAnnotationControls();
+        }
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.refresh();
         }
 
         this.renderUI();

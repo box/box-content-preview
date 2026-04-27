@@ -65,7 +65,8 @@ class Thumbnail {
         }
 
         return pdfDocument.getPage(1).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
+            const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
+            const viewport = page.getViewport({ scale: 1, rotation });
             if (!viewport) {
                 return Promise.resolve(null);
             }
@@ -82,7 +83,7 @@ class Thumbnail {
             this.scale = THUMBNAIL_TOTAL_WIDTH / width;
             // Width : Height ratio of the page
             this.pageRatio = width / height;
-            const scaledViewport = page.getViewport({ scale: this.scale });
+            const scaledViewport = page.getViewport({ scale: this.scale, rotation });
             this.thumbnailHeight = Math.ceil(scaledViewport.height);
             return Promise.resolve(this.thumbnailHeight);
         });
@@ -180,7 +181,8 @@ class Thumbnail {
         return pdfDocument
             .getPage(pageNum)
             .then(page => {
-                const viewport = page.getViewport({ scale: 1 });
+                const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
+                const viewport = page.getViewport({ scale: 1, rotation });
                 if (!viewport || !isFinite(viewport.width) || !isFinite(viewport.height)) {
                     return Promise.reject(new Error('Invalid page viewport'));
                 }
@@ -209,7 +211,7 @@ class Thumbnail {
                 const scale = canvasWidth / width;
                 return page.render({
                     canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport({ scale }),
+                    viewport: page.getViewport({ scale, rotation }),
                 }).promise;
             })
             .then(() => canvas.toDataURL());
