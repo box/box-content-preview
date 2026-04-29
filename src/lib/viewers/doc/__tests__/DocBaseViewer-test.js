@@ -2641,6 +2641,106 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     hasRegion: true,
                 });
             });
+
+            test('should pass onRotateLeft when rotate.enabled feature flag is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: docBase.rotateLeft,
+                });
+            });
+
+            test('should not pass onRotateLeft when rotate.enabled feature flag is false', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: undefined,
+                });
+            });
+        });
+
+        describe('rotateLeft()', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase, 'emit').mockImplementation();
+                jest.spyOn(docBase, 'enableAnnotationControls').mockImplementation();
+                jest.spyOn(docBase, 'disableAnnotationControls').mockImplementation();
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+                docBase.pdfViewer = {
+                    currentPageNumber: 3,
+                    pagesRotation: 0,
+                };
+                docBase.rotationAngle = 0;
+            });
+
+            test('should rotate 90 degrees counterclockwise', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.rotationAngle).toBe(270);
+                expect(docBase.pdfViewer.pagesRotation).toBe(270);
+            });
+
+            test('should cycle through all rotation states', () => {
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(270);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(180);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(90);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(0);
+            });
+
+            test('should preserve the current page number', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.pdfViewer.currentPageNumber).toBe(3);
+            });
+
+            test('should emit a rotate event', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.emit).toBeCalledWith('rotate');
+            });
+
+            test('should disable annotation controls when rotated', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.disableAnnotationControls).toBeCalled();
+                expect(docBase.enableAnnotationControls).not.toBeCalled();
+            });
+
+            test('should enable annotation controls when rotation returns to 0', () => {
+                docBase.rotationAngle = 90;
+                docBase.rotateLeft();
+
+                expect(docBase.enableAnnotationControls).toBeCalled();
+                expect(docBase.disableAnnotationControls).not.toBeCalled();
+            });
+
+            test('should refresh thumbnails sidebar if present', () => {
+                docBase.thumbnailsSidebar = { refresh: jest.fn(), destroy: jest.fn() };
+                docBase.rotateLeft();
+
+                expect(docBase.thumbnailsSidebar.refresh).toBeCalled();
+            });
+
+            test('should not fail if thumbnails sidebar is not present', () => {
+                docBase.thumbnailsSidebar = null;
+
+                expect(() => docBase.rotateLeft()).not.toThrow();
+            });
+
+            test('should call renderUI', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.renderUI).toBeCalled();
+            });
         });
 
         describe('bindDOMListeners()', () => {
