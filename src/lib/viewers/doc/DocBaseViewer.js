@@ -1396,8 +1396,7 @@ class DocBaseViewer extends BaseViewer {
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
-        // TODO: Replace with feature flag once wired through EUA → BUIE → BCP
-        const canRotate = true;
+        const canRotate = this.featureEnabled('rotate.enabled');
 
         this.controls.render(
             <DocControls
