@@ -206,6 +206,7 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
 
+        this.rotationAngle = 0;
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
@@ -862,6 +863,12 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.renderUI();
+
+        // Emit scale with rotation angle so annotations transform to match rotated content
+        this.emit('scale', {
+            scale: this.pdfViewer.currentScale,
+            rotationAngle: this.rotationAngle,
+        });
     }
 
     /**
@@ -1561,6 +1568,7 @@ class DocBaseViewer extends BaseViewer {
         this.emit('scale', {
             scale: this.pdfViewer.currentScale,
             pageNum: pageNumber,
+            rotationAngle: this.rotationAngle,
         });
 
         // Cleanup preload after a page is rendered

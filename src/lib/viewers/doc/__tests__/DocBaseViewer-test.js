@@ -2741,6 +2741,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.renderUI).toBeCalled();
             });
+
+            test('should emit scale event with rotationAngle', () => {
+                docBase.pdfViewer.currentScale = 1.5;
+                docBase.rotateLeft();
+
+                expect(docBase.emit).toBeCalledWith('scale', {
+                    scale: 1.5,
+                    rotationAngle: 270,
+                });
+            });
         });
 
         describe('bindDOMListeners()', () => {
@@ -3001,6 +3011,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.emitMetric).not.toHaveBeenCalledWith({
                     data: 80,
                     name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should include rotationAngle in scale event', () => {
+                docBase.rotationAngle = 90;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 90,
+                });
+            });
+
+            test('should include rotationAngle of 0 in scale event when not rotated', () => {
+                docBase.rotationAngle = 0;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 0,
                 });
             });
         });
