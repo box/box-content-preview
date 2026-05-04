@@ -898,6 +898,44 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    describe('addSubtitle()', () => {
+        test('Should append a single subtitle without removing existing ones', () => {
+            const subsMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+
+            settings.loadSubtitles(['English']);
+            expect(subsMenu.children.length).toBe(3); // back + off + English
+
+            settings.addSubtitle('und', 1);
+            expect(subsMenu.children.length).toBe(4); // back + off + English + und
+
+            const sub0 = subsMenu.querySelector('[data-value="0"]').querySelector('.bp-media-settings-value');
+            const sub1 = subsMenu.querySelector('[data-value="1"]').querySelector('.bp-media-settings-value');
+            expect(sub0.textContent).toBe('English');
+            expect(sub1.textContent).toBe('und');
+        });
+
+        test('Should update the subtitles array', () => {
+            settings.loadSubtitles(['English']);
+            settings.addSubtitle('und', 1);
+
+            expect(settings.subtitles).toEqual(['English', 'und']);
+        });
+
+        test('Should preserve the selected subtitle', () => {
+            const subsMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+
+            settings.loadSubtitles(['English']);
+            settings.chooseOption('subtitles', '0');
+
+            const englishItem = subsMenu.querySelector('[data-value="0"]');
+            expect(englishItem).toHaveClass('bp-media-settings-selected');
+
+            settings.addSubtitle('und', 1);
+
+            expect(englishItem).toHaveClass('bp-media-settings-selected');
+        });
+    });
+
     describe('loadAlternateAudio()', () => {
         test('Should load all audio tracks and make them available', () => {
             const audioMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-audiotracks');
