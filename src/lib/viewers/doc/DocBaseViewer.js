@@ -1400,10 +1400,12 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
-        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
+        const canAnnotate =
+            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.rotationAngle === 0;
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
-        const canRotate = this.featureEnabled('rotate.enabled');
+        const isPDF = ['pdf'].includes(this.options.file.extension);
+        const canRotate = isPDF && this.featureEnabled('rotate.enabled');
 
         this.controls.render(
             <DocControls

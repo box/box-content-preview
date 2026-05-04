@@ -2642,8 +2642,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should pass onRotateLeft when rotate.enabled feature flag is true', () => {
+            test('should hide annotation create controls when rotated', () => {
+                docBase.currentAnnotatorViewMode = 'annotations';
+                docBase.options.showAnnotationsDrawingCreate = true;
+                docBase.rotationAngle = 90;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                });
+            });
+
+            test('should pass onRotateLeft when rotate.enabled feature flag is true and file is PDF', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.options.file.extension = 'pdf';
                 docBase.renderUI();
 
                 expect(getProps(docBase)).toMatchObject({
@@ -2653,6 +2667,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not pass onRotateLeft when rotate.enabled feature flag is false', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.options.file.extension = 'pdf';
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: undefined,
+                });
+            });
+
+            test('should not pass onRotateLeft for non-PDF files even when rotate.enabled is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.options.file.extension = 'ppt';
                 docBase.renderUI();
 
                 expect(getProps(docBase)).toMatchObject({
