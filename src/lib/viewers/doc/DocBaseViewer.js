@@ -206,6 +206,7 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
 
+        this.rotationAngle = 0;
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
@@ -862,6 +863,12 @@ class DocBaseViewer extends BaseViewer {
         }
 
         this.renderUI();
+
+        // Emit scale with rotation angle so annotations transform to match rotated content
+        this.emit('scale', {
+            scale: this.pdfViewer.currentScale,
+            rotationAngle: this.rotationAngle,
+        });
     }
 
     /**
@@ -1393,10 +1400,12 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
-        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
+        const canAnnotate =
+            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.rotationAngle === 0;
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
-        const canRotate = this.featureEnabled('rotate.enabled');
+        const isPDF = ['pdf'].includes(this.options.file.extension);
+        const canRotate = isPDF && this.featureEnabled('rotate.enabled');
 
         this.controls.render(
             <DocControls
@@ -1561,6 +1570,7 @@ class DocBaseViewer extends BaseViewer {
         this.emit('scale', {
             scale: this.pdfViewer.currentScale,
             pageNum: pageNumber,
+            rotationAngle: this.rotationAngle,
         });
 
         // Cleanup preload after a page is rendered

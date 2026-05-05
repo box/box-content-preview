@@ -2642,8 +2642,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should pass onRotateLeft when rotate.enabled feature flag is true', () => {
+            test('should hide annotation create controls when rotated', () => {
+                docBase.currentAnnotatorViewMode = 'annotations';
+                docBase.options.showAnnotationsDrawingCreate = true;
+                docBase.rotationAngle = 90;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                });
+            });
+
+            test('should pass onRotateLeft when rotate.enabled feature flag is true and file is PDF', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.options.file.extension = 'pdf';
                 docBase.renderUI();
 
                 expect(getProps(docBase)).toMatchObject({
@@ -2653,6 +2667,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not pass onRotateLeft when rotate.enabled feature flag is false', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.options.file.extension = 'pdf';
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: undefined,
+                });
+            });
+
+            test('should not pass onRotateLeft for non-PDF files even when rotate.enabled is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.options.file.extension = 'ppt';
                 docBase.renderUI();
 
                 expect(getProps(docBase)).toMatchObject({
@@ -2740,6 +2765,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.rotateLeft();
 
                 expect(docBase.renderUI).toBeCalled();
+            });
+
+            test('should emit scale event with rotationAngle', () => {
+                docBase.pdfViewer.currentScale = 1.5;
+                docBase.rotateLeft();
+
+                expect(docBase.emit).toBeCalledWith('scale', {
+                    scale: 1.5,
+                    rotationAngle: 270,
+                });
             });
         });
 
@@ -3001,6 +3036,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.emitMetric).not.toHaveBeenCalledWith({
                     data: 80,
                     name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should include rotationAngle in scale event', () => {
+                docBase.rotationAngle = 90;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 90,
+                });
+            });
+
+            test('should include rotationAngle of 0 in scale event when not rotated', () => {
+                docBase.rotationAngle = 0;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 0,
                 });
             });
         });
