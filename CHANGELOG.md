@@ -1,3 +1,19 @@
+## 3.28.0 (2026-05-05)
+
+* fix(doc): improve PDF rotation behavior for annotations (#1638) ([81785b3](https://github.com/box/box-content-preview/commit/81785b3)), closes [#1638](https://github.com/box/box-content-preview/issues/1638)
+* fix(media): derive filmestrip frame width from actual image dimensions (#1626) ([bff9bfe](https://github.com/box/box-content-preview/commit/bff9bfe)), closes [#1626](https://github.com/box/box-content-preview/issues/1626)
+* feat(auth): add createContentUrlV2 to BaseViewer (WEBAPP-55833) (#1625) ([faecd56](https://github.com/box/box-content-preview/commit/faecd56)), closes [#1625](https://github.com/box/box-content-preview/issues/1625)
+* feat(auth): migrate archive viewer to use Authorization header (#1627) ([7de5bb5](https://github.com/box/box-content-preview/commit/7de5bb5)), closes [#1627](https://github.com/box/box-content-preview/issues/1627)
+* feat(auth): migrate doc viewers to use Authorization header (#1630) ([a1b7c2d](https://github.com/box/box-content-preview/commit/a1b7c2d)), closes [#1630](https://github.com/box/box-content-preview/issues/1630)
+* feat(auth): migrate image viewers to use Authorization header (#1631) ([8394d4c](https://github.com/box/box-content-preview/commit/8394d4c)), closes [#1631](https://github.com/box/box-content-preview/issues/1631)
+* feat(auth): migrate media viewers to use Authorization header (#1632) ([9214b8d](https://github.com/box/box-content-preview/commit/9214b8d)), closes [#1632](https://github.com/box/box-content-preview/issues/1632)
+* feat(auth): migrate text viewers to use Authorization header (#1629) ([750b33b](https://github.com/box/box-content-preview/commit/750b33b)), closes [#1629](https://github.com/box/box-content-preview/issues/1629)
+* feat(doc): add PDF rotation support (#1637) ([531a493](https://github.com/box/box-content-preview/commit/531a493)), closes [#1637](https://github.com/box/box-content-preview/issues/1637)
+* feat(eml to pdf): add eml to doc formats (#1597) ([47688d8](https://github.com/box/box-content-preview/commit/47688d8)), closes [#1597](https://github.com/box/box-content-preview/issues/1597)
+* feat(media): enable video previews for mxf filetypes (#1634) ([290dece](https://github.com/box/box-content-preview/commit/290dece)), closes [#1634](https://github.com/box/box-content-preview/issues/1634)
+
+
+
 ## 3.27.0 (2026-04-07)
 
 * feat(auth): gate access_token removal behind feature flag (#1619) ([86927e6](https://github.com/box/box-content-preview/commit/86927e6)), closes [#1619](https://github.com/box/box-content-preview/issues/1619)
