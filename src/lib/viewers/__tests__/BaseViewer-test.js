@@ -12,7 +12,7 @@ import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
 import { AnnotationMode } from '../../types';
-import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../events';
+import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, PRELOAD_STATUS, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
 
 let base;
@@ -1856,6 +1856,12 @@ describe('lib/viewers/BaseViewer', () => {
 
             expect(base.emittedMetrics.foo).toBe(true);
             expect(stubs.emit).not.toBeCalled();
+        });
+    });
+
+    describe('getPreloadStatus()', () => {
+        test('should default to "na" since BaseViewer does not support preload', () => {
+            expect(base.getPreloadStatus()).toBe(PRELOAD_STATUS.NA);
         });
     });
 

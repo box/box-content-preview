@@ -11,7 +11,14 @@ import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PRELOAD_REP_NAME } from '../constants';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
+import {
+    VIEWER_EVENT,
+    ERROR_CODE,
+    LOAD_METRIC,
+    PRELOAD_STATUS,
+    PREVIEW_METRIC,
+    PREVIEW_PRELOAD_OUTCOME_EVENT,
+} from '../events';
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
 
@@ -1612,6 +1619,25 @@ describe('lib/Preview', () => {
 
             expect(preview.options.features).toEqual({});
         });
+
+        test('should store host-supplied monitoring dimensions', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                accessPattern: 'direct_link',
+                previewMode: 'shared_file',
+                sharedLinkAuth: 'logged_out',
+            });
+            expect(preview.options.accessPattern).toBe('direct_link');
+            expect(preview.options.previewMode).toBe('shared_file');
+            expect(preview.options.sharedLinkAuth).toBe('logged_out');
+        });
+
+        test('should leave monitoring dimensions undefined when host omits them', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.accessPattern).toBeUndefined();
+            expect(preview.options.previewMode).toBeUndefined();
+            expect(preview.options.sharedLinkAuth).toBeUndefined();
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -2774,6 +2800,38 @@ describe('lib/Preview', () => {
                 }),
             );
         });
+
+        test('should include host-supplied monitoring dimensions when set', () => {
+            preview.file = { id: '12345' };
+            preview.options.accessPattern = 'file_list';
+            preview.options.previewMode = 'default';
+            preview.options.sharedLinkAuth = 'na';
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    access_pattern: 'file_list',
+                    preview_mode: 'default',
+                    shared_link_auth: 'na',
+                }),
+            );
+        });
+
+        test('should omit host-supplied dimension fields that the host did not provide', () => {
+            preview.file = { id: '12345' };
+            preview.options.accessPattern = undefined;
+            preview.options.previewMode = undefined;
+            preview.options.sharedLinkAuth = undefined;
+
+            preview.emitLogEvent('test');
+
+            const payload = preview.emit.mock.calls[0][1];
+            expect(payload).not.toHaveProperty('access_pattern');
+            expect(payload).not.toHaveProperty('preview_mode');
+            expect(payload).not.toHaveProperty('shared_link_auth');
+        });
     });
 
     describe('emitPreviewError()', () => {
@@ -2891,6 +2949,37 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).toHaveBeenCalled();
             expect(preview.emit).toHaveBeenCalled();
+        });
+
+        test('should include preload_status on the load event from viewer.getPreloadStatus()', done => {
+            preview.viewer = { getPreloadStatus: () => PRELOAD_STATUS.HIT };
+            preview.once(PREVIEW_METRIC, metric => {
+                expect(metric.preload_status).toBe(PRELOAD_STATUS.HIT);
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        test('should default preload_status to "na" when viewer has no getPreloadStatus', done => {
+            preview.viewer = {};
+            preview.once(PREVIEW_METRIC, metric => {
+                expect(metric.preload_status).toBe(PRELOAD_STATUS.NA);
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        test('should emit a preview_preload_outcome counter event with matching status', () => {
+            preview.viewer = { getPreloadStatus: () => PRELOAD_STATUS.MISS };
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const outcomeCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === PREVIEW_PRELOAD_OUTCOME_EVENT,
+            );
+            expect(outcomeCall).toBeDefined();
+            expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.MISS);
         });
     });
 

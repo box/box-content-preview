@@ -79,6 +79,16 @@ export const FIRST_RENDER_METRIC = 'first_render_metric';
 export const DURATION_METRIC = 'preview_duration_metric';
 export const PREVIEW_END_EVENT = 'preview_end';
 
+// Event fired once per load with preload hit/miss outcome (counter for hit rate)
+export const PREVIEW_PRELOAD_OUTCOME_EVENT = 'preview_preload_outcome';
+
+// Preload status values attached to load events and preview_preload_outcome
+export const PRELOAD_STATUS = {
+    HIT: 'hit', // Viewer consumed a preloaded representation/asset before the full load completed
+    MISS: 'miss', // Preload was attempted/available but not consumed
+    NA: 'na', // Preload is not applicable for this viewer or file type
+};
+
 // Event fired when the user attempts to download the file
 export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
 // Events around download reachability

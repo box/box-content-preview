@@ -61,10 +61,12 @@ import {
     ERROR_CODE,
     FIRST_RENDER_METRIC,
     LOAD_METRIC,
+    PRELOAD_STATUS,
     PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
     PREVIEW_END_EVENT,
     PREVIEW_ERROR,
     PREVIEW_METRIC,
+    PREVIEW_PRELOAD_OUTCOME_EVENT,
     RENDER_METRIC,
     VIEWER_EVENT,
 } from './events';
@@ -1097,6 +1099,11 @@ class Preview extends EventEmitter {
         // Object with ftux experience data that can determine whether specific experiences can show
         this.options.experiences = options.experiences || {};
 
+        // Host-supplied monitoring dimensions attached to every emitted event by emitLogEvent
+        this.options.accessPattern = options.accessPattern;
+        this.options.previewMode = options.previewMode;
+        this.options.sharedLinkAuth = options.sharedLinkAuth;
+
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 
@@ -1824,6 +1831,11 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
+        const preloadStatus =
+            this.viewer && typeof this.viewer.getPreloadStatus === 'function'
+                ? this.viewer.getPreloadStatus()
+                : PRELOAD_STATUS.NA;
+
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: LOAD_METRIC.previewLoadEvent,
             value: previewLoadTime.elapsed || 0,
@@ -1831,6 +1843,12 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
+            preload_status: preloadStatus,
+        });
+
+        this.emitLogEvent(PREVIEW_METRIC, {
+            event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
+            value: preloadStatus,
         });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
@@ -1869,6 +1887,7 @@ class Preview extends EventEmitter {
      */
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
+        const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
 
         this.emit(name, {
             ...payload,
@@ -1882,6 +1901,9 @@ class Preview extends EventEmitter {
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             timestamp: getISOTime(),
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
+            ...(accessPattern !== undefined && { access_pattern: accessPattern }),
+            ...(previewMode !== undefined && { preview_mode: previewMode }),
+            ...(sharedLinkAuth !== undefined && { shared_link_auth: sharedLinkAuth }),
             ...getClientLogDetails(),
         });
     }

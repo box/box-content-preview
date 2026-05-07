@@ -45,6 +45,7 @@ import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } fr
 import {
     ERROR_CODE,
     LOAD_METRIC,
+    PRELOAD_STATUS,
     RENDER_EVENT,
     RENDER_METRIC,
     REPORT_ACI,
@@ -589,6 +590,14 @@ class DocBaseViewer extends BaseViewer {
             const useInstantHide = this.preloader.config?.showPreloadForNonPaged === true;
             this.preloader.hidePreload(useInstantHide);
         }
+    }
+
+    /** @override */
+    getPreloadStatus() {
+        if (!this.preloader) {
+            return PRELOAD_STATUS.NA;
+        }
+        return this.preloader.loadTime ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS;
     }
 
     /**
