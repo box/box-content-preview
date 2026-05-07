@@ -39,6 +39,7 @@ function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>
             className={classNames('bp-SettingsRadioItem', className, {
                 'bp-is-selected': isSelected,
             })}
+            data-resin-target="settingsRadioItem"
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitemradio"

@@ -13,5 +13,5 @@ export default function MediaFullscreenToggle(props: Props): JSX.Element {
         }
     };
 
-    return <FullscreenToggle onKeyDown={handleKeydown} {...props} />;
+    return <FullscreenToggle data-resin-target="mediaFullscreen" onKeyDown={handleKeydown} {...props} />;
 }
