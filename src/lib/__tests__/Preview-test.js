@@ -703,6 +703,23 @@ describe('lib/Preview', () => {
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
+        test('should record the fileId in prefetchedFiles so preload_status can report hit later', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            jest.spyOn(loader, 'determineRepresentation').mockReturnValue({});
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+
+            expect(preview.prefetchedFiles.has(fileId)).toBe(true);
+        });
+
+        test('should still record the fileId even when no viewer is determined', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+
+            expect(preview.prefetchedFiles.has(fileId)).toBe(true);
+        });
+
         test('should get the appropriate viewer', () => {
             sandbox
                 .mock(loader)
@@ -2801,28 +2818,39 @@ describe('lib/Preview', () => {
             );
         });
 
-        test('should emit file_info_cache_status hit when logger recorded a cache hit', () => {
+        test('should emit prefetch_status hit when logger recorded a file-metadata cache hit', () => {
             preview.file = { id: '12345' };
             preview.logger = { log: { cache: { hit: true } } };
 
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toHaveBeenCalledWith(
-                'test',
-                expect.objectContaining({ file_info_cache_status: 'hit' }),
-            );
+            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ prefetch_status: 'hit' }));
         });
 
-        test('should emit file_info_cache_status miss by default', () => {
+        test('should emit prefetch_status miss by default', () => {
             preview.file = { id: '12345' };
             preview.logger = undefined;
 
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toHaveBeenCalledWith(
-                'test',
-                expect.objectContaining({ file_info_cache_status: 'miss' }),
-            );
+            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ prefetch_status: 'miss' }));
+        });
+
+        test('should emit preload_status hit when prefetch() was called for this fileId', () => {
+            preview.file = { id: '12345' };
+            preview.prefetchedFiles.add('12345');
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ preload_status: 'hit' }));
+        });
+
+        test('should emit preload_status miss when prefetch() was not called for this fileId', () => {
+            preview.file = { id: '12345' };
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ preload_status: 'miss' }));
         });
 
         test('should include host-supplied monitoring dimensions when set', () => {
@@ -2975,26 +3003,20 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalled();
         });
 
-        test('should include preload_status on the load event from viewer.getPreloadStatus()', done => {
-            preview.viewer = { getPreloadStatus: () => PRELOAD_STATUS.HIT };
-            preview.once(PREVIEW_METRIC, metric => {
-                expect(metric.preload_status).toBe(PRELOAD_STATUS.HIT);
-                done();
-            });
+        test('should emit preview_preload_outcome=hit when prefetch() was called for this fileId', () => {
+            preview.prefetchedFiles.add(fileId);
+            jest.spyOn(preview, 'emit');
+
             preview.emitLoadMetrics();
+
+            const outcomeCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === PREVIEW_PRELOAD_OUTCOME_EVENT,
+            );
+            expect(outcomeCall).toBeDefined();
+            expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.HIT);
         });
 
-        test('should default preload_status to "na" when viewer has no getPreloadStatus', done => {
-            preview.viewer = {};
-            preview.once(PREVIEW_METRIC, metric => {
-                expect(metric.preload_status).toBe(PRELOAD_STATUS.NA);
-                done();
-            });
-            preview.emitLoadMetrics();
-        });
-
-        test('should emit a preview_preload_outcome counter event with matching status', () => {
-            preview.viewer = { getPreloadStatus: () => PRELOAD_STATUS.MISS };
+        test('should emit preview_preload_outcome=miss when prefetch() was not called for this fileId', () => {
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();

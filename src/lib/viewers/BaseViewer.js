@@ -37,14 +37,7 @@ import {
     STATUS_VIEWABLE,
 } from '../constants';
 import { EXCLUDED_EXTENSIONS } from '../extensions';
-import {
-    VIEWER_EVENT,
-    ERROR_CODE,
-    LOAD_METRIC,
-    DOWNLOAD_REACHABILITY_METRICS,
-    FIRST_RENDER_METRIC,
-    PRELOAD_STATUS,
-} from '../events';
+import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS, FIRST_RENDER_METRIC } from '../events';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
@@ -747,13 +740,6 @@ class BaseViewer extends EventEmitter {
      */
     getMetricsWhitelist() {
         return [];
-    }
-
-    /**
-     * @return {string} One of PRELOAD_STATUS values; viewers that support preload override.
-     */
-    getPreloadStatus() {
-        return PRELOAD_STATUS.NA;
     }
 
     /**

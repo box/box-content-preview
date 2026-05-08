@@ -6,7 +6,6 @@ import MediaBaseViewer from '../MediaBaseViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import VideoPreloader from '../VideoPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
-import { PRELOAD_STATUS } from '../../../events';
 import * as fileUtil from '../../../file';
 
 let containerEl;
@@ -1108,23 +1107,6 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.showPreload).toBeCalled();
             expect(MediaBaseViewer.prototype.load).toBeCalled();
             // Verify showPreload is called (it's called at the start of load())
-        });
-    });
-
-    describe('getPreloadStatus()', () => {
-        test('should return "na" when no preloader exists', () => {
-            videoBase.preloader = undefined;
-            expect(videoBase.getPreloadStatus()).toBe(PRELOAD_STATUS.NA);
-        });
-
-        test('should return "hit" when preloader rendered (wrapperEl is set)', () => {
-            videoBase.preloader = { wrapperEl: document.createElement('div') };
-            expect(videoBase.getPreloadStatus()).toBe(PRELOAD_STATUS.HIT);
-        });
-
-        test('should return "miss" when preloader exists but never rendered', () => {
-            videoBase.preloader = { wrapperEl: undefined };
-            expect(videoBase.getPreloadStatus()).toBe(PRELOAD_STATUS.MISS);
         });
     });
 

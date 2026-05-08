@@ -175,6 +175,10 @@ class Preview extends EventEmitter {
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
 
+        // File IDs the host has called prefetch() for. Used to tag the preload_status
+        // dimension on emitted metrics so the dashboard can slice warm vs cold loads.
+        this.prefetchedFiles = new Set();
+
         // Bind context for callbacks
         this.download = this.download.bind(this);
         this.print = this.print.bind(this);
@@ -708,6 +712,10 @@ class Preview extends EventEmitter {
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
     }) {
+        if (fileId) {
+            this.prefetchedFiles.add(fileId);
+        }
+
         let file;
         let loader;
         let viewer;
@@ -1831,11 +1839,6 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
-        const preloadStatus =
-            this.viewer && typeof this.viewer.getPreloadStatus === 'function'
-                ? this.viewer.getPreloadStatus()
-                : PRELOAD_STATUS.NA;
-
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: LOAD_METRIC.previewLoadEvent,
             value: previewLoadTime.elapsed || 0,
@@ -1843,12 +1846,11 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
-            preload_status: preloadStatus,
         });
 
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
-            value: preloadStatus,
+            value: this.prefetchedFiles.has(id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
         });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
@@ -1888,7 +1890,8 @@ class Preview extends EventEmitter {
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
         const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
-        const fileInfoCacheStatus = getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss';
+        const prefetchStatus = getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss';
+        const preloadStatus = file.id && this.prefetchedFiles.has(file.id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS;
 
         this.emit(name, {
             ...payload,
@@ -1896,10 +1899,11 @@ class Preview extends EventEmitter {
             current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',
             file_id: getProp(file, 'id', ''),
-            file_info_cache_status: fileInfoCacheStatus,
             file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
+            preload_status: preloadStatus,
+            prefetch_status: prefetchStatus,
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             timestamp: getISOTime(),
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),

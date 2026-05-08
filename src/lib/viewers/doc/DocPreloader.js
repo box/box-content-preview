@@ -141,9 +141,6 @@ class DocPreloader extends EventEmitter {
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
 
-        // Record that the preload actually rendered, so monitoring can report hit/miss
-        this.loadTime = Date.now();
-
         // Emit message that preload has occurred
         this.emit('preload');
     }

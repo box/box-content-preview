@@ -36,14 +36,7 @@ import {
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
-import {
-    LOAD_METRIC,
-    PRELOAD_STATUS,
-    RENDER_EVENT,
-    REPORT_ACI,
-    USER_DOCUMENT_THUMBNAIL_EVENTS,
-    VIEWER_EVENT,
-} from '../../../events';
+import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
@@ -1095,23 +1088,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase.preloader, 'hidePreload');
                 docBase.hidePreload();
                 expect(docBase.preloader.hidePreload).toHaveBeenCalledWith(false);
-            });
-        });
-
-        describe('getPreloadStatus()', () => {
-            test('should return "na" when no preloader exists', () => {
-                docBase.preloader = undefined;
-                expect(docBase.getPreloadStatus()).toBe(PRELOAD_STATUS.NA);
-            });
-
-            test('should return "hit" when preloader rendered (loadTime is set)', () => {
-                docBase.preloader = { loadTime: 1500 };
-                expect(docBase.getPreloadStatus()).toBe(PRELOAD_STATUS.HIT);
-            });
-
-            test('should return "miss" when preloader exists but never rendered', () => {
-                docBase.preloader = { loadTime: undefined };
-                expect(docBase.getPreloadStatus()).toBe(PRELOAD_STATUS.MISS);
             });
         });
 

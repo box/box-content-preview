@@ -13,7 +13,7 @@ import {
     PRELOAD_REP_NAME,
 } from '../../constants';
 import fullscreen from '../../Fullscreen';
-import { PRELOAD_STATUS, VIEWER_EVENT } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
@@ -119,14 +119,6 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.showPreload();
         }
         return super.load();
-    }
-
-    /** @override */
-    getPreloadStatus() {
-        if (!this.preloader) {
-            return PRELOAD_STATUS.NA;
-        }
-        return this.preloader.wrapperEl ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS;
     }
 
     /**
