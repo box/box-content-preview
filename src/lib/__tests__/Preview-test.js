@@ -2818,39 +2818,16 @@ describe('lib/Preview', () => {
             );
         });
 
-        test('should emit prefetch_status hit when logger recorded a file-metadata cache hit', () => {
+        test('should NOT include prefetch_status or preload_status on generic events', () => {
             preview.file = { id: '12345' };
+            preview.prefetchedFiles.add('12345');
             preview.logger = { log: { cache: { hit: true } } };
 
             preview.emitLogEvent('test');
 
-            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ prefetch_status: 'hit' }));
-        });
-
-        test('should emit prefetch_status miss by default', () => {
-            preview.file = { id: '12345' };
-            preview.logger = undefined;
-
-            preview.emitLogEvent('test');
-
-            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ prefetch_status: 'miss' }));
-        });
-
-        test('should emit preload_status hit when prefetch() was called for this fileId', () => {
-            preview.file = { id: '12345' };
-            preview.prefetchedFiles.add('12345');
-
-            preview.emitLogEvent('test');
-
-            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ preload_status: 'hit' }));
-        });
-
-        test('should emit preload_status miss when prefetch() was not called for this fileId', () => {
-            preview.file = { id: '12345' };
-
-            preview.emitLogEvent('test');
-
-            expect(preview.emit).toHaveBeenCalledWith('test', expect.objectContaining({ preload_status: 'miss' }));
+            const payload = preview.emit.mock.calls[0][1];
+            expect(payload).not.toHaveProperty('preload_status');
+            expect(payload).not.toHaveProperty('prefetch_status');
         });
 
         test('should include host-supplied monitoring dimensions when set', () => {
@@ -2944,6 +2921,19 @@ describe('lib/Preview', () => {
             const error = new PreviewError('bad_thing', `${displayMessage}?${auth}`, {}, `${message}?${auth}`);
             preview.emitPreviewError(error);
         });
+
+        test('should tag errors with preload_status and prefetch_status', done => {
+            preview.file = { id: '12345' };
+            preview.prefetchedFiles.add('12345');
+
+            preview.on('preview_error', data => {
+                expect(data.preload_status).toBe(PRELOAD_STATUS.HIT);
+                expect(data.prefetch_status).toBe('miss');
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
     });
 
     describe('emitLoadMetrics()', () => {
@@ -3026,6 +3016,21 @@ describe('lib/Preview', () => {
             );
             expect(outcomeCall).toBeDefined();
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.MISS);
+        });
+
+        test('should tag the load event with preload_status and prefetch_status', () => {
+            preview.prefetchedFiles.add(fileId);
+            preview.logger = { log: { cache: { hit: true } } };
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const loadCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
+            );
+            expect(loadCall).toBeDefined();
+            expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.HIT);
+            expect(loadCall[1].prefetch_status).toBe('hit');
         });
     });
 

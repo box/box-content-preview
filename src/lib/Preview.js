@@ -1809,6 +1809,7 @@ class Preview extends EventEmitter {
 
         this.emitLogEvent(PREVIEW_ERROR, {
             error: sanitizedError,
+            ...this.getLoadStateTags(),
         });
     }
 
@@ -1839,6 +1840,8 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
+        const loadStateTags = this.getLoadStateTags();
+
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: LOAD_METRIC.previewLoadEvent,
             value: previewLoadTime.elapsed || 0,
@@ -1846,11 +1849,13 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
+            ...loadStateTags,
         });
 
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
-            value: this.prefetchedFiles.has(id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
+            value: loadStateTags.preload_status,
+            ...loadStateTags,
         });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
@@ -1890,8 +1895,6 @@ class Preview extends EventEmitter {
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
         const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
-        const prefetchStatus = getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss';
-        const preloadStatus = file.id && this.prefetchedFiles.has(file.id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS;
 
         this.emit(name, {
             ...payload,
@@ -1902,8 +1905,6 @@ class Preview extends EventEmitter {
             file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
-            preload_status: preloadStatus,
-            prefetch_status: prefetchStatus,
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
             timestamp: getISOTime(),
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
@@ -1912,6 +1913,22 @@ class Preview extends EventEmitter {
             ...(sharedLinkAuth !== undefined && { shared_link_auth: sharedLinkAuth }),
             ...getClientLogDetails(),
         });
+    }
+
+    /**
+     * Returns the prefetch/preload dimensions for this preview session. Only attached to
+     * the load event, preview_preload_outcome counter, and preview_error — exactly one
+     * of those fires per preview session so the dashboard denominator stays clean.
+     *
+     * @private
+     * @return {{ preload_status: string, prefetch_status: string }}
+     */
+    getLoadStateTags() {
+        const file = this.file || {};
+        return {
+            preload_status: file.id && this.prefetchedFiles.has(file.id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
+            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
+        };
     }
 
     /**
