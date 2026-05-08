@@ -1103,8 +1103,9 @@ class Preview extends EventEmitter {
         this.options.accessPattern = options.accessPattern;
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
-        // Host-supplied preload status (whether host called prefetch() for this file)
+        // Host-supplied cache dimensions (set only on load / outcome / error events)
         this.options.preloadStatus = options.preloadStatus;
+        this.options.prefetchStatus = options.prefetchStatus;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1918,11 +1919,12 @@ class Preview extends EventEmitter {
      * @return {{ preload_status: string, prefetch_status: string }}
      */
     getLoadStateTags() {
-        const tags = {
-            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
-        };
+        const tags = {};
         if (this.options?.preloadStatus !== undefined) {
             tags.preload_status = this.options.preloadStatus;
+        }
+        if (this.options?.prefetchStatus !== undefined) {
+            tags.prefetch_status = this.options.prefetchStatus;
         }
         return tags;
     }
