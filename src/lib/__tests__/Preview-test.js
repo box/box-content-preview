@@ -703,23 +703,6 @@ describe('lib/Preview', () => {
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
-        test('should record the fileId in prefetchedFiles so preload_status can report hit later', () => {
-            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            jest.spyOn(loader, 'determineRepresentation').mockReturnValue({});
-
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
-
-            expect(preview.prefetchedFiles.has(fileId)).toBe(true);
-        });
-
-        test('should still record the fileId even when no viewer is determined', () => {
-            jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
-
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
-
-            expect(preview.prefetchedFiles.has(fileId)).toBe(true);
-        });
-
         test('should get the appropriate viewer', () => {
             sandbox
                 .mock(loader)
@@ -1643,10 +1626,12 @@ describe('lib/Preview', () => {
                 accessPattern: 'direct_link',
                 previewMode: 'shared_file',
                 sharedLinkAuth: 'logged_out',
+                preloadStatus: 'hit',
             });
             expect(preview.options.accessPattern).toBe('direct_link');
             expect(preview.options.previewMode).toBe('shared_file');
             expect(preview.options.sharedLinkAuth).toBe('logged_out');
+            expect(preview.options.preloadStatus).toBe('hit');
         });
 
         test('should leave monitoring dimensions undefined when host omits them', () => {
@@ -1654,6 +1639,7 @@ describe('lib/Preview', () => {
             expect(preview.options.accessPattern).toBeUndefined();
             expect(preview.options.previewMode).toBeUndefined();
             expect(preview.options.sharedLinkAuth).toBeUndefined();
+            expect(preview.options.preloadStatus).toBeUndefined();
         });
     });
 
@@ -2820,7 +2806,7 @@ describe('lib/Preview', () => {
 
         test('should NOT include prefetch_status or preload_status on generic events', () => {
             preview.file = { id: '12345' };
-            preview.prefetchedFiles.add('12345');
+            preview.options.preloadStatus = 'hit';
             preview.logger = { log: { cache: { hit: true } } };
 
             preview.emitLogEvent('test');
@@ -2922,9 +2908,9 @@ describe('lib/Preview', () => {
             preview.emitPreviewError(error);
         });
 
-        test('should tag errors with preload_status and prefetch_status', done => {
+        test('should tag errors with host-supplied preload_status and prefetch_status', done => {
             preview.file = { id: '12345' };
-            preview.prefetchedFiles.add('12345');
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
 
             preview.on('preview_error', data => {
                 expect(data.preload_status).toBe(PRELOAD_STATUS.HIT);
@@ -2993,8 +2979,8 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalled();
         });
 
-        test('should emit preview_preload_outcome=hit when prefetch() was called for this fileId', () => {
-            preview.prefetchedFiles.add(fileId);
+        test('should emit preview_preload_outcome=hit when host supplied preloadStatus=hit', () => {
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3006,7 +2992,7 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.HIT);
         });
 
-        test('should emit preview_preload_outcome=miss when prefetch() was not called for this fileId', () => {
+        test('should default preview_preload_outcome to miss when host did not supply preloadStatus', () => {
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3018,8 +3004,8 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.MISS);
         });
 
-        test('should tag the load event with preload_status and prefetch_status', () => {
-            preview.prefetchedFiles.add(fileId);
+        test('should tag the load event with host-supplied preload_status and prefetch_status', () => {
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             preview.logger = { log: { cache: { hit: true } } };
             jest.spyOn(preview, 'emit');
 

@@ -175,10 +175,6 @@ class Preview extends EventEmitter {
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
 
-        // File IDs the host has called prefetch() for. Used to tag the preload_status
-        // dimension on emitted metrics so the dashboard can slice warm vs cold loads.
-        this.prefetchedFiles = new Set();
-
         // Bind context for callbacks
         this.download = this.download.bind(this);
         this.print = this.print.bind(this);
@@ -712,10 +708,6 @@ class Preview extends EventEmitter {
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
     }) {
-        if (fileId) {
-            this.prefetchedFiles.add(fileId);
-        }
-
         let file;
         let loader;
         let viewer;
@@ -1111,6 +1103,8 @@ class Preview extends EventEmitter {
         this.options.accessPattern = options.accessPattern;
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
+        // Host-supplied preload status (whether host called prefetch() for this file)
+        this.options.preloadStatus = options.preloadStatus;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1854,7 +1848,7 @@ class Preview extends EventEmitter {
 
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
-            value: loadStateTags.preload_status,
+            value: loadStateTags.preload_status || PRELOAD_STATUS.MISS,
             ...loadStateTags,
         });
 
@@ -1924,11 +1918,13 @@ class Preview extends EventEmitter {
      * @return {{ preload_status: string, prefetch_status: string }}
      */
     getLoadStateTags() {
-        const file = this.file || {};
-        return {
-            preload_status: file.id && this.prefetchedFiles.has(file.id) ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
+        const tags = {
             prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
         };
+        if (this.options?.preloadStatus !== undefined) {
+            tags.preload_status = this.options.preloadStatus;
+        }
+        return tags;
     }
 
     /**
