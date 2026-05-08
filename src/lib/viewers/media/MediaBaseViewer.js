@@ -1179,12 +1179,12 @@ class MediaBaseViewer extends BaseViewer {
                 this.toggleMute();
                 break;
             case ',':
-                if (this.featureEnabled('frameStep')) {
+                if (this.featureEnabled('frameStep.enabled')) {
                     this.frameStep('back');
                 }
                 break;
             case '.':
-                if (this.featureEnabled('frameStep')) {
+                if (this.featureEnabled('frameStep.enabled')) {
                     this.frameStep('forward');
                 }
                 break;
@@ -1218,11 +1218,11 @@ class MediaBaseViewer extends BaseViewer {
                 this.quickSeek(10);
                 break;
             case ',':
-                if (!this.featureEnabled('frameStep')) return false;
+                if (!this.featureEnabled('frameStep.enabled')) return false;
                 this.frameStep('back');
                 break;
             case '.':
-                if (!this.featureEnabled('frameStep')) return false;
+                if (!this.featureEnabled('frameStep.enabled')) return false;
                 this.frameStep('forward');
                 break;
             case '0':
