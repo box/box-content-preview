@@ -1444,6 +1444,44 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.toggleStats).not.toBeCalled();
             expect(result).not.toBe(true);
         });
+
+        test('should frame step back on , when fps is available', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'frameStep').mockImplementation();
+
+            const result = dash.onKeydown(',');
+
+            expect(dash.frameStep).toBeCalledWith('back');
+            expect(result).toBe(true);
+        });
+
+        test('should frame step forward on . when fps is available', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'frameStep').mockImplementation();
+
+            const result = dash.onKeydown('.');
+
+            expect(dash.frameStep).toBeCalledWith('forward');
+            expect(result).toBe(true);
+        });
+
+        test('should not frame step on , when fps is not available', () => {
+            dash.player = {
+                getVariantTracks: () => [{ active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'frameStep').mockImplementation();
+
+            dash.onKeydown(',');
+
+            expect(dash.frameStep).not.toBeCalled();
+        });
     });
 
     describe('showGearHdIcon()', () => {
