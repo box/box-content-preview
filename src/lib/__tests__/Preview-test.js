@@ -2801,6 +2801,30 @@ describe('lib/Preview', () => {
             );
         });
 
+        test('should emit file_info_cache_status hit when logger recorded a cache hit', () => {
+            preview.file = { id: '12345' };
+            preview.logger = { log: { cache: { hit: true } } };
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({ file_info_cache_status: 'hit' }),
+            );
+        });
+
+        test('should emit file_info_cache_status miss by default', () => {
+            preview.file = { id: '12345' };
+            preview.logger = undefined;
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({ file_info_cache_status: 'miss' }),
+            );
+        });
+
         test('should include host-supplied monitoring dimensions when set', () => {
             preview.file = { id: '12345' };
             preview.options.accessPattern = 'file_list';

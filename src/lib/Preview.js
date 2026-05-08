@@ -1888,6 +1888,7 @@ class Preview extends EventEmitter {
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
         const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
+        const fileInfoCacheStatus = getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss';
 
         this.emit(name, {
             ...payload,
@@ -1895,6 +1896,7 @@ class Preview extends EventEmitter {
             current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',
             file_id: getProp(file, 'id', ''),
+            file_info_cache_status: fileInfoCacheStatus,
             file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
