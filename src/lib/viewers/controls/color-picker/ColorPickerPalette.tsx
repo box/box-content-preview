@@ -15,6 +15,7 @@ export default function ColorPickerPalette({ colors, onBlur, onSelect }: Props):
                     <button
                         key={color}
                         className="bp-ColorPickerPalette-button"
+                        data-resin-target="colorSelect"
                         onBlur={onBlur}
                         onClick={(): void => onSelect(color)}
                         style={{

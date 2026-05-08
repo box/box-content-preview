@@ -85,6 +85,7 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
                     aria-haspopup="listbox"
                     aria-labelledby={`${id}-label ${id}-button`}
                     className={classNames('bp-SettingsDropdown-button', { 'bp-is-open': isOpen })}
+                    data-resin-target="settingsDropdown"
                     id={`${id}-button`}
                     onClick={(): void => setIsOpen(!isOpen)}
                     type="button"
