@@ -1358,18 +1358,28 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.toggleFullscreen).toBeCalled();
         });
 
-        test('should frame step back and return true on ,', () => {
+        test('should frame step back and return true on , when feature enabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'frameStep').mockImplementation();
 
             expect(media.handleKeydownReact(',')).toBe(true);
             expect(media.frameStep).toBeCalledWith('back');
         });
 
-        test('should frame step forward and return true on .', () => {
+        test('should frame step forward and return true on . when feature enabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'frameStep').mockImplementation();
 
             expect(media.handleKeydownReact('.')).toBe(true);
             expect(media.frameStep).toBeCalledWith('forward');
+        });
+
+        test('should return false on , when feature flag is disabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'frameStep').mockImplementation();
+
+            expect(media.handleKeydownReact(',')).toBe(false);
+            expect(media.frameStep).not.toBeCalled();
         });
 
         test('should return false if another key is pressed', () => {

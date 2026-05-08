@@ -124,7 +124,7 @@ class MP4Viewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 experiences={this.experiences}
-                fps={DEFAULT_VIDEO_FPS}
+                fps={this.featureEnabled('frameStep') ? DEFAULT_VIDEO_FPS : undefined}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}

@@ -1445,11 +1445,12 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(result).not.toBe(true);
         });
 
-        test('should frame step back on , when fps is available', () => {
+        test('should frame step back on , when fps is available and feature enabled', () => {
             dash.player = {
                 getVariantTracks: () => [{ frameRate: 30, active: true }],
                 destroy: jest.fn(),
             };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(dash, 'frameStep').mockImplementation();
 
             const result = dash.onKeydown(',');
@@ -1458,11 +1459,12 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(result).toBe(true);
         });
 
-        test('should frame step forward on . when fps is available', () => {
+        test('should frame step forward on . when fps is available and feature enabled', () => {
             dash.player = {
                 getVariantTracks: () => [{ frameRate: 30, active: true }],
                 destroy: jest.fn(),
             };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(dash, 'frameStep').mockImplementation();
 
             const result = dash.onKeydown('.');
@@ -1476,6 +1478,20 @@ describe('lib/viewers/media/DashViewer', () => {
                 getVariantTracks: () => [{ active: true }],
                 destroy: jest.fn(),
             };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'frameStep').mockImplementation();
+
+            dash.onKeydown(',');
+
+            expect(dash.frameStep).not.toBeCalled();
+        });
+
+        test('should not frame step on , when feature flag is disabled', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
             jest.spyOn(dash, 'frameStep').mockImplementation();
 
             dash.onKeydown(',');

@@ -1033,12 +1033,12 @@ class DashViewer extends VideoBaseViewer {
             return true;
         }
 
-        if (key === ',' && isFpsAvailable(this.player)) {
+        if (key === ',' && this.featureEnabled('frameStep') && isFpsAvailable(this.player)) {
             this.frameStep('back');
             return true;
         }
 
-        if (key === '.' && isFpsAvailable(this.player)) {
+        if (key === '.' && this.featureEnabled('frameStep') && isFpsAvailable(this.player)) {
             this.frameStep('forward');
             return true;
         }
@@ -1194,7 +1194,11 @@ class DashViewer extends VideoBaseViewer {
                 experiences={this.experiences}
                 filmstripInterval={this.filmstripInterval}
                 filmstripUrl={this.filmstripUrl}
-                fps={isFpsAvailable(this.player) ? getVideoFps(this.player) : undefined}
+                fps={
+                    this.featureEnabled('frameStep') && isFpsAvailable(this.player)
+                        ? getVideoFps(this.player)
+                        : undefined
+                }
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
