@@ -1,5 +1,5 @@
 import React from 'react';
-import { CLASS_INVISIBLE, PRELOAD_REP_NAME } from '../../constants';
+import { CLASS_INVISIBLE, DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoControls from './VideoControls';
@@ -124,11 +124,13 @@ class MP4Viewer extends VideoBaseViewer {
                 currentTime={this.mediaEl.currentTime}
                 durationTime={this.mediaEl.duration}
                 experiences={this.experiences}
+                fps={DEFAULT_VIDEO_FPS}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
                 isNarrowVideo={this.isNarrowVideo}
                 isPlaying={!this.mediaEl.paused}
+                mediaEl={this.mediaEl}
                 movePlayback={this.movePlayback}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
