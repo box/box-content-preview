@@ -831,6 +831,7 @@ class Preview extends EventEmitter {
 
         // Init performance logging
         this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.preloadEmitted = false;
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
@@ -1103,9 +1104,6 @@ class Preview extends EventEmitter {
         this.options.accessPattern = options.accessPattern;
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
-        // Host-supplied cache dimensions (set only on load / outcome / error events)
-        this.options.preloadStatus = options.preloadStatus;
-        this.options.prefetchStatus = options.prefetchStatus;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1484,6 +1482,8 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.preload:
                 // Dismiss the global loading spinner once the preload thumbnail is visible
                 this.ui.hideLoadingIndicator();
+                // Record that a preload rendered for this session (used by getLoadStateTags)
+                this.preloadEmitted = true;
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
                 break;
@@ -1849,7 +1849,7 @@ class Preview extends EventEmitter {
 
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
-            value: loadStateTags.preload_status || PRELOAD_STATUS.MISS,
+            value: loadStateTags.preload_status,
             ...loadStateTags,
         });
 
@@ -1919,14 +1919,10 @@ class Preview extends EventEmitter {
      * @return {{ preload_status: string, prefetch_status: string }}
      */
     getLoadStateTags() {
-        const tags = {};
-        if (this.options?.preloadStatus !== undefined) {
-            tags.preload_status = this.options.preloadStatus;
-        }
-        if (this.options?.prefetchStatus !== undefined) {
-            tags.prefetch_status = this.options.prefetchStatus;
-        }
-        return tags;
+        return {
+            preload_status: this.preloadEmitted ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
+            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
+        };
     }
 
     /**

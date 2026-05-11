@@ -1626,14 +1626,10 @@ describe('lib/Preview', () => {
                 accessPattern: 'direct_link',
                 previewMode: 'shared_file',
                 sharedLinkAuth: 'logged_out',
-                preloadStatus: 'hit',
-                prefetchStatus: 'miss',
             });
             expect(preview.options.accessPattern).toBe('direct_link');
             expect(preview.options.previewMode).toBe('shared_file');
             expect(preview.options.sharedLinkAuth).toBe('logged_out');
-            expect(preview.options.preloadStatus).toBe('hit');
-            expect(preview.options.prefetchStatus).toBe('miss');
         });
 
         test('should leave monitoring dimensions undefined when host omits them', () => {
@@ -1641,8 +1637,6 @@ describe('lib/Preview', () => {
             expect(preview.options.accessPattern).toBeUndefined();
             expect(preview.options.previewMode).toBeUndefined();
             expect(preview.options.sharedLinkAuth).toBeUndefined();
-            expect(preview.options.preloadStatus).toBeUndefined();
-            expect(preview.options.prefetchStatus).toBeUndefined();
         });
     });
 
@@ -2809,8 +2803,8 @@ describe('lib/Preview', () => {
 
         test('should NOT include prefetch_status or preload_status on generic events', () => {
             preview.file = { id: '12345' };
-            preview.options.preloadStatus = 'hit';
-            preview.options.prefetchStatus = 'hit';
+            preview.preloadEmitted = true;
+            preview.logger = { log: { cache: { hit: true } } };
 
             preview.emitLogEvent('test');
 
@@ -2911,10 +2905,10 @@ describe('lib/Preview', () => {
             preview.emitPreviewError(error);
         });
 
-        test('should tag errors with host-supplied preload_status and prefetch_status', done => {
+        test('should tag errors with preload_status=hit when preload event fired', done => {
             preview.file = { id: '12345' };
-            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
-            preview.options.prefetchStatus = 'hit';
+            preview.preloadEmitted = true;
+            preview.logger = { log: { cache: { hit: true } } };
 
             preview.on('preview_error', data => {
                 expect(data.preload_status).toBe(PRELOAD_STATUS.HIT);
@@ -2925,12 +2919,12 @@ describe('lib/Preview', () => {
             preview.emitPreviewError({});
         });
 
-        test('should omit cache tags on errors when host did not supply them', done => {
+        test('should tag errors with miss by default', done => {
             preview.file = { id: '12345' };
 
             preview.on('preview_error', data => {
-                expect(data).not.toHaveProperty('preload_status');
-                expect(data).not.toHaveProperty('prefetch_status');
+                expect(data.preload_status).toBe(PRELOAD_STATUS.MISS);
+                expect(data.prefetch_status).toBe('miss');
                 done();
             });
 
@@ -2995,8 +2989,8 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalled();
         });
 
-        test('should emit preview_preload_outcome=hit when host supplied preloadStatus=hit', () => {
-            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
+        test('should emit preview_preload_outcome=hit when preload event fired this session', () => {
+            preview.preloadEmitted = true;
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3008,7 +3002,7 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.HIT);
         });
 
-        test('should default preview_preload_outcome to miss when host did not supply preloadStatus', () => {
+        test('should emit preview_preload_outcome=miss when preload event did not fire', () => {
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3020,9 +3014,9 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.MISS);
         });
 
-        test('should tag the load event with host-supplied preload_status and prefetch_status', () => {
-            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
-            preview.options.prefetchStatus = 'hit';
+        test('should tag the load event from preloadEmitted and logger.cache.hit', () => {
+            preview.preloadEmitted = true;
+            preview.logger = { log: { cache: { hit: true } } };
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3035,7 +3029,7 @@ describe('lib/Preview', () => {
             expect(loadCall[1].prefetch_status).toBe('hit');
         });
 
-        test('should omit cache tags on load event when host did not supply them', () => {
+        test('should tag load event miss by default', () => {
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3044,8 +3038,8 @@ describe('lib/Preview', () => {
                 ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
             );
             expect(loadCall).toBeDefined();
-            expect(loadCall[1]).not.toHaveProperty('preload_status');
-            expect(loadCall[1]).not.toHaveProperty('prefetch_status');
+            expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.MISS);
+            expect(loadCall[1].prefetch_status).toBe('miss');
         });
     });
 
