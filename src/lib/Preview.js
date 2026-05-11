@@ -1919,8 +1919,9 @@ class Preview extends EventEmitter {
      * @return {{ preload_status: string, prefetch_status: string }}
      */
     getLoadStateTags() {
+        const preloadMs = getProp(this.logger, 'log.time.preload', 0);
         return {
-            preload_status: this.preloadEmitted ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
+            preload_status: this.preloadEmitted || preloadMs > 0 ? PRELOAD_STATUS.HIT : PRELOAD_STATUS.MISS,
             prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
         };
     }

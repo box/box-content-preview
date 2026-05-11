@@ -3041,6 +3041,18 @@ describe('lib/Preview', () => {
             expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.MISS);
             expect(loadCall[1].prefetch_status).toBe('miss');
         });
+
+        test('should tag preload_status=hit when logger.time.preload is set (doc viewer path)', () => {
+            preview.logger = { log: { cache: { hit: false }, time: { preload: 1234 } } };
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const loadCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
+            );
+            expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.HIT);
+        });
     });
 
     describe('getRequestHeaders()', () => {
