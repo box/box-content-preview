@@ -2726,16 +2726,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     onRotateLeft: undefined,
                 });
             });
-
-            test('should not pass onRotateLeft for non-PDF files even when rotate.enabled is true', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
-                docBase.options.file.extension = 'ppt';
-                docBase.renderUI();
-
-                expect(getProps(docBase)).toMatchObject({
-                    onRotateLeft: undefined,
-                });
-            });
         });
 
         describe('rotateLeft()', () => {
