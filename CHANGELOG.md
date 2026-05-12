@@ -1,3 +1,10 @@
+## 3.30.0 (2026-05-12)
+
+* feat(media): add frame-by-frame video navigation (#1641) ([a3a51c7](https://github.com/box/box-content-preview/commit/a3a51c7)), closes [#1641](https://github.com/box/box-content-preview/issues/1641)
+* fix(doc): extend too-many-ops check to xlsx files (#1642) ([72e0902](https://github.com/box/box-content-preview/commit/72e0902)), closes [#1642](https://github.com/box/box-content-preview/issues/1642)
+
+
+
 ## 3.29.0 (2026-05-09)
 
 * feat(controls): add resin tagging to toolbar elements (#1640) ([420a532](https://github.com/box/box-content-preview/commit/420a532)), closes [#1640](https://github.com/box/box-content-preview/issues/1640)
