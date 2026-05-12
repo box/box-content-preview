@@ -2694,16 +2694,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should hide annotation create controls when rotated', () => {
+            test('should show drawing and region annotation create controls when rotated', () => {
                 docBase.currentAnnotatorViewMode = 'annotations';
                 docBase.options.showAnnotationsDrawingCreate = true;
                 docBase.rotationAngle = 90;
                 docBase.renderUI();
 
                 expect(getProps(docBase)).toMatchObject({
-                    hasDrawing: false,
+                    hasDrawing: true,
                     hasHighlight: false,
-                    hasRegion: false,
+                    hasRegion: true,
                 });
             });
 
@@ -2783,21 +2783,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.rotateLeft();
 
                 expect(docBase.emit).toBeCalledWith('rotate');
-            });
-
-            test('should disable annotation controls when rotated', () => {
-                docBase.rotateLeft();
-
-                expect(docBase.disableAnnotationControls).toBeCalled();
-                expect(docBase.enableAnnotationControls).not.toBeCalled();
-            });
-
-            test('should enable annotation controls when rotation returns to 0', () => {
-                docBase.rotationAngle = 90;
-                docBase.rotateLeft();
-
-                expect(docBase.enableAnnotationControls).toBeCalled();
-                expect(docBase.disableAnnotationControls).not.toBeCalled();
             });
 
             test('should refresh thumbnails sidebar if present', () => {
