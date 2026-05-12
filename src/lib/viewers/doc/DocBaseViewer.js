@@ -1005,8 +1005,8 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
-                // Only check operations for .numbers files
-                if (file.extension === 'numbers') {
+                // Only check operations for .numbers and .xlsx files
+                if (file.extension === 'numbers' || file.extension === 'xlsx') {
                     return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
                         if (opCount > MAX_OPERATIONS) {
                             throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
