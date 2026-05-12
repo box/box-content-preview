@@ -13,7 +13,13 @@ export default function VrToggleControl({ isVrShown, onVrToggle }: Props): JSX.E
     }
 
     return (
-        <button className="bp-VrToggleControl" onClick={onVrToggle} title={__('box3d_toggle_vr')} type="button">
+        <button
+            className="bp-VrToggleControl"
+            data-resin-target="vrToggle"
+            onClick={onVrToggle}
+            title={__('box3d_toggle_vr')}
+            type="button"
+        >
             <IconVr24 />
         </button>
     );

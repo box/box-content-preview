@@ -60,6 +60,7 @@ export default function ColorPickerControl({
             <button
                 ref={toggleRef}
                 className={classNames('bp-ColorPickerControl-toggle', { 'bp-is-active': isColorPickerToggled })}
+                data-resin-target="colorPickerOpen"
                 data-testid="bp-ColorPickerControl-toggle"
                 onBlur={handleBlur}
                 onClick={handleClick}

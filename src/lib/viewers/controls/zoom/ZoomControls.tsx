@@ -30,6 +30,7 @@ export default function ZoomControls({
         <div className="bp-ZoomControls">
             <button
                 className="bp-ZoomControls-button"
+                data-resin-target="zoomOut"
                 data-testid="bp-ZoomControls-out"
                 disabled={currentScale <= minScaleValue}
                 onClick={onZoomOut}
@@ -45,6 +46,7 @@ export default function ZoomControls({
             >{`${Math.round(currentScale * 100)}%`}</div>
             <button
                 className="bp-ZoomControls-button"
+                data-resin-target="zoomIn"
                 data-testid="bp-ZoomControls-in"
                 disabled={currentScale >= maxScaleValue}
                 onClick={onZoomIn}

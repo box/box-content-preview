@@ -70,6 +70,7 @@ export default function TimeControls({
             <DurationLabels currentTime={currentTime} durationTime={durationTime} fps={fps} mediaEl={mediaEl} />
             <SliderControl
                 className="bp-TimeControls-slider"
+                data-resin-target="timeScrubber"
                 max={durationValue}
                 min={0}
                 onBlur={noop} // Filmstrip is not currently shown during keyboard navigation

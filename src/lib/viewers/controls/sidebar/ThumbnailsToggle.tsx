@@ -17,6 +17,7 @@ export default function ThumbnailsToggle({ onThumbnailsToggle, isThumbnailsOpen 
         <button
             aria-expanded={isThumbnailsOpen}
             className="bp-ThumbnailsToggle"
+            data-resin-target="thumbnails"
             onClick={onThumbnailsToggle}
             title={__('toggle_thumbnails')}
             type="button"

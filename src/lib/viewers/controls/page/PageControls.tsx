@@ -20,6 +20,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
         <div className="bp-PageControls">
             <button
                 className="bp-PageControls-button"
+                data-resin-target="pagePrevious"
                 data-testid="bp-PageControls-previous"
                 disabled={pageNumber === 1}
                 onClick={(): void => onPageChange(pageNumber - 1)}
@@ -31,6 +32,7 @@ export default function PageControls({ onPageChange, onPageSubmit, pageCount, pa
             <PageControlsForm onPageSubmit={onPageSubmit} pageCount={pageCount} pageNumber={pageNumber} />
             <button
                 className="bp-PageControls-button"
+                data-resin-target="pageNext"
                 data-testid="bp-PageControls-next"
                 disabled={pageNumber === pageCount}
                 onClick={(): void => onPageChange(pageNumber + 1)}

@@ -1,3 +1,9 @@
+## 3.29.0 (2026-05-09)
+
+* feat(controls): add resin tagging to toolbar elements (#1640) ([420a532](https://github.com/box/box-content-preview/commit/420a532)), closes [#1640](https://github.com/box/box-content-preview/issues/1640)
+
+
+
 ## 3.28.0 (2026-05-05)
 
 * fix(doc): improve PDF rotation behavior for annotations (#1638) ([81785b3](https://github.com/box/box-content-preview/commit/81785b3)), closes [#1638](https://github.com/box/box-content-preview/issues/1638)
