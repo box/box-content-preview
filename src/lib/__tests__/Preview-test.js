@@ -1626,10 +1626,12 @@ describe('lib/Preview', () => {
                 accessPattern: 'direct_link',
                 previewMode: 'shared_file',
                 sharedLinkAuth: 'logged_out',
+                preloadStatus: 'hit',
             });
             expect(preview.options.accessPattern).toBe('direct_link');
             expect(preview.options.previewMode).toBe('shared_file');
             expect(preview.options.sharedLinkAuth).toBe('logged_out');
+            expect(preview.options.preloadStatus).toBe('hit');
         });
 
         test('should leave monitoring dimensions undefined when host omits them', () => {
@@ -1637,6 +1639,7 @@ describe('lib/Preview', () => {
             expect(preview.options.accessPattern).toBeUndefined();
             expect(preview.options.previewMode).toBeUndefined();
             expect(preview.options.sharedLinkAuth).toBeUndefined();
+            expect(preview.options.preloadStatus).toBeUndefined();
         });
     });
 
@@ -2803,7 +2806,7 @@ describe('lib/Preview', () => {
 
         test('should NOT include prefetch_status or preload_status on generic events', () => {
             preview.file = { id: '12345' };
-            preview.preloadEmitted = true;
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             preview.logger = { log: { cache: { hit: true } } };
 
             preview.emitLogEvent('test');
@@ -2905,9 +2908,9 @@ describe('lib/Preview', () => {
             preview.emitPreviewError(error);
         });
 
-        test('should tag errors with preload_status=hit when preload event fired', done => {
+        test('should tag errors with preload_status=hit when host supplied preloadStatus=hit', done => {
             preview.file = { id: '12345' };
-            preview.preloadEmitted = true;
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             preview.logger = { log: { cache: { hit: true } } };
 
             preview.on('preview_error', data => {
@@ -2989,8 +2992,8 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalled();
         });
 
-        test('should emit preview_preload_outcome=hit when preload event fired this session', () => {
-            preview.preloadEmitted = true;
+        test('should emit preview_preload_outcome=hit when host supplied preloadStatus=hit', () => {
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3002,7 +3005,7 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.HIT);
         });
 
-        test('should emit preview_preload_outcome=miss when preload event did not fire', () => {
+        test('should emit preview_preload_outcome=miss when host did not supply preloadStatus', () => {
             jest.spyOn(preview, 'emit');
 
             preview.emitLoadMetrics();
@@ -3014,8 +3017,8 @@ describe('lib/Preview', () => {
             expect(outcomeCall[1].value).toBe(PRELOAD_STATUS.MISS);
         });
 
-        test('should tag the load event from preloadEmitted and logger.cache.hit', () => {
-            preview.preloadEmitted = true;
+        test('should tag the load event from host preloadStatus and logger.cache.hit', () => {
+            preview.options.preloadStatus = PRELOAD_STATUS.HIT;
             preview.logger = { log: { cache: { hit: true } } };
             jest.spyOn(preview, 'emit');
 
@@ -3040,18 +3043,6 @@ describe('lib/Preview', () => {
             expect(loadCall).toBeDefined();
             expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.MISS);
             expect(loadCall[1].prefetch_status).toBe('miss');
-        });
-
-        test('should tag preload_status=hit when logger.time.preload is set (doc viewer path)', () => {
-            preview.logger = { log: { cache: { hit: false }, time: { preload: 1234 } } };
-            jest.spyOn(preview, 'emit');
-
-            preview.emitLoadMetrics();
-
-            const loadCall = preview.emit.mock.calls.find(
-                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
-            );
-            expect(loadCall[1].preload_status).toBe(PRELOAD_STATUS.HIT);
         });
     });
 
