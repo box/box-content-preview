@@ -82,11 +82,11 @@ export const PREVIEW_END_EVENT = 'preview_end';
 // Event fired once per load with preload hit/miss outcome (counter for hit rate)
 export const PREVIEW_PRELOAD_OUTCOME_EVENT = 'preview_preload_outcome';
 
-// Preload status values attached to load events and preview_preload_outcome
-export const PRELOAD_STATUS = {
-    HIT: 'hit', // Viewer consumed a preloaded representation/asset before the full load completed
-    MISS: 'miss', // Preload was attempted/available but not consumed
-    NA: 'na', // Preload is not applicable for this viewer or file type
+// Hit/miss values shared by preload_status and prefetch_status on load events,
+// the preview_preload_outcome counter, and preview_error.
+export const CACHE_STATUS = {
+    HIT: 'hit',
+    MISS: 'miss',
 };
 
 // Event fired when the user attempts to download the file

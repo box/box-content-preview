@@ -61,7 +61,7 @@ import {
     ERROR_CODE,
     FIRST_RENDER_METRIC,
     LOAD_METRIC,
-    PRELOAD_STATUS,
+    CACHE_STATUS,
     PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
     PREVIEW_END_EVENT,
     PREVIEW_ERROR,
@@ -1103,7 +1103,8 @@ class Preview extends EventEmitter {
         this.options.accessPattern = options.accessPattern;
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
-        // Whether the host called Preview.prefetch({preload: true}) for this fileId
+        // Host-supplied 'hit' | 'miss' indicating whether Preview.prefetch({preload: true})
+        // was called (and completed) for this fileId before the session opened.
         this.options.preloadStatus = options.preloadStatus;
 
         // Options that are applicable to certain file ids
@@ -1848,7 +1849,6 @@ class Preview extends EventEmitter {
 
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
-            value: loadStateTags.preload_status,
             ...loadStateTags,
         });
 
@@ -1919,8 +1919,8 @@ class Preview extends EventEmitter {
      */
     getLoadStateTags() {
         return {
-            preload_status: this.options?.preloadStatus || PRELOAD_STATUS.MISS,
-            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? 'hit' : 'miss',
+            preload_status: this.options?.preloadStatus || CACHE_STATUS.MISS,
+            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? CACHE_STATUS.HIT : CACHE_STATUS.MISS,
         };
     }
 
