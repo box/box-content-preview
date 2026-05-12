@@ -6,7 +6,13 @@ import MediaControls from './MediaControls';
 import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
-import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
+import {
+    CLASS_ELEM_KEYBOARD_FOCUS,
+    CLASS_HIDDEN,
+    CLASS_IS_BUFFERING,
+    CLASS_IS_VISIBLE,
+    DEFAULT_VIDEO_FPS,
+} from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getProp } from '../../util';
 
@@ -73,6 +79,7 @@ class MediaBaseViewer extends BaseViewer {
         this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
+        this.frameStep = this.frameStep.bind(this);
 
         window.addEventListener('beforeunload', this.processMetrics);
     }
@@ -779,6 +786,10 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     showPlayButton() {
+        if (this.isScrubbing) {
+            return;
+        }
+
         if (this.playContainerEl) {
             this.playContainerEl.classList.remove(CLASS_HIDDEN);
         } else if (this.playButtonEl) {
@@ -1167,6 +1178,16 @@ class MediaBaseViewer extends BaseViewer {
             case 'shift+m':
                 this.toggleMute();
                 break;
+            case ',':
+                if (this.featureEnabled('frameStep.enabled')) {
+                    this.frameStep('back');
+                }
+                break;
+            case '.':
+                if (this.featureEnabled('frameStep.enabled')) {
+                    this.frameStep('forward');
+                }
+                break;
             case 'c':
             case 'shift+c':
                 this.mediaControls.toggleSubtitles();
@@ -1195,6 +1216,14 @@ class MediaBaseViewer extends BaseViewer {
                 break;
             case 'l':
                 this.quickSeek(10);
+                break;
+            case ',':
+                if (!this.featureEnabled('frameStep.enabled')) return false;
+                this.frameStep('back');
+                break;
+            case '.':
+                if (!this.featureEnabled('frameStep.enabled')) return false;
+                this.frameStep('forward');
                 break;
             case '0':
             case 'home':
@@ -1299,6 +1328,27 @@ class MediaBaseViewer extends BaseViewer {
      */
     movePlayback(isForward, duration) {
         this.quickSeek(isForward ? duration : -duration);
+    }
+
+    /**
+     * Steps forward or backward by one frame, pausing playback first.
+     * DashViewer overrides this to use Shaka manifest FPS.
+     *
+     * @param {string} direction - 'forward' or 'back'
+     * @return {void}
+     */
+    frameStep(direction) {
+        this.isScrubbing = true;
+
+        if (!this.mediaEl.paused) {
+            this.mediaEl.pause();
+            this.renderUI();
+        }
+
+        const fps = DEFAULT_VIDEO_FPS;
+        const increment = direction === 'forward' ? 1 / fps : -(1 / fps);
+        this.quickSeek(increment);
+        this.isScrubbing = false;
     }
 
     /**

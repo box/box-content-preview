@@ -158,6 +158,7 @@ export const VIDEO_PLAYER_CONTROL_BAR_HEIGHT = 120;
 export const MIN_VIDEO_WIDTH_PX = 420;
 
 export const MEDIA_PLAYBACK_SKIP_DURATION = 5;
+export const DEFAULT_VIDEO_FPS = 30;
 
 export const ANNOTATOR_VIEW_MODES = {
     ANNOTATIONS: 'annotations',
