@@ -798,6 +798,51 @@ describe('lib/Preview', () => {
 
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
         });
+
+        test('should merge per-call features into viewer options when features are passed', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            jest.spyOn(preview, 'createViewerOptions');
+            preview.options.features = { existingFeature: true };
+
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                features: { migrateAccessTokenToHeader: true },
+            });
+
+            expect(preview.createViewerOptions).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    features: { existingFeature: true, migrateAccessTokenToHeader: true },
+                }),
+            );
+        });
+
+        test('should not set features on viewer options when features are omitted', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            jest.spyOn(preview, 'createViewerOptions');
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+
+            const callArgs = preview.createViewerOptions.mock.calls[0][0];
+            expect(callArgs).not.toHaveProperty('features');
+        });
+
+        test('should not mutate this.options.features when per-call features are passed', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            preview.options.features = { existingFeature: true };
+
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                features: { migrateAccessTokenToHeader: true },
+            });
+
+            expect(preview.options.features).toEqual({ existingFeature: true });
+        });
     });
 
     describe('prefetchViewers()', () => {

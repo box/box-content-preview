@@ -693,6 +693,7 @@ class Preview extends EventEmitter {
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
      * @param {boolean} options.preload - Is this prefetch for a preload
+     * @param {Object} [options.features] - Feature flags to merge into viewer options for this prefetch
      * @param {string} token - Access token
      * @return {void}
      */
@@ -705,6 +706,7 @@ class Preview extends EventEmitter {
         preload = false,
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
+        features,
     }) {
         let file;
         let loader;
@@ -745,6 +747,13 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
             options.docFirstPagesConfig = docFirstPagesConfig;
+        }
+
+        // If features are passed in for this prefetch call (e.g. from callers that
+        // invoke prefetch() before show() has set this.options.features), merge them
+        // into the viewer options for this call without mutating this.options.
+        if (features) {
+            options.features = { ...this.options.features, ...features };
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
