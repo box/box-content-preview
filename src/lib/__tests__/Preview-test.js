@@ -2992,6 +2992,16 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalled();
         });
 
+        test('should not re-emit load metrics when called twice in the same session', () => {
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+            const firstCallCount = preview.emit.mock.calls.length;
+            preview.emitLoadMetrics();
+
+            expect(preview.emit.mock.calls.length).toBe(firstCallCount);
+        });
+
         test('should emit preview_preload_outcome with preload_status=hit when host supplied preloadStatus=hit', () => {
             preview.options.preloadStatus = CACHE_STATUS.HIT;
             jest.spyOn(preview, 'emit');

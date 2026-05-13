@@ -831,6 +831,7 @@ class Preview extends EventEmitter {
 
         // Init performance logging
         this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.loadMetricsEmitted = false;
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
@@ -1817,9 +1818,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     emitLoadMetrics() {
-        if (!this.file || !this.file.id) {
+        if (!this.file || !this.file.id || this.loadMetricsEmitted) {
             return;
         }
+        // Guard against double emission (finishLoading followed by destroy on close/back nav)
+        this.loadMetricsEmitted = true;
 
         const { id } = this.file;
 
