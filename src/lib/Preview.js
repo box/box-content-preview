@@ -57,11 +57,11 @@ import {
     VIDEO_VIEWER_NAMES,
 } from './constants';
 import {
+    CACHE_STATUS,
     DURATION_METRIC,
     ERROR_CODE,
     FIRST_RENDER_METRIC,
     LOAD_METRIC,
-    CACHE_STATUS,
     PREVIEW_DOWNLOAD_ATTEMPT_EVENT,
     PREVIEW_END_EVENT,
     PREVIEW_ERROR,
@@ -1100,12 +1100,10 @@ class Preview extends EventEmitter {
         // Object with ftux experience data that can determine whether specific experiences can show
         this.options.experiences = options.experiences || {};
 
-        // Host-supplied monitoring dimensions attached to every emitted event by emitLogEvent
+        // Host-supplied monitoring dimensions attached to emitted events by emitLogEvent
         this.options.accessPattern = options.accessPattern;
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
-        // Host-supplied 'hit' | 'miss' indicating whether Preview.prefetch({preload: true})
-        // was called (and completed) for this fileId before the session opened.
         this.options.preloadStatus = options.preloadStatus;
 
         // Options that are applicable to certain file ids
