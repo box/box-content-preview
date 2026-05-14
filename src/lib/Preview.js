@@ -57,6 +57,7 @@ import {
     VIDEO_VIEWER_NAMES,
 } from './constants';
 import {
+    CACHE_STATUS,
     DURATION_METRIC,
     ERROR_CODE,
     FIRST_RENDER_METRIC,
@@ -65,6 +66,7 @@ import {
     PREVIEW_END_EVENT,
     PREVIEW_ERROR,
     PREVIEW_METRIC,
+    PREVIEW_PRELOAD_OUTCOME_EVENT,
     RENDER_METRIC,
     VIEWER_EVENT,
 } from './events';
@@ -834,6 +836,7 @@ class Preview extends EventEmitter {
 
         // Init performance logging
         this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.loadMetricsEmitted = false;
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
@@ -1101,6 +1104,12 @@ class Preview extends EventEmitter {
 
         // Object with ftux experience data that can determine whether specific experiences can show
         this.options.experiences = options.experiences || {};
+
+        // Host-supplied monitoring dimensions attached to emitted events by emitLogEvent
+        this.options.accessPattern = options.accessPattern;
+        this.options.previewMode = options.previewMode;
+        this.options.sharedLinkAuth = options.sharedLinkAuth;
+        this.options.preloadStatus = options.preloadStatus;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1799,6 +1808,7 @@ class Preview extends EventEmitter {
 
         this.emitLogEvent(PREVIEW_ERROR, {
             error: sanitizedError,
+            ...this.getLoadStateTags(),
         });
     }
 
@@ -1811,9 +1821,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     emitLoadMetrics() {
-        if (!this.file || !this.file.id) {
+        if (!this.file || !this.file.id || this.loadMetricsEmitted) {
             return;
         }
+        // Guard against double emission (finishLoading followed by destroy on close/back nav)
+        this.loadMetricsEmitted = true;
 
         const { id } = this.file;
 
@@ -1829,6 +1841,8 @@ class Preview extends EventEmitter {
         const contentLoadTime = Timer.get(contentLoadTag) || {};
         const previewLoadTime = Timer.get(previewLoadTag) || {};
 
+        const loadStateTags = this.getLoadStateTags();
+
         this.emitLogEvent(PREVIEW_METRIC, {
             event_name: LOAD_METRIC.previewLoadEvent,
             value: previewLoadTime.elapsed || 0,
@@ -1836,6 +1850,12 @@ class Preview extends EventEmitter {
             [LOAD_METRIC.convertTime]: convertTime.elapsed || 0,
             [LOAD_METRIC.downloadResponseTime]: downloadTime.elapsed || 0,
             [LOAD_METRIC.contentLoadTime]: contentLoadTime.elapsed || 0,
+            ...loadStateTags,
+        });
+
+        this.emitLogEvent(PREVIEW_METRIC, {
+            event_name: PREVIEW_PRELOAD_OUTCOME_EVENT,
+            ...loadStateTags,
         });
 
         Timer.reset([infoTag, convertTag, downloadTag, contentLoadTag, previewLoadTag]);
@@ -1874,9 +1894,11 @@ class Preview extends EventEmitter {
      */
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
+        const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
 
         this.emit(name, {
             ...payload,
+            access_pattern: accessPattern,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
             current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',
@@ -1884,11 +1906,28 @@ class Preview extends EventEmitter {
             file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
+            preview_mode: previewMode,
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
+            shared_link_auth: sharedLinkAuth,
             timestamp: getISOTime(),
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
             ...getClientLogDetails(),
         });
+    }
+
+    /**
+     * Returns the prefetch/preload dimensions for this preview session. Only attached to
+     * the load event, preview_preload_outcome counter, and preview_error — exactly one
+     * of those fires per preview session so the dashboard denominator stays clean.
+     *
+     * @private
+     * @return {{ preload_status: string, prefetch_status: string }}
+     */
+    getLoadStateTags() {
+        return {
+            preload_status: this.options?.preloadStatus || CACHE_STATUS.MISS,
+            prefetch_status: getProp(this.logger, 'log.cache.hit', false) ? CACHE_STATUS.HIT : CACHE_STATUS.MISS,
+        };
     }
 
     /**
