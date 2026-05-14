@@ -1893,6 +1893,7 @@ class Preview extends EventEmitter {
 
         this.emit(name, {
             ...payload,
+            access_pattern: accessPattern,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
             current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',
@@ -1900,12 +1901,11 @@ class Preview extends EventEmitter {
             file_size: getProp(file, 'size', ''),
             file_version_id: getProp(file, 'file_version.id', ''),
             locale: getProp(this.location, 'locale', ''),
+            preview_mode: previewMode,
             rep_type: getProp(this.viewer, 'options.representation.representation', '').toLowerCase(),
+            shared_link_auth: sharedLinkAuth,
             timestamp: getISOTime(),
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
-            ...(accessPattern !== undefined && { access_pattern: accessPattern }),
-            ...(previewMode !== undefined && { preview_mode: previewMode }),
-            ...(sharedLinkAuth !== undefined && { shared_link_auth: sharedLinkAuth }),
             ...getClientLogDetails(),
         });
     }

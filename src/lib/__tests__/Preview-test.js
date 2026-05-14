@@ -2834,7 +2834,7 @@ describe('lib/Preview', () => {
             );
         });
 
-        test('should omit host-supplied dimension fields that the host did not provide', () => {
+        test('should pass through undefined when host does not supply a dimension', () => {
             preview.file = { id: '12345' };
             preview.options.accessPattern = undefined;
             preview.options.previewMode = undefined;
@@ -2843,9 +2843,9 @@ describe('lib/Preview', () => {
             preview.emitLogEvent('test');
 
             const payload = preview.emit.mock.calls[0][1];
-            expect(payload).not.toHaveProperty('access_pattern');
-            expect(payload).not.toHaveProperty('preview_mode');
-            expect(payload).not.toHaveProperty('shared_link_auth');
+            expect(payload.access_pattern).toBeUndefined();
+            expect(payload.preview_mode).toBeUndefined();
+            expect(payload.shared_link_auth).toBeUndefined();
         });
     });
 
