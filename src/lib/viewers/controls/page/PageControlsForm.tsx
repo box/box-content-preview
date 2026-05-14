@@ -88,6 +88,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                 <input
                     ref={inputElRef}
                     className="bp-PageControlsForm-input"
+                    data-resin-target="pageNumberInput"
                     data-testid="bp-PageControlsForm-input"
                     min="1"
                     onBlur={handleNumInputBlur}
@@ -103,6 +104,7 @@ export default function PageControlsForm({ onPageSubmit, pageNumber, pageCount }
                 <button
                     ref={buttonElRef}
                     className="bp-PageControlsForm-button"
+                    data-resin-target="pageNumberOpen"
                     data-testid="bp-PageControlsForm-button"
                     disabled={pageCount <= 1}
                     onClick={(): void => setIsInputShown(true)}

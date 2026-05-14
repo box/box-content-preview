@@ -14,6 +14,8 @@ export type Props = {
     durationTime?: number;
     filmstripInterval?: number;
     filmstripUrl?: string;
+    fps?: number;
+    mediaEl?: HTMLVideoElement | null;
     onTimeChange: (volume: number) => void;
 };
 
@@ -32,6 +34,8 @@ export default function TimeControls({
     durationTime = 0,
     filmstripInterval,
     filmstripUrl,
+    fps,
+    mediaEl,
     onTimeChange,
 }: Props): JSX.Element {
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
@@ -63,9 +67,10 @@ export default function TimeControls({
                     time={hoverTime}
                 />
             )}
-            <DurationLabels currentTime={currentTime} durationTime={durationTime} />
+            <DurationLabels currentTime={currentTime} durationTime={durationTime} fps={fps} mediaEl={mediaEl} />
             <SliderControl
                 className="bp-TimeControls-slider"
+                data-resin-target="timeScrubber"
                 max={durationValue}
                 min={0}
                 onBlur={noop} // Filmstrip is not currently shown during keyboard navigation
@@ -74,7 +79,7 @@ export default function TimeControls({
                 onMouseOver={(): void => setIsSliderHovered(true)}
                 onMove={handleMouseMove}
                 onUpdate={onTimeChange}
-                step={5}
+                step={fps ? 1 / fps : 5}
                 title={__('media_time_slider')}
                 track={`linear-gradient(to right, ${bdlBoxBlue} ${currentPercentage}%, ${white} ${currentPercentage}%, ${white} ${bufferedPercentage}%, ${bdlGray65} ${bufferedPercentage}%, ${bdlGray65} 100%)`}
                 value={currentValue}

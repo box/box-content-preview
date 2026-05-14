@@ -24,6 +24,7 @@ export default function RotateAxisControl({ axis, className, onRotateOnAxisChang
         <div className={classNames('bp-RotateAxisControl', className)} data-testid={`bp-rotate-axis-control-${axis}`}>
             <button
                 className="bp-RotateAxisControl-left"
+                data-resin-target="rotateAxisLeft"
                 data-testid="bp-rotate-axis-control-left"
                 onClick={handleClickLeft}
                 type="button"
@@ -33,6 +34,7 @@ export default function RotateAxisControl({ axis, className, onRotateOnAxisChang
             </span>
             <button
                 className="bp-RotateAxisControl-right"
+                data-resin-target="rotateAxisRight"
                 data-testid="bp-rotate-axis-control-right"
                 onClick={handleClickRight}
                 type="button"

@@ -8,7 +8,13 @@ export type Props = {
 
 export default function RotateControl({ onRotateLeft }: Props): JSX.Element {
     return (
-        <button className="bp-RotateControl" onClick={onRotateLeft} title={__('rotate_left')} type="button">
+        <button
+            className="bp-RotateControl"
+            data-resin-target="rotate"
+            onClick={onRotateLeft}
+            title={__('rotate_left')}
+            type="button"
+        >
             <IconRotate24 />
         </button>
     );

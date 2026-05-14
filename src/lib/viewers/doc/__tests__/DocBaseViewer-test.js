@@ -2126,7 +2126,59 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     });
                 });
 
-                test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['xlsx'], ['pdf']])(
+                test('should check operations count for .xlsx files', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    await docBase.initViewer('url');
+
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should throw error when .xlsx file has too many operations', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                    await docBase.initViewer('url').catch(() => {
+                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    });
+                });
+
+                test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['pdf']])(
                     'should skip operations check for %s files',
                     async extension => {
                         docBase.options.file.extension = extension;

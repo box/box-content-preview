@@ -12,7 +12,13 @@ export default function ResetControl({ onReset }: Props): JSX.Element {
     };
 
     return (
-        <button className="bp-ResetControl" onClick={handleClick} title={__('box3d_reset')} type="button">
+        <button
+            className="bp-ResetControl"
+            data-resin-target="resetView"
+            onClick={handleClick}
+            title={__('box3d_reset')}
+            type="button"
+        >
             <IconReset24 />
         </button>
     );

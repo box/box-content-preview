@@ -20,6 +20,7 @@ function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>):
             <button
                 ref={ref}
                 className="bp-SettingsToggle-button"
+                data-resin-target="settingsOpen"
                 onClick={onClick}
                 title={__('media_settings')}
                 type="button"

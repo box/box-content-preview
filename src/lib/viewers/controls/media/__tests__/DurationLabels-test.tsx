@@ -30,5 +30,12 @@ describe('DurationLabels', () => {
             expect(current).toBeInTheDocument();
             expect(duration).toBeInTheDocument();
         });
+
+        test('should render timecode format when fps is provided', async () => {
+            getWrapper({ currentTime: 61.5, durationTime: 120, fps: 30 });
+
+            expect(await screen.findByText('00:01:01:15')).toBeInTheDocument();
+            expect(await screen.findByText('00:02:00:00')).toBeInTheDocument();
+        });
     });
 });
