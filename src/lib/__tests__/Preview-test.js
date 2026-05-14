@@ -744,6 +744,7 @@ describe('lib/Preview', () => {
                 sharedLinkPassword,
                 isDocFirstPrefetchEnabled: false,
                 docFirstPagesConfig: null,
+                features: { migrateAccessTokenToHeader: false },
             });
         });
 
@@ -804,6 +805,43 @@ describe('lib/Preview', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
 
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+        });
+
+        test('should pass migrateAccessTokenToHeader feature to viewer options when isAccessTokenHeaderEnabled is true', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            jest.spyOn(preview, 'createViewerOptions');
+            preview.options.features = { existingFeature: true };
+
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: true,
+                isAccessTokenHeaderEnabled: true,
+            });
+
+            expect(preview.createViewerOptions).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    features: { existingFeature: true, migrateAccessTokenToHeader: true },
+                }),
+            );
+            expect(preview.options.features).toEqual({ existingFeature: true });
+        });
+
+        test('should pass migrateAccessTokenToHeader=false to viewer options when isAccessTokenHeaderEnabled is false', () => {
+            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
+            jest.spyOn(preview, 'createViewerOptions');
+            preview.options.features = { existingFeature: true };
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+
+            expect(preview.createViewerOptions).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    features: { existingFeature: true, migrateAccessTokenToHeader: false },
+                }),
+            );
+            expect(preview.options.features).toEqual({ existingFeature: true });
         });
     });
 
