@@ -952,7 +952,9 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        const transcriptionUrl = this.createContentUrlWithAuthParams(extractedText.content.url_template);
+        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
+            ? this.createContentUrlV2(extractedText.content.url_template)
+            : this.createContentUrlWithAuthParams(extractedText.content.url_template);
         this.transcriptionStatus = this.getRepStatus(extractedText);
 
         try {

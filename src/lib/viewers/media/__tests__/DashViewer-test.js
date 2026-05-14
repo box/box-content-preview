@@ -1175,6 +1175,32 @@ describe('lib/viewers/media/DashViewer', () => {
 
             expect(stubs.loadSubtitles).not.toBeCalled();
         });
+
+        test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            const createUrlV2 = jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('v2-url');
+            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+            });
+
+            dash.loadTranscription();
+
+            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
+            expect(stubs.createUrl).not.toBeCalled();
+        });
+
+        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+            });
+
+            dash.loadTranscription();
+
+            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
+        });
     });
 
     describe('loadSubtitles()', () => {
