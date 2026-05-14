@@ -1106,8 +1106,9 @@ describe('lib/viewers/media/DashViewer', () => {
                 getPromise: () => mockRepStatusPromise,
             });
 
-            // New track sorts between existing tracks to verify we find it
-            // by ID rather than by array position.
+            // New track's ID would sort it between existing tracks, but we must NOT
+            // re-sort this.textTracks: the non-React menu uses array index as data-value
+            // and the user's cached selection is an index into this.textTracks.
             dash.player.addTextTrackAsync = jest.fn().mockReturnValue(mockAddTrackPromise);
             dash.player.getTextTracks = jest.fn().mockReturnValue([
                 { id: 1, language: 'eng' },
@@ -1127,7 +1128,15 @@ describe('lib/viewers/media/DashViewer', () => {
                 .then(() => {
                     expect(stubs.loadSubtitles).not.toBeCalled();
                     expect(addSubtitle).toHaveBeenCalledTimes(1);
-                    expect(addSubtitle).toBeCalledWith(__('auto_generated'), 1);
+                    // New track is appended at the end (idx 2), preserving the existing
+                    // index → track mapping so the user's cached selection still resolves
+                    // to the originally-selected track.
+                    expect(addSubtitle).toBeCalledWith(__('auto_generated'), 2);
+                    expect(dash.textTracks).toEqual([
+                        { id: 1, language: 'eng' },
+                        { id: 10, language: 'spa' },
+                        { id: 5, language: 'und', label: 'Transcription' },
+                    ]);
                     done();
                 });
         });

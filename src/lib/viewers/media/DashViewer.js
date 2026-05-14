@@ -976,23 +976,27 @@ class DashViewer extends VideoBaseViewer {
             }
 
             if (this.textTracks.length > 0) {
-                // Subtitles were already initialized — find and append only
-                // the new track(s) without disturbing the user's selection.
-                const prevTracks = this.textTracks;
-                const prevIds = new Set(prevTracks.map(t => t.id));
-                this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
+                // Subtitles were already initialized — append only the new track(s) at the
+                // end of `this.textTracks`. We must not re-sort: in the non-React path, the
+                // user's selection is cached as an INDEX into `this.textTracks` (see
+                // handleSubtitle) and Settings menu items use the same number as their
+                // `data-value`, so reordering would silently swap which track plays.
+                const existingIds = new Set(this.textTracks.map(t => t.id));
+                const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
 
                 if (this.useReactControls()) {
-                    this.textTracks = this.textTracks.map(track => ({
+                    this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
                         ...track,
                         displayLanguage: this.getTrackDisplayLanguage(track),
                     }));
                     this.renderUI();
                 } else {
-                    this.textTracks.forEach((track, idx) => {
-                        if (!prevIds.has(track.id)) {
-                            this.mediaControls.settings.addSubtitle(__('auto_generated'), idx);
-                        }
+                    newTracks.forEach(track => {
+                        this.textTracks.push(track);
+                        this.mediaControls.settings.addSubtitle(
+                            this.getTrackDisplayLanguage(track),
+                            this.textTracks.length - 1,
+                        );
                     });
                 }
             } else {
