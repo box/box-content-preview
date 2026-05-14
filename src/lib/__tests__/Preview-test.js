@@ -11,7 +11,14 @@ import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PRELOAD_REP_NAME } from '../constants';
-import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, PREVIEW_METRIC } from '../events';
+import {
+    VIEWER_EVENT,
+    ERROR_CODE,
+    LOAD_METRIC,
+    CACHE_STATUS,
+    PREVIEW_METRIC,
+    PREVIEW_PRELOAD_OUTCOME_EVENT,
+} from '../events';
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
 
@@ -1612,6 +1619,28 @@ describe('lib/Preview', () => {
 
             expect(preview.options.features).toEqual({});
         });
+
+        test('should store host-supplied monitoring dimensions', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                accessPattern: 'direct_link',
+                previewMode: 'shared_file',
+                sharedLinkAuth: 'logged_out',
+                preloadStatus: 'hit',
+            });
+            expect(preview.options.accessPattern).toBe('direct_link');
+            expect(preview.options.previewMode).toBe('shared_file');
+            expect(preview.options.sharedLinkAuth).toBe('logged_out');
+            expect(preview.options.preloadStatus).toBe('hit');
+        });
+
+        test('should leave monitoring dimensions undefined when host omits them', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.accessPattern).toBeUndefined();
+            expect(preview.options.previewMode).toBeUndefined();
+            expect(preview.options.sharedLinkAuth).toBeUndefined();
+            expect(preview.options.preloadStatus).toBeUndefined();
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -2774,6 +2803,50 @@ describe('lib/Preview', () => {
                 }),
             );
         });
+
+        test('should NOT include prefetch_status or preload_status on generic events', () => {
+            preview.file = { id: '12345' };
+            preview.options.preloadStatus = CACHE_STATUS.HIT;
+            preview.logger = { log: { cache: { hit: true } } };
+
+            preview.emitLogEvent('test');
+
+            const payload = preview.emit.mock.calls[0][1];
+            expect(payload).not.toHaveProperty('preload_status');
+            expect(payload).not.toHaveProperty('prefetch_status');
+        });
+
+        test('should include host-supplied monitoring dimensions when set', () => {
+            preview.file = { id: '12345' };
+            preview.options.accessPattern = 'file_list';
+            preview.options.previewMode = 'default';
+            preview.options.sharedLinkAuth = 'na';
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    access_pattern: 'file_list',
+                    preview_mode: 'default',
+                    shared_link_auth: 'na',
+                }),
+            );
+        });
+
+        test('should pass through undefined when host does not supply a dimension', () => {
+            preview.file = { id: '12345' };
+            preview.options.accessPattern = undefined;
+            preview.options.previewMode = undefined;
+            preview.options.sharedLinkAuth = undefined;
+
+            preview.emitLogEvent('test');
+
+            const payload = preview.emit.mock.calls[0][1];
+            expect(payload.access_pattern).toBeUndefined();
+            expect(payload.preview_mode).toBeUndefined();
+            expect(payload.shared_link_auth).toBeUndefined();
+        });
     });
 
     describe('emitPreviewError()', () => {
@@ -2834,6 +2907,32 @@ describe('lib/Preview', () => {
             const error = new PreviewError('bad_thing', `${displayMessage}?${auth}`, {}, `${message}?${auth}`);
             preview.emitPreviewError(error);
         });
+
+        test('should tag errors with preload_status=hit when host supplied preloadStatus=hit', done => {
+            preview.file = { id: '12345' };
+            preview.options.preloadStatus = CACHE_STATUS.HIT;
+            preview.logger = { log: { cache: { hit: true } } };
+
+            preview.on('preview_error', data => {
+                expect(data.preload_status).toBe(CACHE_STATUS.HIT);
+                expect(data.prefetch_status).toBe('hit');
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
+
+        test('should tag errors with miss by default', done => {
+            preview.file = { id: '12345' };
+
+            preview.on('preview_error', data => {
+                expect(data.preload_status).toBe(CACHE_STATUS.MISS);
+                expect(data.prefetch_status).toBe('miss');
+                done();
+            });
+
+            preview.emitPreviewError({});
+        });
     });
 
     describe('emitLoadMetrics()', () => {
@@ -2891,6 +2990,69 @@ describe('lib/Preview', () => {
             preview.emitLoadMetrics();
             expect(Timer.reset).toHaveBeenCalled();
             expect(preview.emit).toHaveBeenCalled();
+        });
+
+        test('should not re-emit load metrics when called twice in the same session', () => {
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+            const firstCallCount = preview.emit.mock.calls.length;
+            preview.emitLoadMetrics();
+
+            expect(preview.emit.mock.calls.length).toBe(firstCallCount);
+        });
+
+        test('should emit preview_preload_outcome with preload_status=hit when host supplied preloadStatus=hit', () => {
+            preview.options.preloadStatus = CACHE_STATUS.HIT;
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const outcomeCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === PREVIEW_PRELOAD_OUTCOME_EVENT,
+            );
+            expect(outcomeCall).toBeDefined();
+            expect(outcomeCall[1].preload_status).toBe(CACHE_STATUS.HIT);
+        });
+
+        test('should emit preview_preload_outcome with preload_status=miss when host did not supply preloadStatus', () => {
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const outcomeCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === PREVIEW_PRELOAD_OUTCOME_EVENT,
+            );
+            expect(outcomeCall).toBeDefined();
+            expect(outcomeCall[1].preload_status).toBe(CACHE_STATUS.MISS);
+        });
+
+        test('should tag the load event from host preloadStatus and logger.cache.hit', () => {
+            preview.options.preloadStatus = CACHE_STATUS.HIT;
+            preview.logger = { log: { cache: { hit: true } } };
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const loadCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
+            );
+            expect(loadCall).toBeDefined();
+            expect(loadCall[1].preload_status).toBe(CACHE_STATUS.HIT);
+            expect(loadCall[1].prefetch_status).toBe('hit');
+        });
+
+        test('should tag load event miss by default', () => {
+            jest.spyOn(preview, 'emit');
+
+            preview.emitLoadMetrics();
+
+            const loadCall = preview.emit.mock.calls.find(
+                ([name, payload]) => name === PREVIEW_METRIC && payload.event_name === LOAD_METRIC.previewLoadEvent,
+            );
+            expect(loadCall).toBeDefined();
+            expect(loadCall[1].preload_status).toBe(CACHE_STATUS.MISS);
+            expect(loadCall[1].prefetch_status).toBe('miss');
         });
     });
 
