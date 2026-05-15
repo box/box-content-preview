@@ -35,9 +35,12 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         margin-right: 20px;
         margin-left: 20px;
         cursor: pointer;
+        transition: transform .2s ease-in-out;
 
         &:focus,
         &:hover {
+            transform: translateY(-1px) scale(1.02);
+
             .bp-thumbnail-page-number {
                 background: $seventy-sixers;
                 opacity: 1;
@@ -84,6 +87,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         background-color: $d-eight;
         border-radius: $thumbnail-border-radius;
         box-shadow: 0 0 0 1px $off-white, 0 1px 4px 0 rgba(0, 0, 0, .08);
+        transition: box-shadow .2s ease-in-out;
     }
 
     .bp-thumbnail-page-number {
