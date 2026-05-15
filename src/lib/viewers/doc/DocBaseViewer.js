@@ -852,12 +852,6 @@ class DocBaseViewer extends BaseViewer {
 
         this.emit('rotate');
 
-        if (this.rotationAngle === 0) {
-            this.enableAnnotationControls();
-        } else {
-            this.disableAnnotationControls();
-        }
-
         if (this.thumbnailsSidebar) {
             this.thumbnailsSidebar.refresh();
         }
@@ -1400,12 +1394,10 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
-        const canAnnotate =
-            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.rotationAngle === 0;
+        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
-        const isPDF = ['pdf'].includes(this.options.file.extension);
-        const canRotate = isPDF && this.featureEnabled('rotate.enabled');
+        const canRotate = this.featureEnabled('rotate.enabled');
 
         this.controls.render(
             <DocControls
@@ -1413,7 +1405,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
-                hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
+                hasHighlight={canAnnotate && canDownload && isAnnotationsMode && this.rotationAngle === 0}
                 hasRegion={canAnnotate && isAnnotationsMode}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}

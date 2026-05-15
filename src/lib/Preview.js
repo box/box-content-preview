@@ -707,6 +707,7 @@ class Preview extends EventEmitter {
         preload = false,
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
+        isAccessTokenHeaderEnabled = false,
     }) {
         let file;
         let loader;
@@ -747,6 +748,10 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
             options.docFirstPagesConfig = docFirstPagesConfig;
+            options.features = {
+                ...this.options.features,
+                migrateAccessTokenToHeader: isAccessTokenHeaderEnabled,
+            };
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
