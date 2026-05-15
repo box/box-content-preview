@@ -1091,6 +1091,7 @@ class BaseViewer extends EventEmitter {
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
             modeButtons: ANNOTATION_BUTTONS,
+            onCopyLink: options && options.onCopyLink,
         });
 
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
