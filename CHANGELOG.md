@@ -1,3 +1,10 @@
+## 3.31.0 (2026-05-15)
+
+* feat(auth): accept optional features in prefetch() (#1645) ([a42f600](https://github.com/box/box-content-preview/commit/a42f600)), closes [#1645](https://github.com/box/box-content-preview/issues/1645)
+* feat(preview): add monitoring dimensions + preload outcome (#1639) ([0287989](https://github.com/box/box-content-preview/commit/0287989)), closes [#1639](https://github.com/box/box-content-preview/issues/1639)
+
+
+
 ## 3.30.0 (2026-05-12)
 
 * feat(media): add frame-by-frame video navigation (#1641) ([a3a51c7](https://github.com/box/box-content-preview/commit/a3a51c7)), closes [#1641](https://github.com/box/box-content-preview/issues/1641)
