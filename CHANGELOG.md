@@ -1,3 +1,10 @@
+## 3.32.0 (2026-05-16)
+
+* feat(annotations): Enable drawing/region annotations on rotated files (#1644) ([bd81be1](https://github.com/box/box-content-preview/commit/bd81be1)), closes [#1644](https://github.com/box/box-content-preview/issues/1644)
+* feat(annotations): forward onCopyLink option to annotator (#1646) ([7555499](https://github.com/box/box-content-preview/commit/7555499)), closes [#1646](https://github.com/box/box-content-preview/issues/1646)
+
+
+
 ## 3.31.0 (2026-05-15)
 
 * feat(auth): accept optional features in prefetch() (#1645) ([a42f600](https://github.com/box/box-content-preview/commit/a42f600)), closes [#1645](https://github.com/box/box-content-preview/issues/1645)
