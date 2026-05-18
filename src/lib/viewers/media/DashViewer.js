@@ -34,6 +34,9 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
 
+    /** @property {Object} - Status of the extracted_text (transcription) representation */
+    transcriptionStatus;
+
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
 
@@ -117,6 +120,10 @@ class DashViewer extends VideoBaseViewer {
         // Stop polling for filmstrip
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
+        }
+
+        if (this.transcriptionStatus) {
+            this.transcriptionStatus.destroy();
         }
 
         clearInterval(this.statsIntervalId);
@@ -634,6 +641,17 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Returns the display-friendly name for a text track's language.
+     * Maps the undetermined language code 'und' to a localized "Auto-Generated" label.
+     *
+     * @param {Object} track - A Shaka text track object
+     * @return {string} Localized language name or the raw language code
+     */
+    getTrackDisplayLanguage(track) {
+        return track.language === 'und' ? __('auto_generated') : getLanguageName(track.language) || track.language;
+    }
+
+    /**
      * Loads captions/subtitles into the settings menu
      *
      * @return {void}
@@ -647,7 +665,7 @@ class DashViewer extends VideoBaseViewer {
                 this.initSubtitles();
             } else {
                 this.mediaControls.initSubtitles(
-                    this.textTracks.map(track => getLanguageName(track.language) || track.language),
+                    this.textTracks.map(track => this.getTrackDisplayLanguage(track)),
                     getLanguageName(this.options.location.locale.substring(0, 2)),
                 );
             }
@@ -687,7 +705,7 @@ class DashViewer extends VideoBaseViewer {
 
         this.textTracks = this.textTracks.map(track => ({
             ...track,
-            displayLanguage: getLanguageName(track.language) || track.language,
+            displayLanguage: this.getTrackDisplayLanguage(track),
         }));
 
         // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
@@ -844,6 +862,7 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         this.loadFilmStrip();
         this.loadSubtitles();
+        this.loadTranscription();
         this.loadAlternateAudio();
         this.showPlayButton();
 
@@ -920,6 +939,75 @@ class DashViewer extends VideoBaseViewer {
             } else {
                 this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
             }
+        }
+    }
+
+    /**
+     * Loads the extracted_text transcription (.vtt) as a text track when available
+     *
+     * @private
+     * @return {void}
+     */
+    async loadTranscription() {
+        const extractedText = getRepresentation(this.options.file, 'extracted_text');
+        if (!extractedText?.content?.url_template) {
+            return;
+        }
+
+        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
+            ? this.createContentUrlV2(extractedText.content.url_template)
+            : this.createContentUrlWithAuthParams(extractedText.content.url_template);
+        this.transcriptionStatus = this.getRepStatus(extractedText);
+
+        try {
+            await this.transcriptionStatus.getPromise();
+
+            if (this.isDestroyed() || !this.player) {
+                return;
+            }
+
+            await this.player.addTextTrackAsync(
+                transcriptionUrl,
+                'und',
+                'subtitles',
+                'text/vtt',
+                undefined,
+                __('auto_generated'),
+            );
+
+            if (this.isDestroyed()) {
+                return;
+            }
+
+            if (this.textTracks.length > 0) {
+                // Subtitles were already initialized — append only the new track(s) at the
+                // end of `this.textTracks`. We must not re-sort: in the non-React path, the
+                // user's selection is cached as an INDEX into `this.textTracks` (see
+                // handleSubtitle) and Settings menu items use the same number as their
+                // `data-value`, so reordering would silently swap which track plays.
+                const existingIds = new Set(this.textTracks.map(t => t.id));
+                const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
+
+                if (this.useReactControls()) {
+                    this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
+                        ...track,
+                        displayLanguage: this.getTrackDisplayLanguage(track),
+                    }));
+                    this.renderUI();
+                } else {
+                    newTracks.forEach(track => {
+                        this.textTracks.push(track);
+                        this.mediaControls.settings.addSubtitle(
+                            this.getTrackDisplayLanguage(track),
+                            this.textTracks.length - 1,
+                        );
+                    });
+                }
+            } else {
+                this.loadSubtitles();
+            }
+        } catch {
+            // Transcription is non-critical; allow the viewer to continue without it
         }
     }
 
