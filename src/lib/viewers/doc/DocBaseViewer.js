@@ -1405,7 +1405,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
-                hasHighlight={canAnnotate && canDownload && isAnnotationsMode && this.rotationAngle === 0}
+                hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
