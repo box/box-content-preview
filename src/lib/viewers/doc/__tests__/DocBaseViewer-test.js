@@ -2694,7 +2694,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should show drawing and region annotation create controls when rotated', () => {
+            test('should show all annotation create controls when rotated', () => {
                 docBase.currentAnnotatorViewMode = 'annotations';
                 docBase.options.showAnnotationsDrawingCreate = true;
                 docBase.rotationAngle = 90;
@@ -2702,7 +2702,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(getProps(docBase)).toMatchObject({
                     hasDrawing: true,
-                    hasHighlight: false,
+                    hasHighlight: true,
                     hasRegion: true,
                 });
             });
