@@ -58,6 +58,7 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
         >
             <MediaToggle
                 className="bp-VolumeControls-toggle"
+                data-resin-target="volumeToggle"
                 onClick={(): void => onMuteChange(!isMuted)}
                 title={title}
                 {...handlers}

@@ -2126,7 +2126,59 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     });
                 });
 
-                test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['xlsx'], ['pdf']])(
+                test('should check operations count for .xlsx files', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    await docBase.initViewer('url');
+
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should throw error when .xlsx file has too many operations', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage: jest.fn(),
+                    };
+
+                    const mockPage = {
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200000) }),
+                    };
+
+                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                    await docBase.initViewer('url').catch(() => {
+                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    });
+                });
+
+                test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['pdf']])(
                     'should skip operations check for %s files',
                     async extension => {
                         docBase.options.file.extension = extension;
@@ -2641,6 +2693,116 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     hasRegion: true,
                 });
             });
+
+            test('should show all annotation create controls when rotated', () => {
+                docBase.currentAnnotatorViewMode = 'annotations';
+                docBase.options.showAnnotationsDrawingCreate = true;
+                docBase.rotationAngle = 90;
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    hasDrawing: true,
+                    hasHighlight: true,
+                    hasRegion: true,
+                });
+            });
+
+            test('should pass onRotateLeft when rotate.enabled feature flag is true and file is PDF', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'rotate.enabled');
+                docBase.options.file.extension = 'pdf';
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: docBase.rotateLeft,
+                });
+            });
+
+            test('should not pass onRotateLeft when rotate.enabled feature flag is false', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.options.file.extension = 'pdf';
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onRotateLeft: undefined,
+                });
+            });
+        });
+
+        describe('rotateLeft()', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase, 'emit').mockImplementation();
+                jest.spyOn(docBase, 'enableAnnotationControls').mockImplementation();
+                jest.spyOn(docBase, 'disableAnnotationControls').mockImplementation();
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+                docBase.pdfViewer = {
+                    currentPageNumber: 3,
+                    pagesRotation: 0,
+                };
+                docBase.rotationAngle = 0;
+            });
+
+            test('should rotate 90 degrees counterclockwise', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.rotationAngle).toBe(270);
+                expect(docBase.pdfViewer.pagesRotation).toBe(270);
+            });
+
+            test('should cycle through all rotation states', () => {
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(270);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(180);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(90);
+
+                docBase.rotateLeft();
+                expect(docBase.rotationAngle).toBe(0);
+            });
+
+            test('should preserve the current page number', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.pdfViewer.currentPageNumber).toBe(3);
+            });
+
+            test('should emit a rotate event', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.emit).toBeCalledWith('rotate');
+            });
+
+            test('should refresh thumbnails sidebar if present', () => {
+                docBase.thumbnailsSidebar = { refresh: jest.fn(), destroy: jest.fn() };
+                docBase.rotateLeft();
+
+                expect(docBase.thumbnailsSidebar.refresh).toBeCalled();
+            });
+
+            test('should not fail if thumbnails sidebar is not present', () => {
+                docBase.thumbnailsSidebar = null;
+
+                expect(() => docBase.rotateLeft()).not.toThrow();
+            });
+
+            test('should call renderUI', () => {
+                docBase.rotateLeft();
+
+                expect(docBase.renderUI).toBeCalled();
+            });
+
+            test('should emit scale event with rotationAngle', () => {
+                docBase.pdfViewer.currentScale = 1.5;
+                docBase.rotateLeft();
+
+                expect(docBase.emit).toBeCalledWith('scale', {
+                    scale: 1.5,
+                    rotationAngle: 270,
+                });
+            });
         });
 
         describe('bindDOMListeners()', () => {
@@ -2901,6 +3063,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.emitMetric).not.toHaveBeenCalledWith({
                     data: 80,
                     name: 'preload_content_load_time_diff',
+                });
+            });
+
+            test('should include rotationAngle in scale event', () => {
+                docBase.rotationAngle = 90;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 90,
+                });
+            });
+
+            test('should include rotationAngle of 0 in scale event when not rotated', () => {
+                docBase.rotationAngle = 0;
+                docBase.pagerenderedHandler(docBase.event);
+
+                expect(stubs.emit).toBeCalledWith('scale', {
+                    scale: 0.5,
+                    pageNum: 1,
+                    rotationAngle: 0,
                 });
             });
         });

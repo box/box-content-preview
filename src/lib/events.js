@@ -79,6 +79,16 @@ export const FIRST_RENDER_METRIC = 'first_render_metric';
 export const DURATION_METRIC = 'preview_duration_metric';
 export const PREVIEW_END_EVENT = 'preview_end';
 
+// Event fired once per load with preload hit/miss outcome (counter for hit rate)
+export const PREVIEW_PRELOAD_OUTCOME_EVENT = 'preview_preload_outcome';
+
+// Hit/miss values shared by preload_status and prefetch_status on load events,
+// the preview_preload_outcome counter, and preview_error.
+export const CACHE_STATUS = {
+    HIT: 'hit',
+    MISS: 'miss',
+};
+
 // Event fired when the user attempts to download the file
 export const PREVIEW_DOWNLOAD_ATTEMPT_EVENT = 'preview_download_attempt';
 // Events around download reachability

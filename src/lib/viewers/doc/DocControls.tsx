@@ -6,6 +6,7 @@ import ExperiencesProvider, { Props as ExperiencesProviderProps } from '../contr
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
 import PageControls, { Props as PageControlsProps } from '../controls/page';
+import RotateControl, { Props as RotateControlProps } from '../controls/rotate/RotateControl';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
 import ZoomControls, { Props as ZoomControlsProps } from '../controls/zoom';
 
@@ -15,6 +16,7 @@ export type Props = AnnotationsControlsProps &
     FindBarToggleProps &
     FullscreenToggleProps &
     PageControlsProps &
+    Partial<RotateControlProps> &
     ThumbnailsToggleProps &
     ZoomControlsProps;
 
@@ -35,6 +37,7 @@ export default function DocControls({
     onFullscreenToggle,
     onPageChange,
     onPageSubmit,
+    onRotateLeft,
     onThumbnailsToggle,
     onZoomIn,
     onZoomOut,
@@ -66,6 +69,11 @@ export default function DocControls({
                         scale={scale}
                     />
                 </ControlsBarGroup>
+                {onRotateLeft && (
+                    <ControlsBarGroup>
+                        <RotateControl onRotateLeft={onRotateLeft} />
+                    </ControlsBarGroup>
+                )}
                 <ControlsBarGroup>
                     <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                     <AnnotationsControls

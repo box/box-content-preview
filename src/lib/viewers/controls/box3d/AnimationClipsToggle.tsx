@@ -13,6 +13,7 @@ function AnimationClipsToggle(props: Props, ref: React.Ref<HTMLButtonElement>): 
         <button
             ref={ref}
             className="bp-AnimationClipsToggle"
+            data-resin-target="animationClips"
             onClick={onClick}
             title={__('box3d_animation_clips')}
             type="button"

@@ -18,6 +18,7 @@ describe('Thumbnail', () => {
         page = {
             getViewport: stubs.getViewport,
             render: stubs.render,
+            rotate: 0,
         };
         pagePromise = Promise.resolve(page);
         stubs.getPage = jest.fn(() => pagePromise);
@@ -204,7 +205,7 @@ describe('Thumbnail', () => {
 
             return thumbnail.getThumbnailDataURL(1).then(() => {
                 expect(stubs.getPage).toBeCalled();
-                expect(stubs.getViewport).toBeCalledWith({ scale: expScale });
+                expect(stubs.getViewport).toBeCalledWith({ scale: expScale, rotation: 0 });
             });
         });
 
@@ -220,7 +221,7 @@ describe('Thumbnail', () => {
 
             return thumbnail.getThumbnailDataURL(0).then(() => {
                 expect(stubs.getPage).toBeCalled();
-                expect(stubs.getViewport).toBeCalledWith({ scale: expScale });
+                expect(stubs.getViewport).toBeCalledWith({ scale: expScale, rotation: 0 });
             });
         });
 

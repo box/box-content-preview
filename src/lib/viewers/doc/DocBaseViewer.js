@@ -160,6 +160,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.print = this.print.bind(this);
+        this.rotateLeft = this.rotateLeft.bind(this);
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
@@ -205,6 +206,7 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
 
+        this.rotationAngle = 0;
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.startPageNum = this.getStartPage(this.startAt);
@@ -838,6 +840,32 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Rotates all pages 90 degrees counterclockwise.
+     *
+     * @return {void}
+     */
+    rotateLeft() {
+        const currentPage = this.pdfViewer.currentPageNumber;
+        this.rotationAngle = (((this.rotationAngle - 90) % 360) + 360) % 360;
+        this.pdfViewer.pagesRotation = this.rotationAngle;
+        this.pdfViewer.currentPageNumber = currentPage;
+
+        this.emit('rotate');
+
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.refresh();
+        }
+
+        this.renderUI();
+
+        // Emit scale with rotation angle so annotations transform to match rotated content
+        this.emit('scale', {
+            scale: this.pdfViewer.currentScale,
+            rotationAngle: this.rotationAngle,
+        });
+    }
+
+    /**
      * Handles keyboard events for document viewer.
      *
      * @param {string} key - keydown key
@@ -971,8 +999,8 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
-                // Only check operations for .numbers files
-                if (file.extension === 'numbers') {
+                // Only check operations for .numbers and .xlsx files
+                if (file.extension === 'numbers' || file.extension === 'xlsx') {
                     return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
                         if (opCount > MAX_OPERATIONS) {
                             throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
@@ -1369,6 +1397,7 @@ class DocBaseViewer extends BaseViewer {
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
+        const canRotate = this.featureEnabled('rotate.enabled');
 
         this.controls.render(
             <DocControls
@@ -1388,6 +1417,7 @@ class DocBaseViewer extends BaseViewer {
                 onFullscreenToggle={this.toggleFullscreen}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
+                onRotateLeft={canRotate ? this.rotateLeft : undefined}
                 onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
                 onZoomIn={this.zoomIn}
                 onZoomOut={this.zoomOut}
@@ -1532,6 +1562,7 @@ class DocBaseViewer extends BaseViewer {
         this.emit('scale', {
             scale: this.pdfViewer.currentScale,
             pageNum: pageNumber,
+            rotationAngle: this.rotationAngle,
         });
 
         // Cleanup preload after a page is rendered

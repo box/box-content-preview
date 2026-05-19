@@ -1,3 +1,4 @@
+import BoundedCache from './BoundedCache';
 import VirtualScroller from './VirtualScroller';
 import { decodeKeydown } from './util';
 import Thumbnail from './Thumbnail';
@@ -402,6 +403,41 @@ class ThumbnailsSidebar {
      */
     toggleClose() {
         this.isOpen = false;
+    }
+
+    refresh() {
+        if (!this.virtualScroller) {
+            return;
+        }
+
+        this.virtualScroller.destroy();
+        this.virtualScroller = new VirtualScroller(this.anchorEl);
+        this.currentThumbnails = [];
+
+        this.thumbnail.thumbnailImageCache.destroy();
+        this.thumbnail.thumbnailImageCache = new BoundedCache();
+
+        // Skip preloader path since preloader dimensions are unrotated
+        const savedPreloader = this.thumbnail.preloader;
+        this.thumbnail.preloader = null;
+
+        this.thumbnail.init().then(thumbnailHeight => {
+            this.thumbnail.preloader = savedPreloader;
+
+            if (thumbnailHeight) {
+                const count = this.pdfViewer?.pagesCount || this.preloader?.numPages;
+                this.virtualScroller.init({
+                    initialRowIndex: this.currentPage - 1,
+                    totalItems: count,
+                    itemHeight: thumbnailHeight,
+                    containerHeight: this.getContainerHeight(),
+                    margin: THUMBNAIL_MARGIN,
+                    renderItemFn: this.createPlaceholderThumbnail,
+                    onScrollEnd: this.generateThumbnailImages,
+                    onInit: this.generateThumbnailImages,
+                });
+            }
+        });
     }
 
     /**

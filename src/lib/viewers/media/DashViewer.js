@@ -8,6 +8,7 @@ import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
 import './Dash.scss';
+import { getVideoFps, isFpsAvailable } from './videoFps';
 import VideoControls from './VideoControls';
 import VideoBaseViewer from './VideoBaseViewer';
 
@@ -73,6 +74,7 @@ class DashViewer extends VideoBaseViewer {
         this.setSubtitle = this.setSubtitle.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
+        this.frameStep = this.frameStep.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
     }
@@ -1119,6 +1121,16 @@ class DashViewer extends VideoBaseViewer {
             return true;
         }
 
+        if (key === ',' && this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)) {
+            this.frameStep('back');
+            return true;
+        }
+
+        if (key === '.' && this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)) {
+            this.frameStep('forward');
+            return true;
+        }
+
         return super.onKeydown(key);
     }
 
@@ -1214,6 +1226,24 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Steps one frame forward or backward. Pauses video if playing.
+     */
+    frameStep(direction) {
+        this.isScrubbing = true;
+
+        const fps = getVideoFps(this.player);
+        const increment = direction === 'forward' ? 1 / fps : -(1 / fps);
+
+        if (!this.mediaEl.paused) {
+            this.mediaEl.pause();
+            this.renderUI();
+        }
+
+        this.quickSeek(increment);
+        this.isScrubbing = false;
+    }
+
+    /**
      * Toggles the subtitles on or off
      * @param {boolean} showSubtitles - Boolean indicating whether to hide or show the subtitles
      * @return {void}
@@ -1252,6 +1282,11 @@ class DashViewer extends VideoBaseViewer {
                 experiences={this.experiences}
                 filmstripInterval={this.filmstripInterval}
                 filmstripUrl={this.filmstripUrl}
+                fps={
+                    this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)
+                        ? getVideoFps(this.player)
+                        : undefined
+                }
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}
@@ -1260,6 +1295,7 @@ class DashViewer extends VideoBaseViewer {
                 isNarrowVideo={this.isNarrowVideo}
                 isPlaying={!this.mediaEl.paused}
                 isPlayingHD={this.isPlayingHD()}
+                mediaEl={this.mediaEl}
                 movePlayback={this.movePlayback}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}

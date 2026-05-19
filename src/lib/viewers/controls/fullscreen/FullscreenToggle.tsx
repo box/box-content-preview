@@ -19,7 +19,14 @@ export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props)
     };
 
     return (
-        <button className="bp-FullscreenToggle" onClick={handleClick} title={title} type="button" {...rest}>
+        <button
+            className="bp-FullscreenToggle"
+            data-resin-target="fullscreen"
+            onClick={handleClick}
+            title={title}
+            type="button"
+            {...rest}
+        >
             <Icon />
         </button>
     );

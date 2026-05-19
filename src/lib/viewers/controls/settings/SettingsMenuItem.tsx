@@ -42,6 +42,7 @@ function SettingsMenuItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
             aria-disabled={isDisabled}
             aria-haspopup="true"
             className={classNames('bp-SettingsMenuItem', className)}
+            data-resin-target="settingsMenuItem"
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"

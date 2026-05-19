@@ -1288,6 +1288,21 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining(createOptionsArg));
         });
 
+        test('should forward onCopyLink from boxAnnotations options to createAnnotatorOptions', () => {
+            const onCopyLink = jest.fn();
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions');
+
+            base.options.boxAnnotations = {
+                determineAnnotator: jest.fn().mockReturnValue(conf),
+                getOptions: jest.fn().mockReturnValue({ ...annotationsOptions, onCopyLink }),
+            };
+
+            base.createAnnotator();
+
+            expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining({ onCopyLink }));
+        });
+
         test('should use default intl lib if annotator options not present ', () => {
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'createAnnotatorOptions');

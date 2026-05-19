@@ -30,6 +30,7 @@ function SettingsMenuBack({ label }: Props, ref: React.Ref<Ref>): JSX.Element {
         <div
             ref={ref}
             className="bp-SettingsMenuBack"
+            data-resin-target="settingsBack"
             onClick={handleClick}
             onKeyDown={handleKeydown}
             role="menuitem"

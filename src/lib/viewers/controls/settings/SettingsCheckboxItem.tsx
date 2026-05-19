@@ -19,7 +19,7 @@ function SettingsCheckboxItem(props: Props, ref: React.Ref<Ref>): JSX.Element {
     };
 
     return (
-        <div className="bp-SettingsCheckboxItem">
+        <div className="bp-SettingsCheckboxItem" data-resin-target="settingsCheckbox">
             <input
                 ref={ref}
                 checked={isChecked}

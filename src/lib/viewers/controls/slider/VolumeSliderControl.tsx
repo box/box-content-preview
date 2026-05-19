@@ -150,6 +150,7 @@ export default function VolumeSliderControl({
                         aria-valuemin={min}
                         aria-valuenow={value}
                         className="bp-VolumeVerticalSliderControl-track"
+                        data-resin-target="volumeSlider"
                         data-testid="bp-volume-slider-control-track"
                         onFocus={onMouseOver}
                         onKeyDown={handleKeydown}

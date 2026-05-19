@@ -27,6 +27,7 @@ export default function SubtitlesToggle({
         <MediaToggle
             aria-pressed={isShowingSubtitles}
             className="bp-SubtitlesToggle"
+            data-resin-target="subtitlesToggle"
             data-testid="bp-media-cc-button"
             onClick={(): void => onSubtitlesToggle(!isShowingSubtitles)}
             title={title}

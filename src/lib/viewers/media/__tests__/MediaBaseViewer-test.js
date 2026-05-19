@@ -953,6 +953,86 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('frameStep()', () => {
+        test('should pause the video if playing', () => {
+            media.mediaEl = {
+                currentTime: 10,
+                duration: 60,
+                paused: false,
+                pause: jest.fn(),
+            };
+            media.renderUI = jest.fn();
+            jest.spyOn(media, 'quickSeek');
+
+            media.frameStep('forward');
+
+            expect(media.mediaEl.pause).toBeCalledTimes(1);
+            expect(media.renderUI).toBeCalledTimes(1);
+        });
+
+        test('should not pause the video if already paused', () => {
+            media.mediaEl = {
+                currentTime: 10,
+                duration: 60,
+                paused: true,
+                pause: jest.fn(),
+            };
+            media.renderUI = jest.fn();
+            jest.spyOn(media, 'quickSeek');
+
+            media.frameStep('forward');
+
+            expect(media.mediaEl.pause).not.toBeCalled();
+        });
+
+        test('should seek forward by 1/30 seconds', () => {
+            media.mediaEl = {
+                currentTime: 10,
+                duration: 60,
+                paused: true,
+                pause: jest.fn(),
+            };
+            media.renderUI = jest.fn();
+            jest.spyOn(media, 'quickSeek');
+
+            media.frameStep('forward');
+
+            expect(media.quickSeek).toBeCalledWith(1 / 30);
+        });
+
+        test('should seek backward by 1/30 seconds', () => {
+            media.mediaEl = {
+                currentTime: 10,
+                duration: 60,
+                paused: true,
+                pause: jest.fn(),
+            };
+            media.renderUI = jest.fn();
+            jest.spyOn(media, 'quickSeek');
+
+            media.frameStep('back');
+
+            expect(media.quickSeek).toBeCalledWith(-1 / 30);
+        });
+
+        test('should set isScrubbing during frame step', () => {
+            media.mediaEl = {
+                currentTime: 10,
+                duration: 60,
+                paused: true,
+                pause: jest.fn(),
+            };
+            media.renderUI = jest.fn();
+            jest.spyOn(media, 'quickSeek').mockImplementation(() => {
+                expect(media.isScrubbing).toBe(true);
+            });
+
+            media.frameStep('forward');
+
+            expect(media.isScrubbing).toBe(false);
+        });
+    });
+
     describe('increaseVolume', () => {
         test('should not exceed maximum volume', () => {
             media.mediaEl = {
@@ -1276,6 +1356,30 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.handleKeydownReact('Shift+F')).toBe(true);
             expect(media.toggleFullscreen).toBeCalled();
+        });
+
+        test('should frame step back and return true on , when feature enabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'frameStep').mockImplementation();
+
+            expect(media.handleKeydownReact(',')).toBe(true);
+            expect(media.frameStep).toBeCalledWith('back');
+        });
+
+        test('should frame step forward and return true on . when feature enabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'frameStep').mockImplementation();
+
+            expect(media.handleKeydownReact('.')).toBe(true);
+            expect(media.frameStep).toBeCalledWith('forward');
+        });
+
+        test('should return false on , when feature flag is disabled', () => {
+            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'frameStep').mockImplementation();
+
+            expect(media.handleKeydownReact(',')).toBe(false);
+            expect(media.frameStep).not.toBeCalled();
         });
 
         test('should return false if another key is pressed', () => {

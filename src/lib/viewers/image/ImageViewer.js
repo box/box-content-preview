@@ -254,13 +254,6 @@ class ImageViewer extends ImageBaseViewer {
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
 
-        // Disallow creating annotations on rotated images
-        if (this.currentRotationAngle === 0) {
-            this.enableAnnotationControls();
-        } else {
-            this.disableAnnotationControls();
-        }
-
         // Re-adjust image position after rotation
         this.handleOrientationChange();
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
@@ -464,8 +457,7 @@ class ImageViewer extends ImageBaseViewer {
             return;
         }
 
-        const canAnnotate =
-            this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.currentRotationAngle === 0;
+        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
 
         this.controls.render(
