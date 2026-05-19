@@ -1,3 +1,10 @@
+## 3.33.0 (2026-05-19)
+
+* feat(annotations): enable highlight annotataions on rotated docs (#1648) ([94c310f](https://github.com/box/box-content-preview/commit/94c310f)), closes [#1648](https://github.com/box/box-content-preview/issues/1648)
+* feat(doc): add subtle hover animation to PDF thumbnail sidebar (#1647) ([46313ed](https://github.com/box/box-content-preview/commit/46313ed)), closes [#1647](https://github.com/box/box-content-preview/issues/1647)
+
+
+
 ## 3.32.0 (2026-05-16)
 
 * feat(annotations): Enable drawing/region annotations on rotated files (#1644) ([bd81be1](https://github.com/box/box-content-preview/commit/bd81be1)), closes [#1644](https://github.com/box/box-content-preview/issues/1644)
