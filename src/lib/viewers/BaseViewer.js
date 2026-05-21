@@ -519,8 +519,8 @@ class BaseViewer extends EventEmitter {
      * @return {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        const { token, sharedLink, sharedLinkPassword } = this.options;
-        return getHeaders(headers, token, sharedLink, sharedLinkPassword);
+        const { token } = this.options;
+        return getHeaders(headers, token);
     }
 
     /**

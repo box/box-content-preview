@@ -432,7 +432,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             const result = base.appendAuthHeader(headers);
             expect(result).toBe(headers);
-            expect(util.getHeaders).toBeCalledWith(headers, token, sharedLink, sharedLinkPassword);
+            expect(util.getHeaders).toBeCalledWith(headers, token);
         });
     });
 
