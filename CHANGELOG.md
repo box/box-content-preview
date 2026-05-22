@@ -1,3 +1,9 @@
+## 3.34.0 (2026-05-22)
+
+* fix(auth): stop sending shared_link in both URL and BoxApi header (#1649) ([d136d93](https://github.com/box/box-content-preview/commit/d136d93)), closes [#1649](https://github.com/box/box-content-preview/issues/1649)
+
+
+
 ## 3.33.0 (2026-05-19)
 
 * feat(annotations): enable highlight annotataions on rotated docs (#1648) ([94c310f](https://github.com/box/box-content-preview/commit/94c310f)), closes [#1648](https://github.com/box/box-content-preview/issues/1648)
