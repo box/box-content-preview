@@ -9,6 +9,9 @@ import { openContentInsideIframe } from '../../util';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
+const MIN_PINCH_SCALE_DELTA = 0.01;
+const WHEEL_ZOOM_MAX_SCALE = 100;
+const WHEEL_ZOOM_MIN_SCALE = 0.1;
 
 class ImageBaseViewer extends BaseViewer {
     /** @inheritdoc */
@@ -31,6 +34,8 @@ class ImageBaseViewer extends BaseViewer {
         this.finishLoading = this.finishLoading.bind(this);
         this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
 
+        // Trackpad pinch-to-zoom support
+        this.wheelZoomHandler = this.wheelZoomHandler.bind(this);
         if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
@@ -272,6 +277,8 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.cancelDragEvent);
+        // Trackpad pinch-to-zoom
+        this.imageEl.addEventListener('wheel', this.wheelZoomHandler, { passive: false });
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -302,12 +309,98 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
         this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         this.imageEl.removeEventListener('dragstart', this.cancelDragEvent);
+        this.imageEl.removeEventListener('wheel', this.wheelZoomHandler);
 
         this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
         this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
         this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+    }
+
+    /**
+     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
+     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     *
+     * @protected
+     * @param {WheelEvent} event - wheel event object
+     * @return {void}
+     */
+    wheelZoomHandler(event) {
+        if (!event.ctrlKey || !this.imageEl || !this.wrapperEl) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const currentWidth = this.imageEl.offsetWidth;
+        if (!currentWidth) {
+            return;
+        }
+
+        const originalWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
+        const minWidth = originalWidth ? originalWidth * WHEEL_ZOOM_MIN_SCALE : currentWidth * 0.1;
+        const maxWidth = originalWidth ? originalWidth * WHEEL_ZOOM_MAX_SCALE : currentWidth * 100;
+
+        const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
+        const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
+        const ratio = newWidth / currentWidth;
+
+        // Capture the point within the image that's under the cursor, in image-local coords.
+        // This is what we'll keep anchored to the cursor through the zoom.
+        const oldImageRect = this.imageEl.getBoundingClientRect();
+        const pointInImageX = event.clientX - oldImageRect.left;
+        const pointInImageY = event.clientY - oldImageRect.top;
+
+        this.imageEl.style.width = `${newWidth}px`;
+        this.imageEl.style.height = '';
+
+        // adjustImageZoomPadding re-centers the image via style.left/top and scrollLeft/Top;
+        // we override both below so the cursor-anchored point stays under the cursor.
+        if (typeof this.adjustImageZoomPadding === 'function') {
+            this.adjustImageZoomPadding();
+        }
+
+        // Compute the delta needed to place the cursor-anchored point back under the cursor.
+        // Apply it first via scroll (when the image overflows the wrapper), and absorb any
+        // clamped remainder by shifting the image's CSS offset (when the image fits the
+        // wrapper and adjustImageZoomPadding re-centered it via style.left/top).
+        const newImageRect = this.imageEl.getBoundingClientRect();
+        const dx = newImageRect.left + pointInImageX * ratio - event.clientX;
+        const dy = newImageRect.top + pointInImageY * ratio - event.clientY;
+
+        const prevScrollLeft = this.wrapperEl.scrollLeft;
+        const prevScrollTop = this.wrapperEl.scrollTop;
+        this.wrapperEl.scrollLeft += dx;
+        this.wrapperEl.scrollTop += dy;
+
+        const remainderX = dx - (this.wrapperEl.scrollLeft - prevScrollLeft);
+        const remainderY = dy - (this.wrapperEl.scrollTop - prevScrollTop);
+        if (remainderX !== 0 || remainderY !== 0) {
+            const currentLeft = parseFloat(this.imageEl.style.left) || 0;
+            const currentTop = parseFloat(this.imageEl.style.top) || 0;
+            this.imageEl.style.left = `${currentLeft - remainderX}px`;
+            this.imageEl.style.top = `${currentTop - remainderY}px`;
+        }
+
+        // setScale emits 'scale', which triggers annotation re-render. Call it AFTER
+        // final image position is set so the overlay reads correct offsetLeft/offsetTop.
+        if (typeof this.setScale === 'function') {
+            this.setScale(newWidth, null);
+        }
+
+        if (typeof this.updatePannability === 'function') {
+            if (this.wheelZoomRAF) {
+                cancelAnimationFrame(this.wheelZoomRAF);
+            }
+            this.wheelZoomRAF = requestAnimationFrame(this.updatePannability);
+        }
+
+        this.emit('zoom', {
+            newScale: [newWidth, this.imageEl.offsetHeight],
+            canZoomIn: newWidth < maxWidth,
+            canZoomOut: newWidth > minWidth,
+        });
     }
 
     /**

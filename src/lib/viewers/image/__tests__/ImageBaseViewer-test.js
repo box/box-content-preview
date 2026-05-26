@@ -448,6 +448,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             jest.spyOn(document, 'addEventListener');
             stubs.listeners = imageBase.imageEl.addEventListener;
             imageBase.isMobile = true;
+            imageBase.mobileZoomStartHandler = imageBase.mobileZoomStartHandler.bind(imageBase);
+            imageBase.mobileZoomChangeHandler = imageBase.mobileZoomChangeHandler.bind(imageBase);
+            imageBase.mobileZoomEndHandler = imageBase.mobileZoomEndHandler.bind(imageBase);
         });
 
         test('should bind all default image listeners', () => {
@@ -457,19 +460,32 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.listeners).toBeCalledWith('dragstart', imageBase.cancelDragEvent);
         });
 
-        test('should bind all iOS listeners', () => {
+        test('should bind wheel listener for trackpad zoom', () => {
+            imageBase.bindDOMListeners();
+            expect(stubs.listeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler, { passive: false });
+        });
+
+        test('should bind all iOS listeners when hasTouch is true', () => {
             jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             imageBase.bindDOMListeners();
             expect(stubs.listeners).toBeCalledWith('gesturestart', imageBase.mobileZoomStartHandler);
             expect(stubs.listeners).toBeCalledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
-        test('should bind all mobile and non-iOS listeners', () => {
+        test('should bind all touch listeners when hasTouch is true and not iOS', () => {
             jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
             imageBase.bindDOMListeners();
             expect(stubs.listeners).toBeCalledWith('touchstart', imageBase.mobileZoomStartHandler);
             expect(stubs.listeners).toBeCalledWith('touchmove', imageBase.mobileZoomChangeHandler);
             expect(stubs.listeners).toBeCalledWith('touchend', imageBase.mobileZoomEndHandler);
+        });
+
+        test('should not bind touch listeners when hasTouch is false', () => {
+            imageBase.isMobile = false;
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(false);
+            imageBase.bindDOMListeners();
+            expect(stubs.listeners).not.toBeCalledWith('touchstart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).not.toBeCalledWith('gesturestart', imageBase.mobileZoomStartHandler);
         });
     });
 
@@ -483,7 +499,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.imageEl.removeEventListener = jest.fn();
             stubs.listeners = imageBase.imageEl.removeEventListener;
             stubs.documentListener = jest.spyOn(document, 'removeEventListener');
-            imageBase.isMobile = true;
+            imageBase.hasTouch = true;
         });
 
         test('should unbind all default image listeners if imageEl does not exist', () => {
@@ -502,6 +518,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.listeners).toBeCalledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
+        test('should unbind wheel listener', () => {
+            imageBase.unbindDOMListeners();
+            expect(stubs.listeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler);
+        });
+
         test('should unbind all document listeners', () => {
             imageBase.unbindDOMListeners();
             expect(stubs.documentListener).toBeCalledWith('mousemove', imageBase.pan);
@@ -514,6 +535,201 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.listeners).toBeCalledWith('touchstart', imageBase.mobileZoomStartHandler);
             expect(stubs.listeners).toBeCalledWith('touchmove', imageBase.mobileZoomChangeHandler);
             expect(stubs.listeners).toBeCalledWith('touchend', imageBase.mobileZoomEndHandler);
+        });
+    });
+
+    describe('wheelZoomHandler()', () => {
+        beforeEach(() => {
+            // Set up imageEl and wrapperEl with measurable geometry
+            imageBase.imageEl.style.width = '100px';
+            imageBase.imageEl.setAttribute('originalWidth', '100');
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 100, configurable: true });
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: 0, top: 0, width: 100, height: 100 })
+                .mockReturnValue({ left: 0, top: 0, width: 105, height: 105 });
+            imageBase.wrapperEl = document.createElement('div');
+            imageBase.wrapperEl.scrollLeft = 0;
+            imageBase.wrapperEl.scrollTop = 0;
+            jest.spyOn(imageBase, 'emit').mockImplementation();
+        });
+
+        test('should do nothing if ctrlKey is not pressed', () => {
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: false,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(imageBase.emit).not.toBeCalled();
+        });
+
+        test('should do nothing if wrapperEl is missing', () => {
+            imageBase.wrapperEl = null;
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(event.preventDefault).not.toBeCalled();
+            expect(imageBase.emit).not.toBeCalled();
+        });
+
+        test('should preventDefault and apply proportional zoom on pinch in', () => {
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(event.preventDefault).toBeCalled();
+            // deltaY=-5, delta=0.05, newWidth = 100 * 1.05 = 105
+            expect(imageBase.imageEl.style.width).toBe('105px');
+            expect(imageBase.imageEl.style.height).toBe('');
+        });
+
+        test('should apply proportional zoom on pinch out', () => {
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: 5, preventDefault: jest.fn() };
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: 0, top: 0, width: 100, height: 100 })
+                .mockReturnValue({ left: 0, top: 0, width: 95, height: 95 });
+
+            imageBase.wheelZoomHandler(event);
+            // deltaY=5, delta=-0.05, newWidth = 100 * 0.95 = 95
+            expect(imageBase.imageEl.style.width).toBe('95px');
+        });
+
+        test('should call adjustImageZoomPadding if available', () => {
+            imageBase.adjustImageZoomPadding = jest.fn();
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: true,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(imageBase.adjustImageZoomPadding).toBeCalled();
+        });
+
+        test('should call setScale with width and null height', () => {
+            imageBase.setScale = jest.fn();
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: true,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(imageBase.setScale).toBeCalledWith(105, null);
+        });
+
+        test('should emit zoom event with [width, height] array and zoom capability flags', () => {
+            Object.defineProperty(imageBase.imageEl, 'offsetHeight', { value: 100, configurable: true });
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: true,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(imageBase.emit).toBeCalledWith('zoom', {
+                newScale: [105, 100],
+                canZoomIn: true,
+                canZoomOut: true,
+            });
+        });
+
+        test('should clamp zoom to minimum scale (10% of original)', () => {
+            // originalWidth=100, so minWidth = 100 * 0.1 = 10
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 11, configurable: true });
+            Object.defineProperty(imageBase.imageEl, 'offsetHeight', { value: 11, configurable: true });
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValue({ left: 0, top: 0, width: 10, height: 10 });
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: 100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(imageBase.imageEl.style.width).toBe('10px');
+        });
+
+        test('should clamp zoom to maximum scale (10000% of original)', () => {
+            // originalWidth=100, so maxWidth = 100 * 100 = 10000
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 9999, configurable: true });
+            Object.defineProperty(imageBase.imageEl, 'offsetHeight', { value: 9999, configurable: true });
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValue({ left: 0, top: 0, width: 10000, height: 10000 });
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(imageBase.imageEl.style.width).toBe('10000px');
+        });
+
+        test('should report canZoomOut as false at minimum scale', () => {
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 11, configurable: true });
+            Object.defineProperty(imageBase.imageEl, 'offsetHeight', { value: 10, configurable: true });
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValue({ left: 0, top: 0, width: 10, height: 10 });
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: 100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(imageBase.emit).toBeCalledWith('zoom', expect.objectContaining({ canZoomOut: false }));
+        });
+
+        test('should report canZoomIn as false at maximum scale', () => {
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 9999, configurable: true });
+            Object.defineProperty(imageBase.imageEl, 'offsetHeight', { value: 10000, configurable: true });
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValue({ left: 0, top: 0, width: 10000, height: 10000 });
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(imageBase.emit).toBeCalledWith('zoom', expect.objectContaining({ canZoomIn: false }));
+        });
+
+        test('should use requestAnimationFrame for updatePannability', () => {
+            imageBase.updatePannability = jest.fn();
+            jest.spyOn(window, 'requestAnimationFrame').mockImplementation();
+            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation();
+
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: true,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(window.requestAnimationFrame).toBeCalledWith(imageBase.updatePannability);
+        });
+
+        test('should cancel previous requestAnimationFrame before scheduling new one', () => {
+            imageBase.updatePannability = jest.fn();
+            imageBase.wheelZoomRAF = 456;
+            jest.spyOn(window, 'requestAnimationFrame').mockImplementation();
+            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation();
+
+            imageBase.wheelZoomHandler({
+                clientX: 0,
+                clientY: 0,
+                ctrlKey: true,
+                deltaY: -5,
+                preventDefault: jest.fn(),
+            });
+            expect(window.cancelAnimationFrame).toBeCalledWith(456);
+            expect(window.requestAnimationFrame).toBeCalledWith(imageBase.updatePannability);
+        });
+
+        test('should anchor zoom at cursor by adjusting wrapperEl scroll', () => {
+            // Cursor at (50, 50) within a 100x100 image rooted at (0, 0); image grows to 105x105.
+            // Image point under cursor = (50, 50). After zoom, same point is at (50 * 1.05, 50 * 1.05) = (52.5, 52.5).
+            // Scroll delta should push it back to (50, 50) → +2.5 on each axis.
+            imageBase.wrapperEl.scrollLeft = 0;
+            imageBase.wrapperEl.scrollTop = 0;
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(imageBase.wrapperEl.scrollLeft).toBeCloseTo(2.5);
+            expect(imageBase.wrapperEl.scrollTop).toBeCloseTo(2.5);
         });
     });
 
