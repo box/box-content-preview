@@ -107,10 +107,10 @@
     },
     "scripts": {
         "build": "yarn setup && yarn clean && yarn build:i18n && yarn build:dev",
-        "build:ci": "yarn setup && yarn webpack --progress --colors --config build/webpack.config.js",
-        "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --colors --config build/webpack.config.js",
+        "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
+        "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
         "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-        "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
+        "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
         "cy:run": "yarn cy:wait; yarn cypress run --spec test/integration/**/*.test.js",
