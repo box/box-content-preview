@@ -1665,11 +1665,13 @@ describe('lib/Preview', () => {
                 previewMode: 'shared_file',
                 sharedLinkAuth: 'logged_out',
                 preloadStatus: 'hit',
+                clientName: 'enduserapp',
             });
             expect(preview.options.accessPattern).toBe('direct_link');
             expect(preview.options.previewMode).toBe('shared_file');
             expect(preview.options.sharedLinkAuth).toBe('logged_out');
             expect(preview.options.preloadStatus).toBe('hit');
+            expect(preview.options.clientName).toBe('enduserapp');
         });
 
         test('should leave monitoring dimensions undefined when host omits them', () => {
@@ -1678,6 +1680,7 @@ describe('lib/Preview', () => {
             expect(preview.options.previewMode).toBeUndefined();
             expect(preview.options.sharedLinkAuth).toBeUndefined();
             expect(preview.options.preloadStatus).toBeUndefined();
+            expect(preview.options.clientName).toBeUndefined();
         });
     });
 
@@ -2859,6 +2862,7 @@ describe('lib/Preview', () => {
             preview.options.accessPattern = 'file_list';
             preview.options.previewMode = 'default';
             preview.options.sharedLinkAuth = 'na';
+            preview.options.clientName = 'enduserapp';
 
             preview.emitLogEvent('test');
 
@@ -2866,6 +2870,7 @@ describe('lib/Preview', () => {
                 'test',
                 expect.objectContaining({
                     access_pattern: 'file_list',
+                    client_name: 'enduserapp',
                     preview_mode: 'default',
                     shared_link_auth: 'na',
                 }),
@@ -2877,6 +2882,7 @@ describe('lib/Preview', () => {
             preview.options.accessPattern = undefined;
             preview.options.previewMode = undefined;
             preview.options.sharedLinkAuth = undefined;
+            preview.options.clientName = undefined;
 
             preview.emitLogEvent('test');
 
@@ -2884,6 +2890,7 @@ describe('lib/Preview', () => {
             expect(payload.access_pattern).toBeUndefined();
             expect(payload.preview_mode).toBeUndefined();
             expect(payload.shared_link_auth).toBeUndefined();
+            expect(payload.client_name).toBeUndefined();
         });
     });
 
