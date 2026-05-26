@@ -338,9 +338,9 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        const originalWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
-        const minWidth = originalWidth ? originalWidth * WHEEL_ZOOM_MIN_SCALE : currentWidth * 0.1;
-        const maxWidth = originalWidth ? originalWidth * WHEEL_ZOOM_MAX_SCALE : currentWidth * 100;
+        const baseWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10) || currentWidth;
+        const minWidth = baseWidth * WHEEL_ZOOM_MIN_SCALE;
+        const maxWidth = baseWidth * WHEEL_ZOOM_MAX_SCALE;
 
         const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
         const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
@@ -352,6 +352,8 @@ class ImageBaseViewer extends BaseViewer {
         const pointInImageX = event.clientX - oldImageRect.left;
         const pointInImageY = event.clientY - oldImageRect.top;
 
+        // Resize the image. This grows/shrinks from the top-left corner, so the exact
+        // pixel that was under the cursor is now at a different screen position.
         this.imageEl.style.width = `${newWidth}px`;
         this.imageEl.style.height = '';
 
@@ -361,10 +363,10 @@ class ImageBaseViewer extends BaseViewer {
             this.adjustImageZoomPadding();
         }
 
-        // Compute the delta needed to place the cursor-anchored point back under the cursor.
-        // Apply it first via scroll (when the image overflows the wrapper), and absorb any
-        // clamped remainder by shifting the image's CSS offset (when the image fits the
-        // wrapper and adjustImageZoomPadding re-centered it via style.left/top).
+        // Compute the delta needed to place the cursor-anchored point back under the
+        // cursor after the resize + re-centering applied above. Apply it first by scrolling
+        // the container, and if scroll is clamped, shift the image's CSS left/top to cover
+        // the remainder.
         const newImageRect = this.imageEl.getBoundingClientRect();
         const dx = newImageRect.left + pointInImageX * ratio - event.clientX;
         const dy = newImageRect.top + pointInImageY * ratio - event.clientY;
