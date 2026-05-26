@@ -6,8 +6,8 @@ const fs = require('fs');
 const get = require('lodash/get');
 const path = require('path');
 const locales = require('@box/languages');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const { execSync } = require('child_process');
 const commonConfig = require('./webpack.common.config');
@@ -43,21 +43,22 @@ function updateConfig(conf, language, index) {
         mode: isProd ? 'production' : 'development',
         optimization: {
             minimizer: [
-                new UglifyJsPlugin({
-                    uglifyOptions: {
+                new TerserPlugin({
+                    terserOptions: {
                         compress: {
                             drop_console: true,
                         },
-                        output: {
+                        format: {
                             comments: /^\/*!/,
                         },
-                        sourceMap: false,
                     },
+                    extractComments: false,
                 }),
+                new CssMinimizerPlugin(),
             ],
         },
         output: {
-            filename: '[Name].js',
+            filename: '[name].js',
             path: path.resolve('dist', version, language),
         },
         performance: {
@@ -65,10 +66,9 @@ function updateConfig(conf, language, index) {
             maxEntrypointSize: 750000,
         },
         devServer: {
-            contentBase: './src',
-            disableHostCheck: true,
+            static: './src',
+            allowedHosts: 'all',
             host: '0.0.0.0',
-            inline: true,
             port: 8000,
         },
     };
@@ -97,17 +97,6 @@ function updateConfig(conf, language, index) {
 
             config.plugins.push(new ApiRsyncPlugin('dist/.', destination));
         }
-    }
-
-    if (isProd) {
-        // Optimize CSS - minimize, remove comments and duplicate rules
-        config.plugins.push(
-            new OptimizeCssAssetsPlugin({
-                cssProcessorOptions: {
-                    safe: true,
-                },
-            }),
-        );
     }
 
     return config;
