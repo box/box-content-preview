@@ -35,7 +35,10 @@ function updateConfig(conf, language, index) {
     const config = {
         ...conf,
         entry: {
-            annotations: ['box-annotations'],
+            annotations: {
+                import: 'box-annotations',
+                library: { name: 'BoxAnnotations', type: 'window', export: 'default' },
+            },
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`],
             archive: [`${lib}/viewers/archive/BoxArchive.js`],
