@@ -346,7 +346,7 @@ class ImageBaseViewer extends BaseViewer {
         const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
         const ratio = newWidth / currentWidth;
 
-        // Capture the point within the image that's under the cursor, in image-local coords.
+        // Record where the cursor sits within the image (in image-local coords).
         // This is what we'll keep anchored to the cursor through the zoom.
         const oldImageRect = this.imageEl.getBoundingClientRect();
         const pointInImageX = event.clientX - oldImageRect.left;
@@ -364,9 +364,8 @@ class ImageBaseViewer extends BaseViewer {
         }
 
         // Compute the delta needed to place the cursor-anchored point back under the
-        // cursor after the resize + re-centering applied above. Apply it first by scrolling
-        // the container, and if scroll is clamped, shift the image's CSS left/top to cover
-        // the remainder.
+        // cursor. Apply it first adjusting scroll position, and if scroll is clamped,
+        // shift the image's CSS left/top to cover the remainder.
         const newImageRect = this.imageEl.getBoundingClientRect();
         const dx = newImageRect.left + pointInImageX * ratio - event.clientX;
         const dy = newImageRect.top + pointInImageY * ratio - event.clientY;
