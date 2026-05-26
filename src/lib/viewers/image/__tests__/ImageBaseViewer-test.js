@@ -552,6 +552,16 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.wrapperEl.scrollLeft = 0;
             imageBase.wrapperEl.scrollTop = 0;
             jest.spyOn(imageBase, 'emit').mockImplementation();
+            jest.spyOn(imageBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+        });
+
+        test('should do nothing if pinchToZoom.enabled feature is off', () => {
+            imageBase.featureEnabled.mockReturnValue(false);
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(event.preventDefault).not.toBeCalled();
+            expect(imageBase.emit).not.toBeCalled();
         });
 
         test('should do nothing if ctrlKey is not pressed', () => {

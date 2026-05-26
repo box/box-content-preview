@@ -327,7 +327,7 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     wheelZoomHandler(event) {
-        if (!event.ctrlKey || !this.imageEl || !this.wrapperEl) {
+        if (!event.ctrlKey || !this.imageEl || !this.wrapperEl || !this.featureEnabled('pinchToZoom.enabled')) {
             return;
         }
 
