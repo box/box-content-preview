@@ -1,3 +1,9 @@
+## 3.35.0 (2026-05-27)
+
+* feat(preview): emit client_name dimension on every event (#1650) ([04b8878](https://github.com/box/box-content-preview/commit/04b8878)), closes [#1650](https://github.com/box/box-content-preview/issues/1650) [#1639](https://github.com/box/box-content-preview/issues/1639)
+
+
+
 ## 3.34.0 (2026-05-22)
 
 * fix(auth): stop sending shared_link in both URL and BoxApi header (#1649) ([d136d93](https://github.com/box/box-content-preview/commit/d136d93)), closes [#1649](https://github.com/box/box-content-preview/issues/1649)
