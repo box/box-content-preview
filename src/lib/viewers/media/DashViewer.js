@@ -911,6 +911,7 @@ class DashViewer extends VideoBaseViewer {
 
         if (filmstripInterval > 0) {
             const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
+            const useReactControls = this.useReactControls();
             const url = useHeaders
                 ? this.createContentUrlV2(filmstrip.content.url_template)
                 : this.createContentUrlWithAuthParams(filmstrip.content.url_template);
@@ -921,51 +922,44 @@ class DashViewer extends VideoBaseViewer {
             // Defer setting filmstripUrl until the blob: URL is ready below.
             this.filmstripUrl = useHeaders ? null : url;
 
-            // Filmstrip is a non-critical scrubbing-preview enhancement, so any failure
-            // (rep status reject, blob fetch reject, viewer destroyed mid-fetch) is swallowed
-            // — leave filmstripUrl null and skip the render rather than failing the whole viewer.
-            const handleBlobUrl = blobUrl => {
-                if (this.destroyed) {
-                    URL.revokeObjectURL(blobUrl);
-                    return;
-                }
-                this.filmstripUrl = blobUrl;
-                if (this.useReactControls()) {
-                    this.renderUI();
-                } else {
-                    this.mediaControls.initFilmstrip(blobUrl, this.filmstripStatus, this.aspect, filmstripInterval);
-                }
-            };
-
-            if (this.useReactControls()) {
-                // <img src> can't carry an Authorization header, so when the access-token has
-                // been migrated out of the URL we must fetch the filmstrip with headers and expose
-                // it as a blob: URL once the rep is ready.
-                this.filmstripStatus
-                    .getPromise()
-                    .then(() => {
-                        if (useHeaders) {
-                            return this.fetchContentAsBlobUrl(url).then(handleBlobUrl);
-                        }
-                        if (!this.destroyed) {
-                            this.renderUI(); // Render once the filmstrip is ready
-                        }
-                        return undefined;
-                    })
-                    .catch(() => {
-                        /* filmstrip is non-critical; skip silently */
-                    });
-            } else if (useHeaders) {
-                this.filmstripStatus
-                    .getPromise()
-                    .then(() => this.fetchContentAsBlobUrl(url))
-                    .then(handleBlobUrl)
-                    .catch(() => {
-                        /* filmstrip is non-critical; skip silently */
-                    });
-            } else {
+            // Legacy controls have a synchronous init path when the URL already carries a token.
+            if (!useHeaders && !useReactControls) {
                 this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
+                return;
             }
+
+            this.filmstripStatus
+                .getPromise()
+                .then(() => (useHeaders ? this.fetchContentAsBlobUrl(url) : url))
+                .then(filmstripUrl => {
+                    // <img src> can't carry an Authorization header, so when the access-token has
+                    // been migrated out of the URL we expose the rep as a blob: URL instead.
+                    // If the viewer was destroyed while we were fetching, release the blob now —
+                    // destroy() can't see it because filmstripUrl was still null when it ran.
+                    if (this.destroyed) {
+                        if (useHeaders) {
+                            URL.revokeObjectURL(filmstripUrl);
+                        }
+                        return;
+                    }
+                    this.filmstripUrl = filmstripUrl;
+                    if (useReactControls) {
+                        this.renderUI();
+                    } else {
+                        this.mediaControls.initFilmstrip(
+                            filmstripUrl,
+                            this.filmstripStatus,
+                            this.aspect,
+                            filmstripInterval,
+                        );
+                    }
+                })
+                // Filmstrip is a non-critical scrubbing-preview enhancement, so any failure
+                // (rep status reject, blob fetch reject) is swallowed rather than failing
+                // the whole viewer. Warn so prod 401s leave a breadcrumb in DevTools.
+                .catch(err => {
+                    console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
+                });
         }
     }
 
