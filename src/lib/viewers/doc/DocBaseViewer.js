@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
+import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -465,9 +465,13 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
-            this.prefetchAssets(ASSETS, CSS);
-            this.prefetchAssets(PRELOAD_JS, [], true);
+            if (this.featureEnabled('useNpmPdfjs')) {
+                this.prefetchAssets(EXIF_READER, CSS);
+            } else {
+                const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+                this.prefetchAssets(ASSETS, CSS);
+                this.prefetchAssets(PRELOAD_JS, [], true);
+            }
         }
 
         if (preload && !isWatermarked) {
@@ -618,8 +622,15 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
         }
-        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
-        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
+        let jsAssets;
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        if (useNpmPdfjs) {
+            jsAssets = this.docFirstPagesEnabled ? EXIF_READER : EXIF;
+        } else {
+            jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+        }
+        const pdfjsNpmPromise = useNpmPdfjs ? this.loadPdfjsFromNpm() : Promise.resolve();
+        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise(), pdfjsNpmPromise])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -1216,6 +1227,13 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
+        if (this.featureEnabled('useNpmPdfjs')) {
+            // eslint-disable-next-line global-require
+            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            return;
+        }
+
         this.pdfjsLib = window.pdfjsLib;
         this.pdfjsViewer = window.pdfjsViewer;
 
@@ -1224,6 +1242,21 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
+    }
+
+    /**
+     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     *
+     * @private
+     * @return {Promise<void>}
+     */
+    async loadPdfjsFromNpm() {
+        const [pdfjsLib, pdfjsViewer] = await Promise.all([
+            import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs'),
+            import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs'),
+        ]);
+        this.pdfjsLib = pdfjsLib;
+        this.pdfjsViewer = pdfjsViewer;
     }
 
     /**
