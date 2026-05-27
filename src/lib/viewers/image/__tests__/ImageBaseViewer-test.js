@@ -444,9 +444,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn(),
             };
+            imageBase.wrapperEl = {
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
+            };
 
             jest.spyOn(document, 'addEventListener');
             stubs.listeners = imageBase.imageEl.addEventListener;
+            stubs.wrapperListeners = imageBase.wrapperEl.addEventListener;
             imageBase.isMobile = true;
             imageBase.mobileZoomStartHandler = imageBase.mobileZoomStartHandler.bind(imageBase);
             imageBase.mobileZoomChangeHandler = imageBase.mobileZoomChangeHandler.bind(imageBase);
@@ -460,9 +465,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.listeners).toBeCalledWith('dragstart', imageBase.cancelDragEvent);
         });
 
-        test('should bind wheel listener for trackpad zoom', () => {
+        test('should bind wheel listener on wrapper for trackpad zoom', () => {
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler, { passive: false });
+            expect(stubs.wrapperListeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler, { passive: false });
         });
 
         test('should bind all iOS listeners when hasTouch is true', () => {
@@ -495,9 +500,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn(),
             };
+            imageBase.wrapperEl = {
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
+            };
 
             imageBase.imageEl.removeEventListener = jest.fn();
             stubs.listeners = imageBase.imageEl.removeEventListener;
+            stubs.wrapperListeners = imageBase.wrapperEl.removeEventListener;
             stubs.documentListener = jest.spyOn(document, 'removeEventListener');
             imageBase.hasTouch = true;
         });
@@ -518,9 +528,9 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.listeners).toBeCalledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
-        test('should unbind wheel listener', () => {
+        test('should unbind wheel listener from wrapper', () => {
             imageBase.unbindDOMListeners();
-            expect(stubs.listeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler);
+            expect(stubs.wrapperListeners).toBeCalledWith('wheel', imageBase.wheelZoomHandler);
         });
 
         test('should unbind all document listeners', () => {
@@ -546,11 +556,17 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 100, configurable: true });
             imageBase.imageEl.getBoundingClientRect = jest
                 .fn()
-                .mockReturnValueOnce({ left: 0, top: 0, width: 100, height: 100 })
-                .mockReturnValue({ left: 0, top: 0, width: 105, height: 105 });
+                .mockReturnValueOnce({ left: 0, top: 0, width: 100, height: 100, right: 100, bottom: 100 })
+                .mockReturnValue({ left: 0, top: 0, width: 105, height: 105, right: 105, bottom: 105 });
             imageBase.wrapperEl = document.createElement('div');
             imageBase.wrapperEl.scrollLeft = 0;
             imageBase.wrapperEl.scrollTop = 0;
+            imageBase.wrapperEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValue({ left: 0, top: 0, width: 800, height: 600 });
+            imageBase.updatePannability = jest.fn();
+            // Pre-set isPinching so most tests skip the hit-test logic
+            imageBase.isPinching = true;
             jest.spyOn(imageBase, 'emit').mockImplementation();
             jest.spyOn(imageBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
         });
@@ -584,6 +600,37 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.emit).not.toBeCalled();
         });
 
+        test('should not start pinch if cursor is outside the image', () => {
+            imageBase.isPinching = false;
+            imageBase.imageEl.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 100,
+                top: 100,
+                right: 200,
+                bottom: 200,
+                width: 100,
+                height: 100,
+            });
+            // Cursor at (50, 50) is outside the image rect (100-200, 100-200)
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(event.preventDefault).not.toBeCalled();
+            expect(imageBase.emit).not.toBeCalled();
+        });
+
+        test('should start pinch if cursor is over the image', () => {
+            imageBase.isPinching = false;
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: 0, top: 0, right: 100, bottom: 100, width: 100, height: 100 })
+                .mockReturnValue({ left: 0, top: 0, right: 105, bottom: 105, width: 105, height: 105 });
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+            expect(event.preventDefault).toBeCalled();
+            expect(imageBase.isPinching).toBe(true);
+        });
+
         test('should preventDefault and apply proportional zoom on pinch in', () => {
             const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
 
@@ -604,18 +651,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.wheelZoomHandler(event);
             // deltaY=5, delta=-0.05, newWidth = 100 * 0.95 = 95
             expect(imageBase.imageEl.style.width).toBe('95px');
-        });
-
-        test('should call adjustImageZoomPadding if available', () => {
-            imageBase.adjustImageZoomPadding = jest.fn();
-            imageBase.wheelZoomHandler({
-                clientX: 0,
-                clientY: 0,
-                ctrlKey: true,
-                deltaY: -5,
-                preventDefault: jest.fn(),
-            });
-            expect(imageBase.adjustImageZoomPadding).toBeCalled();
         });
 
         test('should call setScale with width and null height', () => {
@@ -696,11 +731,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.emit).toBeCalledWith('zoom', expect.objectContaining({ canZoomIn: false }));
         });
 
-        test('should use requestAnimationFrame for updatePannability', () => {
-            imageBase.updatePannability = jest.fn();
-            jest.spyOn(window, 'requestAnimationFrame').mockImplementation();
-            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation();
-
+        test('should call updatePannability', () => {
             imageBase.wheelZoomHandler({
                 clientX: 0,
                 clientY: 0,
@@ -708,24 +739,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 deltaY: -5,
                 preventDefault: jest.fn(),
             });
-            expect(window.requestAnimationFrame).toBeCalledWith(imageBase.updatePannability);
-        });
-
-        test('should cancel previous requestAnimationFrame before scheduling new one', () => {
-            imageBase.updatePannability = jest.fn();
-            imageBase.wheelZoomRAF = 456;
-            jest.spyOn(window, 'requestAnimationFrame').mockImplementation();
-            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation();
-
-            imageBase.wheelZoomHandler({
-                clientX: 0,
-                clientY: 0,
-                ctrlKey: true,
-                deltaY: -5,
-                preventDefault: jest.fn(),
-            });
-            expect(window.cancelAnimationFrame).toBeCalledWith(456);
-            expect(window.requestAnimationFrame).toBeCalledWith(imageBase.updatePannability);
+            expect(imageBase.updatePannability).toBeCalled();
         });
 
         test('should anchor zoom at cursor by adjusting wrapperEl scroll', () => {
@@ -738,6 +752,41 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             imageBase.wheelZoomHandler(event);
 
+            expect(imageBase.wrapperEl.scrollLeft).toBeCloseTo(2.5);
+            expect(imageBase.wrapperEl.scrollTop).toBeCloseTo(2.5);
+        });
+
+        test('should clamp left edge to initial rect when zooming out', () => {
+            // Image is zoomed in: 200px wide, positioned at left=-50 (overflows left of initial).
+            // Initial rect has left=50. On zoom out, cursor-anchoring would push left to 60 (past initial).
+            // Clamping should pin it to initialRect.left=50.
+            Object.defineProperty(imageBase.imageEl, 'offsetWidth', { value: 200, configurable: true });
+            imageBase.initialWidth = 100;
+            imageBase.initialRect = { left: 50, top: 50, right: 150, bottom: 150 };
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: -50, top: -50, width: 200, height: 200 }) // before resize
+                .mockReturnValue({ left: -50, top: -50, width: 190, height: 190 }); // after resize
+
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: 5, preventDefault: jest.fn() };
+            imageBase.wheelZoomHandler(event);
+
+            // The image left edge should not go past initialRect.left (50 relative to wrapper)
+            const imageRect = imageBase.imageEl.getBoundingClientRect();
+            const wrapperRect = imageBase.wrapperEl.getBoundingClientRect();
+            const finalLeft = imageRect.left - wrapperRect.left + imageBase.wrapperEl.scrollLeft;
+            expect(finalLeft).toBeLessThanOrEqual(50);
+        });
+
+        test('should not apply clamping when zooming in', () => {
+            // Even with initialRect set, zoom-in should use pure cursor-anchoring
+            imageBase.initialRect = { left: 50, top: 50, right: 150, bottom: 150 };
+            imageBase.initialWidth = 100;
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            // Should still apply cursor-anchoring (scroll adjusts)
             expect(imageBase.wrapperEl.scrollLeft).toBeCloseTo(2.5);
             expect(imageBase.wrapperEl.scrollTop).toBeCloseTo(2.5);
         });
@@ -803,6 +852,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('enableViewerControls()', () => {
+        beforeEach(() => {
+            imageBase.wrapperEl = document.createElement('div');
+        });
+
         test('should enable viewer controls', () => {
             imageBase.controls = {
                 enable: jest.fn(),
