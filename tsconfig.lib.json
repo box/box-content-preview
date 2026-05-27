@@ -1,0 +1,23 @@
+{
+    "extends": "@box/frontend/ts/tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist/lib",
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "noEmit": false,
+        "strict": true,
+        "isolatedModules": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "./src/index.ts",
+        "./src/components/**/*.ts",
+        "./src/components/**/*.tsx",
+        "./src/hooks/**/*.ts",
+        "./src/hooks/**/*.tsx",
+        "./src/types/**/*.ts"
+    ],
+    "exclude": ["node_modules", "dist", "**/__tests__/**", "**/*-test.ts", "**/*-test.tsx"]
+}
