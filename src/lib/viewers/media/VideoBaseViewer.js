@@ -390,6 +390,7 @@ class VideoBaseViewer extends MediaBaseViewer {
             onHide: this.handleControlsHide,
             onShow: this.handleControlsShow,
         });
+        this.addListener('annotator_create', () => this.renderUI());
         this.renderUI();
     }
 
