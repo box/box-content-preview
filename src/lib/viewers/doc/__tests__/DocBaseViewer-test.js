@@ -1149,12 +1149,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should load pdfjs from npm and skip vendored JS when useNpmPdfjs flag is on', () => {
+            test('should load pdfjs from npm and skip vendored JS/CSS when useNpmPdfjs flag is on', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
 
                 return docBase.load().then(() => {
                     expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
-                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF, CSS);
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF, []);
                     expect(docBase.loadAssets).not.toHaveBeenCalledWith(JS, CSS);
                     expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
                 });
@@ -1166,7 +1166,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.load().then(() => {
                     expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
-                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, CSS);
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
                 });
             });
 

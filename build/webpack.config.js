@@ -27,6 +27,8 @@ if (fs.existsSync('build/rsync.json')) {
 
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
+const exifAssets = path.resolve('src/lib/exif');
+const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
 const staticFolder = path.resolve('dist');
 const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
@@ -86,6 +88,8 @@ function updateConfig(conf, language, index) {
 
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
+        config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
     }
 
     if (isDev) {

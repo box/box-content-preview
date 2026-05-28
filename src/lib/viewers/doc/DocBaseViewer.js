@@ -623,14 +623,17 @@ class DocBaseViewer extends BaseViewer {
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
         }
         let jsAssets;
+        let cssAssets;
         const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
         if (useNpmPdfjs) {
             jsAssets = this.docFirstPagesEnabled ? EXIF_READER : EXIF;
+            cssAssets = []; // pdfjs CSS comes from npm via loadPdfjsFromNpm
         } else {
             jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+            cssAssets = CSS;
         }
         const pdfjsNpmPromise = useNpmPdfjs ? this.loadPdfjsFromNpm() : Promise.resolve();
-        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise(), pdfjsNpmPromise])
+        return Promise.all([this.loadAssets(jsAssets, cssAssets), this.getRepStatus().getPromise(), pdfjsNpmPromise])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -985,9 +988,10 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
+        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
-            cMapUrl: assetUrlCreator(CMAP),
+            cMapUrl,
             disableCreateObjectURL,
             disableFontFace,
             disableRange,
@@ -1255,6 +1259,7 @@ class DocBaseViewer extends BaseViewer {
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
         this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
         this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
     }
 
     /**
