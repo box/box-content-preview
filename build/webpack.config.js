@@ -68,11 +68,19 @@ function updateConfig(conf, language, index) {
             maxAssetSize: 500000,
             maxEntrypointSize: 750000,
         },
+        ignoreWarnings: [
+            // pdfjs-dist contains an internal dynamic require for optional features that
+            // webpack flags as a critical dependency. Safe to ignore.
+            { module: /pdfjs-dist/, message: /Critical dependency/ },
+        ],
         devServer: {
             static: './src',
             allowedHosts: 'all',
             host: '0.0.0.0',
             port: 8000,
+            client: {
+                overlay: { errors: true, warnings: false, runtimeErrors: true },
+            },
         },
     };
 
