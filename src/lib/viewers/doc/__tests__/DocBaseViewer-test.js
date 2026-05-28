@@ -2830,6 +2830,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.addEventListener).toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
+
+            test('should add wheel listener when pinchToZoom.enabled feature flag is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler, {
+                    passive: false,
+                });
+            });
+
+            test('should not add wheel listener when pinchToZoom.enabled feature flag is false', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).not.toBeCalledWith(
+                    'wheel',
+                    docBase.trackpadPinchToZoomHandler,
+                    expect.anything(),
+                );
+            });
         });
 
         describe('unbindDOMListeners()', () => {
@@ -2871,6 +2891,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
+            });
+
+            test('should remove wheel listener when pinchToZoom.enabled feature flag is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.unbindDOMListeners();
+
+                expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
             });
         });
 
@@ -3480,6 +3507,127 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.originalDistance).toBe(0);
                 expect(docBase.pinchScale).toBe(1);
                 expect(docBase.pinchPage).toBeNull();
+            });
+        });
+
+        describe('trackpadPinchToZoomHandler()', () => {
+            let event;
+            let pageEl;
+
+            beforeEach(() => {
+                docBase.pdfViewer = {
+                    currentScaleValue: 1,
+                    currentScale: 1,
+                    update: jest.fn(),
+                };
+
+                docBase.updateScale = jest.fn();
+
+                docBase.docEl.getBoundingClientRect = jest.fn().mockReturnValue({
+                    left: 0,
+                    top: 0,
+                });
+                Object.defineProperty(docBase.docEl, 'scrollLeft', { value: 0, writable: true });
+                Object.defineProperty(docBase.docEl, 'scrollTop', { value: 0, writable: true });
+
+                // Create a mock page element
+                pageEl = document.createElement('div');
+                pageEl.classList.add('page');
+                pageEl.getBoundingClientRect = jest.fn().mockReturnValue({
+                    left: 100,
+                    top: 50,
+                    width: 600,
+                    height: 800,
+                });
+
+                document.elementFromPoint = jest.fn().mockReturnValue(pageEl);
+
+                event = {
+                    ctrlKey: true,
+                    deltaY: -50,
+                    clientX: 400,
+                    clientY: 300,
+                    preventDefault: jest.fn(),
+                };
+            });
+
+            afterEach(() => {
+                delete document.elementFromPoint;
+            });
+
+            test('should do nothing if ctrlKey is false', () => {
+                event.ctrlKey = false;
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(event.preventDefault).not.toBeCalled();
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should call preventDefault when ctrlKey is true', () => {
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(event.preventDefault).toBeCalled();
+            });
+
+            test('should zoom in with cursor anchoring when above initial scale', () => {
+                docBase.pdfViewer.currentScale = 1;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(1.5);
+            });
+
+            test('should zoom out with cursor anchoring', () => {
+                docBase.pdfViewer.currentScale = 0.5;
+
+                event.deltaY = 100; // zoom out
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(0.1);
+                expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+            });
+
+            test('should not exceed MAX_SCALE', () => {
+                docBase.pdfViewer.currentScale = 10.0;
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should not go below MIN_SCALE', () => {
+                docBase.pdfViewer.currentScale = 0.1;
+                event.deltaY = 50; // zoom out
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should use page-relative anchoring when a page element is found', () => {
+                docBase.pdfViewer.currentScale = 1.5;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+                expect(docBase.updateScale).toBeCalled();
+            });
+
+            test('should fall back to content-based anchoring when no page element is found', () => {
+                document.elementFromPoint.mockReturnValue(null);
+                docBase.pdfViewer.currentScale = 1.5;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalled();
             });
         });
 
