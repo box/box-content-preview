@@ -8,6 +8,27 @@
         "type": "git",
         "url": "git@github.com:box/box-content-preview.git"
     },
+    "main": "dist/lib/index.js",
+    "module": "dist/lib/index.js",
+    "types": "dist/lib/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/lib/index.d.ts",
+            "import": "./dist/lib/index.js"
+        },
+        "./styles.css": "./dist/lib/index.css",
+        "./package.json": "./package.json"
+    },
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "@box/blueprint-web": "*",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
     "devDependencies": {
         "@babel/core": "^7.18.6",
         "@babel/plugin-proposal-class-properties": "^7.18.6",
@@ -110,14 +131,17 @@
         "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
         "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
+        "build:lib": "yarn build:lib:js && yarn build:lib:types",
+        "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
+        "build:lib:types": "tsc --project tsconfig.lib.json",
         "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
         "cy:run": "yarn cy:wait; yarn cypress run --spec test/integration/**/*.test.js",
         "cy:wait": "wait-on http-get://127.0.0.1:8000",
         "lint": "npm-run-all lint:*",
-        "lint:css": "NODE_ENV=dev yarn stylelint 'src/lib/**/*.scss'",
-        "lint:js": "NODE_ENV=dev yarn eslint src/lib",
+        "lint:css": "NODE_ENV=dev yarn stylelint 'src/lib/**/*.scss' 'src/components/**/*.scss' 'src/hooks/**/*.scss'",
+        "lint:js": "NODE_ENV=dev yarn eslint src/lib src/components src/hooks",
         "lint:ts": "tsc && eslint --ext=.tsx,.ts --max-warnings=0 .",
         "release": "yarn setup && yarn clean && yarn build:i18n && yarn lint && yarn test && yarn build:prod",
         "release:major": "./build/release.sh -m",
