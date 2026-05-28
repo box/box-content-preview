@@ -87,6 +87,7 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const WHEEL_ZOOM_MAX_SCALE = 5.0;
 const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
@@ -1848,7 +1849,7 @@ class DocBaseViewer extends BaseViewer {
 
         const { currentScale } = this.pdfViewer;
         const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
-        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
+        const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
 
         if (newScale === currentScale) {
             return;

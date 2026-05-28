@@ -3591,7 +3591,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should not exceed MAX_SCALE', () => {
-                docBase.pdfViewer.currentScale = 10.0;
+                docBase.pdfViewer.currentScale = 5.0;
                 event.deltaY = -50; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
