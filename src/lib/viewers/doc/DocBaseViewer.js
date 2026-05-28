@@ -1251,12 +1251,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise<void>}
      */
     async loadPdfjsFromNpm() {
-        const [pdfjsLib, pdfjsViewer] = await Promise.all([
-            import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs'),
-            import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs'),
-        ]);
-        this.pdfjsLib = pdfjsLib;
-        this.pdfjsViewer = pdfjsViewer;
+        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
+        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
     }
 
     /**
