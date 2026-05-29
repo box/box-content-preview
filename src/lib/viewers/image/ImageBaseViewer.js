@@ -9,6 +9,9 @@ import { openContentInsideIframe } from '../../util';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
+const MIN_PINCH_SCALE_DELTA = 0.01;
+const WHEEL_ZOOM_MAX_SCALE = 100;
+const WHEEL_ZOOM_MIN_SCALE = 0.1;
 
 class ImageBaseViewer extends BaseViewer {
     /** @inheritdoc */
@@ -31,6 +34,8 @@ class ImageBaseViewer extends BaseViewer {
         this.finishLoading = this.finishLoading.bind(this);
         this.isDiscoverabilityEnabled = this.isDiscoverabilityEnabled.bind(this);
 
+        // Trackpad pinch-to-zoom support
+        this.wheelZoomHandler = this.wheelZoomHandler.bind(this);
         if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
@@ -77,6 +82,8 @@ class ImageBaseViewer extends BaseViewer {
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions.then(() => {
             this.zoom();
+            this.initialWidth = this.imageEl.offsetWidth;
+            this.initialRect = this.getInitialImageRect();
             this.loadUI();
 
             this.imageEl.classList.remove(CLASS_INVISIBLE);
@@ -110,6 +117,8 @@ class ImageBaseViewer extends BaseViewer {
      */
     resize() {
         this.zoom();
+        this.initialWidth = this.imageEl.offsetWidth;
+        this.initialRect = this.getInitialImageRect();
         super.resize();
     }
 
@@ -272,6 +281,8 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.cancelDragEvent);
+        // Trackpad pinch-to-zoom
+        this.wrapperEl.addEventListener('wheel', this.wheelZoomHandler, { passive: false });
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -302,12 +313,164 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
         this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         this.imageEl.removeEventListener('dragstart', this.cancelDragEvent);
+        if (this.wrapperEl) {
+            this.wrapperEl.removeEventListener('wheel', this.wheelZoomHandler);
+        }
 
         this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
         this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
         this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
         this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+    }
+
+    /**
+     * Returns the image's bounding rect relative to the wrapper.
+     * Used to capture the initial position for zoom-out clamping.
+     *
+     * @protected
+     * @return {Object} Rect with left, top, right, bottom relative to wrapper
+     */
+    getInitialImageRect() {
+        if (!this.imageEl || !this.wrapperEl) {
+            return null;
+        }
+        const imageRect = this.imageEl.getBoundingClientRect();
+        const wrapperRect = this.wrapperEl.getBoundingClientRect();
+        return {
+            left: imageRect.left - wrapperRect.left,
+            top: imageRect.top - wrapperRect.top,
+            right: imageRect.right - wrapperRect.left,
+            bottom: imageRect.bottom - wrapperRect.top,
+        };
+    }
+
+    /**
+     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
+     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     *
+     * @protected
+     * @param {WheelEvent} event - wheel event object
+     * @return {void}
+     */
+    wheelZoomHandler(event) {
+        if (!event.ctrlKey || !this.imageEl || !this.wrapperEl || !this.featureEnabled('pinchToZoom.enabled')) {
+            this.isPinching = false;
+            return;
+        }
+
+        // Only start a pinch session if the gesture begins over the image.
+        // Once active, continue even if the cursor drifts outside the image.
+        if (!this.isPinching) {
+            const imageRect = this.imageEl.getBoundingClientRect();
+            const isOverImage =
+                event.clientX >= imageRect.left &&
+                event.clientX <= imageRect.right &&
+                event.clientY >= imageRect.top &&
+                event.clientY <= imageRect.bottom;
+            if (!isOverImage) {
+                return;
+            }
+            this.isPinching = true;
+        }
+
+        // Reset pinch session after a brief idle (no explicit "pinch end" event exists)
+        clearTimeout(this.pinchIdleTimer);
+        this.pinchIdleTimer = setTimeout(() => {
+            this.isPinching = false;
+        }, 200);
+
+        event.preventDefault();
+
+        const currentWidth = this.imageEl.offsetWidth;
+        if (!currentWidth) {
+            return;
+        }
+
+        const baseWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10) || currentWidth;
+        const minWidth = this.initialWidth || baseWidth * WHEEL_ZOOM_MIN_SCALE;
+        const maxWidth = baseWidth * WHEEL_ZOOM_MAX_SCALE;
+
+        const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
+        const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
+        const ratio = newWidth / currentWidth;
+
+        // Record where the cursor sits within the image (in image-local coords).
+        // This is what we'll keep anchored to the cursor through the zoom.
+        const oldImageRect = this.imageEl.getBoundingClientRect();
+        const pointInImageX = event.clientX - oldImageRect.left;
+        const pointInImageY = event.clientY - oldImageRect.top;
+
+        // Resize the image. This grows/shrinks from the top-left corner, so the exact
+        // pixel that was under the cursor is now at a different screen position.
+        this.imageEl.style.width = `${newWidth}px`;
+        this.imageEl.style.height = '';
+
+        // Compute how far the image pixel drifted from the cursor after resizing.
+        const newImageRect = this.imageEl.getBoundingClientRect();
+        const wrapperRect = this.wrapperEl.getBoundingClientRect();
+        let dx = newImageRect.left + pointInImageX * ratio - event.clientX;
+        let dy = newImageRect.top + pointInImageY * ratio - event.clientY;
+
+        // When zooming out, clamp so edges don't retreat past the initial rect.
+        // This guides the image back to its initial position as it shrinks.
+        if (newWidth < currentWidth && this.initialRect) {
+            // Where the image would end up after full cursor-anchor correction
+            let targetLeft = newImageRect.left - wrapperRect.left - dx;
+            let targetTop = newImageRect.top - wrapperRect.top - dy;
+            const targetRight = targetLeft + newImageRect.width;
+            const targetBottom = targetTop + newImageRect.height;
+
+            // Clamp: don't let an edge retreat past its initial boundary
+            if (targetLeft > this.initialRect.left) {
+                targetLeft = this.initialRect.left;
+            } else if (targetRight < this.initialRect.right) {
+                targetLeft = this.initialRect.right - newImageRect.width;
+            }
+
+            if (targetTop > this.initialRect.top) {
+                targetTop = this.initialRect.top;
+            } else if (targetBottom < this.initialRect.bottom) {
+                targetTop = this.initialRect.bottom - newImageRect.height;
+            }
+
+            dx = newImageRect.left - wrapperRect.left - targetLeft;
+            dy = newImageRect.top - wrapperRect.top - targetTop;
+        }
+
+        // Apply correction: scroll first, then CSS offset for any remainder.
+        const prevScrollLeft = this.wrapperEl.scrollLeft;
+        const prevScrollTop = this.wrapperEl.scrollTop;
+        this.wrapperEl.scrollLeft += dx;
+        this.wrapperEl.scrollTop += dy;
+
+        const remainderX = dx - (this.wrapperEl.scrollLeft - prevScrollLeft);
+        const remainderY = dy - (this.wrapperEl.scrollTop - prevScrollTop);
+        if (remainderX !== 0 || remainderY !== 0) {
+            const currentLeft = parseFloat(this.imageEl.style.left) || 0;
+            const currentTop = parseFloat(this.imageEl.style.top) || 0;
+            this.imageEl.style.left = `${currentLeft - remainderX}px`;
+            this.imageEl.style.top = `${currentTop - remainderY}px`;
+        }
+
+        // When we've reached the minimum width, snap to the correct centered position
+        // via adjustImageZoomPadding. This handles rotation where the initial rect is stale.
+        if (newWidth <= minWidth && typeof this.adjustImageZoomPadding === 'function') {
+            this.adjustImageZoomPadding();
+        }
+
+        // setScale emits 'scale', which triggers annotation re-render. Call it AFTER
+        // final image position is set so the overlay reads correct offsetLeft/offsetTop.
+        if (typeof this.setScale === 'function') {
+            this.setScale(newWidth, null);
+        }
+        this.updatePannability();
+
+        this.emit('zoom', {
+            newScale: [newWidth, this.imageEl.offsetHeight],
+            canZoomIn: newWidth < maxWidth,
+            canZoomOut: newWidth > minWidth,
+        });
     }
 
     /**
