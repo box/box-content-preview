@@ -1682,6 +1682,23 @@ describe('lib/Preview', () => {
             expect(preview.options.preloadStatus).toBeUndefined();
             expect(preview.options.clientName).toBeUndefined();
         });
+
+        test('should store the annotatorToken resolver for the annotator', () => {
+            const annotatorToken = jest.fn();
+            preview.parseOptions({ ...preview.previewOptions, annotatorToken });
+            expect(preview.options.annotatorToken).toBe(annotatorToken);
+        });
+
+        test('should leave annotatorToken undefined when host omits it', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.annotatorToken).toBeUndefined();
+        });
+
+        test.each([['some-string'], [{}], [null]])('should throw when annotatorToken is %p', value => {
+            expect(() => preview.parseOptions({ ...preview.previewOptions, annotatorToken: value })).toThrow(
+                'Bad annotatorToken!',
+            );
+        });
     });
 
     describe('createViewerOptions()', () => {
