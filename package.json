@@ -24,7 +24,14 @@
     "publishConfig": {
         "access": "public"
     },
+    "dependencies": {
+        "axios": "^0.24.0",
+        "pdfjs-dist": "4.3.136"
+    },
     "peerDependencies": {
+        "@box/react-virtualized": "9.22.3-rc-box.2",
+        "box-annotations": "^5.2.1-beta.0",
+        "box-ui-elements": "^20.0.0",
         "react": "^18.0.0",
         "react-dom": "^18.0.0"
     },
@@ -54,7 +61,6 @@
         "@typescript-eslint/eslint-plugin": "^5.60.1",
         "@typescript-eslint/parser": "^5.60.1",
         "autoprefixer": "^10.4.21",
-        "axios": "^0.24.0",
         "babel-loader": "^8.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
         "box-annotations": "^5.2.1-beta.0",
@@ -179,8 +185,5 @@
         "**/react-intl/**/@types/react": "18.3.1",
         "cheerio": "1.0.0-rc.12",
         "acorn": "8.14.0"
-    },
-    "dependencies": {
-        "pdfjs-dist": "4.3.136"
     }
 }

@@ -55,12 +55,15 @@ module.exports = {
     experiments: {
         outputModule: true,
     },
-    externals: {
-        react: 'react',
-        'react-dom': 'react-dom',
-        'react-dom/client': 'react-dom/client',
-        'react/jsx-runtime': 'react/jsx-runtime',
-    },
+    externals: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'box-annotations',
+        /^box-ui-elements(\/.*)?$/,
+        /^@box\/react-virtualized(\/.*)?$/,
+    ],
     externalsType: 'module',
     module: {
         rules: [
