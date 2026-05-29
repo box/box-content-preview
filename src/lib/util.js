@@ -303,8 +303,8 @@ export function createAssetUrlCreator(location) {
         if (name.indexOf('http') === 0) {
             // This is a full url
             asset = name;
-        } else if (name.indexOf('third-party') === 0) {
-            // This is a static third-party asset thats not localized
+        } else if (name.indexOf('third-party') === 0 || name.indexOf('exif/') === 0 || name.indexOf('cmaps/') === 0) {
+            // Static, non-localized asset (third-party libs, shared exif, pdfjs cmaps).
             asset = staticBaseURI + name;
         } else {
             // This is our own asset that is localized

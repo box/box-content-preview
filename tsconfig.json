@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "module": "ES2020",
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
     "extends": "@box/frontend/ts/tsconfig.json",

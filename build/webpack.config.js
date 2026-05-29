@@ -27,6 +27,8 @@ if (fs.existsSync('build/rsync.json')) {
 
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
+const exifAssets = path.resolve('src/lib/exif');
+const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
 const staticFolder = path.resolve('dist');
 const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
@@ -68,16 +70,26 @@ function updateConfig(conf, language, index) {
             maxAssetSize: 500000,
             maxEntrypointSize: 750000,
         },
+        ignoreWarnings: [
+            // pdfjs-dist contains an internal dynamic require for optional features that
+            // webpack flags as a critical dependency. Safe to ignore.
+            { module: /pdfjs-dist/, message: /Critical dependency/ },
+        ],
         devServer: {
             static: './src',
             allowedHosts: 'all',
             host: '0.0.0.0',
             port: 8000,
+            client: {
+                overlay: { errors: true, warnings: false, runtimeErrors: true },
+            },
         },
     };
 
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
+        config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
     }
 
     if (isDev) {

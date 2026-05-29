@@ -33,6 +33,7 @@ module.exports = language => {
                         path.resolve('src/lib'),
                         path.resolve('node_modules/box-annotations'),
                         path.resolve('node_modules/box-ui-elements'),
+                        path.resolve('node_modules/pdfjs-dist'),
                     ],
                 },
                 {
