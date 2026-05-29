@@ -40,7 +40,7 @@ import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, 
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
+import { EXIF, EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -1103,6 +1103,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
                 jest.spyOn(docBase, 'loadAssets').mockResolvedValue();
                 jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
+                jest.spyOn(docBase, 'loadPdfjsFromNpm').mockResolvedValue();
             });
 
             afterEach(() => {
@@ -1145,6 +1146,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 return docBase.load().then(() => {
                     expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                });
+            });
+
+            test('should load pdfjs from npm and skip vendored JS/CSS when useNpmPdfjs flag is on', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF, []);
+                    expect(docBase.loadAssets).not.toHaveBeenCalledWith(JS, CSS);
+                    expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
+                });
+            });
+
+            test('should load EXIF_READER from vendored when useNpmPdfjs and docfirst pages are both on', () => {
+                docBase.docFirstPagesEnabled = true;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                });
+            });
+
+            test('should not call loadPdfjsFromNpm when useNpmPdfjs flag is off', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).not.toHaveBeenCalled();
                 });
             });
         });
@@ -2407,6 +2437,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.setupPdfjs();
 
                 expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('asset');
+            });
+
+            test('should set workerSrc from npm worker module when useNpmPdfjs flag is on', () => {
+                jest.doMock('../pdfjsNpmWorker', () => ({ default: () => 'npm-worker-src' }));
+                docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                docBase.setupPdfjs();
+
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('npm-worker-src');
+                jest.dontMock('../pdfjsNpmWorker');
             });
         });
 
