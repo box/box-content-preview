@@ -1,3 +1,9 @@
+## 3.37.0 (2026-05-29)
+
+* feat(build): add ESM lib build for npm publishing (#1653) ([bb17d6a](https://github.com/box/box-content-preview/commit/bb17d6a)), closes [#1653](https://github.com/box/box-content-preview/issues/1653)
+
+
+
 ## 3.36.0 (2026-05-28)
 
 * chore(build): upgrade webpack 4 to webpack 5 (#1651) ([98696d6](https://github.com/box/box-content-preview/commit/98696d6)), closes [#1651](https://github.com/box/box-content-preview/issues/1651)
