@@ -8,7 +8,6 @@
         "emitDeclarationOnly": true,
         "noEmit": false,
         "strict": true,
-        "isolatedModules": true,
         "esModuleInterop": true
     },
     "include": [

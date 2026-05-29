@@ -19,13 +19,8 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -42,6 +37,7 @@
         "@babel/preset-env": "^7.18.6",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
+        "@box/blueprint-web": "14.41.0",
         "@box/frontend": "^6.4.0",
         "@box/languages": "^1.0.0",
         "@box/react-virtualized": "9.22.3-rc-box.2",
