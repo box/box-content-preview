@@ -19,18 +19,12 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "peerDependencies": {
-        "@box/blueprint-web": "*",
         "react": "^18.0.0",
         "react-dom": "^18.0.0"
     },
@@ -136,9 +130,9 @@
         "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
         "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-        "build:lib": "yarn build:lib:js && yarn build:lib:types",
+        "build:lib": "yarn build:i18n && yarn build:lib:js && yarn build:lib:types",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
-        "build:lib:types": "tsc --project tsconfig.lib.json",
+        "build:lib:types": "cp build/lib-types/index.d.ts dist/lib/index.d.ts",
         "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
