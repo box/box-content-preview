@@ -402,6 +402,8 @@ class ImageBaseViewer extends BaseViewer {
         const pointInImageX = event.clientX - oldImageRect.left;
         const pointInImageY = event.clientY - oldImageRect.top;
 
+        // Resize the image. This grows/shrinks from the top-left corner, so the exact
+        // pixel that was under the cursor is now at a different screen position.
         this.imageEl.style.width = `${newWidth}px`;
         this.imageEl.style.height = '';
 
