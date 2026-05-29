@@ -74,6 +74,8 @@ import { getClientLogDetails, getISOTime } from './logUtils';
 import { isFeatureEnabled } from './featureChecking';
 import './Preview.scss';
 
+console.log('LOCAL PREVIEW LOADED 237');
+
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE_MS = 1500; // for showing or hiding the navigation icons

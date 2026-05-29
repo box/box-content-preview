@@ -388,75 +388,73 @@ class ImageBaseViewer extends BaseViewer {
         }
 
         const baseWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10) || currentWidth;
-        const minWidth = this.initialWidth || baseWidth * WHEEL_ZOOM_MIN_SCALE;
+        const minWidth = baseWidth * WHEEL_ZOOM_MIN_SCALE;
         const maxWidth = baseWidth * WHEEL_ZOOM_MAX_SCALE;
 
         const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
         const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
         const ratio = newWidth / currentWidth;
 
-        // Record where the cursor sits within the image (in image-local coords).
-        // This is what we'll keep anchored to the cursor through the zoom.
+        const belowInitialWidth = this.initialWidth && newWidth <= this.initialWidth;
+
+        // Capture cursor position in image-local coords before resizing.
         const oldImageRect = this.imageEl.getBoundingClientRect();
         const pointInImageX = event.clientX - oldImageRect.left;
         const pointInImageY = event.clientY - oldImageRect.top;
 
-        // Resize the image. This grows/shrinks from the top-left corner, so the exact
-        // pixel that was under the cursor is now at a different screen position.
         this.imageEl.style.width = `${newWidth}px`;
         this.imageEl.style.height = '';
 
-        // Compute how far the image pixel drifted from the cursor after resizing.
-        const newImageRect = this.imageEl.getBoundingClientRect();
-        const wrapperRect = this.wrapperEl.getBoundingClientRect();
-        let dx = newImageRect.left + pointInImageX * ratio - event.clientX;
-        let dy = newImageRect.top + pointInImageY * ratio - event.clientY;
+        if (belowInitialWidth) {
+            // Below fit-to-viewport size: zoom from center, same as toolbar zoom controls
+            if (typeof this.adjustImageZoomPadding === 'function') {
+                this.adjustImageZoomPadding();
+            }
+        } else {
+            // Compute how far the image pixel drifted from the cursor after resizing.
+            const newImageRect = this.imageEl.getBoundingClientRect();
+            const wrapperRect = this.wrapperEl.getBoundingClientRect();
+            let dx = newImageRect.left + pointInImageX * ratio - event.clientX;
+            let dy = newImageRect.top + pointInImageY * ratio - event.clientY;
 
-        // When zooming out, clamp so edges don't retreat past the initial rect.
-        // This guides the image back to its initial position as it shrinks.
-        if (newWidth < currentWidth && this.initialRect) {
-            // Where the image would end up after full cursor-anchor correction
-            let targetLeft = newImageRect.left - wrapperRect.left - dx;
-            let targetTop = newImageRect.top - wrapperRect.top - dy;
-            const targetRight = targetLeft + newImageRect.width;
-            const targetBottom = targetTop + newImageRect.height;
+            // When zooming out, clamp so edges don't retreat past the initial rect.
+            // This guides the image back to its initial position as it shrinks.
+            if (newWidth < currentWidth && this.initialRect) {
+                let targetLeft = newImageRect.left - wrapperRect.left - dx;
+                let targetTop = newImageRect.top - wrapperRect.top - dy;
+                const targetRight = targetLeft + newImageRect.width;
+                const targetBottom = targetTop + newImageRect.height;
 
-            // Clamp: don't let an edge retreat past its initial boundary
-            if (targetLeft > this.initialRect.left) {
-                targetLeft = this.initialRect.left;
-            } else if (targetRight < this.initialRect.right) {
-                targetLeft = this.initialRect.right - newImageRect.width;
+                if (targetLeft > this.initialRect.left) {
+                    targetLeft = this.initialRect.left;
+                } else if (targetRight < this.initialRect.right) {
+                    targetLeft = this.initialRect.right - newImageRect.width;
+                }
+
+                if (targetTop > this.initialRect.top) {
+                    targetTop = this.initialRect.top;
+                } else if (targetBottom < this.initialRect.bottom) {
+                    targetTop = this.initialRect.bottom - newImageRect.height;
+                }
+
+                dx = newImageRect.left - wrapperRect.left - targetLeft;
+                dy = newImageRect.top - wrapperRect.top - targetTop;
             }
 
-            if (targetTop > this.initialRect.top) {
-                targetTop = this.initialRect.top;
-            } else if (targetBottom < this.initialRect.bottom) {
-                targetTop = this.initialRect.bottom - newImageRect.height;
+            // Apply correction: scroll first, then CSS offset for any remainder.
+            const prevScrollLeft = this.wrapperEl.scrollLeft;
+            const prevScrollTop = this.wrapperEl.scrollTop;
+            this.wrapperEl.scrollLeft += dx;
+            this.wrapperEl.scrollTop += dy;
+
+            const remainderX = dx - (this.wrapperEl.scrollLeft - prevScrollLeft);
+            const remainderY = dy - (this.wrapperEl.scrollTop - prevScrollTop);
+            if (remainderX !== 0 || remainderY !== 0) {
+                const currentLeft = parseFloat(this.imageEl.style.left) || 0;
+                const currentTop = parseFloat(this.imageEl.style.top) || 0;
+                this.imageEl.style.left = `${currentLeft - remainderX}px`;
+                this.imageEl.style.top = `${currentTop - remainderY}px`;
             }
-
-            dx = newImageRect.left - wrapperRect.left - targetLeft;
-            dy = newImageRect.top - wrapperRect.top - targetTop;
-        }
-
-        // Apply correction: scroll first, then CSS offset for any remainder.
-        const prevScrollLeft = this.wrapperEl.scrollLeft;
-        const prevScrollTop = this.wrapperEl.scrollTop;
-        this.wrapperEl.scrollLeft += dx;
-        this.wrapperEl.scrollTop += dy;
-
-        const remainderX = dx - (this.wrapperEl.scrollLeft - prevScrollLeft);
-        const remainderY = dy - (this.wrapperEl.scrollTop - prevScrollTop);
-        if (remainderX !== 0 || remainderY !== 0) {
-            const currentLeft = parseFloat(this.imageEl.style.left) || 0;
-            const currentTop = parseFloat(this.imageEl.style.top) || 0;
-            this.imageEl.style.left = `${currentLeft - remainderX}px`;
-            this.imageEl.style.top = `${currentTop - remainderY}px`;
-        }
-
-        // When we've reached the minimum width, snap to the correct centered position
-        // via adjustImageZoomPadding. This handles rotation where the initial rect is stale.
-        if (newWidth <= minWidth && typeof this.adjustImageZoomPadding === 'function') {
-            this.adjustImageZoomPadding();
         }
 
         // setScale emits 'scale', which triggers annotation re-render. Call it AFTER
