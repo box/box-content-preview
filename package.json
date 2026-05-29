@@ -29,6 +29,8 @@
         "pdfjs-dist": "4.3.136"
     },
     "peerDependencies": {
+        "@box/blueprint-web": "^14.32.1",
+        "@box/blueprint-web-assets": "^4.119.2",
         "@box/react-virtualized": "9.22.3-rc-box.2",
         "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",

@@ -62,6 +62,8 @@ module.exports = {
         'react/jsx-runtime',
         'box-annotations',
         /^box-ui-elements(\/.*)?$/,
+        /^@box\/blueprint-web(\/.*)?$/,
+        /^@box\/blueprint-web-assets(\/.*)?$/,
         /^@box\/react-virtualized(\/.*)?$/,
     ],
     externalsType: 'module',
