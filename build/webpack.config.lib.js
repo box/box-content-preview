@@ -24,11 +24,9 @@ class CopyAssetsPlugin {
 }
 
 const src = path.resolve('src');
-// Only copy the current pdfjs version. Older pdfjs versions in src/third-party/doc/
-// are retained for CDN-pinned URLs but the npm bundle only needs the runtime version.
-// Keep this in sync with DOC_STATIC_ASSETS_VERSION in src/lib/constants.js.
-const PDFJS_VERSION = '2.107.0';
-const thirdPartyDoc = path.resolve(`src/third-party/doc/${PDFJS_VERSION}`);
+// pdfjs comes from the npm package (pdfjs-dist) bundled by webpack — useNpmPdfjs is
+// always on for the npm path (see src/index.ts). The vendored src/third-party/doc/
+// directory is only used by CDN consumers and is intentionally NOT copied here.
 const thirdPartyMedia = path.resolve('src/third-party/media');
 const thirdPartyText = path.resolve('src/third-party/text');
 const thirdPartyModel3d = path.resolve('src/third-party/model3d');
@@ -121,8 +119,8 @@ module.exports = {
         new MiniCssExtractPlugin({ filename: '[name].css' }),
         new NormalModuleReplacementPlugin(/\/iconv-loader$/),
         // Copy static assets that the legacy code resolves at runtime via createAssetUrlCreator.
-        // These need to be served alongside the bundle for npm consumers.
-        new CopyAssetsPlugin(thirdPartyDoc, path.join(outDir, 'third-party/doc')),
+        // These need to be served alongside the bundle for npm consumers. pdfjs is excluded —
+        // it's bundled from the pdfjs-dist npm package (useNpmPdfjs=true on the npm path).
         new CopyAssetsPlugin(thirdPartyMedia, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyText, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyModel3d, path.join(outDir, 'third-party')),
