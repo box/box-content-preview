@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "3.36.0",
+    "version": "3.37.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -19,8 +19,13 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": ["dist/lib"],
-    "sideEffects": ["*.css", "*.scss"],
+    "files": [
+        "dist/lib"
+    ],
+    "sideEffects": [
+        "*.css",
+        "*.scss"
+    ],
     "publishConfig": {
         "access": "public"
     },
@@ -114,8 +119,8 @@
         "stylelint-config-standard": "^19.0.0",
         "stylelint-order": "^3.1.1",
         "terser": "^5.31.0",
-        "typescript": "^5.0.4",
         "terser-webpack-plugin": "^5.3.14",
+        "typescript": "^5.0.4",
         "wait-on": "^7.2.0",
         "webpack": "^5.107.1",
         "webpack-bundle-analyzer": "^4.10.2",
@@ -180,5 +185,8 @@
         "**/react-intl/**/@types/react": "18.3.1",
         "cheerio": "1.0.0-rc.12",
         "acorn": "8.14.0"
+    },
+    "dependencies": {
+        "pdfjs-dist": "4.3.136"
     }
 }

@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
+import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -468,9 +468,13 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
-            this.prefetchAssets(ASSETS, CSS);
-            this.prefetchAssets(PRELOAD_JS, [], true);
+            if (this.featureEnabled('useNpmPdfjs')) {
+                this.prefetchAssets(EXIF_READER, CSS);
+            } else {
+                const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+                this.prefetchAssets(ASSETS, CSS);
+                this.prefetchAssets(PRELOAD_JS, [], true);
+            }
         }
 
         if (preload && !isWatermarked) {
@@ -621,8 +625,18 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
         }
-        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
-        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
+        let jsAssets;
+        let cssAssets;
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        if (useNpmPdfjs) {
+            jsAssets = this.docFirstPagesEnabled ? EXIF_READER : EXIF;
+            cssAssets = []; // pdfjs CSS comes from npm via loadPdfjsFromNpm
+        } else {
+            jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+            cssAssets = CSS;
+        }
+        const pdfjsNpmPromise = useNpmPdfjs ? this.loadPdfjsFromNpm() : Promise.resolve();
+        return Promise.all([this.loadAssets(jsAssets, cssAssets), this.getRepStatus().getPromise(), pdfjsNpmPromise])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -977,9 +991,10 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
+        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
-            cMapUrl: assetUrlCreator(CMAP),
+            cMapUrl,
             disableCreateObjectURL,
             disableFontFace,
             disableRange,
@@ -1219,6 +1234,13 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
+        if (this.featureEnabled('useNpmPdfjs')) {
+            // eslint-disable-next-line global-require
+            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            return;
+        }
+
         this.pdfjsLib = window.pdfjsLib;
         this.pdfjsViewer = window.pdfjsViewer;
 
@@ -1227,6 +1249,20 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
+    }
+
+    /**
+     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     *
+     * @private
+     * @return {Promise<void>}
+     */
+    async loadPdfjsFromNpm() {
+        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
+        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
     }
 
     /**
