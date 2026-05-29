@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
+import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -87,6 +87,8 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const WHEEL_ZOOM_MAX_SCALE = 5.0;
+const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -159,6 +161,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.trackpadPinchToZoomHandler = this.trackpadPinchToZoomHandler.bind(this);
         this.print = this.print.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.setPage = this.setPage.bind(this);
@@ -465,9 +468,13 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
-            this.prefetchAssets(ASSETS, CSS);
-            this.prefetchAssets(PRELOAD_JS, [], true);
+            if (this.featureEnabled('useNpmPdfjs')) {
+                this.prefetchAssets(EXIF_READER, CSS);
+            } else {
+                const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+                this.prefetchAssets(ASSETS, CSS);
+                this.prefetchAssets(PRELOAD_JS, [], true);
+            }
         }
 
         if (preload && !isWatermarked) {
@@ -618,8 +625,18 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
         }
-        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
-        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
+        let jsAssets;
+        let cssAssets;
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        if (useNpmPdfjs) {
+            jsAssets = this.docFirstPagesEnabled ? EXIF_READER : EXIF;
+            cssAssets = []; // pdfjs CSS comes from npm via loadPdfjsFromNpm
+        } else {
+            jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+            cssAssets = CSS;
+        }
+        const pdfjsNpmPromise = useNpmPdfjs ? this.loadPdfjsFromNpm() : Promise.resolve();
+        return Promise.all([this.loadAssets(jsAssets, cssAssets), this.getRepStatus().getPromise(), pdfjsNpmPromise])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -974,9 +991,10 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
+        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
-            cMapUrl: assetUrlCreator(CMAP),
+            cMapUrl,
             disableCreateObjectURL,
             disableFontFace,
             disableRange,
@@ -1216,6 +1234,13 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
+        if (this.featureEnabled('useNpmPdfjs')) {
+            // eslint-disable-next-line global-require
+            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            return;
+        }
+
         this.pdfjsLib = window.pdfjsLib;
         this.pdfjsViewer = window.pdfjsViewer;
 
@@ -1224,6 +1249,20 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
+    }
+
+    /**
+     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     *
+     * @private
+     * @return {Promise<void>}
+     */
+    async loadPdfjsFromNpm() {
+        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
+        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
     }
 
     /**
@@ -1447,6 +1486,10 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
+
+        if (this.featureEnabled('pinchToZoom.enabled')) {
+            this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
+        }
     }
 
     /**
@@ -1464,6 +1507,10 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
                 this.docEl.removeEventListener('touchmove', this.pinchToZoomChangeHandler);
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
+            }
+
+            if (this.featureEnabled('pinchToZoom.enabled')) {
+                this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
     }
@@ -1827,6 +1874,59 @@ class DocBaseViewer extends BaseViewer {
         this.originalDistance = 0;
         this.pinchScale = 1;
         this.pinchPage = null;
+    }
+
+    trackpadPinchToZoomHandler(event) {
+        if (!event.ctrlKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const { currentScale } = this.pdfViewer;
+        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
+
+        if (newScale === currentScale) {
+            return;
+        }
+
+        const rect = this.docEl.getBoundingClientRect();
+        const cursorX = event.clientX - rect.left;
+        const cursorY = event.clientY - rect.top;
+
+        // Find the page element under the cursor
+        const pageEl = document.elementFromPoint(event.clientX, event.clientY)?.closest('.page');
+
+        if (pageEl) {
+            // Calculate cursor position as a fraction of the page dimensions
+            const pageRect = pageEl.getBoundingClientRect();
+            const fracX = (event.clientX - pageRect.left) / pageRect.width;
+            const fracY = (event.clientY - pageRect.top) / pageRect.height;
+
+            // Apply zoom
+            this.updateScale(newScale);
+
+            // After zoom, find where that fractional position on the page is now
+            const newPageRect = pageEl.getBoundingClientRect();
+            const newRect = this.docEl.getBoundingClientRect();
+            const newPointX = newPageRect.left - newRect.left + fracX * newPageRect.width;
+            const newPointY = newPageRect.top - newRect.top + fracY * newPageRect.height;
+
+            // Adjust scroll so cursor stays over the same point
+            this.docEl.scrollLeft += newPointX - cursorX;
+            this.docEl.scrollTop += newPointY - cursorY;
+        } else {
+            // Fallback when no page element found
+            const contentX = this.docEl.scrollLeft + cursorX;
+            const contentY = this.docEl.scrollTop + cursorY;
+
+            this.updateScale(newScale);
+
+            const scaleFactor = newScale / currentScale;
+            this.docEl.scrollLeft = contentX * scaleFactor - cursorX;
+            this.docEl.scrollTop = contentY * scaleFactor - cursorY;
+        }
     }
 
     toggleFindBar(findBarToggleEl) {
