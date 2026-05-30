@@ -1,3 +1,13 @@
+## 3.38.0 (2026-05-30)
+
+* fix(media): load filmstrip via blob URL when access-token is in header (#1655) ([5bbe86c](https://github.com/box/box-content-preview/commit/5bbe86c)), closes [#1655](https://github.com/box/box-content-preview/issues/1655)
+* feat(annotations): add annotatorToken option for write tokens (#1659) ([d4238a0](https://github.com/box/box-content-preview/commit/d4238a0)), closes [#1659](https://github.com/box/box-content-preview/issues/1659)
+* feat(doc): add feature-flagged npm pdfjs path in DocBaseViewer (#1654) ([295e32e](https://github.com/box/box-content-preview/commit/295e32e)), closes [#1654](https://github.com/box/box-content-preview/issues/1654)
+* feat(zoom): add trackpad pinch-to-zoom for docs (#1656) ([d651bfd](https://github.com/box/box-content-preview/commit/d651bfd)), closes [#1656](https://github.com/box/box-content-preview/issues/1656)
+* feat(zoom): add trackpad pinch-to-zoom for images (#1652) ([0e6b314](https://github.com/box/box-content-preview/commit/0e6b314)), closes [#1652](https://github.com/box/box-content-preview/issues/1652)
+
+
+
 ## 3.37.0 (2026-05-29)
 
 * feat(build): add ESM lib build for npm publishing (#1653) ([bb17d6a](https://github.com/box/box-content-preview/commit/bb17d6a)), closes [#1653](https://github.com/box/box-content-preview/issues/1653)
