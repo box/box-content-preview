@@ -173,6 +173,11 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.preloader.once('preload', () => {
                 this.emitFirstRenderMetric();
                 this.emit(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
+
+                // If the narrow play/seek cluster was already built, the thumbnail overlay is redundant.
+                if (this.playContainerEl) {
+                    this.preloader.hidePlayOverlay();
+                }
             });
         }
 
@@ -628,9 +633,11 @@ class VideoBaseViewer extends MediaBaseViewer {
                 if (this.playContainerEl && mediaElWidthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.isNarrowVideo = false;
                     this.removePlayButtonWithSeekButtons();
+                    this.preloader?.showPlayOverlay();
                     this.renderUI();
                 } else if (!this.playContainerEl && mediaElWidthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.buildPlayButtonWithSeekButtons();
+                    this.preloader?.hidePlayOverlay();
                     this.isNarrowVideo = true;
                     this.renderUI();
                 }
