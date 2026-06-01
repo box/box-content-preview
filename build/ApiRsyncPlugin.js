@@ -7,7 +7,7 @@ function ApiRsyncPlugin(source, destination) {
 
 /* eslint-disable no-console */
 ApiRsyncPlugin.prototype.apply = function rsync(compiler) {
-    compiler.plugin('done', () => {
+    compiler.hooks.done.tap('ApiRsyncPlugin', () => {
         console.log('');
         console.log(`🔄 🔄 🔄  Rsync starting for ${this.source} 🔄 🔄 🔄`);
         execSync(

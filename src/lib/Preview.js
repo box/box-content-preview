@@ -1068,6 +1068,13 @@ class Preview extends EventEmitter {
         // Custom BoxAnnotations definition
         this.options.boxAnnotations = options.boxAnnotations;
 
+        if (options.annotatorToken !== undefined && typeof options.annotatorToken !== 'function') {
+            throw new Error('Bad annotatorToken!');
+        }
+        // handleTokenResponse later narrows this.options.token to the resolved read string,
+        // so the annotator needs the original { read, write } resolver to perform writes.
+        this.options.annotatorToken = options.annotatorToken;
+
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
@@ -1110,6 +1117,7 @@ class Preview extends EventEmitter {
         this.options.previewMode = options.previewMode;
         this.options.sharedLinkAuth = options.sharedLinkAuth;
         this.options.preloadStatus = options.preloadStatus;
+        this.options.clientName = options.clientName;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1894,11 +1902,12 @@ class Preview extends EventEmitter {
      */
     emitLogEvent(name, payload = {}) {
         const file = this.file || {};
-        const { accessPattern, previewMode, sharedLinkAuth } = this.options || {};
+        const { accessPattern, clientName, previewMode, sharedLinkAuth } = this.options || {};
 
         this.emit(name, {
             ...payload,
             access_pattern: accessPattern,
+            client_name: clientName,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
             current_page_number: getProp(this.viewer, 'pdfViewer.currentPageNumber', ''),
             extension: file.extension || '',

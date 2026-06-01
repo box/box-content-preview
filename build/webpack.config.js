@@ -6,8 +6,8 @@ const fs = require('fs');
 const get = require('lodash/get');
 const path = require('path');
 const locales = require('@box/languages');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const { execSync } = require('child_process');
 const commonConfig = require('./webpack.common.config');
@@ -27,6 +27,8 @@ if (fs.existsSync('build/rsync.json')) {
 
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
+const exifAssets = path.resolve('src/lib/exif');
+const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
 const staticFolder = path.resolve('dist');
 const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
@@ -35,7 +37,10 @@ function updateConfig(conf, language, index) {
     const config = {
         ...conf,
         entry: {
-            annotations: ['box-annotations'],
+            annotations: {
+                import: 'box-annotations',
+                library: { name: 'BoxAnnotations', type: 'window', export: 'default' },
+            },
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`],
             archive: [`${lib}/viewers/archive/BoxArchive.js`],
@@ -43,38 +48,48 @@ function updateConfig(conf, language, index) {
         mode: isProd ? 'production' : 'development',
         optimization: {
             minimizer: [
-                new UglifyJsPlugin({
-                    uglifyOptions: {
+                new TerserPlugin({
+                    terserOptions: {
                         compress: {
                             drop_console: true,
                         },
-                        output: {
+                        format: {
                             comments: /^\/*!/,
                         },
-                        sourceMap: false,
                     },
+                    extractComments: false,
                 }),
+                new CssMinimizerPlugin(),
             ],
         },
         output: {
-            filename: '[Name].js',
+            filename: '[name].js',
             path: path.resolve('dist', version, language),
         },
         performance: {
             maxAssetSize: 500000,
             maxEntrypointSize: 750000,
         },
+        ignoreWarnings: [
+            // pdfjs-dist contains an internal dynamic require for optional features that
+            // webpack flags as a critical dependency. Safe to ignore.
+            { module: /pdfjs-dist/, message: /Critical dependency/ },
+        ],
         devServer: {
-            contentBase: './src',
-            disableHostCheck: true,
+            static: './src',
+            allowedHosts: 'all',
             host: '0.0.0.0',
-            inline: true,
             port: 8000,
+            client: {
+                overlay: { errors: true, warnings: false, runtimeErrors: true },
+            },
         },
     };
 
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
+        config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
     }
 
     if (isDev) {
@@ -97,17 +112,6 @@ function updateConfig(conf, language, index) {
 
             config.plugins.push(new ApiRsyncPlugin('dist/.', destination));
         }
-    }
-
-    if (isProd) {
-        // Optimize CSS - minimize, remove comments and duplicate rules
-        config.plugins.push(
-            new OptimizeCssAssetsPlugin({
-                cssProcessorOptions: {
-                    safe: true,
-                },
-            }),
-        );
     }
 
     return config;

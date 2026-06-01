@@ -1795,6 +1795,31 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.randomOption).toBe('derp');
             expect(combinedOptions.localizedStrings).toBeDefined();
         });
+
+        test('should forward annotatorToken to the annotator when provided', () => {
+            const annotatorToken = jest.fn();
+            base.options = {
+                annotatorToken,
+                file: { id: 1 },
+                location: { locale: 'en-US' },
+                token: 'read-token',
+            };
+
+            const combinedOptions = base.createAnnotatorOptions({});
+            expect(combinedOptions.token).toBe(annotatorToken);
+        });
+
+        test('should fall back to the read token when annotatorToken is undefined', () => {
+            base.options = {
+                annotatorToken: undefined,
+                file: { id: 1 },
+                location: { locale: 'en-US' },
+                token: 'read-token',
+            };
+
+            const combinedOptions = base.createAnnotatorOptions({});
+            expect(combinedOptions.token).toBe('read-token');
+        });
     });
 
     describe('handleAssetAndRepLoad()', () => {

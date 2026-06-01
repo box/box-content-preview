@@ -26,11 +26,9 @@ echo "--------------------------------------------------------------------------
 mkdir ${DOC_STATIC_ASSETS_PATH}
 
 echo "-----------------------------------------------------------------------------------"
-echo "Copying legacy files/folders from version ${DOC_CURRENT_ASSETS_VERSIONS}..."
+echo "Copying images from version ${DOC_CURRENT_ASSETS_VERSIONS}..."
 echo "-----------------------------------------------------------------------------------"
-\cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/exif.js ${DOC_STATIC_ASSETS_PATH}/
-\cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/exif-reader.min.js ${DOC_STATIC_ASSETS_PATH}/
-\cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/exif.min.js ${DOC_STATIC_ASSETS_PATH}/
+# EXIF libs live in src/lib/exif and are not pinned to pdfjs versions; nothing to copy here.
 \cp -R src/third-party/doc/${DOC_CURRENT_ASSETS_VERSIONS}/images ${DOC_STATIC_ASSETS_PATH}/images
 
 echo "-----------------------------------------------------------------------------------"
