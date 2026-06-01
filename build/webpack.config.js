@@ -46,9 +46,15 @@ function updateConfig(conf, language, index) {
             archive: [`${lib}/viewers/archive/BoxArchive.js`],
         },
         mode: isProd ? 'production' : 'development',
+        // Cap webpack's per-compilation parallelism so the 26 per-language
+        // configs don't all enter the minify phase at once on CI.
+        parallelism: 1,
         optimization: {
             minimizer: [
                 new TerserPlugin({
+                    // Default is os.cpus().length, which combined with 26 parallel
+                    // language compilations OOMs the Jenkins agent.
+                    parallel: 2,
                     terserOptions: {
                         compress: {
                             drop_console: true,
