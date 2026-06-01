@@ -124,4 +124,7 @@ function updateConfig(conf, language, index) {
 }
 
 const localizedConfigs = languages.map((language, index) => updateConfig(commonConfig(language), language, index));
+// MultiCompiler cap: limit concurrent language compilations so they don't all
+// enter the Terser minify phase at once and OOM the CI agent.
+localizedConfigs.parallelism = 2;
 module.exports = localizedConfigs.length > 1 ? localizedConfigs : localizedConfigs[0];
