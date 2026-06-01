@@ -512,6 +512,14 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.isNarrowVideo).toBe(true);
         });
 
+        test('should hide the preload play overlay when building the narrow cluster', () => {
+            videoBaseViewer.preloader = { hidePlayOverlay: jest.fn(), showPlayOverlay: jest.fn() };
+            videoBaseViewer.mediaEl.style.width = '579px';
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(videoBaseViewer.preloader.hidePlayOverlay).toHaveBeenCalled();
+            expect(videoBaseViewer.preloader.showPlayOverlay).not.toHaveBeenCalled();
+        });
+
         test('should not add play button controls if video width is less than 580px and playContainerEl is present', () => {
             videoBaseViewer.mediaEl.style.width = '579px';
             videoBaseViewer.playContainerEl = document.createElement('div');
@@ -528,6 +536,15 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(mockRemovePlayButtonWithSeekButtons).toHaveBeenCalled();
             expect(mockRenderUI).toHaveBeenCalled();
             expect(videoBaseViewer.isNarrowVideo).toBe(false);
+        });
+
+        test('should restore the preload play overlay when removing the narrow cluster', () => {
+            videoBaseViewer.preloader = { hidePlayOverlay: jest.fn(), showPlayOverlay: jest.fn() };
+            videoBaseViewer.mediaEl.style.width = '580px';
+            videoBaseViewer.playContainerEl = document.createElement('div');
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(videoBaseViewer.preloader.showPlayOverlay).toHaveBeenCalled();
+            expect(videoBaseViewer.preloader.hidePlayOverlay).not.toHaveBeenCalled();
         });
 
         test('should not call removePLayButtonWithSeekButtons if playContainerEl is not present', () => {
