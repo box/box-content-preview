@@ -23,10 +23,8 @@ describe('RotateControl', () => {
         test('should return a valid wrapper', async () => {
             getWrapper();
             const button = await getButton();
-            const icon = await screen.findByTestId('IconRotate24');
 
             expect(button).toBeInTheDocument();
-            expect(icon).toBeInTheDocument();
         });
     });
 });

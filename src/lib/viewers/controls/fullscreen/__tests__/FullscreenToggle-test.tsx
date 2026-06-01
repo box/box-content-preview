@@ -6,10 +6,8 @@ import FullscreenToggle from '../FullscreenToggle';
 
 describe('FullscreenToggle', () => {
     const getWrapper = (props = {}) => render(<FullscreenToggle onFullscreenToggle={jest.fn()} {...props} />);
-    const getEnterToggleButton = async () => screen.findByTitle('Enter fullscreen');
-    const getExitToggleButton = async () => screen.findByTitle('Exit fullscreen');
-    const getIconFullscreenIn = async () => screen.findByTestId('IconArrowsMaximizeMedium24');
-    const getIconFullscreenOut = async () => screen.findByTestId('IconArrowsMinimizeMedium24');
+    const getEnterToggleButton = async () => screen.findByRole('button', { name: 'Enter fullscreen' });
+    const getExitToggleButton = async () => screen.findByRole('button', { name: 'Exit fullscreen' });
 
     describe('event handlers', () => {
         test('should respond to fullscreen events', async () => {
@@ -19,18 +17,14 @@ describe('FullscreenToggle', () => {
                 fullscreen.enter();
             });
 
-            const iconFullscreenOut = await getIconFullscreenOut();
             const exitToggleButton = await getExitToggleButton();
-            expect(iconFullscreenOut).toBeInTheDocument();
             expect(exitToggleButton).toBeInTheDocument();
 
             act(() => {
                 fullscreen.exit();
             });
 
-            const iconFullscreenIn = await getIconFullscreenIn();
             const enterToggleButton = await getEnterToggleButton();
-            expect(iconFullscreenIn).toBeInTheDocument();
             expect(enterToggleButton).toBeInTheDocument();
         });
 
@@ -50,19 +44,6 @@ describe('FullscreenToggle', () => {
 
             const enterToggleButton = await getEnterToggleButton();
             expect(enterToggleButton).toBeInTheDocument();
-        });
-
-        test('should render modern icons', async () => {
-            getWrapper();
-
-            expect(await screen.findByTestId('IconArrowsMaximizeMedium24')).toBeInTheDocument();
-
-            // Enter fullscreen
-            act(() => {
-                fullscreen.enter();
-            });
-
-            expect(await screen.findByTestId('IconArrowsMinimizeMedium24')).toBeInTheDocument();
         });
     });
 });

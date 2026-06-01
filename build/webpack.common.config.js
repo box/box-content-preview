@@ -49,6 +49,16 @@ module.exports = language => {
                         filename: '[name][ext]',
                     },
                 },
+                {
+                    // @box/blueprint-web's ESM build uses extensionless imports (e.g., 'lodash/noop')
+                    // which webpack 5 rejects under strict ESM resolution. Relax the requirement
+                    // for paths inside Blueprint so its imports resolve correctly.
+                    test: /\.m?js$/,
+                    include: [path.resolve('node_modules/@box/blueprint-web')],
+                    resolve: {
+                        fullySpecified: false,
+                    },
+                },
             ],
         },
         plugins: [
