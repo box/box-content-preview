@@ -19,18 +19,21 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
+    "dependencies": {
+        "axios": "^0.24.0",
+        "pdfjs-dist": "4.3.136"
+    },
     "peerDependencies": {
-        "@box/blueprint-web": "*",
+        "@box/blueprint-web": "^14.32.1",
+        "@box/blueprint-web-assets": "^4.119.2",
+        "@box/react-virtualized": "9.22.3-rc-box.2",
+        "box-annotations": "^5.2.1-beta.0",
+        "box-ui-elements": "^20.0.0",
         "react": "^18.0.0",
         "react-dom": "^18.0.0"
     },
@@ -42,6 +45,8 @@
         "@babel/preset-env": "^7.18.6",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
+        "@box/blueprint-web": "^14.41.0",
+        "@box/blueprint-web-assets": "^4.119.2",
         "@box/frontend": "^6.4.0",
         "@box/languages": "^1.0.0",
         "@box/react-virtualized": "9.22.3-rc-box.2",
@@ -60,7 +65,6 @@
         "@typescript-eslint/eslint-plugin": "^5.60.1",
         "@typescript-eslint/parser": "^5.60.1",
         "autoprefixer": "^10.4.21",
-        "axios": "^0.24.0",
         "babel-loader": "^8.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
         "box-annotations": "^5.2.1-beta.0",
@@ -136,9 +140,9 @@
         "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
         "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-        "build:lib": "yarn build:lib:js && yarn build:lib:types",
+        "build:lib": "yarn build:i18n && yarn build:lib:js && yarn build:lib:types",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
-        "build:lib:types": "tsc --project tsconfig.lib.json",
+        "build:lib:types": "cp build/lib-types/index.d.ts dist/lib/index.d.ts",
         "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
@@ -185,8 +189,5 @@
         "**/react-intl/**/@types/react": "18.3.1",
         "cheerio": "1.0.0-rc.12",
         "acorn": "8.14.0"
-    },
-    "dependencies": {
-        "pdfjs-dist": "4.3.136"
     }
 }
