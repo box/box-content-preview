@@ -1,3 +1,11 @@
+## 3.39.0 (2026-06-01)
+
+* fix(build): cap minify parallelism to prevent CI OOM (#1664) ([82429b5](https://github.com/box/box-content-preview/commit/82429b5)), closes [#1664](https://github.com/box/box-content-preview/issues/1664)
+* fix(media): dedupe play button on narrow videos (#1662) ([b049109](https://github.com/box/box-content-preview/commit/b049109)), closes [#1662](https://github.com/box/box-content-preview/issues/1662)
+* feat(build): ship legacy Preview class as npm package (#1658) ([16ee9b1](https://github.com/box/box-content-preview/commit/16ee9b1)), closes [#1658](https://github.com/box/box-content-preview/issues/1658)
+
+
+
 ## 3.38.0 (2026-05-30)
 
 * fix(media): load filmstrip via blob URL when access-token is in header (#1655) ([5bbe86c](https://github.com/box/box-content-preview/commit/5bbe86c)), closes [#1655](https://github.com/box/box-content-preview/issues/1655)
