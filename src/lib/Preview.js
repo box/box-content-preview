@@ -1068,6 +1068,13 @@ class Preview extends EventEmitter {
         // Custom BoxAnnotations definition
         this.options.boxAnnotations = options.boxAnnotations;
 
+        if (options.annotatorToken !== undefined && typeof options.annotatorToken !== 'function') {
+            throw new Error('Bad annotatorToken!');
+        }
+        // handleTokenResponse later narrows this.options.token to the resolved read string,
+        // so the annotator needs the original { read, write } resolver to perform writes.
+        this.options.annotatorToken = options.annotatorToken;
+
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 

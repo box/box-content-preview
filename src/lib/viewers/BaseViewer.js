@@ -1447,6 +1447,7 @@ class BaseViewer extends EventEmitter {
             isMobile: this.isMobile,
             locale: this.options.location.locale,
             localizedStrings,
+            token: this.options.annotatorToken !== undefined ? this.options.annotatorToken : this.options.token,
         });
     }
 

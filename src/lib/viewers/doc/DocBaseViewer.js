@@ -87,6 +87,8 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const WHEEL_ZOOM_MAX_SCALE = 5.0;
+const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -159,6 +161,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.trackpadPinchToZoomHandler = this.trackpadPinchToZoomHandler.bind(this);
         this.print = this.print.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.setPage = this.setPage.bind(this);
@@ -1483,6 +1486,10 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
+
+        if (this.featureEnabled('pinchToZoom.enabled')) {
+            this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
+        }
     }
 
     /**
@@ -1500,6 +1507,10 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
                 this.docEl.removeEventListener('touchmove', this.pinchToZoomChangeHandler);
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
+            }
+
+            if (this.featureEnabled('pinchToZoom.enabled')) {
+                this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
     }
@@ -1863,6 +1874,59 @@ class DocBaseViewer extends BaseViewer {
         this.originalDistance = 0;
         this.pinchScale = 1;
         this.pinchPage = null;
+    }
+
+    trackpadPinchToZoomHandler(event) {
+        if (!event.ctrlKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const { currentScale } = this.pdfViewer;
+        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
+
+        if (newScale === currentScale) {
+            return;
+        }
+
+        const rect = this.docEl.getBoundingClientRect();
+        const cursorX = event.clientX - rect.left;
+        const cursorY = event.clientY - rect.top;
+
+        // Find the page element under the cursor
+        const pageEl = document.elementFromPoint(event.clientX, event.clientY)?.closest('.page');
+
+        if (pageEl) {
+            // Calculate cursor position as a fraction of the page dimensions
+            const pageRect = pageEl.getBoundingClientRect();
+            const fracX = (event.clientX - pageRect.left) / pageRect.width;
+            const fracY = (event.clientY - pageRect.top) / pageRect.height;
+
+            // Apply zoom
+            this.updateScale(newScale);
+
+            // After zoom, find where that fractional position on the page is now
+            const newPageRect = pageEl.getBoundingClientRect();
+            const newRect = this.docEl.getBoundingClientRect();
+            const newPointX = newPageRect.left - newRect.left + fracX * newPageRect.width;
+            const newPointY = newPageRect.top - newRect.top + fracY * newPageRect.height;
+
+            // Adjust scroll so cursor stays over the same point
+            this.docEl.scrollLeft += newPointX - cursorX;
+            this.docEl.scrollTop += newPointY - cursorY;
+        } else {
+            // Fallback when no page element found
+            const contentX = this.docEl.scrollLeft + cursorX;
+            const contentY = this.docEl.scrollTop + cursorY;
+
+            this.updateScale(newScale);
+
+            const scaleFactor = newScale / currentScale;
+            this.docEl.scrollLeft = contentX * scaleFactor - cursorX;
+            this.docEl.scrollTop = contentY * scaleFactor - cursorY;
+        }
     }
 
     toggleFindBar(findBarToggleEl) {
