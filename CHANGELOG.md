@@ -1,3 +1,9 @@
+## 3.40.0 (2026-06-01)
+
+* fix(build): cap MultiCompiler parallelism to prevent CI OOM (#1665) ([f4aca6b](https://github.com/box/box-content-preview/commit/f4aca6b)), closes [#1665](https://github.com/box/box-content-preview/issues/1665)
+
+
+
 ## 3.39.0 (2026-06-01)
 
 * fix(build): cap minify parallelism to prevent CI OOM (#1664) ([82429b5](https://github.com/box/box-content-preview/commit/82429b5)), closes [#1664](https://github.com/box/box-content-preview/issues/1664)
