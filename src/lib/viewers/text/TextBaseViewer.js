@@ -9,6 +9,7 @@ const ZOOM_DEFAULT = 1.0;
 const ZOOM_MAX = 10;
 const ZOOM_MIN = 0.1;
 const ZOOM_STEP = 0.1;
+const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -23,6 +24,7 @@ class TextBaseViewer extends BaseViewer {
         // Bind context for handlers;
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
+        this.wheelZoomHandler = this.wheelZoomHandler.bind(this);
     }
 
     /**
@@ -42,12 +44,109 @@ class TextBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        this.unbindDOMListeners();
+
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
         }
 
         super.destroy();
+    }
+
+    /**
+     * Binds DOM listeners for the text viewer.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindDOMListeners() {
+        const textEl = this.containerEl && this.containerEl.querySelector('.bp-text');
+        if (textEl && this.featureEnabled('pinchToZoom.enabled')) {
+            textEl.addEventListener('wheel', this.wheelZoomHandler, { passive: false });
+        }
+    }
+
+    /**
+     * Unbinds DOM listeners for the text viewer.
+     *
+     * @protected
+     * @return {void}
+     */
+    unbindDOMListeners() {
+        const textEl = this.containerEl && this.containerEl.querySelector('.bp-text');
+        if (textEl) {
+            textEl.removeEventListener('wheel', this.wheelZoomHandler);
+        }
+    }
+
+    /**
+     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
+     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     * Anchors zoom on the cursor position so content under the cursor stays in place.
+     *
+     * @protected
+     * @param {WheelEvent} event - wheel event object
+     * @return {void}
+     */
+    wheelZoomHandler(event) {
+        const textEl = this.containerEl && this.containerEl.querySelector('.bp-text');
+        if (!event.ctrlKey || !textEl) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, this.scale + scaleDelta));
+
+        if (newScale === this.scale) {
+            return;
+        }
+
+        // Find the text position under the cursor so we can keep it anchored.
+        // Chrome/Safari use caretRangeFromPoint; Firefox uses caretPositionFromPoint.
+        let range = null;
+        if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(event.clientX, event.clientY);
+        } else if (document.caretPositionFromPoint) {
+            const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                range = document.createRange();
+                range.setStart(pos.offsetNode, pos.offset);
+                range.collapse(true);
+            }
+        }
+
+        let anchorScreenY = event.clientY;
+        if (range) {
+            const rangeRect = range.getBoundingClientRect();
+            anchorScreenY = rangeRect.top;
+        }
+
+        // Record where on screen the anchor line currently sits
+        const textRect = textEl.getBoundingClientRect();
+        const anchorViewportOffset = anchorScreenY - textRect.top;
+
+        // Apply zoom via font-size
+        textEl.style.fontSize = `${Math.round(newScale * 100)}%`;
+        this.scale = newScale;
+
+        // Find where the anchor text has moved to and adjust scroll
+        if (range) {
+            const newRangeRect = range.getBoundingClientRect();
+            const newTextRect = textEl.getBoundingClientRect();
+            const newPositionInContent = newRangeRect.top - newTextRect.top + textEl.scrollTop;
+            textEl.scrollTop = newPositionInContent - anchorViewportOffset;
+        }
+
+        this.emit('zoom', {
+            canZoomIn: newScale < ZOOM_MAX,
+            canZoomOut: newScale > ZOOM_MIN,
+            zoom: newScale,
+        });
+
+        this.renderUI();
     }
 
     /**
@@ -124,6 +223,7 @@ class TextBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.bindDOMListeners();
         this.renderUI();
     }
 
