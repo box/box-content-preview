@@ -104,8 +104,19 @@ class TextBaseViewer extends BaseViewer {
             return;
         }
 
-        // Find the text position under the cursor so we can keep it anchored
-        const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(event.clientX, event.clientY) : null;
+        // Find the text position under the cursor so we can keep it anchored.
+        // Chrome/Safari use caretRangeFromPoint; Firefox uses caretPositionFromPoint.
+        let range = null;
+        if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(event.clientX, event.clientY);
+        } else if (document.caretPositionFromPoint) {
+            const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                range = document.createRange();
+                range.setStart(pos.offsetNode, pos.offset);
+                range.collapse(true);
+            }
+        }
 
         let anchorScreenY = event.clientY;
         if (range) {

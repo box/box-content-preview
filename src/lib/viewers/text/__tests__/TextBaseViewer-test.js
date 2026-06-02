@@ -47,6 +47,17 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textBase.destroy();
             expect(textBase.controls.destroy).toBeCalled();
         });
+
+        test('should unbind DOM listeners', () => {
+            const textEl = document.createElement('div');
+            textEl.className = 'bp-text';
+            textBase.containerEl.appendChild(textEl);
+            jest.spyOn(textEl, 'removeEventListener');
+
+            textBase.destroy();
+
+            expect(textEl.removeEventListener).toBeCalledWith('wheel', textBase.wheelZoomHandler);
+        });
     });
 
     describe('zoom()', () => {
@@ -207,28 +218,6 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         });
     });
 
-    describe('unbindDOMListeners()', () => {
-        let textEl;
-
-        beforeEach(() => {
-            textEl = document.createElement('div');
-            textEl.className = 'bp-text';
-            textBase.containerEl.appendChild(textEl);
-        });
-
-        afterEach(() => {
-            textBase.containerEl.removeChild(textEl);
-        });
-
-        test('should remove wheel event listener', () => {
-            jest.spyOn(textEl, 'removeEventListener');
-
-            textBase.unbindDOMListeners();
-
-            expect(textEl.removeEventListener).toBeCalledWith('wheel', textBase.wheelZoomHandler);
-        });
-    });
-
     describe('wheelZoomHandler()', () => {
         let textEl;
 
@@ -321,28 +310,96 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             expect(textBase.scale).toBe(0.1);
         });
 
-        test('should use caretRangeFromPoint to anchor scroll to the line under cursor', () => {
-            const mockRange = {
-                getBoundingClientRect: jest
-                    .fn()
-                    .mockReturnValueOnce({ top: 200 })
-                    .mockReturnValueOnce({ top: 220 }),
-            };
-            document.caretRangeFromPoint = jest.fn().mockReturnValue(mockRange);
+        describe('caret-based scroll anchoring', () => {
+            let originalCaretRangeFromPoint;
+            let originalCaretPositionFromPoint;
 
-            const event = new WheelEvent('wheel', {
-                deltaY: -10,
-                ctrlKey: true,
-                clientX: 400,
-                clientY: 200,
+            beforeEach(() => {
+                originalCaretRangeFromPoint = document.caretRangeFromPoint;
+                originalCaretPositionFromPoint = document.caretPositionFromPoint;
             });
 
-            textBase.wheelZoomHandler(event);
+            afterEach(() => {
+                if (originalCaretRangeFromPoint) {
+                    document.caretRangeFromPoint = originalCaretRangeFromPoint;
+                } else {
+                    delete document.caretRangeFromPoint;
+                }
+                if (originalCaretPositionFromPoint) {
+                    document.caretPositionFromPoint = originalCaretPositionFromPoint;
+                } else {
+                    delete document.caretPositionFromPoint;
+                }
+            });
 
-            expect(document.caretRangeFromPoint).toBeCalledWith(400, 200);
-            expect(textBase.scale).toBeGreaterThan(1.0);
+            test('should use caretRangeFromPoint to anchor scroll to the line under cursor', () => {
+                const mockRange = {
+                    getBoundingClientRect: jest
+                        .fn()
+                        .mockReturnValueOnce({ top: 200 })
+                        .mockReturnValueOnce({ top: 220 }),
+                };
+                document.caretRangeFromPoint = jest.fn().mockReturnValue(mockRange);
 
-            delete document.caretRangeFromPoint;
+                const event = new WheelEvent('wheel', {
+                    deltaY: -10,
+                    ctrlKey: true,
+                    clientX: 400,
+                    clientY: 200,
+                });
+
+                textBase.wheelZoomHandler(event);
+
+                expect(document.caretRangeFromPoint).toBeCalledWith(400, 200);
+                expect(textBase.scale).toBeGreaterThan(1.0);
+            });
+
+            test('should fall back to caretPositionFromPoint for Firefox', () => {
+                delete document.caretRangeFromPoint;
+
+                const mockRange = {
+                    getBoundingClientRect: jest
+                        .fn()
+                        .mockReturnValueOnce({ top: 200 })
+                        .mockReturnValueOnce({ top: 220 }),
+                    setStart: jest.fn(),
+                    collapse: jest.fn(),
+                };
+                jest.spyOn(document, 'createRange').mockReturnValue(mockRange);
+                document.caretPositionFromPoint = jest.fn().mockReturnValue({
+                    offsetNode: document.createTextNode('test'),
+                    offset: 0,
+                });
+
+                const event = new WheelEvent('wheel', {
+                    deltaY: -10,
+                    ctrlKey: true,
+                    clientX: 400,
+                    clientY: 200,
+                });
+
+                textBase.wheelZoomHandler(event);
+
+                expect(document.caretPositionFromPoint).toBeCalledWith(400, 200);
+                expect(textBase.scale).toBeGreaterThan(1.0);
+            });
+
+            test('should still zoom when neither caret API is available', () => {
+                delete document.caretRangeFromPoint;
+                delete document.caretPositionFromPoint;
+
+                const event = new WheelEvent('wheel', {
+                    deltaY: -10,
+                    ctrlKey: true,
+                    clientX: 400,
+                    clientY: 200,
+                });
+
+                textBase.wheelZoomHandler(event);
+
+                expect(textBase.scale).toBeGreaterThan(1.0);
+                expect(textEl.style.fontSize).toBe(`${Math.round(textBase.scale * 100)}%`);
+            });
         });
     });
 });
