@@ -1,3 +1,9 @@
+## 3.41.0 (2026-06-03)
+
+* feat(zoom): add pinch to zoom support for txt files (#1661) ([e703e20](https://github.com/box/box-content-preview/commit/e703e20)), closes [#1661](https://github.com/box/box-content-preview/issues/1661)
+
+
+
 ## 3.40.0 (2026-06-01)
 
 * fix(build): cap MultiCompiler parallelism to prevent CI OOM (#1665) ([f4aca6b](https://github.com/box/box-content-preview/commit/f4aca6b)), closes [#1665](https://github.com/box/box-content-preview/issues/1665)
