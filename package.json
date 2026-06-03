@@ -19,19 +19,14 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "axios": "^0.24.0",
-        "pdfjs-dist": "4.3.136"
+        "pdfjs-dist": "6.0.227"
     },
     "peerDependencies": {
         "@box/blueprint-web": "^14.32.1",
@@ -137,7 +132,7 @@
         "webpack-dev-server": "^5.2.4"
     },
     "engines": {
-        "node": ">=20.0.0",
+        "node": ">=22.13.0",
         "yarn": ">=1.19.x"
     },
     "scripts": {
