@@ -1,3 +1,9 @@
+## 3.42.0 (2026-06-04)
+
+* chore(deps): bump pdfjs-dist to 6.0.227 (#1666) ([7e082b8](https://github.com/box/box-content-preview/commit/7e082b8)), closes [#1666](https://github.com/box/box-content-preview/issues/1666)
+
+
+
 ## 3.41.0 (2026-06-03)
 
 * feat(zoom): add pinch to zoom support for txt files (#1661) ([e703e20](https://github.com/box/box-content-preview/commit/e703e20)), closes [#1661](https://github.com/box/box-content-preview/issues/1661)

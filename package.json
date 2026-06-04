@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "3.41.0",
+    "version": "3.42.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -19,8 +19,13 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": ["dist/lib"],
-    "sideEffects": ["*.css", "*.scss"],
+    "files": [
+        "dist/lib"
+    ],
+    "sideEffects": [
+        "*.css",
+        "*.scss"
+    ],
     "publishConfig": {
         "access": "public"
     },
